@@ -4,6 +4,7 @@ package com.openai.services.blocking.fineTuning.jobs
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.models.*
 import com.openai.models.FineTuningJobCheckpointListParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith

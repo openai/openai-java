@@ -23,11 +23,4 @@ internal fun <K : Comparable<K>, V> SortedMap<K, V>.toImmutable(): SortedMap<K, 
     if (isEmpty()) Collections.emptySortedMap()
     else Collections.unmodifiableSortedMap(toSortedMap(comparator()))
 
-@JvmSynthetic
-internal fun isAzureEndpoint(baseUrl: String): Boolean {
-    // Azure Endpoint should be in the format of `https://<region>.openai.azure.com`.
-    // Or `https://<region>.azure-api.net` for Azure OpenAI Management URL.
-    return baseUrl.endsWith(".openai.azure.com", true) || baseUrl.endsWith(".azure-api.net", true)
-}
-
 internal interface Enum
