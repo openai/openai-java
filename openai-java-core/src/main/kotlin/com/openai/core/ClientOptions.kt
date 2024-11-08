@@ -3,16 +3,11 @@
 package com.openai.core
 
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.openai.azure.AzureOpenAIServiceVersion
-import com.openai.azure.AzureOpenAIServiceVersion.Companion.V2024_06_01
-import com.openai.azure.credential.AzureApiKeyCredential
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpClient
 import com.openai.core.http.PhantomReachableClosingHttpClient
 import com.openai.core.http.QueryParams
 import com.openai.core.http.RetryingHttpClient
-import com.openai.credential.BearerTokenCredential
-import com.openai.credential.Credential
 import java.time.Clock
 
 class ClientOptions
@@ -26,7 +21,7 @@ private constructor(
     @get:JvmName("queryParams") val queryParams: QueryParams,
     @get:JvmName("responseValidation") val responseValidation: Boolean,
     @get:JvmName("maxRetries") val maxRetries: Int,
-    @get:JvmName("credential") val credential: Credential,
+    @get:JvmName("apiKey") val apiKey: String,
     @get:JvmName("organization") val organization: String?,
     @get:JvmName("project") val project: String?,
 ) {
@@ -52,8 +47,7 @@ private constructor(
         private var queryParams: QueryParams.Builder = QueryParams.builder()
         private var responseValidation: Boolean = false
         private var maxRetries: Int = 2
-        private var credential: Credential? = null
-        private var azureServiceVersion: AzureOpenAIServiceVersion? = null
+        private var apiKey: String? = null
         private var organization: String? = null
         private var project: String? = null
 
@@ -67,7 +61,7 @@ private constructor(
             queryParams = clientOptions.queryParams.toBuilder()
             responseValidation = clientOptions.responseValidation
             maxRetries = clientOptions.maxRetries
-            credential = clientOptions.credential
+            apiKey = clientOptions.apiKey
             organization = clientOptions.organization
             project = clientOptions.project
         }
@@ -166,56 +160,21 @@ private constructor(
 
         fun maxRetries(maxRetries: Int) = apply { this.maxRetries = maxRetries }
 
-        fun apiKey(apiKey: String) = apply {
-            this.credential = BearerTokenCredential.create(apiKey)
-        }
-
-        fun credential(credential: Credential) = apply { this.credential = credential }
-
-        fun azureServiceVersion(azureServiceVersion: AzureOpenAIServiceVersion) = apply {
-            this.azureServiceVersion = azureServiceVersion
-        }
+        fun apiKey(apiKey: String) = apply { this.apiKey = apiKey }
 
         fun organization(organization: String?) = apply { this.organization = organization }
 
         fun project(project: String?) = apply { this.project = project }
 
         fun fromEnv() = apply {
-            val openAIKey = System.getenv("OPENAI_API_KEY")
-            val openAIOrgId = System.getenv("OPENAI_ORG_ID")
-            val openAIProjectId = System.getenv("OPENAI_PROJECT_ID")
-            val azureOpenAIKey = System.getenv("AZURE_OPENAI_KEY")
-            val azureEndpoint = System.getenv("AZURE_OPENAI_ENDPOINT")
-
-            when {
-                !openAIKey.isNullOrEmpty() && !azureOpenAIKey.isNullOrEmpty() -> {
-                    throw IllegalArgumentException(
-                        "Both OpenAI and Azure OpenAI API keys, `OPENAI_API_KEY` and `AZURE_OPENAI_KEY`, are set. Please specify only one"
-                    )
-                }
-                !openAIKey.isNullOrEmpty() -> {
-                    credential(BearerTokenCredential.create(openAIKey))
-                    organization(openAIOrgId)
-                    project(openAIProjectId)
-                }
-                !azureOpenAIKey.isNullOrEmpty() -> {
-                    credential(AzureApiKeyCredential.create(azureOpenAIKey))
-                    baseUrl(azureEndpoint)
-                }
-                !azureEndpoint.isNullOrEmpty() -> {
-                    // Both 'openAIKey' and 'azureOpenAIKey' are not set.
-                    // Only 'azureEndpoint' is set here, and user still needs to call method
-                    // '.credential(BearerTokenCredential(Supplier<String>))'
-                    // to get the token through the supplier, which requires Azure Entra ID as a
-                    // dependency.
-                    baseUrl(azureEndpoint)
-                }
-            }
+            System.getenv("OPENAI_API_KEY")?.let { apiKey(it) }
+            System.getenv("OPENAI_ORG_ID")?.let { organization(it) }
+            System.getenv("OPENAI_PROJECT_ID")?.let { project(it) }
         }
 
         fun build(): ClientOptions {
             checkNotNull(httpClient) { "`httpClient` is required but was not set" }
-            checkNotNull(credential) { "`credential` is required but was not set" }
+            checkNotNull(apiKey) { "`apiKey` is required but was not set" }
 
             val headers = Headers.builder()
             val queryParams = QueryParams.builder()
@@ -228,26 +187,11 @@ private constructor(
             headers.put("X-Stainless-Runtime-Version", getJavaVersion())
             organization?.let { headers.put("OpenAI-Organization", it) }
             project?.let { headers.put("OpenAI-Project", it) }
-
-            when (val currentCredential = credential) {
-                is AzureApiKeyCredential -> {
-                    headers.put("api-key", currentCredential.apiKey())
-                }
-                is BearerTokenCredential -> {
-                    headers.put("Authorization", "Bearer ${currentCredential.token()}")
-                }
-                else -> {
-                    throw IllegalArgumentException("Invalid credential type")
+            apiKey?.let {
+                if (!it.isEmpty()) {
+                    headers.put("Authorization", "Bearer $it")
                 }
             }
-
-            if (isAzureEndpoint(baseUrl)) {
-                // Default Azure OpenAI version is used if Azure user doesn't
-                // specific a service API version in 'queryParams'.
-                // We can update the default value every major announcement if needed.
-                replaceQueryParams("api-version", (azureServiceVersion ?: V2024_06_01).value)
-            }
-
             headers.replaceAll(this.headers.build())
             queryParams.replaceAll(this.queryParams.build())
 
@@ -267,7 +211,7 @@ private constructor(
                 queryParams.build(),
                 responseValidation,
                 maxRetries,
-                credential!!,
+                apiKey!!,
                 organization,
                 project,
             )

@@ -3,13 +3,11 @@
 package com.openai.client.okhttp
 
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.openai.azure.AzureOpenAIServiceVersion
 import com.openai.client.OpenAIClientAsync
 import com.openai.client.OpenAIClientAsyncImpl
 import com.openai.core.ClientOptions
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
-import com.openai.credential.Credential
 import java.net.Proxy
 import java.time.Clock
 import java.time.Duration
@@ -131,12 +129,6 @@ class OpenAIOkHttpClientAsync private constructor() {
         }
 
         fun apiKey(apiKey: String) = apply { clientOptions.apiKey(apiKey) }
-
-        fun credential(credential: Credential) = apply { clientOptions.credential(credential) }
-
-        fun azureServiceVersion(azureServiceVersion: AzureOpenAIServiceVersion) = apply {
-            clientOptions.azureServiceVersion(azureServiceVersion)
-        }
 
         fun organization(organization: String?) = apply { clientOptions.organization(organization) }
 
