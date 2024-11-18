@@ -15,10 +15,20 @@ internal fun closeWhenPhantomReachable(observed: Any, closeable: AutoCloseable) 
     check(observed !== closeable) {
         "`observed` cannot be the same object as `closeable` because it would never become phantom reachable"
     }
-    closeWhenPhantomReachable?.let { it(observed, closeable::close) }
+    closeWhenPhantomReachable(observed, closeable::close)
 }
 
-private val closeWhenPhantomReachable: ((Any, AutoCloseable) -> Unit)? by lazy {
+/**
+ * Calls [close] when [observed] becomes only phantom reachable.
+ *
+ * This is a wrapper around a Java 9+ [java.lang.ref.Cleaner], or a no-op in older Java versions.
+ */
+@JvmSynthetic
+internal fun closeWhenPhantomReachable(observed: Any, close: () -> Unit) {
+    closeWhenPhantomReachable?.let { it(observed, close) }
+}
+
+private val closeWhenPhantomReachable: ((Any, () -> Unit) -> Unit)? by lazy {
     try {
         val cleanerClass = Class.forName("java.lang.ref.Cleaner")
         val cleanerCreate = cleanerClass.getMethod("create")
@@ -26,9 +36,9 @@ private val closeWhenPhantomReachable: ((Any, AutoCloseable) -> Unit)? by lazy {
             cleanerClass.getMethod("register", Any::class.java, Runnable::class.java)
         val cleanerObject = cleanerCreate.invoke(null);
 
-        { observed, closeable ->
+        { observed, close ->
             try {
-                cleanerRegister.invoke(cleanerObject, observed, Runnable { closeable.close() })
+                cleanerRegister.invoke(cleanerObject, observed, Runnable { close() })
             } catch (e: ReflectiveOperationException) {
                 if (e is InvocationTargetException) {
                     when (val cause = e.cause) {
