@@ -37,12 +37,10 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is ModelRetrieveParams && this.model == other.model && this.additionalHeaders == other.additionalHeaders && this.additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is ModelRetrieveParams && model == other.model && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int {
-        return /* spotless:off */ Objects.hash(model, additionalHeaders, additionalQueryParams) /* spotless:on */
-    }
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(model, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
         "ModelRetrieveParams{model=$model, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

@@ -160,7 +160,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Object && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -203,17 +203,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is UploadPart && this.id == other.id && this.createdAt == other.createdAt && this.uploadId == other.uploadId && this.object_ == other.object_ && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is UploadPart && id == other.id && createdAt == other.createdAt && uploadId == other.uploadId && object_ == other.object_ && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(id, createdAt, uploadId, object_, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(id, createdAt, uploadId, object_, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "UploadPart{id=$id, createdAt=$createdAt, uploadId=$uploadId, object_=$object_, additionalProperties=$additionalProperties}"

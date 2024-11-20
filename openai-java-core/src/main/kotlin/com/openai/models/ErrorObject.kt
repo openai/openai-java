@@ -135,17 +135,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ErrorObject && this.code == other.code && this.message == other.message && this.param == other.param && this.type == other.type && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ErrorObject && code == other.code && message == other.message && param == other.param && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(code, message, param, type, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(code, message, param, type, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "ErrorObject{code=$code, message=$message, param=$param, type=$type, additionalProperties=$additionalProperties}"

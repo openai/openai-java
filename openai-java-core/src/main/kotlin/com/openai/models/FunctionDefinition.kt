@@ -227,17 +227,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FunctionDefinition && this.description == other.description && this.name == other.name && this.parameters == other.parameters && this.strict == other.strict && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FunctionDefinition && description == other.description && name == other.name && parameters == other.parameters && strict == other.strict && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(description, name, parameters, strict, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(description, name, parameters, strict, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "FunctionDefinition{description=$description, name=$name, parameters=$parameters, strict=$strict, additionalProperties=$additionalProperties}"

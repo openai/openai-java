@@ -73,15 +73,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ModerationMultiModalInput && this.moderationImageUrlInput == other.moderationImageUrlInput && this.moderationTextInput == other.moderationTextInput /* spotless:on */
+        return /* spotless:off */ other is ModerationMultiModalInput && moderationImageUrlInput == other.moderationImageUrlInput && moderationTextInput == other.moderationTextInput /* spotless:on */
     }
 
-    override fun hashCode(): Int {
-        return /* spotless:off */ Objects.hash(moderationImageUrlInput, moderationTextInput) /* spotless:on */
-    }
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(moderationImageUrlInput, moderationTextInput) /* spotless:on */
 
-    override fun toString(): String {
-        return when {
+    override fun toString(): String =
+        when {
             moderationImageUrlInput != null ->
                 "ModerationMultiModalInput{moderationImageUrlInput=$moderationImageUrlInput}"
             moderationTextInput != null ->
@@ -89,7 +87,6 @@ private constructor(
             _json != null -> "ModerationMultiModalInput{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ModerationMultiModalInput")
         }
-    }
 
     companion object {
 

@@ -37,12 +37,10 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is FineTuningJobRetrieveParams && this.fineTuningJobId == other.fineTuningJobId && this.additionalHeaders == other.additionalHeaders && this.additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is FineTuningJobRetrieveParams && fineTuningJobId == other.fineTuningJobId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int {
-        return /* spotless:off */ Objects.hash(fineTuningJobId, additionalHeaders, additionalQueryParams) /* spotless:on */
-    }
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fineTuningJobId, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
         "FineTuningJobRetrieveParams{fineTuningJobId=$fineTuningJobId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

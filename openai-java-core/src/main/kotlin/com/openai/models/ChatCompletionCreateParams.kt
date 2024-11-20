@@ -868,17 +868,14 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ChatCompletionCreateBody && this.messages == other.messages && this.model == other.model && this.audio == other.audio && this.frequencyPenalty == other.frequencyPenalty && this.functionCall == other.functionCall && this.functions == other.functions && this.logitBias == other.logitBias && this.logprobs == other.logprobs && this.maxCompletionTokens == other.maxCompletionTokens && this.maxTokens == other.maxTokens && this.metadata == other.metadata && this.modalities == other.modalities && this.n == other.n && this.parallelToolCalls == other.parallelToolCalls && this.prediction == other.prediction && this.presencePenalty == other.presencePenalty && this.responseFormat == other.responseFormat && this.seed == other.seed && this.serviceTier == other.serviceTier && this.stop == other.stop && this.store == other.store && this.streamOptions == other.streamOptions && this.temperature == other.temperature && this.toolChoice == other.toolChoice && this.tools == other.tools && this.topLogprobs == other.topLogprobs && this.topP == other.topP && this.user == other.user && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ChatCompletionCreateBody && messages == other.messages && model == other.model && audio == other.audio && frequencyPenalty == other.frequencyPenalty && functionCall == other.functionCall && functions == other.functions && logitBias == other.logitBias && logprobs == other.logprobs && maxCompletionTokens == other.maxCompletionTokens && maxTokens == other.maxTokens && metadata == other.metadata && modalities == other.modalities && n == other.n && parallelToolCalls == other.parallelToolCalls && prediction == other.prediction && presencePenalty == other.presencePenalty && responseFormat == other.responseFormat && seed == other.seed && serviceTier == other.serviceTier && stop == other.stop && store == other.store && streamOptions == other.streamOptions && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topLogprobs == other.topLogprobs && topP == other.topP && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(messages, model, audio, frequencyPenalty, functionCall, functions, logitBias, logprobs, maxCompletionTokens, maxTokens, metadata, modalities, n, parallelToolCalls, prediction, presencePenalty, responseFormat, seed, serviceTier, stop, store, streamOptions, temperature, toolChoice, tools, topLogprobs, topP, user, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(messages, model, audio, frequencyPenalty, functionCall, functions, logitBias, logprobs, maxCompletionTokens, maxTokens, metadata, modalities, n, parallelToolCalls, prediction, presencePenalty, responseFormat, seed, serviceTier, stop, store, streamOptions, temperature, toolChoice, tools, topLogprobs, topP, user, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "ChatCompletionCreateBody{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, responseFormat=$responseFormat, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, additionalProperties=$additionalProperties}"
@@ -895,12 +892,10 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionCreateParams && this.messages == other.messages && this.model == other.model && this.audio == other.audio && this.frequencyPenalty == other.frequencyPenalty && this.functionCall == other.functionCall && this.functions == other.functions && this.logitBias == other.logitBias && this.logprobs == other.logprobs && this.maxCompletionTokens == other.maxCompletionTokens && this.maxTokens == other.maxTokens && this.metadata == other.metadata && this.modalities == other.modalities && this.n == other.n && this.parallelToolCalls == other.parallelToolCalls && this.prediction == other.prediction && this.presencePenalty == other.presencePenalty && this.responseFormat == other.responseFormat && this.seed == other.seed && this.serviceTier == other.serviceTier && this.stop == other.stop && this.store == other.store && this.streamOptions == other.streamOptions && this.temperature == other.temperature && this.toolChoice == other.toolChoice && this.tools == other.tools && this.topLogprobs == other.topLogprobs && this.topP == other.topP && this.user == other.user && this.additionalHeaders == other.additionalHeaders && this.additionalQueryParams == other.additionalQueryParams && this.additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionCreateParams && messages == other.messages && model == other.model && audio == other.audio && frequencyPenalty == other.frequencyPenalty && functionCall == other.functionCall && functions == other.functions && logitBias == other.logitBias && logprobs == other.logprobs && maxCompletionTokens == other.maxCompletionTokens && maxTokens == other.maxTokens && metadata == other.metadata && modalities == other.modalities && n == other.n && parallelToolCalls == other.parallelToolCalls && prediction == other.prediction && presencePenalty == other.presencePenalty && responseFormat == other.responseFormat && seed == other.seed && serviceTier == other.serviceTier && stop == other.stop && store == other.store && streamOptions == other.streamOptions && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topLogprobs == other.topLogprobs && topP == other.topP && user == other.user && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
     }
 
-    override fun hashCode(): Int {
-        return /* spotless:off */ Objects.hash(messages, model, audio, frequencyPenalty, functionCall, functions, logitBias, logprobs, maxCompletionTokens, maxTokens, metadata, modalities, n, parallelToolCalls, prediction, presencePenalty, responseFormat, seed, serviceTier, stop, store, streamOptions, temperature, toolChoice, tools, topLogprobs, topP, user, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-    }
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(messages, model, audio, frequencyPenalty, functionCall, functions, logitBias, logprobs, maxCompletionTokens, maxTokens, metadata, modalities, n, parallelToolCalls, prediction, presencePenalty, responseFormat, seed, serviceTier, stop, store, streamOptions, temperature, toolChoice, tools, topLogprobs, topP, user, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
 
     override fun toString() =
         "ChatCompletionCreateParams{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, responseFormat=$responseFormat, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
@@ -1615,7 +1610,7 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Model && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Model && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -1906,21 +1901,18 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is FunctionCall && this.behavior == other.behavior && this.functionCallOption == other.functionCallOption /* spotless:on */
+            return /* spotless:off */ other is FunctionCall && behavior == other.behavior && functionCallOption == other.functionCallOption /* spotless:on */
         }
 
-        override fun hashCode(): Int {
-            return /* spotless:off */ Objects.hash(behavior, functionCallOption) /* spotless:on */
-        }
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(behavior, functionCallOption) /* spotless:on */
 
-        override fun toString(): String {
-            return when {
+        override fun toString(): String =
+            when {
                 behavior != null -> "FunctionCall{behavior=$behavior}"
                 functionCallOption != null -> "FunctionCall{functionCallOption=$functionCallOption}"
                 _json != null -> "FunctionCall{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid FunctionCall")
             }
-        }
 
         companion object {
 
@@ -1991,7 +1983,7 @@ constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Behavior && this.value == other.value /* spotless:on */
+                return /* spotless:off */ other is Behavior && value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -2146,17 +2138,14 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Function && this.description == other.description && this.name == other.name && this.parameters == other.parameters && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Function && description == other.description && name == other.name && parameters == other.parameters && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(description, name, parameters, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(description, name, parameters, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "Function{description=$description, name=$name, parameters=$parameters, additionalProperties=$additionalProperties}"
@@ -2220,17 +2209,14 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is LogitBias && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is LogitBias && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() = "LogitBias{additionalProperties=$additionalProperties}"
     }
@@ -2288,17 +2274,14 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Metadata && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
     }
@@ -2373,15 +2356,13 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ResponseFormat && this.responseFormatText == other.responseFormatText && this.responseFormatJsonObject == other.responseFormatJsonObject && this.responseFormatJsonSchema == other.responseFormatJsonSchema /* spotless:on */
+            return /* spotless:off */ other is ResponseFormat && responseFormatText == other.responseFormatText && responseFormatJsonObject == other.responseFormatJsonObject && responseFormatJsonSchema == other.responseFormatJsonSchema /* spotless:on */
         }
 
-        override fun hashCode(): Int {
-            return /* spotless:off */ Objects.hash(responseFormatText, responseFormatJsonObject, responseFormatJsonSchema) /* spotless:on */
-        }
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(responseFormatText, responseFormatJsonObject, responseFormatJsonSchema) /* spotless:on */
 
-        override fun toString(): String {
-            return when {
+        override fun toString(): String =
+            when {
                 responseFormatText != null ->
                     "ResponseFormat{responseFormatText=$responseFormatText}"
                 responseFormatJsonObject != null ->
@@ -2391,7 +2372,6 @@ constructor(
                 _json != null -> "ResponseFormat{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid ResponseFormat")
             }
-        }
 
         companion object {
 
@@ -2477,7 +2457,7 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ServiceTier && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is ServiceTier && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -2568,21 +2548,18 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Stop && this.string == other.string && this.strings == other.strings /* spotless:on */
+            return /* spotless:off */ other is Stop && string == other.string && strings == other.strings /* spotless:on */
         }
 
-        override fun hashCode(): Int {
-            return /* spotless:off */ Objects.hash(string, strings) /* spotless:on */
-        }
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, strings) /* spotless:on */
 
-        override fun toString(): String {
-            return when {
+        override fun toString(): String =
+            when {
                 string != null -> "Stop{string=$string}"
                 strings != null -> "Stop{strings=$strings}"
                 _json != null -> "Stop{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Stop")
             }
-        }
 
         companion object {
 

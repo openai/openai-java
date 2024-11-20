@@ -117,17 +117,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ModelDeleted && this.id == other.id && this.deleted == other.deleted && this.object_ == other.object_ && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ModelDeleted && id == other.id && deleted == other.deleted && object_ == other.object_ && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(id, deleted, object_, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(id, deleted, object_, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "ModelDeleted{id=$id, deleted=$deleted, object_=$object_, additionalProperties=$additionalProperties}"

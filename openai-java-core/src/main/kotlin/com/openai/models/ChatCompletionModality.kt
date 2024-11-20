@@ -21,7 +21,7 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionModality && this.value == other.value /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionModality && value == other.value /* spotless:on */
     }
 
     override fun hashCode() = value.hashCode()

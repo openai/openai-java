@@ -34,12 +34,10 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FineTuningJobCheckpointListPage && this.checkpointsService == other.checkpointsService && this.params == other.params && this.response == other.response /* spotless:on */
+        return /* spotless:off */ other is FineTuningJobCheckpointListPage && checkpointsService == other.checkpointsService && params == other.params && response == other.response /* spotless:on */
     }
 
-    override fun hashCode(): Int {
-        return /* spotless:off */ Objects.hash(checkpointsService, params, response) /* spotless:on */
-    }
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(checkpointsService, params, response) /* spotless:on */
 
     override fun toString() =
         "FineTuningJobCheckpointListPage{checkpointsService=$checkpointsService, params=$params, response=$response}"
@@ -115,15 +113,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Response && this.data == other.data && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Response && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        override fun hashCode(): Int {
-            return /* spotless:off */ Objects.hash(data, additionalProperties) /* spotless:on */
-        }
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(data, additionalProperties) /* spotless:on */
 
-        override fun toString() =
-            "FineTuningJobCheckpointListPage.Response{data=$data, additionalProperties=$additionalProperties}"
+        override fun toString() = "Response{data=$data, additionalProperties=$additionalProperties}"
 
         companion object {
 

@@ -174,17 +174,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionAudio && this.id == other.id && this.expiresAt == other.expiresAt && this.data == other.data && this.transcript == other.transcript && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionAudio && id == other.id && expiresAt == other.expiresAt && data == other.data && transcript == other.transcript && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(id, expiresAt, data, transcript, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(id, expiresAt, data, transcript, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "ChatCompletionAudio{id=$id, expiresAt=$expiresAt, data=$data, transcript=$transcript, additionalProperties=$additionalProperties}"

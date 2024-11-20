@@ -54,12 +54,10 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is FileListParams && this.after == other.after && this.limit == other.limit && this.order == other.order && this.purpose == other.purpose && this.additionalHeaders == other.additionalHeaders && this.additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is FileListParams && after == other.after && limit == other.limit && order == other.order && purpose == other.purpose && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int {
-        return /* spotless:off */ Objects.hash(after, limit, order, purpose, additionalHeaders, additionalQueryParams) /* spotless:on */
-    }
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(after, limit, order, purpose, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
         "FileListParams{after=$after, limit=$limit, order=$order, purpose=$purpose, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
@@ -236,7 +234,7 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Order && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Order && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()

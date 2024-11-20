@@ -206,21 +206,18 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Content && this.textContent == other.textContent && this.arrayOfContentParts == other.arrayOfContentParts /* spotless:on */
+            return /* spotless:off */ other is Content && textContent == other.textContent && arrayOfContentParts == other.arrayOfContentParts /* spotless:on */
         }
 
-        override fun hashCode(): Int {
-            return /* spotless:off */ Objects.hash(textContent, arrayOfContentParts) /* spotless:on */
-        }
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(textContent, arrayOfContentParts) /* spotless:on */
 
-        override fun toString(): String {
-            return when {
+        override fun toString(): String =
+            when {
                 textContent != null -> "Content{textContent=$textContent}"
                 arrayOfContentParts != null -> "Content{arrayOfContentParts=$arrayOfContentParts}"
                 _json != null -> "Content{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Content")
             }
-        }
 
         companion object {
 
@@ -294,7 +291,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -337,17 +334,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionPredictionContent && this.type == other.type && this.content == other.content && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionPredictionContent && type == other.type && content == other.content && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(type, content, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(type, content, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "ChatCompletionPredictionContent{type=$type, content=$content, additionalProperties=$additionalProperties}"

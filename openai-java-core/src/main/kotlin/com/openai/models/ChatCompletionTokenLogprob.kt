@@ -341,17 +341,14 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is TopLogprob && this.token == other.token && this.logprob == other.logprob && this.bytes == other.bytes && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is TopLogprob && token == other.token && logprob == other.logprob && bytes == other.bytes && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(token, logprob, bytes, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(token, logprob, bytes, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "TopLogprob{token=$token, logprob=$logprob, bytes=$bytes, additionalProperties=$additionalProperties}"
@@ -362,17 +359,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionTokenLogprob && this.token == other.token && this.logprob == other.logprob && this.bytes == other.bytes && this.topLogprobs == other.topLogprobs && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionTokenLogprob && token == other.token && logprob == other.logprob && bytes == other.bytes && topLogprobs == other.topLogprobs && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(token, logprob, bytes, topLogprobs, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(token, logprob, bytes, topLogprobs, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "ChatCompletionTokenLogprob{token=$token, logprob=$logprob, bytes=$bytes, topLogprobs=$topLogprobs, additionalProperties=$additionalProperties}"

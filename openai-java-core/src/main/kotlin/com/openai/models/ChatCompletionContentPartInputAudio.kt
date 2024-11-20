@@ -215,7 +215,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Format && this.value == other.value /* spotless:on */
+                return /* spotless:off */ other is Format && value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -264,17 +264,14 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is InputAudio && this.data == other.data && this.format == other.format && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is InputAudio && data == other.data && format == other.format && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(data, format, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(data, format, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "InputAudio{data=$data, format=$format, additionalProperties=$additionalProperties}"
@@ -293,7 +290,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -336,17 +333,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionContentPartInputAudio && this.type == other.type && this.inputAudio == other.inputAudio && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionContentPartInputAudio && type == other.type && inputAudio == other.inputAudio && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(type, inputAudio, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(type, inputAudio, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "ChatCompletionContentPartInputAudio{type=$type, inputAudio=$inputAudio, additionalProperties=$additionalProperties}"

@@ -435,7 +435,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is FinishReason && this.value == other.value /* spotless:on */
+                return /* spotless:off */ other is FinishReason && value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -605,17 +605,14 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Logprobs && this.content == other.content && this.refusal == other.refusal && this.additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is Logprobs && content == other.content && refusal == other.refusal && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
-            private var hashCode: Int = 0
+            /* spotless:off */
+            private val hashCode: Int by lazy { Objects.hash(content, refusal, additionalProperties) }
+            /* spotless:on */
 
-            override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode = /* spotless:off */ Objects.hash(content, refusal, additionalProperties) /* spotless:on */
-                }
-                return hashCode
-            }
+            override fun hashCode(): Int = hashCode
 
             override fun toString() =
                 "Logprobs{content=$content, refusal=$refusal, additionalProperties=$additionalProperties}"
@@ -626,17 +623,14 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Choice && this.finishReason == other.finishReason && this.index == other.index && this.message == other.message && this.logprobs == other.logprobs && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Choice && finishReason == other.finishReason && index == other.index && message == other.message && logprobs == other.logprobs && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(finishReason, index, message, logprobs, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(finishReason, index, message, logprobs, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "Choice{finishReason=$finishReason, index=$index, message=$message, logprobs=$logprobs, additionalProperties=$additionalProperties}"
@@ -655,7 +649,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Object && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -706,7 +700,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ServiceTier && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is ServiceTier && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -755,17 +749,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletion && this.id == other.id && this.choices == other.choices && this.created == other.created && this.model == other.model && this.serviceTier == other.serviceTier && this.systemFingerprint == other.systemFingerprint && this.object_ == other.object_ && this.usage == other.usage && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletion && id == other.id && choices == other.choices && created == other.created && model == other.model && serviceTier == other.serviceTier && systemFingerprint == other.systemFingerprint && object_ == other.object_ && usage == other.usage && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(id, choices, created, model, serviceTier, systemFingerprint, object_, usage, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(id, choices, created, model, serviceTier, systemFingerprint, object_, usage, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "ChatCompletion{id=$id, choices=$choices, created=$created, model=$model, serviceTier=$serviceTier, systemFingerprint=$systemFingerprint, object_=$object_, usage=$usage, additionalProperties=$additionalProperties}"

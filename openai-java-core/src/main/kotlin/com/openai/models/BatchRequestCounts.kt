@@ -132,17 +132,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is BatchRequestCounts && this.total == other.total && this.completed == other.completed && this.failed == other.failed && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is BatchRequestCounts && total == other.total && completed == other.completed && failed == other.failed && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(total, completed, failed, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(total, completed, failed, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "BatchRequestCounts{total=$total, completed=$completed, failed=$failed, additionalProperties=$additionalProperties}"

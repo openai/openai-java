@@ -547,17 +547,14 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is CompletionCreateBody && this.model == other.model && this.prompt == other.prompt && this.bestOf == other.bestOf && this.echo == other.echo && this.frequencyPenalty == other.frequencyPenalty && this.logitBias == other.logitBias && this.logprobs == other.logprobs && this.maxTokens == other.maxTokens && this.n == other.n && this.presencePenalty == other.presencePenalty && this.seed == other.seed && this.stop == other.stop && this.streamOptions == other.streamOptions && this.suffix == other.suffix && this.temperature == other.temperature && this.topP == other.topP && this.user == other.user && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is CompletionCreateBody && model == other.model && prompt == other.prompt && bestOf == other.bestOf && echo == other.echo && frequencyPenalty == other.frequencyPenalty && logitBias == other.logitBias && logprobs == other.logprobs && maxTokens == other.maxTokens && n == other.n && presencePenalty == other.presencePenalty && seed == other.seed && stop == other.stop && streamOptions == other.streamOptions && suffix == other.suffix && temperature == other.temperature && topP == other.topP && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(model, prompt, bestOf, echo, frequencyPenalty, logitBias, logprobs, maxTokens, n, presencePenalty, seed, stop, streamOptions, suffix, temperature, topP, user, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(model, prompt, bestOf, echo, frequencyPenalty, logitBias, logprobs, maxTokens, n, presencePenalty, seed, stop, streamOptions, suffix, temperature, topP, user, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "CompletionCreateBody{model=$model, prompt=$prompt, bestOf=$bestOf, echo=$echo, frequencyPenalty=$frequencyPenalty, logitBias=$logitBias, logprobs=$logprobs, maxTokens=$maxTokens, n=$n, presencePenalty=$presencePenalty, seed=$seed, stop=$stop, streamOptions=$streamOptions, suffix=$suffix, temperature=$temperature, topP=$topP, user=$user, additionalProperties=$additionalProperties}"
@@ -574,12 +571,10 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is CompletionCreateParams && this.model == other.model && this.prompt == other.prompt && this.bestOf == other.bestOf && this.echo == other.echo && this.frequencyPenalty == other.frequencyPenalty && this.logitBias == other.logitBias && this.logprobs == other.logprobs && this.maxTokens == other.maxTokens && this.n == other.n && this.presencePenalty == other.presencePenalty && this.seed == other.seed && this.stop == other.stop && this.streamOptions == other.streamOptions && this.suffix == other.suffix && this.temperature == other.temperature && this.topP == other.topP && this.user == other.user && this.additionalHeaders == other.additionalHeaders && this.additionalQueryParams == other.additionalQueryParams && this.additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return /* spotless:off */ other is CompletionCreateParams && model == other.model && prompt == other.prompt && bestOf == other.bestOf && echo == other.echo && frequencyPenalty == other.frequencyPenalty && logitBias == other.logitBias && logprobs == other.logprobs && maxTokens == other.maxTokens && n == other.n && presencePenalty == other.presencePenalty && seed == other.seed && stop == other.stop && streamOptions == other.streamOptions && suffix == other.suffix && temperature == other.temperature && topP == other.topP && user == other.user && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
     }
 
-    override fun hashCode(): Int {
-        return /* spotless:off */ Objects.hash(model, prompt, bestOf, echo, frequencyPenalty, logitBias, logprobs, maxTokens, n, presencePenalty, seed, stop, streamOptions, suffix, temperature, topP, user, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-    }
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(model, prompt, bestOf, echo, frequencyPenalty, logitBias, logprobs, maxTokens, n, presencePenalty, seed, stop, streamOptions, suffix, temperature, topP, user, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
 
     override fun toString() =
         "CompletionCreateParams{model=$model, prompt=$prompt, bestOf=$bestOf, echo=$echo, frequencyPenalty=$frequencyPenalty, logitBias=$logitBias, logprobs=$logprobs, maxTokens=$maxTokens, n=$n, presencePenalty=$presencePenalty, seed=$seed, stop=$stop, streamOptions=$streamOptions, suffix=$suffix, temperature=$temperature, topP=$topP, user=$user, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
@@ -1017,7 +1012,7 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Model && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Model && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -1137,15 +1132,13 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Prompt && this.string == other.string && this.arrayOfStrings == other.arrayOfStrings && this.arrayOfTokens == other.arrayOfTokens && this.arrayOfTokenArrays == other.arrayOfTokenArrays /* spotless:on */
+            return /* spotless:off */ other is Prompt && string == other.string && arrayOfStrings == other.arrayOfStrings && arrayOfTokens == other.arrayOfTokens && arrayOfTokenArrays == other.arrayOfTokenArrays /* spotless:on */
         }
 
-        override fun hashCode(): Int {
-            return /* spotless:off */ Objects.hash(string, arrayOfStrings, arrayOfTokens, arrayOfTokenArrays) /* spotless:on */
-        }
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, arrayOfStrings, arrayOfTokens, arrayOfTokenArrays) /* spotless:on */
 
-        override fun toString(): String {
-            return when {
+        override fun toString(): String =
+            when {
                 string != null -> "Prompt{string=$string}"
                 arrayOfStrings != null -> "Prompt{arrayOfStrings=$arrayOfStrings}"
                 arrayOfTokens != null -> "Prompt{arrayOfTokens=$arrayOfTokens}"
@@ -1153,7 +1146,6 @@ constructor(
                 _json != null -> "Prompt{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Prompt")
             }
-        }
 
         companion object {
 
@@ -1290,17 +1282,14 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is LogitBias && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is LogitBias && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() = "LogitBias{additionalProperties=$additionalProperties}"
     }
@@ -1352,21 +1341,18 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Stop && this.string == other.string && this.strings == other.strings /* spotless:on */
+            return /* spotless:off */ other is Stop && string == other.string && strings == other.strings /* spotless:on */
         }
 
-        override fun hashCode(): Int {
-            return /* spotless:off */ Objects.hash(string, strings) /* spotless:on */
-        }
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, strings) /* spotless:on */
 
-        override fun toString(): String {
-            return when {
+        override fun toString(): String =
+            when {
                 string != null -> "Stop{string=$string}"
                 strings != null -> "Stop{strings=$strings}"
                 _json != null -> "Stop{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Stop")
             }
-        }
 
         companion object {
 

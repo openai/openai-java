@@ -246,17 +246,14 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Function && this.name == other.name && this.arguments == other.arguments && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Function && name == other.name && arguments == other.arguments && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(name, arguments, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(name, arguments, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "Function{name=$name, arguments=$arguments, additionalProperties=$additionalProperties}"
@@ -275,7 +272,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -318,17 +315,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionMessageToolCall && this.id == other.id && this.type == other.type && this.function == other.function && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionMessageToolCall && id == other.id && type == other.type && function == other.function && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(id, type, function, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(id, type, function, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "ChatCompletionMessageToolCall{id=$id, type=$type, function=$function, additionalProperties=$additionalProperties}"

@@ -78,22 +78,19 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionToolChoiceOption && this.behavior == other.behavior && this.chatCompletionNamedToolChoice == other.chatCompletionNamedToolChoice /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionToolChoiceOption && behavior == other.behavior && chatCompletionNamedToolChoice == other.chatCompletionNamedToolChoice /* spotless:on */
     }
 
-    override fun hashCode(): Int {
-        return /* spotless:off */ Objects.hash(behavior, chatCompletionNamedToolChoice) /* spotless:on */
-    }
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(behavior, chatCompletionNamedToolChoice) /* spotless:on */
 
-    override fun toString(): String {
-        return when {
+    override fun toString(): String =
+        when {
             behavior != null -> "ChatCompletionToolChoiceOption{behavior=$behavior}"
             chatCompletionNamedToolChoice != null ->
                 "ChatCompletionToolChoiceOption{chatCompletionNamedToolChoice=$chatCompletionNamedToolChoice}"
             _json != null -> "ChatCompletionToolChoiceOption{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ChatCompletionToolChoiceOption")
         }
-    }
 
     companion object {
 
@@ -174,7 +171,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Behavior && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Behavior && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()

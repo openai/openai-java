@@ -272,7 +272,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Object && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -323,7 +323,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Status && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Status && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -384,17 +384,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Upload && this.id == other.id && this.createdAt == other.createdAt && this.filename == other.filename && this.bytes == other.bytes && this.purpose == other.purpose && this.status == other.status && this.expiresAt == other.expiresAt && this.object_ == other.object_ && this.file == other.file && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is Upload && id == other.id && createdAt == other.createdAt && filename == other.filename && bytes == other.bytes && purpose == other.purpose && status == other.status && expiresAt == other.expiresAt && object_ == other.object_ && file == other.file && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(id, createdAt, filename, bytes, purpose, status, expiresAt, object_, file, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(id, createdAt, filename, bytes, purpose, status, expiresAt, object_, file, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "Upload{id=$id, createdAt=$createdAt, filename=$filename, bytes=$bytes, purpose=$purpose, status=$status, expiresAt=$expiresAt, object_=$object_, file=$file, additionalProperties=$additionalProperties}"

@@ -124,7 +124,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -167,17 +167,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ModerationTextInput && this.type == other.type && this.text == other.text && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ModerationTextInput && type == other.type && text == other.text && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(type, text, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(type, text, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "ModerationTextInput{type=$type, text=$text, additionalProperties=$additionalProperties}"

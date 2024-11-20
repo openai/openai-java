@@ -188,17 +188,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FineTuningJobWandbIntegration && this.project == other.project && this.name == other.name && this.entity == other.entity && this.tags == other.tags && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FineTuningJobWandbIntegration && project == other.project && name == other.name && entity == other.entity && tags == other.tags && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(project, name, entity, tags, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(project, name, entity, tags, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "FineTuningJobWandbIntegration{project=$project, name=$name, entity=$entity, tags=$tags, additionalProperties=$additionalProperties}"

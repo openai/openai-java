@@ -172,7 +172,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is FinishReason && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is FinishReason && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -405,17 +405,14 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is TopLogprob && this.additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is TopLogprob && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
-            private var hashCode: Int = 0
+            /* spotless:off */
+            private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+            /* spotless:on */
 
-            override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode = /* spotless:off */ Objects.hash(additionalProperties) /* spotless:on */
-                }
-                return hashCode
-            }
+            override fun hashCode(): Int = hashCode
 
             override fun toString() = "TopLogprob{additionalProperties=$additionalProperties}"
         }
@@ -425,17 +422,14 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Logprobs && this.textOffset == other.textOffset && this.tokenLogprobs == other.tokenLogprobs && this.tokens == other.tokens && this.topLogprobs == other.topLogprobs && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Logprobs && textOffset == other.textOffset && tokenLogprobs == other.tokenLogprobs && tokens == other.tokens && topLogprobs == other.topLogprobs && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(textOffset, tokenLogprobs, tokens, topLogprobs, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(textOffset, tokenLogprobs, tokens, topLogprobs, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "Logprobs{textOffset=$textOffset, tokenLogprobs=$tokenLogprobs, tokens=$tokens, topLogprobs=$topLogprobs, additionalProperties=$additionalProperties}"
@@ -446,17 +440,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is CompletionChoice && this.finishReason == other.finishReason && this.index == other.index && this.logprobs == other.logprobs && this.text == other.text && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is CompletionChoice && finishReason == other.finishReason && index == other.index && logprobs == other.logprobs && text == other.text && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(finishReason, index, logprobs, text, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(finishReason, index, logprobs, text, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "CompletionChoice{finishReason=$finishReason, index=$index, logprobs=$logprobs, text=$text, additionalProperties=$additionalProperties}"
