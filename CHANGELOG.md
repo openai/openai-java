@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.2.0 (2024-11-20)
+
+Full Changelog: [v0.1.0...v0.2.0](https://github.com/openai/openai-java/compare/v0.1.0...v0.2.0)
+
+### Features
+
+* **client:** add async streaming methods ([#6](https://github.com/openai/openai-java/issues/6)) ([f805972](https://github.com/openai/openai-java/commit/f805972d9cafdf3ad8a974e660c62587e2b65c06))
+* initial commit ([fa016ee](https://github.com/openai/openai-java/commit/fa016ee58dba10add81cefddbdf1483bfa24d058))
+
+
+### Performance Improvements
+
+* **tests:** remove unused dependencies ([#3](https://github.com/openai/openai-java/issues/3)) ([4c94984](https://github.com/openai/openai-java/commit/4c949841e4eed67b82bfe1f40370a0a3db8f2d43))
+
+
+### Chores
+
+* **deps:** bump jackson to 2.18.1 ([#7](https://github.com/openai/openai-java/issues/7)) ([9262ca7](https://github.com/openai/openai-java/commit/9262ca7a55c2bdb3dff69f9df328376e23bb11df))
+* **internal:** spec update ([#5](https://github.com/openai/openai-java/issues/5)) ([0df36a4](https://github.com/openai/openai-java/commit/0df36a497f88407e35ca79bacb72f30f2d1350da))
+
+
+### Documentation
+
+* bump models in example snippets to gpt-4o ([#4](https://github.com/openai/openai-java/issues/4)) ([359c100](https://github.com/openai/openai-java/commit/359c10065f9615a73e30573b1dea80d5027288a6))
+
 ## 0.1.0 (2024-11-08)
 
 Full Changelog: [v0.0.1...v0.1.0](https://github.com/openai/openai-java/compare/v0.0.1...v0.1.0)
