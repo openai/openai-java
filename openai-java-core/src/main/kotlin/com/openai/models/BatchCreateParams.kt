@@ -191,17 +191,14 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is BatchCreateBody && this.completionWindow == other.completionWindow && this.endpoint == other.endpoint && this.inputFileId == other.inputFileId && this.metadata == other.metadata && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is BatchCreateBody && completionWindow == other.completionWindow && endpoint == other.endpoint && inputFileId == other.inputFileId && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(completionWindow, endpoint, inputFileId, metadata, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(completionWindow, endpoint, inputFileId, metadata, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "BatchCreateBody{completionWindow=$completionWindow, endpoint=$endpoint, inputFileId=$inputFileId, metadata=$metadata, additionalProperties=$additionalProperties}"
@@ -218,12 +215,10 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is BatchCreateParams && this.completionWindow == other.completionWindow && this.endpoint == other.endpoint && this.inputFileId == other.inputFileId && this.metadata == other.metadata && this.additionalHeaders == other.additionalHeaders && this.additionalQueryParams == other.additionalQueryParams && this.additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return /* spotless:off */ other is BatchCreateParams && completionWindow == other.completionWindow && endpoint == other.endpoint && inputFileId == other.inputFileId && metadata == other.metadata && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
     }
 
-    override fun hashCode(): Int {
-        return /* spotless:off */ Objects.hash(completionWindow, endpoint, inputFileId, metadata, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-    }
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(completionWindow, endpoint, inputFileId, metadata, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
 
     override fun toString() =
         "BatchCreateParams{completionWindow=$completionWindow, endpoint=$endpoint, inputFileId=$inputFileId, metadata=$metadata, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
@@ -434,7 +429,7 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is CompletionWindow && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is CompletionWindow && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -485,7 +480,7 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Endpoint && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Endpoint && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -585,17 +580,14 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Metadata && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
     }

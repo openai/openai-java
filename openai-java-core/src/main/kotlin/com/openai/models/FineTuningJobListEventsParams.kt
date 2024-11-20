@@ -51,12 +51,10 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is FineTuningJobListEventsParams && this.fineTuningJobId == other.fineTuningJobId && this.after == other.after && this.limit == other.limit && this.additionalHeaders == other.additionalHeaders && this.additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is FineTuningJobListEventsParams && fineTuningJobId == other.fineTuningJobId && after == other.after && limit == other.limit && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int {
-        return /* spotless:off */ Objects.hash(fineTuningJobId, after, limit, additionalHeaders, additionalQueryParams) /* spotless:on */
-    }
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fineTuningJobId, after, limit, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
         "FineTuningJobListEventsParams{fineTuningJobId=$fineTuningJobId, after=$after, limit=$limit, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

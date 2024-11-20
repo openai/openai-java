@@ -232,7 +232,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Role && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Role && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -392,17 +392,14 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is FunctionCall && this.arguments == other.arguments && this.name == other.name && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is FunctionCall && arguments == other.arguments && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(arguments, name, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(arguments, name, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "FunctionCall{arguments=$arguments, name=$name, additionalProperties=$additionalProperties}"
@@ -413,17 +410,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionMessage && this.content == other.content && this.refusal == other.refusal && this.toolCalls == other.toolCalls && this.role == other.role && this.functionCall == other.functionCall && this.audio == other.audio && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionMessage && content == other.content && refusal == other.refusal && toolCalls == other.toolCalls && role == other.role && functionCall == other.functionCall && audio == other.audio && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(content, refusal, toolCalls, role, functionCall, audio, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(content, refusal, toolCalls, role, functionCall, audio, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "ChatCompletionMessage{content=$content, refusal=$refusal, toolCalls=$toolCalls, role=$role, functionCall=$functionCall, audio=$audio, additionalProperties=$additionalProperties}"

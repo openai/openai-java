@@ -141,17 +141,14 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ModerationCreateBody && this.input == other.input && this.model == other.model && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ModerationCreateBody && input == other.input && model == other.model && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(input, model, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(input, model, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "ModerationCreateBody{input=$input, model=$model, additionalProperties=$additionalProperties}"
@@ -168,12 +165,10 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is ModerationCreateParams && this.input == other.input && this.model == other.model && this.additionalHeaders == other.additionalHeaders && this.additionalQueryParams == other.additionalQueryParams && this.additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return /* spotless:off */ other is ModerationCreateParams && input == other.input && model == other.model && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
     }
 
-    override fun hashCode(): Int {
-        return /* spotless:off */ Objects.hash(input, model, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-    }
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(input, model, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
 
     override fun toString() =
         "ModerationCreateParams{input=$input, model=$model, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
@@ -432,15 +427,13 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Input && this.string == other.string && this.strings == other.strings && this.moderationMultiModalArray == other.moderationMultiModalArray /* spotless:on */
+            return /* spotless:off */ other is Input && string == other.string && strings == other.strings && moderationMultiModalArray == other.moderationMultiModalArray /* spotless:on */
         }
 
-        override fun hashCode(): Int {
-            return /* spotless:off */ Objects.hash(string, strings, moderationMultiModalArray) /* spotless:on */
-        }
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, strings, moderationMultiModalArray) /* spotless:on */
 
-        override fun toString(): String {
-            return when {
+        override fun toString(): String =
+            when {
                 string != null -> "Input{string=$string}"
                 strings != null -> "Input{strings=$strings}"
                 moderationMultiModalArray != null ->
@@ -448,7 +441,6 @@ constructor(
                 _json != null -> "Input{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Input")
             }
-        }
 
         companion object {
 
@@ -528,7 +520,7 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Model && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Model && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()

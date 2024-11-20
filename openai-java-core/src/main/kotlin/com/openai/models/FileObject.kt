@@ -276,7 +276,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Object && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -327,7 +327,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Purpose && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Purpose && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -414,7 +414,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Status && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Status && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -469,17 +469,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FileObject && this.id == other.id && this.bytes == other.bytes && this.createdAt == other.createdAt && this.filename == other.filename && this.object_ == other.object_ && this.purpose == other.purpose && this.status == other.status && this.statusDetails == other.statusDetails && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FileObject && id == other.id && bytes == other.bytes && createdAt == other.createdAt && filename == other.filename && object_ == other.object_ && purpose == other.purpose && status == other.status && statusDetails == other.statusDetails && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(id, bytes, createdAt, filename, object_, purpose, status, statusDetails, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(id, bytes, createdAt, filename, object_, purpose, status, statusDetails, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "FileObject{id=$id, bytes=$bytes, createdAt=$createdAt, filename=$filename, object_=$object_, purpose=$purpose, status=$status, statusDetails=$statusDetails, additionalProperties=$additionalProperties}"

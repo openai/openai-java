@@ -34,12 +34,10 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FineTuningJobListPage && this.jobsService == other.jobsService && this.params == other.params && this.response == other.response /* spotless:on */
+        return /* spotless:off */ other is FineTuningJobListPage && jobsService == other.jobsService && params == other.params && response == other.response /* spotless:on */
     }
 
-    override fun hashCode(): Int {
-        return /* spotless:off */ Objects.hash(jobsService, params, response) /* spotless:on */
-    }
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(jobsService, params, response) /* spotless:on */
 
     override fun toString() =
         "FineTuningJobListPage{jobsService=$jobsService, params=$params, response=$response}"
@@ -108,15 +106,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Response && this.data == other.data && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Response && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        override fun hashCode(): Int {
-            return /* spotless:off */ Objects.hash(data, additionalProperties) /* spotless:on */
-        }
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(data, additionalProperties) /* spotless:on */
 
-        override fun toString() =
-            "FineTuningJobListPage.Response{data=$data, additionalProperties=$additionalProperties}"
+        override fun toString() = "Response{data=$data, additionalProperties=$additionalProperties}"
 
         companion object {
 

@@ -37,12 +37,10 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ModelListPageAsync && this.modelsService == other.modelsService && this.params == other.params && this.response == other.response /* spotless:on */
+        return /* spotless:off */ other is ModelListPageAsync && modelsService == other.modelsService && params == other.params && response == other.response /* spotless:on */
     }
 
-    override fun hashCode(): Int {
-        return /* spotless:off */ Objects.hash(modelsService, params, response) /* spotless:on */
-    }
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(modelsService, params, response) /* spotless:on */
 
     override fun toString() =
         "ModelListPageAsync{modelsService=$modelsService, params=$params, response=$response}"
@@ -114,15 +112,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Response && this.data == other.data && this.object_ == other.object_ && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Response && data == other.data && object_ == other.object_ && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        override fun hashCode(): Int {
-            return /* spotless:off */ Objects.hash(data, object_, additionalProperties) /* spotless:on */
-        }
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(data, object_, additionalProperties) /* spotless:on */
 
         override fun toString() =
-            "ModelListPageAsync.Response{data=$data, object_=$object_, additionalProperties=$additionalProperties}"
+            "Response{data=$data, object_=$object_, additionalProperties=$additionalProperties}"
 
         companion object {
 

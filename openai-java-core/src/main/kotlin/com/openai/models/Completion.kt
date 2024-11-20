@@ -245,7 +245,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Object && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -288,17 +288,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Completion && this.id == other.id && this.choices == other.choices && this.created == other.created && this.model == other.model && this.systemFingerprint == other.systemFingerprint && this.object_ == other.object_ && this.usage == other.usage && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is Completion && id == other.id && choices == other.choices && created == other.created && model == other.model && systemFingerprint == other.systemFingerprint && object_ == other.object_ && usage == other.usage && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(id, choices, created, model, systemFingerprint, object_, usage, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(id, choices, created, model, systemFingerprint, object_, usage, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "Completion{id=$id, choices=$choices, created=$created, model=$model, systemFingerprint=$systemFingerprint, object_=$object_, usage=$usage, additionalProperties=$additionalProperties}"

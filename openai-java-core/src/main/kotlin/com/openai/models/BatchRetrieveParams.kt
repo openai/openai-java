@@ -37,12 +37,10 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is BatchRetrieveParams && this.batchId == other.batchId && this.additionalHeaders == other.additionalHeaders && this.additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is BatchRetrieveParams && batchId == other.batchId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int {
-        return /* spotless:off */ Objects.hash(batchId, additionalHeaders, additionalQueryParams) /* spotless:on */
-    }
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(batchId, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
         "BatchRetrieveParams{batchId=$batchId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

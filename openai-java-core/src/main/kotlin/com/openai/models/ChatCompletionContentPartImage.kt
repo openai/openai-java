@@ -226,7 +226,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Detail && this.value == other.value /* spotless:on */
+                return /* spotless:off */ other is Detail && value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -281,17 +281,14 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ImageUrl && this.url == other.url && this.detail == other.detail && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ImageUrl && url == other.url && detail == other.detail && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(url, detail, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(url, detail, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "ImageUrl{url=$url, detail=$detail, additionalProperties=$additionalProperties}"
@@ -310,7 +307,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -353,17 +350,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionContentPartImage && this.type == other.type && this.imageUrl == other.imageUrl && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionContentPartImage && type == other.type && imageUrl == other.imageUrl && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(type, imageUrl, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(type, imageUrl, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "ChatCompletionContentPartImage{type=$type, imageUrl=$imageUrl, additionalProperties=$additionalProperties}"

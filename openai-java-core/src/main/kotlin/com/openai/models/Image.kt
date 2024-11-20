@@ -140,17 +140,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Image && this.b64Json == other.b64Json && this.url == other.url && this.revisedPrompt == other.revisedPrompt && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is Image && b64Json == other.b64Json && url == other.url && revisedPrompt == other.revisedPrompt && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(b64Json, url, revisedPrompt, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(b64Json, url, revisedPrompt, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "Image{b64Json=$b64Json, url=$url, revisedPrompt=$revisedPrompt, additionalProperties=$additionalProperties}"

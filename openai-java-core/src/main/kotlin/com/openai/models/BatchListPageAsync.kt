@@ -35,12 +35,10 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is BatchListPageAsync && this.batchesService == other.batchesService && this.params == other.params && this.response == other.response /* spotless:on */
+        return /* spotless:off */ other is BatchListPageAsync && batchesService == other.batchesService && params == other.params && response == other.response /* spotless:on */
     }
 
-    override fun hashCode(): Int {
-        return /* spotless:off */ Objects.hash(batchesService, params, response) /* spotless:on */
-    }
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(batchesService, params, response) /* spotless:on */
 
     override fun toString() =
         "BatchListPageAsync{batchesService=$batchesService, params=$params, response=$response}"
@@ -109,15 +107,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Response && this.data == other.data && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Response && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        override fun hashCode(): Int {
-            return /* spotless:off */ Objects.hash(data, additionalProperties) /* spotless:on */
-        }
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(data, additionalProperties) /* spotless:on */
 
-        override fun toString() =
-            "BatchListPageAsync.Response{data=$data, additionalProperties=$additionalProperties}"
+        override fun toString() = "Response{data=$data, additionalProperties=$additionalProperties}"
 
         companion object {
 

@@ -366,17 +366,14 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is CompletionTokensDetails && this.acceptedPredictionTokens == other.acceptedPredictionTokens && this.audioTokens == other.audioTokens && this.reasoningTokens == other.reasoningTokens && this.rejectedPredictionTokens == other.rejectedPredictionTokens && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is CompletionTokensDetails && acceptedPredictionTokens == other.acceptedPredictionTokens && audioTokens == other.audioTokens && reasoningTokens == other.reasoningTokens && rejectedPredictionTokens == other.rejectedPredictionTokens && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(acceptedPredictionTokens, audioTokens, reasoningTokens, rejectedPredictionTokens, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(acceptedPredictionTokens, audioTokens, reasoningTokens, rejectedPredictionTokens, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "CompletionTokensDetails{acceptedPredictionTokens=$acceptedPredictionTokens, audioTokens=$audioTokens, reasoningTokens=$reasoningTokens, rejectedPredictionTokens=$rejectedPredictionTokens, additionalProperties=$additionalProperties}"
@@ -485,17 +482,14 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is PromptTokensDetails && this.audioTokens == other.audioTokens && this.cachedTokens == other.cachedTokens && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is PromptTokensDetails && audioTokens == other.audioTokens && cachedTokens == other.cachedTokens && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(audioTokens, cachedTokens, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(audioTokens, cachedTokens, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "PromptTokensDetails{audioTokens=$audioTokens, cachedTokens=$cachedTokens, additionalProperties=$additionalProperties}"
@@ -506,17 +500,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is CompletionUsage && this.completionTokens == other.completionTokens && this.promptTokens == other.promptTokens && this.totalTokens == other.totalTokens && this.completionTokensDetails == other.completionTokensDetails && this.promptTokensDetails == other.promptTokensDetails && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is CompletionUsage && completionTokens == other.completionTokens && promptTokens == other.promptTokens && totalTokens == other.totalTokens && completionTokensDetails == other.completionTokensDetails && promptTokensDetails == other.promptTokensDetails && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(completionTokens, promptTokens, totalTokens, completionTokensDetails, promptTokensDetails, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(completionTokens, promptTokens, totalTokens, completionTokensDetails, promptTokensDetails, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "CompletionUsage{completionTokens=$completionTokens, promptTokens=$promptTokens, totalTokens=$totalTokens, completionTokensDetails=$completionTokensDetails, promptTokensDetails=$promptTokensDetails, additionalProperties=$additionalProperties}"

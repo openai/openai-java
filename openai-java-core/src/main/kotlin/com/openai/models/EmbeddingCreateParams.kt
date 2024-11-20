@@ -218,17 +218,14 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is EmbeddingCreateBody && this.input == other.input && this.model == other.model && this.dimensions == other.dimensions && this.encodingFormat == other.encodingFormat && this.user == other.user && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is EmbeddingCreateBody && input == other.input && model == other.model && dimensions == other.dimensions && encodingFormat == other.encodingFormat && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(input, model, dimensions, encodingFormat, user, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(input, model, dimensions, encodingFormat, user, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "EmbeddingCreateBody{input=$input, model=$model, dimensions=$dimensions, encodingFormat=$encodingFormat, user=$user, additionalProperties=$additionalProperties}"
@@ -245,12 +242,10 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is EmbeddingCreateParams && this.input == other.input && this.model == other.model && this.dimensions == other.dimensions && this.encodingFormat == other.encodingFormat && this.user == other.user && this.additionalHeaders == other.additionalHeaders && this.additionalQueryParams == other.additionalQueryParams && this.additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return /* spotless:off */ other is EmbeddingCreateParams && input == other.input && model == other.model && dimensions == other.dimensions && encodingFormat == other.encodingFormat && user == other.user && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
     }
 
-    override fun hashCode(): Int {
-        return /* spotless:off */ Objects.hash(input, model, dimensions, encodingFormat, user, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-    }
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(input, model, dimensions, encodingFormat, user, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
 
     override fun toString() =
         "EmbeddingCreateParams{input=$input, model=$model, dimensions=$dimensions, encodingFormat=$encodingFormat, user=$user, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
@@ -583,15 +578,13 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Input && this.string == other.string && this.arrayOfStrings == other.arrayOfStrings && this.arrayOfTokens == other.arrayOfTokens && this.arrayOfTokenArrays == other.arrayOfTokenArrays /* spotless:on */
+            return /* spotless:off */ other is Input && string == other.string && arrayOfStrings == other.arrayOfStrings && arrayOfTokens == other.arrayOfTokens && arrayOfTokenArrays == other.arrayOfTokenArrays /* spotless:on */
         }
 
-        override fun hashCode(): Int {
-            return /* spotless:off */ Objects.hash(string, arrayOfStrings, arrayOfTokens, arrayOfTokenArrays) /* spotless:on */
-        }
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, arrayOfStrings, arrayOfTokens, arrayOfTokenArrays) /* spotless:on */
 
-        override fun toString(): String {
-            return when {
+        override fun toString(): String =
+            when {
                 string != null -> "Input{string=$string}"
                 arrayOfStrings != null -> "Input{arrayOfStrings=$arrayOfStrings}"
                 arrayOfTokens != null -> "Input{arrayOfTokens=$arrayOfTokens}"
@@ -599,7 +592,6 @@ constructor(
                 _json != null -> "Input{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Input")
             }
-        }
 
         companion object {
 
@@ -687,7 +679,7 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Model && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Model && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -750,7 +742,7 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is EncodingFormat && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is EncodingFormat && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()

@@ -118,15 +118,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionMessageParam && this.chatCompletionSystemMessageParam == other.chatCompletionSystemMessageParam && this.chatCompletionUserMessageParam == other.chatCompletionUserMessageParam && this.chatCompletionAssistantMessageParam == other.chatCompletionAssistantMessageParam && this.chatCompletionToolMessageParam == other.chatCompletionToolMessageParam && this.chatCompletionFunctionMessageParam == other.chatCompletionFunctionMessageParam /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionMessageParam && chatCompletionSystemMessageParam == other.chatCompletionSystemMessageParam && chatCompletionUserMessageParam == other.chatCompletionUserMessageParam && chatCompletionAssistantMessageParam == other.chatCompletionAssistantMessageParam && chatCompletionToolMessageParam == other.chatCompletionToolMessageParam && chatCompletionFunctionMessageParam == other.chatCompletionFunctionMessageParam /* spotless:on */
     }
 
-    override fun hashCode(): Int {
-        return /* spotless:off */ Objects.hash(chatCompletionSystemMessageParam, chatCompletionUserMessageParam, chatCompletionAssistantMessageParam, chatCompletionToolMessageParam, chatCompletionFunctionMessageParam) /* spotless:on */
-    }
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(chatCompletionSystemMessageParam, chatCompletionUserMessageParam, chatCompletionAssistantMessageParam, chatCompletionToolMessageParam, chatCompletionFunctionMessageParam) /* spotless:on */
 
-    override fun toString(): String {
-        return when {
+    override fun toString(): String =
+        when {
             chatCompletionSystemMessageParam != null ->
                 "ChatCompletionMessageParam{chatCompletionSystemMessageParam=$chatCompletionSystemMessageParam}"
             chatCompletionUserMessageParam != null ->
@@ -140,7 +138,6 @@ private constructor(
             _json != null -> "ChatCompletionMessageParam{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ChatCompletionMessageParam")
         }
-    }
 
     companion object {
 

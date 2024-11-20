@@ -124,7 +124,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -167,17 +167,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionContentPartRefusal && this.type == other.type && this.refusal == other.refusal && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionContentPartRefusal && type == other.type && refusal == other.refusal && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(type, refusal, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(type, refusal, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "ChatCompletionContentPartRefusal{type=$type, refusal=$refusal, additionalProperties=$additionalProperties}"
