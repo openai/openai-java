@@ -2,6 +2,8 @@
 
 package com.openai.services.async.chat
 
+import com.openai.azure.addPathSegmentsForAzure
+import com.openai.azure.replaceBearerTokenForAzure
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.handlers.errorHandler
@@ -10,9 +12,7 @@ import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse.Handler
-import com.openai.core.isAzureEndpoint
 import com.openai.core.json
-import com.openai.credential.BearerTokenCredential
 import com.openai.errors.OpenAIError
 import com.openai.models.ChatCompletion
 import com.openai.models.ChatCompletionCreateParams
@@ -41,23 +41,12 @@ constructor(
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.POST)
-                .apply {
-                    if (isAzureEndpoint(clientOptions.baseUrl)) {
-                        addPathSegments("openai", "deployments", params.model().toString())
-                    }
-                }
+                .addPathSegmentsForAzure(clientOptions, params.model().toString())
                 .addPathSegments("chat", "completions")
                 .putAllQueryParams(clientOptions.queryParams)
                 .replaceAllQueryParams(params.getQueryParams())
                 .putAllHeaders(clientOptions.headers)
-                .apply {
-                    if (
-                        isAzureEndpoint(clientOptions.baseUrl) &&
-                            clientOptions.credential is BearerTokenCredential
-                    ) {
-                        putHeader("Authorization", "Bearer ${clientOptions.credential.token()}")
-                    }
-                }
+                .replaceBearerTokenForAzure(clientOptions)
                 .replaceAllHeaders(params.getHeaders())
                 .body(json(clientOptions.jsonMapper, params.getBody()))
                 .build()
