@@ -130,17 +130,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ModerationCreateResponse && this.id == other.id && this.model == other.model && this.results == other.results && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ModerationCreateResponse && id == other.id && model == other.model && results == other.results && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(id, model, results, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(id, model, results, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "ModerationCreateResponse{id=$id, model=$model, results=$results, additionalProperties=$additionalProperties}"

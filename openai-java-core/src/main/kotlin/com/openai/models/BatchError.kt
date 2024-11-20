@@ -151,17 +151,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is BatchError && this.code == other.code && this.message == other.message && this.param == other.param && this.line == other.line && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is BatchError && code == other.code && message == other.message && param == other.param && line == other.line && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(code, message, param, line, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(code, message, param, line, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "BatchError{code=$code, message=$message, param=$param, line=$line, additionalProperties=$additionalProperties}"

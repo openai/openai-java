@@ -33,8 +33,9 @@ private constructor(
     private var validated: Boolean = false
 
     /**
-     * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`, `coral`,
-     * `echo`, `sage`, `shimmer`, and `verse`.
+     * The voice the model uses to respond. Supported voices are `ash`, `ballad`, `coral`, `sage`,
+     * and `verse` (also supported but not recommended are `alloy`, `echo`, and `shimmer`; these
+     * voices are less expressive).
      */
     fun voice(): Voice = voice.getRequired("voice")
 
@@ -44,8 +45,9 @@ private constructor(
     fun format(): Format = format.getRequired("format")
 
     /**
-     * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`, `coral`,
-     * `echo`, `sage`, `shimmer`, and `verse`.
+     * The voice the model uses to respond. Supported voices are `ash`, `ballad`, `coral`, `sage`,
+     * and `verse` (also supported but not recommended are `alloy`, `echo`, and `shimmer`; these
+     * voices are less expressive).
      */
     @JsonProperty("voice") @ExcludeMissing fun _voice() = voice
 
@@ -87,14 +89,16 @@ private constructor(
         }
 
         /**
-         * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`,
-         * `coral`, `echo`, `sage`, `shimmer`, and `verse`.
+         * The voice the model uses to respond. Supported voices are `ash`, `ballad`, `coral`,
+         * `sage`, and `verse` (also supported but not recommended are `alloy`, `echo`, and
+         * `shimmer`; these voices are less expressive).
          */
         fun voice(voice: Voice) = voice(JsonField.of(voice))
 
         /**
-         * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`,
-         * `coral`, `echo`, `sage`, `shimmer`, and `verse`.
+         * The voice the model uses to respond. Supported voices are `ash`, `ballad`, `coral`,
+         * `sage`, and `verse` (also supported but not recommended are `alloy`, `echo`, and
+         * `shimmer`; these voices are less expressive).
          */
         @JsonProperty("voice")
         @ExcludeMissing
@@ -149,7 +153,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Format && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Format && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -224,7 +228,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Voice && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Voice && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -309,17 +313,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionAudioParam && this.voice == other.voice && this.format == other.format && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionAudioParam && voice == other.voice && format == other.format && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(voice, format, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(voice, format, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "ChatCompletionAudioParam{voice=$voice, format=$format, additionalProperties=$additionalProperties}"

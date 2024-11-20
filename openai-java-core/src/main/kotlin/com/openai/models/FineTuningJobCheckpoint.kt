@@ -406,17 +406,14 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Metrics && this.step == other.step && this.trainLoss == other.trainLoss && this.trainMeanTokenAccuracy == other.trainMeanTokenAccuracy && this.validLoss == other.validLoss && this.validMeanTokenAccuracy == other.validMeanTokenAccuracy && this.fullValidLoss == other.fullValidLoss && this.fullValidMeanTokenAccuracy == other.fullValidMeanTokenAccuracy && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Metrics && step == other.step && trainLoss == other.trainLoss && trainMeanTokenAccuracy == other.trainMeanTokenAccuracy && validLoss == other.validLoss && validMeanTokenAccuracy == other.validMeanTokenAccuracy && fullValidLoss == other.fullValidLoss && fullValidMeanTokenAccuracy == other.fullValidMeanTokenAccuracy && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(step, trainLoss, trainMeanTokenAccuracy, validLoss, validMeanTokenAccuracy, fullValidLoss, fullValidMeanTokenAccuracy, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(step, trainLoss, trainMeanTokenAccuracy, validLoss, validMeanTokenAccuracy, fullValidLoss, fullValidMeanTokenAccuracy, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "Metrics{step=$step, trainLoss=$trainLoss, trainMeanTokenAccuracy=$trainMeanTokenAccuracy, validLoss=$validLoss, validMeanTokenAccuracy=$validMeanTokenAccuracy, fullValidLoss=$fullValidLoss, fullValidMeanTokenAccuracy=$fullValidMeanTokenAccuracy, additionalProperties=$additionalProperties}"
@@ -435,7 +432,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Object && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -479,17 +476,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FineTuningJobCheckpoint && this.id == other.id && this.createdAt == other.createdAt && this.fineTunedModelCheckpoint == other.fineTunedModelCheckpoint && this.stepNumber == other.stepNumber && this.metrics == other.metrics && this.fineTuningJobId == other.fineTuningJobId && this.object_ == other.object_ && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FineTuningJobCheckpoint && id == other.id && createdAt == other.createdAt && fineTunedModelCheckpoint == other.fineTunedModelCheckpoint && stepNumber == other.stepNumber && metrics == other.metrics && fineTuningJobId == other.fineTuningJobId && object_ == other.object_ && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(id, createdAt, fineTunedModelCheckpoint, stepNumber, metrics, fineTuningJobId, object_, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(id, createdAt, fineTunedModelCheckpoint, stepNumber, metrics, fineTuningJobId, object_, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "FineTuningJobCheckpoint{id=$id, createdAt=$createdAt, fineTunedModelCheckpoint=$fineTunedModelCheckpoint, stepNumber=$stepNumber, metrics=$metrics, fineTuningJobId=$fineTuningJobId, object_=$object_, additionalProperties=$additionalProperties}"

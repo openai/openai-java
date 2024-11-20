@@ -76,17 +76,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FunctionParameters && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FunctionParameters && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() = "FunctionParameters{additionalProperties=$additionalProperties}"
 }

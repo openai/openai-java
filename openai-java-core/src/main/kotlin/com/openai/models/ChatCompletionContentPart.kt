@@ -93,15 +93,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionContentPart && this.chatCompletionContentPartText == other.chatCompletionContentPartText && this.chatCompletionContentPartImage == other.chatCompletionContentPartImage && this.chatCompletionContentPartInputAudio == other.chatCompletionContentPartInputAudio /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionContentPart && chatCompletionContentPartText == other.chatCompletionContentPartText && chatCompletionContentPartImage == other.chatCompletionContentPartImage && chatCompletionContentPartInputAudio == other.chatCompletionContentPartInputAudio /* spotless:on */
     }
 
-    override fun hashCode(): Int {
-        return /* spotless:off */ Objects.hash(chatCompletionContentPartText, chatCompletionContentPartImage, chatCompletionContentPartInputAudio) /* spotless:on */
-    }
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(chatCompletionContentPartText, chatCompletionContentPartImage, chatCompletionContentPartInputAudio) /* spotless:on */
 
-    override fun toString(): String {
-        return when {
+    override fun toString(): String =
+        when {
             chatCompletionContentPartText != null ->
                 "ChatCompletionContentPart{chatCompletionContentPartText=$chatCompletionContentPartText}"
             chatCompletionContentPartImage != null ->
@@ -111,7 +109,6 @@ private constructor(
             _json != null -> "ChatCompletionContentPart{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ChatCompletionContentPart")
         }
-    }
 
     companion object {
 

@@ -159,7 +159,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Level && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Level && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -222,7 +222,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Object && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -265,17 +265,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FineTuningJobEvent && this.id == other.id && this.createdAt == other.createdAt && this.level == other.level && this.message == other.message && this.object_ == other.object_ && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FineTuningJobEvent && id == other.id && createdAt == other.createdAt && level == other.level && message == other.message && object_ == other.object_ && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(id, createdAt, level, message, object_, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(id, createdAt, level, message, object_, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "FineTuningJobEvent{id=$id, createdAt=$createdAt, level=$level, message=$message, object_=$object_, additionalProperties=$additionalProperties}"

@@ -287,17 +287,14 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is FineTuningJobCreateBody && this.model == other.model && this.trainingFile == other.trainingFile && this.hyperparameters == other.hyperparameters && this.integrations == other.integrations && this.seed == other.seed && this.suffix == other.suffix && this.validationFile == other.validationFile && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is FineTuningJobCreateBody && model == other.model && trainingFile == other.trainingFile && hyperparameters == other.hyperparameters && integrations == other.integrations && seed == other.seed && suffix == other.suffix && validationFile == other.validationFile && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(model, trainingFile, hyperparameters, integrations, seed, suffix, validationFile, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(model, trainingFile, hyperparameters, integrations, seed, suffix, validationFile, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "FineTuningJobCreateBody{model=$model, trainingFile=$trainingFile, hyperparameters=$hyperparameters, integrations=$integrations, seed=$seed, suffix=$suffix, validationFile=$validationFile, additionalProperties=$additionalProperties}"
@@ -314,12 +311,10 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is FineTuningJobCreateParams && this.model == other.model && this.trainingFile == other.trainingFile && this.hyperparameters == other.hyperparameters && this.integrations == other.integrations && this.seed == other.seed && this.suffix == other.suffix && this.validationFile == other.validationFile && this.additionalHeaders == other.additionalHeaders && this.additionalQueryParams == other.additionalQueryParams && this.additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return /* spotless:off */ other is FineTuningJobCreateParams && model == other.model && trainingFile == other.trainingFile && hyperparameters == other.hyperparameters && integrations == other.integrations && seed == other.seed && suffix == other.suffix && validationFile == other.validationFile && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
     }
 
-    override fun hashCode(): Int {
-        return /* spotless:off */ Objects.hash(model, trainingFile, hyperparameters, integrations, seed, suffix, validationFile, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-    }
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(model, trainingFile, hyperparameters, integrations, seed, suffix, validationFile, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
 
     override fun toString() =
         "FineTuningJobCreateParams{model=$model, trainingFile=$trainingFile, hyperparameters=$hyperparameters, integrations=$integrations, seed=$seed, suffix=$suffix, validationFile=$validationFile, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
@@ -582,7 +577,7 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Model && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Model && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -787,21 +782,18 @@ constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is BatchSize && this.behavior == other.behavior && this.integer == other.integer /* spotless:on */
+                return /* spotless:off */ other is BatchSize && behavior == other.behavior && integer == other.integer /* spotless:on */
             }
 
-            override fun hashCode(): Int {
-                return /* spotless:off */ Objects.hash(behavior, integer) /* spotless:on */
-            }
+            override fun hashCode(): Int = /* spotless:off */ Objects.hash(behavior, integer) /* spotless:on */
 
-            override fun toString(): String {
-                return when {
+            override fun toString(): String =
+                when {
                     behavior != null -> "BatchSize{behavior=$behavior}"
                     integer != null -> "BatchSize{integer=$integer}"
                     _json != null -> "BatchSize{_unknown=$_json}"
                     else -> throw IllegalStateException("Invalid BatchSize")
                 }
-            }
 
             companion object {
 
@@ -866,7 +858,7 @@ constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is Behavior && this.value == other.value /* spotless:on */
+                    return /* spotless:off */ other is Behavior && value == other.value /* spotless:on */
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -952,21 +944,18 @@ constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is LearningRateMultiplier && this.behavior == other.behavior && this.number == other.number /* spotless:on */
+                return /* spotless:off */ other is LearningRateMultiplier && behavior == other.behavior && number == other.number /* spotless:on */
             }
 
-            override fun hashCode(): Int {
-                return /* spotless:off */ Objects.hash(behavior, number) /* spotless:on */
-            }
+            override fun hashCode(): Int = /* spotless:off */ Objects.hash(behavior, number) /* spotless:on */
 
-            override fun toString(): String {
-                return when {
+            override fun toString(): String =
+                when {
                     behavior != null -> "LearningRateMultiplier{behavior=$behavior}"
                     number != null -> "LearningRateMultiplier{number=$number}"
                     _json != null -> "LearningRateMultiplier{_unknown=$_json}"
                     else -> throw IllegalStateException("Invalid LearningRateMultiplier")
                 }
-            }
 
             companion object {
 
@@ -1034,7 +1023,7 @@ constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is Behavior && this.value == other.value /* spotless:on */
+                    return /* spotless:off */ other is Behavior && value == other.value /* spotless:on */
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -1120,21 +1109,18 @@ constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is NEpochs && this.behavior == other.behavior && this.integer == other.integer /* spotless:on */
+                return /* spotless:off */ other is NEpochs && behavior == other.behavior && integer == other.integer /* spotless:on */
             }
 
-            override fun hashCode(): Int {
-                return /* spotless:off */ Objects.hash(behavior, integer) /* spotless:on */
-            }
+            override fun hashCode(): Int = /* spotless:off */ Objects.hash(behavior, integer) /* spotless:on */
 
-            override fun toString(): String {
-                return when {
+            override fun toString(): String =
+                when {
                     behavior != null -> "NEpochs{behavior=$behavior}"
                     integer != null -> "NEpochs{integer=$integer}"
                     _json != null -> "NEpochs{_unknown=$_json}"
                     else -> throw IllegalStateException("Invalid NEpochs")
                 }
-            }
 
             companion object {
 
@@ -1199,7 +1185,7 @@ constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is Behavior && this.value == other.value /* spotless:on */
+                    return /* spotless:off */ other is Behavior && value == other.value /* spotless:on */
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -1243,17 +1229,14 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Hyperparameters && this.batchSize == other.batchSize && this.learningRateMultiplier == other.learningRateMultiplier && this.nEpochs == other.nEpochs && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Hyperparameters && batchSize == other.batchSize && learningRateMultiplier == other.learningRateMultiplier && nEpochs == other.nEpochs && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(batchSize, learningRateMultiplier, nEpochs, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(batchSize, learningRateMultiplier, nEpochs, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "Hyperparameters{batchSize=$batchSize, learningRateMultiplier=$learningRateMultiplier, nEpochs=$nEpochs, additionalProperties=$additionalProperties}"
@@ -1355,7 +1338,7 @@ constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
+                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -1514,17 +1497,14 @@ constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Wandb && this.project == other.project && this.name == other.name && this.entity == other.entity && this.tags == other.tags && this.additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is Wandb && project == other.project && name == other.name && entity == other.entity && tags == other.tags && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
-            private var hashCode: Int = 0
+            /* spotless:off */
+            private val hashCode: Int by lazy { Objects.hash(project, name, entity, tags, additionalProperties) }
+            /* spotless:on */
 
-            override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode = /* spotless:off */ Objects.hash(project, name, entity, tags, additionalProperties) /* spotless:on */
-                }
-                return hashCode
-            }
+            override fun hashCode(): Int = hashCode
 
             override fun toString() =
                 "Wandb{project=$project, name=$name, entity=$entity, tags=$tags, additionalProperties=$additionalProperties}"
@@ -1535,17 +1515,14 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Integration && this.type == other.type && this.wandb == other.wandb && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Integration && type == other.type && wandb == other.wandb && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(type, wandb, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(type, wandb, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "Integration{type=$type, wandb=$wandb, additionalProperties=$additionalProperties}"

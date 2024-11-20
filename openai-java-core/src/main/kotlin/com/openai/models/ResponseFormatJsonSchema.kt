@@ -344,17 +344,14 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Schema && this.additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is Schema && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
-            private var hashCode: Int = 0
+            /* spotless:off */
+            private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+            /* spotless:on */
 
-            override fun hashCode(): Int {
-                if (hashCode == 0) {
-                    hashCode = /* spotless:off */ Objects.hash(additionalProperties) /* spotless:on */
-                }
-                return hashCode
-            }
+            override fun hashCode(): Int = hashCode
 
             override fun toString() = "Schema{additionalProperties=$additionalProperties}"
         }
@@ -364,17 +361,14 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is JsonSchema && this.description == other.description && this.name == other.name && this.schema == other.schema && this.strict == other.strict && this.additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is JsonSchema && description == other.description && name == other.name && schema == other.schema && strict == other.strict && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        private var hashCode: Int = 0
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(description, name, schema, strict, additionalProperties) }
+        /* spotless:on */
 
-        override fun hashCode(): Int {
-            if (hashCode == 0) {
-                hashCode = /* spotless:off */ Objects.hash(description, name, schema, strict, additionalProperties) /* spotless:on */
-            }
-            return hashCode
-        }
+        override fun hashCode(): Int = hashCode
 
         override fun toString() =
             "JsonSchema{description=$description, name=$name, schema=$schema, strict=$strict, additionalProperties=$additionalProperties}"
@@ -393,7 +387,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Type && this.value == other.value /* spotless:on */
+            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -436,17 +430,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseFormatJsonSchema && this.type == other.type && this.jsonSchema == other.jsonSchema && this.additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseFormatJsonSchema && type == other.type && jsonSchema == other.jsonSchema && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
-    private var hashCode: Int = 0
+    /* spotless:off */
+    private val hashCode: Int by lazy { Objects.hash(type, jsonSchema, additionalProperties) }
+    /* spotless:on */
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode = /* spotless:off */ Objects.hash(type, jsonSchema, additionalProperties) /* spotless:on */
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
         "ResponseFormatJsonSchema{type=$type, jsonSchema=$jsonSchema, additionalProperties=$additionalProperties}"

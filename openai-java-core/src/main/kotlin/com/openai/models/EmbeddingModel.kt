@@ -21,7 +21,7 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is EmbeddingModel && this.value == other.value /* spotless:on */
+        return /* spotless:off */ other is EmbeddingModel && value == other.value /* spotless:on */
     }
 
     override fun hashCode() = value.hashCode()
