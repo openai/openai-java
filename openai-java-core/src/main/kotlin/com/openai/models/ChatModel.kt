@@ -40,6 +40,8 @@ private constructor(
 
         @JvmField val GPT_4O = ChatModel(JsonField.of("gpt-4o"))
 
+        @JvmField val GPT_4O_2024_11_20 = ChatModel(JsonField.of("gpt-4o-2024-11-20"))
+
         @JvmField val GPT_4O_2024_08_06 = ChatModel(JsonField.of("gpt-4o-2024-08-06"))
 
         @JvmField val GPT_4O_2024_05_13 = ChatModel(JsonField.of("gpt-4o-2024-05-13"))
@@ -109,6 +111,7 @@ private constructor(
         O1_MINI,
         O1_MINI_2024_09_12,
         GPT_4O,
+        GPT_4O_2024_11_20,
         GPT_4O_2024_08_06,
         GPT_4O_2024_05_13,
         GPT_4O_REALTIME_PREVIEW,
@@ -145,6 +148,7 @@ private constructor(
         O1_MINI,
         O1_MINI_2024_09_12,
         GPT_4O,
+        GPT_4O_2024_11_20,
         GPT_4O_2024_08_06,
         GPT_4O_2024_05_13,
         GPT_4O_REALTIME_PREVIEW,
@@ -183,6 +187,7 @@ private constructor(
             O1_MINI -> Value.O1_MINI
             O1_MINI_2024_09_12 -> Value.O1_MINI_2024_09_12
             GPT_4O -> Value.GPT_4O
+            GPT_4O_2024_11_20 -> Value.GPT_4O_2024_11_20
             GPT_4O_2024_08_06 -> Value.GPT_4O_2024_08_06
             GPT_4O_2024_05_13 -> Value.GPT_4O_2024_05_13
             GPT_4O_REALTIME_PREVIEW -> Value.GPT_4O_REALTIME_PREVIEW
@@ -221,6 +226,7 @@ private constructor(
             O1_MINI -> Known.O1_MINI
             O1_MINI_2024_09_12 -> Known.O1_MINI_2024_09_12
             GPT_4O -> Known.GPT_4O
+            GPT_4O_2024_11_20 -> Known.GPT_4O_2024_11_20
             GPT_4O_2024_08_06 -> Known.GPT_4O_2024_08_06
             GPT_4O_2024_05_13 -> Known.GPT_4O_2024_05_13
             GPT_4O_REALTIME_PREVIEW -> Known.GPT_4O_REALTIME_PREVIEW

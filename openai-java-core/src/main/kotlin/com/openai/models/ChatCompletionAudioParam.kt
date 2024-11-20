@@ -33,8 +33,9 @@ private constructor(
     private var validated: Boolean = false
 
     /**
-     * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`, `coral`,
-     * `echo`, `sage`, `shimmer`, and `verse`.
+     * The voice the model uses to respond. Supported voices are `ash`, `ballad`, `coral`, `sage`,
+     * and `verse` (also supported but not recommended are `alloy`, `echo`, and `shimmer`; these
+     * voices are less expressive).
      */
     fun voice(): Voice = voice.getRequired("voice")
 
@@ -44,8 +45,9 @@ private constructor(
     fun format(): Format = format.getRequired("format")
 
     /**
-     * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`, `coral`,
-     * `echo`, `sage`, `shimmer`, and `verse`.
+     * The voice the model uses to respond. Supported voices are `ash`, `ballad`, `coral`, `sage`,
+     * and `verse` (also supported but not recommended are `alloy`, `echo`, and `shimmer`; these
+     * voices are less expressive).
      */
     @JsonProperty("voice") @ExcludeMissing fun _voice() = voice
 
@@ -87,14 +89,16 @@ private constructor(
         }
 
         /**
-         * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`,
-         * `coral`, `echo`, `sage`, `shimmer`, and `verse`.
+         * The voice the model uses to respond. Supported voices are `ash`, `ballad`, `coral`,
+         * `sage`, and `verse` (also supported but not recommended are `alloy`, `echo`, and
+         * `shimmer`; these voices are less expressive).
          */
         fun voice(voice: Voice) = voice(JsonField.of(voice))
 
         /**
-         * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`,
-         * `coral`, `echo`, `sage`, `shimmer`, and `verse`.
+         * The voice the model uses to respond. Supported voices are `ash`, `ballad`, `coral`,
+         * `sage`, and `verse` (also supported but not recommended are `alloy`, `echo`, and
+         * `shimmer`; these voices are less expressive).
          */
         @JsonProperty("voice")
         @ExcludeMissing
