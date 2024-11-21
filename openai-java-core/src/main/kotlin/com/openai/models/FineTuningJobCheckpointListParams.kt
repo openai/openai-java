@@ -24,6 +24,10 @@ constructor(
 
     fun limit(): Optional<Long> = Optional.ofNullable(limit)
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
     @JvmSynthetic internal fun getHeaders(): Headers = additionalHeaders
 
     @JvmSynthetic
@@ -41,23 +45,6 @@ constructor(
             else -> ""
         }
     }
-
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is FineTuningJobCheckpointListParams && fineTuningJobId == other.fineTuningJobId && after == other.after && limit == other.limit && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fineTuningJobId, after, limit, additionalHeaders, additionalQueryParams) /* spotless:on */
-
-    override fun toString() =
-        "FineTuningJobCheckpointListParams{fineTuningJobId=$fineTuningJobId, after=$after, limit=$limit, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -78,11 +65,12 @@ constructor(
         @JvmSynthetic
         internal fun from(fineTuningJobCheckpointListParams: FineTuningJobCheckpointListParams) =
             apply {
-                this.fineTuningJobId = fineTuningJobCheckpointListParams.fineTuningJobId
-                this.after = fineTuningJobCheckpointListParams.after
-                this.limit = fineTuningJobCheckpointListParams.limit
-                additionalHeaders(fineTuningJobCheckpointListParams.additionalHeaders)
-                additionalQueryParams(fineTuningJobCheckpointListParams.additionalQueryParams)
+                fineTuningJobId = fineTuningJobCheckpointListParams.fineTuningJobId
+                after = fineTuningJobCheckpointListParams.after
+                limit = fineTuningJobCheckpointListParams.limit
+                additionalHeaders = fineTuningJobCheckpointListParams.additionalHeaders.toBuilder()
+                additionalQueryParams =
+                    fineTuningJobCheckpointListParams.additionalQueryParams.toBuilder()
             }
 
         fun fineTuningJobId(fineTuningJobId: String) = apply {
@@ -202,4 +190,17 @@ constructor(
                 additionalQueryParams.build(),
             )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is FineTuningJobCheckpointListParams && fineTuningJobId == other.fineTuningJobId && after == other.after && limit == other.limit && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fineTuningJobId, after, limit, additionalHeaders, additionalQueryParams) /* spotless:on */
+
+    override fun toString() =
+        "FineTuningJobCheckpointListParams{fineTuningJobId=$fineTuningJobId, after=$after, limit=$limit, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
