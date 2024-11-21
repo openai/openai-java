@@ -2,6 +2,8 @@
 
 package com.openai.services.blocking
 
+import com.openai.azure.addPathSegmentsForAzure
+import com.openai.azure.replaceBearerTokenForAzure
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.handlers.errorHandler
@@ -33,10 +35,12 @@ constructor(
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.POST)
+                .addPathSegmentsForAzure(clientOptions, params.model().get().toString())
                 .addPathSegments("images", "generations")
                 .putAllQueryParams(clientOptions.queryParams)
                 .replaceAllQueryParams(params.getQueryParams())
                 .putAllHeaders(clientOptions.headers)
+                .replaceBearerTokenForAzure(clientOptions)
                 .replaceAllHeaders(params.getHeaders())
                 .body(json(clientOptions.jsonMapper, params.getBody()))
                 .build()

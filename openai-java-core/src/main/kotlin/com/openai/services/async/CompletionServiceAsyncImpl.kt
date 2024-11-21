@@ -2,6 +2,8 @@
 
 package com.openai.services.async
 
+import com.openai.azure.addPathSegmentsForAzure
+import com.openai.azure.replaceBearerTokenForAzure
 import com.openai.core.ClientOptions
 import com.openai.core.JsonValue
 import com.openai.core.RequestOptions
@@ -41,10 +43,12 @@ constructor(
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.POST)
+                .addPathSegmentsForAzure(clientOptions, params.model().toString())
                 .addPathSegments("completions")
                 .putAllQueryParams(clientOptions.queryParams)
                 .replaceAllQueryParams(params.getQueryParams())
                 .putAllHeaders(clientOptions.headers)
+                .replaceBearerTokenForAzure(clientOptions)
                 .replaceAllHeaders(params.getHeaders())
                 .body(json(clientOptions.jsonMapper, params.getBody()))
                 .build()
