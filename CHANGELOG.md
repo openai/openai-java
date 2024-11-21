@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.4.0 (2024-11-21)
+
+Full Changelog: [v0.3.0...v0.4.0](https://github.com/openai/openai-java/compare/v0.3.0...v0.4.0)
+
+### Features
+
+* **azure:** Add HttpRequest.Builder extension methods ([#9](https://github.com/openai/openai-java/issues/9)) ([097c7c9](https://github.com/openai/openai-java/commit/097c7c91d23ff3bafdb4c01baea0df9beeadcd74))
+
+
+### Bug Fixes
+
+* **azure:** add missing azure changes ([656d3b5](https://github.com/openai/openai-java/commit/656d3b5a6d1c2d68733d5139d3a2982b04009f2a))
+
 ## 0.3.0 (2024-11-20)
 
 Full Changelog: [v0.2.0...v0.3.0](https://github.com/openai/openai-java/compare/v0.2.0...v0.3.0)
