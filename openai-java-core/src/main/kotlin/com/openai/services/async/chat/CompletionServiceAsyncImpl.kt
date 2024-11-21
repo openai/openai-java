@@ -19,7 +19,9 @@ import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.StreamResponse
 import com.openai.core.http.toAsync
+import com.openai.core.isAzureEndpoint
 import com.openai.core.json
+import com.openai.credential.BearerTokenCredential
 import com.openai.errors.OpenAIError
 import com.openai.models.ChatCompletion
 import com.openai.models.ChatCompletionChunk
