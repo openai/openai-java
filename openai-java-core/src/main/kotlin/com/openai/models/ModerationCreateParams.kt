@@ -42,6 +42,12 @@ constructor(
 
     fun model(): Optional<Model> = Optional.ofNullable(model)
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     @JvmSynthetic
     internal fun getBody(): ModerationCreateBody {
         return ModerationCreateBody(
@@ -154,25 +160,6 @@ constructor(
             "ModerationCreateBody{input=$input, model=$model, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is ModerationCreateParams && input == other.input && model == other.model && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(input, model, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "ModerationCreateParams{input=$input, model=$model, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -191,11 +178,12 @@ constructor(
 
         @JvmSynthetic
         internal fun from(moderationCreateParams: ModerationCreateParams) = apply {
-            this.input = moderationCreateParams.input
-            this.model = moderationCreateParams.model
-            additionalHeaders(moderationCreateParams.additionalHeaders)
-            additionalQueryParams(moderationCreateParams.additionalQueryParams)
-            additionalBodyProperties(moderationCreateParams.additionalBodyProperties)
+            input = moderationCreateParams.input
+            model = moderationCreateParams.model
+            additionalHeaders = moderationCreateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = moderationCreateParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties =
+                moderationCreateParams.additionalBodyProperties.toMutableMap()
         }
 
         /**
@@ -576,4 +564,17 @@ constructor(
 
         fun asString(): String = _value().asStringOrThrow()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is ModerationCreateParams && input == other.input && model == other.model && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(input, model, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "ModerationCreateParams{input=$input, model=$model, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

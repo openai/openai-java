@@ -51,6 +51,12 @@ constructor(
 
     fun user(): Optional<String> = Optional.ofNullable(user)
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     @JvmSynthetic
     internal fun getBody(): ImageGenerateBody {
         return ImageGenerateBody(
@@ -270,25 +276,6 @@ constructor(
             "ImageGenerateBody{prompt=$prompt, model=$model, n=$n, quality=$quality, responseFormat=$responseFormat, size=$size, style=$style, user=$user, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is ImageGenerateParams && prompt == other.prompt && model == other.model && n == other.n && quality == other.quality && responseFormat == other.responseFormat && size == other.size && style == other.style && user == other.user && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(prompt, model, n, quality, responseFormat, size, style, user, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "ImageGenerateParams{prompt=$prompt, model=$model, n=$n, quality=$quality, responseFormat=$responseFormat, size=$size, style=$style, user=$user, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -313,17 +300,17 @@ constructor(
 
         @JvmSynthetic
         internal fun from(imageGenerateParams: ImageGenerateParams) = apply {
-            this.prompt = imageGenerateParams.prompt
-            this.model = imageGenerateParams.model
-            this.n = imageGenerateParams.n
-            this.quality = imageGenerateParams.quality
-            this.responseFormat = imageGenerateParams.responseFormat
-            this.size = imageGenerateParams.size
-            this.style = imageGenerateParams.style
-            this.user = imageGenerateParams.user
-            additionalHeaders(imageGenerateParams.additionalHeaders)
-            additionalQueryParams(imageGenerateParams.additionalQueryParams)
-            additionalBodyProperties(imageGenerateParams.additionalBodyProperties)
+            prompt = imageGenerateParams.prompt
+            model = imageGenerateParams.model
+            n = imageGenerateParams.n
+            quality = imageGenerateParams.quality
+            responseFormat = imageGenerateParams.responseFormat
+            size = imageGenerateParams.size
+            style = imageGenerateParams.style
+            user = imageGenerateParams.user
+            additionalHeaders = imageGenerateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = imageGenerateParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties = imageGenerateParams.additionalBodyProperties.toMutableMap()
         }
 
         /**
@@ -818,4 +805,17 @@ constructor(
 
         fun asString(): String = _value().asStringOrThrow()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is ImageGenerateParams && prompt == other.prompt && model == other.model && n == other.n && quality == other.quality && responseFormat == other.responseFormat && size == other.size && style == other.style && user == other.user && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(prompt, model, n, quality, responseFormat, size, style, user, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "ImageGenerateParams{prompt=$prompt, model=$model, n=$n, quality=$quality, responseFormat=$responseFormat, size=$size, style=$style, user=$user, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

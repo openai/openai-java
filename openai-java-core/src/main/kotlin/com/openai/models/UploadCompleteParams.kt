@@ -32,6 +32,12 @@ constructor(
 
     fun md5(): Optional<String> = Optional.ofNullable(md5)
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     @JvmSynthetic
     internal fun getBody(): UploadCompleteBody {
         return UploadCompleteBody(
@@ -144,25 +150,6 @@ constructor(
             "UploadCompleteBody{partIds=$partIds, md5=$md5, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is UploadCompleteParams && uploadId == other.uploadId && partIds == other.partIds && md5 == other.md5 && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(uploadId, partIds, md5, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "UploadCompleteParams{uploadId=$uploadId, partIds=$partIds, md5=$md5, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -182,12 +169,12 @@ constructor(
 
         @JvmSynthetic
         internal fun from(uploadCompleteParams: UploadCompleteParams) = apply {
-            this.uploadId = uploadCompleteParams.uploadId
-            this.partIds(uploadCompleteParams.partIds)
-            this.md5 = uploadCompleteParams.md5
-            additionalHeaders(uploadCompleteParams.additionalHeaders)
-            additionalQueryParams(uploadCompleteParams.additionalQueryParams)
-            additionalBodyProperties(uploadCompleteParams.additionalBodyProperties)
+            uploadId = uploadCompleteParams.uploadId
+            partIds = uploadCompleteParams.partIds.toMutableList()
+            md5 = uploadCompleteParams.md5
+            additionalHeaders = uploadCompleteParams.additionalHeaders.toBuilder()
+            additionalQueryParams = uploadCompleteParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties = uploadCompleteParams.additionalBodyProperties.toMutableMap()
         }
 
         fun uploadId(uploadId: String) = apply { this.uploadId = uploadId }
@@ -330,11 +317,24 @@ constructor(
         fun build(): UploadCompleteParams =
             UploadCompleteParams(
                 checkNotNull(uploadId) { "`uploadId` is required but was not set" },
-                checkNotNull(partIds) { "`partIds` is required but was not set" }.toImmutable(),
+                partIds.toImmutable(),
                 md5,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
             )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is UploadCompleteParams && uploadId == other.uploadId && partIds == other.partIds && md5 == other.md5 && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(uploadId, partIds, md5, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "UploadCompleteParams{uploadId=$uploadId, partIds=$partIds, md5=$md5, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

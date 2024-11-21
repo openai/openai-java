@@ -17,6 +17,10 @@ constructor(
 
     fun batchId(): String = batchId
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
     @JvmSynthetic internal fun getHeaders(): Headers = additionalHeaders
 
     @JvmSynthetic internal fun getQueryParams(): QueryParams = additionalQueryParams
@@ -27,23 +31,6 @@ constructor(
             else -> ""
         }
     }
-
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is BatchRetrieveParams && batchId == other.batchId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(batchId, additionalHeaders, additionalQueryParams) /* spotless:on */
-
-    override fun toString() =
-        "BatchRetrieveParams{batchId=$batchId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -61,9 +48,9 @@ constructor(
 
         @JvmSynthetic
         internal fun from(batchRetrieveParams: BatchRetrieveParams) = apply {
-            this.batchId = batchRetrieveParams.batchId
-            additionalHeaders(batchRetrieveParams.additionalHeaders)
-            additionalQueryParams(batchRetrieveParams.additionalQueryParams)
+            batchId = batchRetrieveParams.batchId
+            additionalHeaders = batchRetrieveParams.additionalHeaders.toBuilder()
+            additionalQueryParams = batchRetrieveParams.additionalQueryParams.toBuilder()
         }
 
         fun batchId(batchId: String) = apply { this.batchId = batchId }
@@ -173,4 +160,17 @@ constructor(
                 additionalQueryParams.build(),
             )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is BatchRetrieveParams && batchId == other.batchId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(batchId, additionalHeaders, additionalQueryParams) /* spotless:on */
+
+    override fun toString() =
+        "BatchRetrieveParams{batchId=$batchId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

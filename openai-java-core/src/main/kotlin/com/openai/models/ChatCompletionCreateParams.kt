@@ -120,6 +120,12 @@ constructor(
 
     fun user(): Optional<String> = Optional.ofNullable(user)
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     @JvmSynthetic
     internal fun getBody(): ChatCompletionCreateBody {
         return ChatCompletionCreateBody(
@@ -881,25 +887,6 @@ constructor(
             "ChatCompletionCreateBody{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, responseFormat=$responseFormat, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is ChatCompletionCreateParams && messages == other.messages && model == other.model && audio == other.audio && frequencyPenalty == other.frequencyPenalty && functionCall == other.functionCall && functions == other.functions && logitBias == other.logitBias && logprobs == other.logprobs && maxCompletionTokens == other.maxCompletionTokens && maxTokens == other.maxTokens && metadata == other.metadata && modalities == other.modalities && n == other.n && parallelToolCalls == other.parallelToolCalls && prediction == other.prediction && presencePenalty == other.presencePenalty && responseFormat == other.responseFormat && seed == other.seed && serviceTier == other.serviceTier && stop == other.stop && store == other.store && streamOptions == other.streamOptions && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topLogprobs == other.topLogprobs && topP == other.topP && user == other.user && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(messages, model, audio, frequencyPenalty, functionCall, functions, logitBias, logprobs, maxCompletionTokens, maxTokens, metadata, modalities, n, parallelToolCalls, prediction, presencePenalty, responseFormat, seed, serviceTier, stop, store, streamOptions, temperature, toolChoice, tools, topLogprobs, topP, user, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "ChatCompletionCreateParams{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, responseFormat=$responseFormat, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -944,37 +931,38 @@ constructor(
 
         @JvmSynthetic
         internal fun from(chatCompletionCreateParams: ChatCompletionCreateParams) = apply {
-            this.messages(chatCompletionCreateParams.messages)
-            this.model = chatCompletionCreateParams.model
-            this.audio = chatCompletionCreateParams.audio
-            this.frequencyPenalty = chatCompletionCreateParams.frequencyPenalty
-            this.functionCall = chatCompletionCreateParams.functionCall
-            this.functions(chatCompletionCreateParams.functions ?: listOf())
-            this.logitBias = chatCompletionCreateParams.logitBias
-            this.logprobs = chatCompletionCreateParams.logprobs
-            this.maxCompletionTokens = chatCompletionCreateParams.maxCompletionTokens
-            this.maxTokens = chatCompletionCreateParams.maxTokens
-            this.metadata = chatCompletionCreateParams.metadata
-            this.modalities(chatCompletionCreateParams.modalities ?: listOf())
-            this.n = chatCompletionCreateParams.n
-            this.parallelToolCalls = chatCompletionCreateParams.parallelToolCalls
-            this.prediction = chatCompletionCreateParams.prediction
-            this.presencePenalty = chatCompletionCreateParams.presencePenalty
-            this.responseFormat = chatCompletionCreateParams.responseFormat
-            this.seed = chatCompletionCreateParams.seed
-            this.serviceTier = chatCompletionCreateParams.serviceTier
-            this.stop = chatCompletionCreateParams.stop
-            this.store = chatCompletionCreateParams.store
-            this.streamOptions = chatCompletionCreateParams.streamOptions
-            this.temperature = chatCompletionCreateParams.temperature
-            this.toolChoice = chatCompletionCreateParams.toolChoice
-            this.tools(chatCompletionCreateParams.tools ?: listOf())
-            this.topLogprobs = chatCompletionCreateParams.topLogprobs
-            this.topP = chatCompletionCreateParams.topP
-            this.user = chatCompletionCreateParams.user
-            additionalHeaders(chatCompletionCreateParams.additionalHeaders)
-            additionalQueryParams(chatCompletionCreateParams.additionalQueryParams)
-            additionalBodyProperties(chatCompletionCreateParams.additionalBodyProperties)
+            messages = chatCompletionCreateParams.messages.toMutableList()
+            model = chatCompletionCreateParams.model
+            audio = chatCompletionCreateParams.audio
+            frequencyPenalty = chatCompletionCreateParams.frequencyPenalty
+            functionCall = chatCompletionCreateParams.functionCall
+            functions = chatCompletionCreateParams.functions?.toMutableList() ?: mutableListOf()
+            logitBias = chatCompletionCreateParams.logitBias
+            logprobs = chatCompletionCreateParams.logprobs
+            maxCompletionTokens = chatCompletionCreateParams.maxCompletionTokens
+            maxTokens = chatCompletionCreateParams.maxTokens
+            metadata = chatCompletionCreateParams.metadata
+            modalities = chatCompletionCreateParams.modalities?.toMutableList() ?: mutableListOf()
+            n = chatCompletionCreateParams.n
+            parallelToolCalls = chatCompletionCreateParams.parallelToolCalls
+            prediction = chatCompletionCreateParams.prediction
+            presencePenalty = chatCompletionCreateParams.presencePenalty
+            responseFormat = chatCompletionCreateParams.responseFormat
+            seed = chatCompletionCreateParams.seed
+            serviceTier = chatCompletionCreateParams.serviceTier
+            stop = chatCompletionCreateParams.stop
+            store = chatCompletionCreateParams.store
+            streamOptions = chatCompletionCreateParams.streamOptions
+            temperature = chatCompletionCreateParams.temperature
+            toolChoice = chatCompletionCreateParams.toolChoice
+            tools = chatCompletionCreateParams.tools?.toMutableList() ?: mutableListOf()
+            topLogprobs = chatCompletionCreateParams.topLogprobs
+            topP = chatCompletionCreateParams.topP
+            user = chatCompletionCreateParams.user
+            additionalHeaders = chatCompletionCreateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = chatCompletionCreateParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties =
+                chatCompletionCreateParams.additionalBodyProperties.toMutableMap()
         }
 
         /**
@@ -1563,18 +1551,18 @@ constructor(
 
         fun build(): ChatCompletionCreateParams =
             ChatCompletionCreateParams(
-                checkNotNull(messages) { "`messages` is required but was not set" }.toImmutable(),
+                messages.toImmutable(),
                 checkNotNull(model) { "`model` is required but was not set" },
                 audio,
                 frequencyPenalty,
                 functionCall,
-                if (functions.size == 0) null else functions.toImmutable(),
+                functions.toImmutable().ifEmpty { null },
                 logitBias,
                 logprobs,
                 maxCompletionTokens,
                 maxTokens,
                 metadata,
-                if (modalities.size == 0) null else modalities.toImmutable(),
+                modalities.toImmutable().ifEmpty { null },
                 n,
                 parallelToolCalls,
                 prediction,
@@ -1587,7 +1575,7 @@ constructor(
                 streamOptions,
                 temperature,
                 toolChoice,
-                if (tools.size == 0) null else tools.toImmutable(),
+                tools.toImmutable().ifEmpty { null },
                 topLogprobs,
                 topP,
                 user,
@@ -2617,4 +2605,17 @@ constructor(
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is ChatCompletionCreateParams && messages == other.messages && model == other.model && audio == other.audio && frequencyPenalty == other.frequencyPenalty && functionCall == other.functionCall && functions == other.functions && logitBias == other.logitBias && logprobs == other.logprobs && maxCompletionTokens == other.maxCompletionTokens && maxTokens == other.maxTokens && metadata == other.metadata && modalities == other.modalities && n == other.n && parallelToolCalls == other.parallelToolCalls && prediction == other.prediction && presencePenalty == other.presencePenalty && responseFormat == other.responseFormat && seed == other.seed && serviceTier == other.serviceTier && stop == other.stop && store == other.store && streamOptions == other.streamOptions && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topLogprobs == other.topLogprobs && topP == other.topP && user == other.user && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(messages, model, audio, frequencyPenalty, functionCall, functions, logitBias, logprobs, maxCompletionTokens, maxTokens, metadata, modalities, n, parallelToolCalls, prediction, presencePenalty, responseFormat, seed, serviceTier, stop, store, streamOptions, temperature, toolChoice, tools, topLogprobs, topP, user, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "ChatCompletionCreateParams{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, responseFormat=$responseFormat, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }
