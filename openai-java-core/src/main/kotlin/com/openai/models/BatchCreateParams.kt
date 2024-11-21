@@ -39,6 +39,12 @@ constructor(
 
     fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata)
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     @JvmSynthetic
     internal fun getBody(): BatchCreateBody {
         return BatchCreateBody(
@@ -204,25 +210,6 @@ constructor(
             "BatchCreateBody{completionWindow=$completionWindow, endpoint=$endpoint, inputFileId=$inputFileId, metadata=$metadata, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is BatchCreateParams && completionWindow == other.completionWindow && endpoint == other.endpoint && inputFileId == other.inputFileId && metadata == other.metadata && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(completionWindow, endpoint, inputFileId, metadata, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "BatchCreateParams{completionWindow=$completionWindow, endpoint=$endpoint, inputFileId=$inputFileId, metadata=$metadata, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -243,13 +230,13 @@ constructor(
 
         @JvmSynthetic
         internal fun from(batchCreateParams: BatchCreateParams) = apply {
-            this.completionWindow = batchCreateParams.completionWindow
-            this.endpoint = batchCreateParams.endpoint
-            this.inputFileId = batchCreateParams.inputFileId
-            this.metadata = batchCreateParams.metadata
-            additionalHeaders(batchCreateParams.additionalHeaders)
-            additionalQueryParams(batchCreateParams.additionalQueryParams)
-            additionalBodyProperties(batchCreateParams.additionalBodyProperties)
+            completionWindow = batchCreateParams.completionWindow
+            endpoint = batchCreateParams.endpoint
+            inputFileId = batchCreateParams.inputFileId
+            metadata = batchCreateParams.metadata
+            additionalHeaders = batchCreateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = batchCreateParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties = batchCreateParams.additionalBodyProperties.toMutableMap()
         }
 
         /**
@@ -591,4 +578,17 @@ constructor(
 
         override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is BatchCreateParams && completionWindow == other.completionWindow && endpoint == other.endpoint && inputFileId == other.inputFileId && metadata == other.metadata && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(completionWindow, endpoint, inputFileId, metadata, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "BatchCreateParams{completionWindow=$completionWindow, endpoint=$endpoint, inputFileId=$inputFileId, metadata=$metadata, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

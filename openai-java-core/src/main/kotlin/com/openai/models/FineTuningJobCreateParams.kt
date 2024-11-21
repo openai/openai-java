@@ -57,6 +57,12 @@ constructor(
 
     fun validationFile(): Optional<String> = Optional.ofNullable(validationFile)
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     @JvmSynthetic
     internal fun getBody(): FineTuningJobCreateBody {
         return FineTuningJobCreateBody(
@@ -300,25 +306,6 @@ constructor(
             "FineTuningJobCreateBody{model=$model, trainingFile=$trainingFile, hyperparameters=$hyperparameters, integrations=$integrations, seed=$seed, suffix=$suffix, validationFile=$validationFile, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is FineTuningJobCreateParams && model == other.model && trainingFile == other.trainingFile && hyperparameters == other.hyperparameters && integrations == other.integrations && seed == other.seed && suffix == other.suffix && validationFile == other.validationFile && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(model, trainingFile, hyperparameters, integrations, seed, suffix, validationFile, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "FineTuningJobCreateParams{model=$model, trainingFile=$trainingFile, hyperparameters=$hyperparameters, integrations=$integrations, seed=$seed, suffix=$suffix, validationFile=$validationFile, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -342,16 +329,18 @@ constructor(
 
         @JvmSynthetic
         internal fun from(fineTuningJobCreateParams: FineTuningJobCreateParams) = apply {
-            this.model = fineTuningJobCreateParams.model
-            this.trainingFile = fineTuningJobCreateParams.trainingFile
-            this.hyperparameters = fineTuningJobCreateParams.hyperparameters
-            this.integrations(fineTuningJobCreateParams.integrations ?: listOf())
-            this.seed = fineTuningJobCreateParams.seed
-            this.suffix = fineTuningJobCreateParams.suffix
-            this.validationFile = fineTuningJobCreateParams.validationFile
-            additionalHeaders(fineTuningJobCreateParams.additionalHeaders)
-            additionalQueryParams(fineTuningJobCreateParams.additionalQueryParams)
-            additionalBodyProperties(fineTuningJobCreateParams.additionalBodyProperties)
+            model = fineTuningJobCreateParams.model
+            trainingFile = fineTuningJobCreateParams.trainingFile
+            hyperparameters = fineTuningJobCreateParams.hyperparameters
+            integrations =
+                fineTuningJobCreateParams.integrations?.toMutableList() ?: mutableListOf()
+            seed = fineTuningJobCreateParams.seed
+            suffix = fineTuningJobCreateParams.suffix
+            validationFile = fineTuningJobCreateParams.validationFile
+            additionalHeaders = fineTuningJobCreateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = fineTuningJobCreateParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties =
+                fineTuningJobCreateParams.additionalBodyProperties.toMutableMap()
         }
 
         /**
@@ -554,7 +543,7 @@ constructor(
                 checkNotNull(model) { "`model` is required but was not set" },
                 checkNotNull(trainingFile) { "`trainingFile` is required but was not set" },
                 hyperparameters,
-                if (integrations.size == 0) null else integrations.toImmutable(),
+                integrations.toImmutable().ifEmpty { null },
                 seed,
                 suffix,
                 validationFile,
@@ -1527,4 +1516,17 @@ constructor(
         override fun toString() =
             "Integration{type=$type, wandb=$wandb, additionalProperties=$additionalProperties}"
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is FineTuningJobCreateParams && model == other.model && trainingFile == other.trainingFile && hyperparameters == other.hyperparameters && integrations == other.integrations && seed == other.seed && suffix == other.suffix && validationFile == other.validationFile && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(model, trainingFile, hyperparameters, integrations, seed, suffix, validationFile, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "FineTuningJobCreateParams{model=$model, trainingFile=$trainingFile, hyperparameters=$hyperparameters, integrations=$integrations, seed=$seed, suffix=$suffix, validationFile=$validationFile, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

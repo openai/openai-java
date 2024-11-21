@@ -87,6 +87,12 @@ constructor(
 
     fun user(): Optional<String> = Optional.ofNullable(user)
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     @JvmSynthetic
     internal fun getBody(): CompletionCreateBody {
         return CompletionCreateBody(
@@ -560,25 +566,6 @@ constructor(
             "CompletionCreateBody{model=$model, prompt=$prompt, bestOf=$bestOf, echo=$echo, frequencyPenalty=$frequencyPenalty, logitBias=$logitBias, logprobs=$logprobs, maxTokens=$maxTokens, n=$n, presencePenalty=$presencePenalty, seed=$seed, stop=$stop, streamOptions=$streamOptions, suffix=$suffix, temperature=$temperature, topP=$topP, user=$user, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is CompletionCreateParams && model == other.model && prompt == other.prompt && bestOf == other.bestOf && echo == other.echo && frequencyPenalty == other.frequencyPenalty && logitBias == other.logitBias && logprobs == other.logprobs && maxTokens == other.maxTokens && n == other.n && presencePenalty == other.presencePenalty && seed == other.seed && stop == other.stop && streamOptions == other.streamOptions && suffix == other.suffix && temperature == other.temperature && topP == other.topP && user == other.user && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(model, prompt, bestOf, echo, frequencyPenalty, logitBias, logprobs, maxTokens, n, presencePenalty, seed, stop, streamOptions, suffix, temperature, topP, user, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "CompletionCreateParams{model=$model, prompt=$prompt, bestOf=$bestOf, echo=$echo, frequencyPenalty=$frequencyPenalty, logitBias=$logitBias, logprobs=$logprobs, maxTokens=$maxTokens, n=$n, presencePenalty=$presencePenalty, seed=$seed, stop=$stop, streamOptions=$streamOptions, suffix=$suffix, temperature=$temperature, topP=$topP, user=$user, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -612,26 +599,27 @@ constructor(
 
         @JvmSynthetic
         internal fun from(completionCreateParams: CompletionCreateParams) = apply {
-            this.model = completionCreateParams.model
-            this.prompt = completionCreateParams.prompt
-            this.bestOf = completionCreateParams.bestOf
-            this.echo = completionCreateParams.echo
-            this.frequencyPenalty = completionCreateParams.frequencyPenalty
-            this.logitBias = completionCreateParams.logitBias
-            this.logprobs = completionCreateParams.logprobs
-            this.maxTokens = completionCreateParams.maxTokens
-            this.n = completionCreateParams.n
-            this.presencePenalty = completionCreateParams.presencePenalty
-            this.seed = completionCreateParams.seed
-            this.stop = completionCreateParams.stop
-            this.streamOptions = completionCreateParams.streamOptions
-            this.suffix = completionCreateParams.suffix
-            this.temperature = completionCreateParams.temperature
-            this.topP = completionCreateParams.topP
-            this.user = completionCreateParams.user
-            additionalHeaders(completionCreateParams.additionalHeaders)
-            additionalQueryParams(completionCreateParams.additionalQueryParams)
-            additionalBodyProperties(completionCreateParams.additionalBodyProperties)
+            model = completionCreateParams.model
+            prompt = completionCreateParams.prompt
+            bestOf = completionCreateParams.bestOf
+            echo = completionCreateParams.echo
+            frequencyPenalty = completionCreateParams.frequencyPenalty
+            logitBias = completionCreateParams.logitBias
+            logprobs = completionCreateParams.logprobs
+            maxTokens = completionCreateParams.maxTokens
+            n = completionCreateParams.n
+            presencePenalty = completionCreateParams.presencePenalty
+            seed = completionCreateParams.seed
+            stop = completionCreateParams.stop
+            streamOptions = completionCreateParams.streamOptions
+            suffix = completionCreateParams.suffix
+            temperature = completionCreateParams.temperature
+            topP = completionCreateParams.topP
+            user = completionCreateParams.user
+            additionalHeaders = completionCreateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = completionCreateParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties =
+                completionCreateParams.additionalBodyProperties.toMutableMap()
         }
 
         /**
@@ -1404,4 +1392,17 @@ constructor(
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is CompletionCreateParams && model == other.model && prompt == other.prompt && bestOf == other.bestOf && echo == other.echo && frequencyPenalty == other.frequencyPenalty && logitBias == other.logitBias && logprobs == other.logprobs && maxTokens == other.maxTokens && n == other.n && presencePenalty == other.presencePenalty && seed == other.seed && stop == other.stop && streamOptions == other.streamOptions && suffix == other.suffix && temperature == other.temperature && topP == other.topP && user == other.user && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(model, prompt, bestOf, echo, frequencyPenalty, logitBias, logprobs, maxTokens, n, presencePenalty, seed, stop, streamOptions, suffix, temperature, topP, user, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "CompletionCreateParams{model=$model, prompt=$prompt, bestOf=$bestOf, echo=$echo, frequencyPenalty=$frequencyPenalty, logitBias=$logitBias, logprobs=$logprobs, maxTokens=$maxTokens, n=$n, presencePenalty=$presencePenalty, seed=$seed, stop=$stop, streamOptions=$streamOptions, suffix=$suffix, temperature=$temperature, topP=$topP, user=$user, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

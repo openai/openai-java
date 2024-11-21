@@ -51,6 +51,12 @@ constructor(
 
     fun user(): Optional<String> = Optional.ofNullable(user)
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     @JvmSynthetic
     internal fun getBody(): EmbeddingCreateBody {
         return EmbeddingCreateBody(
@@ -231,25 +237,6 @@ constructor(
             "EmbeddingCreateBody{input=$input, model=$model, dimensions=$dimensions, encodingFormat=$encodingFormat, user=$user, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is EmbeddingCreateParams && input == other.input && model == other.model && dimensions == other.dimensions && encodingFormat == other.encodingFormat && user == other.user && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(input, model, dimensions, encodingFormat, user, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "EmbeddingCreateParams{input=$input, model=$model, dimensions=$dimensions, encodingFormat=$encodingFormat, user=$user, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -271,14 +258,14 @@ constructor(
 
         @JvmSynthetic
         internal fun from(embeddingCreateParams: EmbeddingCreateParams) = apply {
-            this.input = embeddingCreateParams.input
-            this.model = embeddingCreateParams.model
-            this.dimensions = embeddingCreateParams.dimensions
-            this.encodingFormat = embeddingCreateParams.encodingFormat
-            this.user = embeddingCreateParams.user
-            additionalHeaders(embeddingCreateParams.additionalHeaders)
-            additionalQueryParams(embeddingCreateParams.additionalQueryParams)
-            additionalBodyProperties(embeddingCreateParams.additionalBodyProperties)
+            input = embeddingCreateParams.input
+            model = embeddingCreateParams.model
+            dimensions = embeddingCreateParams.dimensions
+            encodingFormat = embeddingCreateParams.encodingFormat
+            user = embeddingCreateParams.user
+            additionalHeaders = embeddingCreateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = embeddingCreateParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties = embeddingCreateParams.additionalBodyProperties.toMutableMap()
         }
 
         /**
@@ -785,4 +772,17 @@ constructor(
 
         fun asString(): String = _value().asStringOrThrow()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is EmbeddingCreateParams && input == other.input && model == other.model && dimensions == other.dimensions && encodingFormat == other.encodingFormat && user == other.user && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(input, model, dimensions, encodingFormat, user, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "EmbeddingCreateParams{input=$input, model=$model, dimensions=$dimensions, encodingFormat=$encodingFormat, user=$user, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }
