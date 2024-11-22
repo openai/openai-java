@@ -23,6 +23,7 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+import okhttp3.logging.HttpLoggingInterceptor
 import okio.BufferedSink
 
 class OkHttpClient
@@ -30,14 +31,30 @@ private constructor(private val okHttpClient: okhttp3.OkHttpClient, private val 
     HttpClient {
 
     private fun getClient(requestOptions: RequestOptions): okhttp3.OkHttpClient {
-        val timeout = requestOptions.timeout ?: return okHttpClient
-        return okHttpClient
-            .newBuilder()
-            .connectTimeout(timeout)
-            .readTimeout(timeout)
-            .writeTimeout(timeout)
-            .callTimeout(if (timeout.seconds == 0L) timeout else timeout.plusSeconds(30))
-            .build()
+        val clientBuilder = okHttpClient.newBuilder()
+
+        val logLevel =
+            when (System.getenv("OPENAI_LOG")?.lowercase()) {
+                "info" -> HttpLoggingInterceptor.Level.BASIC
+                "debug" -> HttpLoggingInterceptor.Level.BODY
+                else -> null
+            }
+        if (logLevel != null) {
+            clientBuilder.addNetworkInterceptor(
+                HttpLoggingInterceptor().setLevel(logLevel).apply { redactHeader("Authorization") }
+            )
+        }
+
+        val timeout = requestOptions.timeout
+        if (timeout != null) {
+            clientBuilder
+                .connectTimeout(timeout)
+                .readTimeout(timeout)
+                .writeTimeout(timeout)
+                .callTimeout(if (timeout.seconds == 0L) timeout else timeout.plusSeconds(30))
+        }
+
+        return clientBuilder.build()
     }
 
     override fun execute(
