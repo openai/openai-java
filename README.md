@@ -373,6 +373,22 @@ get a map of untyped fields of type `Map<String, JsonValue>`. You can then acces
 `._additionalProperties().get("secret_prop").asString()` or use other helpers defined on the `JsonValue` class
 to extract it to a desired type.
 
+## Logging
+
+We use the standard [OkHttp logging interceptor](https://github.com/square/okhttp/tree/master/okhttp-logging-interceptor).
+
+You can enable logging by setting the environment variable `OPENAI_LOG` to `info`.
+
+```sh
+$ export OPENAI_LOG=info
+```
+
+Or to `debug` for more verbose logging.
+
+```sh
+$ export OPENAI_LOG=debug
+```
+
 ## Semantic versioning
 
 This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) conventions, though certain backwards-incompatible changes may be released as minor versions:
