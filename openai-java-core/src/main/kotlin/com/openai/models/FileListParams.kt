@@ -32,6 +32,10 @@ constructor(
 
     fun purpose(): Optional<String> = Optional.ofNullable(purpose)
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
     @JvmSynthetic internal fun getHeaders(): Headers = additionalHeaders
 
     @JvmSynthetic
@@ -44,23 +48,6 @@ constructor(
         queryParams.putAll(additionalQueryParams)
         return queryParams.build()
     }
-
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is FileListParams && after == other.after && limit == other.limit && order == other.order && purpose == other.purpose && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(after, limit, order, purpose, additionalHeaders, additionalQueryParams) /* spotless:on */
-
-    override fun toString() =
-        "FileListParams{after=$after, limit=$limit, order=$order, purpose=$purpose, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -81,12 +68,12 @@ constructor(
 
         @JvmSynthetic
         internal fun from(fileListParams: FileListParams) = apply {
-            this.after = fileListParams.after
-            this.limit = fileListParams.limit
-            this.order = fileListParams.order
-            this.purpose = fileListParams.purpose
-            additionalHeaders(fileListParams.additionalHeaders)
-            additionalQueryParams(fileListParams.additionalQueryParams)
+            after = fileListParams.after
+            limit = fileListParams.limit
+            order = fileListParams.order
+            purpose = fileListParams.purpose
+            additionalHeaders = fileListParams.additionalHeaders.toBuilder()
+            additionalQueryParams = fileListParams.additionalQueryParams.toBuilder()
         }
 
         /**
@@ -277,4 +264,17 @@ constructor(
 
         fun asString(): String = _value().asStringOrThrow()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is FileListParams && after == other.after && limit == other.limit && order == other.order && purpose == other.purpose && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(after, limit, order, purpose, additionalHeaders, additionalQueryParams) /* spotless:on */
+
+    override fun toString() =
+        "FileListParams{after=$after, limit=$limit, order=$order, purpose=$purpose, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

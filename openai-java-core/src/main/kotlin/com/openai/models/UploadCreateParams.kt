@@ -34,6 +34,12 @@ constructor(
 
     fun purpose(): FilePurpose = purpose
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+
     @JvmSynthetic
     internal fun getBody(): UploadCreateBody {
         return UploadCreateBody(
@@ -177,25 +183,6 @@ constructor(
             "UploadCreateBody{bytes=$bytes, filename=$filename, mimeType=$mimeType, purpose=$purpose, additionalProperties=$additionalProperties}"
     }
 
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is UploadCreateParams && bytes == other.bytes && filename == other.filename && mimeType == other.mimeType && purpose == other.purpose && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(bytes, filename, mimeType, purpose, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
-
-    override fun toString() =
-        "UploadCreateParams{bytes=$bytes, filename=$filename, mimeType=$mimeType, purpose=$purpose, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -216,13 +203,13 @@ constructor(
 
         @JvmSynthetic
         internal fun from(uploadCreateParams: UploadCreateParams) = apply {
-            this.bytes = uploadCreateParams.bytes
-            this.filename = uploadCreateParams.filename
-            this.mimeType = uploadCreateParams.mimeType
-            this.purpose = uploadCreateParams.purpose
-            additionalHeaders(uploadCreateParams.additionalHeaders)
-            additionalQueryParams(uploadCreateParams.additionalQueryParams)
-            additionalBodyProperties(uploadCreateParams.additionalBodyProperties)
+            bytes = uploadCreateParams.bytes
+            filename = uploadCreateParams.filename
+            mimeType = uploadCreateParams.mimeType
+            purpose = uploadCreateParams.purpose
+            additionalHeaders = uploadCreateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = uploadCreateParams.additionalQueryParams.toBuilder()
+            additionalBodyProperties = uploadCreateParams.additionalBodyProperties.toMutableMap()
         }
 
         /** The number of bytes in the file you are uploading. */
@@ -378,4 +365,17 @@ constructor(
                 additionalBodyProperties.toImmutable(),
             )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is UploadCreateParams && bytes == other.bytes && filename == other.filename && mimeType == other.mimeType && purpose == other.purpose && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(bytes, filename, mimeType, purpose, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+
+    override fun toString() =
+        "UploadCreateParams{bytes=$bytes, filename=$filename, mimeType=$mimeType, purpose=$purpose, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

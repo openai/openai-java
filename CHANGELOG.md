@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.5.0 (2024-11-24)
+
+Full Changelog: [v0.4.0...v0.5.0](https://github.com/openai/openai-java/compare/v0.4.0...v0.5.0)
+
+### Features
+
+* **client:** add logging when debug env is set ([#18](https://github.com/openai/openai-java/issues/18)) ([73cdedc](https://github.com/openai/openai-java/commit/73cdedcc55ee2de411197ab7df55b217e20654f3))
+
+
+### Documentation
+
+* **readme:** add Microsoft Azure section ([#17](https://github.com/openai/openai-java/issues/17)) ([fd9e9dc](https://github.com/openai/openai-java/commit/fd9e9dcaa932d2bf7466cf6e0e9907b00c9747ee))
+
+
+### Styles
+
+* **internal:** reorder some params methods and improve consistency of implementations ([#15](https://github.com/openai/openai-java/issues/15)) ([6ddc67e](https://github.com/openai/openai-java/commit/6ddc67ec0395987b7bf025dee341bf8d1e157c26))
+
 ## 0.4.0 (2024-11-21)
 
 Full Changelog: [v0.3.0...v0.4.0](https://github.com/openai/openai-java/compare/v0.3.0...v0.4.0)

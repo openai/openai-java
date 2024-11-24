@@ -17,6 +17,10 @@ constructor(
 
     fun fileId(): String = fileId
 
+    fun _additionalHeaders(): Headers = additionalHeaders
+
+    fun _additionalQueryParams(): QueryParams = additionalQueryParams
+
     @JvmSynthetic internal fun getHeaders(): Headers = additionalHeaders
 
     @JvmSynthetic internal fun getQueryParams(): QueryParams = additionalQueryParams
@@ -27,23 +31,6 @@ constructor(
             else -> ""
         }
     }
-
-    fun _additionalHeaders(): Headers = additionalHeaders
-
-    fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is FileRetrieveParams && fileId == other.fileId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fileId, additionalHeaders, additionalQueryParams) /* spotless:on */
-
-    override fun toString() =
-        "FileRetrieveParams{fileId=$fileId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 
     fun toBuilder() = Builder().from(this)
 
@@ -61,9 +48,9 @@ constructor(
 
         @JvmSynthetic
         internal fun from(fileRetrieveParams: FileRetrieveParams) = apply {
-            this.fileId = fileRetrieveParams.fileId
-            additionalHeaders(fileRetrieveParams.additionalHeaders)
-            additionalQueryParams(fileRetrieveParams.additionalQueryParams)
+            fileId = fileRetrieveParams.fileId
+            additionalHeaders = fileRetrieveParams.additionalHeaders.toBuilder()
+            additionalQueryParams = fileRetrieveParams.additionalQueryParams.toBuilder()
         }
 
         fun fileId(fileId: String) = apply { this.fileId = fileId }
@@ -173,4 +160,17 @@ constructor(
                 additionalQueryParams.build(),
             )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is FileRetrieveParams && fileId == other.fileId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fileId, additionalHeaders, additionalQueryParams) /* spotless:on */
+
+    override fun toString() =
+        "FileRetrieveParams{fileId=$fileId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
