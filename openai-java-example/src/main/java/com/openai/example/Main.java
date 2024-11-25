@@ -10,23 +10,32 @@ public final class Main {
 
     public static void main(String[] args) {
         OpenAIClient client = OpenAIOkHttpClient.fromEnv();
-        CompletionCreateParams completionCreateParams = CompletionCreateParams.builder()
-                .model(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
+        ChatCompletionCreateParams completionCreateParams = ChatCompletionCreateParams.builder()
+                .model(ChatCompletionCreateParams.Model.GPT_3_5_TURBO)
                 .maxTokens(1024)
-                .prompt("Tell me a story about building the best SDK!")
+                .addMessage(ChatCompletionMessageParam.ofChatCompletionUserMessageParam(
+                        ChatCompletionUserMessageParam.builder()
+                                .role(ChatCompletionUserMessageParam.Role.USER)
+                                .content(ChatCompletionUserMessageParam.Content.ofTextContent(
+                                        "Tell me a story about building the best SDK!"
+                                ))
+                                .build()
+                ))
                 .build();
 
         // Non-streaming example
-        client.completions().create(completionCreateParams).choices()
-                .forEach(choice -> System.out.println(choice.text()));
+        client.chat().completions().create(completionCreateParams).choices().stream()
+                .flatMap(choice -> choice.message().content().stream())
+                .forEach(System.out::println);
 
         System.out.println("\n-----------------------------------\n");
 
         // Streaming example
-        try (StreamResponse<Completion> messageStreamResponse = client.completions().createStreaming(completionCreateParams)) {
+        try (StreamResponse<ChatCompletionChunk> messageStreamResponse = client.chat().completions().createStreaming(completionCreateParams)) {
             messageStreamResponse.stream()
                     .flatMap(completion -> completion.choices().stream())
-                    .forEach(choice -> System.out.print(choice.text()));
+                    .flatMap(choice -> choice.delta().content().stream())
+                    .forEach(System.out::print);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
