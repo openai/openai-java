@@ -78,7 +78,7 @@ class ServiceParamsTest {
                         .voice(ChatCompletionAudioParam.Voice.ALLOY)
                         .build()
                 )
-                .frequencyPenalty(2.0)
+                .frequencyPenalty(-2.0)
                 .functionCall(
                     ChatCompletionCreateParams.FunctionCall.ofBehavior(
                         ChatCompletionCreateParams.FunctionCall.Behavior.NONE
@@ -95,11 +95,11 @@ class ServiceParamsTest {
                 )
                 .logitBias(ChatCompletionCreateParams.LogitBias.builder().build())
                 .logprobs(true)
-                .maxCompletionTokens(123L)
-                .maxTokens(123L)
+                .maxCompletionTokens(0L)
+                .maxTokens(0L)
                 .metadata(ChatCompletionCreateParams.Metadata.builder().build())
                 .modalities(listOf(ChatCompletionModality.TEXT))
-                .n(123L)
+                .n(1L)
                 .parallelToolCalls(true)
                 .prediction(
                     ChatCompletionPredictionContent.builder()
@@ -107,18 +107,18 @@ class ServiceParamsTest {
                         .type(ChatCompletionPredictionContent.Type.CONTENT)
                         .build()
                 )
-                .presencePenalty(2.0)
+                .presencePenalty(-2.0)
                 .responseFormat(
                     ChatCompletionCreateParams.ResponseFormat.ofResponseFormatText(
                         ResponseFormatText.builder().type(ResponseFormatText.Type.TEXT).build()
                     )
                 )
-                .seed(123L)
+                .seed(-9007199254740991L)
                 .serviceTier(ChatCompletionCreateParams.ServiceTier.AUTO)
                 .stop(ChatCompletionCreateParams.Stop.ofString("string"))
                 .store(true)
                 .streamOptions(ChatCompletionStreamOptions.builder().includeUsage(true).build())
-                .temperature(2.0)
+                .temperature(1.0)
                 .toolChoice(
                     ChatCompletionToolChoiceOption.ofBehavior(
                         ChatCompletionToolChoiceOption.Behavior.NONE
@@ -139,7 +139,7 @@ class ServiceParamsTest {
                             .build()
                     )
                 )
-                .topLogprobs(20L)
+                .topLogprobs(0L)
                 .topP(1.0)
                 .user("user-1234")
                 .additionalHeaders(additionalHeaders)
@@ -154,22 +154,22 @@ class ServiceParamsTest {
                     listOf(
                         ChatCompletion.Choice.builder()
                             .finishReason(ChatCompletion.Choice.FinishReason.STOP)
-                            .index(123L)
+                            .index(0L)
                             .logprobs(
                                 ChatCompletion.Choice.Logprobs.builder()
                                     .content(
                                         listOf(
                                             ChatCompletionTokenLogprob.builder()
                                                 .token("token")
-                                                .bytes(listOf(123L))
-                                                .logprob(42.23)
+                                                .bytes(listOf(0L))
+                                                .logprob(0.0)
                                                 .topLogprobs(
                                                     listOf(
                                                         ChatCompletionTokenLogprob.TopLogprob
                                                             .builder()
                                                             .token("token")
-                                                            .bytes(listOf(123L))
-                                                            .logprob(42.23)
+                                                            .bytes(listOf(0L))
+                                                            .logprob(0.0)
                                                             .build()
                                                     )
                                                 )
@@ -180,15 +180,15 @@ class ServiceParamsTest {
                                         listOf(
                                             ChatCompletionTokenLogprob.builder()
                                                 .token("token")
-                                                .bytes(listOf(123L))
-                                                .logprob(42.23)
+                                                .bytes(listOf(0L))
+                                                .logprob(0.0)
                                                 .topLogprobs(
                                                     listOf(
                                                         ChatCompletionTokenLogprob.TopLogprob
                                                             .builder()
                                                             .token("token")
-                                                            .bytes(listOf(123L))
-                                                            .logprob(42.23)
+                                                            .bytes(listOf(0L))
+                                                            .logprob(0.0)
                                                             .build()
                                                     )
                                                 )
@@ -206,7 +206,7 @@ class ServiceParamsTest {
                                         ChatCompletionAudio.builder()
                                             .id("id")
                                             .data("data")
-                                            .expiresAt(123L)
+                                            .expiresAt(0L)
                                             .transcript("transcript")
                                             .build()
                                     )
@@ -235,28 +235,28 @@ class ServiceParamsTest {
                             .build()
                     )
                 )
-                .created(123L)
+                .created(0L)
                 .model("model")
                 .object_(ChatCompletion.Object.CHAT_COMPLETION)
                 .serviceTier(ChatCompletion.ServiceTier.SCALE)
                 .systemFingerprint("system_fingerprint")
                 .usage(
                     CompletionUsage.builder()
-                        .completionTokens(123L)
-                        .promptTokens(123L)
-                        .totalTokens(123L)
+                        .completionTokens(0L)
+                        .promptTokens(0L)
+                        .totalTokens(0L)
                         .completionTokensDetails(
                             CompletionUsage.CompletionTokensDetails.builder()
-                                .acceptedPredictionTokens(123L)
-                                .audioTokens(123L)
-                                .reasoningTokens(123L)
-                                .rejectedPredictionTokens(123L)
+                                .acceptedPredictionTokens(0L)
+                                .audioTokens(0L)
+                                .reasoningTokens(0L)
+                                .rejectedPredictionTokens(0L)
                                 .build()
                         )
                         .promptTokensDetails(
                             CompletionUsage.PromptTokensDetails.builder()
-                                .audioTokens(123L)
-                                .cachedTokens(123L)
+                                .audioTokens(0L)
+                                .cachedTokens(0L)
                                 .build()
                         )
                         .build()

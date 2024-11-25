@@ -10,10 +10,10 @@ class BatchRequestCountsTest {
     @Test
     fun createBatchRequestCounts() {
         val batchRequestCounts =
-            BatchRequestCounts.builder().completed(123L).failed(123L).total(123L).build()
+            BatchRequestCounts.builder().completed(0L).failed(0L).total(0L).build()
         assertThat(batchRequestCounts).isNotNull
-        assertThat(batchRequestCounts.completed()).isEqualTo(123L)
-        assertThat(batchRequestCounts.failed()).isEqualTo(123L)
-        assertThat(batchRequestCounts.total()).isEqualTo(123L)
+        assertThat(batchRequestCounts.completed()).isEqualTo(0L)
+        assertThat(batchRequestCounts.failed()).isEqualTo(0L)
+        assertThat(batchRequestCounts.total()).isEqualTo(0L)
     }
 }

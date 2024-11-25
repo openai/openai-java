@@ -12,8 +12,8 @@ class FileObjectTest {
         val fileObject =
             FileObject.builder()
                 .id("id")
-                .bytes(123L)
-                .createdAt(123L)
+                .bytes(0L)
+                .createdAt(0L)
                 .filename("filename")
                 .object_(FileObject.Object.FILE)
                 .purpose(FileObject.Purpose.ASSISTANTS)
@@ -22,8 +22,8 @@ class FileObjectTest {
                 .build()
         assertThat(fileObject).isNotNull
         assertThat(fileObject.id()).isEqualTo("id")
-        assertThat(fileObject.bytes()).isEqualTo(123L)
-        assertThat(fileObject.createdAt()).isEqualTo(123L)
+        assertThat(fileObject.bytes()).isEqualTo(0L)
+        assertThat(fileObject.createdAt()).isEqualTo(0L)
         assertThat(fileObject.filename()).isEqualTo("filename")
         assertThat(fileObject.object_()).isEqualTo(FileObject.Object.FILE)
         assertThat(fileObject.purpose()).isEqualTo(FileObject.Purpose.ASSISTANTS)

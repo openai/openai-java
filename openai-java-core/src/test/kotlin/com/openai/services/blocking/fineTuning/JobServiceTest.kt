@@ -65,7 +65,7 @@ class JobServiceTest {
                                 .build()
                         )
                     )
-                    .seed(123L)
+                    .seed(42L)
                     .suffix("x")
                     .validationFile("file-abc123")
                     .build()

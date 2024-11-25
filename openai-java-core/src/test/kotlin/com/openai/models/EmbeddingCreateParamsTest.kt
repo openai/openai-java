@@ -13,7 +13,7 @@ class EmbeddingCreateParamsTest {
         EmbeddingCreateParams.builder()
             .input(EmbeddingCreateParams.Input.ofString("This is a test."))
             .model(EmbeddingCreateParams.Model.TEXT_EMBEDDING_ADA_002)
-            .dimensions(123L)
+            .dimensions(1L)
             .encodingFormat(EmbeddingCreateParams.EncodingFormat.FLOAT)
             .user("user-1234")
             .build()
@@ -25,7 +25,7 @@ class EmbeddingCreateParamsTest {
             EmbeddingCreateParams.builder()
                 .input(EmbeddingCreateParams.Input.ofString("This is a test."))
                 .model(EmbeddingCreateParams.Model.TEXT_EMBEDDING_ADA_002)
-                .dimensions(123L)
+                .dimensions(1L)
                 .encodingFormat(EmbeddingCreateParams.EncodingFormat.FLOAT)
                 .user("user-1234")
                 .build()
@@ -33,7 +33,7 @@ class EmbeddingCreateParamsTest {
         assertThat(body).isNotNull
         assertThat(body.input()).isEqualTo(EmbeddingCreateParams.Input.ofString("This is a test."))
         assertThat(body.model()).isEqualTo(EmbeddingCreateParams.Model.TEXT_EMBEDDING_ADA_002)
-        assertThat(body.dimensions()).isEqualTo(123L)
+        assertThat(body.dimensions()).isEqualTo(1L)
         assertThat(body.encodingFormat()).isEqualTo(EmbeddingCreateParams.EncodingFormat.FLOAT)
         assertThat(body.user()).isEqualTo("user-1234")
     }
