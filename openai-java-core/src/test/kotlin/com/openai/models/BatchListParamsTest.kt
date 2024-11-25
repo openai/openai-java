@@ -11,15 +11,15 @@ class BatchListParamsTest {
 
     @Test
     fun createBatchListParams() {
-        BatchListParams.builder().after("after").limit(123L).build()
+        BatchListParams.builder().after("after").limit(0L).build()
     }
 
     @Test
     fun getQueryParams() {
-        val params = BatchListParams.builder().after("after").limit(123L).build()
+        val params = BatchListParams.builder().after("after").limit(0L).build()
         val expected = QueryParams.builder()
         expected.put("after", "after")
-        expected.put("limit", "123")
+        expected.put("limit", "0")
         assertThat(params.getQueryParams()).isEqualTo(expected.build())
     }
 

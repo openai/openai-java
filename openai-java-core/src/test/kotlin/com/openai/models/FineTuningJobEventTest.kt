@@ -12,14 +12,14 @@ class FineTuningJobEventTest {
         val fineTuningJobEvent =
             FineTuningJobEvent.builder()
                 .id("id")
-                .createdAt(123L)
+                .createdAt(0L)
                 .level(FineTuningJobEvent.Level.INFO)
                 .message("message")
                 .object_(FineTuningJobEvent.Object.FINE_TUNING_JOB_EVENT)
                 .build()
         assertThat(fineTuningJobEvent).isNotNull
         assertThat(fineTuningJobEvent.id()).isEqualTo("id")
-        assertThat(fineTuningJobEvent.createdAt()).isEqualTo(123L)
+        assertThat(fineTuningJobEvent.createdAt()).isEqualTo(0L)
         assertThat(fineTuningJobEvent.level()).isEqualTo(FineTuningJobEvent.Level.INFO)
         assertThat(fineTuningJobEvent.message()).isEqualTo("message")
         assertThat(fineTuningJobEvent.object_())

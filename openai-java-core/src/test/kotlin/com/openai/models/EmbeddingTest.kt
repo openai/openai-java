@@ -11,13 +11,13 @@ class EmbeddingTest {
     fun createEmbedding() {
         val embedding =
             Embedding.builder()
-                .embedding(listOf(42.23))
-                .index(123L)
+                .embedding(listOf(0.0))
+                .index(0L)
                 .object_(Embedding.Object.EMBEDDING)
                 .build()
         assertThat(embedding).isNotNull
-        assertThat(embedding.embedding()).containsExactly(42.23)
-        assertThat(embedding.index()).isEqualTo(123L)
+        assertThat(embedding.embedding()).containsExactly(0.0)
+        assertThat(embedding.index()).isEqualTo(0L)
         assertThat(embedding.object_()).isEqualTo(Embedding.Object.EMBEDDING)
     }
 }

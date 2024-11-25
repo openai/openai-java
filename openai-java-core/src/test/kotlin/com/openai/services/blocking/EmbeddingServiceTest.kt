@@ -24,7 +24,7 @@ class EmbeddingServiceTest {
                 EmbeddingCreateParams.builder()
                     .input(EmbeddingCreateParams.Input.ofString("This is a test."))
                     .model(EmbeddingCreateParams.Model.TEXT_EMBEDDING_ADA_002)
-                    .dimensions(123L)
+                    .dimensions(1L)
                     .encodingFormat(EmbeddingCreateParams.EncodingFormat.FLOAT)
                     .user("user-1234")
                     .build()

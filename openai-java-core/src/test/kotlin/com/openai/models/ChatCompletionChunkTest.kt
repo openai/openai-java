@@ -29,7 +29,7 @@ class ChatCompletionChunkTest {
                                     .toolCalls(
                                         listOf(
                                             ChatCompletionChunk.Choice.Delta.ToolCall.builder()
-                                                .index(123L)
+                                                .index(0L)
                                                 .id("id")
                                                 .function(
                                                     ChatCompletionChunk.Choice.Delta.ToolCall
@@ -49,22 +49,22 @@ class ChatCompletionChunkTest {
                                     .build()
                             )
                             .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
-                            .index(123L)
+                            .index(0L)
                             .logprobs(
                                 ChatCompletionChunk.Choice.Logprobs.builder()
                                     .content(
                                         listOf(
                                             ChatCompletionTokenLogprob.builder()
                                                 .token("token")
-                                                .bytes(listOf(123L))
-                                                .logprob(42.23)
+                                                .bytes(listOf(0L))
+                                                .logprob(0.0)
                                                 .topLogprobs(
                                                     listOf(
                                                         ChatCompletionTokenLogprob.TopLogprob
                                                             .builder()
                                                             .token("token")
-                                                            .bytes(listOf(123L))
-                                                            .logprob(42.23)
+                                                            .bytes(listOf(0L))
+                                                            .logprob(0.0)
                                                             .build()
                                                     )
                                                 )
@@ -75,15 +75,15 @@ class ChatCompletionChunkTest {
                                         listOf(
                                             ChatCompletionTokenLogprob.builder()
                                                 .token("token")
-                                                .bytes(listOf(123L))
-                                                .logprob(42.23)
+                                                .bytes(listOf(0L))
+                                                .logprob(0.0)
                                                 .topLogprobs(
                                                     listOf(
                                                         ChatCompletionTokenLogprob.TopLogprob
                                                             .builder()
                                                             .token("token")
-                                                            .bytes(listOf(123L))
-                                                            .logprob(42.23)
+                                                            .bytes(listOf(0L))
+                                                            .logprob(0.0)
                                                             .build()
                                                     )
                                                 )
@@ -95,28 +95,28 @@ class ChatCompletionChunkTest {
                             .build()
                     )
                 )
-                .created(123L)
+                .created(0L)
                 .model("model")
                 .object_(ChatCompletionChunk.Object.CHAT_COMPLETION_CHUNK)
                 .serviceTier(ChatCompletionChunk.ServiceTier.SCALE)
                 .systemFingerprint("system_fingerprint")
                 .usage(
                     CompletionUsage.builder()
-                        .completionTokens(123L)
-                        .promptTokens(123L)
-                        .totalTokens(123L)
+                        .completionTokens(0L)
+                        .promptTokens(0L)
+                        .totalTokens(0L)
                         .completionTokensDetails(
                             CompletionUsage.CompletionTokensDetails.builder()
-                                .acceptedPredictionTokens(123L)
-                                .audioTokens(123L)
-                                .reasoningTokens(123L)
-                                .rejectedPredictionTokens(123L)
+                                .acceptedPredictionTokens(0L)
+                                .audioTokens(0L)
+                                .reasoningTokens(0L)
+                                .rejectedPredictionTokens(0L)
                                 .build()
                         )
                         .promptTokensDetails(
                             CompletionUsage.PromptTokensDetails.builder()
-                                .audioTokens(123L)
-                                .cachedTokens(123L)
+                                .audioTokens(0L)
+                                .cachedTokens(0L)
                                 .build()
                         )
                         .build()
@@ -141,7 +141,7 @@ class ChatCompletionChunkTest {
                             .toolCalls(
                                 listOf(
                                     ChatCompletionChunk.Choice.Delta.ToolCall.builder()
-                                        .index(123L)
+                                        .index(0L)
                                         .id("id")
                                         .function(
                                             ChatCompletionChunk.Choice.Delta.ToolCall.Function
@@ -159,21 +159,21 @@ class ChatCompletionChunkTest {
                             .build()
                     )
                     .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
-                    .index(123L)
+                    .index(0L)
                     .logprobs(
                         ChatCompletionChunk.Choice.Logprobs.builder()
                             .content(
                                 listOf(
                                     ChatCompletionTokenLogprob.builder()
                                         .token("token")
-                                        .bytes(listOf(123L))
-                                        .logprob(42.23)
+                                        .bytes(listOf(0L))
+                                        .logprob(0.0)
                                         .topLogprobs(
                                             listOf(
                                                 ChatCompletionTokenLogprob.TopLogprob.builder()
                                                     .token("token")
-                                                    .bytes(listOf(123L))
-                                                    .logprob(42.23)
+                                                    .bytes(listOf(0L))
+                                                    .logprob(0.0)
                                                     .build()
                                             )
                                         )
@@ -184,14 +184,14 @@ class ChatCompletionChunkTest {
                                 listOf(
                                     ChatCompletionTokenLogprob.builder()
                                         .token("token")
-                                        .bytes(listOf(123L))
-                                        .logprob(42.23)
+                                        .bytes(listOf(0L))
+                                        .logprob(0.0)
                                         .topLogprobs(
                                             listOf(
                                                 ChatCompletionTokenLogprob.TopLogprob.builder()
                                                     .token("token")
-                                                    .bytes(listOf(123L))
-                                                    .logprob(42.23)
+                                                    .bytes(listOf(0L))
+                                                    .logprob(0.0)
                                                     .build()
                                             )
                                         )
@@ -202,7 +202,7 @@ class ChatCompletionChunkTest {
                     )
                     .build()
             )
-        assertThat(chatCompletionChunk.created()).isEqualTo(123L)
+        assertThat(chatCompletionChunk.created()).isEqualTo(0L)
         assertThat(chatCompletionChunk.model()).isEqualTo("model")
         assertThat(chatCompletionChunk.object_())
             .isEqualTo(ChatCompletionChunk.Object.CHAT_COMPLETION_CHUNK)
@@ -212,21 +212,21 @@ class ChatCompletionChunkTest {
         assertThat(chatCompletionChunk.usage())
             .contains(
                 CompletionUsage.builder()
-                    .completionTokens(123L)
-                    .promptTokens(123L)
-                    .totalTokens(123L)
+                    .completionTokens(0L)
+                    .promptTokens(0L)
+                    .totalTokens(0L)
                     .completionTokensDetails(
                         CompletionUsage.CompletionTokensDetails.builder()
-                            .acceptedPredictionTokens(123L)
-                            .audioTokens(123L)
-                            .reasoningTokens(123L)
-                            .rejectedPredictionTokens(123L)
+                            .acceptedPredictionTokens(0L)
+                            .audioTokens(0L)
+                            .reasoningTokens(0L)
+                            .rejectedPredictionTokens(0L)
                             .build()
                     )
                     .promptTokensDetails(
                         CompletionUsage.PromptTokensDetails.builder()
-                            .audioTokens(123L)
-                            .cachedTokens(123L)
+                            .audioTokens(0L)
+                            .cachedTokens(0L)
                             .build()
                     )
                     .build()

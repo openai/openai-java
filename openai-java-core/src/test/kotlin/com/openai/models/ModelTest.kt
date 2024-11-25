@@ -12,13 +12,13 @@ class ModelTest {
         val model =
             Model.builder()
                 .id("id")
-                .created(123L)
+                .created(0L)
                 .object_(Model.Object.MODEL)
                 .ownedBy("owned_by")
                 .build()
         assertThat(model).isNotNull
         assertThat(model.id()).isEqualTo("id")
-        assertThat(model.created()).isEqualTo(123L)
+        assertThat(model.created()).isEqualTo(0L)
         assertThat(model.object_()).isEqualTo(Model.Object.MODEL)
         assertThat(model.ownedBy()).isEqualTo("owned_by")
     }
