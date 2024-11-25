@@ -11,7 +11,7 @@ class ImagesResponseTest {
     fun createImagesResponse() {
         val imagesResponse =
             ImagesResponse.builder()
-                .created(123L)
+                .created(0L)
                 .data(
                     listOf(
                         Image.builder()
@@ -23,7 +23,7 @@ class ImagesResponseTest {
                 )
                 .build()
         assertThat(imagesResponse).isNotNull
-        assertThat(imagesResponse.created()).isEqualTo(123L)
+        assertThat(imagesResponse.created()).isEqualTo(0L)
         assertThat(imagesResponse.data())
             .containsExactly(
                 Image.builder()

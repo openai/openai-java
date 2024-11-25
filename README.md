@@ -7,7 +7,7 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/0.5.0)
+[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/0.5.1)
 
 <!-- x-release-please-end -->
 
@@ -30,7 +30,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfo
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.openai:openai-java:0.5.0")
+implementation("com.openai:openai-java:0.5.1")
 ```
 
 #### Maven
@@ -39,7 +39,7 @@ implementation("com.openai:openai-java:0.5.0")
 <dependency>
     <groupId>com.openai</groupId>
     <artifactId>openai-java</artifactId>
-    <version>0.5.0</version>
+    <version>0.5.1</version>
 </dependency>
 ```
 

@@ -13,13 +13,13 @@ class ChatCompletionAudioTest {
             ChatCompletionAudio.builder()
                 .id("id")
                 .data("data")
-                .expiresAt(123L)
+                .expiresAt(0L)
                 .transcript("transcript")
                 .build()
         assertThat(chatCompletionAudio).isNotNull
         assertThat(chatCompletionAudio.id()).isEqualTo("id")
         assertThat(chatCompletionAudio.data()).isEqualTo("data")
-        assertThat(chatCompletionAudio.expiresAt()).isEqualTo(123L)
+        assertThat(chatCompletionAudio.expiresAt()).isEqualTo(0L)
         assertThat(chatCompletionAudio.transcript()).isEqualTo("transcript")
     }
 }

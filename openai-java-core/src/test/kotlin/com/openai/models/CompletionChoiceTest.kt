@@ -12,11 +12,11 @@ class CompletionChoiceTest {
         val completionChoice =
             CompletionChoice.builder()
                 .finishReason(CompletionChoice.FinishReason.STOP)
-                .index(123L)
+                .index(0L)
                 .logprobs(
                     CompletionChoice.Logprobs.builder()
-                        .textOffset(listOf(123L))
-                        .tokenLogprobs(listOf(42.23))
+                        .textOffset(listOf(0L))
+                        .tokenLogprobs(listOf(0.0))
                         .tokens(listOf("string"))
                         .topLogprobs(listOf(CompletionChoice.Logprobs.TopLogprob.builder().build()))
                         .build()
@@ -25,12 +25,12 @@ class CompletionChoiceTest {
                 .build()
         assertThat(completionChoice).isNotNull
         assertThat(completionChoice.finishReason()).isEqualTo(CompletionChoice.FinishReason.STOP)
-        assertThat(completionChoice.index()).isEqualTo(123L)
+        assertThat(completionChoice.index()).isEqualTo(0L)
         assertThat(completionChoice.logprobs())
             .contains(
                 CompletionChoice.Logprobs.builder()
-                    .textOffset(listOf(123L))
-                    .tokenLogprobs(listOf(42.23))
+                    .textOffset(listOf(0L))
+                    .tokenLogprobs(listOf(0.0))
                     .tokens(listOf("string"))
                     .topLogprobs(listOf(CompletionChoice.Logprobs.TopLogprob.builder().build()))
                     .build()

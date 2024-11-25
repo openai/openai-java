@@ -31,7 +31,7 @@ class ChatCompletionCreateParamsTest {
                     .voice(ChatCompletionAudioParam.Voice.ALLOY)
                     .build()
             )
-            .frequencyPenalty(2.0)
+            .frequencyPenalty(-2.0)
             .functionCall(
                 ChatCompletionCreateParams.FunctionCall.ofBehavior(
                     ChatCompletionCreateParams.FunctionCall.Behavior.NONE
@@ -48,11 +48,11 @@ class ChatCompletionCreateParamsTest {
             )
             .logitBias(ChatCompletionCreateParams.LogitBias.builder().build())
             .logprobs(true)
-            .maxCompletionTokens(123L)
-            .maxTokens(123L)
+            .maxCompletionTokens(0L)
+            .maxTokens(0L)
             .metadata(ChatCompletionCreateParams.Metadata.builder().build())
             .modalities(listOf(ChatCompletionModality.TEXT))
-            .n(123L)
+            .n(1L)
             .parallelToolCalls(true)
             .prediction(
                 ChatCompletionPredictionContent.builder()
@@ -60,18 +60,18 @@ class ChatCompletionCreateParamsTest {
                     .type(ChatCompletionPredictionContent.Type.CONTENT)
                     .build()
             )
-            .presencePenalty(2.0)
+            .presencePenalty(-2.0)
             .responseFormat(
                 ChatCompletionCreateParams.ResponseFormat.ofResponseFormatText(
                     ResponseFormatText.builder().type(ResponseFormatText.Type.TEXT).build()
                 )
             )
-            .seed(123L)
+            .seed(-9007199254740991L)
             .serviceTier(ChatCompletionCreateParams.ServiceTier.AUTO)
             .stop(ChatCompletionCreateParams.Stop.ofString("string"))
             .store(true)
             .streamOptions(ChatCompletionStreamOptions.builder().includeUsage(true).build())
-            .temperature(2.0)
+            .temperature(1.0)
             .toolChoice(
                 ChatCompletionToolChoiceOption.ofBehavior(
                     ChatCompletionToolChoiceOption.Behavior.NONE
@@ -92,7 +92,7 @@ class ChatCompletionCreateParamsTest {
                         .build()
                 )
             )
-            .topLogprobs(20L)
+            .topLogprobs(0L)
             .topP(1.0)
             .user("user-1234")
             .build()
@@ -122,7 +122,7 @@ class ChatCompletionCreateParamsTest {
                         .voice(ChatCompletionAudioParam.Voice.ALLOY)
                         .build()
                 )
-                .frequencyPenalty(2.0)
+                .frequencyPenalty(-2.0)
                 .functionCall(
                     ChatCompletionCreateParams.FunctionCall.ofBehavior(
                         ChatCompletionCreateParams.FunctionCall.Behavior.NONE
@@ -139,11 +139,11 @@ class ChatCompletionCreateParamsTest {
                 )
                 .logitBias(ChatCompletionCreateParams.LogitBias.builder().build())
                 .logprobs(true)
-                .maxCompletionTokens(123L)
-                .maxTokens(123L)
+                .maxCompletionTokens(0L)
+                .maxTokens(0L)
                 .metadata(ChatCompletionCreateParams.Metadata.builder().build())
                 .modalities(listOf(ChatCompletionModality.TEXT))
-                .n(123L)
+                .n(1L)
                 .parallelToolCalls(true)
                 .prediction(
                     ChatCompletionPredictionContent.builder()
@@ -151,18 +151,18 @@ class ChatCompletionCreateParamsTest {
                         .type(ChatCompletionPredictionContent.Type.CONTENT)
                         .build()
                 )
-                .presencePenalty(2.0)
+                .presencePenalty(-2.0)
                 .responseFormat(
                     ChatCompletionCreateParams.ResponseFormat.ofResponseFormatText(
                         ResponseFormatText.builder().type(ResponseFormatText.Type.TEXT).build()
                     )
                 )
-                .seed(123L)
+                .seed(-9007199254740991L)
                 .serviceTier(ChatCompletionCreateParams.ServiceTier.AUTO)
                 .stop(ChatCompletionCreateParams.Stop.ofString("string"))
                 .store(true)
                 .streamOptions(ChatCompletionStreamOptions.builder().includeUsage(true).build())
-                .temperature(2.0)
+                .temperature(1.0)
                 .toolChoice(
                     ChatCompletionToolChoiceOption.ofBehavior(
                         ChatCompletionToolChoiceOption.Behavior.NONE
@@ -183,7 +183,7 @@ class ChatCompletionCreateParamsTest {
                             .build()
                     )
                 )
-                .topLogprobs(20L)
+                .topLogprobs(0L)
                 .topP(1.0)
                 .user("user-1234")
                 .build()
@@ -211,7 +211,7 @@ class ChatCompletionCreateParamsTest {
                     .voice(ChatCompletionAudioParam.Voice.ALLOY)
                     .build()
             )
-        assertThat(body.frequencyPenalty()).isEqualTo(2.0)
+        assertThat(body.frequencyPenalty()).isEqualTo(-2.0)
         assertThat(body.functionCall())
             .isEqualTo(
                 ChatCompletionCreateParams.FunctionCall.ofBehavior(
@@ -231,11 +231,11 @@ class ChatCompletionCreateParamsTest {
         assertThat(body.logitBias())
             .isEqualTo(ChatCompletionCreateParams.LogitBias.builder().build())
         assertThat(body.logprobs()).isEqualTo(true)
-        assertThat(body.maxCompletionTokens()).isEqualTo(123L)
-        assertThat(body.maxTokens()).isEqualTo(123L)
+        assertThat(body.maxCompletionTokens()).isEqualTo(0L)
+        assertThat(body.maxTokens()).isEqualTo(0L)
         assertThat(body.metadata()).isEqualTo(ChatCompletionCreateParams.Metadata.builder().build())
         assertThat(body.modalities()).isEqualTo(listOf(ChatCompletionModality.TEXT))
-        assertThat(body.n()).isEqualTo(123L)
+        assertThat(body.n()).isEqualTo(1L)
         assertThat(body.parallelToolCalls()).isEqualTo(true)
         assertThat(body.prediction())
             .isEqualTo(
@@ -244,20 +244,20 @@ class ChatCompletionCreateParamsTest {
                     .type(ChatCompletionPredictionContent.Type.CONTENT)
                     .build()
             )
-        assertThat(body.presencePenalty()).isEqualTo(2.0)
+        assertThat(body.presencePenalty()).isEqualTo(-2.0)
         assertThat(body.responseFormat())
             .isEqualTo(
                 ChatCompletionCreateParams.ResponseFormat.ofResponseFormatText(
                     ResponseFormatText.builder().type(ResponseFormatText.Type.TEXT).build()
                 )
             )
-        assertThat(body.seed()).isEqualTo(123L)
+        assertThat(body.seed()).isEqualTo(-9007199254740991L)
         assertThat(body.serviceTier()).isEqualTo(ChatCompletionCreateParams.ServiceTier.AUTO)
         assertThat(body.stop()).isEqualTo(ChatCompletionCreateParams.Stop.ofString("string"))
         assertThat(body.store()).isEqualTo(true)
         assertThat(body.streamOptions())
             .isEqualTo(ChatCompletionStreamOptions.builder().includeUsage(true).build())
-        assertThat(body.temperature()).isEqualTo(2.0)
+        assertThat(body.temperature()).isEqualTo(1.0)
         assertThat(body.toolChoice())
             .isEqualTo(
                 ChatCompletionToolChoiceOption.ofBehavior(
@@ -280,7 +280,7 @@ class ChatCompletionCreateParamsTest {
                         .build()
                 )
             )
-        assertThat(body.topLogprobs()).isEqualTo(20L)
+        assertThat(body.topLogprobs()).isEqualTo(0L)
         assertThat(body.topP()).isEqualTo(1.0)
         assertThat(body.user()).isEqualTo("user-1234")
     }

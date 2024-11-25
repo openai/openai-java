@@ -44,7 +44,7 @@ class CompletionServiceTest {
                             .voice(ChatCompletionAudioParam.Voice.ALLOY)
                             .build()
                     )
-                    .frequencyPenalty(2.0)
+                    .frequencyPenalty(-2.0)
                     .functionCall(
                         ChatCompletionCreateParams.FunctionCall.ofBehavior(
                             ChatCompletionCreateParams.FunctionCall.Behavior.NONE
@@ -61,11 +61,11 @@ class CompletionServiceTest {
                     )
                     .logitBias(ChatCompletionCreateParams.LogitBias.builder().build())
                     .logprobs(true)
-                    .maxCompletionTokens(123L)
-                    .maxTokens(123L)
+                    .maxCompletionTokens(0L)
+                    .maxTokens(0L)
                     .metadata(ChatCompletionCreateParams.Metadata.builder().build())
                     .modalities(listOf(ChatCompletionModality.TEXT))
-                    .n(123L)
+                    .n(1L)
                     .parallelToolCalls(true)
                     .prediction(
                         ChatCompletionPredictionContent.builder()
@@ -75,18 +75,18 @@ class CompletionServiceTest {
                             .type(ChatCompletionPredictionContent.Type.CONTENT)
                             .build()
                     )
-                    .presencePenalty(2.0)
+                    .presencePenalty(-2.0)
                     .responseFormat(
                         ChatCompletionCreateParams.ResponseFormat.ofResponseFormatText(
                             ResponseFormatText.builder().type(ResponseFormatText.Type.TEXT).build()
                         )
                     )
-                    .seed(123L)
+                    .seed(-9007199254740991L)
                     .serviceTier(ChatCompletionCreateParams.ServiceTier.AUTO)
                     .stop(ChatCompletionCreateParams.Stop.ofString("string"))
                     .store(true)
                     .streamOptions(ChatCompletionStreamOptions.builder().includeUsage(true).build())
-                    .temperature(2.0)
+                    .temperature(1.0)
                     .toolChoice(
                         ChatCompletionToolChoiceOption.ofBehavior(
                             ChatCompletionToolChoiceOption.Behavior.NONE
@@ -107,7 +107,7 @@ class CompletionServiceTest {
                                 .build()
                         )
                     )
-                    .topLogprobs(20L)
+                    .topLogprobs(0L)
                     .topP(1.0)
                     .user("user-1234")
                     .build()
@@ -150,7 +150,7 @@ class CompletionServiceTest {
                             .voice(ChatCompletionAudioParam.Voice.ALLOY)
                             .build()
                     )
-                    .frequencyPenalty(2.0)
+                    .frequencyPenalty(-2.0)
                     .functionCall(
                         ChatCompletionCreateParams.FunctionCall.ofBehavior(
                             ChatCompletionCreateParams.FunctionCall.Behavior.NONE
@@ -167,11 +167,11 @@ class CompletionServiceTest {
                     )
                     .logitBias(ChatCompletionCreateParams.LogitBias.builder().build())
                     .logprobs(true)
-                    .maxCompletionTokens(123L)
-                    .maxTokens(123L)
+                    .maxCompletionTokens(0L)
+                    .maxTokens(0L)
                     .metadata(ChatCompletionCreateParams.Metadata.builder().build())
                     .modalities(listOf(ChatCompletionModality.TEXT))
-                    .n(123L)
+                    .n(1L)
                     .parallelToolCalls(true)
                     .prediction(
                         ChatCompletionPredictionContent.builder()
@@ -181,18 +181,18 @@ class CompletionServiceTest {
                             .type(ChatCompletionPredictionContent.Type.CONTENT)
                             .build()
                     )
-                    .presencePenalty(2.0)
+                    .presencePenalty(-2.0)
                     .responseFormat(
                         ChatCompletionCreateParams.ResponseFormat.ofResponseFormatText(
                             ResponseFormatText.builder().type(ResponseFormatText.Type.TEXT).build()
                         )
                     )
-                    .seed(123L)
+                    .seed(-9007199254740991L)
                     .serviceTier(ChatCompletionCreateParams.ServiceTier.AUTO)
                     .stop(ChatCompletionCreateParams.Stop.ofString("string"))
                     .store(true)
                     .streamOptions(ChatCompletionStreamOptions.builder().includeUsage(true).build())
-                    .temperature(2.0)
+                    .temperature(1.0)
                     .toolChoice(
                         ChatCompletionToolChoiceOption.ofBehavior(
                             ChatCompletionToolChoiceOption.Behavior.NONE
@@ -213,7 +213,7 @@ class CompletionServiceTest {
                                 .build()
                         )
                     )
-                    .topLogprobs(20L)
+                    .topLogprobs(0L)
                     .topP(1.0)
                     .user("user-1234")
                     .build()

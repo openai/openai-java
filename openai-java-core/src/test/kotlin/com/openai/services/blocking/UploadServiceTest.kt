@@ -22,7 +22,7 @@ class UploadServiceTest {
         val upload =
             uploadService.create(
                 UploadCreateParams.builder()
-                    .bytes(123L)
+                    .bytes(0L)
                     .filename("filename")
                     .mimeType("mime_type")
                     .purpose(FilePurpose.ASSISTANTS)

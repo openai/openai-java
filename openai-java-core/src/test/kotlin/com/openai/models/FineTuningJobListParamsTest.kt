@@ -11,15 +11,15 @@ class FineTuningJobListParamsTest {
 
     @Test
     fun createFineTuningJobListParams() {
-        FineTuningJobListParams.builder().after("after").limit(123L).build()
+        FineTuningJobListParams.builder().after("after").limit(0L).build()
     }
 
     @Test
     fun getQueryParams() {
-        val params = FineTuningJobListParams.builder().after("after").limit(123L).build()
+        val params = FineTuningJobListParams.builder().after("after").limit(0L).build()
         val expected = QueryParams.builder()
         expected.put("after", "after")
-        expected.put("limit", "123")
+        expected.put("limit", "0")
         assertThat(params.getQueryParams()).isEqualTo(expected.build())
     }
 

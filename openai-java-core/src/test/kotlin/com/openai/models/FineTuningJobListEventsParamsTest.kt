@@ -14,7 +14,7 @@ class FineTuningJobListEventsParamsTest {
         FineTuningJobListEventsParams.builder()
             .fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
             .after("after")
-            .limit(123L)
+            .limit(0L)
             .build()
     }
 
@@ -24,11 +24,11 @@ class FineTuningJobListEventsParamsTest {
             FineTuningJobListEventsParams.builder()
                 .fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
                 .after("after")
-                .limit(123L)
+                .limit(0L)
                 .build()
         val expected = QueryParams.builder()
         expected.put("after", "after")
-        expected.put("limit", "123")
+        expected.put("limit", "0")
         assertThat(params.getQueryParams()).isEqualTo(expected.build())
     }
 

@@ -12,7 +12,7 @@ class FineTuningJobTest {
         val fineTuningJob =
             FineTuningJob.builder()
                 .id("id")
-                .createdAt(123L)
+                .createdAt(0L)
                 .error(
                     FineTuningJob.Error.builder()
                         .code("code")
@@ -21,7 +21,7 @@ class FineTuningJobTest {
                         .build()
                 )
                 .fineTunedModel("fine_tuned_model")
-                .finishedAt(123L)
+                .finishedAt(0L)
                 .hyperparameters(
                     FineTuningJob.Hyperparameters.builder()
                         .nEpochs(
@@ -35,12 +35,12 @@ class FineTuningJobTest {
                 .object_(FineTuningJob.Object.FINE_TUNING_JOB)
                 .organizationId("organization_id")
                 .resultFiles(listOf("file-abc123"))
-                .seed(123L)
+                .seed(0L)
                 .status(FineTuningJob.Status.VALIDATING_FILES)
-                .trainedTokens(123L)
+                .trainedTokens(0L)
                 .trainingFile("training_file")
                 .validationFile("validation_file")
-                .estimatedFinish(123L)
+                .estimatedFinish(0L)
                 .integrations(
                     listOf(
                         FineTuningJobWandbIntegrationObject.builder()
@@ -59,13 +59,13 @@ class FineTuningJobTest {
                 .build()
         assertThat(fineTuningJob).isNotNull
         assertThat(fineTuningJob.id()).isEqualTo("id")
-        assertThat(fineTuningJob.createdAt()).isEqualTo(123L)
+        assertThat(fineTuningJob.createdAt()).isEqualTo(0L)
         assertThat(fineTuningJob.error())
             .contains(
                 FineTuningJob.Error.builder().code("code").message("message").param("param").build()
             )
         assertThat(fineTuningJob.fineTunedModel()).contains("fine_tuned_model")
-        assertThat(fineTuningJob.finishedAt()).contains(123L)
+        assertThat(fineTuningJob.finishedAt()).contains(0L)
         assertThat(fineTuningJob.hyperparameters())
             .isEqualTo(
                 FineTuningJob.Hyperparameters.builder()
@@ -80,12 +80,12 @@ class FineTuningJobTest {
         assertThat(fineTuningJob.object_()).isEqualTo(FineTuningJob.Object.FINE_TUNING_JOB)
         assertThat(fineTuningJob.organizationId()).isEqualTo("organization_id")
         assertThat(fineTuningJob.resultFiles()).containsExactly("file-abc123")
-        assertThat(fineTuningJob.seed()).isEqualTo(123L)
+        assertThat(fineTuningJob.seed()).isEqualTo(0L)
         assertThat(fineTuningJob.status()).isEqualTo(FineTuningJob.Status.VALIDATING_FILES)
-        assertThat(fineTuningJob.trainedTokens()).contains(123L)
+        assertThat(fineTuningJob.trainedTokens()).contains(0L)
         assertThat(fineTuningJob.trainingFile()).isEqualTo("training_file")
         assertThat(fineTuningJob.validationFile()).contains("validation_file")
-        assertThat(fineTuningJob.estimatedFinish()).contains(123L)
+        assertThat(fineTuningJob.estimatedFinish()).contains(0L)
         assertThat(fineTuningJob.integrations().get())
             .containsExactly(
                 FineTuningJobWandbIntegrationObject.builder()

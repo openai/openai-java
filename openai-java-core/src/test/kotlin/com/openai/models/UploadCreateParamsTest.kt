@@ -11,7 +11,7 @@ class UploadCreateParamsTest {
     @Test
     fun createUploadCreateParams() {
         UploadCreateParams.builder()
-            .bytes(123L)
+            .bytes(0L)
             .filename("filename")
             .mimeType("mime_type")
             .purpose(FilePurpose.ASSISTANTS)
@@ -22,14 +22,14 @@ class UploadCreateParamsTest {
     fun getBody() {
         val params =
             UploadCreateParams.builder()
-                .bytes(123L)
+                .bytes(0L)
                 .filename("filename")
                 .mimeType("mime_type")
                 .purpose(FilePurpose.ASSISTANTS)
                 .build()
         val body = params.getBody()
         assertThat(body).isNotNull
-        assertThat(body.bytes()).isEqualTo(123L)
+        assertThat(body.bytes()).isEqualTo(0L)
         assertThat(body.filename()).isEqualTo("filename")
         assertThat(body.mimeType()).isEqualTo("mime_type")
         assertThat(body.purpose()).isEqualTo(FilePurpose.ASSISTANTS)
@@ -39,14 +39,14 @@ class UploadCreateParamsTest {
     fun getBodyWithoutOptionalFields() {
         val params =
             UploadCreateParams.builder()
-                .bytes(123L)
+                .bytes(0L)
                 .filename("filename")
                 .mimeType("mime_type")
                 .purpose(FilePurpose.ASSISTANTS)
                 .build()
         val body = params.getBody()
         assertThat(body).isNotNull
-        assertThat(body.bytes()).isEqualTo(123L)
+        assertThat(body.bytes()).isEqualTo(0L)
         assertThat(body.filename()).isEqualTo("filename")
         assertThat(body.mimeType()).isEqualTo("mime_type")
         assertThat(body.purpose()).isEqualTo(FilePurpose.ASSISTANTS)
