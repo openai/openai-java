@@ -1,5 +1,10 @@
 # OpenAI Java API Library
 
+> [!NOTE]  
+> The OpenAI Java API Library is currently in _alpha_.
+>
+> There may be frequent breaking changes.
+
 <!-- x-release-please-start-version -->
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/0.4.0)
