@@ -4,7 +4,7 @@ plugins {
 
 allprojects {
     group = "com.openai"
-    version = "0.4.0" // x-release-please-version
+    version = "0.5.0" // x-release-please-version
 }
 
 nexusPublishing {
