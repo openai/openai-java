@@ -32,7 +32,7 @@ import java.util.Optional
 class EmbeddingCreateParams
 constructor(
     private val input: Input,
-    private val model: Model,
+    private val model: EmbeddingModel,
     private val dimensions: Long?,
     private val encodingFormat: EncodingFormat?,
     private val user: String?,
@@ -43,7 +43,7 @@ constructor(
 
     fun input(): Input = input
 
-    fun model(): Model = model
+    fun model(): EmbeddingModel = model
 
     fun dimensions(): Optional<Long> = Optional.ofNullable(dimensions)
 
@@ -78,7 +78,7 @@ constructor(
     class EmbeddingCreateBody
     internal constructor(
         private val input: Input?,
-        private val model: Model?,
+        private val model: EmbeddingModel?,
         private val dimensions: Long?,
         private val encodingFormat: EncodingFormat?,
         private val user: String?,
@@ -101,7 +101,7 @@ constructor(
          * of your available models, or see our
          * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
          */
-        @JsonProperty("model") fun model(): Model? = model
+        @JsonProperty("model") fun model(): EmbeddingModel? = model
 
         /**
          * The number of dimensions the resulting output embeddings should have. Only supported in
@@ -136,7 +136,7 @@ constructor(
         class Builder {
 
             private var input: Input? = null
-            private var model: Model? = null
+            private var model: EmbeddingModel? = null
             private var dimensions: Long? = null
             private var encodingFormat: EncodingFormat? = null
             private var user: String? = null
@@ -169,7 +169,7 @@ constructor(
              * all of your available models, or see our
              * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
              */
-            @JsonProperty("model") fun model(model: Model) = apply { this.model = model }
+            @JsonProperty("model") fun model(model: EmbeddingModel) = apply { this.model = model }
 
             /**
              * The number of dimensions the resulting output embeddings should have. Only supported
@@ -248,7 +248,7 @@ constructor(
     class Builder {
 
         private var input: Input? = null
-        private var model: Model? = null
+        private var model: EmbeddingModel? = null
         private var dimensions: Long? = null
         private var encodingFormat: EncodingFormat? = null
         private var user: String? = null
@@ -330,7 +330,7 @@ constructor(
          * of your available models, or see our
          * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
          */
-        fun model(model: Model) = apply { this.model = model }
+        fun model(model: EmbeddingModel) = apply { this.model = model }
 
         /**
          * ID of the model to use. You can use the
@@ -338,7 +338,7 @@ constructor(
          * of your available models, or see our
          * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
          */
-        fun model(value: String) = apply { this.model = Model.of(value) }
+        fun model(value: String) = apply { this.model = EmbeddingModel.of(value) }
 
         /**
          * The number of dimensions the resulting output embeddings should have. Only supported in
@@ -651,69 +651,6 @@ constructor(
                 }
             }
         }
-    }
-
-    class Model
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Model && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-
-        companion object {
-
-            @JvmField val TEXT_EMBEDDING_ADA_002 = Model(JsonField.of("text-embedding-ada-002"))
-
-            @JvmField val TEXT_EMBEDDING_3_SMALL = Model(JsonField.of("text-embedding-3-small"))
-
-            @JvmField val TEXT_EMBEDDING_3_LARGE = Model(JsonField.of("text-embedding-3-large"))
-
-            @JvmStatic fun of(value: String) = Model(JsonField.of(value))
-        }
-
-        enum class Known {
-            TEXT_EMBEDDING_ADA_002,
-            TEXT_EMBEDDING_3_SMALL,
-            TEXT_EMBEDDING_3_LARGE,
-        }
-
-        enum class Value {
-            TEXT_EMBEDDING_ADA_002,
-            TEXT_EMBEDDING_3_SMALL,
-            TEXT_EMBEDDING_3_LARGE,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                TEXT_EMBEDDING_ADA_002 -> Value.TEXT_EMBEDDING_ADA_002
-                TEXT_EMBEDDING_3_SMALL -> Value.TEXT_EMBEDDING_3_SMALL
-                TEXT_EMBEDDING_3_LARGE -> Value.TEXT_EMBEDDING_3_LARGE
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                TEXT_EMBEDDING_ADA_002 -> Known.TEXT_EMBEDDING_ADA_002
-                TEXT_EMBEDDING_3_SMALL -> Known.TEXT_EMBEDDING_3_SMALL
-                TEXT_EMBEDDING_3_LARGE -> Known.TEXT_EMBEDDING_3_LARGE
-                else -> throw OpenAIInvalidDataException("Unknown Model: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
     }
 
     class EncodingFormat

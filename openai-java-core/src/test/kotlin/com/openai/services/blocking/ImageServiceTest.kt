@@ -23,7 +23,7 @@ class ImageServiceTest {
             imageService.generate(
                 ImageGenerateParams.builder()
                     .prompt("A cute baby sea otter")
-                    .model(ImageGenerateParams.Model.DALL_E_2)
+                    .model(ImageModel.DALL_E_2)
                     .n(1L)
                     .quality(ImageGenerateParams.Quality.STANDARD)
                     .responseFormat(ImageGenerateParams.ResponseFormat.URL)

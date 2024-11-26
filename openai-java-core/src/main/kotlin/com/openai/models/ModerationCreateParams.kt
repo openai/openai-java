@@ -4,7 +4,6 @@ package com.openai.models
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.ObjectCodec
@@ -15,9 +14,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
-import com.openai.core.JsonField
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.getOrThrow
@@ -32,7 +29,7 @@ import java.util.Optional
 class ModerationCreateParams
 constructor(
     private val input: Input,
-    private val model: Model?,
+    private val model: ModerationModel?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
@@ -40,7 +37,7 @@ constructor(
 
     fun input(): Input = input
 
-    fun model(): Optional<Model> = Optional.ofNullable(model)
+    fun model(): Optional<ModerationModel> = Optional.ofNullable(model)
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -66,7 +63,7 @@ constructor(
     class ModerationCreateBody
     internal constructor(
         private val input: Input?,
-        private val model: Model?,
+        private val model: ModerationModel?,
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
@@ -81,7 +78,7 @@ constructor(
          * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
          * about available models [here](https://platform.openai.com/docs/models#moderation).
          */
-        @JsonProperty("model") fun model(): Model? = model
+        @JsonProperty("model") fun model(): ModerationModel? = model
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -97,7 +94,7 @@ constructor(
         class Builder {
 
             private var input: Input? = null
-            private var model: Model? = null
+            private var model: ModerationModel? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -118,7 +115,7 @@ constructor(
              * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
              * about available models [here](https://platform.openai.com/docs/models#moderation).
              */
-            @JsonProperty("model") fun model(model: Model) = apply { this.model = model }
+            @JsonProperty("model") fun model(model: ModerationModel) = apply { this.model = model }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -171,7 +168,7 @@ constructor(
     class Builder {
 
         private var input: Input? = null
-        private var model: Model? = null
+        private var model: ModerationModel? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -217,14 +214,14 @@ constructor(
          * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
          * about available models [here](https://platform.openai.com/docs/models#moderation).
          */
-        fun model(model: Model) = apply { this.model = model }
+        fun model(model: ModerationModel) = apply { this.model = model }
 
         /**
          * The content moderation model you would like to use. Learn more in
          * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
          * about available models [here](https://platform.openai.com/docs/models#moderation).
          */
-        fun model(value: String) = apply { this.model = Model.of(value) }
+        fun model(value: String) = apply { this.model = ModerationModel.of(value) }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -493,76 +490,6 @@ constructor(
                 }
             }
         }
-    }
-
-    class Model
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Model && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-
-        companion object {
-
-            @JvmField val OMNI_MODERATION_LATEST = Model(JsonField.of("omni-moderation-latest"))
-
-            @JvmField
-            val OMNI_MODERATION_2024_09_26 = Model(JsonField.of("omni-moderation-2024-09-26"))
-
-            @JvmField val TEXT_MODERATION_LATEST = Model(JsonField.of("text-moderation-latest"))
-
-            @JvmField val TEXT_MODERATION_STABLE = Model(JsonField.of("text-moderation-stable"))
-
-            @JvmStatic fun of(value: String) = Model(JsonField.of(value))
-        }
-
-        enum class Known {
-            OMNI_MODERATION_LATEST,
-            OMNI_MODERATION_2024_09_26,
-            TEXT_MODERATION_LATEST,
-            TEXT_MODERATION_STABLE,
-        }
-
-        enum class Value {
-            OMNI_MODERATION_LATEST,
-            OMNI_MODERATION_2024_09_26,
-            TEXT_MODERATION_LATEST,
-            TEXT_MODERATION_STABLE,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                OMNI_MODERATION_LATEST -> Value.OMNI_MODERATION_LATEST
-                OMNI_MODERATION_2024_09_26 -> Value.OMNI_MODERATION_2024_09_26
-                TEXT_MODERATION_LATEST -> Value.TEXT_MODERATION_LATEST
-                TEXT_MODERATION_STABLE -> Value.TEXT_MODERATION_STABLE
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                OMNI_MODERATION_LATEST -> Known.OMNI_MODERATION_LATEST
-                OMNI_MODERATION_2024_09_26 -> Known.OMNI_MODERATION_2024_09_26
-                TEXT_MODERATION_LATEST -> Known.TEXT_MODERATION_LATEST
-                TEXT_MODERATION_STABLE -> Known.TEXT_MODERATION_STABLE
-                else -> throw OpenAIInvalidDataException("Unknown Model: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
     }
 
     override fun equals(other: Any?): Boolean {

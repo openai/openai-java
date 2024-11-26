@@ -11,7 +11,7 @@ public final class Main {
     public static void main(String[] args) {
         OpenAIClient client = OpenAIOkHttpClient.fromEnv();
         ChatCompletionCreateParams completionCreateParams = ChatCompletionCreateParams.builder()
-                .model(ChatCompletionCreateParams.Model.GPT_3_5_TURBO)
+                .model(ChatModel.GPT_3_5_TURBO)
                 .maxTokens(1024)
                 .addMessage(ChatCompletionMessageParam.ofChatCompletionUserMessageParam(
                         ChatCompletionUserMessageParam.builder()
