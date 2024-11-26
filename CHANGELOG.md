@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.1 (2024-11-26)
+
+Full Changelog: [v0.5.0...v0.5.1](https://github.com/openai/openai-java/compare/v0.5.0...v0.5.1)
+
+### Chores
+
+* **internal:** update example values ([#21](https://github.com/openai/openai-java/issues/21)) ([2270e67](https://github.com/openai/openai-java/commit/2270e676a013d9c00012757b86d9d86010c09a20))
+
 ## 0.5.0 (2024-11-25)
 
 Full Changelog: [v0.4.0...v0.5.0](https://github.com/openai/openai-java/compare/v0.4.0...v0.5.0)
