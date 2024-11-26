@@ -12,7 +12,7 @@ class ImageGenerateParamsTest {
     fun createImageGenerateParams() {
         ImageGenerateParams.builder()
             .prompt("A cute baby sea otter")
-            .model(ImageGenerateParams.Model.DALL_E_2)
+            .model(ImageModel.DALL_E_2)
             .n(1L)
             .quality(ImageGenerateParams.Quality.STANDARD)
             .responseFormat(ImageGenerateParams.ResponseFormat.URL)
@@ -27,7 +27,7 @@ class ImageGenerateParamsTest {
         val params =
             ImageGenerateParams.builder()
                 .prompt("A cute baby sea otter")
-                .model(ImageGenerateParams.Model.DALL_E_2)
+                .model(ImageModel.DALL_E_2)
                 .n(1L)
                 .quality(ImageGenerateParams.Quality.STANDARD)
                 .responseFormat(ImageGenerateParams.ResponseFormat.URL)
@@ -38,7 +38,7 @@ class ImageGenerateParamsTest {
         val body = params.getBody()
         assertThat(body).isNotNull
         assertThat(body.prompt()).isEqualTo("A cute baby sea otter")
-        assertThat(body.model()).isEqualTo(ImageGenerateParams.Model.DALL_E_2)
+        assertThat(body.model()).isEqualTo(ImageModel.DALL_E_2)
         assertThat(body.n()).isEqualTo(1L)
         assertThat(body.quality()).isEqualTo(ImageGenerateParams.Quality.STANDARD)
         assertThat(body.responseFormat()).isEqualTo(ImageGenerateParams.ResponseFormat.URL)

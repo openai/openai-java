@@ -23,7 +23,7 @@ import java.util.Optional
 class ImageGenerateParams
 constructor(
     private val prompt: String,
-    private val model: Model?,
+    private val model: ImageModel?,
     private val n: Long?,
     private val quality: Quality?,
     private val responseFormat: ResponseFormat?,
@@ -37,7 +37,7 @@ constructor(
 
     fun prompt(): String = prompt
 
-    fun model(): Optional<Model> = Optional.ofNullable(model)
+    fun model(): Optional<ImageModel> = Optional.ofNullable(model)
 
     fun n(): Optional<Long> = Optional.ofNullable(n)
 
@@ -81,7 +81,7 @@ constructor(
     class ImageGenerateBody
     internal constructor(
         private val prompt: String?,
-        private val model: Model?,
+        private val model: ImageModel?,
         private val n: Long?,
         private val quality: Quality?,
         private val responseFormat: ResponseFormat?,
@@ -98,7 +98,7 @@ constructor(
         @JsonProperty("prompt") fun prompt(): String? = prompt
 
         /** The model to use for image generation. */
-        @JsonProperty("model") fun model(): Model? = model
+        @JsonProperty("model") fun model(): ImageModel? = model
 
         /**
          * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
@@ -154,7 +154,7 @@ constructor(
         class Builder {
 
             private var prompt: String? = null
-            private var model: Model? = null
+            private var model: ImageModel? = null
             private var n: Long? = null
             private var quality: Quality? = null
             private var responseFormat: ResponseFormat? = null
@@ -183,7 +183,7 @@ constructor(
             @JsonProperty("prompt") fun prompt(prompt: String) = apply { this.prompt = prompt }
 
             /** The model to use for image generation. */
-            @JsonProperty("model") fun model(model: Model) = apply { this.model = model }
+            @JsonProperty("model") fun model(model: ImageModel) = apply { this.model = model }
 
             /**
              * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
@@ -287,7 +287,7 @@ constructor(
     class Builder {
 
         private var prompt: String? = null
-        private var model: Model? = null
+        private var model: ImageModel? = null
         private var n: Long? = null
         private var quality: Quality? = null
         private var responseFormat: ResponseFormat? = null
@@ -320,10 +320,10 @@ constructor(
         fun prompt(prompt: String) = apply { this.prompt = prompt }
 
         /** The model to use for image generation. */
-        fun model(model: Model) = apply { this.model = model }
+        fun model(model: ImageModel) = apply { this.model = model }
 
         /** The model to use for image generation. */
-        fun model(value: String) = apply { this.model = Model.of(value) }
+        fun model(value: String) = apply { this.model = ImageModel.of(value) }
 
         /**
          * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
@@ -501,63 +501,6 @@ constructor(
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
             )
-    }
-
-    class Model
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Model && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-
-        companion object {
-
-            @JvmField val DALL_E_2 = Model(JsonField.of("dall-e-2"))
-
-            @JvmField val DALL_E_3 = Model(JsonField.of("dall-e-3"))
-
-            @JvmStatic fun of(value: String) = Model(JsonField.of(value))
-        }
-
-        enum class Known {
-            DALL_E_2,
-            DALL_E_3,
-        }
-
-        enum class Value {
-            DALL_E_2,
-            DALL_E_3,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                DALL_E_2 -> Value.DALL_E_2
-                DALL_E_3 -> Value.DALL_E_3
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                DALL_E_2 -> Known.DALL_E_2
-                DALL_E_3 -> Known.DALL_E_3
-                else -> throw OpenAIInvalidDataException("Unknown Model: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
     }
 
     class Quality
