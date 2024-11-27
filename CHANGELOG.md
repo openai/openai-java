@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.6.0 (2024-11-27)
+
+Full Changelog: [v0.5.1...v0.6.0](https://github.com/openai/openai-java/compare/v0.5.1...v0.6.0)
+
+### ⚠ BREAKING CHANGES
+
+* **client:** remove duplicated classes
+
+### Features
+
+* derive gpg release key's id via gpg itself ([#25](https://github.com/openai/openai-java/issues/25)) ([6aad041](https://github.com/openai/openai-java/commit/6aad041b56bc39ee8e9c48e48738081652bf4ed2))
+
+
+### Bug Fixes
+
+* **client:** remove duplicated classes ([8a8f11f](https://github.com/openai/openai-java/commit/8a8f11fc20c415877f1f673ec0be3948126d1c11))
+
 ## 0.5.1 (2024-11-26)
 
 Full Changelog: [v0.5.0...v0.5.1](https://github.com/openai/openai-java/compare/v0.5.0...v0.5.1)
