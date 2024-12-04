@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.7.0 (2024-12-04)
+
+Full Changelog: [v0.6.0...v0.7.0](https://github.com/openai/openai-java/compare/v0.6.0...v0.7.0)
+
+### Features
+
+* **api:** updates ([#29](https://github.com/openai/openai-java/issues/29)) ([a3122af](https://github.com/openai/openai-java/commit/a3122af22767760b4f73880815d138e7493e381c))
+
+
+### Chores
+
+* bump openapi url ([#28](https://github.com/openai/openai-java/issues/28)) ([24d8461](https://github.com/openai/openai-java/commit/24d8461a14cb0a5b831cd821a129f995a3988856))
+
+
+### Documentation
+
+* add missing parameter to code snippet ([#26](https://github.com/openai/openai-java/issues/26)) ([8e7421f](https://github.com/openai/openai-java/commit/8e7421faa2ef8a6fd17757080f49bb5e1c0606c3))
+
 ## 0.6.0 (2024-11-27)
 
 Full Changelog: [v0.5.1...v0.6.0](https://github.com/openai/openai-java/compare/v0.5.1...v0.6.0)
