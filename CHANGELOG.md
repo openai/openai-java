@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.1 (2024-12-09)
+
+Full Changelog: [v0.7.0...v0.7.1](https://github.com/openai/openai-java/compare/v0.7.0...v0.7.1)
+
+### Chores
+
+* **internal:** configure sonatype ([#30](https://github.com/openai/openai-java/issues/30)) ([5d7816a](https://github.com/openai/openai-java/commit/5d7816afb9cf70189aa04dfd18a8f77f25094dcf))
+
 ## 0.7.0 (2024-12-04)
 
 Full Changelog: [v0.6.0...v0.7.0](https://github.com/openai/openai-java/compare/v0.6.0...v0.7.0)
