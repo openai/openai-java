@@ -1,6 +1,9 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import java.util.Locale
+import com.vanniktech.maven.publish.JavaLibrary
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
     `java-library`
@@ -9,11 +12,6 @@ plugins {
 
 repositories {
     mavenCentral()
-}
-
-configure<JavaPluginExtension> {
-    withJavadocJar()
-    withSourcesJar()
 }
 
 configure<SpotlessExtension> {
@@ -34,10 +32,6 @@ java {
 tasks.withType<JavaCompile>().configureEach {
     options.compilerArgs.add("-Werror")
     options.release.set(8)
-}
-
-tasks.named<Jar>("javadocJar") {
-    setZip64(true)
 }
 
 tasks.named<Jar>("jar") {

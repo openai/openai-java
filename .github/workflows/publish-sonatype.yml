@@ -29,7 +29,7 @@ jobs:
           export -- GPG_SIGNING_KEY_ID
           printenv -- GPG_SIGNING_KEY | gpg --batch --passphrase-fd 3 --import 3<<< "$GPG_SIGNING_PASSWORD"
           GPG_SIGNING_KEY_ID="$(gpg --with-colons --list-keys | awk -F : -- '/^pub:/ { getline; print "0x" substr($10, length($10) - 7) }')"
-          ./gradlew --parallel --no-daemon publish
+          ./gradlew publishAndReleaseToMavenCentral --stacktrace -PmavenCentralUsername="$SONATYPE_USERNAME" -PmavenCentralPassword="$SONATYPE_PASSWORD"
         env:
           SONATYPE_USERNAME: ${{ secrets.OPENAI_SONATYPE_USERNAME || secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.OPENAI_SONATYPE_PASSWORD || secrets.SONATYPE_PASSWORD }}
