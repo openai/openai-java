@@ -2,6 +2,7 @@
 
 package com.openai.models
 
+import com.openai.core.JsonValue
 import com.openai.models.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -16,7 +17,11 @@ class CompletionCreateParamsTest {
             .bestOf(0L)
             .echo(true)
             .frequencyPenalty(-2.0)
-            .logitBias(CompletionCreateParams.LogitBias.builder().build())
+            .logitBias(
+                CompletionCreateParams.LogitBias.builder()
+                    .putAdditionalProperty("foo", JsonValue.from(0))
+                    .build()
+            )
             .logprobs(0L)
             .maxTokens(16L)
             .n(1L)
@@ -40,7 +45,11 @@ class CompletionCreateParamsTest {
                 .bestOf(0L)
                 .echo(true)
                 .frequencyPenalty(-2.0)
-                .logitBias(CompletionCreateParams.LogitBias.builder().build())
+                .logitBias(
+                    CompletionCreateParams.LogitBias.builder()
+                        .putAdditionalProperty("foo", JsonValue.from(0))
+                        .build()
+                )
                 .logprobs(0L)
                 .maxTokens(16L)
                 .n(1L)
@@ -61,7 +70,12 @@ class CompletionCreateParamsTest {
         assertThat(body.bestOf()).isEqualTo(0L)
         assertThat(body.echo()).isEqualTo(true)
         assertThat(body.frequencyPenalty()).isEqualTo(-2.0)
-        assertThat(body.logitBias()).isEqualTo(CompletionCreateParams.LogitBias.builder().build())
+        assertThat(body.logitBias())
+            .isEqualTo(
+                CompletionCreateParams.LogitBias.builder()
+                    .putAdditionalProperty("foo", JsonValue.from(0))
+                    .build()
+            )
         assertThat(body.logprobs()).isEqualTo(0L)
         assertThat(body.maxTokens()).isEqualTo(16L)
         assertThat(body.n()).isEqualTo(1L)

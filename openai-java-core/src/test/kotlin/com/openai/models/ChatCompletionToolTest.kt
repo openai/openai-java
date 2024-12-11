@@ -2,6 +2,7 @@
 
 package com.openai.models
 
+import com.openai.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -15,7 +16,11 @@ class ChatCompletionToolTest {
                     FunctionDefinition.builder()
                         .name("name")
                         .description("description")
-                        .parameters(FunctionParameters.builder().build())
+                        .parameters(
+                            FunctionParameters.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
                         .strict(true)
                         .build()
                 )
@@ -27,7 +32,11 @@ class ChatCompletionToolTest {
                 FunctionDefinition.builder()
                     .name("name")
                     .description("description")
-                    .parameters(FunctionParameters.builder().build())
+                    .parameters(
+                        FunctionParameters.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
                     .strict(true)
                     .build()
             )

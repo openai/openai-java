@@ -92,10 +92,10 @@ import java.util.List;
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .message(List.of(ChatCompletionMessageParam.ofChatCompletionUserMessageParam(ChatCompletionUserMessageParam.builder()
+        .role(ChatCompletionUserMessageParam.Role.USER)
         .content(ChatCompletionUserMessageParam.Content.ofTextContent("Say this is a test"))
-        .role(ChatCompletionUserMessageParam.Role.user)
         .build())))
-    .model("gpt-4o")
+    .model(ChatModel.O1_PREVIEW)
     .build();
 ChatCompletion chatCompletion = client.chat().completions().create(params);
 ```
