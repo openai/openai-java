@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.7.3 (2024-12-11)
+
+Full Changelog: [v0.7.2...v0.7.3](https://github.com/openai/openai-java/compare/v0.7.2...v0.7.3)
+
+### Chores
+
+* **internal:** remove unused imports ([#38](https://github.com/openai/openai-java/issues/38)) ([021177f](https://github.com/openai/openai-java/commit/021177f995fb11e9a17ebf3950e0d46591e3c354))
+
+
+### Styles
+
+* **internal:** make enum value definitions less verbose ([#35](https://github.com/openai/openai-java/issues/35)) ([1effd49](https://github.com/openai/openai-java/commit/1effd49f5c1585c54e46454945df3fe2314ef05d))
+* **internal:** move enum identity methods to bottom of class ([#37](https://github.com/openai/openai-java/issues/37)) ([7a9d27a](https://github.com/openai/openai-java/commit/7a9d27a7ef5d59f78479e1af83a980eb52097fcc))
+
 ## 0.7.2 (2024-12-11)
 
 Full Changelog: [v0.7.1...v0.7.2](https://github.com/openai/openai-java/compare/v0.7.1...v0.7.2)
