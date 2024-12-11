@@ -930,7 +930,7 @@ private constructor(
 
                 companion object {
 
-                    @JvmField val AUTO = Behavior(JsonField.of("auto"))
+                    @JvmField val AUTO = of("auto")
 
                     @JvmStatic fun of(value: String) = Behavior(JsonField.of(value))
                 }
@@ -1000,7 +1000,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val FINE_TUNING_JOB = Object(JsonField.of("fine_tuning.job"))
+            @JvmField val FINE_TUNING_JOB = of("fine_tuning.job")
 
             @JvmStatic fun of(value: String) = Object(JsonField.of(value))
         }
@@ -1051,17 +1051,17 @@ private constructor(
 
         companion object {
 
-            @JvmField val VALIDATING_FILES = Status(JsonField.of("validating_files"))
+            @JvmField val VALIDATING_FILES = of("validating_files")
 
-            @JvmField val QUEUED = Status(JsonField.of("queued"))
+            @JvmField val QUEUED = of("queued")
 
-            @JvmField val RUNNING = Status(JsonField.of("running"))
+            @JvmField val RUNNING = of("running")
 
-            @JvmField val SUCCEEDED = Status(JsonField.of("succeeded"))
+            @JvmField val SUCCEEDED = of("succeeded")
 
-            @JvmField val FAILED = Status(JsonField.of("failed"))
+            @JvmField val FAILED = of("failed")
 
-            @JvmField val CANCELLED = Status(JsonField.of("cancelled"))
+            @JvmField val CANCELLED = of("cancelled")
 
             @JvmStatic fun of(value: String) = Status(JsonField.of(value))
         }

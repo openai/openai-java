@@ -792,13 +792,13 @@ private constructor(
 
                 companion object {
 
-                    @JvmField val SYSTEM = Role(JsonField.of("system"))
+                    @JvmField val SYSTEM = of("system")
 
-                    @JvmField val USER = Role(JsonField.of("user"))
+                    @JvmField val USER = of("user")
 
-                    @JvmField val ASSISTANT = Role(JsonField.of("assistant"))
+                    @JvmField val ASSISTANT = of("assistant")
 
-                    @JvmField val TOOL = Role(JsonField.of("tool"))
+                    @JvmField val TOOL = of("tool")
 
                     @JvmStatic fun of(value: String) = Role(JsonField.of(value))
                 }
@@ -1123,7 +1123,7 @@ private constructor(
 
                     companion object {
 
-                        @JvmField val FUNCTION = Type(JsonField.of("function"))
+                        @JvmField val FUNCTION = of("function")
 
                         @JvmStatic fun of(value: String) = Type(JsonField.of(value))
                     }
@@ -1210,15 +1210,15 @@ private constructor(
 
             companion object {
 
-                @JvmField val STOP = FinishReason(JsonField.of("stop"))
+                @JvmField val STOP = of("stop")
 
-                @JvmField val LENGTH = FinishReason(JsonField.of("length"))
+                @JvmField val LENGTH = of("length")
 
-                @JvmField val TOOL_CALLS = FinishReason(JsonField.of("tool_calls"))
+                @JvmField val TOOL_CALLS = of("tool_calls")
 
-                @JvmField val CONTENT_FILTER = FinishReason(JsonField.of("content_filter"))
+                @JvmField val CONTENT_FILTER = of("content_filter")
 
-                @JvmField val FUNCTION_CALL = FinishReason(JsonField.of("function_call"))
+                @JvmField val FUNCTION_CALL = of("function_call")
 
                 @JvmStatic fun of(value: String) = FinishReason(JsonField.of(value))
             }
@@ -1424,7 +1424,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val CHAT_COMPLETION_CHUNK = Object(JsonField.of("chat.completion.chunk"))
+            @JvmField val CHAT_COMPLETION_CHUNK = of("chat.completion.chunk")
 
             @JvmStatic fun of(value: String) = Object(JsonField.of(value))
         }
@@ -1475,9 +1475,9 @@ private constructor(
 
         companion object {
 
-            @JvmField val SCALE = ServiceTier(JsonField.of("scale"))
+            @JvmField val SCALE = of("scale")
 
-            @JvmField val DEFAULT = ServiceTier(JsonField.of("default"))
+            @JvmField val DEFAULT = of("default")
 
             @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
         }

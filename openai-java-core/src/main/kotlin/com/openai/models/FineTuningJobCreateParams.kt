@@ -575,13 +575,13 @@ constructor(
 
         companion object {
 
-            @JvmField val BABBAGE_002 = Model(JsonField.of("babbage-002"))
+            @JvmField val BABBAGE_002 = of("babbage-002")
 
-            @JvmField val DAVINCI_002 = Model(JsonField.of("davinci-002"))
+            @JvmField val DAVINCI_002 = of("davinci-002")
 
-            @JvmField val GPT_3_5_TURBO = Model(JsonField.of("gpt-3.5-turbo"))
+            @JvmField val GPT_3_5_TURBO = of("gpt-3.5-turbo")
 
-            @JvmField val GPT_4O_MINI = Model(JsonField.of("gpt-4o-mini"))
+            @JvmField val GPT_4O_MINI = of("gpt-4o-mini")
 
             @JvmStatic fun of(value: String) = Model(JsonField.of(value))
         }
@@ -856,7 +856,7 @@ constructor(
 
                 companion object {
 
-                    @JvmField val AUTO = Behavior(JsonField.of("auto"))
+                    @JvmField val AUTO = of("auto")
 
                     @JvmStatic fun of(value: String) = Behavior(JsonField.of(value))
                 }
@@ -1021,7 +1021,7 @@ constructor(
 
                 companion object {
 
-                    @JvmField val AUTO = Behavior(JsonField.of("auto"))
+                    @JvmField val AUTO = of("auto")
 
                     @JvmStatic fun of(value: String) = Behavior(JsonField.of(value))
                 }
@@ -1183,7 +1183,7 @@ constructor(
 
                 companion object {
 
-                    @JvmField val AUTO = Behavior(JsonField.of("auto"))
+                    @JvmField val AUTO = of("auto")
 
                     @JvmStatic fun of(value: String) = Behavior(JsonField.of(value))
                 }
@@ -1336,7 +1336,7 @@ constructor(
 
             companion object {
 
-                @JvmField val WANDB = Type(JsonField.of("wandb"))
+                @JvmField val WANDB = of("wandb")
 
                 @JvmStatic fun of(value: String) = Type(JsonField.of(value))
             }

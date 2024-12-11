@@ -254,7 +254,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val TEXT_COMPLETION = Object(JsonField.of("text_completion"))
+            @JvmField val TEXT_COMPLETION = of("text_completion")
 
             @JvmStatic fun of(value: String) = Object(JsonField.of(value))
         }

@@ -180,11 +180,11 @@ private constructor(
 
         companion object {
 
-            @JvmField val NONE = Behavior(JsonField.of("none"))
+            @JvmField val NONE = of("none")
 
-            @JvmField val AUTO = Behavior(JsonField.of("auto"))
+            @JvmField val AUTO = of("auto")
 
-            @JvmField val REQUIRED = Behavior(JsonField.of("required"))
+            @JvmField val REQUIRED = of("required")
 
             @JvmStatic fun of(value: String) = Behavior(JsonField.of(value))
         }

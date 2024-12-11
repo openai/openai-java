@@ -224,9 +224,9 @@ private constructor(
 
             companion object {
 
-                @JvmField val WAV = Format(JsonField.of("wav"))
+                @JvmField val WAV = of("wav")
 
-                @JvmField val MP3 = Format(JsonField.of("mp3"))
+                @JvmField val MP3 = of("mp3")
 
                 @JvmStatic fun of(value: String) = Format(JsonField.of(value))
             }
@@ -299,7 +299,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val INPUT_AUDIO = Type(JsonField.of("input_audio"))
+            @JvmField val INPUT_AUDIO = of("input_audio")
 
             @JvmStatic fun of(value: String) = Type(JsonField.of(value))
         }

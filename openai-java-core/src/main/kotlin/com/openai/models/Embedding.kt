@@ -166,7 +166,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val EMBEDDING = Object(JsonField.of("embedding"))
+            @JvmField val EMBEDDING = of("embedding")
 
             @JvmStatic fun of(value: String) = Object(JsonField.of(value))
         }

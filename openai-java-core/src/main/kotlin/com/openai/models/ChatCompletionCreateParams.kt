@@ -1733,9 +1733,9 @@ constructor(
 
             companion object {
 
-                @JvmField val NONE = Behavior(JsonField.of("none"))
+                @JvmField val NONE = of("none")
 
-                @JvmField val AUTO = Behavior(JsonField.of("auto"))
+                @JvmField val AUTO = of("auto")
 
                 @JvmStatic fun of(value: String) = Behavior(JsonField.of(value))
             }
@@ -2207,9 +2207,9 @@ constructor(
 
         companion object {
 
-            @JvmField val AUTO = ServiceTier(JsonField.of("auto"))
+            @JvmField val AUTO = of("auto")
 
-            @JvmField val DEFAULT = ServiceTier(JsonField.of("default"))
+            @JvmField val DEFAULT = of("default")
 
             @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
         }

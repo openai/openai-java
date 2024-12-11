@@ -181,11 +181,11 @@ private constructor(
 
         companion object {
 
-            @JvmField val STOP = FinishReason(JsonField.of("stop"))
+            @JvmField val STOP = of("stop")
 
-            @JvmField val LENGTH = FinishReason(JsonField.of("length"))
+            @JvmField val LENGTH = of("length")
 
-            @JvmField val CONTENT_FILTER = FinishReason(JsonField.of("content_filter"))
+            @JvmField val CONTENT_FILTER = of("content_filter")
 
             @JvmStatic fun of(value: String) = FinishReason(JsonField.of(value))
         }

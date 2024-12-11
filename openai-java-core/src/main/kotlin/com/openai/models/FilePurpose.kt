@@ -30,13 +30,13 @@ private constructor(
 
     companion object {
 
-        @JvmField val ASSISTANTS = FilePurpose(JsonField.of("assistants"))
+        @JvmField val ASSISTANTS = of("assistants")
 
-        @JvmField val BATCH = FilePurpose(JsonField.of("batch"))
+        @JvmField val BATCH = of("batch")
 
-        @JvmField val FINE_TUNE = FilePurpose(JsonField.of("fine-tune"))
+        @JvmField val FINE_TUNE = of("fine-tune")
 
-        @JvmField val VISION = FilePurpose(JsonField.of("vision"))
+        @JvmField val VISION = of("vision")
 
         @JvmStatic fun of(value: String) = FilePurpose(JsonField.of(value))
     }

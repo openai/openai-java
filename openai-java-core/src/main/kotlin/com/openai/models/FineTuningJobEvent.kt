@@ -168,11 +168,11 @@ private constructor(
 
         companion object {
 
-            @JvmField val INFO = Level(JsonField.of("info"))
+            @JvmField val INFO = of("info")
 
-            @JvmField val WARN = Level(JsonField.of("warn"))
+            @JvmField val WARN = of("warn")
 
-            @JvmField val ERROR = Level(JsonField.of("error"))
+            @JvmField val ERROR = of("error")
 
             @JvmStatic fun of(value: String) = Level(JsonField.of(value))
         }
@@ -231,7 +231,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val FINE_TUNING_JOB_EVENT = Object(JsonField.of("fine_tuning.job.event"))
+            @JvmField val FINE_TUNING_JOB_EVENT = of("fine_tuning.job.event")
 
             @JvmStatic fun of(value: String) = Object(JsonField.of(value))
         }

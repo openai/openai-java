@@ -1009,11 +1009,11 @@ constructor(
 
         companion object {
 
-            @JvmField val GPT_3_5_TURBO_INSTRUCT = Model(JsonField.of("gpt-3.5-turbo-instruct"))
+            @JvmField val GPT_3_5_TURBO_INSTRUCT = of("gpt-3.5-turbo-instruct")
 
-            @JvmField val DAVINCI_002 = Model(JsonField.of("davinci-002"))
+            @JvmField val DAVINCI_002 = of("davinci-002")
 
-            @JvmField val BABBAGE_002 = Model(JsonField.of("babbage-002"))
+            @JvmField val BABBAGE_002 = of("babbage-002")
 
             @JvmStatic fun of(value: String) = Model(JsonField.of(value))
         }

@@ -675,9 +675,9 @@ constructor(
 
         companion object {
 
-            @JvmField val FLOAT = EncodingFormat(JsonField.of("float"))
+            @JvmField val FLOAT = of("float")
 
-            @JvmField val BASE64 = EncodingFormat(JsonField.of("base64"))
+            @JvmField val BASE64 = of("base64")
 
             @JvmStatic fun of(value: String) = EncodingFormat(JsonField.of(value))
         }

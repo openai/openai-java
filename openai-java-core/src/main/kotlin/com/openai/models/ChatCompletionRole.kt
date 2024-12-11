@@ -30,15 +30,15 @@ private constructor(
 
     companion object {
 
-        @JvmField val SYSTEM = ChatCompletionRole(JsonField.of("system"))
+        @JvmField val SYSTEM = of("system")
 
-        @JvmField val USER = ChatCompletionRole(JsonField.of("user"))
+        @JvmField val USER = of("user")
 
-        @JvmField val ASSISTANT = ChatCompletionRole(JsonField.of("assistant"))
+        @JvmField val ASSISTANT = of("assistant")
 
-        @JvmField val TOOL = ChatCompletionRole(JsonField.of("tool"))
+        @JvmField val TOOL = of("tool")
 
-        @JvmField val FUNCTION = ChatCompletionRole(JsonField.of("function"))
+        @JvmField val FUNCTION = of("function")
 
         @JvmStatic fun of(value: String) = ChatCompletionRole(JsonField.of(value))
     }

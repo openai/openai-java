@@ -221,7 +221,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val IMAGE_URL = Type(JsonField.of("image_url"))
+            @JvmField val IMAGE_URL = of("image_url")
 
             @JvmStatic fun of(value: String) = Type(JsonField.of(value))
         }

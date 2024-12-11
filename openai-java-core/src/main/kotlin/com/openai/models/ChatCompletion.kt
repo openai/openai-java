@@ -444,15 +444,15 @@ private constructor(
 
             companion object {
 
-                @JvmField val STOP = FinishReason(JsonField.of("stop"))
+                @JvmField val STOP = of("stop")
 
-                @JvmField val LENGTH = FinishReason(JsonField.of("length"))
+                @JvmField val LENGTH = of("length")
 
-                @JvmField val TOOL_CALLS = FinishReason(JsonField.of("tool_calls"))
+                @JvmField val TOOL_CALLS = of("tool_calls")
 
-                @JvmField val CONTENT_FILTER = FinishReason(JsonField.of("content_filter"))
+                @JvmField val CONTENT_FILTER = of("content_filter")
 
-                @JvmField val FUNCTION_CALL = FinishReason(JsonField.of("function_call"))
+                @JvmField val FUNCTION_CALL = of("function_call")
 
                 @JvmStatic fun of(value: String) = FinishReason(JsonField.of(value))
             }
@@ -658,7 +658,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val CHAT_COMPLETION = Object(JsonField.of("chat.completion"))
+            @JvmField val CHAT_COMPLETION = of("chat.completion")
 
             @JvmStatic fun of(value: String) = Object(JsonField.of(value))
         }
@@ -709,9 +709,9 @@ private constructor(
 
         companion object {
 
-            @JvmField val SCALE = ServiceTier(JsonField.of("scale"))
+            @JvmField val SCALE = of("scale")
 
-            @JvmField val DEFAULT = ServiceTier(JsonField.of("default"))
+            @JvmField val DEFAULT = of("default")
 
             @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
         }

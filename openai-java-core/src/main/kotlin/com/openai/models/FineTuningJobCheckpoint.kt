@@ -441,8 +441,7 @@ private constructor(
 
         companion object {
 
-            @JvmField
-            val FINE_TUNING_JOB_CHECKPOINT = Object(JsonField.of("fine_tuning.job.checkpoint"))
+            @JvmField val FINE_TUNING_JOB_CHECKPOINT = of("fine_tuning.job.checkpoint")
 
             @JvmStatic fun of(value: String) = Object(JsonField.of(value))
         }

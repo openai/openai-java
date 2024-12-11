@@ -235,11 +235,11 @@ private constructor(
 
             companion object {
 
-                @JvmField val AUTO = Detail(JsonField.of("auto"))
+                @JvmField val AUTO = of("auto")
 
-                @JvmField val LOW = Detail(JsonField.of("low"))
+                @JvmField val LOW = of("low")
 
-                @JvmField val HIGH = Detail(JsonField.of("high"))
+                @JvmField val HIGH = of("high")
 
                 @JvmStatic fun of(value: String) = Detail(JsonField.of(value))
             }
@@ -316,7 +316,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val IMAGE_URL = Type(JsonField.of("image_url"))
+            @JvmField val IMAGE_URL = of("image_url")
 
             @JvmStatic fun of(value: String) = Type(JsonField.of(value))
         }
