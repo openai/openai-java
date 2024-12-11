@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.2 (2024-12-11)
+
+Full Changelog: [v0.7.1...v0.7.2](https://github.com/openai/openai-java/compare/v0.7.1...v0.7.2)
+
+### Chores
+
+* update example values in tests and docs ([#33](https://github.com/openai/openai-java/issues/33)) ([e74f2b5](https://github.com/openai/openai-java/commit/e74f2b571857879b6a40351c572ab063eb1f18f5))
+
 ## 0.7.1 (2024-12-09)
 
 Full Changelog: [v0.7.0...v0.7.1](https://github.com/openai/openai-java/compare/v0.7.0...v0.7.1)
