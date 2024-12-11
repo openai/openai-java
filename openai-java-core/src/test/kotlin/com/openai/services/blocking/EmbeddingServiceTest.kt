@@ -22,7 +22,11 @@ class EmbeddingServiceTest {
         val createEmbeddingResponse =
             embeddingService.create(
                 EmbeddingCreateParams.builder()
-                    .input(EmbeddingCreateParams.Input.ofString("This is a test."))
+                    .input(
+                        EmbeddingCreateParams.Input.ofString(
+                            "The quick brown fox jumped over the lazy dog"
+                        )
+                    )
                     .model(EmbeddingModel.TEXT_EMBEDDING_ADA_002)
                     .dimensions(1L)
                     .encodingFormat(EmbeddingCreateParams.EncodingFormat.FLOAT)

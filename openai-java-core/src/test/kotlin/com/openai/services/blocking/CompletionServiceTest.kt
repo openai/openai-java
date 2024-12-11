@@ -4,6 +4,7 @@ package com.openai.services.blocking
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.core.JsonValue
 import com.openai.models.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -27,7 +28,11 @@ class CompletionServiceTest {
                     .bestOf(0L)
                     .echo(true)
                     .frequencyPenalty(-2.0)
-                    .logitBias(CompletionCreateParams.LogitBias.builder().build())
+                    .logitBias(
+                        CompletionCreateParams.LogitBias.builder()
+                            .putAdditionalProperty("foo", JsonValue.from(0))
+                            .build()
+                    )
                     .logprobs(0L)
                     .maxTokens(16L)
                     .n(1L)
@@ -62,7 +67,11 @@ class CompletionServiceTest {
                     .bestOf(0L)
                     .echo(true)
                     .frequencyPenalty(-2.0)
-                    .logitBias(CompletionCreateParams.LogitBias.builder().build())
+                    .logitBias(
+                        CompletionCreateParams.LogitBias.builder()
+                            .putAdditionalProperty("foo", JsonValue.from(0))
+                            .build()
+                    )
                     .logprobs(0L)
                     .maxTokens(16L)
                     .n(1L)

@@ -11,7 +11,9 @@ class EmbeddingCreateParamsTest {
     @Test
     fun createEmbeddingCreateParams() {
         EmbeddingCreateParams.builder()
-            .input(EmbeddingCreateParams.Input.ofString("This is a test."))
+            .input(
+                EmbeddingCreateParams.Input.ofString("The quick brown fox jumped over the lazy dog")
+            )
             .model(EmbeddingModel.TEXT_EMBEDDING_ADA_002)
             .dimensions(1L)
             .encodingFormat(EmbeddingCreateParams.EncodingFormat.FLOAT)
@@ -23,7 +25,11 @@ class EmbeddingCreateParamsTest {
     fun getBody() {
         val params =
             EmbeddingCreateParams.builder()
-                .input(EmbeddingCreateParams.Input.ofString("This is a test."))
+                .input(
+                    EmbeddingCreateParams.Input.ofString(
+                        "The quick brown fox jumped over the lazy dog"
+                    )
+                )
                 .model(EmbeddingModel.TEXT_EMBEDDING_ADA_002)
                 .dimensions(1L)
                 .encodingFormat(EmbeddingCreateParams.EncodingFormat.FLOAT)
@@ -31,7 +37,10 @@ class EmbeddingCreateParamsTest {
                 .build()
         val body = params.getBody()
         assertThat(body).isNotNull
-        assertThat(body.input()).isEqualTo(EmbeddingCreateParams.Input.ofString("This is a test."))
+        assertThat(body.input())
+            .isEqualTo(
+                EmbeddingCreateParams.Input.ofString("The quick brown fox jumped over the lazy dog")
+            )
         assertThat(body.model()).isEqualTo(EmbeddingModel.TEXT_EMBEDDING_ADA_002)
         assertThat(body.dimensions()).isEqualTo(1L)
         assertThat(body.encodingFormat()).isEqualTo(EmbeddingCreateParams.EncodingFormat.FLOAT)
@@ -42,12 +51,19 @@ class EmbeddingCreateParamsTest {
     fun getBodyWithoutOptionalFields() {
         val params =
             EmbeddingCreateParams.builder()
-                .input(EmbeddingCreateParams.Input.ofString("This is a test."))
+                .input(
+                    EmbeddingCreateParams.Input.ofString(
+                        "The quick brown fox jumped over the lazy dog"
+                    )
+                )
                 .model(EmbeddingModel.TEXT_EMBEDDING_ADA_002)
                 .build()
         val body = params.getBody()
         assertThat(body).isNotNull
-        assertThat(body.input()).isEqualTo(EmbeddingCreateParams.Input.ofString("This is a test."))
+        assertThat(body.input())
+            .isEqualTo(
+                EmbeddingCreateParams.Input.ofString("The quick brown fox jumped over the lazy dog")
+            )
         assertThat(body.model()).isEqualTo(EmbeddingModel.TEXT_EMBEDDING_ADA_002)
     }
 }

@@ -4,6 +4,7 @@ package com.openai.services.blocking.chat
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.core.JsonValue
 import com.openai.models.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -55,15 +56,27 @@ class CompletionServiceTest {
                             ChatCompletionCreateParams.Function.builder()
                                 .name("name")
                                 .description("description")
-                                .parameters(FunctionParameters.builder().build())
+                                .parameters(
+                                    FunctionParameters.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                        .build()
+                                )
                                 .build()
                         )
                     )
-                    .logitBias(ChatCompletionCreateParams.LogitBias.builder().build())
+                    .logitBias(
+                        ChatCompletionCreateParams.LogitBias.builder()
+                            .putAdditionalProperty("foo", JsonValue.from(0))
+                            .build()
+                    )
                     .logprobs(true)
                     .maxCompletionTokens(0L)
                     .maxTokens(0L)
-                    .metadata(ChatCompletionCreateParams.Metadata.builder().build())
+                    .metadata(
+                        ChatCompletionCreateParams.Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
                     .modalities(listOf(ChatCompletionModality.TEXT))
                     .n(1L)
                     .parallelToolCalls(true)
@@ -99,7 +112,11 @@ class CompletionServiceTest {
                                     FunctionDefinition.builder()
                                         .name("name")
                                         .description("description")
-                                        .parameters(FunctionParameters.builder().build())
+                                        .parameters(
+                                            FunctionParameters.builder()
+                                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                                .build()
+                                        )
                                         .strict(true)
                                         .build()
                                 )
@@ -161,15 +178,27 @@ class CompletionServiceTest {
                             ChatCompletionCreateParams.Function.builder()
                                 .name("name")
                                 .description("description")
-                                .parameters(FunctionParameters.builder().build())
+                                .parameters(
+                                    FunctionParameters.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                        .build()
+                                )
                                 .build()
                         )
                     )
-                    .logitBias(ChatCompletionCreateParams.LogitBias.builder().build())
+                    .logitBias(
+                        ChatCompletionCreateParams.LogitBias.builder()
+                            .putAdditionalProperty("foo", JsonValue.from(0))
+                            .build()
+                    )
                     .logprobs(true)
                     .maxCompletionTokens(0L)
                     .maxTokens(0L)
-                    .metadata(ChatCompletionCreateParams.Metadata.builder().build())
+                    .metadata(
+                        ChatCompletionCreateParams.Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
                     .modalities(listOf(ChatCompletionModality.TEXT))
                     .n(1L)
                     .parallelToolCalls(true)
@@ -205,7 +234,11 @@ class CompletionServiceTest {
                                     FunctionDefinition.builder()
                                         .name("name")
                                         .description("description")
-                                        .parameters(FunctionParameters.builder().build())
+                                        .parameters(
+                                            FunctionParameters.builder()
+                                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                                .build()
+                                        )
                                         .strict(true)
                                         .build()
                                 )

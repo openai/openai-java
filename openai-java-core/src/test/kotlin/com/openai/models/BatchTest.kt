@@ -2,7 +2,7 @@
 
 package com.openai.models
 
-import com.openai.core.JsonNull
+import com.openai.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -43,7 +43,7 @@ class BatchTest {
                 .failedAt(0L)
                 .finalizingAt(0L)
                 .inProgressAt(0L)
-                .metadata(JsonNull.of())
+                .metadata(JsonValue.from(mapOf<String, Any>()))
                 .outputFileId("output_file_id")
                 .requestCounts(
                     BatchRequestCounts.builder().completed(0L).failed(0L).total(0L).build()
@@ -82,7 +82,7 @@ class BatchTest {
         assertThat(batch.failedAt()).contains(0L)
         assertThat(batch.finalizingAt()).contains(0L)
         assertThat(batch.inProgressAt()).contains(0L)
-        assertThat(batch._metadata()).isEqualTo(JsonNull.of())
+        assertThat(batch._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(batch.outputFileId()).contains("output_file_id")
         assertThat(batch.requestCounts())
             .contains(BatchRequestCounts.builder().completed(0L).failed(0L).total(0L).build())

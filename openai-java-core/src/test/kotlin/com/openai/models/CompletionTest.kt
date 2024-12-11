@@ -2,6 +2,7 @@
 
 package com.openai.models
 
+import com.openai.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -24,7 +25,9 @@ class CompletionTest {
                                     .tokens(listOf("string"))
                                     .topLogprobs(
                                         listOf(
-                                            CompletionChoice.Logprobs.TopLogprob.builder().build()
+                                            CompletionChoice.Logprobs.TopLogprob.builder()
+                                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                                .build()
                                         )
                                     )
                                     .build()
@@ -72,7 +75,11 @@ class CompletionTest {
                             .tokenLogprobs(listOf(0.0))
                             .tokens(listOf("string"))
                             .topLogprobs(
-                                listOf(CompletionChoice.Logprobs.TopLogprob.builder().build())
+                                listOf(
+                                    CompletionChoice.Logprobs.TopLogprob.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from(0))
+                                        .build()
+                                )
                             )
                             .build()
                     )

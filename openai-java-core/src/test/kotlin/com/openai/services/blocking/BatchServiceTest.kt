@@ -4,6 +4,7 @@ package com.openai.services.blocking
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.core.JsonValue
 import com.openai.models.*
 import com.openai.models.BatchListParams
 import org.junit.jupiter.api.Test
@@ -26,7 +27,11 @@ class BatchServiceTest {
                     .completionWindow(BatchCreateParams.CompletionWindow._24H)
                     .endpoint(BatchCreateParams.Endpoint.V1_CHAT_COMPLETIONS)
                     .inputFileId("input_file_id")
-                    .metadata(BatchCreateParams.Metadata.builder().build())
+                    .metadata(
+                        BatchCreateParams.Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
                     .build()
             )
         println(batch)
