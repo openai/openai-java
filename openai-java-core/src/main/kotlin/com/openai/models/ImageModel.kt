@@ -5,7 +5,6 @@ package com.openai.models
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.openai.core.Enum
 import com.openai.core.JsonField
-import com.openai.core.JsonValue
 import com.openai.errors.OpenAIInvalidDataException
 
 class ImageModel
