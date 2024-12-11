@@ -30,9 +30,9 @@ private constructor(
 
     companion object {
 
-        @JvmField val TEXT = ChatCompletionModality(JsonField.of("text"))
+        @JvmField val TEXT = of("text")
 
-        @JvmField val AUDIO = ChatCompletionModality(JsonField.of("audio"))
+        @JvmField val AUDIO = of("audio")
 
         @JvmStatic fun of(value: String) = ChatCompletionModality(JsonField.of(value))
     }

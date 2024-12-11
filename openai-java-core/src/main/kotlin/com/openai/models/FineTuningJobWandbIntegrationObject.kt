@@ -154,7 +154,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val WANDB = Type(JsonField.of("wandb"))
+            @JvmField val WANDB = of("wandb")
 
             @JvmStatic fun of(value: String) = Type(JsonField.of(value))
         }

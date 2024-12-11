@@ -153,7 +153,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val FUNCTION = Role(JsonField.of("function"))
+            @JvmField val FUNCTION = of("function")
 
             @JvmStatic fun of(value: String) = Role(JsonField.of(value))
         }

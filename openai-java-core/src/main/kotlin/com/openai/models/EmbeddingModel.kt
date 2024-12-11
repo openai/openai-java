@@ -30,14 +30,11 @@ private constructor(
 
     companion object {
 
-        @JvmField
-        val TEXT_EMBEDDING_ADA_002 = EmbeddingModel(JsonField.of("text-embedding-ada-002"))
+        @JvmField val TEXT_EMBEDDING_ADA_002 = of("text-embedding-ada-002")
 
-        @JvmField
-        val TEXT_EMBEDDING_3_SMALL = EmbeddingModel(JsonField.of("text-embedding-3-small"))
+        @JvmField val TEXT_EMBEDDING_3_SMALL = of("text-embedding-3-small")
 
-        @JvmField
-        val TEXT_EMBEDDING_3_LARGE = EmbeddingModel(JsonField.of("text-embedding-3-large"))
+        @JvmField val TEXT_EMBEDDING_3_LARGE = of("text-embedding-3-large")
 
         @JvmStatic fun of(value: String) = EmbeddingModel(JsonField.of(value))
     }

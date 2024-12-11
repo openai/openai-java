@@ -169,7 +169,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val MODEL = Object(JsonField.of("model"))
+            @JvmField val MODEL = of("model")
 
             @JvmStatic fun of(value: String) = Object(JsonField.of(value))
         }

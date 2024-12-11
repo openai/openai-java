@@ -984,7 +984,7 @@ private constructor(
 
             companion object {
 
-                @JvmField val TEXT = Harassment(JsonField.of("text"))
+                @JvmField val TEXT = of("text")
 
                 @JvmStatic fun of(value: String) = Harassment(JsonField.of(value))
             }
@@ -1035,7 +1035,7 @@ private constructor(
 
             companion object {
 
-                @JvmField val TEXT = HarassmentThreatening(JsonField.of("text"))
+                @JvmField val TEXT = of("text")
 
                 @JvmStatic fun of(value: String) = HarassmentThreatening(JsonField.of(value))
             }
@@ -1087,7 +1087,7 @@ private constructor(
 
             companion object {
 
-                @JvmField val TEXT = Hate(JsonField.of("text"))
+                @JvmField val TEXT = of("text")
 
                 @JvmStatic fun of(value: String) = Hate(JsonField.of(value))
             }
@@ -1138,7 +1138,7 @@ private constructor(
 
             companion object {
 
-                @JvmField val TEXT = HateThreatening(JsonField.of("text"))
+                @JvmField val TEXT = of("text")
 
                 @JvmStatic fun of(value: String) = HateThreatening(JsonField.of(value))
             }
@@ -1189,7 +1189,7 @@ private constructor(
 
             companion object {
 
-                @JvmField val TEXT = Illicit(JsonField.of("text"))
+                @JvmField val TEXT = of("text")
 
                 @JvmStatic fun of(value: String) = Illicit(JsonField.of(value))
             }
@@ -1240,7 +1240,7 @@ private constructor(
 
             companion object {
 
-                @JvmField val TEXT = IllicitViolent(JsonField.of("text"))
+                @JvmField val TEXT = of("text")
 
                 @JvmStatic fun of(value: String) = IllicitViolent(JsonField.of(value))
             }
@@ -1291,9 +1291,9 @@ private constructor(
 
             companion object {
 
-                @JvmField val TEXT = SelfHarm(JsonField.of("text"))
+                @JvmField val TEXT = of("text")
 
-                @JvmField val IMAGE = SelfHarm(JsonField.of("image"))
+                @JvmField val IMAGE = of("image")
 
                 @JvmStatic fun of(value: String) = SelfHarm(JsonField.of(value))
             }
@@ -1348,9 +1348,9 @@ private constructor(
 
             companion object {
 
-                @JvmField val TEXT = SelfHarmInstruction(JsonField.of("text"))
+                @JvmField val TEXT = of("text")
 
-                @JvmField val IMAGE = SelfHarmInstruction(JsonField.of("image"))
+                @JvmField val IMAGE = of("image")
 
                 @JvmStatic fun of(value: String) = SelfHarmInstruction(JsonField.of(value))
             }
@@ -1405,9 +1405,9 @@ private constructor(
 
             companion object {
 
-                @JvmField val TEXT = SelfHarmIntent(JsonField.of("text"))
+                @JvmField val TEXT = of("text")
 
-                @JvmField val IMAGE = SelfHarmIntent(JsonField.of("image"))
+                @JvmField val IMAGE = of("image")
 
                 @JvmStatic fun of(value: String) = SelfHarmIntent(JsonField.of(value))
             }
@@ -1462,9 +1462,9 @@ private constructor(
 
             companion object {
 
-                @JvmField val TEXT = Sexual(JsonField.of("text"))
+                @JvmField val TEXT = of("text")
 
-                @JvmField val IMAGE = Sexual(JsonField.of("image"))
+                @JvmField val IMAGE = of("image")
 
                 @JvmStatic fun of(value: String) = Sexual(JsonField.of(value))
             }
@@ -1519,7 +1519,7 @@ private constructor(
 
             companion object {
 
-                @JvmField val TEXT = SexualMinor(JsonField.of("text"))
+                @JvmField val TEXT = of("text")
 
                 @JvmStatic fun of(value: String) = SexualMinor(JsonField.of(value))
             }
@@ -1570,9 +1570,9 @@ private constructor(
 
             companion object {
 
-                @JvmField val TEXT = Violence(JsonField.of("text"))
+                @JvmField val TEXT = of("text")
 
-                @JvmField val IMAGE = Violence(JsonField.of("image"))
+                @JvmField val IMAGE = of("image")
 
                 @JvmStatic fun of(value: String) = Violence(JsonField.of(value))
             }
@@ -1627,9 +1627,9 @@ private constructor(
 
             companion object {
 
-                @JvmField val TEXT = ViolenceGraphic(JsonField.of("text"))
+                @JvmField val TEXT = of("text")
 
-                @JvmField val IMAGE = ViolenceGraphic(JsonField.of("image"))
+                @JvmField val IMAGE = of("image")
 
                 @JvmStatic fun of(value: String) = ViolenceGraphic(JsonField.of(value))
             }

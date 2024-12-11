@@ -425,7 +425,7 @@ constructor(
 
         companion object {
 
-            @JvmField val _24H = CompletionWindow(JsonField.of("24h"))
+            @JvmField val _24H = of("24h")
 
             @JvmStatic fun of(value: String) = CompletionWindow(JsonField.of(value))
         }
@@ -476,11 +476,11 @@ constructor(
 
         companion object {
 
-            @JvmField val V1_CHAT_COMPLETIONS = Endpoint(JsonField.of("/v1/chat/completions"))
+            @JvmField val V1_CHAT_COMPLETIONS = of("/v1/chat/completions")
 
-            @JvmField val V1_EMBEDDINGS = Endpoint(JsonField.of("/v1/embeddings"))
+            @JvmField val V1_EMBEDDINGS = of("/v1/embeddings")
 
-            @JvmField val V1_COMPLETIONS = Endpoint(JsonField.of("/v1/completions"))
+            @JvmField val V1_COMPLETIONS = of("/v1/completions")
 
             @JvmStatic fun of(value: String) = Endpoint(JsonField.of(value))
         }

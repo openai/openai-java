@@ -169,7 +169,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val UPLOAD_PART = Object(JsonField.of("upload.part"))
+            @JvmField val UPLOAD_PART = of("upload.part")
 
             @JvmStatic fun of(value: String) = Object(JsonField.of(value))
         }

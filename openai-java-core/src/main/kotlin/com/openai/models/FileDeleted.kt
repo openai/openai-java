@@ -137,7 +137,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val FILE = Object(JsonField.of("file"))
+            @JvmField val FILE = of("file")
 
             @JvmStatic fun of(value: String) = Object(JsonField.of(value))
         }

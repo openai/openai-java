@@ -285,7 +285,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val FILE = Object(JsonField.of("file"))
+            @JvmField val FILE = of("file")
 
             @JvmStatic fun of(value: String) = Object(JsonField.of(value))
         }
@@ -336,19 +336,19 @@ private constructor(
 
         companion object {
 
-            @JvmField val ASSISTANTS = Purpose(JsonField.of("assistants"))
+            @JvmField val ASSISTANTS = of("assistants")
 
-            @JvmField val ASSISTANTS_OUTPUT = Purpose(JsonField.of("assistants_output"))
+            @JvmField val ASSISTANTS_OUTPUT = of("assistants_output")
 
-            @JvmField val BATCH = Purpose(JsonField.of("batch"))
+            @JvmField val BATCH = of("batch")
 
-            @JvmField val BATCH_OUTPUT = Purpose(JsonField.of("batch_output"))
+            @JvmField val BATCH_OUTPUT = of("batch_output")
 
-            @JvmField val FINE_TUNE = Purpose(JsonField.of("fine-tune"))
+            @JvmField val FINE_TUNE = of("fine-tune")
 
-            @JvmField val FINE_TUNE_RESULTS = Purpose(JsonField.of("fine-tune-results"))
+            @JvmField val FINE_TUNE_RESULTS = of("fine-tune-results")
 
-            @JvmField val VISION = Purpose(JsonField.of("vision"))
+            @JvmField val VISION = of("vision")
 
             @JvmStatic fun of(value: String) = Purpose(JsonField.of(value))
         }
@@ -423,11 +423,11 @@ private constructor(
 
         companion object {
 
-            @JvmField val UPLOADED = Status(JsonField.of("uploaded"))
+            @JvmField val UPLOADED = of("uploaded")
 
-            @JvmField val PROCESSED = Status(JsonField.of("processed"))
+            @JvmField val PROCESSED = of("processed")
 
-            @JvmField val ERROR = Status(JsonField.of("error"))
+            @JvmField val ERROR = of("error")
 
             @JvmStatic fun of(value: String) = Status(JsonField.of(value))
         }

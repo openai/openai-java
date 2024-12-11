@@ -295,7 +295,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val ASSISTANT = Role(JsonField.of("assistant"))
+            @JvmField val ASSISTANT = of("assistant")
 
             @JvmStatic fun of(value: String) = Role(JsonField.of(value))
         }

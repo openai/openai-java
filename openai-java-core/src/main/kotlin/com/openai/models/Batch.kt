@@ -480,7 +480,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val BATCH = Object(JsonField.of("batch"))
+            @JvmField val BATCH = of("batch")
 
             @JvmStatic fun of(value: String) = Object(JsonField.of(value))
         }
@@ -531,21 +531,21 @@ private constructor(
 
         companion object {
 
-            @JvmField val VALIDATING = Status(JsonField.of("validating"))
+            @JvmField val VALIDATING = of("validating")
 
-            @JvmField val FAILED = Status(JsonField.of("failed"))
+            @JvmField val FAILED = of("failed")
 
-            @JvmField val IN_PROGRESS = Status(JsonField.of("in_progress"))
+            @JvmField val IN_PROGRESS = of("in_progress")
 
-            @JvmField val FINALIZING = Status(JsonField.of("finalizing"))
+            @JvmField val FINALIZING = of("finalizing")
 
-            @JvmField val COMPLETED = Status(JsonField.of("completed"))
+            @JvmField val COMPLETED = of("completed")
 
-            @JvmField val EXPIRED = Status(JsonField.of("expired"))
+            @JvmField val EXPIRED = of("expired")
 
-            @JvmField val CANCELLING = Status(JsonField.of("cancelling"))
+            @JvmField val CANCELLING = of("cancelling")
 
-            @JvmField val CANCELLED = Status(JsonField.of("cancelled"))
+            @JvmField val CANCELLED = of("cancelled")
 
             @JvmStatic fun of(value: String) = Status(JsonField.of(value))
         }

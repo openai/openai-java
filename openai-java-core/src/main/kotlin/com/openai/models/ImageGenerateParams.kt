@@ -525,9 +525,9 @@ constructor(
 
         companion object {
 
-            @JvmField val STANDARD = Quality(JsonField.of("standard"))
+            @JvmField val STANDARD = of("standard")
 
-            @JvmField val HD = Quality(JsonField.of("hd"))
+            @JvmField val HD = of("hd")
 
             @JvmStatic fun of(value: String) = Quality(JsonField.of(value))
         }
@@ -582,9 +582,9 @@ constructor(
 
         companion object {
 
-            @JvmField val URL = ResponseFormat(JsonField.of("url"))
+            @JvmField val URL = of("url")
 
-            @JvmField val B64_JSON = ResponseFormat(JsonField.of("b64_json"))
+            @JvmField val B64_JSON = of("b64_json")
 
             @JvmStatic fun of(value: String) = ResponseFormat(JsonField.of(value))
         }
@@ -639,15 +639,15 @@ constructor(
 
         companion object {
 
-            @JvmField val _256X256 = Size(JsonField.of("256x256"))
+            @JvmField val _256X256 = of("256x256")
 
-            @JvmField val _512X512 = Size(JsonField.of("512x512"))
+            @JvmField val _512X512 = of("512x512")
 
-            @JvmField val _1024X1024 = Size(JsonField.of("1024x1024"))
+            @JvmField val _1024X1024 = of("1024x1024")
 
-            @JvmField val _1792X1024 = Size(JsonField.of("1792x1024"))
+            @JvmField val _1792X1024 = of("1792x1024")
 
-            @JvmField val _1024X1792 = Size(JsonField.of("1024x1792"))
+            @JvmField val _1024X1792 = of("1024x1792")
 
             @JvmStatic fun of(value: String) = Size(JsonField.of(value))
         }
@@ -714,9 +714,9 @@ constructor(
 
         companion object {
 
-            @JvmField val VIVID = Style(JsonField.of("vivid"))
+            @JvmField val VIVID = of("vivid")
 
-            @JvmField val NATURAL = Style(JsonField.of("natural"))
+            @JvmField val NATURAL = of("natural")
 
             @JvmStatic fun of(value: String) = Style(JsonField.of(value))
         }

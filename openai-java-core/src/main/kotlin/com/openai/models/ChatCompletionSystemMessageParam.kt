@@ -300,7 +300,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val SYSTEM = Role(JsonField.of("system"))
+            @JvmField val SYSTEM = of("system")
 
             @JvmStatic fun of(value: String) = Role(JsonField.of(value))
         }

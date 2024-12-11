@@ -230,9 +230,9 @@ constructor(
 
         companion object {
 
-            @JvmField val ASC = Order(JsonField.of("asc"))
+            @JvmField val ASC = of("asc")
 
-            @JvmField val DESC = Order(JsonField.of("desc"))
+            @JvmField val DESC = of("desc")
 
             @JvmStatic fun of(value: String) = Order(JsonField.of(value))
         }

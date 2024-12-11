@@ -162,15 +162,15 @@ private constructor(
 
         companion object {
 
-            @JvmField val WAV = Format(JsonField.of("wav"))
+            @JvmField val WAV = of("wav")
 
-            @JvmField val MP3 = Format(JsonField.of("mp3"))
+            @JvmField val MP3 = of("mp3")
 
-            @JvmField val FLAC = Format(JsonField.of("flac"))
+            @JvmField val FLAC = of("flac")
 
-            @JvmField val OPUS = Format(JsonField.of("opus"))
+            @JvmField val OPUS = of("opus")
 
-            @JvmField val PCM16 = Format(JsonField.of("pcm16"))
+            @JvmField val PCM16 = of("pcm16")
 
             @JvmStatic fun of(value: String) = Format(JsonField.of(value))
         }
@@ -237,21 +237,21 @@ private constructor(
 
         companion object {
 
-            @JvmField val ALLOY = Voice(JsonField.of("alloy"))
+            @JvmField val ALLOY = of("alloy")
 
-            @JvmField val ASH = Voice(JsonField.of("ash"))
+            @JvmField val ASH = of("ash")
 
-            @JvmField val BALLAD = Voice(JsonField.of("ballad"))
+            @JvmField val BALLAD = of("ballad")
 
-            @JvmField val CORAL = Voice(JsonField.of("coral"))
+            @JvmField val CORAL = of("coral")
 
-            @JvmField val ECHO = Voice(JsonField.of("echo"))
+            @JvmField val ECHO = of("echo")
 
-            @JvmField val SAGE = Voice(JsonField.of("sage"))
+            @JvmField val SAGE = of("sage")
 
-            @JvmField val SHIMMER = Voice(JsonField.of("shimmer"))
+            @JvmField val SHIMMER = of("shimmer")
 
-            @JvmField val VERSE = Voice(JsonField.of("verse"))
+            @JvmField val VERSE = of("verse")
 
             @JvmStatic fun of(value: String) = Voice(JsonField.of(value))
         }

@@ -281,7 +281,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val UPLOAD = Object(JsonField.of("upload"))
+            @JvmField val UPLOAD = of("upload")
 
             @JvmStatic fun of(value: String) = Object(JsonField.of(value))
         }
@@ -332,13 +332,13 @@ private constructor(
 
         companion object {
 
-            @JvmField val PENDING = Status(JsonField.of("pending"))
+            @JvmField val PENDING = of("pending")
 
-            @JvmField val COMPLETED = Status(JsonField.of("completed"))
+            @JvmField val COMPLETED = of("completed")
 
-            @JvmField val CANCELLED = Status(JsonField.of("cancelled"))
+            @JvmField val CANCELLED = of("cancelled")
 
-            @JvmField val EXPIRED = Status(JsonField.of("expired"))
+            @JvmField val EXPIRED = of("expired")
 
             @JvmStatic fun of(value: String) = Status(JsonField.of(value))
         }

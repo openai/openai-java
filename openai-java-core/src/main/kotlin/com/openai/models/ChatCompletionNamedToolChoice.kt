@@ -216,7 +216,7 @@ private constructor(
 
         companion object {
 
-            @JvmField val FUNCTION = Type(JsonField.of("function"))
+            @JvmField val FUNCTION = of("function")
 
             @JvmStatic fun of(value: String) = Type(JsonField.of(value))
         }

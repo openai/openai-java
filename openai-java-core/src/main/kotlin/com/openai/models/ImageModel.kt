@@ -30,9 +30,9 @@ private constructor(
 
     companion object {
 
-        @JvmField val DALL_E_2 = ImageModel(JsonField.of("dall-e-2"))
+        @JvmField val DALL_E_2 = of("dall-e-2")
 
-        @JvmField val DALL_E_3 = ImageModel(JsonField.of("dall-e-3"))
+        @JvmField val DALL_E_3 = of("dall-e-3")
 
         @JvmStatic fun of(value: String) = ImageModel(JsonField.of(value))
     }

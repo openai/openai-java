@@ -30,17 +30,13 @@ private constructor(
 
     companion object {
 
-        @JvmField
-        val OMNI_MODERATION_LATEST = ModerationModel(JsonField.of("omni-moderation-latest"))
+        @JvmField val OMNI_MODERATION_LATEST = of("omni-moderation-latest")
 
-        @JvmField
-        val OMNI_MODERATION_2024_09_26 = ModerationModel(JsonField.of("omni-moderation-2024-09-26"))
+        @JvmField val OMNI_MODERATION_2024_09_26 = of("omni-moderation-2024-09-26")
 
-        @JvmField
-        val TEXT_MODERATION_LATEST = ModerationModel(JsonField.of("text-moderation-latest"))
+        @JvmField val TEXT_MODERATION_LATEST = of("text-moderation-latest")
 
-        @JvmField
-        val TEXT_MODERATION_STABLE = ModerationModel(JsonField.of("text-moderation-stable"))
+        @JvmField val TEXT_MODERATION_STABLE = of("text-moderation-stable")
 
         @JvmStatic fun of(value: String) = ModerationModel(JsonField.of(value))
     }
