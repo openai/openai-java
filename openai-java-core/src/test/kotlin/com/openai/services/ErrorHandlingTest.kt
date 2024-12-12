@@ -12,7 +12,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
 import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.openai.client.OpenAIClient
 import com.openai.client.okhttp.OpenAIOkHttpClient
-import com.openai.core.JsonString
+import com.openai.core.JsonValue
 import com.openai.core.http.Headers
 import com.openai.core.jsonMapper
 import com.openai.errors.BadRequestException
@@ -38,7 +38,7 @@ class ErrorHandlingTest {
     private val JSON_MAPPER: JsonMapper = jsonMapper()
 
     private val OPENAI_ERROR: OpenAIError =
-        OpenAIError.builder().putAdditionalProperty("key", JsonString.of("value")).build()
+        OpenAIError.builder().putAdditionalProperty("key", JsonValue.from("value")).build()
 
     private lateinit var client: OpenAIClient
 
