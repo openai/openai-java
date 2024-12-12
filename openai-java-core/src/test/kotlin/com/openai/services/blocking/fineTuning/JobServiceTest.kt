@@ -4,9 +4,11 @@ package com.openai.services.blocking.fineTuning
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
-import com.openai.models.*
+import com.openai.models.FineTuningJobCancelParams
+import com.openai.models.FineTuningJobCreateParams
 import com.openai.models.FineTuningJobListEventsParams
 import com.openai.models.FineTuningJobListParams
+import com.openai.models.FineTuningJobRetrieveParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 

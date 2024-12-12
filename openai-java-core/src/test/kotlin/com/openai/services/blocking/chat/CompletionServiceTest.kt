@@ -5,7 +5,19 @@ package com.openai.services.blocking.chat
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
-import com.openai.models.*
+import com.openai.models.ChatCompletionAudioParam
+import com.openai.models.ChatCompletionCreateParams
+import com.openai.models.ChatCompletionMessageParam
+import com.openai.models.ChatCompletionModality
+import com.openai.models.ChatCompletionPredictionContent
+import com.openai.models.ChatCompletionStreamOptions
+import com.openai.models.ChatCompletionSystemMessageParam
+import com.openai.models.ChatCompletionTool
+import com.openai.models.ChatCompletionToolChoiceOption
+import com.openai.models.ChatModel
+import com.openai.models.FunctionDefinition
+import com.openai.models.FunctionParameters
+import com.openai.models.ResponseFormatText
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
