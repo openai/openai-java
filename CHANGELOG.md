@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.4 (2024-12-12)
+
+Full Changelog: [v0.7.3...v0.7.4](https://github.com/openai/openai-java/compare/v0.7.3...v0.7.4)
+
+### Chores
+
+* **test:** remove unused imports ([#39](https://github.com/openai/openai-java/issues/39)) ([1ce3035](https://github.com/openai/openai-java/commit/1ce303537ed133fea41a7d4dbd2ebf9e53c8f594))
+
 ## 0.7.3 (2024-12-11)
 
 Full Changelog: [v0.7.2...v0.7.3](https://github.com/openai/openai-java/compare/v0.7.2...v0.7.3)
