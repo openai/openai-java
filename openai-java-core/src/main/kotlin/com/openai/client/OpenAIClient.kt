@@ -2,7 +2,6 @@
 
 package com.openai.client
 
-import com.openai.models.*
 import com.openai.services.blocking.*
 
 interface OpenAIClient {

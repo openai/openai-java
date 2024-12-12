@@ -5,7 +5,6 @@ package com.openai.models
 import com.openai.core.NoAutoDetect
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
-import com.openai.models.*
 import java.util.Objects
 import java.util.Optional
 

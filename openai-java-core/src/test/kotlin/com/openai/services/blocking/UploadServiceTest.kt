@@ -4,7 +4,10 @@ package com.openai.services.blocking
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
-import com.openai.models.*
+import com.openai.models.FilePurpose
+import com.openai.models.UploadCancelParams
+import com.openai.models.UploadCompleteParams
+import com.openai.models.UploadCreateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 

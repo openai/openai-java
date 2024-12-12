@@ -4,7 +4,6 @@ package com.openai.client
 
 import com.openai.core.ClientOptions
 import com.openai.core.getPackageVersion
-import com.openai.models.*
 import com.openai.services.blocking.*
 
 class OpenAIClientImpl

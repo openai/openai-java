@@ -16,7 +16,6 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
-import com.openai.models.*
 import java.util.Objects
 import java.util.Optional
 

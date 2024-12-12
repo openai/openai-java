@@ -4,7 +4,8 @@ package com.openai.services.blocking
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
-import com.openai.models.*
+import com.openai.models.ImageGenerateParams
+import com.openai.models.ImageModel
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 

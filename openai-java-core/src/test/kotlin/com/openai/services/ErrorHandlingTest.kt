@@ -25,7 +25,10 @@ import com.openai.errors.RateLimitException
 import com.openai.errors.UnauthorizedException
 import com.openai.errors.UnexpectedStatusCodeException
 import com.openai.errors.UnprocessableEntityException
-import com.openai.models.*
+import com.openai.models.FineTuningJob
+import com.openai.models.FineTuningJobCreateParams
+import com.openai.models.FineTuningJobWandbIntegration
+import com.openai.models.FineTuningJobWandbIntegrationObject
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.InstanceOfAssertFactories
