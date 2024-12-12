@@ -4,7 +4,26 @@ package com.openai.client
 
 import com.openai.core.ClientOptions
 import com.openai.core.getPackageVersion
-import com.openai.services.blocking.*
+import com.openai.services.blocking.BatchService
+import com.openai.services.blocking.BatchServiceImpl
+import com.openai.services.blocking.ChatService
+import com.openai.services.blocking.ChatServiceImpl
+import com.openai.services.blocking.CompletionService
+import com.openai.services.blocking.CompletionServiceImpl
+import com.openai.services.blocking.EmbeddingService
+import com.openai.services.blocking.EmbeddingServiceImpl
+import com.openai.services.blocking.FileService
+import com.openai.services.blocking.FileServiceImpl
+import com.openai.services.blocking.FineTuningService
+import com.openai.services.blocking.FineTuningServiceImpl
+import com.openai.services.blocking.ImageService
+import com.openai.services.blocking.ImageServiceImpl
+import com.openai.services.blocking.ModelService
+import com.openai.services.blocking.ModelServiceImpl
+import com.openai.services.blocking.ModerationService
+import com.openai.services.blocking.ModerationServiceImpl
+import com.openai.services.blocking.UploadService
+import com.openai.services.blocking.UploadServiceImpl
 
 class OpenAIClientImpl
 constructor(
