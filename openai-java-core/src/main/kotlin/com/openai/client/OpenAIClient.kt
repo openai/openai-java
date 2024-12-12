@@ -2,7 +2,16 @@
 
 package com.openai.client
 
-import com.openai.services.blocking.*
+import com.openai.services.blocking.BatchService
+import com.openai.services.blocking.ChatService
+import com.openai.services.blocking.CompletionService
+import com.openai.services.blocking.EmbeddingService
+import com.openai.services.blocking.FileService
+import com.openai.services.blocking.FineTuningService
+import com.openai.services.blocking.ImageService
+import com.openai.services.blocking.ModelService
+import com.openai.services.blocking.ModerationService
+import com.openai.services.blocking.UploadService
 
 interface OpenAIClient {
 
