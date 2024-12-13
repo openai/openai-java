@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.7.5 (2024-12-13)
+
+Full Changelog: [v0.7.4...v0.7.5](https://github.com/openai/openai-java/compare/v0.7.4...v0.7.5)
+
+### Chores
+
+* **internal:** remove unused and expand used wildcard imports ([#43](https://github.com/openai/openai-java/issues/43)) ([39bfc4e](https://github.com/openai/openai-java/commit/39bfc4e4a15ce52c029ed31253afff9d9de36cc1))
+* **internal:** remove unused and expand used wildcard imports ([#44](https://github.com/openai/openai-java/issues/44)) ([7f7e131](https://github.com/openai/openai-java/commit/7f7e1313bde6827cd9067b712f3d7992ddeeaa6f))
+* **test:** use `JsonValue` instead of `JsonString` ([#41](https://github.com/openai/openai-java/issues/41)) ([8d2dd03](https://github.com/openai/openai-java/commit/8d2dd030899ad807a4712e00a33426c7484bcab5))
+
 ## 0.7.4 (2024-12-12)
 
 Full Changelog: [v0.7.3...v0.7.4](https://github.com/openai/openai-java/compare/v0.7.3...v0.7.4)
