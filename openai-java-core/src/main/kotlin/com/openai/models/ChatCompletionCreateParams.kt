@@ -46,6 +46,7 @@ constructor(
     private val parallelToolCalls: Boolean?,
     private val prediction: ChatCompletionPredictionContent?,
     private val presencePenalty: Double?,
+    private val reasoningEffort: ChatCompletionReasoningEffort?,
     private val responseFormat: ResponseFormat?,
     private val seed: Long?,
     private val serviceTier: ServiceTier?,
@@ -94,6 +95,9 @@ constructor(
     fun prediction(): Optional<ChatCompletionPredictionContent> = Optional.ofNullable(prediction)
 
     fun presencePenalty(): Optional<Double> = Optional.ofNullable(presencePenalty)
+
+    fun reasoningEffort(): Optional<ChatCompletionReasoningEffort> =
+        Optional.ofNullable(reasoningEffort)
 
     fun responseFormat(): Optional<ResponseFormat> = Optional.ofNullable(responseFormat)
 
@@ -144,6 +148,7 @@ constructor(
             parallelToolCalls,
             prediction,
             presencePenalty,
+            reasoningEffort,
             responseFormat,
             seed,
             serviceTier,
@@ -184,6 +189,7 @@ constructor(
         private val parallelToolCalls: Boolean?,
         private val prediction: ChatCompletionPredictionContent?,
         private val presencePenalty: Double?,
+        private val reasoningEffort: ChatCompletionReasoningEffort?,
         private val responseFormat: ResponseFormat?,
         private val seed: Long?,
         private val serviceTier: ServiceTier?,
@@ -226,19 +232,20 @@ constructor(
          * Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing
          * frequency in the text so far, decreasing the model's likelihood to repeat the same line
          * verbatim.
-         *
-         * [See more information about frequency and presence
-         * penalties.](https://platform.openai.com/docs/guides/text-generation)
          */
         @JsonProperty("frequency_penalty") fun frequencyPenalty(): Double? = frequencyPenalty
 
         /**
          * Deprecated in favor of `tool_choice`.
          *
-         * Controls which (if any) function is called by the model. `none` means the model will not
-         * call a function and instead generates a message. `auto` means the model can pick between
-         * generating a message or calling a function. Specifying a particular function via
-         * `{"name": "my_function"}` forces the model to call that function.
+         * Controls which (if any) function is called by the model.
+         *
+         * `none` means the model will not call a function and instead generates a message.
+         *
+         * `auto` means the model can pick between generating a message or calling a function.
+         *
+         * Specifying a particular function via `{"name": "my_function"}` forces the model to call
+         * that function.
          *
          * `none` is the default when no functions are present. `auto` is the default if functions
          * are present.
@@ -330,18 +337,22 @@ constructor(
         /**
          * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they
          * appear in the text so far, increasing the model's likelihood to talk about new topics.
-         *
-         * [See more information about frequency and presence
-         * penalties.](https://platform.openai.com/docs/guides/text-generation)
          */
         @JsonProperty("presence_penalty") fun presencePenalty(): Double? = presencePenalty
 
         /**
-         * An object specifying the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4o
-         * mini](https://platform.openai.com/docs/models#gpt-4o-mini),
-         * [GPT-4 Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4) and all
-         * GPT-3.5 Turbo models newer than `gpt-3.5-turbo-1106`.
+         * **o1 models only**
+         *
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
+         * faster responses and fewer tokens used on reasoning in a response.
+         */
+        @JsonProperty("reasoning_effort")
+        fun reasoningEffort(): ChatCompletionReasoningEffort? = reasoningEffort
+
+        /**
+         * An object specifying the format that the model must output.
          *
          * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
          * which ensures the model will match your supplied JSON schema. Learn more in the
@@ -400,9 +411,7 @@ constructor(
         /**
          * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
          * output more random, while lower values like 0.2 will make it more focused and
-         * deterministic.
-         *
-         * We generally recommend altering this or `top_p` but not both.
+         * deterministic. We generally recommend altering this or `top_p` but not both.
          */
         @JsonProperty("temperature") fun temperature(): Double? = temperature
 
@@ -477,6 +486,7 @@ constructor(
             private var parallelToolCalls: Boolean? = null
             private var prediction: ChatCompletionPredictionContent? = null
             private var presencePenalty: Double? = null
+            private var reasoningEffort: ChatCompletionReasoningEffort? = null
             private var responseFormat: ResponseFormat? = null
             private var seed: Long? = null
             private var serviceTier: ServiceTier? = null
@@ -509,6 +519,7 @@ constructor(
                 this.parallelToolCalls = chatCompletionCreateBody.parallelToolCalls
                 this.prediction = chatCompletionCreateBody.prediction
                 this.presencePenalty = chatCompletionCreateBody.presencePenalty
+                this.reasoningEffort = chatCompletionCreateBody.reasoningEffort
                 this.responseFormat = chatCompletionCreateBody.responseFormat
                 this.seed = chatCompletionCreateBody.seed
                 this.serviceTier = chatCompletionCreateBody.serviceTier
@@ -555,9 +566,6 @@ constructor(
              * Number between -2.0 and 2.0. Positive values penalize new tokens based on their
              * existing frequency in the text so far, decreasing the model's likelihood to repeat
              * the same line verbatim.
-             *
-             * [See more information about frequency and presence
-             * penalties.](https://platform.openai.com/docs/guides/text-generation)
              */
             @JsonProperty("frequency_penalty")
             fun frequencyPenalty(frequencyPenalty: Double) = apply {
@@ -567,10 +575,14 @@ constructor(
             /**
              * Deprecated in favor of `tool_choice`.
              *
-             * Controls which (if any) function is called by the model. `none` means the model will
-             * not call a function and instead generates a message. `auto` means the model can pick
-             * between generating a message or calling a function. Specifying a particular function
-             * via `{"name": "my_function"}` forces the model to call that function.
+             * Controls which (if any) function is called by the model.
+             *
+             * `none` means the model will not call a function and instead generates a message.
+             *
+             * `auto` means the model can pick between generating a message or calling a function.
+             *
+             * Specifying a particular function via `{"name": "my_function"}` forces the model to
+             * call that function.
              *
              * `none` is the default when no functions are present. `auto` is the default if
              * functions are present.
@@ -684,9 +696,6 @@ constructor(
              * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether
              * they appear in the text so far, increasing the model's likelihood to talk about new
              * topics.
-             *
-             * [See more information about frequency and presence
-             * penalties.](https://platform.openai.com/docs/guides/text-generation)
              */
             @JsonProperty("presence_penalty")
             fun presencePenalty(presencePenalty: Double) = apply {
@@ -694,11 +703,20 @@ constructor(
             }
 
             /**
-             * An object specifying the format that the model must output. Compatible with
-             * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4o
-             * mini](https://platform.openai.com/docs/models#gpt-4o-mini),
-             * [GPT-4 Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4) and all
-             * GPT-3.5 Turbo models newer than `gpt-3.5-turbo-1106`.
+             * **o1 models only**
+             *
+             * Constrains effort on reasoning for
+             * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+             * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
+             * result in faster responses and fewer tokens used on reasoning in a response.
+             */
+            @JsonProperty("reasoning_effort")
+            fun reasoningEffort(reasoningEffort: ChatCompletionReasoningEffort) = apply {
+                this.reasoningEffort = reasoningEffort
+            }
+
+            /**
+             * An object specifying the format that the model must output.
              *
              * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
              * Outputs which ensures the model will match your supplied JSON schema. Learn more in
@@ -765,9 +783,7 @@ constructor(
             /**
              * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
              * the output more random, while lower values like 0.2 will make it more focused and
-             * deterministic.
-             *
-             * We generally recommend altering this or `top_p` but not both.
+             * deterministic. We generally recommend altering this or `top_p` but not both.
              */
             @JsonProperty("temperature")
             fun temperature(temperature: Double) = apply { this.temperature = temperature }
@@ -852,6 +868,7 @@ constructor(
                     parallelToolCalls,
                     prediction,
                     presencePenalty,
+                    reasoningEffort,
                     responseFormat,
                     seed,
                     serviceTier,
@@ -873,17 +890,17 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ChatCompletionCreateBody && messages == other.messages && model == other.model && audio == other.audio && frequencyPenalty == other.frequencyPenalty && functionCall == other.functionCall && functions == other.functions && logitBias == other.logitBias && logprobs == other.logprobs && maxCompletionTokens == other.maxCompletionTokens && maxTokens == other.maxTokens && metadata == other.metadata && modalities == other.modalities && n == other.n && parallelToolCalls == other.parallelToolCalls && prediction == other.prediction && presencePenalty == other.presencePenalty && responseFormat == other.responseFormat && seed == other.seed && serviceTier == other.serviceTier && stop == other.stop && store == other.store && streamOptions == other.streamOptions && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topLogprobs == other.topLogprobs && topP == other.topP && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ChatCompletionCreateBody && messages == other.messages && model == other.model && audio == other.audio && frequencyPenalty == other.frequencyPenalty && functionCall == other.functionCall && functions == other.functions && logitBias == other.logitBias && logprobs == other.logprobs && maxCompletionTokens == other.maxCompletionTokens && maxTokens == other.maxTokens && metadata == other.metadata && modalities == other.modalities && n == other.n && parallelToolCalls == other.parallelToolCalls && prediction == other.prediction && presencePenalty == other.presencePenalty && reasoningEffort == other.reasoningEffort && responseFormat == other.responseFormat && seed == other.seed && serviceTier == other.serviceTier && stop == other.stop && store == other.store && streamOptions == other.streamOptions && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topLogprobs == other.topLogprobs && topP == other.topP && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(messages, model, audio, frequencyPenalty, functionCall, functions, logitBias, logprobs, maxCompletionTokens, maxTokens, metadata, modalities, n, parallelToolCalls, prediction, presencePenalty, responseFormat, seed, serviceTier, stop, store, streamOptions, temperature, toolChoice, tools, topLogprobs, topP, user, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(messages, model, audio, frequencyPenalty, functionCall, functions, logitBias, logprobs, maxCompletionTokens, maxTokens, metadata, modalities, n, parallelToolCalls, prediction, presencePenalty, reasoningEffort, responseFormat, seed, serviceTier, stop, store, streamOptions, temperature, toolChoice, tools, topLogprobs, topP, user, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ChatCompletionCreateBody{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, responseFormat=$responseFormat, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, additionalProperties=$additionalProperties}"
+            "ChatCompletionCreateBody{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -912,6 +929,7 @@ constructor(
         private var parallelToolCalls: Boolean? = null
         private var prediction: ChatCompletionPredictionContent? = null
         private var presencePenalty: Double? = null
+        private var reasoningEffort: ChatCompletionReasoningEffort? = null
         private var responseFormat: ResponseFormat? = null
         private var seed: Long? = null
         private var serviceTier: ServiceTier? = null
@@ -946,6 +964,7 @@ constructor(
             parallelToolCalls = chatCompletionCreateParams.parallelToolCalls
             prediction = chatCompletionCreateParams.prediction
             presencePenalty = chatCompletionCreateParams.presencePenalty
+            reasoningEffort = chatCompletionCreateParams.reasoningEffort
             responseFormat = chatCompletionCreateParams.responseFormat
             seed = chatCompletionCreateParams.seed
             serviceTier = chatCompletionCreateParams.serviceTier
@@ -1011,9 +1030,6 @@ constructor(
          * Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing
          * frequency in the text so far, decreasing the model's likelihood to repeat the same line
          * verbatim.
-         *
-         * [See more information about frequency and presence
-         * penalties.](https://platform.openai.com/docs/guides/text-generation)
          */
         fun frequencyPenalty(frequencyPenalty: Double) = apply {
             this.frequencyPenalty = frequencyPenalty
@@ -1022,10 +1038,14 @@ constructor(
         /**
          * Deprecated in favor of `tool_choice`.
          *
-         * Controls which (if any) function is called by the model. `none` means the model will not
-         * call a function and instead generates a message. `auto` means the model can pick between
-         * generating a message or calling a function. Specifying a particular function via
-         * `{"name": "my_function"}` forces the model to call that function.
+         * Controls which (if any) function is called by the model.
+         *
+         * `none` means the model will not call a function and instead generates a message.
+         *
+         * `auto` means the model can pick between generating a message or calling a function.
+         *
+         * Specifying a particular function via `{"name": "my_function"}` forces the model to call
+         * that function.
          *
          * `none` is the default when no functions are present. `auto` is the default if functions
          * are present.
@@ -1035,10 +1055,14 @@ constructor(
         /**
          * Deprecated in favor of `tool_choice`.
          *
-         * Controls which (if any) function is called by the model. `none` means the model will not
-         * call a function and instead generates a message. `auto` means the model can pick between
-         * generating a message or calling a function. Specifying a particular function via
-         * `{"name": "my_function"}` forces the model to call that function.
+         * Controls which (if any) function is called by the model.
+         *
+         * `none` means the model will not call a function and instead generates a message.
+         *
+         * `auto` means the model can pick between generating a message or calling a function.
+         *
+         * Specifying a particular function via `{"name": "my_function"}` forces the model to call
+         * that function.
          *
          * `none` is the default when no functions are present. `auto` is the default if functions
          * are present.
@@ -1050,10 +1074,14 @@ constructor(
         /**
          * Deprecated in favor of `tool_choice`.
          *
-         * Controls which (if any) function is called by the model. `none` means the model will not
-         * call a function and instead generates a message. `auto` means the model can pick between
-         * generating a message or calling a function. Specifying a particular function via
-         * `{"name": "my_function"}` forces the model to call that function.
+         * Controls which (if any) function is called by the model.
+         *
+         * `none` means the model will not call a function and instead generates a message.
+         *
+         * `auto` means the model can pick between generating a message or calling a function.
+         *
+         * Specifying a particular function via `{"name": "my_function"}` forces the model to call
+         * that function.
          *
          * `none` is the default when no functions are present. `auto` is the default if functions
          * are present.
@@ -1179,20 +1207,25 @@ constructor(
         /**
          * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they
          * appear in the text so far, increasing the model's likelihood to talk about new topics.
-         *
-         * [See more information about frequency and presence
-         * penalties.](https://platform.openai.com/docs/guides/text-generation)
          */
         fun presencePenalty(presencePenalty: Double) = apply {
             this.presencePenalty = presencePenalty
         }
 
         /**
-         * An object specifying the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4o
-         * mini](https://platform.openai.com/docs/models#gpt-4o-mini),
-         * [GPT-4 Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4) and all
-         * GPT-3.5 Turbo models newer than `gpt-3.5-turbo-1106`.
+         * **o1 models only**
+         *
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
+         * faster responses and fewer tokens used on reasoning in a response.
+         */
+        fun reasoningEffort(reasoningEffort: ChatCompletionReasoningEffort) = apply {
+            this.reasoningEffort = reasoningEffort
+        }
+
+        /**
+         * An object specifying the format that the model must output.
          *
          * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
          * which ensures the model will match your supplied JSON schema. Learn more in the
@@ -1213,11 +1246,7 @@ constructor(
         }
 
         /**
-         * An object specifying the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4o
-         * mini](https://platform.openai.com/docs/models#gpt-4o-mini),
-         * [GPT-4 Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4) and all
-         * GPT-3.5 Turbo models newer than `gpt-3.5-turbo-1106`.
+         * An object specifying the format that the model must output.
          *
          * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
          * which ensures the model will match your supplied JSON schema. Learn more in the
@@ -1238,11 +1267,7 @@ constructor(
         }
 
         /**
-         * An object specifying the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4o
-         * mini](https://platform.openai.com/docs/models#gpt-4o-mini),
-         * [GPT-4 Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4) and all
-         * GPT-3.5 Turbo models newer than `gpt-3.5-turbo-1106`.
+         * An object specifying the format that the model must output.
          *
          * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
          * which ensures the model will match your supplied JSON schema. Learn more in the
@@ -1264,11 +1289,7 @@ constructor(
         }
 
         /**
-         * An object specifying the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4o
-         * mini](https://platform.openai.com/docs/models#gpt-4o-mini),
-         * [GPT-4 Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4) and all
-         * GPT-3.5 Turbo models newer than `gpt-3.5-turbo-1106`.
+         * An object specifying the format that the model must output.
          *
          * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
          * which ensures the model will match your supplied JSON schema. Learn more in the
@@ -1337,9 +1358,7 @@ constructor(
         /**
          * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
          * output more random, while lower values like 0.2 will make it more focused and
-         * deterministic.
-         *
-         * We generally recommend altering this or `top_p` but not both.
+         * deterministic. We generally recommend altering this or `top_p` but not both.
          */
         fun temperature(temperature: Double) = apply { this.temperature = temperature }
 
@@ -1566,6 +1585,7 @@ constructor(
                 parallelToolCalls,
                 prediction,
                 presencePenalty,
+                reasoningEffort,
                 responseFormat,
                 seed,
                 serviceTier,
@@ -2357,11 +2377,11 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionCreateParams && messages == other.messages && model == other.model && audio == other.audio && frequencyPenalty == other.frequencyPenalty && functionCall == other.functionCall && functions == other.functions && logitBias == other.logitBias && logprobs == other.logprobs && maxCompletionTokens == other.maxCompletionTokens && maxTokens == other.maxTokens && metadata == other.metadata && modalities == other.modalities && n == other.n && parallelToolCalls == other.parallelToolCalls && prediction == other.prediction && presencePenalty == other.presencePenalty && responseFormat == other.responseFormat && seed == other.seed && serviceTier == other.serviceTier && stop == other.stop && store == other.store && streamOptions == other.streamOptions && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topLogprobs == other.topLogprobs && topP == other.topP && user == other.user && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionCreateParams && messages == other.messages && model == other.model && audio == other.audio && frequencyPenalty == other.frequencyPenalty && functionCall == other.functionCall && functions == other.functions && logitBias == other.logitBias && logprobs == other.logprobs && maxCompletionTokens == other.maxCompletionTokens && maxTokens == other.maxTokens && metadata == other.metadata && modalities == other.modalities && n == other.n && parallelToolCalls == other.parallelToolCalls && prediction == other.prediction && presencePenalty == other.presencePenalty && reasoningEffort == other.reasoningEffort && responseFormat == other.responseFormat && seed == other.seed && serviceTier == other.serviceTier && stop == other.stop && store == other.store && streamOptions == other.streamOptions && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topLogprobs == other.topLogprobs && topP == other.topP && user == other.user && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(messages, model, audio, frequencyPenalty, functionCall, functions, logitBias, logprobs, maxCompletionTokens, maxTokens, metadata, modalities, n, parallelToolCalls, prediction, presencePenalty, responseFormat, seed, serviceTier, stop, store, streamOptions, temperature, toolChoice, tools, topLogprobs, topP, user, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(messages, model, audio, frequencyPenalty, functionCall, functions, logitBias, logprobs, maxCompletionTokens, maxTokens, metadata, modalities, n, parallelToolCalls, prediction, presencePenalty, reasoningEffort, responseFormat, seed, serviceTier, stop, store, streamOptions, temperature, toolChoice, tools, topLogprobs, topP, user, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
 
     override fun toString() =
-        "ChatCompletionCreateParams{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, responseFormat=$responseFormat, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
+        "ChatCompletionCreateParams{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

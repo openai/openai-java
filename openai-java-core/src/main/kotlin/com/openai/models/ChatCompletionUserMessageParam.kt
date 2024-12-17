@@ -27,6 +27,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
+/** Messages sent by an end user, containing prompts or additional context information. */
 @JsonDeserialize(builder = ChatCompletionUserMessageParam.Builder::class)
 @NoAutoDetect
 class ChatCompletionUserMessageParam

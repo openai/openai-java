@@ -21,13 +21,14 @@ import com.openai.models.ChatCompletion
 import com.openai.models.ChatCompletionAudio
 import com.openai.models.ChatCompletionAudioParam
 import com.openai.models.ChatCompletionCreateParams
+import com.openai.models.ChatCompletionDeveloperMessageParam
 import com.openai.models.ChatCompletionMessage
 import com.openai.models.ChatCompletionMessageParam
 import com.openai.models.ChatCompletionMessageToolCall
 import com.openai.models.ChatCompletionModality
 import com.openai.models.ChatCompletionPredictionContent
+import com.openai.models.ChatCompletionReasoningEffort
 import com.openai.models.ChatCompletionStreamOptions
-import com.openai.models.ChatCompletionSystemMessageParam
 import com.openai.models.ChatCompletionTokenLogprob
 import com.openai.models.ChatCompletionTool
 import com.openai.models.ChatCompletionToolChoiceOption
@@ -75,18 +76,20 @@ class ServiceParamsTest {
             ChatCompletionCreateParams.builder()
                 .messages(
                     listOf(
-                        ChatCompletionMessageParam.ofChatCompletionSystemMessageParam(
-                            ChatCompletionSystemMessageParam.builder()
+                        ChatCompletionMessageParam.ofChatCompletionDeveloperMessageParam(
+                            ChatCompletionDeveloperMessageParam.builder()
                                 .content(
-                                    ChatCompletionSystemMessageParam.Content.ofTextContent("string")
+                                    ChatCompletionDeveloperMessageParam.Content.ofTextContent(
+                                        "string"
+                                    )
                                 )
-                                .role(ChatCompletionSystemMessageParam.Role.SYSTEM)
+                                .role(ChatCompletionDeveloperMessageParam.Role.DEVELOPER)
                                 .name("name")
                                 .build()
                         )
                     )
                 )
-                .model(ChatModel.O1_PREVIEW)
+                .model(ChatModel.O1)
                 .audio(
                     ChatCompletionAudioParam.builder()
                         .format(ChatCompletionAudioParam.Format.WAV)
@@ -135,6 +138,7 @@ class ServiceParamsTest {
                         .build()
                 )
                 .presencePenalty(-2.0)
+                .reasoningEffort(ChatCompletionReasoningEffort.LOW)
                 .responseFormat(
                     ChatCompletionCreateParams.ResponseFormat.ofResponseFormatText(
                         ResponseFormatText.builder().type(ResponseFormatText.Type.TEXT).build()

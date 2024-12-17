@@ -34,6 +34,7 @@ constructor(
     private val trainingFile: String,
     private val hyperparameters: Hyperparameters?,
     private val integrations: List<Integration>?,
+    private val method: Method?,
     private val seed: Long?,
     private val suffix: String?,
     private val validationFile: String?,
@@ -49,6 +50,8 @@ constructor(
     fun hyperparameters(): Optional<Hyperparameters> = Optional.ofNullable(hyperparameters)
 
     fun integrations(): Optional<List<Integration>> = Optional.ofNullable(integrations)
+
+    fun method(): Optional<Method> = Optional.ofNullable(method)
 
     fun seed(): Optional<Long> = Optional.ofNullable(seed)
 
@@ -69,6 +72,7 @@ constructor(
             trainingFile,
             hyperparameters,
             integrations,
+            method,
             seed,
             suffix,
             validationFile,
@@ -88,6 +92,7 @@ constructor(
         private val trainingFile: String?,
         private val hyperparameters: Hyperparameters?,
         private val integrations: List<Integration>?,
+        private val method: Method?,
         private val seed: Long?,
         private val suffix: String?,
         private val validationFile: String?,
@@ -110,8 +115,10 @@ constructor(
          * with the purpose `fine-tune`.
          *
          * The contents of the file should differ depending on if the model uses the
-         * [chat](https://platform.openai.com/docs/api-reference/fine-tuning/chat-input) or
+         * [chat](https://platform.openai.com/docs/api-reference/fine-tuning/chat-input),
          * [completions](https://platform.openai.com/docs/api-reference/fine-tuning/completions-input)
+         * format, or if the fine-tuning method uses the
+         * [preference](https://platform.openai.com/docs/api-reference/fine-tuning/preference-input)
          * format.
          *
          * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for more
@@ -119,11 +126,17 @@ constructor(
          */
         @JsonProperty("training_file") fun trainingFile(): String? = trainingFile
 
-        /** The hyperparameters used for the fine-tuning job. */
+        /**
+         * The hyperparameters used for the fine-tuning job. This value is now deprecated in favor
+         * of `method`, and should be passed in under the `method` parameter.
+         */
         @JsonProperty("hyperparameters") fun hyperparameters(): Hyperparameters? = hyperparameters
 
         /** A list of integrations to enable for your fine-tuning job. */
         @JsonProperty("integrations") fun integrations(): List<Integration>? = integrations
+
+        /** The method used for fine-tuning. */
+        @JsonProperty("method") fun method(): Method? = method
 
         /**
          * The seed controls the reproducibility of the job. Passing in the same seed and job
@@ -172,6 +185,7 @@ constructor(
             private var trainingFile: String? = null
             private var hyperparameters: Hyperparameters? = null
             private var integrations: List<Integration>? = null
+            private var method: Method? = null
             private var seed: Long? = null
             private var suffix: String? = null
             private var validationFile: String? = null
@@ -183,6 +197,7 @@ constructor(
                 this.trainingFile = fineTuningJobCreateBody.trainingFile
                 this.hyperparameters = fineTuningJobCreateBody.hyperparameters
                 this.integrations = fineTuningJobCreateBody.integrations
+                this.method = fineTuningJobCreateBody.method
                 this.seed = fineTuningJobCreateBody.seed
                 this.suffix = fineTuningJobCreateBody.suffix
                 this.validationFile = fineTuningJobCreateBody.validationFile
@@ -205,8 +220,10 @@ constructor(
              * file with the purpose `fine-tune`.
              *
              * The contents of the file should differ depending on if the model uses the
-             * [chat](https://platform.openai.com/docs/api-reference/fine-tuning/chat-input) or
+             * [chat](https://platform.openai.com/docs/api-reference/fine-tuning/chat-input),
              * [completions](https://platform.openai.com/docs/api-reference/fine-tuning/completions-input)
+             * format, or if the fine-tuning method uses the
+             * [preference](https://platform.openai.com/docs/api-reference/fine-tuning/preference-input)
              * format.
              *
              * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for
@@ -215,7 +232,10 @@ constructor(
             @JsonProperty("training_file")
             fun trainingFile(trainingFile: String) = apply { this.trainingFile = trainingFile }
 
-            /** The hyperparameters used for the fine-tuning job. */
+            /**
+             * The hyperparameters used for the fine-tuning job. This value is now deprecated in
+             * favor of `method`, and should be passed in under the `method` parameter.
+             */
             @JsonProperty("hyperparameters")
             fun hyperparameters(hyperparameters: Hyperparameters) = apply {
                 this.hyperparameters = hyperparameters
@@ -226,6 +246,9 @@ constructor(
             fun integrations(integrations: List<Integration>) = apply {
                 this.integrations = integrations
             }
+
+            /** The method used for fine-tuning. */
+            @JsonProperty("method") fun method(method: Method) = apply { this.method = method }
 
             /**
              * The seed controls the reproducibility of the job. Passing in the same seed and job
@@ -280,6 +303,7 @@ constructor(
                     checkNotNull(trainingFile) { "`trainingFile` is required but was not set" },
                     hyperparameters,
                     integrations?.toImmutable(),
+                    method,
                     seed,
                     suffix,
                     validationFile,
@@ -292,17 +316,17 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is FineTuningJobCreateBody && model == other.model && trainingFile == other.trainingFile && hyperparameters == other.hyperparameters && integrations == other.integrations && seed == other.seed && suffix == other.suffix && validationFile == other.validationFile && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is FineTuningJobCreateBody && model == other.model && trainingFile == other.trainingFile && hyperparameters == other.hyperparameters && integrations == other.integrations && method == other.method && seed == other.seed && suffix == other.suffix && validationFile == other.validationFile && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(model, trainingFile, hyperparameters, integrations, seed, suffix, validationFile, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(model, trainingFile, hyperparameters, integrations, method, seed, suffix, validationFile, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "FineTuningJobCreateBody{model=$model, trainingFile=$trainingFile, hyperparameters=$hyperparameters, integrations=$integrations, seed=$seed, suffix=$suffix, validationFile=$validationFile, additionalProperties=$additionalProperties}"
+            "FineTuningJobCreateBody{model=$model, trainingFile=$trainingFile, hyperparameters=$hyperparameters, integrations=$integrations, method=$method, seed=$seed, suffix=$suffix, validationFile=$validationFile, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -319,6 +343,7 @@ constructor(
         private var trainingFile: String? = null
         private var hyperparameters: Hyperparameters? = null
         private var integrations: MutableList<Integration> = mutableListOf()
+        private var method: Method? = null
         private var seed: Long? = null
         private var suffix: String? = null
         private var validationFile: String? = null
@@ -333,6 +358,7 @@ constructor(
             hyperparameters = fineTuningJobCreateParams.hyperparameters
             integrations =
                 fineTuningJobCreateParams.integrations?.toMutableList() ?: mutableListOf()
+            method = fineTuningJobCreateParams.method
             seed = fineTuningJobCreateParams.seed
             suffix = fineTuningJobCreateParams.suffix
             validationFile = fineTuningJobCreateParams.validationFile
@@ -364,8 +390,10 @@ constructor(
          * with the purpose `fine-tune`.
          *
          * The contents of the file should differ depending on if the model uses the
-         * [chat](https://platform.openai.com/docs/api-reference/fine-tuning/chat-input) or
+         * [chat](https://platform.openai.com/docs/api-reference/fine-tuning/chat-input),
          * [completions](https://platform.openai.com/docs/api-reference/fine-tuning/completions-input)
+         * format, or if the fine-tuning method uses the
+         * [preference](https://platform.openai.com/docs/api-reference/fine-tuning/preference-input)
          * format.
          *
          * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for more
@@ -373,7 +401,10 @@ constructor(
          */
         fun trainingFile(trainingFile: String) = apply { this.trainingFile = trainingFile }
 
-        /** The hyperparameters used for the fine-tuning job. */
+        /**
+         * The hyperparameters used for the fine-tuning job. This value is now deprecated in favor
+         * of `method`, and should be passed in under the `method` parameter.
+         */
         fun hyperparameters(hyperparameters: Hyperparameters) = apply {
             this.hyperparameters = hyperparameters
         }
@@ -386,6 +417,9 @@ constructor(
 
         /** A list of integrations to enable for your fine-tuning job. */
         fun addIntegration(integration: Integration) = apply { this.integrations.add(integration) }
+
+        /** The method used for fine-tuning. */
+        fun method(method: Method) = apply { this.method = method }
 
         /**
          * The seed controls the reproducibility of the job. Passing in the same seed and job
@@ -543,6 +577,7 @@ constructor(
                 checkNotNull(trainingFile) { "`trainingFile` is required but was not set" },
                 hyperparameters,
                 integrations.toImmutable().ifEmpty { null },
+                method,
                 seed,
                 suffix,
                 validationFile,
@@ -621,7 +656,10 @@ constructor(
         override fun toString() = value.toString()
     }
 
-    /** The hyperparameters used for the fine-tuning job. */
+    /**
+     * The hyperparameters used for the fine-tuning job. This value is now deprecated in favor of
+     * `method`, and should be passed in under the `method` parameter.
+     */
     @JsonDeserialize(builder = Hyperparameters.Builder::class)
     @NoAutoDetect
     class Hyperparameters
@@ -1516,16 +1554,1746 @@ constructor(
             "Integration{type=$type, wandb=$wandb, additionalProperties=$additionalProperties}"
     }
 
+    /** The method used for fine-tuning. */
+    @JsonDeserialize(builder = Method.Builder::class)
+    @NoAutoDetect
+    class Method
+    private constructor(
+        private val type: Type?,
+        private val supervised: Supervised?,
+        private val dpo: Dpo?,
+        private val additionalProperties: Map<String, JsonValue>,
+    ) {
+
+        /** The type of method. Is either `supervised` or `dpo`. */
+        @JsonProperty("type") fun type(): Type? = type
+
+        /** Configuration for the supervised fine-tuning method. */
+        @JsonProperty("supervised") fun supervised(): Supervised? = supervised
+
+        /** Configuration for the DPO fine-tuning method. */
+        @JsonProperty("dpo") fun dpo(): Dpo? = dpo
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            @JvmStatic fun builder() = Builder()
+        }
+
+        class Builder {
+
+            private var type: Type? = null
+            private var supervised: Supervised? = null
+            private var dpo: Dpo? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(method: Method) = apply {
+                this.type = method.type
+                this.supervised = method.supervised
+                this.dpo = method.dpo
+                additionalProperties(method.additionalProperties)
+            }
+
+            /** The type of method. Is either `supervised` or `dpo`. */
+            @JsonProperty("type") fun type(type: Type) = apply { this.type = type }
+
+            /** Configuration for the supervised fine-tuning method. */
+            @JsonProperty("supervised")
+            fun supervised(supervised: Supervised) = apply { this.supervised = supervised }
+
+            /** Configuration for the DPO fine-tuning method. */
+            @JsonProperty("dpo") fun dpo(dpo: Dpo) = apply { this.dpo = dpo }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            @JsonAnySetter
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                this.additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun build(): Method =
+                Method(
+                    type,
+                    supervised,
+                    dpo,
+                    additionalProperties.toImmutable(),
+                )
+        }
+
+        /** Configuration for the DPO fine-tuning method. */
+        @JsonDeserialize(builder = Dpo.Builder::class)
+        @NoAutoDetect
+        class Dpo
+        private constructor(
+            private val hyperparameters: Hyperparameters?,
+            private val additionalProperties: Map<String, JsonValue>,
+        ) {
+
+            /** The hyperparameters used for the fine-tuning job. */
+            @JsonProperty("hyperparameters")
+            fun hyperparameters(): Hyperparameters? = hyperparameters
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                @JvmStatic fun builder() = Builder()
+            }
+
+            class Builder {
+
+                private var hyperparameters: Hyperparameters? = null
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(dpo: Dpo) = apply {
+                    this.hyperparameters = dpo.hyperparameters
+                    additionalProperties(dpo.additionalProperties)
+                }
+
+                /** The hyperparameters used for the fine-tuning job. */
+                @JsonProperty("hyperparameters")
+                fun hyperparameters(hyperparameters: Hyperparameters) = apply {
+                    this.hyperparameters = hyperparameters
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    this.additionalProperties.putAll(additionalProperties)
+                }
+
+                @JsonAnySetter
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    this.additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun build(): Dpo = Dpo(hyperparameters, additionalProperties.toImmutable())
+            }
+
+            /** The hyperparameters used for the fine-tuning job. */
+            @JsonDeserialize(builder = Hyperparameters.Builder::class)
+            @NoAutoDetect
+            class Hyperparameters
+            private constructor(
+                private val beta: Beta?,
+                private val batchSize: BatchSize?,
+                private val learningRateMultiplier: LearningRateMultiplier?,
+                private val nEpochs: NEpochs?,
+                private val additionalProperties: Map<String, JsonValue>,
+            ) {
+
+                /**
+                 * The beta value for the DPO method. A higher beta value will increase the weight
+                 * of the penalty between the policy and reference model.
+                 */
+                @JsonProperty("beta") fun beta(): Beta? = beta
+
+                /**
+                 * Number of examples in each batch. A larger batch size means that model parameters
+                 * are updated less frequently, but with lower variance.
+                 */
+                @JsonProperty("batch_size") fun batchSize(): BatchSize? = batchSize
+
+                /**
+                 * Scaling factor for the learning rate. A smaller learning rate may be useful to
+                 * avoid overfitting.
+                 */
+                @JsonProperty("learning_rate_multiplier")
+                fun learningRateMultiplier(): LearningRateMultiplier? = learningRateMultiplier
+
+                /**
+                 * The number of epochs to train the model for. An epoch refers to one full cycle
+                 * through the training dataset.
+                 */
+                @JsonProperty("n_epochs") fun nEpochs(): NEpochs? = nEpochs
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                class Builder {
+
+                    private var beta: Beta? = null
+                    private var batchSize: BatchSize? = null
+                    private var learningRateMultiplier: LearningRateMultiplier? = null
+                    private var nEpochs: NEpochs? = null
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(hyperparameters: Hyperparameters) = apply {
+                        this.beta = hyperparameters.beta
+                        this.batchSize = hyperparameters.batchSize
+                        this.learningRateMultiplier = hyperparameters.learningRateMultiplier
+                        this.nEpochs = hyperparameters.nEpochs
+                        additionalProperties(hyperparameters.additionalProperties)
+                    }
+
+                    /**
+                     * The beta value for the DPO method. A higher beta value will increase the
+                     * weight of the penalty between the policy and reference model.
+                     */
+                    @JsonProperty("beta") fun beta(beta: Beta) = apply { this.beta = beta }
+
+                    /**
+                     * Number of examples in each batch. A larger batch size means that model
+                     * parameters are updated less frequently, but with lower variance.
+                     */
+                    @JsonProperty("batch_size")
+                    fun batchSize(batchSize: BatchSize) = apply { this.batchSize = batchSize }
+
+                    /**
+                     * Scaling factor for the learning rate. A smaller learning rate may be useful
+                     * to avoid overfitting.
+                     */
+                    @JsonProperty("learning_rate_multiplier")
+                    fun learningRateMultiplier(learningRateMultiplier: LearningRateMultiplier) =
+                        apply {
+                            this.learningRateMultiplier = learningRateMultiplier
+                        }
+
+                    /**
+                     * The number of epochs to train the model for. An epoch refers to one full
+                     * cycle through the training dataset.
+                     */
+                    @JsonProperty("n_epochs")
+                    fun nEpochs(nEpochs: NEpochs) = apply { this.nEpochs = nEpochs }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                    @JsonAnySetter
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        this.additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun build(): Hyperparameters =
+                        Hyperparameters(
+                            beta,
+                            batchSize,
+                            learningRateMultiplier,
+                            nEpochs,
+                            additionalProperties.toImmutable(),
+                        )
+                }
+
+                @JsonDeserialize(using = BatchSize.Deserializer::class)
+                @JsonSerialize(using = BatchSize.Serializer::class)
+                class BatchSize
+                private constructor(
+                    private val auto: Auto? = null,
+                    private val manual: Long? = null,
+                    private val _json: JsonValue? = null,
+                ) {
+
+                    private var validated: Boolean = false
+
+                    fun auto(): Optional<Auto> = Optional.ofNullable(auto)
+
+                    fun manual(): Optional<Long> = Optional.ofNullable(manual)
+
+                    fun isAuto(): Boolean = auto != null
+
+                    fun isManual(): Boolean = manual != null
+
+                    fun asAuto(): Auto = auto.getOrThrow("auto")
+
+                    fun asManual(): Long = manual.getOrThrow("manual")
+
+                    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+                    fun <T> accept(visitor: Visitor<T>): T {
+                        return when {
+                            auto != null -> visitor.visitAuto(auto)
+                            manual != null -> visitor.visitManual(manual)
+                            else -> visitor.unknown(_json)
+                        }
+                    }
+
+                    fun validate(): BatchSize = apply {
+                        if (!validated) {
+                            if (auto == null && manual == null) {
+                                throw OpenAIInvalidDataException("Unknown BatchSize: $_json")
+                            }
+                            validated = true
+                        }
+                    }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return /* spotless:off */ other is BatchSize && auto == other.auto && manual == other.manual /* spotless:on */
+                    }
+
+                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, manual) /* spotless:on */
+
+                    override fun toString(): String =
+                        when {
+                            auto != null -> "BatchSize{auto=$auto}"
+                            manual != null -> "BatchSize{manual=$manual}"
+                            _json != null -> "BatchSize{_unknown=$_json}"
+                            else -> throw IllegalStateException("Invalid BatchSize")
+                        }
+
+                    companion object {
+
+                        @JvmStatic fun ofAuto(auto: Auto) = BatchSize(auto = auto)
+
+                        @JvmStatic fun ofManual(manual: Long) = BatchSize(manual = manual)
+                    }
+
+                    interface Visitor<out T> {
+
+                        fun visitAuto(auto: Auto): T
+
+                        fun visitManual(manual: Long): T
+
+                        fun unknown(json: JsonValue?): T {
+                            throw OpenAIInvalidDataException("Unknown BatchSize: $json")
+                        }
+                    }
+
+                    class Deserializer : BaseDeserializer<BatchSize>(BatchSize::class) {
+
+                        override fun ObjectCodec.deserialize(node: JsonNode): BatchSize {
+                            val json = JsonValue.fromJsonNode(node)
+
+                            tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
+                                return BatchSize(auto = it, _json = json)
+                            }
+                            tryDeserialize(node, jacksonTypeRef<Long>())?.let {
+                                return BatchSize(manual = it, _json = json)
+                            }
+
+                            return BatchSize(_json = json)
+                        }
+                    }
+
+                    class Serializer : BaseSerializer<BatchSize>(BatchSize::class) {
+
+                        override fun serialize(
+                            value: BatchSize,
+                            generator: JsonGenerator,
+                            provider: SerializerProvider
+                        ) {
+                            when {
+                                value.auto != null -> generator.writeObject(value.auto)
+                                value.manual != null -> generator.writeObject(value.manual)
+                                value._json != null -> generator.writeObject(value._json)
+                                else -> throw IllegalStateException("Invalid BatchSize")
+                            }
+                        }
+                    }
+
+                    class Auto
+                    @JsonCreator
+                    private constructor(
+                        private val value: JsonField<String>,
+                    ) : Enum {
+
+                        @com.fasterxml.jackson.annotation.JsonValue
+                        fun _value(): JsonField<String> = value
+
+                        companion object {
+
+                            @JvmField val AUTO = of("auto")
+
+                            @JvmStatic fun of(value: String) = Auto(JsonField.of(value))
+                        }
+
+                        enum class Known {
+                            AUTO,
+                        }
+
+                        enum class Value {
+                            AUTO,
+                            _UNKNOWN,
+                        }
+
+                        fun value(): Value =
+                            when (this) {
+                                AUTO -> Value.AUTO
+                                else -> Value._UNKNOWN
+                            }
+
+                        fun known(): Known =
+                            when (this) {
+                                AUTO -> Known.AUTO
+                                else -> throw OpenAIInvalidDataException("Unknown Auto: $value")
+                            }
+
+                        fun asString(): String = _value().asStringOrThrow()
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return /* spotless:off */ other is Auto && value == other.value /* spotless:on */
+                        }
+
+                        override fun hashCode() = value.hashCode()
+
+                        override fun toString() = value.toString()
+                    }
+                }
+
+                @JsonDeserialize(using = Beta.Deserializer::class)
+                @JsonSerialize(using = Beta.Serializer::class)
+                class Beta
+                private constructor(
+                    private val auto: Auto? = null,
+                    private val manual: Double? = null,
+                    private val _json: JsonValue? = null,
+                ) {
+
+                    private var validated: Boolean = false
+
+                    fun auto(): Optional<Auto> = Optional.ofNullable(auto)
+
+                    fun manual(): Optional<Double> = Optional.ofNullable(manual)
+
+                    fun isAuto(): Boolean = auto != null
+
+                    fun isManual(): Boolean = manual != null
+
+                    fun asAuto(): Auto = auto.getOrThrow("auto")
+
+                    fun asManual(): Double = manual.getOrThrow("manual")
+
+                    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+                    fun <T> accept(visitor: Visitor<T>): T {
+                        return when {
+                            auto != null -> visitor.visitAuto(auto)
+                            manual != null -> visitor.visitManual(manual)
+                            else -> visitor.unknown(_json)
+                        }
+                    }
+
+                    fun validate(): Beta = apply {
+                        if (!validated) {
+                            if (auto == null && manual == null) {
+                                throw OpenAIInvalidDataException("Unknown Beta: $_json")
+                            }
+                            validated = true
+                        }
+                    }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return /* spotless:off */ other is Beta && auto == other.auto && manual == other.manual /* spotless:on */
+                    }
+
+                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, manual) /* spotless:on */
+
+                    override fun toString(): String =
+                        when {
+                            auto != null -> "Beta{auto=$auto}"
+                            manual != null -> "Beta{manual=$manual}"
+                            _json != null -> "Beta{_unknown=$_json}"
+                            else -> throw IllegalStateException("Invalid Beta")
+                        }
+
+                    companion object {
+
+                        @JvmStatic fun ofAuto(auto: Auto) = Beta(auto = auto)
+
+                        @JvmStatic fun ofManual(manual: Double) = Beta(manual = manual)
+                    }
+
+                    interface Visitor<out T> {
+
+                        fun visitAuto(auto: Auto): T
+
+                        fun visitManual(manual: Double): T
+
+                        fun unknown(json: JsonValue?): T {
+                            throw OpenAIInvalidDataException("Unknown Beta: $json")
+                        }
+                    }
+
+                    class Deserializer : BaseDeserializer<Beta>(Beta::class) {
+
+                        override fun ObjectCodec.deserialize(node: JsonNode): Beta {
+                            val json = JsonValue.fromJsonNode(node)
+
+                            tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
+                                return Beta(auto = it, _json = json)
+                            }
+                            tryDeserialize(node, jacksonTypeRef<Double>())?.let {
+                                return Beta(manual = it, _json = json)
+                            }
+
+                            return Beta(_json = json)
+                        }
+                    }
+
+                    class Serializer : BaseSerializer<Beta>(Beta::class) {
+
+                        override fun serialize(
+                            value: Beta,
+                            generator: JsonGenerator,
+                            provider: SerializerProvider
+                        ) {
+                            when {
+                                value.auto != null -> generator.writeObject(value.auto)
+                                value.manual != null -> generator.writeObject(value.manual)
+                                value._json != null -> generator.writeObject(value._json)
+                                else -> throw IllegalStateException("Invalid Beta")
+                            }
+                        }
+                    }
+
+                    class Auto
+                    @JsonCreator
+                    private constructor(
+                        private val value: JsonField<String>,
+                    ) : Enum {
+
+                        @com.fasterxml.jackson.annotation.JsonValue
+                        fun _value(): JsonField<String> = value
+
+                        companion object {
+
+                            @JvmField val AUTO = of("auto")
+
+                            @JvmStatic fun of(value: String) = Auto(JsonField.of(value))
+                        }
+
+                        enum class Known {
+                            AUTO,
+                        }
+
+                        enum class Value {
+                            AUTO,
+                            _UNKNOWN,
+                        }
+
+                        fun value(): Value =
+                            when (this) {
+                                AUTO -> Value.AUTO
+                                else -> Value._UNKNOWN
+                            }
+
+                        fun known(): Known =
+                            when (this) {
+                                AUTO -> Known.AUTO
+                                else -> throw OpenAIInvalidDataException("Unknown Auto: $value")
+                            }
+
+                        fun asString(): String = _value().asStringOrThrow()
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return /* spotless:off */ other is Auto && value == other.value /* spotless:on */
+                        }
+
+                        override fun hashCode() = value.hashCode()
+
+                        override fun toString() = value.toString()
+                    }
+                }
+
+                @JsonDeserialize(using = LearningRateMultiplier.Deserializer::class)
+                @JsonSerialize(using = LearningRateMultiplier.Serializer::class)
+                class LearningRateMultiplier
+                private constructor(
+                    private val auto: Auto? = null,
+                    private val manual: Double? = null,
+                    private val _json: JsonValue? = null,
+                ) {
+
+                    private var validated: Boolean = false
+
+                    fun auto(): Optional<Auto> = Optional.ofNullable(auto)
+
+                    fun manual(): Optional<Double> = Optional.ofNullable(manual)
+
+                    fun isAuto(): Boolean = auto != null
+
+                    fun isManual(): Boolean = manual != null
+
+                    fun asAuto(): Auto = auto.getOrThrow("auto")
+
+                    fun asManual(): Double = manual.getOrThrow("manual")
+
+                    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+                    fun <T> accept(visitor: Visitor<T>): T {
+                        return when {
+                            auto != null -> visitor.visitAuto(auto)
+                            manual != null -> visitor.visitManual(manual)
+                            else -> visitor.unknown(_json)
+                        }
+                    }
+
+                    fun validate(): LearningRateMultiplier = apply {
+                        if (!validated) {
+                            if (auto == null && manual == null) {
+                                throw OpenAIInvalidDataException(
+                                    "Unknown LearningRateMultiplier: $_json"
+                                )
+                            }
+                            validated = true
+                        }
+                    }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return /* spotless:off */ other is LearningRateMultiplier && auto == other.auto && manual == other.manual /* spotless:on */
+                    }
+
+                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, manual) /* spotless:on */
+
+                    override fun toString(): String =
+                        when {
+                            auto != null -> "LearningRateMultiplier{auto=$auto}"
+                            manual != null -> "LearningRateMultiplier{manual=$manual}"
+                            _json != null -> "LearningRateMultiplier{_unknown=$_json}"
+                            else -> throw IllegalStateException("Invalid LearningRateMultiplier")
+                        }
+
+                    companion object {
+
+                        @JvmStatic fun ofAuto(auto: Auto) = LearningRateMultiplier(auto = auto)
+
+                        @JvmStatic
+                        fun ofManual(manual: Double) = LearningRateMultiplier(manual = manual)
+                    }
+
+                    interface Visitor<out T> {
+
+                        fun visitAuto(auto: Auto): T
+
+                        fun visitManual(manual: Double): T
+
+                        fun unknown(json: JsonValue?): T {
+                            throw OpenAIInvalidDataException(
+                                "Unknown LearningRateMultiplier: $json"
+                            )
+                        }
+                    }
+
+                    class Deserializer :
+                        BaseDeserializer<LearningRateMultiplier>(LearningRateMultiplier::class) {
+
+                        override fun ObjectCodec.deserialize(
+                            node: JsonNode
+                        ): LearningRateMultiplier {
+                            val json = JsonValue.fromJsonNode(node)
+
+                            tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
+                                return LearningRateMultiplier(auto = it, _json = json)
+                            }
+                            tryDeserialize(node, jacksonTypeRef<Double>())?.let {
+                                return LearningRateMultiplier(manual = it, _json = json)
+                            }
+
+                            return LearningRateMultiplier(_json = json)
+                        }
+                    }
+
+                    class Serializer :
+                        BaseSerializer<LearningRateMultiplier>(LearningRateMultiplier::class) {
+
+                        override fun serialize(
+                            value: LearningRateMultiplier,
+                            generator: JsonGenerator,
+                            provider: SerializerProvider
+                        ) {
+                            when {
+                                value.auto != null -> generator.writeObject(value.auto)
+                                value.manual != null -> generator.writeObject(value.manual)
+                                value._json != null -> generator.writeObject(value._json)
+                                else ->
+                                    throw IllegalStateException("Invalid LearningRateMultiplier")
+                            }
+                        }
+                    }
+
+                    class Auto
+                    @JsonCreator
+                    private constructor(
+                        private val value: JsonField<String>,
+                    ) : Enum {
+
+                        @com.fasterxml.jackson.annotation.JsonValue
+                        fun _value(): JsonField<String> = value
+
+                        companion object {
+
+                            @JvmField val AUTO = of("auto")
+
+                            @JvmStatic fun of(value: String) = Auto(JsonField.of(value))
+                        }
+
+                        enum class Known {
+                            AUTO,
+                        }
+
+                        enum class Value {
+                            AUTO,
+                            _UNKNOWN,
+                        }
+
+                        fun value(): Value =
+                            when (this) {
+                                AUTO -> Value.AUTO
+                                else -> Value._UNKNOWN
+                            }
+
+                        fun known(): Known =
+                            when (this) {
+                                AUTO -> Known.AUTO
+                                else -> throw OpenAIInvalidDataException("Unknown Auto: $value")
+                            }
+
+                        fun asString(): String = _value().asStringOrThrow()
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return /* spotless:off */ other is Auto && value == other.value /* spotless:on */
+                        }
+
+                        override fun hashCode() = value.hashCode()
+
+                        override fun toString() = value.toString()
+                    }
+                }
+
+                @JsonDeserialize(using = NEpochs.Deserializer::class)
+                @JsonSerialize(using = NEpochs.Serializer::class)
+                class NEpochs
+                private constructor(
+                    private val auto: Auto? = null,
+                    private val manual: Long? = null,
+                    private val _json: JsonValue? = null,
+                ) {
+
+                    private var validated: Boolean = false
+
+                    fun auto(): Optional<Auto> = Optional.ofNullable(auto)
+
+                    fun manual(): Optional<Long> = Optional.ofNullable(manual)
+
+                    fun isAuto(): Boolean = auto != null
+
+                    fun isManual(): Boolean = manual != null
+
+                    fun asAuto(): Auto = auto.getOrThrow("auto")
+
+                    fun asManual(): Long = manual.getOrThrow("manual")
+
+                    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+                    fun <T> accept(visitor: Visitor<T>): T {
+                        return when {
+                            auto != null -> visitor.visitAuto(auto)
+                            manual != null -> visitor.visitManual(manual)
+                            else -> visitor.unknown(_json)
+                        }
+                    }
+
+                    fun validate(): NEpochs = apply {
+                        if (!validated) {
+                            if (auto == null && manual == null) {
+                                throw OpenAIInvalidDataException("Unknown NEpochs: $_json")
+                            }
+                            validated = true
+                        }
+                    }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return /* spotless:off */ other is NEpochs && auto == other.auto && manual == other.manual /* spotless:on */
+                    }
+
+                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, manual) /* spotless:on */
+
+                    override fun toString(): String =
+                        when {
+                            auto != null -> "NEpochs{auto=$auto}"
+                            manual != null -> "NEpochs{manual=$manual}"
+                            _json != null -> "NEpochs{_unknown=$_json}"
+                            else -> throw IllegalStateException("Invalid NEpochs")
+                        }
+
+                    companion object {
+
+                        @JvmStatic fun ofAuto(auto: Auto) = NEpochs(auto = auto)
+
+                        @JvmStatic fun ofManual(manual: Long) = NEpochs(manual = manual)
+                    }
+
+                    interface Visitor<out T> {
+
+                        fun visitAuto(auto: Auto): T
+
+                        fun visitManual(manual: Long): T
+
+                        fun unknown(json: JsonValue?): T {
+                            throw OpenAIInvalidDataException("Unknown NEpochs: $json")
+                        }
+                    }
+
+                    class Deserializer : BaseDeserializer<NEpochs>(NEpochs::class) {
+
+                        override fun ObjectCodec.deserialize(node: JsonNode): NEpochs {
+                            val json = JsonValue.fromJsonNode(node)
+
+                            tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
+                                return NEpochs(auto = it, _json = json)
+                            }
+                            tryDeserialize(node, jacksonTypeRef<Long>())?.let {
+                                return NEpochs(manual = it, _json = json)
+                            }
+
+                            return NEpochs(_json = json)
+                        }
+                    }
+
+                    class Serializer : BaseSerializer<NEpochs>(NEpochs::class) {
+
+                        override fun serialize(
+                            value: NEpochs,
+                            generator: JsonGenerator,
+                            provider: SerializerProvider
+                        ) {
+                            when {
+                                value.auto != null -> generator.writeObject(value.auto)
+                                value.manual != null -> generator.writeObject(value.manual)
+                                value._json != null -> generator.writeObject(value._json)
+                                else -> throw IllegalStateException("Invalid NEpochs")
+                            }
+                        }
+                    }
+
+                    class Auto
+                    @JsonCreator
+                    private constructor(
+                        private val value: JsonField<String>,
+                    ) : Enum {
+
+                        @com.fasterxml.jackson.annotation.JsonValue
+                        fun _value(): JsonField<String> = value
+
+                        companion object {
+
+                            @JvmField val AUTO = of("auto")
+
+                            @JvmStatic fun of(value: String) = Auto(JsonField.of(value))
+                        }
+
+                        enum class Known {
+                            AUTO,
+                        }
+
+                        enum class Value {
+                            AUTO,
+                            _UNKNOWN,
+                        }
+
+                        fun value(): Value =
+                            when (this) {
+                                AUTO -> Value.AUTO
+                                else -> Value._UNKNOWN
+                            }
+
+                        fun known(): Known =
+                            when (this) {
+                                AUTO -> Known.AUTO
+                                else -> throw OpenAIInvalidDataException("Unknown Auto: $value")
+                            }
+
+                        fun asString(): String = _value().asStringOrThrow()
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return /* spotless:off */ other is Auto && value == other.value /* spotless:on */
+                        }
+
+                        override fun hashCode() = value.hashCode()
+
+                        override fun toString() = value.toString()
+                    }
+                }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return /* spotless:off */ other is Hyperparameters && beta == other.beta && batchSize == other.batchSize && learningRateMultiplier == other.learningRateMultiplier && nEpochs == other.nEpochs && additionalProperties == other.additionalProperties /* spotless:on */
+                }
+
+                /* spotless:off */
+                private val hashCode: Int by lazy { Objects.hash(beta, batchSize, learningRateMultiplier, nEpochs, additionalProperties) }
+                /* spotless:on */
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "Hyperparameters{beta=$beta, batchSize=$batchSize, learningRateMultiplier=$learningRateMultiplier, nEpochs=$nEpochs, additionalProperties=$additionalProperties}"
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is Dpo && hyperparameters == other.hyperparameters && additionalProperties == other.additionalProperties /* spotless:on */
+            }
+
+            /* spotless:off */
+            private val hashCode: Int by lazy { Objects.hash(hyperparameters, additionalProperties) }
+            /* spotless:on */
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Dpo{hyperparameters=$hyperparameters, additionalProperties=$additionalProperties}"
+        }
+
+        /** Configuration for the supervised fine-tuning method. */
+        @JsonDeserialize(builder = Supervised.Builder::class)
+        @NoAutoDetect
+        class Supervised
+        private constructor(
+            private val hyperparameters: Hyperparameters?,
+            private val additionalProperties: Map<String, JsonValue>,
+        ) {
+
+            /** The hyperparameters used for the fine-tuning job. */
+            @JsonProperty("hyperparameters")
+            fun hyperparameters(): Hyperparameters? = hyperparameters
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                @JvmStatic fun builder() = Builder()
+            }
+
+            class Builder {
+
+                private var hyperparameters: Hyperparameters? = null
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(supervised: Supervised) = apply {
+                    this.hyperparameters = supervised.hyperparameters
+                    additionalProperties(supervised.additionalProperties)
+                }
+
+                /** The hyperparameters used for the fine-tuning job. */
+                @JsonProperty("hyperparameters")
+                fun hyperparameters(hyperparameters: Hyperparameters) = apply {
+                    this.hyperparameters = hyperparameters
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    this.additionalProperties.putAll(additionalProperties)
+                }
+
+                @JsonAnySetter
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    this.additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun build(): Supervised =
+                    Supervised(hyperparameters, additionalProperties.toImmutable())
+            }
+
+            /** The hyperparameters used for the fine-tuning job. */
+            @JsonDeserialize(builder = Hyperparameters.Builder::class)
+            @NoAutoDetect
+            class Hyperparameters
+            private constructor(
+                private val batchSize: BatchSize?,
+                private val learningRateMultiplier: LearningRateMultiplier?,
+                private val nEpochs: NEpochs?,
+                private val additionalProperties: Map<String, JsonValue>,
+            ) {
+
+                /**
+                 * Number of examples in each batch. A larger batch size means that model parameters
+                 * are updated less frequently, but with lower variance.
+                 */
+                @JsonProperty("batch_size") fun batchSize(): BatchSize? = batchSize
+
+                /**
+                 * Scaling factor for the learning rate. A smaller learning rate may be useful to
+                 * avoid overfitting.
+                 */
+                @JsonProperty("learning_rate_multiplier")
+                fun learningRateMultiplier(): LearningRateMultiplier? = learningRateMultiplier
+
+                /**
+                 * The number of epochs to train the model for. An epoch refers to one full cycle
+                 * through the training dataset.
+                 */
+                @JsonProperty("n_epochs") fun nEpochs(): NEpochs? = nEpochs
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                class Builder {
+
+                    private var batchSize: BatchSize? = null
+                    private var learningRateMultiplier: LearningRateMultiplier? = null
+                    private var nEpochs: NEpochs? = null
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(hyperparameters: Hyperparameters) = apply {
+                        this.batchSize = hyperparameters.batchSize
+                        this.learningRateMultiplier = hyperparameters.learningRateMultiplier
+                        this.nEpochs = hyperparameters.nEpochs
+                        additionalProperties(hyperparameters.additionalProperties)
+                    }
+
+                    /**
+                     * Number of examples in each batch. A larger batch size means that model
+                     * parameters are updated less frequently, but with lower variance.
+                     */
+                    @JsonProperty("batch_size")
+                    fun batchSize(batchSize: BatchSize) = apply { this.batchSize = batchSize }
+
+                    /**
+                     * Scaling factor for the learning rate. A smaller learning rate may be useful
+                     * to avoid overfitting.
+                     */
+                    @JsonProperty("learning_rate_multiplier")
+                    fun learningRateMultiplier(learningRateMultiplier: LearningRateMultiplier) =
+                        apply {
+                            this.learningRateMultiplier = learningRateMultiplier
+                        }
+
+                    /**
+                     * The number of epochs to train the model for. An epoch refers to one full
+                     * cycle through the training dataset.
+                     */
+                    @JsonProperty("n_epochs")
+                    fun nEpochs(nEpochs: NEpochs) = apply { this.nEpochs = nEpochs }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                    @JsonAnySetter
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        this.additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun build(): Hyperparameters =
+                        Hyperparameters(
+                            batchSize,
+                            learningRateMultiplier,
+                            nEpochs,
+                            additionalProperties.toImmutable(),
+                        )
+                }
+
+                @JsonDeserialize(using = BatchSize.Deserializer::class)
+                @JsonSerialize(using = BatchSize.Serializer::class)
+                class BatchSize
+                private constructor(
+                    private val auto: Auto? = null,
+                    private val manual: Long? = null,
+                    private val _json: JsonValue? = null,
+                ) {
+
+                    private var validated: Boolean = false
+
+                    fun auto(): Optional<Auto> = Optional.ofNullable(auto)
+
+                    fun manual(): Optional<Long> = Optional.ofNullable(manual)
+
+                    fun isAuto(): Boolean = auto != null
+
+                    fun isManual(): Boolean = manual != null
+
+                    fun asAuto(): Auto = auto.getOrThrow("auto")
+
+                    fun asManual(): Long = manual.getOrThrow("manual")
+
+                    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+                    fun <T> accept(visitor: Visitor<T>): T {
+                        return when {
+                            auto != null -> visitor.visitAuto(auto)
+                            manual != null -> visitor.visitManual(manual)
+                            else -> visitor.unknown(_json)
+                        }
+                    }
+
+                    fun validate(): BatchSize = apply {
+                        if (!validated) {
+                            if (auto == null && manual == null) {
+                                throw OpenAIInvalidDataException("Unknown BatchSize: $_json")
+                            }
+                            validated = true
+                        }
+                    }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return /* spotless:off */ other is BatchSize && auto == other.auto && manual == other.manual /* spotless:on */
+                    }
+
+                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, manual) /* spotless:on */
+
+                    override fun toString(): String =
+                        when {
+                            auto != null -> "BatchSize{auto=$auto}"
+                            manual != null -> "BatchSize{manual=$manual}"
+                            _json != null -> "BatchSize{_unknown=$_json}"
+                            else -> throw IllegalStateException("Invalid BatchSize")
+                        }
+
+                    companion object {
+
+                        @JvmStatic fun ofAuto(auto: Auto) = BatchSize(auto = auto)
+
+                        @JvmStatic fun ofManual(manual: Long) = BatchSize(manual = manual)
+                    }
+
+                    interface Visitor<out T> {
+
+                        fun visitAuto(auto: Auto): T
+
+                        fun visitManual(manual: Long): T
+
+                        fun unknown(json: JsonValue?): T {
+                            throw OpenAIInvalidDataException("Unknown BatchSize: $json")
+                        }
+                    }
+
+                    class Deserializer : BaseDeserializer<BatchSize>(BatchSize::class) {
+
+                        override fun ObjectCodec.deserialize(node: JsonNode): BatchSize {
+                            val json = JsonValue.fromJsonNode(node)
+
+                            tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
+                                return BatchSize(auto = it, _json = json)
+                            }
+                            tryDeserialize(node, jacksonTypeRef<Long>())?.let {
+                                return BatchSize(manual = it, _json = json)
+                            }
+
+                            return BatchSize(_json = json)
+                        }
+                    }
+
+                    class Serializer : BaseSerializer<BatchSize>(BatchSize::class) {
+
+                        override fun serialize(
+                            value: BatchSize,
+                            generator: JsonGenerator,
+                            provider: SerializerProvider
+                        ) {
+                            when {
+                                value.auto != null -> generator.writeObject(value.auto)
+                                value.manual != null -> generator.writeObject(value.manual)
+                                value._json != null -> generator.writeObject(value._json)
+                                else -> throw IllegalStateException("Invalid BatchSize")
+                            }
+                        }
+                    }
+
+                    class Auto
+                    @JsonCreator
+                    private constructor(
+                        private val value: JsonField<String>,
+                    ) : Enum {
+
+                        @com.fasterxml.jackson.annotation.JsonValue
+                        fun _value(): JsonField<String> = value
+
+                        companion object {
+
+                            @JvmField val AUTO = of("auto")
+
+                            @JvmStatic fun of(value: String) = Auto(JsonField.of(value))
+                        }
+
+                        enum class Known {
+                            AUTO,
+                        }
+
+                        enum class Value {
+                            AUTO,
+                            _UNKNOWN,
+                        }
+
+                        fun value(): Value =
+                            when (this) {
+                                AUTO -> Value.AUTO
+                                else -> Value._UNKNOWN
+                            }
+
+                        fun known(): Known =
+                            when (this) {
+                                AUTO -> Known.AUTO
+                                else -> throw OpenAIInvalidDataException("Unknown Auto: $value")
+                            }
+
+                        fun asString(): String = _value().asStringOrThrow()
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return /* spotless:off */ other is Auto && value == other.value /* spotless:on */
+                        }
+
+                        override fun hashCode() = value.hashCode()
+
+                        override fun toString() = value.toString()
+                    }
+                }
+
+                @JsonDeserialize(using = LearningRateMultiplier.Deserializer::class)
+                @JsonSerialize(using = LearningRateMultiplier.Serializer::class)
+                class LearningRateMultiplier
+                private constructor(
+                    private val auto: Auto? = null,
+                    private val manual: Double? = null,
+                    private val _json: JsonValue? = null,
+                ) {
+
+                    private var validated: Boolean = false
+
+                    fun auto(): Optional<Auto> = Optional.ofNullable(auto)
+
+                    fun manual(): Optional<Double> = Optional.ofNullable(manual)
+
+                    fun isAuto(): Boolean = auto != null
+
+                    fun isManual(): Boolean = manual != null
+
+                    fun asAuto(): Auto = auto.getOrThrow("auto")
+
+                    fun asManual(): Double = manual.getOrThrow("manual")
+
+                    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+                    fun <T> accept(visitor: Visitor<T>): T {
+                        return when {
+                            auto != null -> visitor.visitAuto(auto)
+                            manual != null -> visitor.visitManual(manual)
+                            else -> visitor.unknown(_json)
+                        }
+                    }
+
+                    fun validate(): LearningRateMultiplier = apply {
+                        if (!validated) {
+                            if (auto == null && manual == null) {
+                                throw OpenAIInvalidDataException(
+                                    "Unknown LearningRateMultiplier: $_json"
+                                )
+                            }
+                            validated = true
+                        }
+                    }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return /* spotless:off */ other is LearningRateMultiplier && auto == other.auto && manual == other.manual /* spotless:on */
+                    }
+
+                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, manual) /* spotless:on */
+
+                    override fun toString(): String =
+                        when {
+                            auto != null -> "LearningRateMultiplier{auto=$auto}"
+                            manual != null -> "LearningRateMultiplier{manual=$manual}"
+                            _json != null -> "LearningRateMultiplier{_unknown=$_json}"
+                            else -> throw IllegalStateException("Invalid LearningRateMultiplier")
+                        }
+
+                    companion object {
+
+                        @JvmStatic fun ofAuto(auto: Auto) = LearningRateMultiplier(auto = auto)
+
+                        @JvmStatic
+                        fun ofManual(manual: Double) = LearningRateMultiplier(manual = manual)
+                    }
+
+                    interface Visitor<out T> {
+
+                        fun visitAuto(auto: Auto): T
+
+                        fun visitManual(manual: Double): T
+
+                        fun unknown(json: JsonValue?): T {
+                            throw OpenAIInvalidDataException(
+                                "Unknown LearningRateMultiplier: $json"
+                            )
+                        }
+                    }
+
+                    class Deserializer :
+                        BaseDeserializer<LearningRateMultiplier>(LearningRateMultiplier::class) {
+
+                        override fun ObjectCodec.deserialize(
+                            node: JsonNode
+                        ): LearningRateMultiplier {
+                            val json = JsonValue.fromJsonNode(node)
+
+                            tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
+                                return LearningRateMultiplier(auto = it, _json = json)
+                            }
+                            tryDeserialize(node, jacksonTypeRef<Double>())?.let {
+                                return LearningRateMultiplier(manual = it, _json = json)
+                            }
+
+                            return LearningRateMultiplier(_json = json)
+                        }
+                    }
+
+                    class Serializer :
+                        BaseSerializer<LearningRateMultiplier>(LearningRateMultiplier::class) {
+
+                        override fun serialize(
+                            value: LearningRateMultiplier,
+                            generator: JsonGenerator,
+                            provider: SerializerProvider
+                        ) {
+                            when {
+                                value.auto != null -> generator.writeObject(value.auto)
+                                value.manual != null -> generator.writeObject(value.manual)
+                                value._json != null -> generator.writeObject(value._json)
+                                else ->
+                                    throw IllegalStateException("Invalid LearningRateMultiplier")
+                            }
+                        }
+                    }
+
+                    class Auto
+                    @JsonCreator
+                    private constructor(
+                        private val value: JsonField<String>,
+                    ) : Enum {
+
+                        @com.fasterxml.jackson.annotation.JsonValue
+                        fun _value(): JsonField<String> = value
+
+                        companion object {
+
+                            @JvmField val AUTO = of("auto")
+
+                            @JvmStatic fun of(value: String) = Auto(JsonField.of(value))
+                        }
+
+                        enum class Known {
+                            AUTO,
+                        }
+
+                        enum class Value {
+                            AUTO,
+                            _UNKNOWN,
+                        }
+
+                        fun value(): Value =
+                            when (this) {
+                                AUTO -> Value.AUTO
+                                else -> Value._UNKNOWN
+                            }
+
+                        fun known(): Known =
+                            when (this) {
+                                AUTO -> Known.AUTO
+                                else -> throw OpenAIInvalidDataException("Unknown Auto: $value")
+                            }
+
+                        fun asString(): String = _value().asStringOrThrow()
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return /* spotless:off */ other is Auto && value == other.value /* spotless:on */
+                        }
+
+                        override fun hashCode() = value.hashCode()
+
+                        override fun toString() = value.toString()
+                    }
+                }
+
+                @JsonDeserialize(using = NEpochs.Deserializer::class)
+                @JsonSerialize(using = NEpochs.Serializer::class)
+                class NEpochs
+                private constructor(
+                    private val auto: Auto? = null,
+                    private val manual: Long? = null,
+                    private val _json: JsonValue? = null,
+                ) {
+
+                    private var validated: Boolean = false
+
+                    fun auto(): Optional<Auto> = Optional.ofNullable(auto)
+
+                    fun manual(): Optional<Long> = Optional.ofNullable(manual)
+
+                    fun isAuto(): Boolean = auto != null
+
+                    fun isManual(): Boolean = manual != null
+
+                    fun asAuto(): Auto = auto.getOrThrow("auto")
+
+                    fun asManual(): Long = manual.getOrThrow("manual")
+
+                    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+                    fun <T> accept(visitor: Visitor<T>): T {
+                        return when {
+                            auto != null -> visitor.visitAuto(auto)
+                            manual != null -> visitor.visitManual(manual)
+                            else -> visitor.unknown(_json)
+                        }
+                    }
+
+                    fun validate(): NEpochs = apply {
+                        if (!validated) {
+                            if (auto == null && manual == null) {
+                                throw OpenAIInvalidDataException("Unknown NEpochs: $_json")
+                            }
+                            validated = true
+                        }
+                    }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return /* spotless:off */ other is NEpochs && auto == other.auto && manual == other.manual /* spotless:on */
+                    }
+
+                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, manual) /* spotless:on */
+
+                    override fun toString(): String =
+                        when {
+                            auto != null -> "NEpochs{auto=$auto}"
+                            manual != null -> "NEpochs{manual=$manual}"
+                            _json != null -> "NEpochs{_unknown=$_json}"
+                            else -> throw IllegalStateException("Invalid NEpochs")
+                        }
+
+                    companion object {
+
+                        @JvmStatic fun ofAuto(auto: Auto) = NEpochs(auto = auto)
+
+                        @JvmStatic fun ofManual(manual: Long) = NEpochs(manual = manual)
+                    }
+
+                    interface Visitor<out T> {
+
+                        fun visitAuto(auto: Auto): T
+
+                        fun visitManual(manual: Long): T
+
+                        fun unknown(json: JsonValue?): T {
+                            throw OpenAIInvalidDataException("Unknown NEpochs: $json")
+                        }
+                    }
+
+                    class Deserializer : BaseDeserializer<NEpochs>(NEpochs::class) {
+
+                        override fun ObjectCodec.deserialize(node: JsonNode): NEpochs {
+                            val json = JsonValue.fromJsonNode(node)
+
+                            tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
+                                return NEpochs(auto = it, _json = json)
+                            }
+                            tryDeserialize(node, jacksonTypeRef<Long>())?.let {
+                                return NEpochs(manual = it, _json = json)
+                            }
+
+                            return NEpochs(_json = json)
+                        }
+                    }
+
+                    class Serializer : BaseSerializer<NEpochs>(NEpochs::class) {
+
+                        override fun serialize(
+                            value: NEpochs,
+                            generator: JsonGenerator,
+                            provider: SerializerProvider
+                        ) {
+                            when {
+                                value.auto != null -> generator.writeObject(value.auto)
+                                value.manual != null -> generator.writeObject(value.manual)
+                                value._json != null -> generator.writeObject(value._json)
+                                else -> throw IllegalStateException("Invalid NEpochs")
+                            }
+                        }
+                    }
+
+                    class Auto
+                    @JsonCreator
+                    private constructor(
+                        private val value: JsonField<String>,
+                    ) : Enum {
+
+                        @com.fasterxml.jackson.annotation.JsonValue
+                        fun _value(): JsonField<String> = value
+
+                        companion object {
+
+                            @JvmField val AUTO = of("auto")
+
+                            @JvmStatic fun of(value: String) = Auto(JsonField.of(value))
+                        }
+
+                        enum class Known {
+                            AUTO,
+                        }
+
+                        enum class Value {
+                            AUTO,
+                            _UNKNOWN,
+                        }
+
+                        fun value(): Value =
+                            when (this) {
+                                AUTO -> Value.AUTO
+                                else -> Value._UNKNOWN
+                            }
+
+                        fun known(): Known =
+                            when (this) {
+                                AUTO -> Known.AUTO
+                                else -> throw OpenAIInvalidDataException("Unknown Auto: $value")
+                            }
+
+                        fun asString(): String = _value().asStringOrThrow()
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return /* spotless:off */ other is Auto && value == other.value /* spotless:on */
+                        }
+
+                        override fun hashCode() = value.hashCode()
+
+                        override fun toString() = value.toString()
+                    }
+                }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return /* spotless:off */ other is Hyperparameters && batchSize == other.batchSize && learningRateMultiplier == other.learningRateMultiplier && nEpochs == other.nEpochs && additionalProperties == other.additionalProperties /* spotless:on */
+                }
+
+                /* spotless:off */
+                private val hashCode: Int by lazy { Objects.hash(batchSize, learningRateMultiplier, nEpochs, additionalProperties) }
+                /* spotless:on */
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "Hyperparameters{batchSize=$batchSize, learningRateMultiplier=$learningRateMultiplier, nEpochs=$nEpochs, additionalProperties=$additionalProperties}"
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is Supervised && hyperparameters == other.hyperparameters && additionalProperties == other.additionalProperties /* spotless:on */
+            }
+
+            /* spotless:off */
+            private val hashCode: Int by lazy { Objects.hash(hyperparameters, additionalProperties) }
+            /* spotless:on */
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Supervised{hyperparameters=$hyperparameters, additionalProperties=$additionalProperties}"
+        }
+
+        class Type
+        @JsonCreator
+        private constructor(
+            private val value: JsonField<String>,
+        ) : Enum {
+
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val SUPERVISED = of("supervised")
+
+                @JvmField val DPO = of("dpo")
+
+                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
+            }
+
+            enum class Known {
+                SUPERVISED,
+                DPO,
+            }
+
+            enum class Value {
+                SUPERVISED,
+                DPO,
+                _UNKNOWN,
+            }
+
+            fun value(): Value =
+                when (this) {
+                    SUPERVISED -> Value.SUPERVISED
+                    DPO -> Value.DPO
+                    else -> Value._UNKNOWN
+                }
+
+            fun known(): Known =
+                when (this) {
+                    SUPERVISED -> Known.SUPERVISED
+                    DPO -> Known.DPO
+                    else -> throw OpenAIInvalidDataException("Unknown Type: $value")
+                }
+
+            fun asString(): String = _value().asStringOrThrow()
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Method && type == other.type && supervised == other.supervised && dpo == other.dpo && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(type, supervised, dpo, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Method{type=$type, supervised=$supervised, dpo=$dpo, additionalProperties=$additionalProperties}"
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return /* spotless:off */ other is FineTuningJobCreateParams && model == other.model && trainingFile == other.trainingFile && hyperparameters == other.hyperparameters && integrations == other.integrations && seed == other.seed && suffix == other.suffix && validationFile == other.validationFile && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return /* spotless:off */ other is FineTuningJobCreateParams && model == other.model && trainingFile == other.trainingFile && hyperparameters == other.hyperparameters && integrations == other.integrations && method == other.method && seed == other.seed && suffix == other.suffix && validationFile == other.validationFile && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(model, trainingFile, hyperparameters, integrations, seed, suffix, validationFile, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(model, trainingFile, hyperparameters, integrations, method, seed, suffix, validationFile, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
 
     override fun toString() =
-        "FineTuningJobCreateParams{model=$model, trainingFile=$trainingFile, hyperparameters=$hyperparameters, integrations=$integrations, seed=$seed, suffix=$suffix, validationFile=$validationFile, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
+        "FineTuningJobCreateParams{model=$model, trainingFile=$trainingFile, hyperparameters=$hyperparameters, integrations=$integrations, method=$method, seed=$seed, suffix=$suffix, validationFile=$validationFile, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

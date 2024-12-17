@@ -28,6 +28,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
+/** Messages sent by the model in response to user messages. */
 @JsonDeserialize(builder = ChatCompletionAssistantMessageParam.Builder::class)
 @NoAutoDetect
 class ChatCompletionAssistantMessageParam

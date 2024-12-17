@@ -17,6 +17,10 @@ private constructor(
 
     companion object {
 
+        @JvmField val O1 = of("o1")
+
+        @JvmField val O1_2024_12_17 = of("o1-2024-12-17")
+
         @JvmField val O1_PREVIEW = of("o1-preview")
 
         @JvmField val O1_PREVIEW_2024_09_12 = of("o1-preview-2024-09-12")
@@ -33,13 +37,16 @@ private constructor(
 
         @JvmField val GPT_4O_2024_05_13 = of("gpt-4o-2024-05-13")
 
-        @JvmField val GPT_4O_REALTIME_PREVIEW = of("gpt-4o-realtime-preview")
-
-        @JvmField val GPT_4O_REALTIME_PREVIEW_2024_10_01 = of("gpt-4o-realtime-preview-2024-10-01")
-
         @JvmField val GPT_4O_AUDIO_PREVIEW = of("gpt-4o-audio-preview")
 
         @JvmField val GPT_4O_AUDIO_PREVIEW_2024_10_01 = of("gpt-4o-audio-preview-2024-10-01")
+
+        @JvmField val GPT_4O_AUDIO_PREVIEW_2024_12_17 = of("gpt-4o-audio-preview-2024-12-17")
+
+        @JvmField val GPT_4O_MINI_AUDIO_PREVIEW = of("gpt-4o-mini-audio-preview")
+
+        @JvmField
+        val GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17 = of("gpt-4o-mini-audio-preview-2024-12-17")
 
         @JvmField val CHATGPT_4O_LATEST = of("chatgpt-4o-latest")
 
@@ -89,6 +96,8 @@ private constructor(
     }
 
     enum class Known {
+        O1,
+        O1_2024_12_17,
         O1_PREVIEW,
         O1_PREVIEW_2024_09_12,
         O1_MINI,
@@ -97,10 +106,11 @@ private constructor(
         GPT_4O_2024_11_20,
         GPT_4O_2024_08_06,
         GPT_4O_2024_05_13,
-        GPT_4O_REALTIME_PREVIEW,
-        GPT_4O_REALTIME_PREVIEW_2024_10_01,
         GPT_4O_AUDIO_PREVIEW,
         GPT_4O_AUDIO_PREVIEW_2024_10_01,
+        GPT_4O_AUDIO_PREVIEW_2024_12_17,
+        GPT_4O_MINI_AUDIO_PREVIEW,
+        GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17,
         CHATGPT_4O_LATEST,
         GPT_4O_MINI,
         GPT_4O_MINI_2024_07_18,
@@ -126,6 +136,8 @@ private constructor(
     }
 
     enum class Value {
+        O1,
+        O1_2024_12_17,
         O1_PREVIEW,
         O1_PREVIEW_2024_09_12,
         O1_MINI,
@@ -134,10 +146,11 @@ private constructor(
         GPT_4O_2024_11_20,
         GPT_4O_2024_08_06,
         GPT_4O_2024_05_13,
-        GPT_4O_REALTIME_PREVIEW,
-        GPT_4O_REALTIME_PREVIEW_2024_10_01,
         GPT_4O_AUDIO_PREVIEW,
         GPT_4O_AUDIO_PREVIEW_2024_10_01,
+        GPT_4O_AUDIO_PREVIEW_2024_12_17,
+        GPT_4O_MINI_AUDIO_PREVIEW,
+        GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17,
         CHATGPT_4O_LATEST,
         GPT_4O_MINI,
         GPT_4O_MINI_2024_07_18,
@@ -165,6 +178,8 @@ private constructor(
 
     fun value(): Value =
         when (this) {
+            O1 -> Value.O1
+            O1_2024_12_17 -> Value.O1_2024_12_17
             O1_PREVIEW -> Value.O1_PREVIEW
             O1_PREVIEW_2024_09_12 -> Value.O1_PREVIEW_2024_09_12
             O1_MINI -> Value.O1_MINI
@@ -173,10 +188,11 @@ private constructor(
             GPT_4O_2024_11_20 -> Value.GPT_4O_2024_11_20
             GPT_4O_2024_08_06 -> Value.GPT_4O_2024_08_06
             GPT_4O_2024_05_13 -> Value.GPT_4O_2024_05_13
-            GPT_4O_REALTIME_PREVIEW -> Value.GPT_4O_REALTIME_PREVIEW
-            GPT_4O_REALTIME_PREVIEW_2024_10_01 -> Value.GPT_4O_REALTIME_PREVIEW_2024_10_01
             GPT_4O_AUDIO_PREVIEW -> Value.GPT_4O_AUDIO_PREVIEW
             GPT_4O_AUDIO_PREVIEW_2024_10_01 -> Value.GPT_4O_AUDIO_PREVIEW_2024_10_01
+            GPT_4O_AUDIO_PREVIEW_2024_12_17 -> Value.GPT_4O_AUDIO_PREVIEW_2024_12_17
+            GPT_4O_MINI_AUDIO_PREVIEW -> Value.GPT_4O_MINI_AUDIO_PREVIEW
+            GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17 -> Value.GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17
             CHATGPT_4O_LATEST -> Value.CHATGPT_4O_LATEST
             GPT_4O_MINI -> Value.GPT_4O_MINI
             GPT_4O_MINI_2024_07_18 -> Value.GPT_4O_MINI_2024_07_18
@@ -204,6 +220,8 @@ private constructor(
 
     fun known(): Known =
         when (this) {
+            O1 -> Known.O1
+            O1_2024_12_17 -> Known.O1_2024_12_17
             O1_PREVIEW -> Known.O1_PREVIEW
             O1_PREVIEW_2024_09_12 -> Known.O1_PREVIEW_2024_09_12
             O1_MINI -> Known.O1_MINI
@@ -212,10 +230,11 @@ private constructor(
             GPT_4O_2024_11_20 -> Known.GPT_4O_2024_11_20
             GPT_4O_2024_08_06 -> Known.GPT_4O_2024_08_06
             GPT_4O_2024_05_13 -> Known.GPT_4O_2024_05_13
-            GPT_4O_REALTIME_PREVIEW -> Known.GPT_4O_REALTIME_PREVIEW
-            GPT_4O_REALTIME_PREVIEW_2024_10_01 -> Known.GPT_4O_REALTIME_PREVIEW_2024_10_01
             GPT_4O_AUDIO_PREVIEW -> Known.GPT_4O_AUDIO_PREVIEW
             GPT_4O_AUDIO_PREVIEW_2024_10_01 -> Known.GPT_4O_AUDIO_PREVIEW_2024_10_01
+            GPT_4O_AUDIO_PREVIEW_2024_12_17 -> Known.GPT_4O_AUDIO_PREVIEW_2024_12_17
+            GPT_4O_MINI_AUDIO_PREVIEW -> Known.GPT_4O_MINI_AUDIO_PREVIEW
+            GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17 -> Known.GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17
             CHATGPT_4O_LATEST -> Known.CHATGPT_4O_LATEST
             GPT_4O_MINI -> Known.GPT_4O_MINI
             GPT_4O_MINI_2024_07_18 -> Known.GPT_4O_MINI_2024_07_18

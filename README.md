@@ -95,7 +95,7 @@ ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
         .role(ChatCompletionUserMessageParam.Role.USER)
         .content(ChatCompletionUserMessageParam.Content.ofTextContent("Say this is a test"))
         .build())))
-    .model(ChatModel.O1_PREVIEW)
+    .model(ChatModel.O1)
     .build();
 ChatCompletion chatCompletion = client.chat().completions().create(params);
 ```

@@ -13,18 +13,18 @@ class ChatCompletionCreateParamsTest {
         ChatCompletionCreateParams.builder()
             .messages(
                 listOf(
-                    ChatCompletionMessageParam.ofChatCompletionSystemMessageParam(
-                        ChatCompletionSystemMessageParam.builder()
+                    ChatCompletionMessageParam.ofChatCompletionDeveloperMessageParam(
+                        ChatCompletionDeveloperMessageParam.builder()
                             .content(
-                                ChatCompletionSystemMessageParam.Content.ofTextContent("string")
+                                ChatCompletionDeveloperMessageParam.Content.ofTextContent("string")
                             )
-                            .role(ChatCompletionSystemMessageParam.Role.SYSTEM)
+                            .role(ChatCompletionDeveloperMessageParam.Role.DEVELOPER)
                             .name("name")
                             .build()
                     )
                 )
             )
-            .model(ChatModel.O1_PREVIEW)
+            .model(ChatModel.O1)
             .audio(
                 ChatCompletionAudioParam.builder()
                     .format(ChatCompletionAudioParam.Format.WAV)
@@ -73,6 +73,7 @@ class ChatCompletionCreateParamsTest {
                     .build()
             )
             .presencePenalty(-2.0)
+            .reasoningEffort(ChatCompletionReasoningEffort.LOW)
             .responseFormat(
                 ChatCompletionCreateParams.ResponseFormat.ofResponseFormatText(
                     ResponseFormatText.builder().type(ResponseFormatText.Type.TEXT).build()
@@ -120,18 +121,20 @@ class ChatCompletionCreateParamsTest {
             ChatCompletionCreateParams.builder()
                 .messages(
                     listOf(
-                        ChatCompletionMessageParam.ofChatCompletionSystemMessageParam(
-                            ChatCompletionSystemMessageParam.builder()
+                        ChatCompletionMessageParam.ofChatCompletionDeveloperMessageParam(
+                            ChatCompletionDeveloperMessageParam.builder()
                                 .content(
-                                    ChatCompletionSystemMessageParam.Content.ofTextContent("string")
+                                    ChatCompletionDeveloperMessageParam.Content.ofTextContent(
+                                        "string"
+                                    )
                                 )
-                                .role(ChatCompletionSystemMessageParam.Role.SYSTEM)
+                                .role(ChatCompletionDeveloperMessageParam.Role.DEVELOPER)
                                 .name("name")
                                 .build()
                         )
                     )
                 )
-                .model(ChatModel.O1_PREVIEW)
+                .model(ChatModel.O1)
                 .audio(
                     ChatCompletionAudioParam.builder()
                         .format(ChatCompletionAudioParam.Format.WAV)
@@ -180,6 +183,7 @@ class ChatCompletionCreateParamsTest {
                         .build()
                 )
                 .presencePenalty(-2.0)
+                .reasoningEffort(ChatCompletionReasoningEffort.LOW)
                 .responseFormat(
                     ChatCompletionCreateParams.ResponseFormat.ofResponseFormatText(
                         ResponseFormatText.builder().type(ResponseFormatText.Type.TEXT).build()
@@ -224,18 +228,18 @@ class ChatCompletionCreateParamsTest {
         assertThat(body.messages())
             .isEqualTo(
                 listOf(
-                    ChatCompletionMessageParam.ofChatCompletionSystemMessageParam(
-                        ChatCompletionSystemMessageParam.builder()
+                    ChatCompletionMessageParam.ofChatCompletionDeveloperMessageParam(
+                        ChatCompletionDeveloperMessageParam.builder()
                             .content(
-                                ChatCompletionSystemMessageParam.Content.ofTextContent("string")
+                                ChatCompletionDeveloperMessageParam.Content.ofTextContent("string")
                             )
-                            .role(ChatCompletionSystemMessageParam.Role.SYSTEM)
+                            .role(ChatCompletionDeveloperMessageParam.Role.DEVELOPER)
                             .name("name")
                             .build()
                     )
                 )
             )
-        assertThat(body.model()).isEqualTo(ChatModel.O1_PREVIEW)
+        assertThat(body.model()).isEqualTo(ChatModel.O1)
         assertThat(body.audio())
             .isEqualTo(
                 ChatCompletionAudioParam.builder()
@@ -290,6 +294,7 @@ class ChatCompletionCreateParamsTest {
                     .build()
             )
         assertThat(body.presencePenalty()).isEqualTo(-2.0)
+        assertThat(body.reasoningEffort()).isEqualTo(ChatCompletionReasoningEffort.LOW)
         assertThat(body.responseFormat())
             .isEqualTo(
                 ChatCompletionCreateParams.ResponseFormat.ofResponseFormatText(
@@ -340,33 +345,35 @@ class ChatCompletionCreateParamsTest {
             ChatCompletionCreateParams.builder()
                 .messages(
                     listOf(
-                        ChatCompletionMessageParam.ofChatCompletionSystemMessageParam(
-                            ChatCompletionSystemMessageParam.builder()
+                        ChatCompletionMessageParam.ofChatCompletionDeveloperMessageParam(
+                            ChatCompletionDeveloperMessageParam.builder()
                                 .content(
-                                    ChatCompletionSystemMessageParam.Content.ofTextContent("string")
+                                    ChatCompletionDeveloperMessageParam.Content.ofTextContent(
+                                        "string"
+                                    )
                                 )
-                                .role(ChatCompletionSystemMessageParam.Role.SYSTEM)
+                                .role(ChatCompletionDeveloperMessageParam.Role.DEVELOPER)
                                 .build()
                         )
                     )
                 )
-                .model(ChatModel.O1_PREVIEW)
+                .model(ChatModel.O1)
                 .build()
         val body = params.getBody()
         assertThat(body).isNotNull
         assertThat(body.messages())
             .isEqualTo(
                 listOf(
-                    ChatCompletionMessageParam.ofChatCompletionSystemMessageParam(
-                        ChatCompletionSystemMessageParam.builder()
+                    ChatCompletionMessageParam.ofChatCompletionDeveloperMessageParam(
+                        ChatCompletionDeveloperMessageParam.builder()
                             .content(
-                                ChatCompletionSystemMessageParam.Content.ofTextContent("string")
+                                ChatCompletionDeveloperMessageParam.Content.ofTextContent("string")
                             )
-                            .role(ChatCompletionSystemMessageParam.Role.SYSTEM)
+                            .role(ChatCompletionDeveloperMessageParam.Role.DEVELOPER)
                             .build()
                     )
                 )
             )
-        assertThat(body.model()).isEqualTo(ChatModel.O1_PREVIEW)
+        assertThat(body.model()).isEqualTo(ChatModel.O1)
     }
 }

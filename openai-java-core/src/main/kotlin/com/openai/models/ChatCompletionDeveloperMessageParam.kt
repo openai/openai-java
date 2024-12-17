@@ -29,11 +29,11 @@ import java.util.Optional
 
 /**
  * Developer-provided instructions that the model should follow, regardless of messages sent by the
- * user. With o1 models and newer, use `developer` messages for this purpose instead.
+ * user. With o1 models and newer, `developer` messages replace the previous `system` messages.
  */
-@JsonDeserialize(builder = ChatCompletionSystemMessageParam.Builder::class)
+@JsonDeserialize(builder = ChatCompletionDeveloperMessageParam.Builder::class)
 @NoAutoDetect
-class ChatCompletionSystemMessageParam
+class ChatCompletionDeveloperMessageParam
 private constructor(
     private val content: JsonField<Content>,
     private val role: JsonField<Role>,
@@ -43,10 +43,10 @@ private constructor(
 
     private var validated: Boolean = false
 
-    /** The contents of the system message. */
+    /** The contents of the developer message. */
     fun content(): Content = content.getRequired("content")
 
-    /** The role of the messages author, in this case `system`. */
+    /** The role of the messages author, in this case `developer`. */
     fun role(): Role = role.getRequired("role")
 
     /**
@@ -55,10 +55,10 @@ private constructor(
      */
     fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
 
-    /** The contents of the system message. */
+    /** The contents of the developer message. */
     @JsonProperty("content") @ExcludeMissing fun _content() = content
 
-    /** The role of the messages author, in this case `system`. */
+    /** The role of the messages author, in this case `developer`. */
     @JsonProperty("role") @ExcludeMissing fun _role() = role
 
     /**
@@ -71,7 +71,7 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
-    fun validate(): ChatCompletionSystemMessageParam = apply {
+    fun validate(): ChatCompletionDeveloperMessageParam = apply {
         if (!validated) {
             content()
             role()
@@ -95,26 +95,27 @@ private constructor(
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(chatCompletionSystemMessageParam: ChatCompletionSystemMessageParam) =
-            apply {
-                this.content = chatCompletionSystemMessageParam.content
-                this.role = chatCompletionSystemMessageParam.role
-                this.name = chatCompletionSystemMessageParam.name
-                additionalProperties(chatCompletionSystemMessageParam.additionalProperties)
-            }
+        internal fun from(
+            chatCompletionDeveloperMessageParam: ChatCompletionDeveloperMessageParam
+        ) = apply {
+            this.content = chatCompletionDeveloperMessageParam.content
+            this.role = chatCompletionDeveloperMessageParam.role
+            this.name = chatCompletionDeveloperMessageParam.name
+            additionalProperties(chatCompletionDeveloperMessageParam.additionalProperties)
+        }
 
-        /** The contents of the system message. */
+        /** The contents of the developer message. */
         fun content(content: Content) = content(JsonField.of(content))
 
-        /** The contents of the system message. */
+        /** The contents of the developer message. */
         @JsonProperty("content")
         @ExcludeMissing
         fun content(content: JsonField<Content>) = apply { this.content = content }
 
-        /** The role of the messages author, in this case `system`. */
+        /** The role of the messages author, in this case `developer`. */
         fun role(role: Role) = role(JsonField.of(role))
 
-        /** The role of the messages author, in this case `system`. */
+        /** The role of the messages author, in this case `developer`. */
         @JsonProperty("role")
         @ExcludeMissing
         fun role(role: JsonField<Role>) = apply { this.role = role }
@@ -147,8 +148,8 @@ private constructor(
             this.additionalProperties.putAll(additionalProperties)
         }
 
-        fun build(): ChatCompletionSystemMessageParam =
-            ChatCompletionSystemMessageParam(
+        fun build(): ChatCompletionDeveloperMessageParam =
+            ChatCompletionDeveloperMessageParam(
                 content,
                 role,
                 name,
@@ -167,11 +168,11 @@ private constructor(
 
         private var validated: Boolean = false
 
-        /** The contents of the system message. */
+        /** The contents of the developer message. */
         fun textContent(): Optional<String> = Optional.ofNullable(textContent)
         /**
-         * An array of content parts with a defined type. For system messages, only type `text` is
-         * supported.
+         * An array of content parts with a defined type. For developer messages, only type `text`
+         * is supported.
          */
         fun arrayOfContentParts(): Optional<List<ChatCompletionContentPartText>> =
             Optional.ofNullable(arrayOfContentParts)
@@ -292,29 +293,29 @@ private constructor(
 
         companion object {
 
-            @JvmField val SYSTEM = of("system")
+            @JvmField val DEVELOPER = of("developer")
 
             @JvmStatic fun of(value: String) = Role(JsonField.of(value))
         }
 
         enum class Known {
-            SYSTEM,
+            DEVELOPER,
         }
 
         enum class Value {
-            SYSTEM,
+            DEVELOPER,
             _UNKNOWN,
         }
 
         fun value(): Value =
             when (this) {
-                SYSTEM -> Value.SYSTEM
+                DEVELOPER -> Value.DEVELOPER
                 else -> Value._UNKNOWN
             }
 
         fun known(): Known =
             when (this) {
-                SYSTEM -> Known.SYSTEM
+                DEVELOPER -> Known.DEVELOPER
                 else -> throw OpenAIInvalidDataException("Unknown Role: $value")
             }
 
@@ -338,7 +339,7 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionSystemMessageParam && content == other.content && role == other.role && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionDeveloperMessageParam && content == other.content && role == other.role && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
@@ -348,5 +349,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ChatCompletionSystemMessageParam{content=$content, role=$role, name=$name, additionalProperties=$additionalProperties}"
+        "ChatCompletionDeveloperMessageParam{content=$content, role=$role, name=$name, additionalProperties=$additionalProperties}"
 }
