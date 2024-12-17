@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.8.0 (2024-12-17)
+
+Full Changelog: [v0.7.5...v0.8.0](https://github.com/openai/openai-java/compare/v0.7.5...v0.8.0)
+
+### Features
+
+* **api:** new o1 and GPT-4o models + preference fine-tuning ([#46](https://github.com/openai/openai-java/issues/46)) ([4f2fac5](https://github.com/openai/openai-java/commit/4f2fac59587836e6a34ed4b313589abbf8153963))
+
+
+### Chores
+
+* **internal:** spec update ([#48](https://github.com/openai/openai-java/issues/48)) ([777165c](https://github.com/openai/openai-java/commit/777165c5344891ae7816be6606d9413550a578b5))
+
 ## 0.7.5 (2024-12-13)
 
 Full Changelog: [v0.7.4...v0.7.5](https://github.com/openai/openai-java/compare/v0.7.4...v0.7.5)

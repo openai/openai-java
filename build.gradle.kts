@@ -4,7 +4,7 @@ plugins {
 
 allprojects {
     group = "com.openai"
-    version = "0.7.5" // x-release-please-version
+    version = "0.8.0" // x-release-please-version
 }
 
 
