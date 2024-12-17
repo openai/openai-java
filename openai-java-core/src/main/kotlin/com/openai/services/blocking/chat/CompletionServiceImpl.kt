@@ -36,6 +36,11 @@ constructor(
      * [text generation](https://platform.openai.com/docs/guides/text-generation),
      * [vision](https://platform.openai.com/docs/guides/vision), and
      * [audio](https://platform.openai.com/docs/guides/audio) guides.
+     *
+     * Parameter support can differ depending on the model used to generate the response,
+     * particularly for newer reasoning models. Parameters that are only supported for reasoning
+     * models are noted below. For the current state of unsupported parameters in reasoning models,
+     * [refer to the reasoning guide](https://platform.openai.com/docs/guides/reasoning).
      */
     override fun create(
         params: ChatCompletionCreateParams,
@@ -72,6 +77,11 @@ constructor(
      * [text generation](https://platform.openai.com/docs/guides/text-generation),
      * [vision](https://platform.openai.com/docs/guides/vision), and
      * [audio](https://platform.openai.com/docs/guides/audio) guides.
+     *
+     * Parameter support can differ depending on the model used to generate the response,
+     * particularly for newer reasoning models. Parameters that are only supported for reasoning
+     * models are noted below. For the current state of unsupported parameters in reasoning models,
+     * [refer to the reasoning guide](https://platform.openai.com/docs/guides/reasoning).
      */
     override fun createStreaming(
         params: ChatCompletionCreateParams,
