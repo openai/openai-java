@@ -1,13 +1,18 @@
 plugins {
+    id("openai.kotlin")
     id("java")
-}
-
-repositories {
-    mavenCentral()
+    application
 }
 
 dependencies {
-
     implementation(project(":openai-java"))
-    implementation(project(mapOf("path" to ":openai-java-core")))
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    // Allow using more modern APIs, like `List.of` and `Map.of`, in examples.
+    options.release.set(9)
+}
+
+application {
+    mainClass = "com.openai.example.Main"
 }
