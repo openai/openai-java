@@ -86,7 +86,7 @@ import com.openai.models.ChatCompletionCreateParams;
 import java.util.List;
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-    .message(List.of(ChatCompletionMessageParam.ofChatCompletionUserMessageParam(ChatCompletionUserMessageParam.builder()
+    .messages(List.of(ChatCompletionMessageParam.ofChatCompletionUserMessageParam(ChatCompletionUserMessageParam.builder()
         .role(ChatCompletionUserMessageParam.Role.USER)
         .content(ChatCompletionUserMessageParam.Content.ofTextContent("Say this is a test"))
         .build())))
@@ -114,7 +114,8 @@ Use the `FineTuningJobListParams` builder to set parameters:
 
 ```java
 FineTuningJobListParams params = FineTuningJobListParams.builder()
-    .limit(20)
+    .after("after")
+    .limit(20L)
     .build();
 FineTuningJobListPage page1 = client.fineTuning().jobs().list(params);
 
