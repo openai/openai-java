@@ -384,7 +384,7 @@ This library is typed for convenient access to the documented API. If you need t
 
 To make requests using undocumented parameters, you can provide or override parameters on the params object while building it.
 
-```kotlin
+```java
 FooCreateParams address = FooCreateParams.builder()
     .id("my_id")
     .putAdditionalProperty("secret_prop", JsonValue.from("hello"))
