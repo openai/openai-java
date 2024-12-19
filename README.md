@@ -41,6 +41,11 @@ implementation("com.openai:openai-java:0.8.0")
     <artifactId>openai-java</artifactId>
     <version>0.8.0</version>
 </dependency>
+ <dependency>
+    <groupId>com.openai</groupId>
+    <artifactId>openai-java-client-okhttp</artifactId>
+    <version>0.8.0</version>
+</dependency>
 ```
 
 <!-- x-release-please-end -->
@@ -91,7 +96,7 @@ import com.openai.models.ChatCompletionCreateParams;
 import java.util.List;
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-    .message(List.of(ChatCompletionMessageParam.ofChatCompletionUserMessageParam(ChatCompletionUserMessageParam.builder()
+    .messages(List.of(ChatCompletionMessageParam.ofChatCompletionUserMessageParam(ChatCompletionUserMessageParam.builder()
         .role(ChatCompletionUserMessageParam.Role.USER)
         .content(ChatCompletionUserMessageParam.Content.ofTextContent("Say this is a test"))
         .build())))
