@@ -17,10 +17,8 @@ public final class Main {
                         ChatCompletionUserMessageParam.builder()
                                 .role(ChatCompletionUserMessageParam.Role.USER)
                                 .content(ChatCompletionUserMessageParam.Content.ofTextContent(
-                                        "Tell me a story about building the best SDK!"
-                                ))
-                                .build()
-                ))
+                                        "Tell me a story about building the best SDK!"))
+                                .build()))
                 .build();
 
         // Non-streaming example
@@ -31,7 +29,8 @@ public final class Main {
         System.out.println("\n-----------------------------------\n");
 
         // Streaming example
-        try (StreamResponse<ChatCompletionChunk> messageStreamResponse = client.chat().completions().createStreaming(completionCreateParams)) {
+        try (StreamResponse<ChatCompletionChunk> messageStreamResponse =
+                client.chat().completions().createStreaming(completionCreateParams)) {
             messageStreamResponse.stream()
                     .flatMap(completion -> completion.choices().stream())
                     .flatMap(choice -> choice.delta().content().stream())
