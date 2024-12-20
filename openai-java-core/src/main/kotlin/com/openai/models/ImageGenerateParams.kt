@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
@@ -14,6 +13,7 @@ import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
@@ -75,19 +75,20 @@ constructor(
 
     @JvmSynthetic internal fun getQueryParams(): QueryParams = additionalQueryParams
 
-    @JsonDeserialize(builder = ImageGenerateBody.Builder::class)
     @NoAutoDetect
     class ImageGenerateBody
+    @JsonCreator
     internal constructor(
-        private val prompt: String,
-        private val model: ImageModel?,
-        private val n: Long?,
-        private val quality: Quality?,
-        private val responseFormat: ResponseFormat?,
-        private val size: Size?,
-        private val style: Style?,
-        private val user: String?,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("prompt") private val prompt: String,
+        @JsonProperty("model") private val model: ImageModel?,
+        @JsonProperty("n") private val n: Long?,
+        @JsonProperty("quality") private val quality: Quality?,
+        @JsonProperty("response_format") private val responseFormat: ResponseFormat?,
+        @JsonProperty("size") private val size: Size?,
+        @JsonProperty("style") private val style: Style?,
+        @JsonProperty("user") private val user: String?,
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /**
@@ -180,30 +181,28 @@ constructor(
              * A text description of the desired image(s). The maximum length is 1000 characters for
              * `dall-e-2` and 4000 characters for `dall-e-3`.
              */
-            @JsonProperty("prompt") fun prompt(prompt: String) = apply { this.prompt = prompt }
+            fun prompt(prompt: String) = apply { this.prompt = prompt }
 
             /** The model to use for image generation. */
-            @JsonProperty("model") fun model(model: ImageModel) = apply { this.model = model }
+            fun model(model: ImageModel) = apply { this.model = model }
 
             /**
              * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
              * `n=1` is supported.
              */
-            @JsonProperty("n") fun n(n: Long) = apply { this.n = n }
+            fun n(n: Long) = apply { this.n = n }
 
             /**
              * The quality of the image that will be generated. `hd` creates images with finer
              * details and greater consistency across the image. This param is only supported for
              * `dall-e-3`.
              */
-            @JsonProperty("quality")
             fun quality(quality: Quality) = apply { this.quality = quality }
 
             /**
              * The format in which the generated images are returned. Must be one of `url` or
              * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
              */
-            @JsonProperty("response_format")
             fun responseFormat(responseFormat: ResponseFormat) = apply {
                 this.responseFormat = responseFormat
             }
@@ -213,7 +212,7 @@ constructor(
              * for `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for
              * `dall-e-3` models.
              */
-            @JsonProperty("size") fun size(size: Size) = apply { this.size = size }
+            fun size(size: Size) = apply { this.size = size }
 
             /**
              * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes
@@ -221,21 +220,20 @@ constructor(
              * the model to produce more natural, less hyper-real looking images. This param is only
              * supported for `dall-e-3`.
              */
-            @JsonProperty("style") fun style(style: Style) = apply { this.style = style }
+            fun style(style: Style) = apply { this.style = style }
 
             /**
              * A unique identifier representing your end-user, which can help OpenAI to monitor and
              * detect abuse.
              * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
              */
-            @JsonProperty("user") fun user(user: String) = apply { this.user = user }
+            fun user(user: String) = apply { this.user = user }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }

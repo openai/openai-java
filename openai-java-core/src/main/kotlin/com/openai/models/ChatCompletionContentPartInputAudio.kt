@@ -6,25 +6,27 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 
 /** Learn about [audio inputs](https://platform.openai.com/docs/guides/audio). */
-@JsonDeserialize(builder = ChatCompletionContentPartInputAudio.Builder::class)
 @NoAutoDetect
 class ChatCompletionContentPartInputAudio
+@JsonCreator
 private constructor(
-    private val type: JsonField<Type>,
-    private val inputAudio: JsonField<InputAudio>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("input_audio")
+    @ExcludeMissing
+    private val inputAudio: JsonField<InputAudio> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The type of the content part. Always `input_audio`. */
@@ -78,14 +80,10 @@ private constructor(
         fun type(type: Type) = type(JsonField.of(type))
 
         /** The type of the content part. Always `input_audio`. */
-        @JsonProperty("type")
-        @ExcludeMissing
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
         fun inputAudio(inputAudio: InputAudio) = inputAudio(JsonField.of(inputAudio))
 
-        @JsonProperty("input_audio")
-        @ExcludeMissing
         fun inputAudio(inputAudio: JsonField<InputAudio>) = apply { this.inputAudio = inputAudio }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -93,7 +91,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }
@@ -116,13 +113,18 @@ private constructor(
             )
     }
 
-    @JsonDeserialize(builder = InputAudio.Builder::class)
     @NoAutoDetect
     class InputAudio
+    @JsonCreator
     private constructor(
-        private val data: JsonField<String>,
-        private val format: JsonField<Format>,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("data")
+        @ExcludeMissing
+        private val data: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("format")
+        @ExcludeMissing
+        private val format: JsonField<Format> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** Base64 encoded audio data. */
@@ -175,16 +177,12 @@ private constructor(
             fun data(data: String) = data(JsonField.of(data))
 
             /** Base64 encoded audio data. */
-            @JsonProperty("data")
-            @ExcludeMissing
             fun data(data: JsonField<String>) = apply { this.data = data }
 
             /** The format of the encoded audio data. Currently supports "wav" and "mp3". */
             fun format(format: Format) = format(JsonField.of(format))
 
             /** The format of the encoded audio data. Currently supports "wav" and "mp3". */
-            @JsonProperty("format")
-            @ExcludeMissing
             fun format(format: JsonField<Format>) = apply { this.format = format }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -192,7 +190,6 @@ private constructor(
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }

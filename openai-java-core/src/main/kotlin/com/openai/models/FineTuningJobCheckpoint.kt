@@ -6,13 +6,13 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
@@ -22,18 +22,30 @@ import java.util.Optional
  * The `fine_tuning.job.checkpoint` object represents a model checkpoint for a fine-tuning job that
  * is ready to use.
  */
-@JsonDeserialize(builder = FineTuningJobCheckpoint.Builder::class)
 @NoAutoDetect
 class FineTuningJobCheckpoint
+@JsonCreator
 private constructor(
-    private val id: JsonField<String>,
-    private val createdAt: JsonField<Long>,
-    private val fineTunedModelCheckpoint: JsonField<String>,
-    private val stepNumber: JsonField<Long>,
-    private val metrics: JsonField<Metrics>,
-    private val fineTuningJobId: JsonField<String>,
-    private val object_: JsonField<Object>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("created_at")
+    @ExcludeMissing
+    private val createdAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("fine_tuned_model_checkpoint")
+    @ExcludeMissing
+    private val fineTunedModelCheckpoint: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("step_number")
+    @ExcludeMissing
+    private val stepNumber: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("metrics")
+    @ExcludeMissing
+    private val metrics: JsonField<Metrics> = JsonMissing.of(),
+    @JsonProperty("fine_tuning_job_id")
+    @ExcludeMissing
+    private val fineTuningJobId: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("object")
+    @ExcludeMissing
+    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The checkpoint identifier, which can be referenced in the API endpoints. */
@@ -134,14 +146,12 @@ private constructor(
         fun id(id: String) = id(JsonField.of(id))
 
         /** The checkpoint identifier, which can be referenced in the API endpoints. */
-        @JsonProperty("id") @ExcludeMissing fun id(id: JsonField<String>) = apply { this.id = id }
+        fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The Unix timestamp (in seconds) for when the checkpoint was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
         /** The Unix timestamp (in seconds) for when the checkpoint was created. */
-        @JsonProperty("created_at")
-        @ExcludeMissing
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /** The name of the fine-tuned checkpoint model that is created. */
@@ -149,8 +159,6 @@ private constructor(
             fineTunedModelCheckpoint(JsonField.of(fineTunedModelCheckpoint))
 
         /** The name of the fine-tuned checkpoint model that is created. */
-        @JsonProperty("fine_tuned_model_checkpoint")
-        @ExcludeMissing
         fun fineTunedModelCheckpoint(fineTunedModelCheckpoint: JsonField<String>) = apply {
             this.fineTunedModelCheckpoint = fineTunedModelCheckpoint
         }
@@ -159,16 +167,12 @@ private constructor(
         fun stepNumber(stepNumber: Long) = stepNumber(JsonField.of(stepNumber))
 
         /** The step number that the checkpoint was created at. */
-        @JsonProperty("step_number")
-        @ExcludeMissing
         fun stepNumber(stepNumber: JsonField<Long>) = apply { this.stepNumber = stepNumber }
 
         /** Metrics at the step number during the fine-tuning job. */
         fun metrics(metrics: Metrics) = metrics(JsonField.of(metrics))
 
         /** Metrics at the step number during the fine-tuning job. */
-        @JsonProperty("metrics")
-        @ExcludeMissing
         fun metrics(metrics: JsonField<Metrics>) = apply { this.metrics = metrics }
 
         /** The name of the fine-tuning job that this checkpoint was created from. */
@@ -176,8 +180,6 @@ private constructor(
             fineTuningJobId(JsonField.of(fineTuningJobId))
 
         /** The name of the fine-tuning job that this checkpoint was created from. */
-        @JsonProperty("fine_tuning_job_id")
-        @ExcludeMissing
         fun fineTuningJobId(fineTuningJobId: JsonField<String>) = apply {
             this.fineTuningJobId = fineTuningJobId
         }
@@ -186,8 +188,6 @@ private constructor(
         fun object_(object_: Object) = object_(JsonField.of(object_))
 
         /** The object type, which is always "fine_tuning.job.checkpoint". */
-        @JsonProperty("object")
-        @ExcludeMissing
         fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -195,7 +195,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }
@@ -224,18 +223,33 @@ private constructor(
     }
 
     /** Metrics at the step number during the fine-tuning job. */
-    @JsonDeserialize(builder = Metrics.Builder::class)
     @NoAutoDetect
     class Metrics
+    @JsonCreator
     private constructor(
-        private val step: JsonField<Double>,
-        private val trainLoss: JsonField<Double>,
-        private val trainMeanTokenAccuracy: JsonField<Double>,
-        private val validLoss: JsonField<Double>,
-        private val validMeanTokenAccuracy: JsonField<Double>,
-        private val fullValidLoss: JsonField<Double>,
-        private val fullValidMeanTokenAccuracy: JsonField<Double>,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("step")
+        @ExcludeMissing
+        private val step: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("train_loss")
+        @ExcludeMissing
+        private val trainLoss: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("train_mean_token_accuracy")
+        @ExcludeMissing
+        private val trainMeanTokenAccuracy: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("valid_loss")
+        @ExcludeMissing
+        private val validLoss: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("valid_mean_token_accuracy")
+        @ExcludeMissing
+        private val validMeanTokenAccuracy: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("full_valid_loss")
+        @ExcludeMissing
+        private val fullValidLoss: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("full_valid_mean_token_accuracy")
+        @ExcludeMissing
+        private val fullValidMeanTokenAccuracy: JsonField<Double> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         fun step(): Optional<Double> = Optional.ofNullable(step.getNullable("step"))
@@ -329,44 +343,32 @@ private constructor(
 
             fun step(step: Double) = step(JsonField.of(step))
 
-            @JsonProperty("step")
-            @ExcludeMissing
             fun step(step: JsonField<Double>) = apply { this.step = step }
 
             fun trainLoss(trainLoss: Double) = trainLoss(JsonField.of(trainLoss))
 
-            @JsonProperty("train_loss")
-            @ExcludeMissing
             fun trainLoss(trainLoss: JsonField<Double>) = apply { this.trainLoss = trainLoss }
 
             fun trainMeanTokenAccuracy(trainMeanTokenAccuracy: Double) =
                 trainMeanTokenAccuracy(JsonField.of(trainMeanTokenAccuracy))
 
-            @JsonProperty("train_mean_token_accuracy")
-            @ExcludeMissing
             fun trainMeanTokenAccuracy(trainMeanTokenAccuracy: JsonField<Double>) = apply {
                 this.trainMeanTokenAccuracy = trainMeanTokenAccuracy
             }
 
             fun validLoss(validLoss: Double) = validLoss(JsonField.of(validLoss))
 
-            @JsonProperty("valid_loss")
-            @ExcludeMissing
             fun validLoss(validLoss: JsonField<Double>) = apply { this.validLoss = validLoss }
 
             fun validMeanTokenAccuracy(validMeanTokenAccuracy: Double) =
                 validMeanTokenAccuracy(JsonField.of(validMeanTokenAccuracy))
 
-            @JsonProperty("valid_mean_token_accuracy")
-            @ExcludeMissing
             fun validMeanTokenAccuracy(validMeanTokenAccuracy: JsonField<Double>) = apply {
                 this.validMeanTokenAccuracy = validMeanTokenAccuracy
             }
 
             fun fullValidLoss(fullValidLoss: Double) = fullValidLoss(JsonField.of(fullValidLoss))
 
-            @JsonProperty("full_valid_loss")
-            @ExcludeMissing
             fun fullValidLoss(fullValidLoss: JsonField<Double>) = apply {
                 this.fullValidLoss = fullValidLoss
             }
@@ -374,8 +376,6 @@ private constructor(
             fun fullValidMeanTokenAccuracy(fullValidMeanTokenAccuracy: Double) =
                 fullValidMeanTokenAccuracy(JsonField.of(fullValidMeanTokenAccuracy))
 
-            @JsonProperty("full_valid_mean_token_accuracy")
-            @ExcludeMissing
             fun fullValidMeanTokenAccuracy(fullValidMeanTokenAccuracy: JsonField<Double>) = apply {
                 this.fullValidMeanTokenAccuracy = fullValidMeanTokenAccuracy
             }
@@ -385,7 +385,6 @@ private constructor(
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }

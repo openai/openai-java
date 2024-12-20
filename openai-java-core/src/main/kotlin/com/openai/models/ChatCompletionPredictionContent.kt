@@ -22,6 +22,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.getOrThrow
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
@@ -30,13 +31,15 @@ import java.util.Optional
 /**
  * Static predicted output content, such as the content of a text file that is being regenerated.
  */
-@JsonDeserialize(builder = ChatCompletionPredictionContent.Builder::class)
 @NoAutoDetect
 class ChatCompletionPredictionContent
+@JsonCreator
 private constructor(
-    private val type: JsonField<Type>,
-    private val content: JsonField<Content>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("content")
+    @ExcludeMissing
+    private val content: JsonField<Content> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /**
@@ -109,8 +112,6 @@ private constructor(
          * The type of the predicted content you want to provide. This type is currently always
          * `content`.
          */
-        @JsonProperty("type")
-        @ExcludeMissing
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
         /**
@@ -123,8 +124,6 @@ private constructor(
          * The content that should be matched when generating a model response. If generated tokens
          * would match this content, the entire model response can be returned much more quickly.
          */
-        @JsonProperty("content")
-        @ExcludeMissing
         fun content(content: JsonField<Content>) = apply { this.content = content }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -132,7 +131,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }

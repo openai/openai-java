@@ -4,26 +4,33 @@ package com.openai.models
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
-@JsonDeserialize(builder = FunctionDefinition.Builder::class)
 @NoAutoDetect
 class FunctionDefinition
+@JsonCreator
 private constructor(
-    private val description: JsonField<String>,
-    private val name: JsonField<String>,
-    private val parameters: JsonField<FunctionParameters>,
-    private val strict: JsonField<Boolean>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("description")
+    @ExcludeMissing
+    private val description: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("parameters")
+    @ExcludeMissing
+    private val parameters: JsonField<FunctionParameters> = JsonMissing.of(),
+    @JsonProperty("strict")
+    @ExcludeMissing
+    private val strict: JsonField<Boolean> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /**
@@ -138,8 +145,6 @@ private constructor(
          * A description of what the function does, used by the model to choose when and how to call
          * the function.
          */
-        @JsonProperty("description")
-        @ExcludeMissing
         fun description(description: JsonField<String>) = apply { this.description = description }
 
         /**
@@ -152,8 +157,6 @@ private constructor(
          * The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and
          * dashes, with a maximum length of 64.
          */
-        @JsonProperty("name")
-        @ExcludeMissing
         fun name(name: JsonField<String>) = apply { this.name = name }
 
         /**
@@ -174,8 +177,6 @@ private constructor(
          *
          * Omitting `parameters` defines a function with an empty parameter list.
          */
-        @JsonProperty("parameters")
-        @ExcludeMissing
         fun parameters(parameters: JsonField<FunctionParameters>) = apply {
             this.parameters = parameters
         }
@@ -194,8 +195,6 @@ private constructor(
          * subset of JSON Schema is supported when `strict` is `true`. Learn more about Structured
          * Outputs in the [function calling guide](docs/guides/function-calling).
          */
-        @JsonProperty("strict")
-        @ExcludeMissing
         fun strict(strict: JsonField<Boolean>) = apply { this.strict = strict }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -203,7 +202,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }

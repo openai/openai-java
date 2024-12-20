@@ -6,43 +6,79 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
-@JsonDeserialize(builder = Batch.Builder::class)
 @NoAutoDetect
 class Batch
+@JsonCreator
 private constructor(
-    private val id: JsonField<String>,
-    private val object_: JsonField<Object>,
-    private val endpoint: JsonField<String>,
-    private val errors: JsonField<Errors>,
-    private val inputFileId: JsonField<String>,
-    private val completionWindow: JsonField<String>,
-    private val status: JsonField<Status>,
-    private val outputFileId: JsonField<String>,
-    private val errorFileId: JsonField<String>,
-    private val createdAt: JsonField<Long>,
-    private val inProgressAt: JsonField<Long>,
-    private val expiresAt: JsonField<Long>,
-    private val finalizingAt: JsonField<Long>,
-    private val completedAt: JsonField<Long>,
-    private val failedAt: JsonField<Long>,
-    private val expiredAt: JsonField<Long>,
-    private val cancellingAt: JsonField<Long>,
-    private val cancelledAt: JsonField<Long>,
-    private val requestCounts: JsonField<BatchRequestCounts>,
-    private val metadata: JsonValue,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("object")
+    @ExcludeMissing
+    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("endpoint")
+    @ExcludeMissing
+    private val endpoint: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("errors")
+    @ExcludeMissing
+    private val errors: JsonField<Errors> = JsonMissing.of(),
+    @JsonProperty("input_file_id")
+    @ExcludeMissing
+    private val inputFileId: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("completion_window")
+    @ExcludeMissing
+    private val completionWindow: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("status")
+    @ExcludeMissing
+    private val status: JsonField<Status> = JsonMissing.of(),
+    @JsonProperty("output_file_id")
+    @ExcludeMissing
+    private val outputFileId: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("error_file_id")
+    @ExcludeMissing
+    private val errorFileId: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("created_at")
+    @ExcludeMissing
+    private val createdAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("in_progress_at")
+    @ExcludeMissing
+    private val inProgressAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("expires_at")
+    @ExcludeMissing
+    private val expiresAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("finalizing_at")
+    @ExcludeMissing
+    private val finalizingAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("completed_at")
+    @ExcludeMissing
+    private val completedAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("failed_at")
+    @ExcludeMissing
+    private val failedAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("expired_at")
+    @ExcludeMissing
+    private val expiredAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("cancelling_at")
+    @ExcludeMissing
+    private val cancellingAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("cancelled_at")
+    @ExcludeMissing
+    private val cancelledAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("request_counts")
+    @ExcludeMissing
+    private val requestCounts: JsonField<BatchRequestCounts> = JsonMissing.of(),
+    @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonValue = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     fun id(): String = id.getRequired("id")
@@ -257,36 +293,28 @@ private constructor(
 
         fun id(id: String) = id(JsonField.of(id))
 
-        @JsonProperty("id") @ExcludeMissing fun id(id: JsonField<String>) = apply { this.id = id }
+        fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The object type, which is always `batch`. */
         fun object_(object_: Object) = object_(JsonField.of(object_))
 
         /** The object type, which is always `batch`. */
-        @JsonProperty("object")
-        @ExcludeMissing
         fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
 
         /** The OpenAI API endpoint used by the batch. */
         fun endpoint(endpoint: String) = endpoint(JsonField.of(endpoint))
 
         /** The OpenAI API endpoint used by the batch. */
-        @JsonProperty("endpoint")
-        @ExcludeMissing
         fun endpoint(endpoint: JsonField<String>) = apply { this.endpoint = endpoint }
 
         fun errors(errors: Errors) = errors(JsonField.of(errors))
 
-        @JsonProperty("errors")
-        @ExcludeMissing
         fun errors(errors: JsonField<Errors>) = apply { this.errors = errors }
 
         /** The ID of the input file for the batch. */
         fun inputFileId(inputFileId: String) = inputFileId(JsonField.of(inputFileId))
 
         /** The ID of the input file for the batch. */
-        @JsonProperty("input_file_id")
-        @ExcludeMissing
         fun inputFileId(inputFileId: JsonField<String>) = apply { this.inputFileId = inputFileId }
 
         /** The time frame within which the batch should be processed. */
@@ -294,8 +322,6 @@ private constructor(
             completionWindow(JsonField.of(completionWindow))
 
         /** The time frame within which the batch should be processed. */
-        @JsonProperty("completion_window")
-        @ExcludeMissing
         fun completionWindow(completionWindow: JsonField<String>) = apply {
             this.completionWindow = completionWindow
         }
@@ -304,16 +330,12 @@ private constructor(
         fun status(status: Status) = status(JsonField.of(status))
 
         /** The current status of the batch. */
-        @JsonProperty("status")
-        @ExcludeMissing
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
         /** The ID of the file containing the outputs of successfully executed requests. */
         fun outputFileId(outputFileId: String) = outputFileId(JsonField.of(outputFileId))
 
         /** The ID of the file containing the outputs of successfully executed requests. */
-        @JsonProperty("output_file_id")
-        @ExcludeMissing
         fun outputFileId(outputFileId: JsonField<String>) = apply {
             this.outputFileId = outputFileId
         }
@@ -322,80 +344,60 @@ private constructor(
         fun errorFileId(errorFileId: String) = errorFileId(JsonField.of(errorFileId))
 
         /** The ID of the file containing the outputs of requests with errors. */
-        @JsonProperty("error_file_id")
-        @ExcludeMissing
         fun errorFileId(errorFileId: JsonField<String>) = apply { this.errorFileId = errorFileId }
 
         /** The Unix timestamp (in seconds) for when the batch was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
         /** The Unix timestamp (in seconds) for when the batch was created. */
-        @JsonProperty("created_at")
-        @ExcludeMissing
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /** The Unix timestamp (in seconds) for when the batch started processing. */
         fun inProgressAt(inProgressAt: Long) = inProgressAt(JsonField.of(inProgressAt))
 
         /** The Unix timestamp (in seconds) for when the batch started processing. */
-        @JsonProperty("in_progress_at")
-        @ExcludeMissing
         fun inProgressAt(inProgressAt: JsonField<Long>) = apply { this.inProgressAt = inProgressAt }
 
         /** The Unix timestamp (in seconds) for when the batch will expire. */
         fun expiresAt(expiresAt: Long) = expiresAt(JsonField.of(expiresAt))
 
         /** The Unix timestamp (in seconds) for when the batch will expire. */
-        @JsonProperty("expires_at")
-        @ExcludeMissing
         fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
 
         /** The Unix timestamp (in seconds) for when the batch started finalizing. */
         fun finalizingAt(finalizingAt: Long) = finalizingAt(JsonField.of(finalizingAt))
 
         /** The Unix timestamp (in seconds) for when the batch started finalizing. */
-        @JsonProperty("finalizing_at")
-        @ExcludeMissing
         fun finalizingAt(finalizingAt: JsonField<Long>) = apply { this.finalizingAt = finalizingAt }
 
         /** The Unix timestamp (in seconds) for when the batch was completed. */
         fun completedAt(completedAt: Long) = completedAt(JsonField.of(completedAt))
 
         /** The Unix timestamp (in seconds) for when the batch was completed. */
-        @JsonProperty("completed_at")
-        @ExcludeMissing
         fun completedAt(completedAt: JsonField<Long>) = apply { this.completedAt = completedAt }
 
         /** The Unix timestamp (in seconds) for when the batch failed. */
         fun failedAt(failedAt: Long) = failedAt(JsonField.of(failedAt))
 
         /** The Unix timestamp (in seconds) for when the batch failed. */
-        @JsonProperty("failed_at")
-        @ExcludeMissing
         fun failedAt(failedAt: JsonField<Long>) = apply { this.failedAt = failedAt }
 
         /** The Unix timestamp (in seconds) for when the batch expired. */
         fun expiredAt(expiredAt: Long) = expiredAt(JsonField.of(expiredAt))
 
         /** The Unix timestamp (in seconds) for when the batch expired. */
-        @JsonProperty("expired_at")
-        @ExcludeMissing
         fun expiredAt(expiredAt: JsonField<Long>) = apply { this.expiredAt = expiredAt }
 
         /** The Unix timestamp (in seconds) for when the batch started cancelling. */
         fun cancellingAt(cancellingAt: Long) = cancellingAt(JsonField.of(cancellingAt))
 
         /** The Unix timestamp (in seconds) for when the batch started cancelling. */
-        @JsonProperty("cancelling_at")
-        @ExcludeMissing
         fun cancellingAt(cancellingAt: JsonField<Long>) = apply { this.cancellingAt = cancellingAt }
 
         /** The Unix timestamp (in seconds) for when the batch was cancelled. */
         fun cancelledAt(cancelledAt: Long) = cancelledAt(JsonField.of(cancelledAt))
 
         /** The Unix timestamp (in seconds) for when the batch was cancelled. */
-        @JsonProperty("cancelled_at")
-        @ExcludeMissing
         fun cancelledAt(cancelledAt: JsonField<Long>) = apply { this.cancelledAt = cancelledAt }
 
         /** The request counts for different statuses within the batch. */
@@ -403,8 +405,6 @@ private constructor(
             requestCounts(JsonField.of(requestCounts))
 
         /** The request counts for different statuses within the batch. */
-        @JsonProperty("request_counts")
-        @ExcludeMissing
         fun requestCounts(requestCounts: JsonField<BatchRequestCounts>) = apply {
             this.requestCounts = requestCounts
         }
@@ -414,8 +414,6 @@ private constructor(
          * storing additional information about the object in a structured format. Keys can be a
          * maximum of 64 characters long and values can be a maximum of 512 characters long.
          */
-        @JsonProperty("metadata")
-        @ExcludeMissing
         fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -423,7 +421,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }
@@ -608,13 +605,18 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    @JsonDeserialize(builder = Errors.Builder::class)
     @NoAutoDetect
     class Errors
+    @JsonCreator
     private constructor(
-        private val object_: JsonField<String>,
-        private val data: JsonField<List<BatchError>>,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("object")
+        @ExcludeMissing
+        private val object_: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("data")
+        @ExcludeMissing
+        private val data: JsonField<List<BatchError>> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** The object type, which is always `list`. */
@@ -665,14 +667,10 @@ private constructor(
             fun object_(object_: String) = object_(JsonField.of(object_))
 
             /** The object type, which is always `list`. */
-            @JsonProperty("object")
-            @ExcludeMissing
             fun object_(object_: JsonField<String>) = apply { this.object_ = object_ }
 
             fun data(data: List<BatchError>) = data(JsonField.of(data))
 
-            @JsonProperty("data")
-            @ExcludeMissing
             fun data(data: JsonField<List<BatchError>>) = apply { this.data = data }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -680,7 +678,6 @@ private constructor(
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }

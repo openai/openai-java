@@ -6,25 +6,27 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 
-@JsonDeserialize(builder = ChatCompletionMessageToolCall.Builder::class)
 @NoAutoDetect
 class ChatCompletionMessageToolCall
+@JsonCreator
 private constructor(
-    private val id: JsonField<String>,
-    private val type: JsonField<Type>,
-    private val function: JsonField<Function>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("function")
+    @ExcludeMissing
+    private val function: JsonField<Function> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The ID of the tool call. */
@@ -86,22 +88,18 @@ private constructor(
         fun id(id: String) = id(JsonField.of(id))
 
         /** The ID of the tool call. */
-        @JsonProperty("id") @ExcludeMissing fun id(id: JsonField<String>) = apply { this.id = id }
+        fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The type of the tool. Currently, only `function` is supported. */
         fun type(type: Type) = type(JsonField.of(type))
 
         /** The type of the tool. Currently, only `function` is supported. */
-        @JsonProperty("type")
-        @ExcludeMissing
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
         /** The function that the model called. */
         fun function(function: Function) = function(JsonField.of(function))
 
         /** The function that the model called. */
-        @JsonProperty("function")
-        @ExcludeMissing
         fun function(function: JsonField<Function>) = apply { this.function = function }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -109,7 +107,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }
@@ -134,13 +131,18 @@ private constructor(
     }
 
     /** The function that the model called. */
-    @JsonDeserialize(builder = Function.Builder::class)
     @NoAutoDetect
     class Function
+    @JsonCreator
     private constructor(
-        private val name: JsonField<String>,
-        private val arguments: JsonField<String>,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("name")
+        @ExcludeMissing
+        private val name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("arguments")
+        @ExcludeMissing
+        private val arguments: JsonField<String> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** The name of the function to call. */
@@ -203,8 +205,6 @@ private constructor(
             fun name(name: String) = name(JsonField.of(name))
 
             /** The name of the function to call. */
-            @JsonProperty("name")
-            @ExcludeMissing
             fun name(name: JsonField<String>) = apply { this.name = name }
 
             /**
@@ -221,8 +221,6 @@ private constructor(
              * parameters not defined by your function schema. Validate the arguments in your code
              * before calling your function.
              */
-            @JsonProperty("arguments")
-            @ExcludeMissing
             fun arguments(arguments: JsonField<String>) = apply { this.arguments = arguments }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -230,7 +228,6 @@ private constructor(
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }

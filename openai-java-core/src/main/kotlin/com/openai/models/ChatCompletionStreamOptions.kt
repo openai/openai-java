@@ -4,24 +4,27 @@ package com.openai.models
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
 /** Options for streaming response. Only set this when you set `stream: true`. */
-@JsonDeserialize(builder = ChatCompletionStreamOptions.Builder::class)
 @NoAutoDetect
 class ChatCompletionStreamOptions
+@JsonCreator
 private constructor(
-    private val includeUsage: JsonField<Boolean>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("include_usage")
+    @ExcludeMissing
+    private val includeUsage: JsonField<Boolean> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /**
@@ -86,8 +89,6 @@ private constructor(
          * the `choices` field will always be an empty array. All other chunks will also include a
          * `usage` field, but with a null value.
          */
-        @JsonProperty("include_usage")
-        @ExcludeMissing
         fun includeUsage(includeUsage: JsonField<Boolean>) = apply {
             this.includeUsage = includeUsage
         }
@@ -97,7 +98,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }

@@ -4,6 +4,7 @@ package com.openai.models
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.ObjectCodec
@@ -20,6 +21,7 @@ import com.openai.core.NoAutoDetect
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
@@ -57,13 +59,14 @@ constructor(
 
     @JvmSynthetic internal fun getQueryParams(): QueryParams = additionalQueryParams
 
-    @JsonDeserialize(builder = ModerationCreateBody.Builder::class)
     @NoAutoDetect
     class ModerationCreateBody
+    @JsonCreator
     internal constructor(
-        private val input: Input,
-        private val model: ModerationModel?,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("input") private val input: Input,
+        @JsonProperty("model") private val model: ModerationModel?,
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /**
@@ -107,21 +110,20 @@ constructor(
              * Input (or inputs) to classify. Can be a single string, an array of strings, or an
              * array of multi-modal input objects similar to other models.
              */
-            @JsonProperty("input") fun input(input: Input) = apply { this.input = input }
+            fun input(input: Input) = apply { this.input = input }
 
             /**
              * The content moderation model you would like to use. Learn more in
              * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
              * about available models [here](https://platform.openai.com/docs/models#moderation).
              */
-            @JsonProperty("model") fun model(model: ModerationModel) = apply { this.model = model }
+            fun model(model: ModerationModel) = apply { this.model = model }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }

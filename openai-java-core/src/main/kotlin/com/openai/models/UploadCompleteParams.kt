@@ -4,13 +4,14 @@ package com.openai.models
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
@@ -57,13 +58,14 @@ constructor(
         }
     }
 
-    @JsonDeserialize(builder = UploadCompleteBody.Builder::class)
     @NoAutoDetect
     class UploadCompleteBody
+    @JsonCreator
     internal constructor(
-        private val partIds: List<String>,
-        private val md5: String?,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("part_ids") private val partIds: List<String>,
+        @JsonProperty("md5") private val md5: String?,
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** The ordered list of Part IDs. */
@@ -100,21 +102,19 @@ constructor(
             }
 
             /** The ordered list of Part IDs. */
-            @JsonProperty("part_ids")
             fun partIds(partIds: List<String>) = apply { this.partIds = partIds }
 
             /**
              * The optional md5 checksum for the file contents to verify if the bytes uploaded
              * matches what you expect.
              */
-            @JsonProperty("md5") fun md5(md5: String) = apply { this.md5 = md5 }
+            fun md5(md5: String) = apply { this.md5 = md5 }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }

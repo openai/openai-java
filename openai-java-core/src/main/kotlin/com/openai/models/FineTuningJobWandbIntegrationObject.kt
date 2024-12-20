@@ -6,24 +6,26 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 
-@JsonDeserialize(builder = FineTuningJobWandbIntegrationObject.Builder::class)
 @NoAutoDetect
 class FineTuningJobWandbIntegrationObject
+@JsonCreator
 private constructor(
-    private val type: JsonField<Type>,
-    private val wandb: JsonField<FineTuningJobWandbIntegration>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("wandb")
+    @ExcludeMissing
+    private val wandb: JsonField<FineTuningJobWandbIntegration> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The type of the integration being enabled for the fine-tuning job */
@@ -89,8 +91,6 @@ private constructor(
         fun type(type: Type) = type(JsonField.of(type))
 
         /** The type of the integration being enabled for the fine-tuning job */
-        @JsonProperty("type")
-        @ExcludeMissing
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
         /**
@@ -107,8 +107,6 @@ private constructor(
          * for your run, add tags to your run, and set a default entity (team, username, etc) to be
          * associated with your run.
          */
-        @JsonProperty("wandb")
-        @ExcludeMissing
         fun wandb(wandb: JsonField<FineTuningJobWandbIntegration>) = apply { this.wandb = wandb }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -116,7 +114,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }

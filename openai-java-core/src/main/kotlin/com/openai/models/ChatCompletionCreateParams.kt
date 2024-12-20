@@ -23,6 +23,7 @@ import com.openai.core.NoAutoDetect
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
@@ -169,40 +170,42 @@ constructor(
 
     @JvmSynthetic internal fun getQueryParams(): QueryParams = additionalQueryParams
 
-    @JsonDeserialize(builder = ChatCompletionCreateBody.Builder::class)
     @NoAutoDetect
     class ChatCompletionCreateBody
+    @JsonCreator
     internal constructor(
-        private val messages: List<ChatCompletionMessageParam>,
-        private val model: ChatModel,
-        private val audio: ChatCompletionAudioParam?,
-        private val frequencyPenalty: Double?,
-        private val functionCall: FunctionCall?,
-        private val functions: List<Function>?,
-        private val logitBias: LogitBias?,
-        private val logprobs: Boolean?,
-        private val maxCompletionTokens: Long?,
-        private val maxTokens: Long?,
-        private val metadata: Metadata?,
-        private val modalities: List<ChatCompletionModality>?,
-        private val n: Long?,
-        private val parallelToolCalls: Boolean?,
-        private val prediction: ChatCompletionPredictionContent?,
-        private val presencePenalty: Double?,
+        @JsonProperty("messages") private val messages: List<ChatCompletionMessageParam>,
+        @JsonProperty("model") private val model: ChatModel,
+        @JsonProperty("audio") private val audio: ChatCompletionAudioParam?,
+        @JsonProperty("frequency_penalty") private val frequencyPenalty: Double?,
+        @JsonProperty("function_call") private val functionCall: FunctionCall?,
+        @JsonProperty("functions") private val functions: List<Function>?,
+        @JsonProperty("logit_bias") private val logitBias: LogitBias?,
+        @JsonProperty("logprobs") private val logprobs: Boolean?,
+        @JsonProperty("max_completion_tokens") private val maxCompletionTokens: Long?,
+        @JsonProperty("max_tokens") private val maxTokens: Long?,
+        @JsonProperty("metadata") private val metadata: Metadata?,
+        @JsonProperty("modalities") private val modalities: List<ChatCompletionModality>?,
+        @JsonProperty("n") private val n: Long?,
+        @JsonProperty("parallel_tool_calls") private val parallelToolCalls: Boolean?,
+        @JsonProperty("prediction") private val prediction: ChatCompletionPredictionContent?,
+        @JsonProperty("presence_penalty") private val presencePenalty: Double?,
+        @JsonProperty("reasoning_effort")
         private val reasoningEffort: ChatCompletionReasoningEffort?,
-        private val responseFormat: ResponseFormat?,
-        private val seed: Long?,
-        private val serviceTier: ServiceTier?,
-        private val stop: Stop?,
-        private val store: Boolean?,
-        private val streamOptions: ChatCompletionStreamOptions?,
-        private val temperature: Double?,
-        private val toolChoice: ChatCompletionToolChoiceOption?,
-        private val tools: List<ChatCompletionTool>?,
-        private val topLogprobs: Long?,
-        private val topP: Double?,
-        private val user: String?,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("response_format") private val responseFormat: ResponseFormat?,
+        @JsonProperty("seed") private val seed: Long?,
+        @JsonProperty("service_tier") private val serviceTier: ServiceTier?,
+        @JsonProperty("stop") private val stop: Stop?,
+        @JsonProperty("store") private val store: Boolean?,
+        @JsonProperty("stream_options") private val streamOptions: ChatCompletionStreamOptions?,
+        @JsonProperty("temperature") private val temperature: Double?,
+        @JsonProperty("tool_choice") private val toolChoice: ChatCompletionToolChoiceOption?,
+        @JsonProperty("tools") private val tools: List<ChatCompletionTool>?,
+        @JsonProperty("top_logprobs") private val topLogprobs: Long?,
+        @JsonProperty("top_p") private val topP: Double?,
+        @JsonProperty("user") private val user: String?,
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /**
@@ -561,7 +564,6 @@ constructor(
              * [images](https://platform.openai.com/docs/guides/vision), and
              * [audio](https://platform.openai.com/docs/guides/audio).
              */
-            @JsonProperty("messages")
             fun messages(messages: List<ChatCompletionMessageParam>) = apply {
                 this.messages = messages
             }
@@ -571,13 +573,12 @@ constructor(
              * [model endpoint compatibility](https://platform.openai.com/docs/models#model-endpoint-compatibility)
              * table for details on which models work with the Chat API.
              */
-            @JsonProperty("model") fun model(model: ChatModel) = apply { this.model = model }
+            fun model(model: ChatModel) = apply { this.model = model }
 
             /**
              * Parameters for audio output. Required when audio output is requested with
              * `modalities: ["audio"]`. [Learn more](https://platform.openai.com/docs/guides/audio).
              */
-            @JsonProperty("audio")
             fun audio(audio: ChatCompletionAudioParam) = apply { this.audio = audio }
 
             /**
@@ -585,7 +586,6 @@ constructor(
              * existing frequency in the text so far, decreasing the model's likelihood to repeat
              * the same line verbatim.
              */
-            @JsonProperty("frequency_penalty")
             fun frequencyPenalty(frequencyPenalty: Double) = apply {
                 this.frequencyPenalty = frequencyPenalty
             }
@@ -605,7 +605,6 @@ constructor(
              * `none` is the default when no functions are present. `auto` is the default if
              * functions are present.
              */
-            @JsonProperty("function_call")
             fun functionCall(functionCall: FunctionCall) = apply {
                 this.functionCall = functionCall
             }
@@ -615,7 +614,6 @@ constructor(
              *
              * A list of functions the model may generate JSON inputs for.
              */
-            @JsonProperty("functions")
             fun functions(functions: List<Function>) = apply { this.functions = functions }
 
             /**
@@ -628,14 +626,12 @@ constructor(
              * selection; values like -100 or 100 should result in a ban or exclusive selection of
              * the relevant token.
              */
-            @JsonProperty("logit_bias")
             fun logitBias(logitBias: LogitBias) = apply { this.logitBias = logitBias }
 
             /**
              * Whether to return log probabilities of the output tokens or not. If true, returns the
              * log probabilities of each output token returned in the `content` of `message`.
              */
-            @JsonProperty("logprobs")
             fun logprobs(logprobs: Boolean) = apply { this.logprobs = logprobs }
 
             /**
@@ -643,7 +639,6 @@ constructor(
              * including visible output tokens and
              * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
              */
-            @JsonProperty("max_completion_tokens")
             fun maxCompletionTokens(maxCompletionTokens: Long) = apply {
                 this.maxCompletionTokens = maxCompletionTokens
             }
@@ -657,14 +652,12 @@ constructor(
              * compatible with
              * [o1 series models](https://platform.openai.com/docs/guides/reasoning).
              */
-            @JsonProperty("max_tokens")
             fun maxTokens(maxTokens: Long) = apply { this.maxTokens = maxTokens }
 
             /**
              * Developer-defined tags and values used for filtering completions in the
              * [dashboard](https://platform.openai.com/chat-completions).
              */
-            @JsonProperty("metadata")
             fun metadata(metadata: Metadata) = apply { this.metadata = metadata }
 
             /**
@@ -679,7 +672,6 @@ constructor(
              *
              * `["text", "audio"]`
              */
-            @JsonProperty("modalities")
             fun modalities(modalities: List<ChatCompletionModality>) = apply {
                 this.modalities = modalities
             }
@@ -689,14 +681,13 @@ constructor(
              * will be charged based on the number of generated tokens across all of the choices.
              * Keep `n` as `1` to minimize costs.
              */
-            @JsonProperty("n") fun n(n: Long) = apply { this.n = n }
+            fun n(n: Long) = apply { this.n = n }
 
             /**
              * Whether to enable
              * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
              * during tool use.
              */
-            @JsonProperty("parallel_tool_calls")
             fun parallelToolCalls(parallelToolCalls: Boolean) = apply {
                 this.parallelToolCalls = parallelToolCalls
             }
@@ -705,7 +696,6 @@ constructor(
              * Static predicted output content, such as the content of a text file that is being
              * regenerated.
              */
-            @JsonProperty("prediction")
             fun prediction(prediction: ChatCompletionPredictionContent) = apply {
                 this.prediction = prediction
             }
@@ -715,7 +705,6 @@ constructor(
              * they appear in the text so far, increasing the model's likelihood to talk about new
              * topics.
              */
-            @JsonProperty("presence_penalty")
             fun presencePenalty(presencePenalty: Double) = apply {
                 this.presencePenalty = presencePenalty
             }
@@ -728,7 +717,6 @@ constructor(
              * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
              * result in faster responses and fewer tokens used on reasoning in a response.
              */
-            @JsonProperty("reasoning_effort")
             fun reasoningEffort(reasoningEffort: ChatCompletionReasoningEffort) = apply {
                 this.reasoningEffort = reasoningEffort
             }
@@ -751,7 +739,6 @@ constructor(
              * may be partially cut off if `finish_reason="length"`, which indicates the generation
              * exceeded `max_tokens` or the conversation exceeded the max context length.
              */
-            @JsonProperty("response_format")
             fun responseFormat(responseFormat: ResponseFormat) = apply {
                 this.responseFormat = responseFormat
             }
@@ -762,7 +749,7 @@ constructor(
              * should return the same result. Determinism is not guaranteed, and you should refer to
              * the `system_fingerprint` response parameter to monitor changes in the backend.
              */
-            @JsonProperty("seed") fun seed(seed: Long) = apply { this.seed = seed }
+            fun seed(seed: Long) = apply { this.seed = seed }
 
             /**
              * Specifies the latency tier to use for processing the request. This parameter is
@@ -779,21 +766,19 @@ constructor(
              * When this parameter is set, the response body will include the `service_tier`
              * utilized.
              */
-            @JsonProperty("service_tier")
             fun serviceTier(serviceTier: ServiceTier) = apply { this.serviceTier = serviceTier }
 
             /** Up to 4 sequences where the API will stop generating further tokens. */
-            @JsonProperty("stop") fun stop(stop: Stop) = apply { this.stop = stop }
+            fun stop(stop: Stop) = apply { this.stop = stop }
 
             /**
              * Whether or not to store the output of this chat completion request for use in our
              * [model distillation](https://platform.openai.com/docs/guides/distillation) or
              * [evals](https://platform.openai.com/docs/guides/evals) products.
              */
-            @JsonProperty("store") fun store(store: Boolean) = apply { this.store = store }
+            fun store(store: Boolean) = apply { this.store = store }
 
             /** Options for streaming response. Only set this when you set `stream: true`. */
-            @JsonProperty("stream_options")
             fun streamOptions(streamOptions: ChatCompletionStreamOptions) = apply {
                 this.streamOptions = streamOptions
             }
@@ -803,7 +788,6 @@ constructor(
              * the output more random, while lower values like 0.2 will make it more focused and
              * deterministic. We generally recommend altering this or `top_p` but not both.
              */
-            @JsonProperty("temperature")
             fun temperature(temperature: Double) = apply { this.temperature = temperature }
 
             /**
@@ -816,7 +800,6 @@ constructor(
              * `none` is the default when no tools are present. `auto` is the default if tools are
              * present.
              */
-            @JsonProperty("tool_choice")
             fun toolChoice(toolChoice: ChatCompletionToolChoiceOption) = apply {
                 this.toolChoice = toolChoice
             }
@@ -826,7 +809,6 @@ constructor(
              * tool. Use this to provide a list of functions the model may generate JSON inputs for.
              * A max of 128 functions are supported.
              */
-            @JsonProperty("tools")
             fun tools(tools: List<ChatCompletionTool>) = apply { this.tools = tools }
 
             /**
@@ -834,7 +816,6 @@ constructor(
              * each token position, each with an associated log probability. `logprobs` must be set
              * to `true` if this parameter is used.
              */
-            @JsonProperty("top_logprobs")
             fun topLogprobs(topLogprobs: Long) = apply { this.topLogprobs = topLogprobs }
 
             /**
@@ -844,21 +825,20 @@ constructor(
              *
              * We generally recommend altering this or `temperature` but not both.
              */
-            @JsonProperty("top_p") fun topP(topP: Double) = apply { this.topP = topP }
+            fun topP(topP: Double) = apply { this.topP = topP }
 
             /**
              * A unique identifier representing your end-user, which can help OpenAI to monitor and
              * detect abuse.
              * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
              */
-            @JsonProperty("user") fun user(user: String) = apply { this.user = user }
+            fun user(user: String) = apply { this.user = user }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }
@@ -1797,14 +1777,15 @@ constructor(
         }
     }
 
-    @JsonDeserialize(builder = Function.Builder::class)
     @NoAutoDetect
     class Function
+    @JsonCreator
     private constructor(
-        private val description: String?,
-        private val name: String,
-        private val parameters: FunctionParameters?,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("description") private val description: String?,
+        @JsonProperty("name") private val name: String,
+        @JsonProperty("parameters") private val parameters: FunctionParameters?,
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /**
@@ -1861,14 +1842,13 @@ constructor(
              * A description of what the function does, used by the model to choose when and how to
              * call the function.
              */
-            @JsonProperty("description")
             fun description(description: String) = apply { this.description = description }
 
             /**
              * The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores
              * and dashes, with a maximum length of 64.
              */
-            @JsonProperty("name") fun name(name: String) = apply { this.name = name }
+            fun name(name: String) = apply { this.name = name }
 
             /**
              * The parameters the functions accepts, described as a JSON Schema object. See the
@@ -1878,7 +1858,6 @@ constructor(
              *
              * Omitting `parameters` defines a function with an empty parameter list.
              */
-            @JsonProperty("parameters")
             fun parameters(parameters: FunctionParameters) = apply { this.parameters = parameters }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1886,7 +1865,6 @@ constructor(
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }
@@ -1937,11 +1915,12 @@ constructor(
      * between -1 and 1 should decrease or increase likelihood of selection; values like -100 or 100
      * should result in a ban or exclusive selection of the relevant token.
      */
-    @JsonDeserialize(builder = LogitBias.Builder::class)
     @NoAutoDetect
     class LogitBias
+    @JsonCreator
     private constructor(
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         @JsonAnyGetter
@@ -1969,7 +1948,6 @@ constructor(
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }
@@ -2008,11 +1986,12 @@ constructor(
      * Developer-defined tags and values used for filtering completions in the
      * [dashboard](https://platform.openai.com/chat-completions).
      */
-    @JsonDeserialize(builder = Metadata.Builder::class)
     @NoAutoDetect
     class Metadata
+    @JsonCreator
     private constructor(
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         @JsonAnyGetter
@@ -2040,7 +2019,6 @@ constructor(
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }

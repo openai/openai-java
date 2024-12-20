@@ -4,25 +4,28 @@ package com.openai.models
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
 
 /** Represents if a given text input is potentially harmful. */
-@JsonDeserialize(builder = ModerationCreateResponse.Builder::class)
 @NoAutoDetect
 class ModerationCreateResponse
+@JsonCreator
 private constructor(
-    private val id: JsonField<String>,
-    private val model: JsonField<String>,
-    private val results: JsonField<List<Moderation>>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("results")
+    @ExcludeMissing
+    private val results: JsonField<List<Moderation>> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The unique identifier for the moderation request. */
@@ -84,22 +87,18 @@ private constructor(
         fun id(id: String) = id(JsonField.of(id))
 
         /** The unique identifier for the moderation request. */
-        @JsonProperty("id") @ExcludeMissing fun id(id: JsonField<String>) = apply { this.id = id }
+        fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The model used to generate the moderation results. */
         fun model(model: String) = model(JsonField.of(model))
 
         /** The model used to generate the moderation results. */
-        @JsonProperty("model")
-        @ExcludeMissing
         fun model(model: JsonField<String>) = apply { this.model = model }
 
         /** A list of moderation objects. */
         fun results(results: List<Moderation>) = results(JsonField.of(results))
 
         /** A list of moderation objects. */
-        @JsonProperty("results")
-        @ExcludeMissing
         fun results(results: JsonField<List<Moderation>>) = apply { this.results = results }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -107,7 +106,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }
