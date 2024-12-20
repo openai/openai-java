@@ -1,8 +1,15 @@
 # OpenAI Java API Library
 
+> [!NOTE]  
+> The OpenAI Java API Library is currently in _alpha_.
+>
+> There may be frequent breaking changes.
+>
+> Have thoughts or feedback? [File an issue](https://github.com/openai/openai-java/issues/new) or comment on [this thread](https://community.openai.com/t/your-feedback-requested-java-sdk/1061029).
+
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/0.0.1)
+[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/0.8.0)
 
 <!-- x-release-please-end -->
 
@@ -25,7 +32,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfo
 <!-- x-release-please-start-version -->
 
 ```kotlin
-implementation("com.openai:openai-java:0.0.1")
+implementation("com.openai:openai-java:0.8.0")
 ```
 
 #### Maven
@@ -34,7 +41,7 @@ implementation("com.openai:openai-java:0.0.1")
 <dependency>
     <groupId>com.openai</groupId>
     <artifactId>openai-java</artifactId>
-    <version>0.0.1</version>
+    <version>0.8.0</version>
 </dependency>
 ```
 
@@ -283,6 +290,46 @@ This library throws exceptions in a single hierarchy for easy handling:
 - **`OpenAIInvalidDataException`** - any other exceptions on the client side, e.g.:
   - We failed to serialize the request body
   - We failed to parse the response body (has access to response code and body)
+
+## Microsoft Azure OpenAI
+
+To use this library with [Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/overview), use the same 
+OpenAI client builder but with the Azure-specific configuration. 
+
+```java
+OpenAIOkHttpClient.Builder clientBuilder = OpenAIOkHttpClient.builder();
+
+/* Azure-specific code starts here */
+// You can either set 'endpoint' directly in the builder.
+// or set the env var "AZURE_OPENAI_ENDPOINT" and use fromEnv() method instead
+clientBuilder
+    .baseUrl(System.getenv("AZURE_OPENAI_ENDPOINT"))
+    .credential(BearerTokenCredential.create(
+        AuthenticationUtil.getBearerTokenSupplier(
+            new DefaultAzureCredentialBuilder().build(), "https://cognitiveservices.azure.com/.default")
+    ));
+/* Azure-specific code ends here */
+
+OpenAIClient client = clientBuilder.build();
+
+ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
+    .addMessage(ChatCompletionMessageParam.ofChatCompletionUserMessageParam(
+        ChatCompletionUserMessageParam.builder()
+            .role(ChatCompletionUserMessageParam.Role.USER)
+            .content(ChatCompletionUserMessageParam.Content.ofTextContent("Who won the world series in 2020?"))
+            .build()))
+    .model("gpt-4o")
+    .build();
+
+ChatCompletion chatCompletion = client.chat().completions().create(params);
+
+List<ChatCompletion.Choice> choices = chatCompletion.choices();
+for (ChatCompletion.Choice choice : choices) {
+    System.out.println("Choice content: " + choice.message().content().get());
+}
+```
+
+See the complete Azure OpenAI examples in the [Azure OpenAI example](https://github.com/openai/openai-java/tree/next/openai-azure-java-example/src/main/java/com.openai.azure.examples).
 
 ## Network options
 
