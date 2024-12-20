@@ -6,13 +6,13 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
@@ -22,19 +22,31 @@ import java.util.Optional
  * Represents a streamed chunk of a chat completion response returned by model, based on the
  * provided input.
  */
-@JsonDeserialize(builder = ChatCompletionChunk.Builder::class)
 @NoAutoDetect
 class ChatCompletionChunk
+@JsonCreator
 private constructor(
-    private val id: JsonField<String>,
-    private val choices: JsonField<List<Choice>>,
-    private val created: JsonField<Long>,
-    private val model: JsonField<String>,
-    private val serviceTier: JsonField<ServiceTier>,
-    private val systemFingerprint: JsonField<String>,
-    private val object_: JsonField<Object>,
-    private val usage: JsonField<CompletionUsage>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("choices")
+    @ExcludeMissing
+    private val choices: JsonField<List<Choice>> = JsonMissing.of(),
+    @JsonProperty("created")
+    @ExcludeMissing
+    private val created: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("service_tier")
+    @ExcludeMissing
+    private val serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
+    @JsonProperty("system_fingerprint")
+    @ExcludeMissing
+    private val systemFingerprint: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("object")
+    @ExcludeMissing
+    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("usage")
+    @ExcludeMissing
+    private val usage: JsonField<CompletionUsage> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** A unique identifier for the chat completion. Each chunk has the same ID. */
@@ -179,7 +191,7 @@ private constructor(
         fun id(id: String) = id(JsonField.of(id))
 
         /** A unique identifier for the chat completion. Each chunk has the same ID. */
-        @JsonProperty("id") @ExcludeMissing fun id(id: JsonField<String>) = apply { this.id = id }
+        fun id(id: JsonField<String>) = apply { this.id = id }
 
         /**
          * A list of chat completion choices. Can contain more than one elements if `n` is greater
@@ -193,8 +205,6 @@ private constructor(
          * than 1. Can also be empty for the last chunk if you set `stream_options:
          * {"include_usage": true}`.
          */
-        @JsonProperty("choices")
-        @ExcludeMissing
         fun choices(choices: JsonField<List<Choice>>) = apply { this.choices = choices }
 
         /**
@@ -207,16 +217,12 @@ private constructor(
          * The Unix timestamp (in seconds) of when the chat completion was created. Each chunk has
          * the same timestamp.
          */
-        @JsonProperty("created")
-        @ExcludeMissing
         fun created(created: JsonField<Long>) = apply { this.created = created }
 
         /** The model to generate the completion. */
         fun model(model: String) = model(JsonField.of(model))
 
         /** The model to generate the completion. */
-        @JsonProperty("model")
-        @ExcludeMissing
         fun model(model: JsonField<String>) = apply { this.model = model }
 
         /**
@@ -229,8 +235,6 @@ private constructor(
          * The service tier used for processing the request. This field is only included if the
          * `service_tier` parameter is specified in the request.
          */
-        @JsonProperty("service_tier")
-        @ExcludeMissing
         fun serviceTier(serviceTier: JsonField<ServiceTier>) = apply {
             this.serviceTier = serviceTier
         }
@@ -248,8 +252,6 @@ private constructor(
          * used in conjunction with the `seed` request parameter to understand when backend changes
          * have been made that might impact determinism.
          */
-        @JsonProperty("system_fingerprint")
-        @ExcludeMissing
         fun systemFingerprint(systemFingerprint: JsonField<String>) = apply {
             this.systemFingerprint = systemFingerprint
         }
@@ -258,8 +260,6 @@ private constructor(
         fun object_(object_: Object) = object_(JsonField.of(object_))
 
         /** The object type, which is always `chat.completion.chunk`. */
-        @JsonProperty("object")
-        @ExcludeMissing
         fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
 
         /**
@@ -274,8 +274,6 @@ private constructor(
          * {"include_usage": true}` in your request. When present, it contains a null value except
          * for the last chunk which contains the token usage statistics for the entire request.
          */
-        @JsonProperty("usage")
-        @ExcludeMissing
         fun usage(usage: JsonField<CompletionUsage>) = apply { this.usage = usage }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -283,7 +281,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }
@@ -312,15 +309,24 @@ private constructor(
             )
     }
 
-    @JsonDeserialize(builder = Choice.Builder::class)
     @NoAutoDetect
     class Choice
+    @JsonCreator
     private constructor(
-        private val delta: JsonField<Delta>,
-        private val logprobs: JsonField<Logprobs>,
-        private val finishReason: JsonField<FinishReason>,
-        private val index: JsonField<Long>,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("delta")
+        @ExcludeMissing
+        private val delta: JsonField<Delta> = JsonMissing.of(),
+        @JsonProperty("logprobs")
+        @ExcludeMissing
+        private val logprobs: JsonField<Logprobs> = JsonMissing.of(),
+        @JsonProperty("finish_reason")
+        @ExcludeMissing
+        private val finishReason: JsonField<FinishReason> = JsonMissing.of(),
+        @JsonProperty("index")
+        @ExcludeMissing
+        private val index: JsonField<Long> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** A chat completion delta generated by streamed model responses. */
@@ -404,16 +410,12 @@ private constructor(
             fun delta(delta: Delta) = delta(JsonField.of(delta))
 
             /** A chat completion delta generated by streamed model responses. */
-            @JsonProperty("delta")
-            @ExcludeMissing
             fun delta(delta: JsonField<Delta>) = apply { this.delta = delta }
 
             /** Log probability information for the choice. */
             fun logprobs(logprobs: Logprobs) = logprobs(JsonField.of(logprobs))
 
             /** Log probability information for the choice. */
-            @JsonProperty("logprobs")
-            @ExcludeMissing
             fun logprobs(logprobs: JsonField<Logprobs>) = apply { this.logprobs = logprobs }
 
             /**
@@ -432,8 +434,6 @@ private constructor(
              * due to a flag from our content filters, `tool_calls` if the model called a tool, or
              * `function_call` (deprecated) if the model called a function.
              */
-            @JsonProperty("finish_reason")
-            @ExcludeMissing
             fun finishReason(finishReason: JsonField<FinishReason>) = apply {
                 this.finishReason = finishReason
             }
@@ -442,8 +442,6 @@ private constructor(
             fun index(index: Long) = index(JsonField.of(index))
 
             /** The index of the choice in the list of choices. */
-            @JsonProperty("index")
-            @ExcludeMissing
             fun index(index: JsonField<Long>) = apply { this.index = index }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -451,7 +449,6 @@ private constructor(
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }
@@ -477,16 +474,27 @@ private constructor(
         }
 
         /** A chat completion delta generated by streamed model responses. */
-        @JsonDeserialize(builder = Delta.Builder::class)
         @NoAutoDetect
         class Delta
+        @JsonCreator
         private constructor(
-            private val content: JsonField<String>,
-            private val functionCall: JsonField<FunctionCall>,
-            private val toolCalls: JsonField<List<ToolCall>>,
-            private val role: JsonField<Role>,
-            private val refusal: JsonField<String>,
-            private val additionalProperties: Map<String, JsonValue>,
+            @JsonProperty("content")
+            @ExcludeMissing
+            private val content: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("function_call")
+            @ExcludeMissing
+            private val functionCall: JsonField<FunctionCall> = JsonMissing.of(),
+            @JsonProperty("tool_calls")
+            @ExcludeMissing
+            private val toolCalls: JsonField<List<ToolCall>> = JsonMissing.of(),
+            @JsonProperty("role")
+            @ExcludeMissing
+            private val role: JsonField<Role> = JsonMissing.of(),
+            @JsonProperty("refusal")
+            @ExcludeMissing
+            private val refusal: JsonField<String> = JsonMissing.of(),
+            @JsonAnySetter
+            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
             /** The contents of the chunk message. */
@@ -572,8 +580,6 @@ private constructor(
                 fun content(content: String) = content(JsonField.of(content))
 
                 /** The contents of the chunk message. */
-                @JsonProperty("content")
-                @ExcludeMissing
                 fun content(content: JsonField<String>) = apply { this.content = content }
 
                 /**
@@ -587,16 +593,12 @@ private constructor(
                  * Deprecated and replaced by `tool_calls`. The name and arguments of a function
                  * that should be called, as generated by the model.
                  */
-                @JsonProperty("function_call")
-                @ExcludeMissing
                 fun functionCall(functionCall: JsonField<FunctionCall>) = apply {
                     this.functionCall = functionCall
                 }
 
                 fun toolCalls(toolCalls: List<ToolCall>) = toolCalls(JsonField.of(toolCalls))
 
-                @JsonProperty("tool_calls")
-                @ExcludeMissing
                 fun toolCalls(toolCalls: JsonField<List<ToolCall>>) = apply {
                     this.toolCalls = toolCalls
                 }
@@ -605,16 +607,12 @@ private constructor(
                 fun role(role: Role) = role(JsonField.of(role))
 
                 /** The role of the author of this message. */
-                @JsonProperty("role")
-                @ExcludeMissing
                 fun role(role: JsonField<Role>) = apply { this.role = role }
 
                 /** The refusal message generated by the model. */
                 fun refusal(refusal: String) = refusal(JsonField.of(refusal))
 
                 /** The refusal message generated by the model. */
-                @JsonProperty("refusal")
-                @ExcludeMissing
                 fun refusal(refusal: JsonField<String>) = apply { this.refusal = refusal }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -622,7 +620,6 @@ private constructor(
                     putAllAdditionalProperties(additionalProperties)
                 }
 
-                @JsonAnySetter
                 fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                     additionalProperties.put(key, value)
                 }
@@ -655,13 +652,18 @@ private constructor(
              * Deprecated and replaced by `tool_calls`. The name and arguments of a function that
              * should be called, as generated by the model.
              */
-            @JsonDeserialize(builder = FunctionCall.Builder::class)
             @NoAutoDetect
             class FunctionCall
+            @JsonCreator
             private constructor(
-                private val arguments: JsonField<String>,
-                private val name: JsonField<String>,
-                private val additionalProperties: Map<String, JsonValue>,
+                @JsonProperty("arguments")
+                @ExcludeMissing
+                private val arguments: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("name")
+                @ExcludeMissing
+                private val name: JsonField<String> = JsonMissing.of(),
+                @JsonAnySetter
+                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
 
                 /**
@@ -735,8 +737,6 @@ private constructor(
                      * hallucinate parameters not defined by your function schema. Validate the
                      * arguments in your code before calling your function.
                      */
-                    @JsonProperty("arguments")
-                    @ExcludeMissing
                     fun arguments(arguments: JsonField<String>) = apply {
                         this.arguments = arguments
                     }
@@ -745,8 +745,6 @@ private constructor(
                     fun name(name: String) = name(JsonField.of(name))
 
                     /** The name of the function to call. */
-                    @JsonProperty("name")
-                    @ExcludeMissing
                     fun name(name: JsonField<String>) = apply { this.name = name }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -754,7 +752,6 @@ private constructor(
                         putAllAdditionalProperties(additionalProperties)
                     }
 
-                    @JsonAnySetter
                     fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                         additionalProperties.put(key, value)
                     }
@@ -867,15 +864,24 @@ private constructor(
                 override fun toString() = value.toString()
             }
 
-            @JsonDeserialize(builder = ToolCall.Builder::class)
             @NoAutoDetect
             class ToolCall
+            @JsonCreator
             private constructor(
-                private val index: JsonField<Long>,
-                private val id: JsonField<String>,
-                private val type: JsonField<Type>,
-                private val function: JsonField<Function>,
-                private val additionalProperties: Map<String, JsonValue>,
+                @JsonProperty("index")
+                @ExcludeMissing
+                private val index: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("id")
+                @ExcludeMissing
+                private val id: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type")
+                @ExcludeMissing
+                private val type: JsonField<Type> = JsonMissing.of(),
+                @JsonProperty("function")
+                @ExcludeMissing
+                private val function: JsonField<Function> = JsonMissing.of(),
+                @JsonAnySetter
+                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
 
                 fun index(): Long = index.getRequired("index")
@@ -941,30 +947,22 @@ private constructor(
 
                     fun index(index: Long) = index(JsonField.of(index))
 
-                    @JsonProperty("index")
-                    @ExcludeMissing
                     fun index(index: JsonField<Long>) = apply { this.index = index }
 
                     /** The ID of the tool call. */
                     fun id(id: String) = id(JsonField.of(id))
 
                     /** The ID of the tool call. */
-                    @JsonProperty("id")
-                    @ExcludeMissing
                     fun id(id: JsonField<String>) = apply { this.id = id }
 
                     /** The type of the tool. Currently, only `function` is supported. */
                     fun type(type: Type) = type(JsonField.of(type))
 
                     /** The type of the tool. Currently, only `function` is supported. */
-                    @JsonProperty("type")
-                    @ExcludeMissing
                     fun type(type: JsonField<Type>) = apply { this.type = type }
 
                     fun function(function: Function) = function(JsonField.of(function))
 
-                    @JsonProperty("function")
-                    @ExcludeMissing
                     fun function(function: JsonField<Function>) = apply { this.function = function }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -972,7 +970,6 @@ private constructor(
                         putAllAdditionalProperties(additionalProperties)
                     }
 
-                    @JsonAnySetter
                     fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                         additionalProperties.put(key, value)
                     }
@@ -1000,13 +997,18 @@ private constructor(
                         )
                 }
 
-                @JsonDeserialize(builder = Function.Builder::class)
                 @NoAutoDetect
                 class Function
+                @JsonCreator
                 private constructor(
-                    private val name: JsonField<String>,
-                    private val arguments: JsonField<String>,
-                    private val additionalProperties: Map<String, JsonValue>,
+                    @JsonProperty("name")
+                    @ExcludeMissing
+                    private val name: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("arguments")
+                    @ExcludeMissing
+                    private val arguments: JsonField<String> = JsonMissing.of(),
+                    @JsonAnySetter
+                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
                 ) {
 
                     /** The name of the function to call. */
@@ -1071,8 +1073,6 @@ private constructor(
                         fun name(name: String) = name(JsonField.of(name))
 
                         /** The name of the function to call. */
-                        @JsonProperty("name")
-                        @ExcludeMissing
                         fun name(name: JsonField<String>) = apply { this.name = name }
 
                         /**
@@ -1089,8 +1089,6 @@ private constructor(
                          * may hallucinate parameters not defined by your function schema. Validate
                          * the arguments in your code before calling your function.
                          */
-                        @JsonProperty("arguments")
-                        @ExcludeMissing
                         fun arguments(arguments: JsonField<String>) = apply {
                             this.arguments = arguments
                         }
@@ -1101,7 +1099,6 @@ private constructor(
                                 putAllAdditionalProperties(additionalProperties)
                             }
 
-                        @JsonAnySetter
                         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                             additionalProperties.put(key, value)
                         }
@@ -1308,13 +1305,18 @@ private constructor(
         }
 
         /** Log probability information for the choice. */
-        @JsonDeserialize(builder = Logprobs.Builder::class)
         @NoAutoDetect
         class Logprobs
+        @JsonCreator
         private constructor(
-            private val content: JsonField<List<ChatCompletionTokenLogprob>>,
-            private val refusal: JsonField<List<ChatCompletionTokenLogprob>>,
-            private val additionalProperties: Map<String, JsonValue>,
+            @JsonProperty("content")
+            @ExcludeMissing
+            private val content: JsonField<List<ChatCompletionTokenLogprob>> = JsonMissing.of(),
+            @JsonProperty("refusal")
+            @ExcludeMissing
+            private val refusal: JsonField<List<ChatCompletionTokenLogprob>> = JsonMissing.of(),
+            @JsonAnySetter
+            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
             /** A list of message content tokens with log probability information. */
@@ -1370,8 +1372,6 @@ private constructor(
                     content(JsonField.of(content))
 
                 /** A list of message content tokens with log probability information. */
-                @JsonProperty("content")
-                @ExcludeMissing
                 fun content(content: JsonField<List<ChatCompletionTokenLogprob>>) = apply {
                     this.content = content
                 }
@@ -1381,8 +1381,6 @@ private constructor(
                     refusal(JsonField.of(refusal))
 
                 /** A list of message refusal tokens with log probability information. */
-                @JsonProperty("refusal")
-                @ExcludeMissing
                 fun refusal(refusal: JsonField<List<ChatCompletionTokenLogprob>>) = apply {
                     this.refusal = refusal
                 }
@@ -1392,7 +1390,6 @@ private constructor(
                     putAllAdditionalProperties(additionalProperties)
                 }
 
-                @JsonAnySetter
                 fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                     additionalProperties.put(key, value)
                 }

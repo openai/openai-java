@@ -6,31 +6,37 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
 /** Fine-tuning job event object */
-@JsonDeserialize(builder = FineTuningJobEvent.Builder::class)
 @NoAutoDetect
 class FineTuningJobEvent
+@JsonCreator
 private constructor(
-    private val object_: JsonField<Object>,
-    private val id: JsonField<String>,
-    private val createdAt: JsonField<Long>,
-    private val level: JsonField<Level>,
-    private val message: JsonField<String>,
-    private val type: JsonField<Type>,
-    private val data: JsonValue,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("object")
+    @ExcludeMissing
+    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("created_at")
+    @ExcludeMissing
+    private val createdAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("level") @ExcludeMissing private val level: JsonField<Level> = JsonMissing.of(),
+    @JsonProperty("message")
+    @ExcludeMissing
+    private val message: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("data") @ExcludeMissing private val data: JsonValue = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The object type, which is always "fine_tuning.job.event". */
@@ -124,57 +130,46 @@ private constructor(
         fun object_(object_: Object) = object_(JsonField.of(object_))
 
         /** The object type, which is always "fine_tuning.job.event". */
-        @JsonProperty("object")
-        @ExcludeMissing
         fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
 
         /** The object identifier. */
         fun id(id: String) = id(JsonField.of(id))
 
         /** The object identifier. */
-        @JsonProperty("id") @ExcludeMissing fun id(id: JsonField<String>) = apply { this.id = id }
+        fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The Unix timestamp (in seconds) for when the fine-tuning job was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
         /** The Unix timestamp (in seconds) for when the fine-tuning job was created. */
-        @JsonProperty("created_at")
-        @ExcludeMissing
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /** The log level of the event. */
         fun level(level: Level) = level(JsonField.of(level))
 
         /** The log level of the event. */
-        @JsonProperty("level")
-        @ExcludeMissing
         fun level(level: JsonField<Level>) = apply { this.level = level }
 
         /** The message of the event. */
         fun message(message: String) = message(JsonField.of(message))
 
         /** The message of the event. */
-        @JsonProperty("message")
-        @ExcludeMissing
         fun message(message: JsonField<String>) = apply { this.message = message }
 
         /** The type of event. */
         fun type(type: Type) = type(JsonField.of(type))
 
         /** The type of event. */
-        @JsonProperty("type")
-        @ExcludeMissing
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
         /** The data associated with the event. */
-        @JsonProperty("data") @ExcludeMissing fun data(data: JsonValue) = apply { this.data = data }
+        fun data(data: JsonValue) = apply { this.data = data }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }

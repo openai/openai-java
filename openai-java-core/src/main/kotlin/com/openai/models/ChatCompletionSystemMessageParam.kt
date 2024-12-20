@@ -22,6 +22,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.getOrThrow
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
@@ -31,14 +32,16 @@ import java.util.Optional
  * Developer-provided instructions that the model should follow, regardless of messages sent by the
  * user. With o1 models and newer, use `developer` messages for this purpose instead.
  */
-@JsonDeserialize(builder = ChatCompletionSystemMessageParam.Builder::class)
 @NoAutoDetect
 class ChatCompletionSystemMessageParam
+@JsonCreator
 private constructor(
-    private val content: JsonField<Content>,
-    private val role: JsonField<Role>,
-    private val name: JsonField<String>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("content")
+    @ExcludeMissing
+    private val content: JsonField<Content> = JsonMissing.of(),
+    @JsonProperty("role") @ExcludeMissing private val role: JsonField<Role> = JsonMissing.of(),
+    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The contents of the system message. */
@@ -108,16 +111,12 @@ private constructor(
         fun content(content: Content) = content(JsonField.of(content))
 
         /** The contents of the system message. */
-        @JsonProperty("content")
-        @ExcludeMissing
         fun content(content: JsonField<Content>) = apply { this.content = content }
 
         /** The role of the messages author, in this case `system`. */
         fun role(role: Role) = role(JsonField.of(role))
 
         /** The role of the messages author, in this case `system`. */
-        @JsonProperty("role")
-        @ExcludeMissing
         fun role(role: JsonField<Role>) = apply { this.role = role }
 
         /**
@@ -130,8 +129,6 @@ private constructor(
          * An optional name for the participant. Provides the model information to differentiate
          * between participants of the same role.
          */
-        @JsonProperty("name")
-        @ExcludeMissing
         fun name(name: JsonField<String>) = apply { this.name = name }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -139,7 +136,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }

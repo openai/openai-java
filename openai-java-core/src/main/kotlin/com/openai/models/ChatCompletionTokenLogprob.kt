@@ -4,26 +4,33 @@ package com.openai.models
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
-@JsonDeserialize(builder = ChatCompletionTokenLogprob.Builder::class)
 @NoAutoDetect
 class ChatCompletionTokenLogprob
+@JsonCreator
 private constructor(
-    private val token: JsonField<String>,
-    private val logprob: JsonField<Double>,
-    private val bytes: JsonField<List<Long>>,
-    private val topLogprobs: JsonField<List<TopLogprob>>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("token") @ExcludeMissing private val token: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("logprob")
+    @ExcludeMissing
+    private val logprob: JsonField<Double> = JsonMissing.of(),
+    @JsonProperty("bytes")
+    @ExcludeMissing
+    private val bytes: JsonField<List<Long>> = JsonMissing.of(),
+    @JsonProperty("top_logprobs")
+    @ExcludeMissing
+    private val topLogprobs: JsonField<List<TopLogprob>> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The token. */
@@ -116,8 +123,6 @@ private constructor(
         fun token(token: String) = token(JsonField.of(token))
 
         /** The token. */
-        @JsonProperty("token")
-        @ExcludeMissing
         fun token(token: JsonField<String>) = apply { this.token = token }
 
         /**
@@ -130,8 +135,6 @@ private constructor(
          * The log probability of this token, if it is within the top 20 most likely tokens.
          * Otherwise, the value `-9999.0` is used to signify that the token is very unlikely.
          */
-        @JsonProperty("logprob")
-        @ExcludeMissing
         fun logprob(logprob: JsonField<Double>) = apply { this.logprob = logprob }
 
         /**
@@ -148,8 +151,6 @@ private constructor(
          * representations must be combined to generate the correct text representation. Can be
          * `null` if there is no bytes representation for the token.
          */
-        @JsonProperty("bytes")
-        @ExcludeMissing
         fun bytes(bytes: JsonField<List<Long>>) = apply { this.bytes = bytes }
 
         /**
@@ -162,8 +163,6 @@ private constructor(
          * List of the most likely tokens and their log probability, at this token position. In rare
          * cases, there may be fewer than the number of requested `top_logprobs` returned.
          */
-        @JsonProperty("top_logprobs")
-        @ExcludeMissing
         fun topLogprobs(topLogprobs: JsonField<List<TopLogprob>>) = apply {
             this.topLogprobs = topLogprobs
         }
@@ -173,7 +172,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }
@@ -198,14 +196,21 @@ private constructor(
             )
     }
 
-    @JsonDeserialize(builder = TopLogprob.Builder::class)
     @NoAutoDetect
     class TopLogprob
+    @JsonCreator
     private constructor(
-        private val token: JsonField<String>,
-        private val logprob: JsonField<Double>,
-        private val bytes: JsonField<List<Long>>,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("token")
+        @ExcludeMissing
+        private val token: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("logprob")
+        @ExcludeMissing
+        private val logprob: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("bytes")
+        @ExcludeMissing
+        private val bytes: JsonField<List<Long>> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** The token. */
@@ -283,8 +288,6 @@ private constructor(
             fun token(token: String) = token(JsonField.of(token))
 
             /** The token. */
-            @JsonProperty("token")
-            @ExcludeMissing
             fun token(token: JsonField<String>) = apply { this.token = token }
 
             /**
@@ -297,8 +300,6 @@ private constructor(
              * The log probability of this token, if it is within the top 20 most likely tokens.
              * Otherwise, the value `-9999.0` is used to signify that the token is very unlikely.
              */
-            @JsonProperty("logprob")
-            @ExcludeMissing
             fun logprob(logprob: JsonField<Double>) = apply { this.logprob = logprob }
 
             /**
@@ -315,8 +316,6 @@ private constructor(
              * representations must be combined to generate the correct text representation. Can be
              * `null` if there is no bytes representation for the token.
              */
-            @JsonProperty("bytes")
-            @ExcludeMissing
             fun bytes(bytes: JsonField<List<Long>>) = apply { this.bytes = bytes }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -324,7 +323,6 @@ private constructor(
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }

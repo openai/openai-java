@@ -6,33 +6,47 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
 /** The Upload object can accept byte chunks in the form of Parts. */
-@JsonDeserialize(builder = Upload.Builder::class)
 @NoAutoDetect
 class Upload
+@JsonCreator
 private constructor(
-    private val id: JsonField<String>,
-    private val createdAt: JsonField<Long>,
-    private val filename: JsonField<String>,
-    private val bytes: JsonField<Long>,
-    private val purpose: JsonField<String>,
-    private val status: JsonField<Status>,
-    private val expiresAt: JsonField<Long>,
-    private val object_: JsonField<Object>,
-    private val file: JsonField<FileObject>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("created_at")
+    @ExcludeMissing
+    private val createdAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("filename")
+    @ExcludeMissing
+    private val filename: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("bytes") @ExcludeMissing private val bytes: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("purpose")
+    @ExcludeMissing
+    private val purpose: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("status")
+    @ExcludeMissing
+    private val status: JsonField<Status> = JsonMissing.of(),
+    @JsonProperty("expires_at")
+    @ExcludeMissing
+    private val expiresAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("object")
+    @ExcludeMissing
+    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("file")
+    @ExcludeMissing
+    private val file: JsonField<FileObject> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The Upload unique identifier, which can be referenced in API endpoints. */
@@ -156,30 +170,24 @@ private constructor(
         fun id(id: String) = id(JsonField.of(id))
 
         /** The Upload unique identifier, which can be referenced in API endpoints. */
-        @JsonProperty("id") @ExcludeMissing fun id(id: JsonField<String>) = apply { this.id = id }
+        fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The Unix timestamp (in seconds) for when the Upload was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
         /** The Unix timestamp (in seconds) for when the Upload was created. */
-        @JsonProperty("created_at")
-        @ExcludeMissing
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /** The name of the file to be uploaded. */
         fun filename(filename: String) = filename(JsonField.of(filename))
 
         /** The name of the file to be uploaded. */
-        @JsonProperty("filename")
-        @ExcludeMissing
         fun filename(filename: JsonField<String>) = apply { this.filename = filename }
 
         /** The intended number of bytes to be uploaded. */
         fun bytes(bytes: Long) = bytes(JsonField.of(bytes))
 
         /** The intended number of bytes to be uploaded. */
-        @JsonProperty("bytes")
-        @ExcludeMissing
         fun bytes(bytes: JsonField<Long>) = apply { this.bytes = bytes }
 
         /**
@@ -194,40 +202,30 @@ private constructor(
          * [Please refer here](https://platform.openai.com/docs/api-reference/files/object#files/object-purpose)
          * for acceptable values.
          */
-        @JsonProperty("purpose")
-        @ExcludeMissing
         fun purpose(purpose: JsonField<String>) = apply { this.purpose = purpose }
 
         /** The status of the Upload. */
         fun status(status: Status) = status(JsonField.of(status))
 
         /** The status of the Upload. */
-        @JsonProperty("status")
-        @ExcludeMissing
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
         /** The Unix timestamp (in seconds) for when the Upload was created. */
         fun expiresAt(expiresAt: Long) = expiresAt(JsonField.of(expiresAt))
 
         /** The Unix timestamp (in seconds) for when the Upload was created. */
-        @JsonProperty("expires_at")
-        @ExcludeMissing
         fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
 
         /** The object type, which is always "upload". */
         fun object_(object_: Object) = object_(JsonField.of(object_))
 
         /** The object type, which is always "upload". */
-        @JsonProperty("object")
-        @ExcludeMissing
         fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
 
         /** The ready File object after the Upload is completed. */
         fun file(file: FileObject) = file(JsonField.of(file))
 
         /** The ready File object after the Upload is completed. */
-        @JsonProperty("file")
-        @ExcludeMissing
         fun file(file: JsonField<FileObject>) = apply { this.file = file }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -235,7 +233,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }

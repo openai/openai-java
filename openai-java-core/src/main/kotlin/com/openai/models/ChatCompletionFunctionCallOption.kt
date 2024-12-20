@@ -4,13 +4,14 @@ package com.openai.models
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
 
@@ -18,12 +19,12 @@ import java.util.Objects
  * Specifying a particular function via `{"name": "my_function"}` forces the model to call that
  * function.
  */
-@JsonDeserialize(builder = ChatCompletionFunctionCallOption.Builder::class)
 @NoAutoDetect
 class ChatCompletionFunctionCallOption
+@JsonCreator
 private constructor(
-    private val name: JsonField<String>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The name of the function to call. */
@@ -69,8 +70,6 @@ private constructor(
         fun name(name: String) = name(JsonField.of(name))
 
         /** The name of the function to call. */
-        @JsonProperty("name")
-        @ExcludeMissing
         fun name(name: JsonField<String>) = apply { this.name = name }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -78,7 +77,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }

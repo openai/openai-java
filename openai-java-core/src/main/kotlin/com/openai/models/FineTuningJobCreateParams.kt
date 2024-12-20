@@ -23,6 +23,7 @@ import com.openai.core.NoAutoDetect
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
@@ -84,19 +85,20 @@ constructor(
 
     @JvmSynthetic internal fun getQueryParams(): QueryParams = additionalQueryParams
 
-    @JsonDeserialize(builder = FineTuningJobCreateBody.Builder::class)
     @NoAutoDetect
     class FineTuningJobCreateBody
+    @JsonCreator
     internal constructor(
-        private val model: Model,
-        private val trainingFile: String,
-        private val hyperparameters: Hyperparameters?,
-        private val integrations: List<Integration>?,
-        private val method: Method?,
-        private val seed: Long?,
-        private val suffix: String?,
-        private val validationFile: String?,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("model") private val model: Model,
+        @JsonProperty("training_file") private val trainingFile: String,
+        @JsonProperty("hyperparameters") private val hyperparameters: Hyperparameters?,
+        @JsonProperty("integrations") private val integrations: List<Integration>?,
+        @JsonProperty("method") private val method: Method?,
+        @JsonProperty("seed") private val seed: Long?,
+        @JsonProperty("suffix") private val suffix: String?,
+        @JsonProperty("validation_file") private val validationFile: String?,
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /**
@@ -211,7 +213,7 @@ constructor(
              * The name of the model to fine-tune. You can select one of the
              * [supported models](https://platform.openai.com/docs/guides/fine-tuning#which-models-can-be-fine-tuned).
              */
-            @JsonProperty("model") fun model(model: Model) = apply { this.model = model }
+            fun model(model: Model) = apply { this.model = model }
 
             /**
              * The ID of an uploaded file that contains training data.
@@ -232,33 +234,30 @@ constructor(
              * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for
              * more details.
              */
-            @JsonProperty("training_file")
             fun trainingFile(trainingFile: String) = apply { this.trainingFile = trainingFile }
 
             /**
              * The hyperparameters used for the fine-tuning job. This value is now deprecated in
              * favor of `method`, and should be passed in under the `method` parameter.
              */
-            @JsonProperty("hyperparameters")
             fun hyperparameters(hyperparameters: Hyperparameters) = apply {
                 this.hyperparameters = hyperparameters
             }
 
             /** A list of integrations to enable for your fine-tuning job. */
-            @JsonProperty("integrations")
             fun integrations(integrations: List<Integration>) = apply {
                 this.integrations = integrations
             }
 
             /** The method used for fine-tuning. */
-            @JsonProperty("method") fun method(method: Method) = apply { this.method = method }
+            fun method(method: Method) = apply { this.method = method }
 
             /**
              * The seed controls the reproducibility of the job. Passing in the same seed and job
              * parameters should produce the same results, but may differ in rare cases. If a seed
              * is not specified, one will be generated for you.
              */
-            @JsonProperty("seed") fun seed(seed: Long) = apply { this.seed = seed }
+            fun seed(seed: Long) = apply { this.seed = seed }
 
             /**
              * A string of up to 64 characters that will be added to your fine-tuned model name.
@@ -266,7 +265,7 @@ constructor(
              * For example, a `suffix` of "custom-model-name" would produce a model name like
              * `ft:gpt-4o-mini:openai:custom-model-name:7p4lURel`.
              */
-            @JsonProperty("suffix") fun suffix(suffix: String) = apply { this.suffix = suffix }
+            fun suffix(suffix: String) = apply { this.suffix = suffix }
 
             /**
              * The ID of an uploaded file that contains validation data.
@@ -281,7 +280,6 @@ constructor(
              * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for
              * more details.
              */
-            @JsonProperty("validation_file")
             fun validationFile(validationFile: String) = apply {
                 this.validationFile = validationFile
             }
@@ -291,7 +289,6 @@ constructor(
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }
@@ -669,14 +666,16 @@ constructor(
      * The hyperparameters used for the fine-tuning job. This value is now deprecated in favor of
      * `method`, and should be passed in under the `method` parameter.
      */
-    @JsonDeserialize(builder = Hyperparameters.Builder::class)
     @NoAutoDetect
     class Hyperparameters
+    @JsonCreator
     private constructor(
-        private val batchSize: BatchSize?,
+        @JsonProperty("batch_size") private val batchSize: BatchSize?,
+        @JsonProperty("learning_rate_multiplier")
         private val learningRateMultiplier: LearningRateMultiplier?,
-        private val nEpochs: NEpochs?,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("n_epochs") private val nEpochs: NEpochs?,
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /**
@@ -730,14 +729,12 @@ constructor(
              * Number of examples in each batch. A larger batch size means that model parameters are
              * updated less frequently, but with lower variance.
              */
-            @JsonProperty("batch_size")
             fun batchSize(batchSize: BatchSize) = apply { this.batchSize = batchSize }
 
             /**
              * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
              * overfitting.
              */
-            @JsonProperty("learning_rate_multiplier")
             fun learningRateMultiplier(learningRateMultiplier: LearningRateMultiplier) = apply {
                 this.learningRateMultiplier = learningRateMultiplier
             }
@@ -746,7 +743,6 @@ constructor(
              * The number of epochs to train the model for. An epoch refers to one full cycle
              * through the training dataset.
              */
-            @JsonProperty("n_epochs")
             fun nEpochs(nEpochs: NEpochs) = apply { this.nEpochs = nEpochs }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -754,7 +750,6 @@ constructor(
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }
@@ -1252,13 +1247,14 @@ constructor(
             "Hyperparameters{batchSize=$batchSize, learningRateMultiplier=$learningRateMultiplier, nEpochs=$nEpochs, additionalProperties=$additionalProperties}"
     }
 
-    @JsonDeserialize(builder = Integration.Builder::class)
     @NoAutoDetect
     class Integration
+    @JsonCreator
     private constructor(
-        private val type: Type,
-        private val wandb: Wandb,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("type") private val type: Type,
+        @JsonProperty("wandb") private val wandb: Wandb,
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /**
@@ -1303,7 +1299,7 @@ constructor(
              * The type of integration to enable. Currently, only "wandb" (Weights and Biases) is
              * supported.
              */
-            @JsonProperty("type") fun type(type: Type) = apply { this.type = type }
+            fun type(type: Type) = apply { this.type = type }
 
             /**
              * The settings for your integration with Weights and Biases. This payload specifies the
@@ -1311,14 +1307,13 @@ constructor(
              * name for your run, add tags to your run, and set a default entity (team, username,
              * etc) to be associated with your run.
              */
-            @JsonProperty("wandb") fun wandb(wandb: Wandb) = apply { this.wandb = wandb }
+            fun wandb(wandb: Wandb) = apply { this.wandb = wandb }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }
@@ -1398,15 +1393,16 @@ constructor(
          * for your run, add tags to your run, and set a default entity (team, username, etc) to be
          * associated with your run.
          */
-        @JsonDeserialize(builder = Wandb.Builder::class)
         @NoAutoDetect
         class Wandb
+        @JsonCreator
         private constructor(
-            private val project: String,
-            private val name: String?,
-            private val entity: String?,
-            private val tags: List<String>?,
-            private val additionalProperties: Map<String, JsonValue>,
+            @JsonProperty("project") private val project: String,
+            @JsonProperty("name") private val name: String?,
+            @JsonProperty("entity") private val entity: String?,
+            @JsonProperty("tags") private val tags: List<String>?,
+            @JsonAnySetter
+            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
             /** The name of the project that the new run will be created under. */
@@ -1460,35 +1456,33 @@ constructor(
                 }
 
                 /** The name of the project that the new run will be created under. */
-                @JsonProperty("project")
                 fun project(project: String) = apply { this.project = project }
 
                 /**
                  * A display name to set for the run. If not set, we will use the Job ID as the
                  * name.
                  */
-                @JsonProperty("name") fun name(name: String) = apply { this.name = name }
+                fun name(name: String) = apply { this.name = name }
 
                 /**
                  * The entity to use for the run. This allows you to set the team or username of the
                  * WandB user that you would like associated with the run. If not set, the default
                  * entity for the registered WandB API key is used.
                  */
-                @JsonProperty("entity") fun entity(entity: String) = apply { this.entity = entity }
+                fun entity(entity: String) = apply { this.entity = entity }
 
                 /**
                  * A list of tags to be attached to the newly created run. These tags are passed
                  * through directly to WandB. Some default tags are generated by OpenAI:
                  * "openai/finetune", "openai/{base-model}", "openai/{ftjob-abcdef}".
                  */
-                @JsonProperty("tags") fun tags(tags: List<String>) = apply { this.tags = tags }
+                fun tags(tags: List<String>) = apply { this.tags = tags }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
                     putAllAdditionalProperties(additionalProperties)
                 }
 
-                @JsonAnySetter
                 fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                     additionalProperties.put(key, value)
                 }
@@ -1553,14 +1547,15 @@ constructor(
     }
 
     /** The method used for fine-tuning. */
-    @JsonDeserialize(builder = Method.Builder::class)
     @NoAutoDetect
     class Method
+    @JsonCreator
     private constructor(
-        private val type: Type?,
-        private val supervised: Supervised?,
-        private val dpo: Dpo?,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("type") private val type: Type?,
+        @JsonProperty("supervised") private val supervised: Supervised?,
+        @JsonProperty("dpo") private val dpo: Dpo?,
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** The type of method. Is either `supervised` or `dpo`. */
@@ -1600,21 +1595,19 @@ constructor(
             }
 
             /** The type of method. Is either `supervised` or `dpo`. */
-            @JsonProperty("type") fun type(type: Type) = apply { this.type = type }
+            fun type(type: Type) = apply { this.type = type }
 
             /** Configuration for the supervised fine-tuning method. */
-            @JsonProperty("supervised")
             fun supervised(supervised: Supervised) = apply { this.supervised = supervised }
 
             /** Configuration for the DPO fine-tuning method. */
-            @JsonProperty("dpo") fun dpo(dpo: Dpo) = apply { this.dpo = dpo }
+            fun dpo(dpo: Dpo) = apply { this.dpo = dpo }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }
@@ -1639,12 +1632,13 @@ constructor(
         }
 
         /** Configuration for the DPO fine-tuning method. */
-        @JsonDeserialize(builder = Dpo.Builder::class)
         @NoAutoDetect
         class Dpo
+        @JsonCreator
         private constructor(
-            private val hyperparameters: Hyperparameters?,
-            private val additionalProperties: Map<String, JsonValue>,
+            @JsonProperty("hyperparameters") private val hyperparameters: Hyperparameters?,
+            @JsonAnySetter
+            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
             /** The hyperparameters used for the fine-tuning job. */
@@ -1674,7 +1668,6 @@ constructor(
                 }
 
                 /** The hyperparameters used for the fine-tuning job. */
-                @JsonProperty("hyperparameters")
                 fun hyperparameters(hyperparameters: Hyperparameters) = apply {
                     this.hyperparameters = hyperparameters
                 }
@@ -1684,7 +1677,6 @@ constructor(
                     putAllAdditionalProperties(additionalProperties)
                 }
 
-                @JsonAnySetter
                 fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                     additionalProperties.put(key, value)
                 }
@@ -1706,15 +1698,17 @@ constructor(
             }
 
             /** The hyperparameters used for the fine-tuning job. */
-            @JsonDeserialize(builder = Hyperparameters.Builder::class)
             @NoAutoDetect
             class Hyperparameters
+            @JsonCreator
             private constructor(
-                private val beta: Beta?,
-                private val batchSize: BatchSize?,
+                @JsonProperty("beta") private val beta: Beta?,
+                @JsonProperty("batch_size") private val batchSize: BatchSize?,
+                @JsonProperty("learning_rate_multiplier")
                 private val learningRateMultiplier: LearningRateMultiplier?,
-                private val nEpochs: NEpochs?,
-                private val additionalProperties: Map<String, JsonValue>,
+                @JsonProperty("n_epochs") private val nEpochs: NEpochs?,
+                @JsonAnySetter
+                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
 
                 /**
@@ -1777,20 +1771,18 @@ constructor(
                      * The beta value for the DPO method. A higher beta value will increase the
                      * weight of the penalty between the policy and reference model.
                      */
-                    @JsonProperty("beta") fun beta(beta: Beta) = apply { this.beta = beta }
+                    fun beta(beta: Beta) = apply { this.beta = beta }
 
                     /**
                      * Number of examples in each batch. A larger batch size means that model
                      * parameters are updated less frequently, but with lower variance.
                      */
-                    @JsonProperty("batch_size")
                     fun batchSize(batchSize: BatchSize) = apply { this.batchSize = batchSize }
 
                     /**
                      * Scaling factor for the learning rate. A smaller learning rate may be useful
                      * to avoid overfitting.
                      */
-                    @JsonProperty("learning_rate_multiplier")
                     fun learningRateMultiplier(learningRateMultiplier: LearningRateMultiplier) =
                         apply {
                             this.learningRateMultiplier = learningRateMultiplier
@@ -1800,7 +1792,6 @@ constructor(
                      * The number of epochs to train the model for. An epoch refers to one full
                      * cycle through the training dataset.
                      */
-                    @JsonProperty("n_epochs")
                     fun nEpochs(nEpochs: NEpochs) = apply { this.nEpochs = nEpochs }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1808,7 +1799,6 @@ constructor(
                         putAllAdditionalProperties(additionalProperties)
                     }
 
-                    @JsonAnySetter
                     fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                         additionalProperties.put(key, value)
                     }
@@ -2489,12 +2479,13 @@ constructor(
         }
 
         /** Configuration for the supervised fine-tuning method. */
-        @JsonDeserialize(builder = Supervised.Builder::class)
         @NoAutoDetect
         class Supervised
+        @JsonCreator
         private constructor(
-            private val hyperparameters: Hyperparameters?,
-            private val additionalProperties: Map<String, JsonValue>,
+            @JsonProperty("hyperparameters") private val hyperparameters: Hyperparameters?,
+            @JsonAnySetter
+            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
             /** The hyperparameters used for the fine-tuning job. */
@@ -2524,7 +2515,6 @@ constructor(
                 }
 
                 /** The hyperparameters used for the fine-tuning job. */
-                @JsonProperty("hyperparameters")
                 fun hyperparameters(hyperparameters: Hyperparameters) = apply {
                     this.hyperparameters = hyperparameters
                 }
@@ -2534,7 +2524,6 @@ constructor(
                     putAllAdditionalProperties(additionalProperties)
                 }
 
-                @JsonAnySetter
                 fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                     additionalProperties.put(key, value)
                 }
@@ -2557,14 +2546,16 @@ constructor(
             }
 
             /** The hyperparameters used for the fine-tuning job. */
-            @JsonDeserialize(builder = Hyperparameters.Builder::class)
             @NoAutoDetect
             class Hyperparameters
+            @JsonCreator
             private constructor(
-                private val batchSize: BatchSize?,
+                @JsonProperty("batch_size") private val batchSize: BatchSize?,
+                @JsonProperty("learning_rate_multiplier")
                 private val learningRateMultiplier: LearningRateMultiplier?,
-                private val nEpochs: NEpochs?,
-                private val additionalProperties: Map<String, JsonValue>,
+                @JsonProperty("n_epochs") private val nEpochs: NEpochs?,
+                @JsonAnySetter
+                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
 
                 /**
@@ -2619,14 +2610,12 @@ constructor(
                      * Number of examples in each batch. A larger batch size means that model
                      * parameters are updated less frequently, but with lower variance.
                      */
-                    @JsonProperty("batch_size")
                     fun batchSize(batchSize: BatchSize) = apply { this.batchSize = batchSize }
 
                     /**
                      * Scaling factor for the learning rate. A smaller learning rate may be useful
                      * to avoid overfitting.
                      */
-                    @JsonProperty("learning_rate_multiplier")
                     fun learningRateMultiplier(learningRateMultiplier: LearningRateMultiplier) =
                         apply {
                             this.learningRateMultiplier = learningRateMultiplier
@@ -2636,7 +2625,6 @@ constructor(
                      * The number of epochs to train the model for. An epoch refers to one full
                      * cycle through the training dataset.
                      */
-                    @JsonProperty("n_epochs")
                     fun nEpochs(nEpochs: NEpochs) = apply { this.nEpochs = nEpochs }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -2644,7 +2632,6 @@ constructor(
                         putAllAdditionalProperties(additionalProperties)
                     }
 
-                    @JsonAnySetter
                     fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                         additionalProperties.put(key, value)
                     }

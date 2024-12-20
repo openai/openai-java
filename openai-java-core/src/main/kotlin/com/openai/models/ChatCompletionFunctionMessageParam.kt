@@ -6,26 +6,28 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
-@JsonDeserialize(builder = ChatCompletionFunctionMessageParam.Builder::class)
 @NoAutoDetect
 class ChatCompletionFunctionMessageParam
+@JsonCreator
 private constructor(
-    private val role: JsonField<Role>,
-    private val content: JsonField<String>,
-    private val name: JsonField<String>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("role") @ExcludeMissing private val role: JsonField<Role> = JsonMissing.of(),
+    @JsonProperty("content")
+    @ExcludeMissing
+    private val content: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The role of the messages author, in this case `function`. */
@@ -89,24 +91,18 @@ private constructor(
         fun role(role: Role) = role(JsonField.of(role))
 
         /** The role of the messages author, in this case `function`. */
-        @JsonProperty("role")
-        @ExcludeMissing
         fun role(role: JsonField<Role>) = apply { this.role = role }
 
         /** The contents of the function message. */
         fun content(content: String) = content(JsonField.of(content))
 
         /** The contents of the function message. */
-        @JsonProperty("content")
-        @ExcludeMissing
         fun content(content: JsonField<String>) = apply { this.content = content }
 
         /** The name of the function to call. */
         fun name(name: String) = name(JsonField.of(name))
 
         /** The name of the function to call. */
-        @JsonProperty("name")
-        @ExcludeMissing
         fun name(name: JsonField<String>) = apply { this.name = name }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -114,7 +110,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }

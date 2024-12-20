@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
@@ -14,6 +13,7 @@ import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
@@ -59,15 +59,16 @@ constructor(
 
     @JvmSynthetic internal fun getQueryParams(): QueryParams = additionalQueryParams
 
-    @JsonDeserialize(builder = BatchCreateBody.Builder::class)
     @NoAutoDetect
     class BatchCreateBody
+    @JsonCreator
     internal constructor(
-        private val completionWindow: CompletionWindow,
-        private val endpoint: Endpoint,
-        private val inputFileId: String,
-        private val metadata: Metadata?,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("completion_window") private val completionWindow: CompletionWindow,
+        @JsonProperty("endpoint") private val endpoint: Endpoint,
+        @JsonProperty("input_file_id") private val inputFileId: String,
+        @JsonProperty("metadata") private val metadata: Metadata?,
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /**
@@ -133,7 +134,6 @@ constructor(
              * The time frame within which the batch should be processed. Currently only `24h` is
              * supported.
              */
-            @JsonProperty("completion_window")
             fun completionWindow(completionWindow: CompletionWindow) = apply {
                 this.completionWindow = completionWindow
             }
@@ -144,7 +144,6 @@ constructor(
              * that `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding
              * inputs across all requests in the batch.
              */
-            @JsonProperty("endpoint")
             fun endpoint(endpoint: Endpoint) = apply { this.endpoint = endpoint }
 
             /**
@@ -158,11 +157,9 @@ constructor(
              * must be uploaded with the purpose `batch`. The file can contain up to 50,000
              * requests, and can be up to 200 MB in size.
              */
-            @JsonProperty("input_file_id")
             fun inputFileId(inputFileId: String) = apply { this.inputFileId = inputFileId }
 
             /** Optional custom metadata for the batch. */
-            @JsonProperty("metadata")
             fun metadata(metadata: Metadata) = apply { this.metadata = metadata }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -170,7 +167,6 @@ constructor(
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }
@@ -523,11 +519,12 @@ constructor(
     }
 
     /** Optional custom metadata for the batch. */
-    @JsonDeserialize(builder = Metadata.Builder::class)
     @NoAutoDetect
     class Metadata
+    @JsonCreator
     private constructor(
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         @JsonAnyGetter
@@ -555,7 +552,6 @@ constructor(
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }

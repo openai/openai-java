@@ -6,25 +6,27 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
-@JsonDeserialize(builder = ResponseFormatJsonSchema.Builder::class)
 @NoAutoDetect
 class ResponseFormatJsonSchema
+@JsonCreator
 private constructor(
-    private val type: JsonField<Type>,
-    private val jsonSchema: JsonField<JsonSchema>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("json_schema")
+    @ExcludeMissing
+    private val jsonSchema: JsonField<JsonSchema> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The type of response format being defined: `json_schema` */
@@ -75,14 +77,10 @@ private constructor(
         fun type(type: Type) = type(JsonField.of(type))
 
         /** The type of response format being defined: `json_schema` */
-        @JsonProperty("type")
-        @ExcludeMissing
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
         fun jsonSchema(jsonSchema: JsonSchema) = jsonSchema(JsonField.of(jsonSchema))
 
-        @JsonProperty("json_schema")
-        @ExcludeMissing
         fun jsonSchema(jsonSchema: JsonField<JsonSchema>) = apply { this.jsonSchema = jsonSchema }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -90,7 +88,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }
@@ -113,15 +110,24 @@ private constructor(
             )
     }
 
-    @JsonDeserialize(builder = JsonSchema.Builder::class)
     @NoAutoDetect
     class JsonSchema
+    @JsonCreator
     private constructor(
-        private val description: JsonField<String>,
-        private val name: JsonField<String>,
-        private val schema: JsonField<Schema>,
-        private val strict: JsonField<Boolean>,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("description")
+        @ExcludeMissing
+        private val description: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("name")
+        @ExcludeMissing
+        private val name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("schema")
+        @ExcludeMissing
+        private val schema: JsonField<Schema> = JsonMissing.of(),
+        @JsonProperty("strict")
+        @ExcludeMissing
+        private val strict: JsonField<Boolean> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /**
@@ -221,8 +227,6 @@ private constructor(
              * A description of what the response format is for, used by the model to determine how
              * to respond in the format.
              */
-            @JsonProperty("description")
-            @ExcludeMissing
             fun description(description: JsonField<String>) = apply {
                 this.description = description
             }
@@ -237,16 +241,12 @@ private constructor(
              * The name of the response format. Must be a-z, A-Z, 0-9, or contain underscores and
              * dashes, with a maximum length of 64.
              */
-            @JsonProperty("name")
-            @ExcludeMissing
             fun name(name: JsonField<String>) = apply { this.name = name }
 
             /** The schema for the response format, described as a JSON Schema object. */
             fun schema(schema: Schema) = schema(JsonField.of(schema))
 
             /** The schema for the response format, described as a JSON Schema object. */
-            @JsonProperty("schema")
-            @ExcludeMissing
             fun schema(schema: JsonField<Schema>) = apply { this.schema = schema }
 
             /**
@@ -263,8 +263,6 @@ private constructor(
              * subset of JSON Schema is supported when `strict` is `true`. To learn more, read the
              * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
              */
-            @JsonProperty("strict")
-            @ExcludeMissing
             fun strict(strict: JsonField<Boolean>) = apply { this.strict = strict }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -272,7 +270,6 @@ private constructor(
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }
@@ -298,11 +295,12 @@ private constructor(
         }
 
         /** The schema for the response format, described as a JSON Schema object. */
-        @JsonDeserialize(builder = Schema.Builder::class)
         @NoAutoDetect
         class Schema
+        @JsonCreator
         private constructor(
-            private val additionalProperties: Map<String, JsonValue>,
+            @JsonAnySetter
+            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
             @JsonAnyGetter
@@ -338,7 +336,6 @@ private constructor(
                     putAllAdditionalProperties(additionalProperties)
                 }
 
-                @JsonAnySetter
                 fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                     additionalProperties.put(key, value)
                 }
