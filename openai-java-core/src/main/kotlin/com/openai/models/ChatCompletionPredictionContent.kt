@@ -39,8 +39,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /**
      * The type of the predicted content you want to provide. This type is currently always
      * `content`.
@@ -69,6 +67,8 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    private var validated: Boolean = false
+
     fun validate(): ChatCompletionPredictionContent = apply {
         if (!validated) {
             type()
@@ -93,9 +93,10 @@ private constructor(
         @JvmSynthetic
         internal fun from(chatCompletionPredictionContent: ChatCompletionPredictionContent) =
             apply {
-                this.type = chatCompletionPredictionContent.type
-                this.content = chatCompletionPredictionContent.content
-                additionalProperties(chatCompletionPredictionContent.additionalProperties)
+                type = chatCompletionPredictionContent.type
+                content = chatCompletionPredictionContent.content
+                additionalProperties =
+                    chatCompletionPredictionContent.additionalProperties.toMutableMap()
             }
 
         /**
@@ -128,16 +129,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): ChatCompletionPredictionContent =

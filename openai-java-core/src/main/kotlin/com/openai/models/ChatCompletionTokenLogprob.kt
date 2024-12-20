@@ -26,8 +26,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /** The token. */
     fun token(): String = token.getRequired("token")
 
@@ -78,6 +76,8 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    private var validated: Boolean = false
+
     fun validate(): ChatCompletionTokenLogprob = apply {
         if (!validated) {
             token()
@@ -105,11 +105,11 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(chatCompletionTokenLogprob: ChatCompletionTokenLogprob) = apply {
-            this.token = chatCompletionTokenLogprob.token
-            this.logprob = chatCompletionTokenLogprob.logprob
-            this.bytes = chatCompletionTokenLogprob.bytes
-            this.topLogprobs = chatCompletionTokenLogprob.topLogprobs
-            additionalProperties(chatCompletionTokenLogprob.additionalProperties)
+            token = chatCompletionTokenLogprob.token
+            logprob = chatCompletionTokenLogprob.logprob
+            bytes = chatCompletionTokenLogprob.bytes
+            topLogprobs = chatCompletionTokenLogprob.topLogprobs
+            additionalProperties = chatCompletionTokenLogprob.additionalProperties.toMutableMap()
         }
 
         /** The token. */
@@ -170,16 +170,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): ChatCompletionTokenLogprob =
@@ -201,8 +207,6 @@ private constructor(
         private val bytes: JsonField<List<Long>>,
         private val additionalProperties: Map<String, JsonValue>,
     ) {
-
-        private var validated: Boolean = false
 
         /** The token. */
         fun token(): String = token.getRequired("token")
@@ -242,6 +246,8 @@ private constructor(
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+        private var validated: Boolean = false
+
         fun validate(): TopLogprob = apply {
             if (!validated) {
                 token()
@@ -267,10 +273,10 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(topLogprob: TopLogprob) = apply {
-                this.token = topLogprob.token
-                this.logprob = topLogprob.logprob
-                this.bytes = topLogprob.bytes
-                additionalProperties(topLogprob.additionalProperties)
+                token = topLogprob.token
+                logprob = topLogprob.logprob
+                bytes = topLogprob.bytes
+                additionalProperties = topLogprob.additionalProperties.toMutableMap()
             }
 
             /** The token. */
@@ -315,16 +321,22 @@ private constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): TopLogprob =

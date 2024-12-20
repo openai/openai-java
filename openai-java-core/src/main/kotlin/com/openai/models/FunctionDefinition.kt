@@ -26,8 +26,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /**
      * A description of what the function does, used by the model to choose when and how to call the
      * function.
@@ -94,6 +92,8 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    private var validated: Boolean = false
+
     fun validate(): FunctionDefinition = apply {
         if (!validated) {
             description()
@@ -121,11 +121,11 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(functionDefinition: FunctionDefinition) = apply {
-            this.description = functionDefinition.description
-            this.name = functionDefinition.name
-            this.parameters = functionDefinition.parameters
-            this.strict = functionDefinition.strict
-            additionalProperties(functionDefinition.additionalProperties)
+            description = functionDefinition.description
+            name = functionDefinition.name
+            parameters = functionDefinition.parameters
+            strict = functionDefinition.strict
+            additionalProperties = functionDefinition.additionalProperties.toMutableMap()
         }
 
         /**
@@ -200,16 +200,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): FunctionDefinition =

@@ -41,9 +41,9 @@ class EmbeddingCreateParamsTest {
                 EmbeddingCreateParams.Input.ofString("The quick brown fox jumped over the lazy dog")
             )
         assertThat(body.model()).isEqualTo(EmbeddingModel.TEXT_EMBEDDING_ADA_002)
-        assertThat(body.dimensions()).isEqualTo(1L)
-        assertThat(body.encodingFormat()).isEqualTo(EmbeddingCreateParams.EncodingFormat.FLOAT)
-        assertThat(body.user()).isEqualTo("user-1234")
+        assertThat(body.dimensions()).contains(1L)
+        assertThat(body.encodingFormat()).contains(EmbeddingCreateParams.EncodingFormat.FLOAT)
+        assertThat(body.user()).contains("user-1234")
     }
 
     @Test

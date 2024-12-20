@@ -61,7 +61,7 @@ constructor(
     @NoAutoDetect
     class ModerationCreateBody
     internal constructor(
-        private val input: Input?,
+        private val input: Input,
         private val model: ModerationModel?,
         private val additionalProperties: Map<String, JsonValue>,
     ) {
@@ -70,14 +70,14 @@ constructor(
          * Input (or inputs) to classify. Can be a single string, an array of strings, or an array
          * of multi-modal input objects similar to other models.
          */
-        @JsonProperty("input") fun input(): Input? = input
+        @JsonProperty("input") fun input(): Input = input
 
         /**
          * The content moderation model you would like to use. Learn more in
          * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
          * about available models [here](https://platform.openai.com/docs/models#moderation).
          */
-        @JsonProperty("model") fun model(): ModerationModel? = model
+        @JsonProperty("model") fun model(): Optional<ModerationModel> = Optional.ofNullable(model)
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -98,9 +98,9 @@ constructor(
 
             @JvmSynthetic
             internal fun from(moderationCreateBody: ModerationCreateBody) = apply {
-                this.input = moderationCreateBody.input
-                this.model = moderationCreateBody.model
-                additionalProperties(moderationCreateBody.additionalProperties)
+                input = moderationCreateBody.input
+                model = moderationCreateBody.model
+                additionalProperties = moderationCreateBody.additionalProperties.toMutableMap()
             }
 
             /**
@@ -118,16 +118,22 @@ constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): ModerationCreateBody =
@@ -362,8 +368,6 @@ constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        private var validated: Boolean = false
-
         /** A string of text to classify for moderation. */
         fun string(): Optional<String> = Optional.ofNullable(string)
         /** An array of strings to classify for moderation. */
@@ -394,15 +398,6 @@ constructor(
                 moderationMultiModalArray != null ->
                     visitor.visitModerationMultiModalArray(moderationMultiModalArray)
                 else -> visitor.unknown(_json)
-            }
-        }
-
-        fun validate(): Input = apply {
-            if (!validated) {
-                if (string == null && strings == null && moderationMultiModalArray == null) {
-                    throw OpenAIInvalidDataException("Unknown Input: $_json")
-                }
-                validated = true
             }
         }
 

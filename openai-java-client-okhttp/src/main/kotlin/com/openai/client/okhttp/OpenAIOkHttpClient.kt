@@ -130,9 +130,9 @@ class OpenAIOkHttpClient private constructor() {
 
         fun apiKey(apiKey: String) = apply { clientOptions.apiKey(apiKey) }
 
-        fun organization(organization: String?) = apply { clientOptions.organization(organization) }
+        fun organization(organization: String) = apply { clientOptions.organization(organization) }
 
-        fun project(project: String?) = apply { clientOptions.project(project) }
+        fun project(project: String) = apply { clientOptions.project(project) }
 
         fun fromEnv() = apply { clientOptions.fromEnv() }
 

@@ -55,8 +55,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /** The object identifier, which can be referenced in the API endpoints. */
     fun id(): String = id.getRequired("id")
 
@@ -234,6 +232,8 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    private var validated: Boolean = false
+
     fun validate(): FineTuningJob = apply {
         if (!validated) {
             id()
@@ -290,25 +290,25 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(fineTuningJob: FineTuningJob) = apply {
-            this.id = fineTuningJob.id
-            this.createdAt = fineTuningJob.createdAt
-            this.error = fineTuningJob.error
-            this.fineTunedModel = fineTuningJob.fineTunedModel
-            this.finishedAt = fineTuningJob.finishedAt
-            this.hyperparameters = fineTuningJob.hyperparameters
-            this.model = fineTuningJob.model
-            this.object_ = fineTuningJob.object_
-            this.organizationId = fineTuningJob.organizationId
-            this.resultFiles = fineTuningJob.resultFiles
-            this.status = fineTuningJob.status
-            this.trainedTokens = fineTuningJob.trainedTokens
-            this.trainingFile = fineTuningJob.trainingFile
-            this.validationFile = fineTuningJob.validationFile
-            this.integrations = fineTuningJob.integrations
-            this.seed = fineTuningJob.seed
-            this.estimatedFinish = fineTuningJob.estimatedFinish
-            this.method = fineTuningJob.method
-            additionalProperties(fineTuningJob.additionalProperties)
+            id = fineTuningJob.id
+            createdAt = fineTuningJob.createdAt
+            error = fineTuningJob.error
+            fineTunedModel = fineTuningJob.fineTunedModel
+            finishedAt = fineTuningJob.finishedAt
+            hyperparameters = fineTuningJob.hyperparameters
+            model = fineTuningJob.model
+            object_ = fineTuningJob.object_
+            organizationId = fineTuningJob.organizationId
+            resultFiles = fineTuningJob.resultFiles
+            status = fineTuningJob.status
+            trainedTokens = fineTuningJob.trainedTokens
+            trainingFile = fineTuningJob.trainingFile
+            validationFile = fineTuningJob.validationFile
+            integrations = fineTuningJob.integrations
+            seed = fineTuningJob.seed
+            estimatedFinish = fineTuningJob.estimatedFinish
+            method = fineTuningJob.method
+            additionalProperties = fineTuningJob.additionalProperties.toMutableMap()
         }
 
         /** The object identifier, which can be referenced in the API endpoints. */
@@ -538,16 +538,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): FineTuningJob =
@@ -588,8 +594,6 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var validated: Boolean = false
-
         /** A machine-readable error code. */
         fun code(): String = code.getRequired("code")
 
@@ -618,6 +622,8 @@ private constructor(
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+        private var validated: Boolean = false
+
         fun validate(): Error = apply {
             if (!validated) {
                 code()
@@ -643,10 +649,10 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(error: Error) = apply {
-                this.code = error.code
-                this.message = error.message
-                this.param = error.param
-                additionalProperties(error.additionalProperties)
+                code = error.code
+                message = error.message
+                param = error.param
+                additionalProperties = error.additionalProperties.toMutableMap()
             }
 
             /** A machine-readable error code. */
@@ -681,16 +687,22 @@ private constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): Error =
@@ -733,8 +745,6 @@ private constructor(
         private val nEpochs: JsonField<NEpochs>,
         private val additionalProperties: Map<String, JsonValue>,
     ) {
-
-        private var validated: Boolean = false
 
         /**
          * Number of examples in each batch. A larger batch size means that model parameters are
@@ -780,6 +790,8 @@ private constructor(
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+        private var validated: Boolean = false
+
         fun validate(): Hyperparameters = apply {
             if (!validated) {
                 batchSize()
@@ -805,10 +817,10 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(hyperparameters: Hyperparameters) = apply {
-                this.batchSize = hyperparameters.batchSize
-                this.learningRateMultiplier = hyperparameters.learningRateMultiplier
-                this.nEpochs = hyperparameters.nEpochs
-                additionalProperties(hyperparameters.additionalProperties)
+                batchSize = hyperparameters.batchSize
+                learningRateMultiplier = hyperparameters.learningRateMultiplier
+                nEpochs = hyperparameters.nEpochs
+                additionalProperties = hyperparameters.additionalProperties.toMutableMap()
             }
 
             /**
@@ -859,16 +871,22 @@ private constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): Hyperparameters =
@@ -1529,8 +1547,6 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var validated: Boolean = false
-
         /** The type of method. Is either `supervised` or `dpo`. */
         fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
 
@@ -1553,6 +1569,8 @@ private constructor(
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
 
         fun validate(): Method = apply {
             if (!validated) {
@@ -1579,10 +1597,10 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(method: Method) = apply {
-                this.type = method.type
-                this.supervised = method.supervised
-                this.dpo = method.dpo
-                additionalProperties(method.additionalProperties)
+                type = method.type
+                supervised = method.supervised
+                dpo = method.dpo
+                additionalProperties = method.additionalProperties.toMutableMap()
             }
 
             /** The type of method. Is either `supervised` or `dpo`. */
@@ -1613,16 +1631,22 @@ private constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): Method =
@@ -1643,8 +1667,6 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue>,
         ) {
 
-            private var validated: Boolean = false
-
             /** The hyperparameters used for the fine-tuning job. */
             fun hyperparameters(): Optional<Hyperparameters> =
                 Optional.ofNullable(hyperparameters.getNullable("hyperparameters"))
@@ -1657,6 +1679,8 @@ private constructor(
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            private var validated: Boolean = false
 
             fun validate(): Dpo = apply {
                 if (!validated) {
@@ -1679,8 +1703,8 @@ private constructor(
 
                 @JvmSynthetic
                 internal fun from(dpo: Dpo) = apply {
-                    this.hyperparameters = dpo.hyperparameters
-                    additionalProperties(dpo.additionalProperties)
+                    hyperparameters = dpo.hyperparameters
+                    additionalProperties = dpo.additionalProperties.toMutableMap()
                 }
 
                 /** The hyperparameters used for the fine-tuning job. */
@@ -1696,18 +1720,26 @@ private constructor(
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
-                    this.additionalProperties.putAll(additionalProperties)
+                    putAllAdditionalProperties(additionalProperties)
                 }
 
                 @JsonAnySetter
                 fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    this.additionalProperties.put(key, value)
+                    additionalProperties.put(key, value)
                 }
 
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                     apply {
                         this.additionalProperties.putAll(additionalProperties)
                     }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
 
                 fun build(): Dpo = Dpo(hyperparameters, additionalProperties.toImmutable())
             }
@@ -1723,8 +1755,6 @@ private constructor(
                 private val nEpochs: JsonField<NEpochs>,
                 private val additionalProperties: Map<String, JsonValue>,
             ) {
-
-                private var validated: Boolean = false
 
                 /**
                  * The beta value for the DPO method. A higher beta value will increase the weight
@@ -1785,6 +1815,8 @@ private constructor(
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+                private var validated: Boolean = false
+
                 fun validate(): Hyperparameters = apply {
                     if (!validated) {
                         beta()
@@ -1813,11 +1845,11 @@ private constructor(
 
                     @JvmSynthetic
                     internal fun from(hyperparameters: Hyperparameters) = apply {
-                        this.beta = hyperparameters.beta
-                        this.batchSize = hyperparameters.batchSize
-                        this.learningRateMultiplier = hyperparameters.learningRateMultiplier
-                        this.nEpochs = hyperparameters.nEpochs
-                        additionalProperties(hyperparameters.additionalProperties)
+                        beta = hyperparameters.beta
+                        batchSize = hyperparameters.batchSize
+                        learningRateMultiplier = hyperparameters.learningRateMultiplier
+                        nEpochs = hyperparameters.nEpochs
+                        additionalProperties = hyperparameters.additionalProperties.toMutableMap()
                     }
 
                     /**
@@ -1883,18 +1915,26 @@ private constructor(
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
-                        this.additionalProperties.putAll(additionalProperties)
+                        putAllAdditionalProperties(additionalProperties)
                     }
 
                     @JsonAnySetter
                     fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                        this.additionalProperties.put(key, value)
+                        additionalProperties.put(key, value)
                     }
 
                     fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                         apply {
                             this.additionalProperties.putAll(additionalProperties)
                         }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
 
                     fun build(): Hyperparameters =
                         Hyperparameters(
@@ -2613,8 +2653,6 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue>,
         ) {
 
-            private var validated: Boolean = false
-
             /** The hyperparameters used for the fine-tuning job. */
             fun hyperparameters(): Optional<Hyperparameters> =
                 Optional.ofNullable(hyperparameters.getNullable("hyperparameters"))
@@ -2627,6 +2665,8 @@ private constructor(
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            private var validated: Boolean = false
 
             fun validate(): Supervised = apply {
                 if (!validated) {
@@ -2649,8 +2689,8 @@ private constructor(
 
                 @JvmSynthetic
                 internal fun from(supervised: Supervised) = apply {
-                    this.hyperparameters = supervised.hyperparameters
-                    additionalProperties(supervised.additionalProperties)
+                    hyperparameters = supervised.hyperparameters
+                    additionalProperties = supervised.additionalProperties.toMutableMap()
                 }
 
                 /** The hyperparameters used for the fine-tuning job. */
@@ -2666,18 +2706,26 @@ private constructor(
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
-                    this.additionalProperties.putAll(additionalProperties)
+                    putAllAdditionalProperties(additionalProperties)
                 }
 
                 @JsonAnySetter
                 fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    this.additionalProperties.put(key, value)
+                    additionalProperties.put(key, value)
                 }
 
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                     apply {
                         this.additionalProperties.putAll(additionalProperties)
                     }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
 
                 fun build(): Supervised =
                     Supervised(hyperparameters, additionalProperties.toImmutable())
@@ -2693,8 +2741,6 @@ private constructor(
                 private val nEpochs: JsonField<NEpochs>,
                 private val additionalProperties: Map<String, JsonValue>,
             ) {
-
-                private var validated: Boolean = false
 
                 /**
                  * Number of examples in each batch. A larger batch size means that model parameters
@@ -2743,6 +2789,8 @@ private constructor(
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+                private var validated: Boolean = false
+
                 fun validate(): Hyperparameters = apply {
                     if (!validated) {
                         batchSize()
@@ -2769,10 +2817,10 @@ private constructor(
 
                     @JvmSynthetic
                     internal fun from(hyperparameters: Hyperparameters) = apply {
-                        this.batchSize = hyperparameters.batchSize
-                        this.learningRateMultiplier = hyperparameters.learningRateMultiplier
-                        this.nEpochs = hyperparameters.nEpochs
-                        additionalProperties(hyperparameters.additionalProperties)
+                        batchSize = hyperparameters.batchSize
+                        learningRateMultiplier = hyperparameters.learningRateMultiplier
+                        nEpochs = hyperparameters.nEpochs
+                        additionalProperties = hyperparameters.additionalProperties.toMutableMap()
                     }
 
                     /**
@@ -2824,18 +2872,26 @@ private constructor(
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
-                        this.additionalProperties.putAll(additionalProperties)
+                        putAllAdditionalProperties(additionalProperties)
                     }
 
                     @JsonAnySetter
                     fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                        this.additionalProperties.put(key, value)
+                        additionalProperties.put(key, value)
                     }
 
                     fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                         apply {
                             this.additionalProperties.putAll(additionalProperties)
                         }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
 
                     fun build(): Hyperparameters =
                         Hyperparameters(

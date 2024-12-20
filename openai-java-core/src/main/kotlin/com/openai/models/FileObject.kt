@@ -34,8 +34,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /** The file identifier, which can be referenced in the API endpoints. */
     fun id(): String = id.getRequired("id")
 
@@ -107,6 +105,8 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    private var validated: Boolean = false
+
     fun validate(): FileObject = apply {
         if (!validated) {
             id()
@@ -142,15 +142,15 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(fileObject: FileObject) = apply {
-            this.id = fileObject.id
-            this.bytes = fileObject.bytes
-            this.createdAt = fileObject.createdAt
-            this.filename = fileObject.filename
-            this.object_ = fileObject.object_
-            this.purpose = fileObject.purpose
-            this.status = fileObject.status
-            this.statusDetails = fileObject.statusDetails
-            additionalProperties(fileObject.additionalProperties)
+            id = fileObject.id
+            bytes = fileObject.bytes
+            createdAt = fileObject.createdAt
+            filename = fileObject.filename
+            object_ = fileObject.object_
+            purpose = fileObject.purpose
+            status = fileObject.status
+            statusDetails = fileObject.statusDetails
+            additionalProperties = fileObject.additionalProperties.toMutableMap()
         }
 
         /** The file identifier, which can be referenced in the API endpoints. */
@@ -237,16 +237,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): FileObject =

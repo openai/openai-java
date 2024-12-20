@@ -25,8 +25,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /** Total number of requests in the batch. */
     fun total(): Long = total.getRequired("total")
 
@@ -48,6 +46,8 @@ private constructor(
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+    private var validated: Boolean = false
 
     fun validate(): BatchRequestCounts = apply {
         if (!validated) {
@@ -74,10 +74,10 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(batchRequestCounts: BatchRequestCounts) = apply {
-            this.total = batchRequestCounts.total
-            this.completed = batchRequestCounts.completed
-            this.failed = batchRequestCounts.failed
-            additionalProperties(batchRequestCounts.additionalProperties)
+            total = batchRequestCounts.total
+            completed = batchRequestCounts.completed
+            failed = batchRequestCounts.failed
+            additionalProperties = batchRequestCounts.additionalProperties.toMutableMap()
         }
 
         /** Total number of requests in the batch. */
@@ -106,16 +106,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): BatchRequestCounts =

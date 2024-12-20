@@ -26,8 +26,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /** An error code identifying the error type. */
     fun code(): Optional<String> = Optional.ofNullable(code.getNullable("code"))
 
@@ -56,6 +54,8 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    private var validated: Boolean = false
+
     fun validate(): BatchError = apply {
         if (!validated) {
             code()
@@ -83,11 +83,11 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(batchError: BatchError) = apply {
-            this.code = batchError.code
-            this.message = batchError.message
-            this.param = batchError.param
-            this.line = batchError.line
-            additionalProperties(batchError.additionalProperties)
+            code = batchError.code
+            message = batchError.message
+            param = batchError.param
+            line = batchError.line
+            additionalProperties = batchError.additionalProperties.toMutableMap()
         }
 
         /** An error code identifying the error type. */
@@ -124,16 +124,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): BatchError =

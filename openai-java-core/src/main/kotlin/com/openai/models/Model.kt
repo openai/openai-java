@@ -29,8 +29,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /** The model identifier, which can be referenced in the API endpoints. */
     fun id(): String = id.getRequired("id")
 
@@ -59,6 +57,8 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    private var validated: Boolean = false
+
     fun validate(): Model = apply {
         if (!validated) {
             id()
@@ -86,11 +86,11 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(model: Model) = apply {
-            this.id = model.id
-            this.created = model.created
-            this.object_ = model.object_
-            this.ownedBy = model.ownedBy
-            additionalProperties(model.additionalProperties)
+            id = model.id
+            created = model.created
+            object_ = model.object_
+            ownedBy = model.ownedBy
+            additionalProperties = model.additionalProperties.toMutableMap()
         }
 
         /** The model identifier, which can be referenced in the API endpoints. */
@@ -125,16 +125,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): Model =
