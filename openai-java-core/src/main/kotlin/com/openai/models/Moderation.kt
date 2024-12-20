@@ -6,26 +6,34 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 
-@JsonDeserialize(builder = Moderation.Builder::class)
 @NoAutoDetect
 class Moderation
+@JsonCreator
 private constructor(
-    private val flagged: JsonField<Boolean>,
-    private val categories: JsonField<Categories>,
-    private val categoryScores: JsonField<CategoryScores>,
-    private val categoryAppliedInputTypes: JsonField<CategoryAppliedInputTypes>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("flagged")
+    @ExcludeMissing
+    private val flagged: JsonField<Boolean> = JsonMissing.of(),
+    @JsonProperty("categories")
+    @ExcludeMissing
+    private val categories: JsonField<Categories> = JsonMissing.of(),
+    @JsonProperty("category_scores")
+    @ExcludeMissing
+    private val categoryScores: JsonField<CategoryScores> = JsonMissing.of(),
+    @JsonProperty("category_applied_input_types")
+    @ExcludeMissing
+    private val categoryAppliedInputTypes: JsonField<CategoryAppliedInputTypes> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** Whether any of the below categories are flagged. */
@@ -100,16 +108,12 @@ private constructor(
         fun flagged(flagged: Boolean) = flagged(JsonField.of(flagged))
 
         /** Whether any of the below categories are flagged. */
-        @JsonProperty("flagged")
-        @ExcludeMissing
         fun flagged(flagged: JsonField<Boolean>) = apply { this.flagged = flagged }
 
         /** A list of the categories, and whether they are flagged or not. */
         fun categories(categories: Categories) = categories(JsonField.of(categories))
 
         /** A list of the categories, and whether they are flagged or not. */
-        @JsonProperty("categories")
-        @ExcludeMissing
         fun categories(categories: JsonField<Categories>) = apply { this.categories = categories }
 
         /** A list of the categories along with their scores as predicted by model. */
@@ -117,8 +121,6 @@ private constructor(
             categoryScores(JsonField.of(categoryScores))
 
         /** A list of the categories along with their scores as predicted by model. */
-        @JsonProperty("category_scores")
-        @ExcludeMissing
         fun categoryScores(categoryScores: JsonField<CategoryScores>) = apply {
             this.categoryScores = categoryScores
         }
@@ -128,8 +130,6 @@ private constructor(
             categoryAppliedInputTypes(JsonField.of(categoryAppliedInputTypes))
 
         /** A list of the categories along with the input type(s) that the score applies to. */
-        @JsonProperty("category_applied_input_types")
-        @ExcludeMissing
         fun categoryAppliedInputTypes(
             categoryAppliedInputTypes: JsonField<CategoryAppliedInputTypes>
         ) = apply { this.categoryAppliedInputTypes = categoryAppliedInputTypes }
@@ -139,7 +139,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }
@@ -165,24 +164,51 @@ private constructor(
     }
 
     /** A list of the categories, and whether they are flagged or not. */
-    @JsonDeserialize(builder = Categories.Builder::class)
     @NoAutoDetect
     class Categories
+    @JsonCreator
     private constructor(
-        private val hate: JsonField<Boolean>,
-        private val hateThreatening: JsonField<Boolean>,
-        private val harassment: JsonField<Boolean>,
-        private val harassmentThreatening: JsonField<Boolean>,
-        private val illicit: JsonField<Boolean>,
-        private val illicitViolent: JsonField<Boolean>,
-        private val selfHarm: JsonField<Boolean>,
-        private val selfHarmIntent: JsonField<Boolean>,
-        private val selfHarmInstructions: JsonField<Boolean>,
-        private val sexual: JsonField<Boolean>,
-        private val sexualMinors: JsonField<Boolean>,
-        private val violence: JsonField<Boolean>,
-        private val violenceGraphic: JsonField<Boolean>,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("hate")
+        @ExcludeMissing
+        private val hate: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("hate/threatening")
+        @ExcludeMissing
+        private val hateThreatening: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("harassment")
+        @ExcludeMissing
+        private val harassment: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("harassment/threatening")
+        @ExcludeMissing
+        private val harassmentThreatening: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("illicit")
+        @ExcludeMissing
+        private val illicit: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("illicit/violent")
+        @ExcludeMissing
+        private val illicitViolent: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("self-harm")
+        @ExcludeMissing
+        private val selfHarm: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("self-harm/intent")
+        @ExcludeMissing
+        private val selfHarmIntent: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("self-harm/instructions")
+        @ExcludeMissing
+        private val selfHarmInstructions: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("sexual")
+        @ExcludeMissing
+        private val sexual: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("sexual/minors")
+        @ExcludeMissing
+        private val sexualMinors: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("violence")
+        @ExcludeMissing
+        private val violence: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("violence/graphic")
+        @ExcludeMissing
+        private val violenceGraphic: JsonField<Boolean> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /**
@@ -404,8 +430,6 @@ private constructor(
              * religion, nationality, sexual orientation, disability status, or caste. Hateful
              * content aimed at non-protected groups (e.g., chess players) is harassment.
              */
-            @JsonProperty("hate")
-            @ExcludeMissing
             fun hate(hate: JsonField<Boolean>) = apply { this.hate = hate }
 
             /**
@@ -421,8 +445,6 @@ private constructor(
              * group based on race, gender, ethnicity, religion, nationality, sexual orientation,
              * disability status, or caste.
              */
-            @JsonProperty("hate/threatening")
-            @ExcludeMissing
             fun hateThreatening(hateThreatening: JsonField<Boolean>) = apply {
                 this.hateThreatening = hateThreatening
             }
@@ -435,8 +457,6 @@ private constructor(
             /**
              * Content that expresses, incites, or promotes harassing language towards any target.
              */
-            @JsonProperty("harassment")
-            @ExcludeMissing
             fun harassment(harassment: JsonField<Boolean>) = apply { this.harassment = harassment }
 
             /**
@@ -448,8 +468,6 @@ private constructor(
             /**
              * Harassment content that also includes violence or serious harm towards any target.
              */
-            @JsonProperty("harassment/threatening")
-            @ExcludeMissing
             fun harassmentThreatening(harassmentThreatening: JsonField<Boolean>) = apply {
                 this.harassmentThreatening = harassmentThreatening
             }
@@ -466,8 +484,6 @@ private constructor(
              * execution of wrongdoing, or that gives advice or instruction on how to commit illicit
              * acts. For example, "how to shoplift" would fit this category.
              */
-            @JsonProperty("illicit")
-            @ExcludeMissing
             fun illicit(illicit: JsonField<Boolean>) = apply { this.illicit = illicit }
 
             /**
@@ -483,8 +499,6 @@ private constructor(
              * execution of wrongdoing that also includes violence, or that gives advice or
              * instruction on the procurement of any weapon.
              */
-            @JsonProperty("illicit/violent")
-            @ExcludeMissing
             fun illicitViolent(illicitViolent: JsonField<Boolean>) = apply {
                 this.illicitViolent = illicitViolent
             }
@@ -499,8 +513,6 @@ private constructor(
              * Content that promotes, encourages, or depicts acts of self-harm, such as suicide,
              * cutting, and eating disorders.
              */
-            @JsonProperty("self-harm")
-            @ExcludeMissing
             fun selfHarm(selfHarm: JsonField<Boolean>) = apply { this.selfHarm = selfHarm }
 
             /**
@@ -514,8 +526,6 @@ private constructor(
              * Content where the speaker expresses that they are engaging or intend to engage in
              * acts of self-harm, such as suicide, cutting, and eating disorders.
              */
-            @JsonProperty("self-harm/intent")
-            @ExcludeMissing
             fun selfHarmIntent(selfHarmIntent: JsonField<Boolean>) = apply {
                 this.selfHarmIntent = selfHarmIntent
             }
@@ -531,8 +541,6 @@ private constructor(
              * Content that encourages performing acts of self-harm, such as suicide, cutting, and
              * eating disorders, or that gives instructions or advice on how to commit such acts.
              */
-            @JsonProperty("self-harm/instructions")
-            @ExcludeMissing
             fun selfHarmInstructions(selfHarmInstructions: JsonField<Boolean>) = apply {
                 this.selfHarmInstructions = selfHarmInstructions
             }
@@ -547,16 +555,12 @@ private constructor(
              * Content meant to arouse sexual excitement, such as the description of sexual
              * activity, or that promotes sexual services (excluding sex education and wellness).
              */
-            @JsonProperty("sexual")
-            @ExcludeMissing
             fun sexual(sexual: JsonField<Boolean>) = apply { this.sexual = sexual }
 
             /** Sexual content that includes an individual who is under 18 years old. */
             fun sexualMinors(sexualMinors: Boolean) = sexualMinors(JsonField.of(sexualMinors))
 
             /** Sexual content that includes an individual who is under 18 years old. */
-            @JsonProperty("sexual/minors")
-            @ExcludeMissing
             fun sexualMinors(sexualMinors: JsonField<Boolean>) = apply {
                 this.sexualMinors = sexualMinors
             }
@@ -565,8 +569,6 @@ private constructor(
             fun violence(violence: Boolean) = violence(JsonField.of(violence))
 
             /** Content that depicts death, violence, or physical injury. */
-            @JsonProperty("violence")
-            @ExcludeMissing
             fun violence(violence: JsonField<Boolean>) = apply { this.violence = violence }
 
             /** Content that depicts death, violence, or physical injury in graphic detail. */
@@ -574,8 +576,6 @@ private constructor(
                 violenceGraphic(JsonField.of(violenceGraphic))
 
             /** Content that depicts death, violence, or physical injury in graphic detail. */
-            @JsonProperty("violence/graphic")
-            @ExcludeMissing
             fun violenceGraphic(violenceGraphic: JsonField<Boolean>) = apply {
                 this.violenceGraphic = violenceGraphic
             }
@@ -585,7 +585,6 @@ private constructor(
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }
@@ -638,24 +637,52 @@ private constructor(
     }
 
     /** A list of the categories along with the input type(s) that the score applies to. */
-    @JsonDeserialize(builder = CategoryAppliedInputTypes.Builder::class)
     @NoAutoDetect
     class CategoryAppliedInputTypes
+    @JsonCreator
     private constructor(
-        private val hate: JsonField<List<Hate>>,
-        private val hateThreatening: JsonField<List<HateThreatening>>,
-        private val harassment: JsonField<List<Harassment>>,
-        private val harassmentThreatening: JsonField<List<HarassmentThreatening>>,
-        private val illicit: JsonField<List<Illicit>>,
-        private val illicitViolent: JsonField<List<IllicitViolent>>,
-        private val selfHarm: JsonField<List<SelfHarm>>,
-        private val selfHarmIntent: JsonField<List<SelfHarmIntent>>,
-        private val selfHarmInstructions: JsonField<List<SelfHarmInstruction>>,
-        private val sexual: JsonField<List<Sexual>>,
-        private val sexualMinors: JsonField<List<SexualMinor>>,
-        private val violence: JsonField<List<Violence>>,
-        private val violenceGraphic: JsonField<List<ViolenceGraphic>>,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("hate")
+        @ExcludeMissing
+        private val hate: JsonField<List<Hate>> = JsonMissing.of(),
+        @JsonProperty("hate/threatening")
+        @ExcludeMissing
+        private val hateThreatening: JsonField<List<HateThreatening>> = JsonMissing.of(),
+        @JsonProperty("harassment")
+        @ExcludeMissing
+        private val harassment: JsonField<List<Harassment>> = JsonMissing.of(),
+        @JsonProperty("harassment/threatening")
+        @ExcludeMissing
+        private val harassmentThreatening: JsonField<List<HarassmentThreatening>> =
+            JsonMissing.of(),
+        @JsonProperty("illicit")
+        @ExcludeMissing
+        private val illicit: JsonField<List<Illicit>> = JsonMissing.of(),
+        @JsonProperty("illicit/violent")
+        @ExcludeMissing
+        private val illicitViolent: JsonField<List<IllicitViolent>> = JsonMissing.of(),
+        @JsonProperty("self-harm")
+        @ExcludeMissing
+        private val selfHarm: JsonField<List<SelfHarm>> = JsonMissing.of(),
+        @JsonProperty("self-harm/intent")
+        @ExcludeMissing
+        private val selfHarmIntent: JsonField<List<SelfHarmIntent>> = JsonMissing.of(),
+        @JsonProperty("self-harm/instructions")
+        @ExcludeMissing
+        private val selfHarmInstructions: JsonField<List<SelfHarmInstruction>> = JsonMissing.of(),
+        @JsonProperty("sexual")
+        @ExcludeMissing
+        private val sexual: JsonField<List<Sexual>> = JsonMissing.of(),
+        @JsonProperty("sexual/minors")
+        @ExcludeMissing
+        private val sexualMinors: JsonField<List<SexualMinor>> = JsonMissing.of(),
+        @JsonProperty("violence")
+        @ExcludeMissing
+        private val violence: JsonField<List<Violence>> = JsonMissing.of(),
+        @JsonProperty("violence/graphic")
+        @ExcludeMissing
+        private val violenceGraphic: JsonField<List<ViolenceGraphic>> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** The applied input type(s) for the category 'hate'. */
@@ -817,8 +844,6 @@ private constructor(
             fun hate(hate: List<Hate>) = hate(JsonField.of(hate))
 
             /** The applied input type(s) for the category 'hate'. */
-            @JsonProperty("hate")
-            @ExcludeMissing
             fun hate(hate: JsonField<List<Hate>>) = apply { this.hate = hate }
 
             /** The applied input type(s) for the category 'hate/threatening'. */
@@ -826,8 +851,6 @@ private constructor(
                 hateThreatening(JsonField.of(hateThreatening))
 
             /** The applied input type(s) for the category 'hate/threatening'. */
-            @JsonProperty("hate/threatening")
-            @ExcludeMissing
             fun hateThreatening(hateThreatening: JsonField<List<HateThreatening>>) = apply {
                 this.hateThreatening = hateThreatening
             }
@@ -836,8 +859,6 @@ private constructor(
             fun harassment(harassment: List<Harassment>) = harassment(JsonField.of(harassment))
 
             /** The applied input type(s) for the category 'harassment'. */
-            @JsonProperty("harassment")
-            @ExcludeMissing
             fun harassment(harassment: JsonField<List<Harassment>>) = apply {
                 this.harassment = harassment
             }
@@ -847,8 +868,6 @@ private constructor(
                 harassmentThreatening(JsonField.of(harassmentThreatening))
 
             /** The applied input type(s) for the category 'harassment/threatening'. */
-            @JsonProperty("harassment/threatening")
-            @ExcludeMissing
             fun harassmentThreatening(
                 harassmentThreatening: JsonField<List<HarassmentThreatening>>
             ) = apply { this.harassmentThreatening = harassmentThreatening }
@@ -857,8 +876,6 @@ private constructor(
             fun illicit(illicit: List<Illicit>) = illicit(JsonField.of(illicit))
 
             /** The applied input type(s) for the category 'illicit'. */
-            @JsonProperty("illicit")
-            @ExcludeMissing
             fun illicit(illicit: JsonField<List<Illicit>>) = apply { this.illicit = illicit }
 
             /** The applied input type(s) for the category 'illicit/violent'. */
@@ -866,8 +883,6 @@ private constructor(
                 illicitViolent(JsonField.of(illicitViolent))
 
             /** The applied input type(s) for the category 'illicit/violent'. */
-            @JsonProperty("illicit/violent")
-            @ExcludeMissing
             fun illicitViolent(illicitViolent: JsonField<List<IllicitViolent>>) = apply {
                 this.illicitViolent = illicitViolent
             }
@@ -876,8 +891,6 @@ private constructor(
             fun selfHarm(selfHarm: List<SelfHarm>) = selfHarm(JsonField.of(selfHarm))
 
             /** The applied input type(s) for the category 'self-harm'. */
-            @JsonProperty("self-harm")
-            @ExcludeMissing
             fun selfHarm(selfHarm: JsonField<List<SelfHarm>>) = apply { this.selfHarm = selfHarm }
 
             /** The applied input type(s) for the category 'self-harm/intent'. */
@@ -885,8 +898,6 @@ private constructor(
                 selfHarmIntent(JsonField.of(selfHarmIntent))
 
             /** The applied input type(s) for the category 'self-harm/intent'. */
-            @JsonProperty("self-harm/intent")
-            @ExcludeMissing
             fun selfHarmIntent(selfHarmIntent: JsonField<List<SelfHarmIntent>>) = apply {
                 this.selfHarmIntent = selfHarmIntent
             }
@@ -896,8 +907,6 @@ private constructor(
                 selfHarmInstructions(JsonField.of(selfHarmInstructions))
 
             /** The applied input type(s) for the category 'self-harm/instructions'. */
-            @JsonProperty("self-harm/instructions")
-            @ExcludeMissing
             fun selfHarmInstructions(selfHarmInstructions: JsonField<List<SelfHarmInstruction>>) =
                 apply {
                     this.selfHarmInstructions = selfHarmInstructions
@@ -907,8 +916,6 @@ private constructor(
             fun sexual(sexual: List<Sexual>) = sexual(JsonField.of(sexual))
 
             /** The applied input type(s) for the category 'sexual'. */
-            @JsonProperty("sexual")
-            @ExcludeMissing
             fun sexual(sexual: JsonField<List<Sexual>>) = apply { this.sexual = sexual }
 
             /** The applied input type(s) for the category 'sexual/minors'. */
@@ -916,8 +923,6 @@ private constructor(
                 sexualMinors(JsonField.of(sexualMinors))
 
             /** The applied input type(s) for the category 'sexual/minors'. */
-            @JsonProperty("sexual/minors")
-            @ExcludeMissing
             fun sexualMinors(sexualMinors: JsonField<List<SexualMinor>>) = apply {
                 this.sexualMinors = sexualMinors
             }
@@ -926,8 +931,6 @@ private constructor(
             fun violence(violence: List<Violence>) = violence(JsonField.of(violence))
 
             /** The applied input type(s) for the category 'violence'. */
-            @JsonProperty("violence")
-            @ExcludeMissing
             fun violence(violence: JsonField<List<Violence>>) = apply { this.violence = violence }
 
             /** The applied input type(s) for the category 'violence/graphic'. */
@@ -935,8 +938,6 @@ private constructor(
                 violenceGraphic(JsonField.of(violenceGraphic))
 
             /** The applied input type(s) for the category 'violence/graphic'. */
-            @JsonProperty("violence/graphic")
-            @ExcludeMissing
             fun violenceGraphic(violenceGraphic: JsonField<List<ViolenceGraphic>>) = apply {
                 this.violenceGraphic = violenceGraphic
             }
@@ -946,7 +947,6 @@ private constructor(
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }
@@ -1699,24 +1699,51 @@ private constructor(
     }
 
     /** A list of the categories along with their scores as predicted by model. */
-    @JsonDeserialize(builder = CategoryScores.Builder::class)
     @NoAutoDetect
     class CategoryScores
+    @JsonCreator
     private constructor(
-        private val hate: JsonField<Double>,
-        private val hateThreatening: JsonField<Double>,
-        private val harassment: JsonField<Double>,
-        private val harassmentThreatening: JsonField<Double>,
-        private val illicit: JsonField<Double>,
-        private val illicitViolent: JsonField<Double>,
-        private val selfHarm: JsonField<Double>,
-        private val selfHarmIntent: JsonField<Double>,
-        private val selfHarmInstructions: JsonField<Double>,
-        private val sexual: JsonField<Double>,
-        private val sexualMinors: JsonField<Double>,
-        private val violence: JsonField<Double>,
-        private val violenceGraphic: JsonField<Double>,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("hate")
+        @ExcludeMissing
+        private val hate: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("hate/threatening")
+        @ExcludeMissing
+        private val hateThreatening: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("harassment")
+        @ExcludeMissing
+        private val harassment: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("harassment/threatening")
+        @ExcludeMissing
+        private val harassmentThreatening: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("illicit")
+        @ExcludeMissing
+        private val illicit: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("illicit/violent")
+        @ExcludeMissing
+        private val illicitViolent: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("self-harm")
+        @ExcludeMissing
+        private val selfHarm: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("self-harm/intent")
+        @ExcludeMissing
+        private val selfHarmIntent: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("self-harm/instructions")
+        @ExcludeMissing
+        private val selfHarmInstructions: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("sexual")
+        @ExcludeMissing
+        private val sexual: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("sexual/minors")
+        @ExcludeMissing
+        private val sexualMinors: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("violence")
+        @ExcludeMissing
+        private val violence: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("violence/graphic")
+        @ExcludeMissing
+        private val violenceGraphic: JsonField<Double> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** The score for the category 'hate'. */
@@ -1874,8 +1901,6 @@ private constructor(
             fun hate(hate: Double) = hate(JsonField.of(hate))
 
             /** The score for the category 'hate'. */
-            @JsonProperty("hate")
-            @ExcludeMissing
             fun hate(hate: JsonField<Double>) = apply { this.hate = hate }
 
             /** The score for the category 'hate/threatening'. */
@@ -1883,8 +1908,6 @@ private constructor(
                 hateThreatening(JsonField.of(hateThreatening))
 
             /** The score for the category 'hate/threatening'. */
-            @JsonProperty("hate/threatening")
-            @ExcludeMissing
             fun hateThreatening(hateThreatening: JsonField<Double>) = apply {
                 this.hateThreatening = hateThreatening
             }
@@ -1893,8 +1916,6 @@ private constructor(
             fun harassment(harassment: Double) = harassment(JsonField.of(harassment))
 
             /** The score for the category 'harassment'. */
-            @JsonProperty("harassment")
-            @ExcludeMissing
             fun harassment(harassment: JsonField<Double>) = apply { this.harassment = harassment }
 
             /** The score for the category 'harassment/threatening'. */
@@ -1902,8 +1923,6 @@ private constructor(
                 harassmentThreatening(JsonField.of(harassmentThreatening))
 
             /** The score for the category 'harassment/threatening'. */
-            @JsonProperty("harassment/threatening")
-            @ExcludeMissing
             fun harassmentThreatening(harassmentThreatening: JsonField<Double>) = apply {
                 this.harassmentThreatening = harassmentThreatening
             }
@@ -1912,8 +1931,6 @@ private constructor(
             fun illicit(illicit: Double) = illicit(JsonField.of(illicit))
 
             /** The score for the category 'illicit'. */
-            @JsonProperty("illicit")
-            @ExcludeMissing
             fun illicit(illicit: JsonField<Double>) = apply { this.illicit = illicit }
 
             /** The score for the category 'illicit/violent'. */
@@ -1921,8 +1938,6 @@ private constructor(
                 illicitViolent(JsonField.of(illicitViolent))
 
             /** The score for the category 'illicit/violent'. */
-            @JsonProperty("illicit/violent")
-            @ExcludeMissing
             fun illicitViolent(illicitViolent: JsonField<Double>) = apply {
                 this.illicitViolent = illicitViolent
             }
@@ -1931,8 +1946,6 @@ private constructor(
             fun selfHarm(selfHarm: Double) = selfHarm(JsonField.of(selfHarm))
 
             /** The score for the category 'self-harm'. */
-            @JsonProperty("self-harm")
-            @ExcludeMissing
             fun selfHarm(selfHarm: JsonField<Double>) = apply { this.selfHarm = selfHarm }
 
             /** The score for the category 'self-harm/intent'. */
@@ -1940,8 +1953,6 @@ private constructor(
                 selfHarmIntent(JsonField.of(selfHarmIntent))
 
             /** The score for the category 'self-harm/intent'. */
-            @JsonProperty("self-harm/intent")
-            @ExcludeMissing
             fun selfHarmIntent(selfHarmIntent: JsonField<Double>) = apply {
                 this.selfHarmIntent = selfHarmIntent
             }
@@ -1951,8 +1962,6 @@ private constructor(
                 selfHarmInstructions(JsonField.of(selfHarmInstructions))
 
             /** The score for the category 'self-harm/instructions'. */
-            @JsonProperty("self-harm/instructions")
-            @ExcludeMissing
             fun selfHarmInstructions(selfHarmInstructions: JsonField<Double>) = apply {
                 this.selfHarmInstructions = selfHarmInstructions
             }
@@ -1961,16 +1970,12 @@ private constructor(
             fun sexual(sexual: Double) = sexual(JsonField.of(sexual))
 
             /** The score for the category 'sexual'. */
-            @JsonProperty("sexual")
-            @ExcludeMissing
             fun sexual(sexual: JsonField<Double>) = apply { this.sexual = sexual }
 
             /** The score for the category 'sexual/minors'. */
             fun sexualMinors(sexualMinors: Double) = sexualMinors(JsonField.of(sexualMinors))
 
             /** The score for the category 'sexual/minors'. */
-            @JsonProperty("sexual/minors")
-            @ExcludeMissing
             fun sexualMinors(sexualMinors: JsonField<Double>) = apply {
                 this.sexualMinors = sexualMinors
             }
@@ -1979,8 +1984,6 @@ private constructor(
             fun violence(violence: Double) = violence(JsonField.of(violence))
 
             /** The score for the category 'violence'. */
-            @JsonProperty("violence")
-            @ExcludeMissing
             fun violence(violence: JsonField<Double>) = apply { this.violence = violence }
 
             /** The score for the category 'violence/graphic'. */
@@ -1988,8 +1991,6 @@ private constructor(
                 violenceGraphic(JsonField.of(violenceGraphic))
 
             /** The score for the category 'violence/graphic'. */
-            @JsonProperty("violence/graphic")
-            @ExcludeMissing
             fun violenceGraphic(violenceGraphic: JsonField<Double>) = apply {
                 this.violenceGraphic = violenceGraphic
             }
@@ -1999,7 +2000,6 @@ private constructor(
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }

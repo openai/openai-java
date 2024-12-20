@@ -23,6 +23,7 @@ import com.openai.core.NoAutoDetect
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
@@ -72,16 +73,17 @@ constructor(
 
     @JvmSynthetic internal fun getQueryParams(): QueryParams = additionalQueryParams
 
-    @JsonDeserialize(builder = EmbeddingCreateBody.Builder::class)
     @NoAutoDetect
     class EmbeddingCreateBody
+    @JsonCreator
     internal constructor(
-        private val input: Input,
-        private val model: EmbeddingModel,
-        private val dimensions: Long?,
-        private val encodingFormat: EncodingFormat?,
-        private val user: String?,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("input") private val input: Input,
+        @JsonProperty("model") private val model: EmbeddingModel,
+        @JsonProperty("dimensions") private val dimensions: Long?,
+        @JsonProperty("encoding_format") private val encodingFormat: EncodingFormat?,
+        @JsonProperty("user") private val user: String?,
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /**
@@ -162,7 +164,7 @@ constructor(
              * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
              * for counting tokens.
              */
-            @JsonProperty("input") fun input(input: Input) = apply { this.input = input }
+            fun input(input: Input) = apply { this.input = input }
 
             /**
              * ID of the model to use. You can use the
@@ -170,20 +172,18 @@ constructor(
              * all of your available models, or see our
              * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
              */
-            @JsonProperty("model") fun model(model: EmbeddingModel) = apply { this.model = model }
+            fun model(model: EmbeddingModel) = apply { this.model = model }
 
             /**
              * The number of dimensions the resulting output embeddings should have. Only supported
              * in `text-embedding-3` and later models.
              */
-            @JsonProperty("dimensions")
             fun dimensions(dimensions: Long) = apply { this.dimensions = dimensions }
 
             /**
              * The format to return the embeddings in. Can be either `float` or
              * [`base64`](https://pypi.org/project/pybase64/).
              */
-            @JsonProperty("encoding_format")
             fun encodingFormat(encodingFormat: EncodingFormat) = apply {
                 this.encodingFormat = encodingFormat
             }
@@ -193,14 +193,13 @@ constructor(
              * detect abuse.
              * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
              */
-            @JsonProperty("user") fun user(user: String) = apply { this.user = user }
+            fun user(user: String) = apply { this.user = user }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }

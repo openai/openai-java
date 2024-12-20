@@ -4,10 +4,11 @@ package com.openai.models
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
 
@@ -19,11 +20,11 @@ import java.util.Objects
  *
  * Omitting `parameters` defines a function with an empty parameter list.
  */
-@JsonDeserialize(builder = FunctionParameters.Builder::class)
 @NoAutoDetect
 class FunctionParameters
+@JsonCreator
 private constructor(
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     @JsonAnyGetter
@@ -59,7 +60,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }

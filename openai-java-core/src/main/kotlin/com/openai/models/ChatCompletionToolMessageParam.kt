@@ -22,19 +22,24 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.getOrThrow
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
-@JsonDeserialize(builder = ChatCompletionToolMessageParam.Builder::class)
 @NoAutoDetect
 class ChatCompletionToolMessageParam
+@JsonCreator
 private constructor(
-    private val role: JsonField<Role>,
-    private val content: JsonField<Content>,
-    private val toolCallId: JsonField<String>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("role") @ExcludeMissing private val role: JsonField<Role> = JsonMissing.of(),
+    @JsonProperty("content")
+    @ExcludeMissing
+    private val content: JsonField<Content> = JsonMissing.of(),
+    @JsonProperty("tool_call_id")
+    @ExcludeMissing
+    private val toolCallId: JsonField<String> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The role of the messages author, in this case `tool`. */
@@ -97,24 +102,18 @@ private constructor(
         fun role(role: Role) = role(JsonField.of(role))
 
         /** The role of the messages author, in this case `tool`. */
-        @JsonProperty("role")
-        @ExcludeMissing
         fun role(role: JsonField<Role>) = apply { this.role = role }
 
         /** The contents of the tool message. */
         fun content(content: Content) = content(JsonField.of(content))
 
         /** The contents of the tool message. */
-        @JsonProperty("content")
-        @ExcludeMissing
         fun content(content: JsonField<Content>) = apply { this.content = content }
 
         /** Tool call that this message is responding to. */
         fun toolCallId(toolCallId: String) = toolCallId(JsonField.of(toolCallId))
 
         /** Tool call that this message is responding to. */
-        @JsonProperty("tool_call_id")
-        @ExcludeMissing
         fun toolCallId(toolCallId: JsonField<String>) = apply { this.toolCallId = toolCallId }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -122,7 +121,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }

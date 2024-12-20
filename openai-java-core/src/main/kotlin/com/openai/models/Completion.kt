@@ -6,13 +6,13 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
@@ -22,18 +22,28 @@ import java.util.Optional
  * Represents a completion response from the API. Note: both the streamed and non-streamed response
  * objects share the same shape (unlike the chat endpoint).
  */
-@JsonDeserialize(builder = Completion.Builder::class)
 @NoAutoDetect
 class Completion
+@JsonCreator
 private constructor(
-    private val id: JsonField<String>,
-    private val choices: JsonField<List<CompletionChoice>>,
-    private val created: JsonField<Long>,
-    private val model: JsonField<String>,
-    private val systemFingerprint: JsonField<String>,
-    private val object_: JsonField<Object>,
-    private val usage: JsonField<CompletionUsage>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("choices")
+    @ExcludeMissing
+    private val choices: JsonField<List<CompletionChoice>> = JsonMissing.of(),
+    @JsonProperty("created")
+    @ExcludeMissing
+    private val created: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("system_fingerprint")
+    @ExcludeMissing
+    private val systemFingerprint: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("object")
+    @ExcludeMissing
+    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("usage")
+    @ExcludeMissing
+    private val usage: JsonField<CompletionUsage> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** A unique identifier for the completion. */
@@ -142,30 +152,24 @@ private constructor(
         fun id(id: String) = id(JsonField.of(id))
 
         /** A unique identifier for the completion. */
-        @JsonProperty("id") @ExcludeMissing fun id(id: JsonField<String>) = apply { this.id = id }
+        fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The list of completion choices the model generated for the input prompt. */
         fun choices(choices: List<CompletionChoice>) = choices(JsonField.of(choices))
 
         /** The list of completion choices the model generated for the input prompt. */
-        @JsonProperty("choices")
-        @ExcludeMissing
         fun choices(choices: JsonField<List<CompletionChoice>>) = apply { this.choices = choices }
 
         /** The Unix timestamp (in seconds) of when the completion was created. */
         fun created(created: Long) = created(JsonField.of(created))
 
         /** The Unix timestamp (in seconds) of when the completion was created. */
-        @JsonProperty("created")
-        @ExcludeMissing
         fun created(created: JsonField<Long>) = apply { this.created = created }
 
         /** The model used for completion. */
         fun model(model: String) = model(JsonField.of(model))
 
         /** The model used for completion. */
-        @JsonProperty("model")
-        @ExcludeMissing
         fun model(model: JsonField<String>) = apply { this.model = model }
 
         /**
@@ -183,8 +187,6 @@ private constructor(
          * Can be used in conjunction with the `seed` request parameter to understand when backend
          * changes have been made that might impact determinism.
          */
-        @JsonProperty("system_fingerprint")
-        @ExcludeMissing
         fun systemFingerprint(systemFingerprint: JsonField<String>) = apply {
             this.systemFingerprint = systemFingerprint
         }
@@ -193,16 +195,12 @@ private constructor(
         fun object_(object_: Object) = object_(JsonField.of(object_))
 
         /** The object type, which is always "text_completion" */
-        @JsonProperty("object")
-        @ExcludeMissing
         fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
 
         /** Usage statistics for the completion request. */
         fun usage(usage: CompletionUsage) = usage(JsonField.of(usage))
 
         /** Usage statistics for the completion request. */
-        @JsonProperty("usage")
-        @ExcludeMissing
         fun usage(usage: JsonField<CompletionUsage>) = apply { this.usage = usage }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -210,7 +208,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }

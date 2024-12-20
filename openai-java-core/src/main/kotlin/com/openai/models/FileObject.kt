@@ -6,32 +6,44 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
 /** The `File` object represents a document that has been uploaded to OpenAI. */
-@JsonDeserialize(builder = FileObject.Builder::class)
 @NoAutoDetect
 class FileObject
+@JsonCreator
 private constructor(
-    private val id: JsonField<String>,
-    private val bytes: JsonField<Long>,
-    private val createdAt: JsonField<Long>,
-    private val filename: JsonField<String>,
-    private val object_: JsonField<Object>,
-    private val purpose: JsonField<Purpose>,
-    private val status: JsonField<Status>,
-    private val statusDetails: JsonField<String>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("bytes") @ExcludeMissing private val bytes: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("created_at")
+    @ExcludeMissing
+    private val createdAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("filename")
+    @ExcludeMissing
+    private val filename: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("object")
+    @ExcludeMissing
+    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("purpose")
+    @ExcludeMissing
+    private val purpose: JsonField<Purpose> = JsonMissing.of(),
+    @JsonProperty("status")
+    @ExcludeMissing
+    private val status: JsonField<Status> = JsonMissing.of(),
+    @JsonProperty("status_details")
+    @ExcludeMissing
+    private val statusDetails: JsonField<String> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The file identifier, which can be referenced in the API endpoints. */
@@ -157,38 +169,30 @@ private constructor(
         fun id(id: String) = id(JsonField.of(id))
 
         /** The file identifier, which can be referenced in the API endpoints. */
-        @JsonProperty("id") @ExcludeMissing fun id(id: JsonField<String>) = apply { this.id = id }
+        fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The size of the file, in bytes. */
         fun bytes(bytes: Long) = bytes(JsonField.of(bytes))
 
         /** The size of the file, in bytes. */
-        @JsonProperty("bytes")
-        @ExcludeMissing
         fun bytes(bytes: JsonField<Long>) = apply { this.bytes = bytes }
 
         /** The Unix timestamp (in seconds) for when the file was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
         /** The Unix timestamp (in seconds) for when the file was created. */
-        @JsonProperty("created_at")
-        @ExcludeMissing
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /** The name of the file. */
         fun filename(filename: String) = filename(JsonField.of(filename))
 
         /** The name of the file. */
-        @JsonProperty("filename")
-        @ExcludeMissing
         fun filename(filename: JsonField<String>) = apply { this.filename = filename }
 
         /** The object type, which is always `file`. */
         fun object_(object_: Object) = object_(JsonField.of(object_))
 
         /** The object type, which is always `file`. */
-        @JsonProperty("object")
-        @ExcludeMissing
         fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
 
         /**
@@ -201,8 +205,6 @@ private constructor(
          * The intended purpose of the file. Supported values are `assistants`, `assistants_output`,
          * `batch`, `batch_output`, `fine-tune`, `fine-tune-results` and `vision`.
          */
-        @JsonProperty("purpose")
-        @ExcludeMissing
         fun purpose(purpose: JsonField<Purpose>) = apply { this.purpose = purpose }
 
         /**
@@ -215,8 +217,6 @@ private constructor(
          * Deprecated. The current status of the file, which can be either `uploaded`, `processed`,
          * or `error`.
          */
-        @JsonProperty("status")
-        @ExcludeMissing
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
         /**
@@ -229,8 +229,6 @@ private constructor(
          * Deprecated. For details on why a fine-tuning training file failed validation, see the
          * `error` field on `fine_tuning.job`.
          */
-        @JsonProperty("status_details")
-        @ExcludeMissing
         fun statusDetails(statusDetails: JsonField<String>) = apply {
             this.statusDetails = statusDetails
         }
@@ -240,7 +238,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }

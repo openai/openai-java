@@ -6,27 +6,33 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 
 /** The upload Part represents a chunk of bytes we can add to an Upload object. */
-@JsonDeserialize(builder = UploadPart.Builder::class)
 @NoAutoDetect
 class UploadPart
+@JsonCreator
 private constructor(
-    private val id: JsonField<String>,
-    private val createdAt: JsonField<Long>,
-    private val uploadId: JsonField<String>,
-    private val object_: JsonField<Object>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("created_at")
+    @ExcludeMissing
+    private val createdAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("upload_id")
+    @ExcludeMissing
+    private val uploadId: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("object")
+    @ExcludeMissing
+    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The upload Part unique identifier, which can be referenced in API endpoints. */
@@ -97,30 +103,24 @@ private constructor(
         fun id(id: String) = id(JsonField.of(id))
 
         /** The upload Part unique identifier, which can be referenced in API endpoints. */
-        @JsonProperty("id") @ExcludeMissing fun id(id: JsonField<String>) = apply { this.id = id }
+        fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The Unix timestamp (in seconds) for when the Part was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
         /** The Unix timestamp (in seconds) for when the Part was created. */
-        @JsonProperty("created_at")
-        @ExcludeMissing
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /** The ID of the Upload object that this Part was added to. */
         fun uploadId(uploadId: String) = uploadId(JsonField.of(uploadId))
 
         /** The ID of the Upload object that this Part was added to. */
-        @JsonProperty("upload_id")
-        @ExcludeMissing
         fun uploadId(uploadId: JsonField<String>) = apply { this.uploadId = uploadId }
 
         /** The object type, which is always `upload.part`. */
         fun object_(object_: Object) = object_(JsonField.of(object_))
 
         /** The object type, which is always `upload.part`. */
-        @JsonProperty("object")
-        @ExcludeMissing
         fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -128,7 +128,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }

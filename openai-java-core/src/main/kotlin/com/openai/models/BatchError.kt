@@ -4,26 +4,29 @@ package com.openai.models
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
-@JsonDeserialize(builder = BatchError.Builder::class)
 @NoAutoDetect
 class BatchError
+@JsonCreator
 private constructor(
-    private val code: JsonField<String>,
-    private val message: JsonField<String>,
-    private val param: JsonField<String>,
-    private val line: JsonField<Long>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("code") @ExcludeMissing private val code: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("message")
+    @ExcludeMissing
+    private val message: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("param") @ExcludeMissing private val param: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("line") @ExcludeMissing private val line: JsonField<Long> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** An error code identifying the error type. */
@@ -94,32 +97,24 @@ private constructor(
         fun code(code: String) = code(JsonField.of(code))
 
         /** An error code identifying the error type. */
-        @JsonProperty("code")
-        @ExcludeMissing
         fun code(code: JsonField<String>) = apply { this.code = code }
 
         /** A human-readable message providing more details about the error. */
         fun message(message: String) = message(JsonField.of(message))
 
         /** A human-readable message providing more details about the error. */
-        @JsonProperty("message")
-        @ExcludeMissing
         fun message(message: JsonField<String>) = apply { this.message = message }
 
         /** The name of the parameter that caused the error, if applicable. */
         fun param(param: String) = param(JsonField.of(param))
 
         /** The name of the parameter that caused the error, if applicable. */
-        @JsonProperty("param")
-        @ExcludeMissing
         fun param(param: JsonField<String>) = apply { this.param = param }
 
         /** The line number of the input file where the error occurred, if applicable. */
         fun line(line: Long) = line(JsonField.of(line))
 
         /** The line number of the input file where the error occurred, if applicable. */
-        @JsonProperty("line")
-        @ExcludeMissing
         fun line(line: JsonField<Long>) = apply { this.line = line }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -127,7 +122,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }

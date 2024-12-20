@@ -4,13 +4,14 @@ package com.openai.models
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
 
@@ -54,15 +55,16 @@ constructor(
 
     @JvmSynthetic internal fun getQueryParams(): QueryParams = additionalQueryParams
 
-    @JsonDeserialize(builder = UploadCreateBody.Builder::class)
     @NoAutoDetect
     class UploadCreateBody
+    @JsonCreator
     internal constructor(
-        private val bytes: Long,
-        private val filename: String,
-        private val mimeType: String,
-        private val purpose: FilePurpose,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("bytes") private val bytes: Long,
+        @JsonProperty("filename") private val filename: String,
+        @JsonProperty("mime_type") private val mimeType: String,
+        @JsonProperty("purpose") private val purpose: FilePurpose,
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** The number of bytes in the file you are uploading. */
@@ -116,10 +118,9 @@ constructor(
             }
 
             /** The number of bytes in the file you are uploading. */
-            @JsonProperty("bytes") fun bytes(bytes: Long) = apply { this.bytes = bytes }
+            fun bytes(bytes: Long) = apply { this.bytes = bytes }
 
             /** The name of the file to upload. */
-            @JsonProperty("filename")
             fun filename(filename: String) = apply { this.filename = filename }
 
             /**
@@ -128,7 +129,6 @@ constructor(
              * This must fall within the supported MIME types for your file purpose. See the
              * supported MIME types for assistants and vision.
              */
-            @JsonProperty("mime_type")
             fun mimeType(mimeType: String) = apply { this.mimeType = mimeType }
 
             /**
@@ -137,7 +137,6 @@ constructor(
              * See the
              * [documentation on File purposes](https://platform.openai.com/docs/api-reference/files/create#files-create-purpose).
              */
-            @JsonProperty("purpose")
             fun purpose(purpose: FilePurpose) = apply { this.purpose = purpose }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -145,7 +144,6 @@ constructor(
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }

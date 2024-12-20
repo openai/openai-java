@@ -6,25 +6,27 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 
 /** An object describing an image to classify. */
-@JsonDeserialize(builder = ModerationImageUrlInput.Builder::class)
 @NoAutoDetect
 class ModerationImageUrlInput
+@JsonCreator
 private constructor(
-    private val type: JsonField<Type>,
-    private val imageUrl: JsonField<ImageUrl>,
-    private val additionalProperties: Map<String, JsonValue>,
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("image_url")
+    @ExcludeMissing
+    private val imageUrl: JsonField<ImageUrl> = JsonMissing.of(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** Always `image_url`. */
@@ -77,16 +79,12 @@ private constructor(
         fun type(type: Type) = type(JsonField.of(type))
 
         /** Always `image_url`. */
-        @JsonProperty("type")
-        @ExcludeMissing
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
         /** Contains either an image URL or a data URL for a base64 encoded image. */
         fun imageUrl(imageUrl: ImageUrl) = imageUrl(JsonField.of(imageUrl))
 
         /** Contains either an image URL or a data URL for a base64 encoded image. */
-        @JsonProperty("image_url")
-        @ExcludeMissing
         fun imageUrl(imageUrl: JsonField<ImageUrl>) = apply { this.imageUrl = imageUrl }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -94,7 +92,6 @@ private constructor(
             putAllAdditionalProperties(additionalProperties)
         }
 
-        @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
             additionalProperties.put(key, value)
         }
@@ -118,12 +115,13 @@ private constructor(
     }
 
     /** Contains either an image URL or a data URL for a base64 encoded image. */
-    @JsonDeserialize(builder = ImageUrl.Builder::class)
     @NoAutoDetect
     class ImageUrl
+    @JsonCreator
     private constructor(
-        private val url: JsonField<String>,
-        private val additionalProperties: Map<String, JsonValue>,
+        @JsonProperty("url") @ExcludeMissing private val url: JsonField<String> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** Either a URL of the image or the base64 encoded image data. */
@@ -167,8 +165,6 @@ private constructor(
             fun url(url: String) = url(JsonField.of(url))
 
             /** Either a URL of the image or the base64 encoded image data. */
-            @JsonProperty("url")
-            @ExcludeMissing
             fun url(url: JsonField<String>) = apply { this.url = url }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -176,7 +172,6 @@ private constructor(
                 putAllAdditionalProperties(additionalProperties)
             }
 
-            @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 additionalProperties.put(key, value)
             }
