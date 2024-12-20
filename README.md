@@ -4,6 +4,8 @@
 > The OpenAI Java API Library is currently in _alpha_.
 >
 > There may be frequent breaking changes.
+>
+> Have thoughts or feedback? [File an issue](https://github.com/openai/openai-java/issues/new) or comment on [this thread](https://community.openai.com/t/your-feedback-requested-java-sdk/1061029).
 
 <!-- x-release-please-start-version -->
 
