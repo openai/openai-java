@@ -5,6 +5,7 @@ package com.openai.errors
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.openai.core.ExcludeMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.toImmutable
@@ -15,6 +16,7 @@ import java.util.Objects
 class OpenAIError
 private constructor(
     @JsonAnyGetter
+    @ExcludeMissing
     @get:JvmName("additionalProperties")
     val additionalProperties: Map<String, JsonValue>,
 ) {

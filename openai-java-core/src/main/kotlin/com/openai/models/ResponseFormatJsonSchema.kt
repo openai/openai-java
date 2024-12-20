@@ -27,8 +27,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /** The type of response format being defined: `json_schema` */
     fun type(): Type = type.getRequired("type")
 
@@ -42,6 +40,8 @@ private constructor(
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+    private var validated: Boolean = false
 
     fun validate(): ResponseFormatJsonSchema = apply {
         if (!validated) {
@@ -66,9 +66,9 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(responseFormatJsonSchema: ResponseFormatJsonSchema) = apply {
-            this.type = responseFormatJsonSchema.type
-            this.jsonSchema = responseFormatJsonSchema.jsonSchema
-            additionalProperties(responseFormatJsonSchema.additionalProperties)
+            type = responseFormatJsonSchema.type
+            jsonSchema = responseFormatJsonSchema.jsonSchema
+            additionalProperties = responseFormatJsonSchema.additionalProperties.toMutableMap()
         }
 
         /** The type of response format being defined: `json_schema` */
@@ -87,16 +87,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): ResponseFormatJsonSchema =
@@ -117,8 +123,6 @@ private constructor(
         private val strict: JsonField<Boolean>,
         private val additionalProperties: Map<String, JsonValue>,
     ) {
-
-        private var validated: Boolean = false
 
         /**
          * A description of what the response format is for, used by the model to determine how to
@@ -171,6 +175,8 @@ private constructor(
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+        private var validated: Boolean = false
+
         fun validate(): JsonSchema = apply {
             if (!validated) {
                 description()
@@ -198,11 +204,11 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(jsonSchema: JsonSchema) = apply {
-                this.description = jsonSchema.description
-                this.name = jsonSchema.name
-                this.schema = jsonSchema.schema
-                this.strict = jsonSchema.strict
-                additionalProperties(jsonSchema.additionalProperties)
+                description = jsonSchema.description
+                name = jsonSchema.name
+                schema = jsonSchema.schema
+                strict = jsonSchema.strict
+                additionalProperties = jsonSchema.additionalProperties.toMutableMap()
             }
 
             /**
@@ -263,16 +269,22 @@ private constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): JsonSchema =
@@ -293,11 +305,11 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue>,
         ) {
 
-            private var validated: Boolean = false
-
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            private var validated: Boolean = false
 
             fun validate(): Schema = apply {
                 if (!validated) {
@@ -318,23 +330,31 @@ private constructor(
 
                 @JvmSynthetic
                 internal fun from(schema: Schema) = apply {
-                    additionalProperties(schema.additionalProperties)
+                    additionalProperties = schema.additionalProperties.toMutableMap()
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
-                    this.additionalProperties.putAll(additionalProperties)
+                    putAllAdditionalProperties(additionalProperties)
                 }
 
                 @JsonAnySetter
                 fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    this.additionalProperties.put(key, value)
+                    additionalProperties.put(key, value)
                 }
 
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                     apply {
                         this.additionalProperties.putAll(additionalProperties)
                     }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
 
                 fun build(): Schema = Schema(additionalProperties.toImmutable())
             }

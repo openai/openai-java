@@ -33,8 +33,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /** The object type, which is always "fine_tuning.job.event". */
     fun object_(): Object = object_.getRequired("object")
 
@@ -78,6 +76,8 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    private var validated: Boolean = false
+
     fun validate(): FineTuningJobEvent = apply {
         if (!validated) {
             object_()
@@ -110,14 +110,14 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(fineTuningJobEvent: FineTuningJobEvent) = apply {
-            this.object_ = fineTuningJobEvent.object_
-            this.id = fineTuningJobEvent.id
-            this.createdAt = fineTuningJobEvent.createdAt
-            this.level = fineTuningJobEvent.level
-            this.message = fineTuningJobEvent.message
-            this.type = fineTuningJobEvent.type
-            this.data = fineTuningJobEvent.data
-            additionalProperties(fineTuningJobEvent.additionalProperties)
+            object_ = fineTuningJobEvent.object_
+            id = fineTuningJobEvent.id
+            createdAt = fineTuningJobEvent.createdAt
+            level = fineTuningJobEvent.level
+            message = fineTuningJobEvent.message
+            type = fineTuningJobEvent.type
+            data = fineTuningJobEvent.data
+            additionalProperties = fineTuningJobEvent.additionalProperties.toMutableMap()
         }
 
         /** The object type, which is always "fine_tuning.job.event". */
@@ -171,16 +171,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): FineTuningJobEvent =

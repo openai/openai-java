@@ -34,8 +34,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /** A unique identifier for the chat completion. */
     fun id(): String = id.getRequired("id")
 
@@ -106,6 +104,8 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    private var validated: Boolean = false
+
     fun validate(): ChatCompletion = apply {
         if (!validated) {
             id()
@@ -141,15 +141,15 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(chatCompletion: ChatCompletion) = apply {
-            this.id = chatCompletion.id
-            this.choices = chatCompletion.choices
-            this.created = chatCompletion.created
-            this.model = chatCompletion.model
-            this.serviceTier = chatCompletion.serviceTier
-            this.systemFingerprint = chatCompletion.systemFingerprint
-            this.object_ = chatCompletion.object_
-            this.usage = chatCompletion.usage
-            additionalProperties(chatCompletion.additionalProperties)
+            id = chatCompletion.id
+            choices = chatCompletion.choices
+            created = chatCompletion.created
+            model = chatCompletion.model
+            serviceTier = chatCompletion.serviceTier
+            systemFingerprint = chatCompletion.systemFingerprint
+            object_ = chatCompletion.object_
+            usage = chatCompletion.usage
+            additionalProperties = chatCompletion.additionalProperties.toMutableMap()
         }
 
         /** A unique identifier for the chat completion. */
@@ -237,16 +237,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): ChatCompletion =
@@ -273,8 +279,6 @@ private constructor(
         private val logprobs: JsonField<Logprobs>,
         private val additionalProperties: Map<String, JsonValue>,
     ) {
-
-        private var validated: Boolean = false
 
         /**
          * The reason the model stopped generating tokens. This will be `stop` if the model hit a
@@ -316,6 +320,8 @@ private constructor(
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+        private var validated: Boolean = false
+
         fun validate(): Choice = apply {
             if (!validated) {
                 finishReason()
@@ -343,11 +349,11 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(choice: Choice) = apply {
-                this.finishReason = choice.finishReason
-                this.index = choice.index
-                this.message = choice.message
-                this.logprobs = choice.logprobs
-                additionalProperties(choice.additionalProperties)
+                finishReason = choice.finishReason
+                index = choice.index
+                message = choice.message
+                logprobs = choice.logprobs
+                additionalProperties = choice.additionalProperties.toMutableMap()
             }
 
             /**
@@ -400,16 +406,22 @@ private constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): Choice =
@@ -507,8 +519,6 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue>,
         ) {
 
-            private var validated: Boolean = false
-
             /** A list of message content tokens with log probability information. */
             fun content(): Optional<List<ChatCompletionTokenLogprob>> =
                 Optional.ofNullable(content.getNullable("content"))
@@ -526,6 +536,8 @@ private constructor(
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            private var validated: Boolean = false
 
             fun validate(): Logprobs = apply {
                 if (!validated) {
@@ -550,9 +562,9 @@ private constructor(
 
                 @JvmSynthetic
                 internal fun from(logprobs: Logprobs) = apply {
-                    this.content = logprobs.content
-                    this.refusal = logprobs.refusal
-                    additionalProperties(logprobs.additionalProperties)
+                    content = logprobs.content
+                    refusal = logprobs.refusal
+                    additionalProperties = logprobs.additionalProperties.toMutableMap()
                 }
 
                 /** A list of message content tokens with log probability information. */
@@ -579,18 +591,26 @@ private constructor(
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
-                    this.additionalProperties.putAll(additionalProperties)
+                    putAllAdditionalProperties(additionalProperties)
                 }
 
                 @JsonAnySetter
                 fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    this.additionalProperties.put(key, value)
+                    additionalProperties.put(key, value)
                 }
 
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                     apply {
                         this.additionalProperties.putAll(additionalProperties)
                     }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
 
                 fun build(): Logprobs =
                     Logprobs(

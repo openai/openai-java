@@ -301,7 +301,7 @@ class FineTuningJobCreateParamsTest {
         assertThat(body.model()).isEqualTo(FineTuningJobCreateParams.Model.BABBAGE_002)
         assertThat(body.trainingFile()).isEqualTo("file-abc123")
         assertThat(body.hyperparameters())
-            .isEqualTo(
+            .contains(
                 FineTuningJobCreateParams.Hyperparameters.builder()
                     .batchSize(
                         FineTuningJobCreateParams.Hyperparameters.BatchSize.ofBehavior(
@@ -323,7 +323,7 @@ class FineTuningJobCreateParamsTest {
                     .build()
             )
         assertThat(body.integrations())
-            .isEqualTo(
+            .contains(
                 listOf(
                     FineTuningJobCreateParams.Integration.builder()
                         .type(FineTuningJobCreateParams.Integration.Type.WANDB)
@@ -339,7 +339,7 @@ class FineTuningJobCreateParamsTest {
                 )
             )
         assertThat(body.method())
-            .isEqualTo(
+            .contains(
                 FineTuningJobCreateParams.Method.builder()
                     .dpo(
                         FineTuningJobCreateParams.Method.Dpo.builder()
@@ -432,9 +432,9 @@ class FineTuningJobCreateParamsTest {
                     .type(FineTuningJobCreateParams.Method.Type.SUPERVISED)
                     .build()
             )
-        assertThat(body.seed()).isEqualTo(42L)
-        assertThat(body.suffix()).isEqualTo("x")
-        assertThat(body.validationFile()).isEqualTo("file-abc123")
+        assertThat(body.seed()).contains(42L)
+        assertThat(body.suffix()).contains("x")
+        assertThat(body.validationFile()).contains("file-abc123")
     }
 
     @Test

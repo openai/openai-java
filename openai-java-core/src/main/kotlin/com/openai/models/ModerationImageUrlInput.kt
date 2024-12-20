@@ -27,8 +27,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /** Always `image_url`. */
     fun type(): Type = type.getRequired("type")
 
@@ -44,6 +42,8 @@ private constructor(
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+    private var validated: Boolean = false
 
     fun validate(): ModerationImageUrlInput = apply {
         if (!validated) {
@@ -68,9 +68,9 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(moderationImageUrlInput: ModerationImageUrlInput) = apply {
-            this.type = moderationImageUrlInput.type
-            this.imageUrl = moderationImageUrlInput.imageUrl
-            additionalProperties(moderationImageUrlInput.additionalProperties)
+            type = moderationImageUrlInput.type
+            imageUrl = moderationImageUrlInput.imageUrl
+            additionalProperties = moderationImageUrlInput.additionalProperties.toMutableMap()
         }
 
         /** Always `image_url`. */
@@ -91,16 +91,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): ModerationImageUrlInput =
@@ -120,8 +126,6 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var validated: Boolean = false
-
         /** Either a URL of the image or the base64 encoded image data. */
         fun url(): String = url.getRequired("url")
 
@@ -131,6 +135,8 @@ private constructor(
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
 
         fun validate(): ImageUrl = apply {
             if (!validated) {
@@ -153,8 +159,8 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(imageUrl: ImageUrl) = apply {
-                this.url = imageUrl.url
-                additionalProperties(imageUrl.additionalProperties)
+                url = imageUrl.url
+                additionalProperties = imageUrl.additionalProperties.toMutableMap()
             }
 
             /** Either a URL of the image or the base64 encoded image data. */
@@ -167,16 +173,22 @@ private constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): ImageUrl = ImageUrl(url, additionalProperties.toImmutable())

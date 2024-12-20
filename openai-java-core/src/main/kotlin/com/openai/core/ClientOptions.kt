@@ -173,9 +173,9 @@ private constructor(
 
         fun apiKey(apiKey: String) = apply { this.apiKey = apiKey }
 
-        fun organization(organization: String?) = apply { this.organization = organization }
+        fun organization(organization: String) = apply { this.organization = organization }
 
-        fun project(project: String?) = apply { this.project = project }
+        fun project(project: String) = apply { this.project = project }
 
         fun fromEnv() = apply {
             System.getenv("OPENAI_API_KEY")?.let { apiKey(it) }

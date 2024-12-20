@@ -37,13 +37,13 @@ class ImageGenerateParamsTest {
         val body = params.getBody()
         assertThat(body).isNotNull
         assertThat(body.prompt()).isEqualTo("A cute baby sea otter")
-        assertThat(body.model()).isEqualTo(ImageModel.DALL_E_2)
-        assertThat(body.n()).isEqualTo(1L)
-        assertThat(body.quality()).isEqualTo(ImageGenerateParams.Quality.STANDARD)
-        assertThat(body.responseFormat()).isEqualTo(ImageGenerateParams.ResponseFormat.URL)
-        assertThat(body.size()).isEqualTo(ImageGenerateParams.Size._256X256)
-        assertThat(body.style()).isEqualTo(ImageGenerateParams.Style.VIVID)
-        assertThat(body.user()).isEqualTo("user-1234")
+        assertThat(body.model()).contains(ImageModel.DALL_E_2)
+        assertThat(body.n()).contains(1L)
+        assertThat(body.quality()).contains(ImageGenerateParams.Quality.STANDARD)
+        assertThat(body.responseFormat()).contains(ImageGenerateParams.ResponseFormat.URL)
+        assertThat(body.size()).contains(ImageGenerateParams.Size._256X256)
+        assertThat(body.style()).contains(ImageGenerateParams.Style.VIVID)
+        assertThat(body.user()).contains("user-1234")
     }
 
     @Test

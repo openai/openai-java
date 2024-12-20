@@ -36,8 +36,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /** The checkpoint identifier, which can be referenced in the API endpoints. */
     fun id(): String = id.getRequired("id")
 
@@ -87,6 +85,8 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    private var validated: Boolean = false
+
     fun validate(): FineTuningJobCheckpoint = apply {
         if (!validated) {
             id()
@@ -120,14 +120,14 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(fineTuningJobCheckpoint: FineTuningJobCheckpoint) = apply {
-            this.id = fineTuningJobCheckpoint.id
-            this.createdAt = fineTuningJobCheckpoint.createdAt
-            this.fineTunedModelCheckpoint = fineTuningJobCheckpoint.fineTunedModelCheckpoint
-            this.stepNumber = fineTuningJobCheckpoint.stepNumber
-            this.metrics = fineTuningJobCheckpoint.metrics
-            this.fineTuningJobId = fineTuningJobCheckpoint.fineTuningJobId
-            this.object_ = fineTuningJobCheckpoint.object_
-            additionalProperties(fineTuningJobCheckpoint.additionalProperties)
+            id = fineTuningJobCheckpoint.id
+            createdAt = fineTuningJobCheckpoint.createdAt
+            fineTunedModelCheckpoint = fineTuningJobCheckpoint.fineTunedModelCheckpoint
+            stepNumber = fineTuningJobCheckpoint.stepNumber
+            metrics = fineTuningJobCheckpoint.metrics
+            fineTuningJobId = fineTuningJobCheckpoint.fineTuningJobId
+            object_ = fineTuningJobCheckpoint.object_
+            additionalProperties = fineTuningJobCheckpoint.additionalProperties.toMutableMap()
         }
 
         /** The checkpoint identifier, which can be referenced in the API endpoints. */
@@ -192,16 +192,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): FineTuningJobCheckpoint =
@@ -231,8 +237,6 @@ private constructor(
         private val fullValidMeanTokenAccuracy: JsonField<Double>,
         private val additionalProperties: Map<String, JsonValue>,
     ) {
-
-        private var validated: Boolean = false
 
         fun step(): Optional<Double> = Optional.ofNullable(step.getNullable("step"))
 
@@ -278,6 +282,8 @@ private constructor(
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+        private var validated: Boolean = false
+
         fun validate(): Metrics = apply {
             if (!validated) {
                 step()
@@ -311,14 +317,14 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(metrics: Metrics) = apply {
-                this.step = metrics.step
-                this.trainLoss = metrics.trainLoss
-                this.trainMeanTokenAccuracy = metrics.trainMeanTokenAccuracy
-                this.validLoss = metrics.validLoss
-                this.validMeanTokenAccuracy = metrics.validMeanTokenAccuracy
-                this.fullValidLoss = metrics.fullValidLoss
-                this.fullValidMeanTokenAccuracy = metrics.fullValidMeanTokenAccuracy
-                additionalProperties(metrics.additionalProperties)
+                step = metrics.step
+                trainLoss = metrics.trainLoss
+                trainMeanTokenAccuracy = metrics.trainMeanTokenAccuracy
+                validLoss = metrics.validLoss
+                validMeanTokenAccuracy = metrics.validMeanTokenAccuracy
+                fullValidLoss = metrics.fullValidLoss
+                fullValidMeanTokenAccuracy = metrics.fullValidMeanTokenAccuracy
+                additionalProperties = metrics.additionalProperties.toMutableMap()
             }
 
             fun step(step: Double) = step(JsonField.of(step))
@@ -376,16 +382,22 @@ private constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): Metrics =

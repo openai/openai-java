@@ -26,8 +26,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /** The base64-encoded JSON of the generated image, if `response_format` is `b64_json`. */
     fun b64Json(): Optional<String> = Optional.ofNullable(b64Json.getNullable("b64_json"))
 
@@ -50,6 +48,8 @@ private constructor(
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+    private var validated: Boolean = false
 
     fun validate(): Image = apply {
         if (!validated) {
@@ -76,10 +76,10 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(image: Image) = apply {
-            this.b64Json = image.b64Json
-            this.url = image.url
-            this.revisedPrompt = image.revisedPrompt
-            additionalProperties(image.additionalProperties)
+            b64Json = image.b64Json
+            url = image.url
+            revisedPrompt = image.revisedPrompt
+            additionalProperties = image.additionalProperties.toMutableMap()
         }
 
         /** The base64-encoded JSON of the generated image, if `response_format` is `b64_json`. */
@@ -114,16 +114,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): Image =

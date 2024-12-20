@@ -76,8 +76,8 @@ constructor(
     @NoAutoDetect
     class EmbeddingCreateBody
     internal constructor(
-        private val input: Input?,
-        private val model: EmbeddingModel?,
+        private val input: Input,
+        private val model: EmbeddingModel,
         private val dimensions: Long?,
         private val encodingFormat: EncodingFormat?,
         private val user: String?,
@@ -92,7 +92,7 @@ constructor(
          * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
          * for counting tokens.
          */
-        @JsonProperty("input") fun input(): Input? = input
+        @JsonProperty("input") fun input(): Input = input
 
         /**
          * ID of the model to use. You can use the
@@ -100,26 +100,28 @@ constructor(
          * of your available models, or see our
          * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
          */
-        @JsonProperty("model") fun model(): EmbeddingModel? = model
+        @JsonProperty("model") fun model(): EmbeddingModel = model
 
         /**
          * The number of dimensions the resulting output embeddings should have. Only supported in
          * `text-embedding-3` and later models.
          */
-        @JsonProperty("dimensions") fun dimensions(): Long? = dimensions
+        @JsonProperty("dimensions")
+        fun dimensions(): Optional<Long> = Optional.ofNullable(dimensions)
 
         /**
          * The format to return the embeddings in. Can be either `float` or
          * [`base64`](https://pypi.org/project/pybase64/).
          */
-        @JsonProperty("encoding_format") fun encodingFormat(): EncodingFormat? = encodingFormat
+        @JsonProperty("encoding_format")
+        fun encodingFormat(): Optional<EncodingFormat> = Optional.ofNullable(encodingFormat)
 
         /**
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
          * detect abuse.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
          */
-        @JsonProperty("user") fun user(): String? = user
+        @JsonProperty("user") fun user(): Optional<String> = Optional.ofNullable(user)
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -143,12 +145,12 @@ constructor(
 
             @JvmSynthetic
             internal fun from(embeddingCreateBody: EmbeddingCreateBody) = apply {
-                this.input = embeddingCreateBody.input
-                this.model = embeddingCreateBody.model
-                this.dimensions = embeddingCreateBody.dimensions
-                this.encodingFormat = embeddingCreateBody.encodingFormat
-                this.user = embeddingCreateBody.user
-                additionalProperties(embeddingCreateBody.additionalProperties)
+                input = embeddingCreateBody.input
+                model = embeddingCreateBody.model
+                dimensions = embeddingCreateBody.dimensions
+                encodingFormat = embeddingCreateBody.encodingFormat
+                user = embeddingCreateBody.user
+                additionalProperties = embeddingCreateBody.additionalProperties.toMutableMap()
             }
 
             /**
@@ -195,16 +197,22 @@ constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): EmbeddingCreateBody =
@@ -504,8 +512,6 @@ constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        private var validated: Boolean = false
-
         /** The string that will be turned into an embedding. */
         fun string(): Optional<String> = Optional.ofNullable(string)
         /** The array of strings that will be turned into an embedding. */
@@ -542,20 +548,6 @@ constructor(
                 arrayOfTokens != null -> visitor.visitArrayOfTokens(arrayOfTokens)
                 arrayOfTokenArrays != null -> visitor.visitArrayOfTokenArrays(arrayOfTokenArrays)
                 else -> visitor.unknown(_json)
-            }
-        }
-
-        fun validate(): Input = apply {
-            if (!validated) {
-                if (
-                    string == null &&
-                        arrayOfStrings == null &&
-                        arrayOfTokens == null &&
-                        arrayOfTokenArrays == null
-                ) {
-                    throw OpenAIInvalidDataException("Unknown Input: $_json")
-                }
-                validated = true
             }
         }
 

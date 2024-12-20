@@ -35,8 +35,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /** The Upload unique identifier, which can be referenced in API endpoints. */
     fun id(): String = id.getRequired("id")
 
@@ -103,6 +101,8 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    private var validated: Boolean = false
+
     fun validate(): Upload = apply {
         if (!validated) {
             id()
@@ -140,16 +140,16 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(upload: Upload) = apply {
-            this.id = upload.id
-            this.createdAt = upload.createdAt
-            this.filename = upload.filename
-            this.bytes = upload.bytes
-            this.purpose = upload.purpose
-            this.status = upload.status
-            this.expiresAt = upload.expiresAt
-            this.object_ = upload.object_
-            this.file = upload.file
-            additionalProperties(upload.additionalProperties)
+            id = upload.id
+            createdAt = upload.createdAt
+            filename = upload.filename
+            bytes = upload.bytes
+            purpose = upload.purpose
+            status = upload.status
+            expiresAt = upload.expiresAt
+            object_ = upload.object_
+            file = upload.file
+            additionalProperties = upload.additionalProperties.toMutableMap()
         }
 
         /** The Upload unique identifier, which can be referenced in API endpoints. */
@@ -232,16 +232,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): Upload =

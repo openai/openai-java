@@ -241,21 +241,21 @@ class ChatCompletionCreateParamsTest {
             )
         assertThat(body.model()).isEqualTo(ChatModel.O1)
         assertThat(body.audio())
-            .isEqualTo(
+            .contains(
                 ChatCompletionAudioParam.builder()
                     .format(ChatCompletionAudioParam.Format.WAV)
                     .voice(ChatCompletionAudioParam.Voice.ALLOY)
                     .build()
             )
-        assertThat(body.frequencyPenalty()).isEqualTo(-2.0)
+        assertThat(body.frequencyPenalty()).contains(-2.0)
         assertThat(body.functionCall())
-            .isEqualTo(
+            .contains(
                 ChatCompletionCreateParams.FunctionCall.ofBehavior(
                     ChatCompletionCreateParams.FunctionCall.Behavior.NONE
                 )
             )
         assertThat(body.functions())
-            .isEqualTo(
+            .contains(
                 listOf(
                     ChatCompletionCreateParams.Function.builder()
                         .name("name")
@@ -269,53 +269,53 @@ class ChatCompletionCreateParamsTest {
                 )
             )
         assertThat(body.logitBias())
-            .isEqualTo(
+            .contains(
                 ChatCompletionCreateParams.LogitBias.builder()
                     .putAdditionalProperty("foo", JsonValue.from(0))
                     .build()
             )
-        assertThat(body.logprobs()).isEqualTo(true)
-        assertThat(body.maxCompletionTokens()).isEqualTo(0L)
-        assertThat(body.maxTokens()).isEqualTo(0L)
+        assertThat(body.logprobs()).contains(true)
+        assertThat(body.maxCompletionTokens()).contains(0L)
+        assertThat(body.maxTokens()).contains(0L)
         assertThat(body.metadata())
-            .isEqualTo(
+            .contains(
                 ChatCompletionCreateParams.Metadata.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(body.modalities()).isEqualTo(listOf(ChatCompletionModality.TEXT))
-        assertThat(body.n()).isEqualTo(1L)
-        assertThat(body.parallelToolCalls()).isEqualTo(true)
+        assertThat(body.modalities()).contains(listOf(ChatCompletionModality.TEXT))
+        assertThat(body.n()).contains(1L)
+        assertThat(body.parallelToolCalls()).contains(true)
         assertThat(body.prediction())
-            .isEqualTo(
+            .contains(
                 ChatCompletionPredictionContent.builder()
                     .content(ChatCompletionPredictionContent.Content.ofTextContent("string"))
                     .type(ChatCompletionPredictionContent.Type.CONTENT)
                     .build()
             )
-        assertThat(body.presencePenalty()).isEqualTo(-2.0)
-        assertThat(body.reasoningEffort()).isEqualTo(ChatCompletionReasoningEffort.LOW)
+        assertThat(body.presencePenalty()).contains(-2.0)
+        assertThat(body.reasoningEffort()).contains(ChatCompletionReasoningEffort.LOW)
         assertThat(body.responseFormat())
-            .isEqualTo(
+            .contains(
                 ChatCompletionCreateParams.ResponseFormat.ofResponseFormatText(
                     ResponseFormatText.builder().type(ResponseFormatText.Type.TEXT).build()
                 )
             )
-        assertThat(body.seed()).isEqualTo(-9007199254740991L)
-        assertThat(body.serviceTier()).isEqualTo(ChatCompletionCreateParams.ServiceTier.AUTO)
-        assertThat(body.stop()).isEqualTo(ChatCompletionCreateParams.Stop.ofString("string"))
-        assertThat(body.store()).isEqualTo(true)
+        assertThat(body.seed()).contains(-9007199254740991L)
+        assertThat(body.serviceTier()).contains(ChatCompletionCreateParams.ServiceTier.AUTO)
+        assertThat(body.stop()).contains(ChatCompletionCreateParams.Stop.ofString("string"))
+        assertThat(body.store()).contains(true)
         assertThat(body.streamOptions())
-            .isEqualTo(ChatCompletionStreamOptions.builder().includeUsage(true).build())
-        assertThat(body.temperature()).isEqualTo(1.0)
+            .contains(ChatCompletionStreamOptions.builder().includeUsage(true).build())
+        assertThat(body.temperature()).contains(1.0)
         assertThat(body.toolChoice())
-            .isEqualTo(
+            .contains(
                 ChatCompletionToolChoiceOption.ofBehavior(
                     ChatCompletionToolChoiceOption.Behavior.NONE
                 )
             )
         assertThat(body.tools())
-            .isEqualTo(
+            .contains(
                 listOf(
                     ChatCompletionTool.builder()
                         .function(
@@ -334,9 +334,9 @@ class ChatCompletionCreateParamsTest {
                         .build()
                 )
             )
-        assertThat(body.topLogprobs()).isEqualTo(0L)
-        assertThat(body.topP()).isEqualTo(1.0)
-        assertThat(body.user()).isEqualTo("user-1234")
+        assertThat(body.topLogprobs()).contains(0L)
+        assertThat(body.topP()).contains(1.0)
+        assertThat(body.user()).contains("user-1234")
     }
 
     @Test
