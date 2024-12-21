@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.8.1 (2024-12-21)
+
+Full Changelog: [v0.8.0...v0.8.1](https://github.com/openai/openai-java/compare/v0.8.0...v0.8.1)
+
+### Chores
+
+* **docs:** add example project ([#59](https://github.com/openai/openai-java/issues/59)) ([045c7ba](https://github.com/openai/openai-java/commit/045c7badc319be2df3fac123df3daafc61b40473))
+* **docs:** fix code block language ([#61](https://github.com/openai/openai-java/issues/61)) ([4301693](https://github.com/openai/openai-java/commit/4301693dac3c53e80225a91087ddb890e1419f76))
+* **docs:** update readme ([#58](https://github.com/openai/openai-java/issues/58)) ([ef3dcd5](https://github.com/openai/openai-java/commit/ef3dcd543892f092899dcc57b1788ea8d07f6de4))
+* format example ([892bb69](https://github.com/openai/openai-java/commit/892bb697138f56c2e9783c1a413db5873385cc9b))
+* **internal:** spec update ([#55](https://github.com/openai/openai-java/issues/55)) ([768138f](https://github.com/openai/openai-java/commit/768138fcc6d6101efc08b8ebc001d45f8d6a96a1))
+* update parameter examples in tests and docs ([#57](https://github.com/openai/openai-java/issues/57)) ([afe3e0e](https://github.com/openai/openai-java/commit/afe3e0e2591818bcc8cfb14bb6a956a0d1d3fff0))
+
+
+### Documentation
+
+* add note about feedback ([1a5517f](https://github.com/openai/openai-java/commit/1a5517f823a04e4523c0a4b45482f223048e0c31))
+
 ## 0.8.0 (2024-12-17)
 
 Full Changelog: [v0.7.5...v0.8.0](https://github.com/openai/openai-java/compare/v0.7.5...v0.8.0)
