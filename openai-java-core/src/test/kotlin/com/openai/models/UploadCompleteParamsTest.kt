@@ -27,7 +27,7 @@ class UploadCompleteParamsTest {
         val body = params.getBody()
         assertThat(body).isNotNull
         assertThat(body.partIds()).isEqualTo(listOf("string"))
-        assertThat(body.md5()).isEqualTo("md5")
+        assertThat(body.md5()).contains("md5")
     }
 
     @Test

@@ -88,8 +88,8 @@ constructor(
     @NoAutoDetect
     class FineTuningJobCreateBody
     internal constructor(
-        private val model: Model?,
-        private val trainingFile: String?,
+        private val model: Model,
+        private val trainingFile: String,
         private val hyperparameters: Hyperparameters?,
         private val integrations: List<Integration>?,
         private val method: Method?,
@@ -103,7 +103,7 @@ constructor(
          * The name of the model to fine-tune. You can select one of the
          * [supported models](https://platform.openai.com/docs/guides/fine-tuning#which-models-can-be-fine-tuned).
          */
-        @JsonProperty("model") fun model(): Model? = model
+        @JsonProperty("model") fun model(): Model = model
 
         /**
          * The ID of an uploaded file that contains training data.
@@ -124,26 +124,28 @@ constructor(
          * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for more
          * details.
          */
-        @JsonProperty("training_file") fun trainingFile(): String? = trainingFile
+        @JsonProperty("training_file") fun trainingFile(): String = trainingFile
 
         /**
          * The hyperparameters used for the fine-tuning job. This value is now deprecated in favor
          * of `method`, and should be passed in under the `method` parameter.
          */
-        @JsonProperty("hyperparameters") fun hyperparameters(): Hyperparameters? = hyperparameters
+        @JsonProperty("hyperparameters")
+        fun hyperparameters(): Optional<Hyperparameters> = Optional.ofNullable(hyperparameters)
 
         /** A list of integrations to enable for your fine-tuning job. */
-        @JsonProperty("integrations") fun integrations(): List<Integration>? = integrations
+        @JsonProperty("integrations")
+        fun integrations(): Optional<List<Integration>> = Optional.ofNullable(integrations)
 
         /** The method used for fine-tuning. */
-        @JsonProperty("method") fun method(): Method? = method
+        @JsonProperty("method") fun method(): Optional<Method> = Optional.ofNullable(method)
 
         /**
          * The seed controls the reproducibility of the job. Passing in the same seed and job
          * parameters should produce the same results, but may differ in rare cases. If a seed is
          * not specified, one will be generated for you.
          */
-        @JsonProperty("seed") fun seed(): Long? = seed
+        @JsonProperty("seed") fun seed(): Optional<Long> = Optional.ofNullable(seed)
 
         /**
          * A string of up to 64 characters that will be added to your fine-tuned model name.
@@ -151,7 +153,7 @@ constructor(
          * For example, a `suffix` of "custom-model-name" would produce a model name like
          * `ft:gpt-4o-mini:openai:custom-model-name:7p4lURel`.
          */
-        @JsonProperty("suffix") fun suffix(): String? = suffix
+        @JsonProperty("suffix") fun suffix(): Optional<String> = Optional.ofNullable(suffix)
 
         /**
          * The ID of an uploaded file that contains validation data.
@@ -166,7 +168,8 @@ constructor(
          * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for more
          * details.
          */
-        @JsonProperty("validation_file") fun validationFile(): String? = validationFile
+        @JsonProperty("validation_file")
+        fun validationFile(): Optional<String> = Optional.ofNullable(validationFile)
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -193,15 +196,15 @@ constructor(
 
             @JvmSynthetic
             internal fun from(fineTuningJobCreateBody: FineTuningJobCreateBody) = apply {
-                this.model = fineTuningJobCreateBody.model
-                this.trainingFile = fineTuningJobCreateBody.trainingFile
-                this.hyperparameters = fineTuningJobCreateBody.hyperparameters
-                this.integrations = fineTuningJobCreateBody.integrations
-                this.method = fineTuningJobCreateBody.method
-                this.seed = fineTuningJobCreateBody.seed
-                this.suffix = fineTuningJobCreateBody.suffix
-                this.validationFile = fineTuningJobCreateBody.validationFile
-                additionalProperties(fineTuningJobCreateBody.additionalProperties)
+                model = fineTuningJobCreateBody.model
+                trainingFile = fineTuningJobCreateBody.trainingFile
+                hyperparameters = fineTuningJobCreateBody.hyperparameters
+                integrations = fineTuningJobCreateBody.integrations?.toMutableList()
+                method = fineTuningJobCreateBody.method
+                seed = fineTuningJobCreateBody.seed
+                suffix = fineTuningJobCreateBody.suffix
+                validationFile = fineTuningJobCreateBody.validationFile
+                additionalProperties = fineTuningJobCreateBody.additionalProperties.toMutableMap()
             }
 
             /**
@@ -285,16 +288,22 @@ constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): FineTuningJobCreateBody =
@@ -674,20 +683,22 @@ constructor(
          * Number of examples in each batch. A larger batch size means that model parameters are
          * updated less frequently, but with lower variance.
          */
-        @JsonProperty("batch_size") fun batchSize(): BatchSize? = batchSize
+        @JsonProperty("batch_size")
+        fun batchSize(): Optional<BatchSize> = Optional.ofNullable(batchSize)
 
         /**
          * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
          * overfitting.
          */
         @JsonProperty("learning_rate_multiplier")
-        fun learningRateMultiplier(): LearningRateMultiplier? = learningRateMultiplier
+        fun learningRateMultiplier(): Optional<LearningRateMultiplier> =
+            Optional.ofNullable(learningRateMultiplier)
 
         /**
          * The number of epochs to train the model for. An epoch refers to one full cycle through
          * the training dataset.
          */
-        @JsonProperty("n_epochs") fun nEpochs(): NEpochs? = nEpochs
+        @JsonProperty("n_epochs") fun nEpochs(): Optional<NEpochs> = Optional.ofNullable(nEpochs)
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -709,10 +720,10 @@ constructor(
 
             @JvmSynthetic
             internal fun from(hyperparameters: Hyperparameters) = apply {
-                this.batchSize = hyperparameters.batchSize
-                this.learningRateMultiplier = hyperparameters.learningRateMultiplier
-                this.nEpochs = hyperparameters.nEpochs
-                additionalProperties(hyperparameters.additionalProperties)
+                batchSize = hyperparameters.batchSize
+                learningRateMultiplier = hyperparameters.learningRateMultiplier
+                nEpochs = hyperparameters.nEpochs
+                additionalProperties = hyperparameters.additionalProperties.toMutableMap()
             }
 
             /**
@@ -740,16 +751,22 @@ constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): Hyperparameters =
@@ -770,8 +787,6 @@ constructor(
             private val _json: JsonValue? = null,
         ) {
 
-            private var validated: Boolean = false
-
             fun behavior(): Optional<Behavior> = Optional.ofNullable(behavior)
 
             fun integer(): Optional<Long> = Optional.ofNullable(integer)
@@ -791,15 +806,6 @@ constructor(
                     behavior != null -> visitor.visitBehavior(behavior)
                     integer != null -> visitor.visitInteger(integer)
                     else -> visitor.unknown(_json)
-                }
-            }
-
-            fun validate(): BatchSize = apply {
-                if (!validated) {
-                    if (behavior == null && integer == null) {
-                        throw OpenAIInvalidDataException("Unknown BatchSize: $_json")
-                    }
-                    validated = true
                 }
             }
 
@@ -932,8 +938,6 @@ constructor(
             private val _json: JsonValue? = null,
         ) {
 
-            private var validated: Boolean = false
-
             fun behavior(): Optional<Behavior> = Optional.ofNullable(behavior)
 
             fun number(): Optional<Double> = Optional.ofNullable(number)
@@ -953,15 +957,6 @@ constructor(
                     behavior != null -> visitor.visitBehavior(behavior)
                     number != null -> visitor.visitNumber(number)
                     else -> visitor.unknown(_json)
-                }
-            }
-
-            fun validate(): LearningRateMultiplier = apply {
-                if (!validated) {
-                    if (behavior == null && number == null) {
-                        throw OpenAIInvalidDataException("Unknown LearningRateMultiplier: $_json")
-                    }
-                    validated = true
                 }
             }
 
@@ -1097,8 +1092,6 @@ constructor(
             private val _json: JsonValue? = null,
         ) {
 
-            private var validated: Boolean = false
-
             fun behavior(): Optional<Behavior> = Optional.ofNullable(behavior)
 
             fun integer(): Optional<Long> = Optional.ofNullable(integer)
@@ -1118,15 +1111,6 @@ constructor(
                     behavior != null -> visitor.visitBehavior(behavior)
                     integer != null -> visitor.visitInteger(integer)
                     else -> visitor.unknown(_json)
-                }
-            }
-
-            fun validate(): NEpochs = apply {
-                if (!validated) {
-                    if (behavior == null && integer == null) {
-                        throw OpenAIInvalidDataException("Unknown NEpochs: $_json")
-                    }
-                    validated = true
                 }
             }
 
@@ -1272,8 +1256,8 @@ constructor(
     @NoAutoDetect
     class Integration
     private constructor(
-        private val type: Type?,
-        private val wandb: Wandb?,
+        private val type: Type,
+        private val wandb: Wandb,
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
@@ -1281,7 +1265,7 @@ constructor(
          * The type of integration to enable. Currently, only "wandb" (Weights and Biases) is
          * supported.
          */
-        @JsonProperty("type") fun type(): Type? = type
+        @JsonProperty("type") fun type(): Type = type
 
         /**
          * The settings for your integration with Weights and Biases. This payload specifies the
@@ -1289,7 +1273,7 @@ constructor(
          * for your run, add tags to your run, and set a default entity (team, username, etc) to be
          * associated with your run.
          */
-        @JsonProperty("wandb") fun wandb(): Wandb? = wandb
+        @JsonProperty("wandb") fun wandb(): Wandb = wandb
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1310,9 +1294,9 @@ constructor(
 
             @JvmSynthetic
             internal fun from(integration: Integration) = apply {
-                this.type = integration.type
-                this.wandb = integration.wandb
-                additionalProperties(integration.additionalProperties)
+                type = integration.type
+                wandb = integration.wandb
+                additionalProperties = integration.additionalProperties.toMutableMap()
             }
 
             /**
@@ -1331,16 +1315,22 @@ constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): Integration =
@@ -1412,7 +1402,7 @@ constructor(
         @NoAutoDetect
         class Wandb
         private constructor(
-            private val project: String?,
+            private val project: String,
             private val name: String?,
             private val entity: String?,
             private val tags: List<String>?,
@@ -1420,26 +1410,26 @@ constructor(
         ) {
 
             /** The name of the project that the new run will be created under. */
-            @JsonProperty("project") fun project(): String? = project
+            @JsonProperty("project") fun project(): String = project
 
             /**
              * A display name to set for the run. If not set, we will use the Job ID as the name.
              */
-            @JsonProperty("name") fun name(): String? = name
+            @JsonProperty("name") fun name(): Optional<String> = Optional.ofNullable(name)
 
             /**
              * The entity to use for the run. This allows you to set the team or username of the
              * WandB user that you would like associated with the run. If not set, the default
              * entity for the registered WandB API key is used.
              */
-            @JsonProperty("entity") fun entity(): String? = entity
+            @JsonProperty("entity") fun entity(): Optional<String> = Optional.ofNullable(entity)
 
             /**
              * A list of tags to be attached to the newly created run. These tags are passed through
              * directly to WandB. Some default tags are generated by OpenAI: "openai/finetune",
              * "openai/{base-model}", "openai/{ftjob-abcdef}".
              */
-            @JsonProperty("tags") fun tags(): List<String>? = tags
+            @JsonProperty("tags") fun tags(): Optional<List<String>> = Optional.ofNullable(tags)
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -1462,11 +1452,11 @@ constructor(
 
                 @JvmSynthetic
                 internal fun from(wandb: Wandb) = apply {
-                    this.project = wandb.project
-                    this.name = wandb.name
-                    this.entity = wandb.entity
-                    this.tags = wandb.tags
-                    additionalProperties(wandb.additionalProperties)
+                    project = wandb.project
+                    name = wandb.name
+                    entity = wandb.entity
+                    tags = wandb.tags?.toMutableList()
+                    additionalProperties = wandb.additionalProperties.toMutableMap()
                 }
 
                 /** The name of the project that the new run will be created under. */
@@ -1495,18 +1485,26 @@ constructor(
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
-                    this.additionalProperties.putAll(additionalProperties)
+                    putAllAdditionalProperties(additionalProperties)
                 }
 
                 @JsonAnySetter
                 fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    this.additionalProperties.put(key, value)
+                    additionalProperties.put(key, value)
                 }
 
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                     apply {
                         this.additionalProperties.putAll(additionalProperties)
                     }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
 
                 fun build(): Wandb =
                     Wandb(
@@ -1566,13 +1564,14 @@ constructor(
     ) {
 
         /** The type of method. Is either `supervised` or `dpo`. */
-        @JsonProperty("type") fun type(): Type? = type
+        @JsonProperty("type") fun type(): Optional<Type> = Optional.ofNullable(type)
 
         /** Configuration for the supervised fine-tuning method. */
-        @JsonProperty("supervised") fun supervised(): Supervised? = supervised
+        @JsonProperty("supervised")
+        fun supervised(): Optional<Supervised> = Optional.ofNullable(supervised)
 
         /** Configuration for the DPO fine-tuning method. */
-        @JsonProperty("dpo") fun dpo(): Dpo? = dpo
+        @JsonProperty("dpo") fun dpo(): Optional<Dpo> = Optional.ofNullable(dpo)
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1594,10 +1593,10 @@ constructor(
 
             @JvmSynthetic
             internal fun from(method: Method) = apply {
-                this.type = method.type
-                this.supervised = method.supervised
-                this.dpo = method.dpo
-                additionalProperties(method.additionalProperties)
+                type = method.type
+                supervised = method.supervised
+                dpo = method.dpo
+                additionalProperties = method.additionalProperties.toMutableMap()
             }
 
             /** The type of method. Is either `supervised` or `dpo`. */
@@ -1612,16 +1611,22 @@ constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): Method =
@@ -1644,7 +1649,7 @@ constructor(
 
             /** The hyperparameters used for the fine-tuning job. */
             @JsonProperty("hyperparameters")
-            fun hyperparameters(): Hyperparameters? = hyperparameters
+            fun hyperparameters(): Optional<Hyperparameters> = Optional.ofNullable(hyperparameters)
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -1664,8 +1669,8 @@ constructor(
 
                 @JvmSynthetic
                 internal fun from(dpo: Dpo) = apply {
-                    this.hyperparameters = dpo.hyperparameters
-                    additionalProperties(dpo.additionalProperties)
+                    hyperparameters = dpo.hyperparameters
+                    additionalProperties = dpo.additionalProperties.toMutableMap()
                 }
 
                 /** The hyperparameters used for the fine-tuning job. */
@@ -1676,18 +1681,26 @@ constructor(
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
-                    this.additionalProperties.putAll(additionalProperties)
+                    putAllAdditionalProperties(additionalProperties)
                 }
 
                 @JsonAnySetter
                 fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    this.additionalProperties.put(key, value)
+                    additionalProperties.put(key, value)
                 }
 
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                     apply {
                         this.additionalProperties.putAll(additionalProperties)
                     }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
 
                 fun build(): Dpo = Dpo(hyperparameters, additionalProperties.toImmutable())
             }
@@ -1708,26 +1721,29 @@ constructor(
                  * The beta value for the DPO method. A higher beta value will increase the weight
                  * of the penalty between the policy and reference model.
                  */
-                @JsonProperty("beta") fun beta(): Beta? = beta
+                @JsonProperty("beta") fun beta(): Optional<Beta> = Optional.ofNullable(beta)
 
                 /**
                  * Number of examples in each batch. A larger batch size means that model parameters
                  * are updated less frequently, but with lower variance.
                  */
-                @JsonProperty("batch_size") fun batchSize(): BatchSize? = batchSize
+                @JsonProperty("batch_size")
+                fun batchSize(): Optional<BatchSize> = Optional.ofNullable(batchSize)
 
                 /**
                  * Scaling factor for the learning rate. A smaller learning rate may be useful to
                  * avoid overfitting.
                  */
                 @JsonProperty("learning_rate_multiplier")
-                fun learningRateMultiplier(): LearningRateMultiplier? = learningRateMultiplier
+                fun learningRateMultiplier(): Optional<LearningRateMultiplier> =
+                    Optional.ofNullable(learningRateMultiplier)
 
                 /**
                  * The number of epochs to train the model for. An epoch refers to one full cycle
                  * through the training dataset.
                  */
-                @JsonProperty("n_epochs") fun nEpochs(): NEpochs? = nEpochs
+                @JsonProperty("n_epochs")
+                fun nEpochs(): Optional<NEpochs> = Optional.ofNullable(nEpochs)
 
                 @JsonAnyGetter
                 @ExcludeMissing
@@ -1750,11 +1766,11 @@ constructor(
 
                     @JvmSynthetic
                     internal fun from(hyperparameters: Hyperparameters) = apply {
-                        this.beta = hyperparameters.beta
-                        this.batchSize = hyperparameters.batchSize
-                        this.learningRateMultiplier = hyperparameters.learningRateMultiplier
-                        this.nEpochs = hyperparameters.nEpochs
-                        additionalProperties(hyperparameters.additionalProperties)
+                        beta = hyperparameters.beta
+                        batchSize = hyperparameters.batchSize
+                        learningRateMultiplier = hyperparameters.learningRateMultiplier
+                        nEpochs = hyperparameters.nEpochs
+                        additionalProperties = hyperparameters.additionalProperties.toMutableMap()
                     }
 
                     /**
@@ -1789,18 +1805,26 @@ constructor(
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
-                        this.additionalProperties.putAll(additionalProperties)
+                        putAllAdditionalProperties(additionalProperties)
                     }
 
                     @JsonAnySetter
                     fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                        this.additionalProperties.put(key, value)
+                        additionalProperties.put(key, value)
                     }
 
                     fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                         apply {
                             this.additionalProperties.putAll(additionalProperties)
                         }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
 
                     fun build(): Hyperparameters =
                         Hyperparameters(
@@ -1821,8 +1845,6 @@ constructor(
                     private val _json: JsonValue? = null,
                 ) {
 
-                    private var validated: Boolean = false
-
                     fun auto(): Optional<Auto> = Optional.ofNullable(auto)
 
                     fun manual(): Optional<Long> = Optional.ofNullable(manual)
@@ -1842,15 +1864,6 @@ constructor(
                             auto != null -> visitor.visitAuto(auto)
                             manual != null -> visitor.visitManual(manual)
                             else -> visitor.unknown(_json)
-                        }
-                    }
-
-                    fun validate(): BatchSize = apply {
-                        if (!validated) {
-                            if (auto == null && manual == null) {
-                                throw OpenAIInvalidDataException("Unknown BatchSize: $_json")
-                            }
-                            validated = true
                         }
                     }
 
@@ -1984,8 +1997,6 @@ constructor(
                     private val _json: JsonValue? = null,
                 ) {
 
-                    private var validated: Boolean = false
-
                     fun auto(): Optional<Auto> = Optional.ofNullable(auto)
 
                     fun manual(): Optional<Double> = Optional.ofNullable(manual)
@@ -2005,15 +2016,6 @@ constructor(
                             auto != null -> visitor.visitAuto(auto)
                             manual != null -> visitor.visitManual(manual)
                             else -> visitor.unknown(_json)
-                        }
-                    }
-
-                    fun validate(): Beta = apply {
-                        if (!validated) {
-                            if (auto == null && manual == null) {
-                                throw OpenAIInvalidDataException("Unknown Beta: $_json")
-                            }
-                            validated = true
                         }
                     }
 
@@ -2147,8 +2149,6 @@ constructor(
                     private val _json: JsonValue? = null,
                 ) {
 
-                    private var validated: Boolean = false
-
                     fun auto(): Optional<Auto> = Optional.ofNullable(auto)
 
                     fun manual(): Optional<Double> = Optional.ofNullable(manual)
@@ -2168,17 +2168,6 @@ constructor(
                             auto != null -> visitor.visitAuto(auto)
                             manual != null -> visitor.visitManual(manual)
                             else -> visitor.unknown(_json)
-                        }
-                    }
-
-                    fun validate(): LearningRateMultiplier = apply {
-                        if (!validated) {
-                            if (auto == null && manual == null) {
-                                throw OpenAIInvalidDataException(
-                                    "Unknown LearningRateMultiplier: $_json"
-                                )
-                            }
-                            validated = true
                         }
                     }
 
@@ -2320,8 +2309,6 @@ constructor(
                     private val _json: JsonValue? = null,
                 ) {
 
-                    private var validated: Boolean = false
-
                     fun auto(): Optional<Auto> = Optional.ofNullable(auto)
 
                     fun manual(): Optional<Long> = Optional.ofNullable(manual)
@@ -2341,15 +2328,6 @@ constructor(
                             auto != null -> visitor.visitAuto(auto)
                             manual != null -> visitor.visitManual(manual)
                             else -> visitor.unknown(_json)
-                        }
-                    }
-
-                    fun validate(): NEpochs = apply {
-                        if (!validated) {
-                            if (auto == null && manual == null) {
-                                throw OpenAIInvalidDataException("Unknown NEpochs: $_json")
-                            }
-                            validated = true
                         }
                     }
 
@@ -2521,7 +2499,7 @@ constructor(
 
             /** The hyperparameters used for the fine-tuning job. */
             @JsonProperty("hyperparameters")
-            fun hyperparameters(): Hyperparameters? = hyperparameters
+            fun hyperparameters(): Optional<Hyperparameters> = Optional.ofNullable(hyperparameters)
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -2541,8 +2519,8 @@ constructor(
 
                 @JvmSynthetic
                 internal fun from(supervised: Supervised) = apply {
-                    this.hyperparameters = supervised.hyperparameters
-                    additionalProperties(supervised.additionalProperties)
+                    hyperparameters = supervised.hyperparameters
+                    additionalProperties = supervised.additionalProperties.toMutableMap()
                 }
 
                 /** The hyperparameters used for the fine-tuning job. */
@@ -2553,18 +2531,26 @@ constructor(
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
-                    this.additionalProperties.putAll(additionalProperties)
+                    putAllAdditionalProperties(additionalProperties)
                 }
 
                 @JsonAnySetter
                 fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    this.additionalProperties.put(key, value)
+                    additionalProperties.put(key, value)
                 }
 
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                     apply {
                         this.additionalProperties.putAll(additionalProperties)
                     }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
 
                 fun build(): Supervised =
                     Supervised(hyperparameters, additionalProperties.toImmutable())
@@ -2585,20 +2571,23 @@ constructor(
                  * Number of examples in each batch. A larger batch size means that model parameters
                  * are updated less frequently, but with lower variance.
                  */
-                @JsonProperty("batch_size") fun batchSize(): BatchSize? = batchSize
+                @JsonProperty("batch_size")
+                fun batchSize(): Optional<BatchSize> = Optional.ofNullable(batchSize)
 
                 /**
                  * Scaling factor for the learning rate. A smaller learning rate may be useful to
                  * avoid overfitting.
                  */
                 @JsonProperty("learning_rate_multiplier")
-                fun learningRateMultiplier(): LearningRateMultiplier? = learningRateMultiplier
+                fun learningRateMultiplier(): Optional<LearningRateMultiplier> =
+                    Optional.ofNullable(learningRateMultiplier)
 
                 /**
                  * The number of epochs to train the model for. An epoch refers to one full cycle
                  * through the training dataset.
                  */
-                @JsonProperty("n_epochs") fun nEpochs(): NEpochs? = nEpochs
+                @JsonProperty("n_epochs")
+                fun nEpochs(): Optional<NEpochs> = Optional.ofNullable(nEpochs)
 
                 @JsonAnyGetter
                 @ExcludeMissing
@@ -2620,10 +2609,10 @@ constructor(
 
                     @JvmSynthetic
                     internal fun from(hyperparameters: Hyperparameters) = apply {
-                        this.batchSize = hyperparameters.batchSize
-                        this.learningRateMultiplier = hyperparameters.learningRateMultiplier
-                        this.nEpochs = hyperparameters.nEpochs
-                        additionalProperties(hyperparameters.additionalProperties)
+                        batchSize = hyperparameters.batchSize
+                        learningRateMultiplier = hyperparameters.learningRateMultiplier
+                        nEpochs = hyperparameters.nEpochs
+                        additionalProperties = hyperparameters.additionalProperties.toMutableMap()
                     }
 
                     /**
@@ -2652,18 +2641,26 @@ constructor(
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
-                        this.additionalProperties.putAll(additionalProperties)
+                        putAllAdditionalProperties(additionalProperties)
                     }
 
                     @JsonAnySetter
                     fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                        this.additionalProperties.put(key, value)
+                        additionalProperties.put(key, value)
                     }
 
                     fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                         apply {
                             this.additionalProperties.putAll(additionalProperties)
                         }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
 
                     fun build(): Hyperparameters =
                         Hyperparameters(
@@ -2682,8 +2679,6 @@ constructor(
                     private val manual: Long? = null,
                     private val _json: JsonValue? = null,
                 ) {
-
-                    private var validated: Boolean = false
 
                     fun auto(): Optional<Auto> = Optional.ofNullable(auto)
 
@@ -2704,15 +2699,6 @@ constructor(
                             auto != null -> visitor.visitAuto(auto)
                             manual != null -> visitor.visitManual(manual)
                             else -> visitor.unknown(_json)
-                        }
-                    }
-
-                    fun validate(): BatchSize = apply {
-                        if (!validated) {
-                            if (auto == null && manual == null) {
-                                throw OpenAIInvalidDataException("Unknown BatchSize: $_json")
-                            }
-                            validated = true
                         }
                     }
 
@@ -2846,8 +2832,6 @@ constructor(
                     private val _json: JsonValue? = null,
                 ) {
 
-                    private var validated: Boolean = false
-
                     fun auto(): Optional<Auto> = Optional.ofNullable(auto)
 
                     fun manual(): Optional<Double> = Optional.ofNullable(manual)
@@ -2867,17 +2851,6 @@ constructor(
                             auto != null -> visitor.visitAuto(auto)
                             manual != null -> visitor.visitManual(manual)
                             else -> visitor.unknown(_json)
-                        }
-                    }
-
-                    fun validate(): LearningRateMultiplier = apply {
-                        if (!validated) {
-                            if (auto == null && manual == null) {
-                                throw OpenAIInvalidDataException(
-                                    "Unknown LearningRateMultiplier: $_json"
-                                )
-                            }
-                            validated = true
                         }
                     }
 
@@ -3019,8 +2992,6 @@ constructor(
                     private val _json: JsonValue? = null,
                 ) {
 
-                    private var validated: Boolean = false
-
                     fun auto(): Optional<Auto> = Optional.ofNullable(auto)
 
                     fun manual(): Optional<Long> = Optional.ofNullable(manual)
@@ -3040,15 +3011,6 @@ constructor(
                             auto != null -> visitor.visitAuto(auto)
                             manual != null -> visitor.visitManual(manual)
                             else -> visitor.unknown(_json)
-                        }
-                    }
-
-                    fun validate(): NEpochs = apply {
-                        if (!validated) {
-                            if (auto == null && manual == null) {
-                                throw OpenAIInvalidDataException("Unknown NEpochs: $_json")
-                            }
-                            validated = true
                         }
                     }
 

@@ -58,18 +58,18 @@ constructor(
     @NoAutoDetect
     class UploadCreateBody
     internal constructor(
-        private val bytes: Long?,
-        private val filename: String?,
-        private val mimeType: String?,
-        private val purpose: FilePurpose?,
+        private val bytes: Long,
+        private val filename: String,
+        private val mimeType: String,
+        private val purpose: FilePurpose,
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
         /** The number of bytes in the file you are uploading. */
-        @JsonProperty("bytes") fun bytes(): Long? = bytes
+        @JsonProperty("bytes") fun bytes(): Long = bytes
 
         /** The name of the file to upload. */
-        @JsonProperty("filename") fun filename(): String? = filename
+        @JsonProperty("filename") fun filename(): String = filename
 
         /**
          * The MIME type of the file.
@@ -77,7 +77,7 @@ constructor(
          * This must fall within the supported MIME types for your file purpose. See the supported
          * MIME types for assistants and vision.
          */
-        @JsonProperty("mime_type") fun mimeType(): String? = mimeType
+        @JsonProperty("mime_type") fun mimeType(): String = mimeType
 
         /**
          * The intended purpose of the uploaded file.
@@ -85,7 +85,7 @@ constructor(
          * See the
          * [documentation on File purposes](https://platform.openai.com/docs/api-reference/files/create#files-create-purpose).
          */
-        @JsonProperty("purpose") fun purpose(): FilePurpose? = purpose
+        @JsonProperty("purpose") fun purpose(): FilePurpose = purpose
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -108,11 +108,11 @@ constructor(
 
             @JvmSynthetic
             internal fun from(uploadCreateBody: UploadCreateBody) = apply {
-                this.bytes = uploadCreateBody.bytes
-                this.filename = uploadCreateBody.filename
-                this.mimeType = uploadCreateBody.mimeType
-                this.purpose = uploadCreateBody.purpose
-                additionalProperties(uploadCreateBody.additionalProperties)
+                bytes = uploadCreateBody.bytes
+                filename = uploadCreateBody.filename
+                mimeType = uploadCreateBody.mimeType
+                purpose = uploadCreateBody.purpose
+                additionalProperties = uploadCreateBody.additionalProperties.toMutableMap()
             }
 
             /** The number of bytes in the file you are uploading. */
@@ -142,16 +142,22 @@ constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): UploadCreateBody =

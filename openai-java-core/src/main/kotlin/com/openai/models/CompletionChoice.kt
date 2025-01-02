@@ -29,8 +29,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /**
      * The reason the model stopped generating tokens. This will be `stop` if the model hit a
      * natural stop point or a provided stop sequence, `length` if the maximum number of tokens
@@ -63,6 +61,8 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    private var validated: Boolean = false
+
     fun validate(): CompletionChoice = apply {
         if (!validated) {
             finishReason()
@@ -90,11 +90,11 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(completionChoice: CompletionChoice) = apply {
-            this.finishReason = completionChoice.finishReason
-            this.index = completionChoice.index
-            this.logprobs = completionChoice.logprobs
-            this.text = completionChoice.text
-            additionalProperties(completionChoice.additionalProperties)
+            finishReason = completionChoice.finishReason
+            index = completionChoice.index
+            logprobs = completionChoice.logprobs
+            text = completionChoice.text
+            additionalProperties = completionChoice.additionalProperties.toMutableMap()
         }
 
         /**
@@ -137,16 +137,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): CompletionChoice =
@@ -233,8 +239,6 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var validated: Boolean = false
-
         fun textOffset(): Optional<List<Long>> =
             Optional.ofNullable(textOffset.getNullable("text_offset"))
 
@@ -257,6 +261,8 @@ private constructor(
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
 
         fun validate(): Logprobs = apply {
             if (!validated) {
@@ -285,11 +291,11 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(logprobs: Logprobs) = apply {
-                this.textOffset = logprobs.textOffset
-                this.tokenLogprobs = logprobs.tokenLogprobs
-                this.tokens = logprobs.tokens
-                this.topLogprobs = logprobs.topLogprobs
-                additionalProperties(logprobs.additionalProperties)
+                textOffset = logprobs.textOffset
+                tokenLogprobs = logprobs.tokenLogprobs
+                tokens = logprobs.tokens
+                topLogprobs = logprobs.topLogprobs
+                additionalProperties = logprobs.additionalProperties.toMutableMap()
             }
 
             fun textOffset(textOffset: List<Long>) = textOffset(JsonField.of(textOffset))
@@ -325,16 +331,22 @@ private constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): Logprobs =
@@ -354,11 +366,11 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue>,
         ) {
 
-            private var validated: Boolean = false
-
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            private var validated: Boolean = false
 
             fun validate(): TopLogprob = apply {
                 if (!validated) {
@@ -379,23 +391,31 @@ private constructor(
 
                 @JvmSynthetic
                 internal fun from(topLogprob: TopLogprob) = apply {
-                    additionalProperties(topLogprob.additionalProperties)
+                    additionalProperties = topLogprob.additionalProperties.toMutableMap()
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
-                    this.additionalProperties.putAll(additionalProperties)
+                    putAllAdditionalProperties(additionalProperties)
                 }
 
                 @JsonAnySetter
                 fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    this.additionalProperties.put(key, value)
+                    additionalProperties.put(key, value)
                 }
 
                 fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
                     apply {
                         this.additionalProperties.putAll(additionalProperties)
                     }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
 
                 fun build(): TopLogprob = TopLogprob(additionalProperties.toImmutable())
             }

@@ -45,8 +45,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     fun id(): String = id.getRequired("id")
 
     /** The object type, which is always `batch`. */
@@ -174,6 +172,8 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    private var validated: Boolean = false
+
     fun validate(): Batch = apply {
         if (!validated) {
             id()
@@ -232,27 +232,27 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(batch: Batch) = apply {
-            this.id = batch.id
-            this.object_ = batch.object_
-            this.endpoint = batch.endpoint
-            this.errors = batch.errors
-            this.inputFileId = batch.inputFileId
-            this.completionWindow = batch.completionWindow
-            this.status = batch.status
-            this.outputFileId = batch.outputFileId
-            this.errorFileId = batch.errorFileId
-            this.createdAt = batch.createdAt
-            this.inProgressAt = batch.inProgressAt
-            this.expiresAt = batch.expiresAt
-            this.finalizingAt = batch.finalizingAt
-            this.completedAt = batch.completedAt
-            this.failedAt = batch.failedAt
-            this.expiredAt = batch.expiredAt
-            this.cancellingAt = batch.cancellingAt
-            this.cancelledAt = batch.cancelledAt
-            this.requestCounts = batch.requestCounts
-            this.metadata = batch.metadata
-            additionalProperties(batch.additionalProperties)
+            id = batch.id
+            object_ = batch.object_
+            endpoint = batch.endpoint
+            errors = batch.errors
+            inputFileId = batch.inputFileId
+            completionWindow = batch.completionWindow
+            status = batch.status
+            outputFileId = batch.outputFileId
+            errorFileId = batch.errorFileId
+            createdAt = batch.createdAt
+            inProgressAt = batch.inProgressAt
+            expiresAt = batch.expiresAt
+            finalizingAt = batch.finalizingAt
+            completedAt = batch.completedAt
+            failedAt = batch.failedAt
+            expiredAt = batch.expiredAt
+            cancellingAt = batch.cancellingAt
+            cancelledAt = batch.cancelledAt
+            requestCounts = batch.requestCounts
+            metadata = batch.metadata
+            additionalProperties = batch.additionalProperties.toMutableMap()
         }
 
         fun id(id: String) = id(JsonField.of(id))
@@ -420,16 +420,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): Batch =
@@ -611,8 +617,6 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var validated: Boolean = false
-
         /** The object type, which is always `list`. */
         fun object_(): Optional<String> = Optional.ofNullable(object_.getNullable("object"))
 
@@ -626,6 +630,8 @@ private constructor(
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
 
         fun validate(): Errors = apply {
             if (!validated) {
@@ -650,9 +656,9 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(errors: Errors) = apply {
-                this.object_ = errors.object_
-                this.data = errors.data
-                additionalProperties(errors.additionalProperties)
+                object_ = errors.object_
+                data = errors.data
+                additionalProperties = errors.additionalProperties.toMutableMap()
             }
 
             /** The object type, which is always `list`. */
@@ -671,16 +677,22 @@ private constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): Errors =

@@ -31,8 +31,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /** The name of the project that the new run will be created under. */
     fun project(): String = project.getRequired("project")
 
@@ -77,6 +75,8 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    private var validated: Boolean = false
+
     fun validate(): FineTuningJobWandbIntegration = apply {
         if (!validated) {
             project()
@@ -104,11 +104,11 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(fineTuningJobWandbIntegration: FineTuningJobWandbIntegration) = apply {
-            this.project = fineTuningJobWandbIntegration.project
-            this.name = fineTuningJobWandbIntegration.name
-            this.entity = fineTuningJobWandbIntegration.entity
-            this.tags = fineTuningJobWandbIntegration.tags
-            additionalProperties(fineTuningJobWandbIntegration.additionalProperties)
+            project = fineTuningJobWandbIntegration.project
+            name = fineTuningJobWandbIntegration.name
+            entity = fineTuningJobWandbIntegration.entity
+            tags = fineTuningJobWandbIntegration.tags
+            additionalProperties = fineTuningJobWandbIntegration.additionalProperties.toMutableMap()
         }
 
         /** The name of the project that the new run will be created under. */
@@ -161,16 +161,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): FineTuningJobWandbIntegration =

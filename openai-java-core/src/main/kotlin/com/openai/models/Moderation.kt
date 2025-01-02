@@ -28,8 +28,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /** Whether any of the below categories are flagged. */
     fun flagged(): Boolean = flagged.getRequired("flagged")
 
@@ -61,6 +59,8 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    private var validated: Boolean = false
+
     fun validate(): Moderation = apply {
         if (!validated) {
             flagged()
@@ -89,11 +89,11 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(moderation: Moderation) = apply {
-            this.flagged = moderation.flagged
-            this.categories = moderation.categories
-            this.categoryScores = moderation.categoryScores
-            this.categoryAppliedInputTypes = moderation.categoryAppliedInputTypes
-            additionalProperties(moderation.additionalProperties)
+            flagged = moderation.flagged
+            categories = moderation.categories
+            categoryScores = moderation.categoryScores
+            categoryAppliedInputTypes = moderation.categoryAppliedInputTypes
+            additionalProperties = moderation.additionalProperties.toMutableMap()
         }
 
         /** Whether any of the below categories are flagged. */
@@ -136,16 +136,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): Moderation =
@@ -178,8 +184,6 @@ private constructor(
         private val violenceGraphic: JsonField<Boolean>,
         private val additionalProperties: Map<String, JsonValue>,
     ) {
-
-        private var validated: Boolean = false
 
         /**
          * Content that expresses, incites, or promotes hate based on race, gender, ethnicity,
@@ -325,6 +329,8 @@ private constructor(
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+        private var validated: Boolean = false
+
         fun validate(): Categories = apply {
             if (!validated) {
                 hate()
@@ -370,20 +376,20 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(categories: Categories) = apply {
-                this.hate = categories.hate
-                this.hateThreatening = categories.hateThreatening
-                this.harassment = categories.harassment
-                this.harassmentThreatening = categories.harassmentThreatening
-                this.illicit = categories.illicit
-                this.illicitViolent = categories.illicitViolent
-                this.selfHarm = categories.selfHarm
-                this.selfHarmIntent = categories.selfHarmIntent
-                this.selfHarmInstructions = categories.selfHarmInstructions
-                this.sexual = categories.sexual
-                this.sexualMinors = categories.sexualMinors
-                this.violence = categories.violence
-                this.violenceGraphic = categories.violenceGraphic
-                additionalProperties(categories.additionalProperties)
+                hate = categories.hate
+                hateThreatening = categories.hateThreatening
+                harassment = categories.harassment
+                harassmentThreatening = categories.harassmentThreatening
+                illicit = categories.illicit
+                illicitViolent = categories.illicitViolent
+                selfHarm = categories.selfHarm
+                selfHarmIntent = categories.selfHarmIntent
+                selfHarmInstructions = categories.selfHarmInstructions
+                sexual = categories.sexual
+                sexualMinors = categories.sexualMinors
+                violence = categories.violence
+                violenceGraphic = categories.violenceGraphic
+                additionalProperties = categories.additionalProperties.toMutableMap()
             }
 
             /**
@@ -576,16 +582,22 @@ private constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): Categories =
@@ -645,8 +657,6 @@ private constructor(
         private val violenceGraphic: JsonField<List<ViolenceGraphic>>,
         private val additionalProperties: Map<String, JsonValue>,
     ) {
-
-        private var validated: Boolean = false
 
         /** The applied input type(s) for the category 'hate'. */
         fun hate(): List<Hate> = hate.getRequired("hate")
@@ -738,6 +748,8 @@ private constructor(
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+        private var validated: Boolean = false
+
         fun validate(): CategoryAppliedInputTypes = apply {
             if (!validated) {
                 hate()
@@ -785,20 +797,20 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(categoryAppliedInputTypes: CategoryAppliedInputTypes) = apply {
-                this.hate = categoryAppliedInputTypes.hate
-                this.hateThreatening = categoryAppliedInputTypes.hateThreatening
-                this.harassment = categoryAppliedInputTypes.harassment
-                this.harassmentThreatening = categoryAppliedInputTypes.harassmentThreatening
-                this.illicit = categoryAppliedInputTypes.illicit
-                this.illicitViolent = categoryAppliedInputTypes.illicitViolent
-                this.selfHarm = categoryAppliedInputTypes.selfHarm
-                this.selfHarmIntent = categoryAppliedInputTypes.selfHarmIntent
-                this.selfHarmInstructions = categoryAppliedInputTypes.selfHarmInstructions
-                this.sexual = categoryAppliedInputTypes.sexual
-                this.sexualMinors = categoryAppliedInputTypes.sexualMinors
-                this.violence = categoryAppliedInputTypes.violence
-                this.violenceGraphic = categoryAppliedInputTypes.violenceGraphic
-                additionalProperties(categoryAppliedInputTypes.additionalProperties)
+                hate = categoryAppliedInputTypes.hate
+                hateThreatening = categoryAppliedInputTypes.hateThreatening
+                harassment = categoryAppliedInputTypes.harassment
+                harassmentThreatening = categoryAppliedInputTypes.harassmentThreatening
+                illicit = categoryAppliedInputTypes.illicit
+                illicitViolent = categoryAppliedInputTypes.illicitViolent
+                selfHarm = categoryAppliedInputTypes.selfHarm
+                selfHarmIntent = categoryAppliedInputTypes.selfHarmIntent
+                selfHarmInstructions = categoryAppliedInputTypes.selfHarmInstructions
+                sexual = categoryAppliedInputTypes.sexual
+                sexualMinors = categoryAppliedInputTypes.sexualMinors
+                violence = categoryAppliedInputTypes.violence
+                violenceGraphic = categoryAppliedInputTypes.violenceGraphic
+                additionalProperties = categoryAppliedInputTypes.additionalProperties.toMutableMap()
             }
 
             /** The applied input type(s) for the category 'hate'. */
@@ -931,16 +943,22 @@ private constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): CategoryAppliedInputTypes =
@@ -1701,8 +1719,6 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var validated: Boolean = false
-
         /** The score for the category 'hate'. */
         fun hate(): Double = hate.getRequired("hate")
 
@@ -1791,6 +1807,8 @@ private constructor(
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+        private var validated: Boolean = false
+
         fun validate(): CategoryScores = apply {
             if (!validated) {
                 hate()
@@ -1836,20 +1854,20 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(categoryScores: CategoryScores) = apply {
-                this.hate = categoryScores.hate
-                this.hateThreatening = categoryScores.hateThreatening
-                this.harassment = categoryScores.harassment
-                this.harassmentThreatening = categoryScores.harassmentThreatening
-                this.illicit = categoryScores.illicit
-                this.illicitViolent = categoryScores.illicitViolent
-                this.selfHarm = categoryScores.selfHarm
-                this.selfHarmIntent = categoryScores.selfHarmIntent
-                this.selfHarmInstructions = categoryScores.selfHarmInstructions
-                this.sexual = categoryScores.sexual
-                this.sexualMinors = categoryScores.sexualMinors
-                this.violence = categoryScores.violence
-                this.violenceGraphic = categoryScores.violenceGraphic
-                additionalProperties(categoryScores.additionalProperties)
+                hate = categoryScores.hate
+                hateThreatening = categoryScores.hateThreatening
+                harassment = categoryScores.harassment
+                harassmentThreatening = categoryScores.harassmentThreatening
+                illicit = categoryScores.illicit
+                illicitViolent = categoryScores.illicitViolent
+                selfHarm = categoryScores.selfHarm
+                selfHarmIntent = categoryScores.selfHarmIntent
+                selfHarmInstructions = categoryScores.selfHarmInstructions
+                sexual = categoryScores.sexual
+                sexualMinors = categoryScores.sexualMinors
+                violence = categoryScores.violence
+                violenceGraphic = categoryScores.violenceGraphic
+                additionalProperties = categoryScores.additionalProperties.toMutableMap()
             }
 
             /** The score for the category 'hate'. */
@@ -1978,16 +1996,22 @@ private constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): CategoryScores =

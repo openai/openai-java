@@ -124,7 +124,7 @@ constructor(
     @NoAutoDetect
     class CompletionCreateBody
     internal constructor(
-        private val model: Model?,
+        private val model: Model,
         private val prompt: Prompt?,
         private val bestOf: Long?,
         private val echo: Boolean?,
@@ -150,7 +150,7 @@ constructor(
          * of your available models, or see our
          * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
          */
-        @JsonProperty("model") fun model(): Model? = model
+        @JsonProperty("model") fun model(): Model = model
 
         /**
          * The prompt(s) to generate completions for, encoded as a string, array of strings, array
@@ -160,7 +160,7 @@ constructor(
          * if a prompt is not specified the model will generate as if from the beginning of a new
          * document.
          */
-        @JsonProperty("prompt") fun prompt(): Prompt? = prompt
+        @JsonProperty("prompt") fun prompt(): Optional<Prompt> = Optional.ofNullable(prompt)
 
         /**
          * Generates `best_of` completions server-side and returns the "best" (the one with the
@@ -173,10 +173,10 @@ constructor(
          * token quota. Use carefully and ensure that you have reasonable settings for `max_tokens`
          * and `stop`.
          */
-        @JsonProperty("best_of") fun bestOf(): Long? = bestOf
+        @JsonProperty("best_of") fun bestOf(): Optional<Long> = Optional.ofNullable(bestOf)
 
         /** Echo back the prompt in addition to the completion */
-        @JsonProperty("echo") fun echo(): Boolean? = echo
+        @JsonProperty("echo") fun echo(): Optional<Boolean> = Optional.ofNullable(echo)
 
         /**
          * Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing
@@ -186,7 +186,8 @@ constructor(
          * [See more information about frequency and presence
          * penalties.](https://platform.openai.com/docs/guides/text-generation)
          */
-        @JsonProperty("frequency_penalty") fun frequencyPenalty(): Double? = frequencyPenalty
+        @JsonProperty("frequency_penalty")
+        fun frequencyPenalty(): Optional<Double> = Optional.ofNullable(frequencyPenalty)
 
         /**
          * Modify the likelihood of specified tokens appearing in the completion.
@@ -202,7 +203,8 @@ constructor(
          * As an example, you can pass `{"50256": -100}` to prevent the <|endoftext|> token from
          * being generated.
          */
-        @JsonProperty("logit_bias") fun logitBias(): LogitBias? = logitBias
+        @JsonProperty("logit_bias")
+        fun logitBias(): Optional<LogitBias> = Optional.ofNullable(logitBias)
 
         /**
          * Include the log probabilities on the `logprobs` most likely output tokens, as well the
@@ -212,7 +214,7 @@ constructor(
          *
          * The maximum value for `logprobs` is 5.
          */
-        @JsonProperty("logprobs") fun logprobs(): Long? = logprobs
+        @JsonProperty("logprobs") fun logprobs(): Optional<Long> = Optional.ofNullable(logprobs)
 
         /**
          * The maximum number of [tokens](/tokenizer) that can be generated in the completion.
@@ -222,7 +224,7 @@ constructor(
          * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
          * for counting tokens.
          */
-        @JsonProperty("max_tokens") fun maxTokens(): Long? = maxTokens
+        @JsonProperty("max_tokens") fun maxTokens(): Optional<Long> = Optional.ofNullable(maxTokens)
 
         /**
          * How many completions to generate for each prompt.
@@ -231,7 +233,7 @@ constructor(
          * token quota. Use carefully and ensure that you have reasonable settings for `max_tokens`
          * and `stop`.
          */
-        @JsonProperty("n") fun n(): Long? = n
+        @JsonProperty("n") fun n(): Optional<Long> = Optional.ofNullable(n)
 
         /**
          * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they
@@ -240,7 +242,8 @@ constructor(
          * [See more information about frequency and presence
          * penalties.](https://platform.openai.com/docs/guides/text-generation)
          */
-        @JsonProperty("presence_penalty") fun presencePenalty(): Double? = presencePenalty
+        @JsonProperty("presence_penalty")
+        fun presencePenalty(): Optional<Double> = Optional.ofNullable(presencePenalty)
 
         /**
          * If specified, our system will make a best effort to sample deterministically, such that
@@ -249,24 +252,25 @@ constructor(
          * Determinism is not guaranteed, and you should refer to the `system_fingerprint` response
          * parameter to monitor changes in the backend.
          */
-        @JsonProperty("seed") fun seed(): Long? = seed
+        @JsonProperty("seed") fun seed(): Optional<Long> = Optional.ofNullable(seed)
 
         /**
          * Up to 4 sequences where the API will stop generating further tokens. The returned text
          * will not contain the stop sequence.
          */
-        @JsonProperty("stop") fun stop(): Stop? = stop
+        @JsonProperty("stop") fun stop(): Optional<Stop> = Optional.ofNullable(stop)
 
         /** Options for streaming response. Only set this when you set `stream: true`. */
         @JsonProperty("stream_options")
-        fun streamOptions(): ChatCompletionStreamOptions? = streamOptions
+        fun streamOptions(): Optional<ChatCompletionStreamOptions> =
+            Optional.ofNullable(streamOptions)
 
         /**
          * The suffix that comes after a completion of inserted text.
          *
          * This parameter is only supported for `gpt-3.5-turbo-instruct`.
          */
-        @JsonProperty("suffix") fun suffix(): String? = suffix
+        @JsonProperty("suffix") fun suffix(): Optional<String> = Optional.ofNullable(suffix)
 
         /**
          * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
@@ -275,7 +279,8 @@ constructor(
          *
          * We generally recommend altering this or `top_p` but not both.
          */
-        @JsonProperty("temperature") fun temperature(): Double? = temperature
+        @JsonProperty("temperature")
+        fun temperature(): Optional<Double> = Optional.ofNullable(temperature)
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -284,14 +289,14 @@ constructor(
          *
          * We generally recommend altering this or `temperature` but not both.
          */
-        @JsonProperty("top_p") fun topP(): Double? = topP
+        @JsonProperty("top_p") fun topP(): Optional<Double> = Optional.ofNullable(topP)
 
         /**
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
          * detect abuse.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
          */
-        @JsonProperty("user") fun user(): String? = user
+        @JsonProperty("user") fun user(): Optional<String> = Optional.ofNullable(user)
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -327,24 +332,24 @@ constructor(
 
             @JvmSynthetic
             internal fun from(completionCreateBody: CompletionCreateBody) = apply {
-                this.model = completionCreateBody.model
-                this.prompt = completionCreateBody.prompt
-                this.bestOf = completionCreateBody.bestOf
-                this.echo = completionCreateBody.echo
-                this.frequencyPenalty = completionCreateBody.frequencyPenalty
-                this.logitBias = completionCreateBody.logitBias
-                this.logprobs = completionCreateBody.logprobs
-                this.maxTokens = completionCreateBody.maxTokens
-                this.n = completionCreateBody.n
-                this.presencePenalty = completionCreateBody.presencePenalty
-                this.seed = completionCreateBody.seed
-                this.stop = completionCreateBody.stop
-                this.streamOptions = completionCreateBody.streamOptions
-                this.suffix = completionCreateBody.suffix
-                this.temperature = completionCreateBody.temperature
-                this.topP = completionCreateBody.topP
-                this.user = completionCreateBody.user
-                additionalProperties(completionCreateBody.additionalProperties)
+                model = completionCreateBody.model
+                prompt = completionCreateBody.prompt
+                bestOf = completionCreateBody.bestOf
+                echo = completionCreateBody.echo
+                frequencyPenalty = completionCreateBody.frequencyPenalty
+                logitBias = completionCreateBody.logitBias
+                logprobs = completionCreateBody.logprobs
+                maxTokens = completionCreateBody.maxTokens
+                n = completionCreateBody.n
+                presencePenalty = completionCreateBody.presencePenalty
+                seed = completionCreateBody.seed
+                stop = completionCreateBody.stop
+                streamOptions = completionCreateBody.streamOptions
+                suffix = completionCreateBody.suffix
+                temperature = completionCreateBody.temperature
+                topP = completionCreateBody.topP
+                user = completionCreateBody.user
+                additionalProperties = completionCreateBody.additionalProperties.toMutableMap()
             }
 
             /**
@@ -512,16 +517,22 @@ constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): CompletionCreateBody =
@@ -1060,8 +1071,6 @@ constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        private var validated: Boolean = false
-
         fun string(): Optional<String> = Optional.ofNullable(string)
 
         fun arrayOfStrings(): Optional<List<String>> = Optional.ofNullable(arrayOfStrings)
@@ -1097,20 +1106,6 @@ constructor(
                 arrayOfTokens != null -> visitor.visitArrayOfTokens(arrayOfTokens)
                 arrayOfTokenArrays != null -> visitor.visitArrayOfTokenArrays(arrayOfTokenArrays)
                 else -> visitor.unknown(_json)
-            }
-        }
-
-        fun validate(): Prompt = apply {
-            if (!validated) {
-                if (
-                    string == null &&
-                        arrayOfStrings == null &&
-                        arrayOfTokens == null &&
-                        arrayOfTokenArrays == null
-                ) {
-                    throw OpenAIInvalidDataException("Unknown Prompt: $_json")
-                }
-                validated = true
             }
         }
 
@@ -1244,21 +1239,27 @@ constructor(
 
             @JvmSynthetic
             internal fun from(logitBias: LogitBias) = apply {
-                additionalProperties(logitBias.additionalProperties)
+                additionalProperties = logitBias.additionalProperties.toMutableMap()
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): LogitBias = LogitBias(additionalProperties.toImmutable())
@@ -1290,8 +1291,6 @@ constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        private var validated: Boolean = false
-
         fun string(): Optional<String> = Optional.ofNullable(string)
 
         fun strings(): Optional<List<String>> = Optional.ofNullable(strings)
@@ -1311,15 +1310,6 @@ constructor(
                 string != null -> visitor.visitString(string)
                 strings != null -> visitor.visitStrings(strings)
                 else -> visitor.unknown(_json)
-            }
-        }
-
-        fun validate(): Stop = apply {
-            if (!validated) {
-                if (string == null && strings == null) {
-                    throw OpenAIInvalidDataException("Unknown Stop: $_json")
-                }
-                validated = true
             }
         }
 

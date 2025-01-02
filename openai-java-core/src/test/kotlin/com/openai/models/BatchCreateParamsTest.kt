@@ -41,7 +41,7 @@ class BatchCreateParamsTest {
         assertThat(body.endpoint()).isEqualTo(BatchCreateParams.Endpoint.V1_CHAT_COMPLETIONS)
         assertThat(body.inputFileId()).isEqualTo("input_file_id")
         assertThat(body.metadata())
-            .isEqualTo(
+            .contains(
                 BatchCreateParams.Metadata.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()

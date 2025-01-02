@@ -63,9 +63,9 @@ constructor(
     @NoAutoDetect
     class BatchCreateBody
     internal constructor(
-        private val completionWindow: CompletionWindow?,
-        private val endpoint: Endpoint?,
-        private val inputFileId: String?,
+        private val completionWindow: CompletionWindow,
+        private val endpoint: Endpoint,
+        private val inputFileId: String,
         private val metadata: Metadata?,
         private val additionalProperties: Map<String, JsonValue>,
     ) {
@@ -75,7 +75,7 @@ constructor(
          * supported.
          */
         @JsonProperty("completion_window")
-        fun completionWindow(): CompletionWindow? = completionWindow
+        fun completionWindow(): CompletionWindow = completionWindow
 
         /**
          * The endpoint to be used for all requests in the batch. Currently `/v1/chat/completions`,
@@ -83,7 +83,7 @@ constructor(
          * are also restricted to a maximum of 50,000 embedding inputs across all requests in the
          * batch.
          */
-        @JsonProperty("endpoint") fun endpoint(): Endpoint? = endpoint
+        @JsonProperty("endpoint") fun endpoint(): Endpoint = endpoint
 
         /**
          * The ID of an uploaded file that contains requests for the new batch.
@@ -96,10 +96,10 @@ constructor(
          * must be uploaded with the purpose `batch`. The file can contain up to 50,000 requests,
          * and can be up to 200 MB in size.
          */
-        @JsonProperty("input_file_id") fun inputFileId(): String? = inputFileId
+        @JsonProperty("input_file_id") fun inputFileId(): String = inputFileId
 
         /** Optional custom metadata for the batch. */
-        @JsonProperty("metadata") fun metadata(): Metadata? = metadata
+        @JsonProperty("metadata") fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata)
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -122,11 +122,11 @@ constructor(
 
             @JvmSynthetic
             internal fun from(batchCreateBody: BatchCreateBody) = apply {
-                this.completionWindow = batchCreateBody.completionWindow
-                this.endpoint = batchCreateBody.endpoint
-                this.inputFileId = batchCreateBody.inputFileId
-                this.metadata = batchCreateBody.metadata
-                additionalProperties(batchCreateBody.additionalProperties)
+                completionWindow = batchCreateBody.completionWindow
+                endpoint = batchCreateBody.endpoint
+                inputFileId = batchCreateBody.inputFileId
+                metadata = batchCreateBody.metadata
+                additionalProperties = batchCreateBody.additionalProperties.toMutableMap()
             }
 
             /**
@@ -167,16 +167,22 @@ constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): BatchCreateBody =
@@ -541,21 +547,27 @@ constructor(
 
             @JvmSynthetic
             internal fun from(metadata: Metadata) = apply {
-                additionalProperties(metadata.additionalProperties)
+                additionalProperties = metadata.additionalProperties.toMutableMap()
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): Metadata = Metadata(additionalProperties.toImmutable())

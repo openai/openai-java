@@ -28,8 +28,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /** The type of the content part. */
     fun type(): Type = type.getRequired("type")
 
@@ -43,6 +41,8 @@ private constructor(
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+    private var validated: Boolean = false
 
     fun validate(): ChatCompletionContentPartImage = apply {
         if (!validated) {
@@ -67,9 +67,10 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(chatCompletionContentPartImage: ChatCompletionContentPartImage) = apply {
-            this.type = chatCompletionContentPartImage.type
-            this.imageUrl = chatCompletionContentPartImage.imageUrl
-            additionalProperties(chatCompletionContentPartImage.additionalProperties)
+            type = chatCompletionContentPartImage.type
+            imageUrl = chatCompletionContentPartImage.imageUrl
+            additionalProperties =
+                chatCompletionContentPartImage.additionalProperties.toMutableMap()
         }
 
         /** The type of the content part. */
@@ -88,16 +89,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): ChatCompletionContentPartImage =
@@ -116,8 +123,6 @@ private constructor(
         private val detail: JsonField<Detail>,
         private val additionalProperties: Map<String, JsonValue>,
     ) {
-
-        private var validated: Boolean = false
 
         /** Either a URL of the image or the base64 encoded image data. */
         fun url(): String = url.getRequired("url")
@@ -140,6 +145,8 @@ private constructor(
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
 
         fun validate(): ImageUrl = apply {
             if (!validated) {
@@ -164,9 +171,9 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(imageUrl: ImageUrl) = apply {
-                this.url = imageUrl.url
-                this.detail = imageUrl.detail
-                additionalProperties(imageUrl.additionalProperties)
+                url = imageUrl.url
+                detail = imageUrl.detail
+                additionalProperties = imageUrl.additionalProperties.toMutableMap()
             }
 
             /** Either a URL of the image or the base64 encoded image data. */
@@ -193,16 +200,22 @@ private constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): ImageUrl =

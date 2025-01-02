@@ -27,8 +27,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /** Always `text`. */
     fun type(): Type = type.getRequired("type")
 
@@ -44,6 +42,8 @@ private constructor(
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+    private var validated: Boolean = false
 
     fun validate(): ModerationTextInput = apply {
         if (!validated) {
@@ -68,9 +68,9 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(moderationTextInput: ModerationTextInput) = apply {
-            this.type = moderationTextInput.type
-            this.text = moderationTextInput.text
-            additionalProperties(moderationTextInput.additionalProperties)
+            type = moderationTextInput.type
+            text = moderationTextInput.text
+            additionalProperties = moderationTextInput.additionalProperties.toMutableMap()
         }
 
         /** Always `text`. */
@@ -91,16 +91,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): ModerationTextInput =

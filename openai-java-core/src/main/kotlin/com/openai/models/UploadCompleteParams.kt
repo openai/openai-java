@@ -61,19 +61,19 @@ constructor(
     @NoAutoDetect
     class UploadCompleteBody
     internal constructor(
-        private val partIds: List<String>?,
+        private val partIds: List<String>,
         private val md5: String?,
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
         /** The ordered list of Part IDs. */
-        @JsonProperty("part_ids") fun partIds(): List<String>? = partIds
+        @JsonProperty("part_ids") fun partIds(): List<String> = partIds
 
         /**
          * The optional md5 checksum for the file contents to verify if the bytes uploaded matches
          * what you expect.
          */
-        @JsonProperty("md5") fun md5(): String? = md5
+        @JsonProperty("md5") fun md5(): Optional<String> = Optional.ofNullable(md5)
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -94,9 +94,9 @@ constructor(
 
             @JvmSynthetic
             internal fun from(uploadCompleteBody: UploadCompleteBody) = apply {
-                this.partIds = uploadCompleteBody.partIds
-                this.md5 = uploadCompleteBody.md5
-                additionalProperties(uploadCompleteBody.additionalProperties)
+                partIds = uploadCompleteBody.partIds.toMutableList()
+                md5 = uploadCompleteBody.md5
+                additionalProperties = uploadCompleteBody.additionalProperties.toMutableMap()
             }
 
             /** The ordered list of Part IDs. */
@@ -111,16 +111,22 @@ constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): UploadCompleteBody =

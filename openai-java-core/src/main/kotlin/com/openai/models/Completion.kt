@@ -36,8 +36,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /** A unique identifier for the completion. */
     fun id(): String = id.getRequired("id")
 
@@ -95,6 +93,8 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    private var validated: Boolean = false
+
     fun validate(): Completion = apply {
         if (!validated) {
             id()
@@ -128,14 +128,14 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(completion: Completion) = apply {
-            this.id = completion.id
-            this.choices = completion.choices
-            this.created = completion.created
-            this.model = completion.model
-            this.systemFingerprint = completion.systemFingerprint
-            this.object_ = completion.object_
-            this.usage = completion.usage
-            additionalProperties(completion.additionalProperties)
+            id = completion.id
+            choices = completion.choices
+            created = completion.created
+            model = completion.model
+            systemFingerprint = completion.systemFingerprint
+            object_ = completion.object_
+            usage = completion.usage
+            additionalProperties = completion.additionalProperties.toMutableMap()
         }
 
         /** A unique identifier for the completion. */
@@ -207,16 +207,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): Completion =

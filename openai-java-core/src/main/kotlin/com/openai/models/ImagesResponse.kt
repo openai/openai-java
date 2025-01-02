@@ -23,8 +23,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     fun created(): Long = created.getRequired("created")
 
     fun data(): List<Image> = data.getRequired("data")
@@ -36,6 +34,8 @@ private constructor(
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+    private var validated: Boolean = false
 
     fun validate(): ImagesResponse = apply {
         if (!validated) {
@@ -60,9 +60,9 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(imagesResponse: ImagesResponse) = apply {
-            this.created = imagesResponse.created
-            this.data = imagesResponse.data
-            additionalProperties(imagesResponse.additionalProperties)
+            created = imagesResponse.created
+            data = imagesResponse.data
+            additionalProperties = imagesResponse.additionalProperties.toMutableMap()
         }
 
         fun created(created: Long) = created(JsonField.of(created))
@@ -79,16 +79,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): ImagesResponse =

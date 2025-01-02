@@ -28,8 +28,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /** Number of tokens in the generated completion. */
     fun completionTokens(): Long = completionTokens.getRequired("completion_tokens")
 
@@ -70,6 +68,8 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    private var validated: Boolean = false
+
     fun validate(): CompletionUsage = apply {
         if (!validated) {
             completionTokens()
@@ -99,12 +99,12 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(completionUsage: CompletionUsage) = apply {
-            this.completionTokens = completionUsage.completionTokens
-            this.promptTokens = completionUsage.promptTokens
-            this.totalTokens = completionUsage.totalTokens
-            this.completionTokensDetails = completionUsage.completionTokensDetails
-            this.promptTokensDetails = completionUsage.promptTokensDetails
-            additionalProperties(completionUsage.additionalProperties)
+            completionTokens = completionUsage.completionTokens
+            promptTokens = completionUsage.promptTokens
+            totalTokens = completionUsage.totalTokens
+            completionTokensDetails = completionUsage.completionTokensDetails
+            promptTokensDetails = completionUsage.promptTokensDetails
+            additionalProperties = completionUsage.additionalProperties.toMutableMap()
         }
 
         /** Number of tokens in the generated completion. */
@@ -159,16 +159,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): CompletionUsage =
@@ -193,8 +199,6 @@ private constructor(
         private val rejectedPredictionTokens: JsonField<Long>,
         private val additionalProperties: Map<String, JsonValue>,
     ) {
-
-        private var validated: Boolean = false
 
         /**
          * When using Predicted Outputs, the number of tokens in the prediction that appeared in the
@@ -246,6 +250,8 @@ private constructor(
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+        private var validated: Boolean = false
+
         fun validate(): CompletionTokensDetails = apply {
             if (!validated) {
                 acceptedPredictionTokens()
@@ -273,11 +279,11 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(completionTokensDetails: CompletionTokensDetails) = apply {
-                this.acceptedPredictionTokens = completionTokensDetails.acceptedPredictionTokens
-                this.audioTokens = completionTokensDetails.audioTokens
-                this.reasoningTokens = completionTokensDetails.reasoningTokens
-                this.rejectedPredictionTokens = completionTokensDetails.rejectedPredictionTokens
-                additionalProperties(completionTokensDetails.additionalProperties)
+                acceptedPredictionTokens = completionTokensDetails.acceptedPredictionTokens
+                audioTokens = completionTokensDetails.audioTokens
+                reasoningTokens = completionTokensDetails.reasoningTokens
+                rejectedPredictionTokens = completionTokensDetails.rejectedPredictionTokens
+                additionalProperties = completionTokensDetails.additionalProperties.toMutableMap()
             }
 
             /**
@@ -339,16 +345,22 @@ private constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): CompletionTokensDetails =
@@ -389,8 +401,6 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var validated: Boolean = false
-
         /** Audio input tokens present in the prompt. */
         fun audioTokens(): Optional<Long> =
             Optional.ofNullable(audioTokens.getNullable("audio_tokens"))
@@ -408,6 +418,8 @@ private constructor(
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
 
         fun validate(): PromptTokensDetails = apply {
             if (!validated) {
@@ -432,9 +444,9 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(promptTokensDetails: PromptTokensDetails) = apply {
-                this.audioTokens = promptTokensDetails.audioTokens
-                this.cachedTokens = promptTokensDetails.cachedTokens
-                additionalProperties(promptTokensDetails.additionalProperties)
+                audioTokens = promptTokensDetails.audioTokens
+                cachedTokens = promptTokensDetails.cachedTokens
+                additionalProperties = promptTokensDetails.additionalProperties.toMutableMap()
             }
 
             /** Audio input tokens present in the prompt. */
@@ -457,16 +469,22 @@ private constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): PromptTokensDetails =

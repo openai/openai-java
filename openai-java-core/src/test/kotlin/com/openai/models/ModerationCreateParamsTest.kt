@@ -26,7 +26,7 @@ class ModerationCreateParamsTest {
         assertThat(body).isNotNull
         assertThat(body.input())
             .isEqualTo(ModerationCreateParams.Input.ofString("I want to kill them."))
-        assertThat(body.model()).isEqualTo(ModerationModel.OMNI_MODERATION_LATEST)
+        assertThat(body.model()).contains(ModerationModel.OMNI_MODERATION_LATEST)
     }
 
     @Test

@@ -43,8 +43,6 @@ private constructor(
     private val additionalProperties: Map<String, JsonValue>,
 ) {
 
-    private var validated: Boolean = false
-
     /**
      * The contents of the assistant message. Required unless `tool_calls` or `function_call` is
      * specified.
@@ -117,6 +115,8 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    private var validated: Boolean = false
+
     fun validate(): ChatCompletionAssistantMessageParam = apply {
         if (!validated) {
             content()
@@ -152,14 +152,15 @@ private constructor(
         internal fun from(
             chatCompletionAssistantMessageParam: ChatCompletionAssistantMessageParam
         ) = apply {
-            this.content = chatCompletionAssistantMessageParam.content
-            this.refusal = chatCompletionAssistantMessageParam.refusal
-            this.role = chatCompletionAssistantMessageParam.role
-            this.name = chatCompletionAssistantMessageParam.name
-            this.audio = chatCompletionAssistantMessageParam.audio
-            this.toolCalls = chatCompletionAssistantMessageParam.toolCalls
-            this.functionCall = chatCompletionAssistantMessageParam.functionCall
-            additionalProperties(chatCompletionAssistantMessageParam.additionalProperties)
+            content = chatCompletionAssistantMessageParam.content
+            refusal = chatCompletionAssistantMessageParam.refusal
+            role = chatCompletionAssistantMessageParam.role
+            name = chatCompletionAssistantMessageParam.name
+            audio = chatCompletionAssistantMessageParam.audio
+            toolCalls = chatCompletionAssistantMessageParam.toolCalls
+            functionCall = chatCompletionAssistantMessageParam.functionCall
+            additionalProperties =
+                chatCompletionAssistantMessageParam.additionalProperties.toMutableMap()
         }
 
         /**
@@ -249,16 +250,22 @@ private constructor(
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
-            this.additionalProperties.putAll(additionalProperties)
+            putAllAdditionalProperties(additionalProperties)
         }
 
         @JsonAnySetter
         fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            this.additionalProperties.put(key, value)
+            additionalProperties.put(key, value)
         }
 
         fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
         }
 
         fun build(): ChatCompletionAssistantMessageParam =
@@ -337,8 +344,6 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var validated: Boolean = false
-
         /** Unique identifier for a previous audio response from the model. */
         fun id(): String = id.getRequired("id")
 
@@ -348,6 +353,8 @@ private constructor(
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
 
         fun validate(): Audio = apply {
             if (!validated) {
@@ -370,8 +377,8 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(audio: Audio) = apply {
-                this.id = audio.id
-                additionalProperties(audio.additionalProperties)
+                id = audio.id
+                additionalProperties = audio.additionalProperties.toMutableMap()
             }
 
             /** Unique identifier for a previous audio response from the model. */
@@ -384,16 +391,22 @@ private constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): Audio = Audio(id, additionalProperties.toImmutable())
@@ -749,8 +762,6 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue>,
     ) {
 
-        private var validated: Boolean = false
-
         /**
          * The arguments to call the function with, as generated by the model in JSON format. Note
          * that the model does not always generate valid JSON, and may hallucinate parameters not
@@ -777,6 +788,8 @@ private constructor(
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+        private var validated: Boolean = false
+
         fun validate(): FunctionCall = apply {
             if (!validated) {
                 arguments()
@@ -800,9 +813,9 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(functionCall: FunctionCall) = apply {
-                this.arguments = functionCall.arguments
-                this.name = functionCall.name
-                additionalProperties(functionCall.additionalProperties)
+                arguments = functionCall.arguments
+                name = functionCall.name
+                additionalProperties = functionCall.additionalProperties.toMutableMap()
             }
 
             /**
@@ -833,16 +846,22 @@ private constructor(
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
-                this.additionalProperties.putAll(additionalProperties)
+                putAllAdditionalProperties(additionalProperties)
             }
 
             @JsonAnySetter
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
+                additionalProperties.put(key, value)
             }
 
             fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
             }
 
             fun build(): FunctionCall =

@@ -187,9 +187,9 @@ private constructor(
             this.azureServiceVersion = azureServiceVersion
         }
 
-        fun organization(organization: String?) = apply { this.organization = organization }
+        fun organization(organization: String) = apply { this.organization = organization }
 
-        fun project(project: String?) = apply { this.project = project }
+        fun project(project: String) = apply { this.project = project }
 
         fun fromEnv() = apply {
             val openAIKey = System.getenv("OPENAI_API_KEY")
