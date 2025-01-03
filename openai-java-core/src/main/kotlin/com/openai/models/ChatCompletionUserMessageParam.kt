@@ -155,6 +155,7 @@ private constructor(
             )
     }
 
+    /** The contents of the user message. */
     @JsonDeserialize(using = Content.Deserializer::class)
     @JsonSerialize(using = Content.Serializer::class)
     class Content
@@ -180,8 +181,13 @@ private constructor(
 
         fun isArrayOfContentParts(): Boolean = arrayOfContentParts != null
 
+        /** The text contents of the message. */
         fun asTextContent(): String = textContent.getOrThrow("textContent")
-
+        /**
+         * An array of content parts with a defined type. Supported options differ based on the
+         * [model](https://platform.openai.com/docs/models) being used to generate the response. Can
+         * contain text, image, or audio inputs.
+         */
         fun asArrayOfContentParts(): List<ChatCompletionContentPart> =
             arrayOfContentParts.getOrThrow("arrayOfContentParts")
 
@@ -224,8 +230,14 @@ private constructor(
 
         companion object {
 
+            /** The text contents of the message. */
             @JvmStatic fun ofTextContent(textContent: String) = Content(textContent = textContent)
 
+            /**
+             * An array of content parts with a defined type. Supported options differ based on the
+             * [model](https://platform.openai.com/docs/models) being used to generate the response.
+             * Can contain text, image, or audio inputs.
+             */
             @JvmStatic
             fun ofArrayOfContentParts(arrayOfContentParts: List<ChatCompletionContentPart>) =
                 Content(arrayOfContentParts = arrayOfContentParts)

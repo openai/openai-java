@@ -18,6 +18,10 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
+/**
+ * Developer-provided instructions that the model should follow, regardless of messages sent by the
+ * user. With o1 models and newer, `developer` messages replace the previous `system` messages.
+ */
 @JsonDeserialize(using = ChatCompletionMessageParam.Deserializer::class)
 @JsonSerialize(using = ChatCompletionMessageParam.Serializer::class)
 class ChatCompletionMessageParam
@@ -73,15 +77,23 @@ private constructor(
 
     fun isChatCompletionFunctionMessageParam(): Boolean = chatCompletionFunctionMessageParam != null
 
+    /**
+     * Developer-provided instructions that the model should follow, regardless of messages sent by
+     * the user. With o1 models and newer, `developer` messages replace the previous `system`
+     * messages.
+     */
     fun asChatCompletionDeveloperMessageParam(): ChatCompletionDeveloperMessageParam =
         chatCompletionDeveloperMessageParam.getOrThrow("chatCompletionDeveloperMessageParam")
-
+    /**
+     * Developer-provided instructions that the model should follow, regardless of messages sent by
+     * the user. With o1 models and newer, use `developer` messages for this purpose instead.
+     */
     fun asChatCompletionSystemMessageParam(): ChatCompletionSystemMessageParam =
         chatCompletionSystemMessageParam.getOrThrow("chatCompletionSystemMessageParam")
-
+    /** Messages sent by an end user, containing prompts or additional context information. */
     fun asChatCompletionUserMessageParam(): ChatCompletionUserMessageParam =
         chatCompletionUserMessageParam.getOrThrow("chatCompletionUserMessageParam")
-
+    /** Messages sent by the model in response to user messages. */
     fun asChatCompletionAssistantMessageParam(): ChatCompletionAssistantMessageParam =
         chatCompletionAssistantMessageParam.getOrThrow("chatCompletionAssistantMessageParam")
 
@@ -167,6 +179,11 @@ private constructor(
 
     companion object {
 
+        /**
+         * Developer-provided instructions that the model should follow, regardless of messages sent
+         * by the user. With o1 models and newer, `developer` messages replace the previous `system`
+         * messages.
+         */
         @JvmStatic
         fun ofChatCompletionDeveloperMessageParam(
             chatCompletionDeveloperMessageParam: ChatCompletionDeveloperMessageParam
@@ -175,6 +192,10 @@ private constructor(
                 chatCompletionDeveloperMessageParam = chatCompletionDeveloperMessageParam
             )
 
+        /**
+         * Developer-provided instructions that the model should follow, regardless of messages sent
+         * by the user. With o1 models and newer, use `developer` messages for this purpose instead.
+         */
         @JvmStatic
         fun ofChatCompletionSystemMessageParam(
             chatCompletionSystemMessageParam: ChatCompletionSystemMessageParam
@@ -183,6 +204,7 @@ private constructor(
                 chatCompletionSystemMessageParam = chatCompletionSystemMessageParam
             )
 
+        /** Messages sent by an end user, containing prompts or additional context information. */
         @JvmStatic
         fun ofChatCompletionUserMessageParam(
             chatCompletionUserMessageParam: ChatCompletionUserMessageParam
@@ -191,6 +213,7 @@ private constructor(
                 chatCompletionUserMessageParam = chatCompletionUserMessageParam
             )
 
+        /** Messages sent by the model in response to user messages. */
         @JvmStatic
         fun ofChatCompletionAssistantMessageParam(
             chatCompletionAssistantMessageParam: ChatCompletionAssistantMessageParam

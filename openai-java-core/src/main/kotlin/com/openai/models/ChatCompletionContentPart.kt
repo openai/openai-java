@@ -18,6 +18,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
+/** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
 @JsonDeserialize(using = ChatCompletionContentPart.Deserializer::class)
 @JsonSerialize(using = ChatCompletionContentPart.Serializer::class)
 class ChatCompletionContentPart
@@ -47,12 +48,13 @@ private constructor(
     fun isChatCompletionContentPartInputAudio(): Boolean =
         chatCompletionContentPartInputAudio != null
 
+    /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
     fun asChatCompletionContentPartText(): ChatCompletionContentPartText =
         chatCompletionContentPartText.getOrThrow("chatCompletionContentPartText")
-
+    /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
     fun asChatCompletionContentPartImage(): ChatCompletionContentPartImage =
         chatCompletionContentPartImage.getOrThrow("chatCompletionContentPartImage")
-
+    /** Learn about [audio inputs](https://platform.openai.com/docs/guides/audio). */
     fun asChatCompletionContentPartInputAudio(): ChatCompletionContentPartInputAudio =
         chatCompletionContentPartInputAudio.getOrThrow("chatCompletionContentPartInputAudio")
 
@@ -112,11 +114,13 @@ private constructor(
 
     companion object {
 
+        /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
         @JvmStatic
         fun ofChatCompletionContentPartText(
             chatCompletionContentPartText: ChatCompletionContentPartText
         ) = ChatCompletionContentPart(chatCompletionContentPartText = chatCompletionContentPartText)
 
+        /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
         @JvmStatic
         fun ofChatCompletionContentPartImage(
             chatCompletionContentPartImage: ChatCompletionContentPartImage
@@ -125,6 +129,7 @@ private constructor(
                 chatCompletionContentPartImage = chatCompletionContentPartImage
             )
 
+        /** Learn about [audio inputs](https://platform.openai.com/docs/guides/audio). */
         @JvmStatic
         fun ofChatCompletionContentPartInputAudio(
             chatCompletionContentPartInputAudio: ChatCompletionContentPartInputAudio
