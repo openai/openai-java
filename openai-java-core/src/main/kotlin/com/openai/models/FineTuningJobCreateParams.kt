@@ -806,6 +806,10 @@ constructor(
                 )
         }
 
+        /**
+         * Number of examples in each batch. A larger batch size means that model parameters are
+         * updated less frequently, but with lower variance.
+         */
         @JsonDeserialize(using = BatchSize.Deserializer::class)
         @JsonSerialize(using = BatchSize.Serializer::class)
         class BatchSize
@@ -957,6 +961,10 @@ constructor(
             }
         }
 
+        /**
+         * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
+         * overfitting.
+         */
         @JsonDeserialize(using = LearningRateMultiplier.Deserializer::class)
         @JsonSerialize(using = LearningRateMultiplier.Serializer::class)
         class LearningRateMultiplier
@@ -1111,6 +1119,10 @@ constructor(
             }
         }
 
+        /**
+         * The number of epochs to train the model for. An epoch refers to one full cycle through
+         * the training dataset.
+         */
         @JsonDeserialize(using = NEpochs.Deserializer::class)
         @JsonSerialize(using = NEpochs.Serializer::class)
         class NEpochs
@@ -1892,6 +1904,10 @@ constructor(
                         )
                 }
 
+                /**
+                 * Number of examples in each batch. A larger batch size means that model parameters
+                 * are updated less frequently, but with lower variance.
+                 */
                 @JsonDeserialize(using = BatchSize.Deserializer::class)
                 @JsonSerialize(using = BatchSize.Serializer::class)
                 class BatchSize
@@ -2044,6 +2060,10 @@ constructor(
                     }
                 }
 
+                /**
+                 * The beta value for the DPO method. A higher beta value will increase the weight
+                 * of the penalty between the policy and reference model.
+                 */
                 @JsonDeserialize(using = Beta.Deserializer::class)
                 @JsonSerialize(using = Beta.Serializer::class)
                 class Beta
@@ -2196,6 +2216,10 @@ constructor(
                     }
                 }
 
+                /**
+                 * Scaling factor for the learning rate. A smaller learning rate may be useful to
+                 * avoid overfitting.
+                 */
                 @JsonDeserialize(using = LearningRateMultiplier.Deserializer::class)
                 @JsonSerialize(using = LearningRateMultiplier.Serializer::class)
                 class LearningRateMultiplier
@@ -2356,6 +2380,10 @@ constructor(
                     }
                 }
 
+                /**
+                 * The number of epochs to train the model for. An epoch refers to one full cycle
+                 * through the training dataset.
+                 */
                 @JsonDeserialize(using = NEpochs.Deserializer::class)
                 @JsonSerialize(using = NEpochs.Serializer::class)
                 class NEpochs
@@ -2744,6 +2772,10 @@ constructor(
                         )
                 }
 
+                /**
+                 * Number of examples in each batch. A larger batch size means that model parameters
+                 * are updated less frequently, but with lower variance.
+                 */
                 @JsonDeserialize(using = BatchSize.Deserializer::class)
                 @JsonSerialize(using = BatchSize.Serializer::class)
                 class BatchSize
@@ -2896,6 +2928,10 @@ constructor(
                     }
                 }
 
+                /**
+                 * Scaling factor for the learning rate. A smaller learning rate may be useful to
+                 * avoid overfitting.
+                 */
                 @JsonDeserialize(using = LearningRateMultiplier.Deserializer::class)
                 @JsonSerialize(using = LearningRateMultiplier.Serializer::class)
                 class LearningRateMultiplier
@@ -3056,6 +3092,10 @@ constructor(
                     }
                 }
 
+                /**
+                 * The number of epochs to train the model for. An epoch refers to one full cycle
+                 * through the training dataset.
+                 */
                 @JsonDeserialize(using = NEpochs.Deserializer::class)
                 @JsonSerialize(using = NEpochs.Serializer::class)
                 class NEpochs

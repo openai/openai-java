@@ -153,6 +153,10 @@ private constructor(
             )
     }
 
+    /**
+     * The content that should be matched when generating a model response. If generated tokens
+     * would match this content, the entire model response can be returned much more quickly.
+     */
     @JsonDeserialize(using = Content.Deserializer::class)
     @JsonSerialize(using = Content.Serializer::class)
     class Content
@@ -181,8 +185,16 @@ private constructor(
 
         fun isArrayOfContentParts(): Boolean = arrayOfContentParts != null
 
+        /**
+         * The content used for a Predicted Output. This is often the text of a file you are
+         * regenerating with minor changes.
+         */
         fun asTextContent(): String = textContent.getOrThrow("textContent")
-
+        /**
+         * An array of content parts with a defined type. Supported options differ based on the
+         * [model](https://platform.openai.com/docs/models) being used to generate the response. Can
+         * contain text inputs.
+         */
         fun asArrayOfContentParts(): List<ChatCompletionContentPartText> =
             arrayOfContentParts.getOrThrow("arrayOfContentParts")
 
@@ -226,8 +238,17 @@ private constructor(
 
         companion object {
 
+            /**
+             * The content used for a Predicted Output. This is often the text of a file you are
+             * regenerating with minor changes.
+             */
             @JvmStatic fun ofTextContent(textContent: String) = Content(textContent = textContent)
 
+            /**
+             * An array of content parts with a defined type. Supported options differ based on the
+             * [model](https://platform.openai.com/docs/models) being used to generate the response.
+             * Can contain text inputs.
+             */
             @JvmStatic
             fun ofArrayOfContentParts(arrayOfContentParts: List<ChatCompletionContentPartText>) =
                 Content(arrayOfContentParts = arrayOfContentParts)

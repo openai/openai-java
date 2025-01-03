@@ -492,6 +492,14 @@ constructor(
             )
     }
 
+    /**
+     * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in a
+     * single request, pass an array of strings or array of token arrays. The input must not exceed
+     * the max input tokens for the model (8192 tokens for `text-embedding-ada-002`), cannot be an
+     * empty string, and any array must be 2048 dimensions or less.
+     * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
+     * for counting tokens.
+     */
     @JsonDeserialize(using = Input.Deserializer::class)
     @JsonSerialize(using = Input.Serializer::class)
     class Input
@@ -521,12 +529,13 @@ constructor(
 
         fun isArrayOfTokenArrays(): Boolean = arrayOfTokenArrays != null
 
+        /** The string that will be turned into an embedding. */
         fun asString(): String = string.getOrThrow("string")
-
+        /** The array of strings that will be turned into an embedding. */
         fun asArrayOfStrings(): List<String> = arrayOfStrings.getOrThrow("arrayOfStrings")
-
+        /** The array of integers that will be turned into an embedding. */
         fun asArrayOfTokens(): List<Long> = arrayOfTokens.getOrThrow("arrayOfTokens")
-
+        /** The array of arrays containing integers that will be turned into an embedding. */
         fun asArrayOfTokenArrays(): List<List<Long>> =
             arrayOfTokenArrays.getOrThrow("arrayOfTokenArrays")
 
@@ -564,15 +573,19 @@ constructor(
 
         companion object {
 
+            /** The string that will be turned into an embedding. */
             @JvmStatic fun ofString(string: String) = Input(string = string)
 
+            /** The array of strings that will be turned into an embedding. */
             @JvmStatic
             fun ofArrayOfStrings(arrayOfStrings: List<String>) =
                 Input(arrayOfStrings = arrayOfStrings)
 
+            /** The array of integers that will be turned into an embedding. */
             @JvmStatic
             fun ofArrayOfTokens(arrayOfTokens: List<Long>) = Input(arrayOfTokens = arrayOfTokens)
 
+            /** The array of arrays containing integers that will be turned into an embedding. */
             @JvmStatic
             fun ofArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>) =
                 Input(arrayOfTokenArrays = arrayOfTokenArrays)

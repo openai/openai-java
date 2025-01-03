@@ -20,6 +20,15 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
+/**
+ * Controls which (if any) tool is called by the model. `none` means the model will not call any
+ * tool and instead generates a message. `auto` means the model can pick between generating a
+ * message or calling one or more tools. `required` means the model must call one or more tools.
+ * Specifying a particular tool via `{"type": "function", "function": {"name": "my_function"}}`
+ * forces the model to call that tool.
+ *
+ * `none` is the default when no tools are present. `auto` is the default if tools are present.
+ */
 @JsonDeserialize(using = ChatCompletionToolChoiceOption.Deserializer::class)
 @JsonSerialize(using = ChatCompletionToolChoiceOption.Serializer::class)
 class ChatCompletionToolChoiceOption
@@ -47,8 +56,15 @@ private constructor(
 
     fun isChatCompletionNamedToolChoice(): Boolean = chatCompletionNamedToolChoice != null
 
+    /**
+     * `none` means the model will not call any tool and instead generates a message. `auto` means
+     * the model can pick between generating a message or calling one or more tools. `required`
+     * means the model must call one or more tools.
+     */
     fun asBehavior(): Behavior = behavior.getOrThrow("behavior")
-
+    /**
+     * Specifies a tool the model should use. Use to force the model to call a specific function.
+     */
     fun asChatCompletionNamedToolChoice(): ChatCompletionNamedToolChoice =
         chatCompletionNamedToolChoice.getOrThrow("chatCompletionNamedToolChoice")
 
@@ -94,9 +110,18 @@ private constructor(
 
     companion object {
 
+        /**
+         * `none` means the model will not call any tool and instead generates a message. `auto`
+         * means the model can pick between generating a message or calling one or more tools.
+         * `required` means the model must call one or more tools.
+         */
         @JvmStatic
         fun ofBehavior(behavior: Behavior) = ChatCompletionToolChoiceOption(behavior = behavior)
 
+        /**
+         * Specifies a tool the model should use. Use to force the model to call a specific
+         * function.
+         */
         @JvmStatic
         fun ofChatCompletionNamedToolChoice(
             chatCompletionNamedToolChoice: ChatCompletionNamedToolChoice

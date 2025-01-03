@@ -361,6 +361,10 @@ constructor(
             )
     }
 
+    /**
+     * Input (or inputs) to classify. Can be a single string, an array of strings, or an array of
+     * multi-modal input objects similar to other models.
+     */
     @JsonDeserialize(using = Input.Deserializer::class)
     @JsonSerialize(using = Input.Serializer::class)
     class Input
@@ -385,10 +389,11 @@ constructor(
 
         fun isModerationMultiModalArray(): Boolean = moderationMultiModalArray != null
 
+        /** A string of text to classify for moderation. */
         fun asString(): String = string.getOrThrow("string")
-
+        /** An array of strings to classify for moderation. */
         fun asStrings(): List<String> = strings.getOrThrow("strings")
-
+        /** An array of multi-modal inputs to the moderation model. */
         fun asModerationMultiModalArray(): List<ModerationMultiModalInput> =
             moderationMultiModalArray.getOrThrow("moderationMultiModalArray")
 
@@ -426,10 +431,13 @@ constructor(
 
         companion object {
 
+            /** A string of text to classify for moderation. */
             @JvmStatic fun ofString(string: String) = Input(string = string)
 
+            /** An array of strings to classify for moderation. */
             @JvmStatic fun ofStrings(strings: List<String>) = Input(strings = strings)
 
+            /** An array of multi-modal inputs to the moderation model. */
             @JvmStatic
             fun ofModerationMultiModalArray(
                 moderationMultiModalArray: List<ModerationMultiModalInput>
