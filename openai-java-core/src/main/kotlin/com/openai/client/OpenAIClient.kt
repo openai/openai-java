@@ -3,6 +3,7 @@
 package com.openai.client
 
 import com.openai.services.blocking.BatchService
+import com.openai.services.blocking.BetaService
 import com.openai.services.blocking.ChatService
 import com.openai.services.blocking.CompletionService
 import com.openai.services.blocking.EmbeddingService
@@ -32,6 +33,8 @@ interface OpenAIClient {
     fun models(): ModelService
 
     fun fineTuning(): FineTuningService
+
+    fun beta(): BetaService
 
     fun batches(): BatchService
 

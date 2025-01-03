@@ -3,6 +3,7 @@
 package com.openai.client
 
 import com.openai.services.async.BatchServiceAsync
+import com.openai.services.async.BetaServiceAsync
 import com.openai.services.async.ChatServiceAsync
 import com.openai.services.async.CompletionServiceAsync
 import com.openai.services.async.EmbeddingServiceAsync
@@ -32,6 +33,8 @@ interface OpenAIClientAsync {
     fun models(): ModelServiceAsync
 
     fun fineTuning(): FineTuningServiceAsync
+
+    fun beta(): BetaServiceAsync
 
     fun batches(): BatchServiceAsync
 
