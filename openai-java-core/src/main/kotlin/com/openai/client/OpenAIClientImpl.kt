@@ -6,6 +6,8 @@ import com.openai.core.ClientOptions
 import com.openai.core.getPackageVersion
 import com.openai.services.blocking.BatchService
 import com.openai.services.blocking.BatchServiceImpl
+import com.openai.services.blocking.BetaService
+import com.openai.services.blocking.BetaServiceImpl
 import com.openai.services.blocking.ChatService
 import com.openai.services.blocking.ChatServiceImpl
 import com.openai.services.blocking.CompletionService
@@ -65,6 +67,8 @@ constructor(
         FineTuningServiceImpl(clientOptionsWithUserAgent)
     }
 
+    private val beta: BetaService by lazy { BetaServiceImpl(clientOptionsWithUserAgent) }
+
     private val batches: BatchService by lazy { BatchServiceImpl(clientOptionsWithUserAgent) }
 
     private val uploads: UploadService by lazy { UploadServiceImpl(clientOptionsWithUserAgent) }
@@ -86,6 +90,8 @@ constructor(
     override fun models(): ModelService = models
 
     override fun fineTuning(): FineTuningService = fineTuning
+
+    override fun beta(): BetaService = beta
 
     override fun batches(): BatchService = batches
 
