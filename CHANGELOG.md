@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.9.0 (2025-01-03)
+
+Full Changelog: [v0.8.1...v0.9.0](https://github.com/openai/openai-java/compare/v0.8.1...v0.9.0)
+
+### ⚠ BREAKING CHANGES
+
+* **client:** switch query params objects to use `QueryParams` ([#64](https://github.com/openai/openai-java/issues/64))
+
+### Features
+
+* **client:** add beta endpoints ([#79](https://github.com/openai/openai-java/issues/79)) ([8584a20](https://github.com/openai/openai-java/commit/8584a2029ec5402b205ce485e96702da0a692b76))
+* **client:** put body field in params, add more convenience methods, and add missing docs ([#77](https://github.com/openai/openai-java/issues/77)) ([0c74350](https://github.com/openai/openai-java/commit/0c74350f0e5d1f0a30ae9b27c50a306ca081b1a7))
+
+
+### Chores
+
+* bump license year ([#74](https://github.com/openai/openai-java/issues/74)) ([769175d](https://github.com/openai/openai-java/commit/769175d3c42b6679e8ea91847e1fba32ab76d9a6))
+
+
+### Documentation
+
+* add some missing javadocs ([#78](https://github.com/openai/openai-java/issues/78)) ([d153ef9](https://github.com/openai/openai-java/commit/d153ef99dff3a201bf5674ee4154f3a3d276f608))
+
+
+### Refactors
+
+* **client:** switch query params objects to use `QueryParams` ([#64](https://github.com/openai/openai-java/issues/64)) ([4e9c3eb](https://github.com/openai/openai-java/commit/4e9c3eb9351f308ed3d842bd4aa2d860c23d568e))
+* **internal:** use constructor to deserialize json ([#66](https://github.com/openai/openai-java/issues/66)) ([27389cd](https://github.com/openai/openai-java/commit/27389cd377ce9a109a4aa25f78f70c36ca62de14))
+
 ## 0.8.1 (2024-12-21)
 
 Full Changelog: [v0.8.0...v0.8.1](https://github.com/openai/openai-java/compare/v0.8.0...v0.8.1)
