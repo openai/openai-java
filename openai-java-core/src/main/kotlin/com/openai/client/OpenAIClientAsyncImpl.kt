@@ -6,6 +6,8 @@ import com.openai.core.ClientOptions
 import com.openai.core.getPackageVersion
 import com.openai.services.async.BatchServiceAsync
 import com.openai.services.async.BatchServiceAsyncImpl
+import com.openai.services.async.BetaServiceAsync
+import com.openai.services.async.BetaServiceAsyncImpl
 import com.openai.services.async.ChatServiceAsync
 import com.openai.services.async.ChatServiceAsyncImpl
 import com.openai.services.async.CompletionServiceAsync
@@ -69,6 +71,8 @@ constructor(
         FineTuningServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
+    private val beta: BetaServiceAsync by lazy { BetaServiceAsyncImpl(clientOptionsWithUserAgent) }
+
     private val batches: BatchServiceAsync by lazy {
         BatchServiceAsyncImpl(clientOptionsWithUserAgent)
     }
@@ -94,6 +98,8 @@ constructor(
     override fun models(): ModelServiceAsync = models
 
     override fun fineTuning(): FineTuningServiceAsync = fineTuning
+
+    override fun beta(): BetaServiceAsync = beta
 
     override fun batches(): BatchServiceAsync = batches
 
