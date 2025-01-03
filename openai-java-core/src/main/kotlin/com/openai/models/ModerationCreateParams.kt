@@ -29,31 +29,31 @@ import java.util.Optional
 
 class ModerationCreateParams
 constructor(
-    private val input: Input,
-    private val model: ModerationModel?,
+    private val body: ModerationCreateBody,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
-    private val additionalBodyProperties: Map<String, JsonValue>,
 ) {
 
-    fun input(): Input = input
+    /**
+     * Input (or inputs) to classify. Can be a single string, an array of strings, or an array of
+     * multi-modal input objects similar to other models.
+     */
+    fun input(): Input = body.input()
 
-    fun model(): Optional<ModerationModel> = Optional.ofNullable(model)
+    /**
+     * The content moderation model you would like to use. Learn more in
+     * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn about
+     * available models [here](https://platform.openai.com/docs/models#moderation).
+     */
+    fun model(): Optional<ModerationModel> = body.model()
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
-    @JvmSynthetic
-    internal fun getBody(): ModerationCreateBody {
-        return ModerationCreateBody(
-            input,
-            model,
-            additionalBodyProperties,
-        )
-    }
+    @JvmSynthetic internal fun getBody(): ModerationCreateBody = body
 
     @JvmSynthetic internal fun getHeaders(): Headers = additionalHeaders
 
@@ -112,12 +112,32 @@ constructor(
              */
             fun input(input: Input) = apply { this.input = input }
 
+            /** A string of text to classify for moderation. */
+            fun input(string: String) = apply { this.input = Input.ofString(string) }
+
+            /** An array of strings to classify for moderation. */
+            fun inputOfStrings(strings: List<String>) = apply {
+                this.input = Input.ofStrings(strings)
+            }
+
+            /** An array of multi-modal inputs to the moderation model. */
+            fun inputOfModerationMultiModalArray(
+                moderationMultiModalArray: List<ModerationMultiModalInput>
+            ) = apply { this.input = Input.ofModerationMultiModalArray(moderationMultiModalArray) }
+
             /**
              * The content moderation model you would like to use. Learn more in
              * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
              * about available models [here](https://platform.openai.com/docs/models#moderation).
              */
             fun model(model: ModerationModel) = apply { this.model = model }
+
+            /**
+             * The content moderation model you would like to use. Learn more in
+             * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
+             * about available models [here](https://platform.openai.com/docs/models#moderation).
+             */
+            fun model(value: String) = apply { model = ModerationModel.of(value) }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -174,61 +194,47 @@ constructor(
     @NoAutoDetect
     class Builder {
 
-        private var input: Input? = null
-        private var model: ModerationModel? = null
+        private var body: ModerationCreateBody.Builder = ModerationCreateBody.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
-        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(moderationCreateParams: ModerationCreateParams) = apply {
-            input = moderationCreateParams.input
-            model = moderationCreateParams.model
+            body = moderationCreateParams.body.toBuilder()
             additionalHeaders = moderationCreateParams.additionalHeaders.toBuilder()
             additionalQueryParams = moderationCreateParams.additionalQueryParams.toBuilder()
-            additionalBodyProperties =
-                moderationCreateParams.additionalBodyProperties.toMutableMap()
         }
 
         /**
          * Input (or inputs) to classify. Can be a single string, an array of strings, or an array
          * of multi-modal input objects similar to other models.
          */
-        fun input(input: Input) = apply { this.input = input }
+        fun input(input: Input) = apply { body.input(input) }
 
-        /**
-         * Input (or inputs) to classify. Can be a single string, an array of strings, or an array
-         * of multi-modal input objects similar to other models.
-         */
-        fun input(string: String) = apply { this.input = Input.ofString(string) }
+        /** A string of text to classify for moderation. */
+        fun input(string: String) = apply { body.input(string) }
 
-        /**
-         * Input (or inputs) to classify. Can be a single string, an array of strings, or an array
-         * of multi-modal input objects similar to other models.
-         */
-        fun inputOfStrings(strings: List<String>) = apply { this.input = Input.ofStrings(strings) }
+        /** An array of strings to classify for moderation. */
+        fun inputOfStrings(strings: List<String>) = apply { body.inputOfStrings(strings) }
 
-        /**
-         * Input (or inputs) to classify. Can be a single string, an array of strings, or an array
-         * of multi-modal input objects similar to other models.
-         */
+        /** An array of multi-modal inputs to the moderation model. */
         fun inputOfModerationMultiModalArray(
             moderationMultiModalArray: List<ModerationMultiModalInput>
-        ) = apply { this.input = Input.ofModerationMultiModalArray(moderationMultiModalArray) }
+        ) = apply { body.inputOfModerationMultiModalArray(moderationMultiModalArray) }
 
         /**
          * The content moderation model you would like to use. Learn more in
          * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
          * about available models [here](https://platform.openai.com/docs/models#moderation).
          */
-        fun model(model: ModerationModel) = apply { this.model = model }
+        fun model(model: ModerationModel) = apply { body.model(model) }
 
         /**
          * The content moderation model you would like to use. Learn more in
          * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
          * about available models [here](https://platform.openai.com/docs/models#moderation).
          */
-        fun model(value: String) = apply { this.model = ModerationModel.of(value) }
+        fun model(value: String) = apply { body.model(value) }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -329,34 +335,29 @@ constructor(
         }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.clear()
-            putAllAdditionalBodyProperties(additionalBodyProperties)
+            body.additionalProperties(additionalBodyProperties)
         }
 
         fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            additionalBodyProperties.put(key, value)
+            body.putAdditionalProperty(key, value)
         }
 
         fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
             apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
+                body.putAllAdditionalProperties(additionalBodyProperties)
             }
 
-        fun removeAdditionalBodyProperty(key: String) = apply {
-            additionalBodyProperties.remove(key)
-        }
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
 
         fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            keys.forEach(::removeAdditionalBodyProperty)
+            body.removeAllAdditionalProperties(keys)
         }
 
         fun build(): ModerationCreateParams =
             ModerationCreateParams(
-                checkNotNull(input) { "`input` is required but was not set" },
-                model,
+                body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
-                additionalBodyProperties.toImmutable(),
             )
     }
 
@@ -493,11 +494,11 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is ModerationCreateParams && input == other.input && model == other.model && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return /* spotless:off */ other is ModerationCreateParams && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(input, model, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(body, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "ModerationCreateParams{input=$input, model=$model, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
+        "ModerationCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
