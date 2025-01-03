@@ -18,6 +18,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
+/** An object describing an image to classify. */
 @JsonDeserialize(using = ModerationMultiModalInput.Deserializer::class)
 @JsonSerialize(using = ModerationMultiModalInput.Serializer::class)
 class ModerationMultiModalInput
@@ -40,9 +41,10 @@ private constructor(
 
     fun isModerationTextInput(): Boolean = moderationTextInput != null
 
+    /** An object describing an image to classify. */
     fun asModerationImageUrlInput(): ModerationImageUrlInput =
         moderationImageUrlInput.getOrThrow("moderationImageUrlInput")
-
+    /** An object describing text to classify. */
     fun asModerationTextInput(): ModerationTextInput =
         moderationTextInput.getOrThrow("moderationTextInput")
 
@@ -90,10 +92,12 @@ private constructor(
 
     companion object {
 
+        /** An object describing an image to classify. */
         @JvmStatic
         fun ofModerationImageUrlInput(moderationImageUrlInput: ModerationImageUrlInput) =
             ModerationMultiModalInput(moderationImageUrlInput = moderationImageUrlInput)
 
+        /** An object describing text to classify. */
         @JvmStatic
         fun ofModerationTextInput(moderationTextInput: ModerationTextInput) =
             ModerationMultiModalInput(moderationTextInput = moderationTextInput)

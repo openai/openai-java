@@ -1056,6 +1056,13 @@ constructor(
         override fun toString() = value.toString()
     }
 
+    /**
+     * The prompt(s) to generate completions for, encoded as a string, array of strings, array of
+     * tokens, or array of token arrays.
+     *
+     * Note that <|endoftext|> is the document separator that the model sees during training, so if
+     * a prompt is not specified the model will generate as if from the beginning of a new document.
+     */
     @JsonDeserialize(using = Prompt.Deserializer::class)
     @JsonSerialize(using = Prompt.Serializer::class)
     class Prompt
@@ -1278,6 +1285,10 @@ constructor(
         override fun toString() = "LogitBias{additionalProperties=$additionalProperties}"
     }
 
+    /**
+     * Up to 4 sequences where the API will stop generating further tokens. The returned text will
+     * not contain the stop sequence.
+     */
     @JsonDeserialize(using = Stop.Deserializer::class)
     @JsonSerialize(using = Stop.Serializer::class)
     class Stop

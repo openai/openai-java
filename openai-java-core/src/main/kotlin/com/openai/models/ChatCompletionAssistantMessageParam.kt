@@ -421,6 +421,10 @@ private constructor(
         override fun toString() = "Audio{id=$id, additionalProperties=$additionalProperties}"
     }
 
+    /**
+     * The contents of the assistant message. Required unless `tool_calls` or `function_call` is
+     * specified.
+     */
     @JsonDeserialize(using = Content.Deserializer::class)
     @JsonSerialize(using = Content.Serializer::class)
     class Content
@@ -447,8 +451,12 @@ private constructor(
 
         fun isArrayOfContentParts(): Boolean = arrayOfContentParts != null
 
+        /** The contents of the assistant message. */
         fun asTextContent(): String = textContent.getOrThrow("textContent")
-
+        /**
+         * An array of content parts with a defined type. Can be one or more of type `text`, or
+         * exactly one of type `refusal`.
+         */
         fun asArrayOfContentParts(): List<ChatCompletionRequestAssistantMessageContentPart> =
             arrayOfContentParts.getOrThrow("arrayOfContentParts")
 
@@ -491,8 +499,13 @@ private constructor(
 
         companion object {
 
+            /** The contents of the assistant message. */
             @JvmStatic fun ofTextContent(textContent: String) = Content(textContent = textContent)
 
+            /**
+             * An array of content parts with a defined type. Can be one or more of type `text`, or
+             * exactly one of type `refusal`.
+             */
             @JvmStatic
             fun ofArrayOfContentParts(
                 arrayOfContentParts: List<ChatCompletionRequestAssistantMessageContentPart>
@@ -549,6 +562,7 @@ private constructor(
             }
         }
 
+        /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
         @JsonDeserialize(
             using = ChatCompletionRequestAssistantMessageContentPart.Deserializer::class
         )
@@ -576,6 +590,9 @@ private constructor(
             fun isChatCompletionContentPartRefusal(): Boolean =
                 chatCompletionContentPartRefusal != null
 
+            /**
+             * Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation).
+             */
             fun asChatCompletionContentPartText(): ChatCompletionContentPartText =
                 chatCompletionContentPartText.getOrThrow("chatCompletionContentPartText")
 
@@ -638,6 +655,10 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Learn about
+                 * [text inputs](https://platform.openai.com/docs/guides/text-generation).
+                 */
                 @JvmStatic
                 fun ofChatCompletionContentPartText(
                     chatCompletionContentPartText: ChatCompletionContentPartText

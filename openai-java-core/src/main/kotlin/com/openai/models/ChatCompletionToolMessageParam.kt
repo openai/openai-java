@@ -144,6 +144,7 @@ private constructor(
             )
     }
 
+    /** The contents of the tool message. */
     @JsonDeserialize(using = Content.Deserializer::class)
     @JsonSerialize(using = Content.Serializer::class)
     class Content
@@ -168,8 +169,12 @@ private constructor(
 
         fun isArrayOfContentParts(): Boolean = arrayOfContentParts != null
 
+        /** The contents of the tool message. */
         fun asTextContent(): String = textContent.getOrThrow("textContent")
-
+        /**
+         * An array of content parts with a defined type. For tool messages, only type `text` is
+         * supported.
+         */
         fun asArrayOfContentParts(): List<ChatCompletionContentPartText> =
             arrayOfContentParts.getOrThrow("arrayOfContentParts")
 
@@ -213,8 +218,13 @@ private constructor(
 
         companion object {
 
+            /** The contents of the tool message. */
             @JvmStatic fun ofTextContent(textContent: String) = Content(textContent = textContent)
 
+            /**
+             * An array of content parts with a defined type. For tool messages, only type `text` is
+             * supported.
+             */
             @JvmStatic
             fun ofArrayOfContentParts(arrayOfContentParts: List<ChatCompletionContentPartText>) =
                 Content(arrayOfContentParts = arrayOfContentParts)

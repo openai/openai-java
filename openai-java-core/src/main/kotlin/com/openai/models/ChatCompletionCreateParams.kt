@@ -1650,6 +1650,21 @@ constructor(
             )
     }
 
+    /**
+     * Deprecated in favor of `tool_choice`.
+     *
+     * Controls which (if any) function is called by the model.
+     *
+     * `none` means the model will not call a function and instead generates a message.
+     *
+     * `auto` means the model can pick between generating a message or calling a function.
+     *
+     * Specifying a particular function via `{"name": "my_function"}` forces the model to call that
+     * function.
+     *
+     * `none` is the default when no functions are present. `auto` is the default if functions are
+     * present.
+     */
     @JsonDeserialize(using = FunctionCall.Deserializer::class)
     @JsonSerialize(using = FunctionCall.Serializer::class)
     class FunctionCall
@@ -1675,8 +1690,15 @@ constructor(
 
         fun isFunctionCallOption(): Boolean = functionCallOption != null
 
+        /**
+         * `none` means the model will not call a function and instead generates a message. `auto`
+         * means the model can pick between generating a message or calling a function.
+         */
         fun asBehavior(): Behavior = behavior.getOrThrow("behavior")
-
+        /**
+         * Specifying a particular function via `{"name": "my_function"}` forces the model to call
+         * that function.
+         */
         fun asFunctionCallOption(): ChatCompletionFunctionCallOption =
             functionCallOption.getOrThrow("functionCallOption")
 
@@ -1710,8 +1732,16 @@ constructor(
 
         companion object {
 
+            /**
+             * `none` means the model will not call a function and instead generates a message.
+             * `auto` means the model can pick between generating a message or calling a function.
+             */
             @JvmStatic fun ofBehavior(behavior: Behavior) = FunctionCall(behavior = behavior)
 
+            /**
+             * Specifying a particular function via `{"name": "my_function"}` forces the model to
+             * call that function.
+             */
             @JvmStatic
             fun ofFunctionCallOption(functionCallOption: ChatCompletionFunctionCallOption) =
                 FunctionCall(functionCallOption = functionCallOption)
@@ -2095,6 +2125,23 @@ constructor(
         override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
     }
 
+    /**
+     * An object specifying the format that the model must output.
+     *
+     * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs which
+     * ensures the model will match your supplied JSON schema. Learn more in the
+     * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+     *
+     * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the model
+     * generates is valid JSON.
+     *
+     * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
+     * yourself via a system or user message. Without this, the model may generate an unending
+     * stream of whitespace until the generation reaches the token limit, resulting in a
+     * long-running and seemingly "stuck" request. Also note that the message content may be
+     * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
+     * `max_tokens` or the conversation exceeded the max context length.
+     */
     @JsonDeserialize(using = ResponseFormat.Deserializer::class)
     @JsonSerialize(using = ResponseFormat.Serializer::class)
     class ResponseFormat
@@ -2289,6 +2336,7 @@ constructor(
         override fun toString() = value.toString()
     }
 
+    /** Up to 4 sequences where the API will stop generating further tokens. */
     @JsonDeserialize(using = Stop.Deserializer::class)
     @JsonSerialize(using = Stop.Serializer::class)
     class Stop
