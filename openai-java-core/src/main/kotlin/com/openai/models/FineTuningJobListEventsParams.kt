@@ -19,8 +19,10 @@ constructor(
 
     fun fineTuningJobId(): String = fineTuningJobId
 
+    /** Identifier for the last event from the previous pagination request. */
     fun after(): Optional<String> = Optional.ofNullable(after)
 
+    /** Number of events to retrieve. */
     fun limit(): Optional<Long> = Optional.ofNullable(limit)
 
     fun _additionalHeaders(): Headers = additionalHeaders

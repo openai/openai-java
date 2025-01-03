@@ -16,8 +16,10 @@ constructor(
     private val additionalQueryParams: QueryParams,
 ) {
 
+    /** Identifier for the last job from the previous pagination request. */
     fun after(): Optional<String> = Optional.ofNullable(after)
 
+    /** Number of fine-tuning jobs to retrieve. */
     fun limit(): Optional<Long> = Optional.ofNullable(limit)
 
     fun _additionalHeaders(): Headers = additionalHeaders
