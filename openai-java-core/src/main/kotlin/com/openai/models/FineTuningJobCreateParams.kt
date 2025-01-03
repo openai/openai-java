@@ -31,55 +31,87 @@ import java.util.Optional
 
 class FineTuningJobCreateParams
 constructor(
-    private val model: Model,
-    private val trainingFile: String,
-    private val hyperparameters: Hyperparameters?,
-    private val integrations: List<Integration>?,
-    private val method: Method?,
-    private val seed: Long?,
-    private val suffix: String?,
-    private val validationFile: String?,
+    private val body: FineTuningJobCreateBody,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
-    private val additionalBodyProperties: Map<String, JsonValue>,
 ) {
 
-    fun model(): Model = model
+    /**
+     * The name of the model to fine-tune. You can select one of the
+     * [supported models](https://platform.openai.com/docs/guides/fine-tuning#which-models-can-be-fine-tuned).
+     */
+    fun model(): Model = body.model()
 
-    fun trainingFile(): String = trainingFile
+    /**
+     * The ID of an uploaded file that contains training data.
+     *
+     * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for how to
+     * upload a file.
+     *
+     * Your dataset must be formatted as a JSONL file. Additionally, you must upload your file with
+     * the purpose `fine-tune`.
+     *
+     * The contents of the file should differ depending on if the model uses the
+     * [chat](https://platform.openai.com/docs/api-reference/fine-tuning/chat-input),
+     * [completions](https://platform.openai.com/docs/api-reference/fine-tuning/completions-input)
+     * format, or if the fine-tuning method uses the
+     * [preference](https://platform.openai.com/docs/api-reference/fine-tuning/preference-input)
+     * format.
+     *
+     * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for more
+     * details.
+     */
+    fun trainingFile(): String = body.trainingFile()
 
-    fun hyperparameters(): Optional<Hyperparameters> = Optional.ofNullable(hyperparameters)
+    /**
+     * The hyperparameters used for the fine-tuning job. This value is now deprecated in favor of
+     * `method`, and should be passed in under the `method` parameter.
+     */
+    fun hyperparameters(): Optional<Hyperparameters> = body.hyperparameters()
 
-    fun integrations(): Optional<List<Integration>> = Optional.ofNullable(integrations)
+    /** A list of integrations to enable for your fine-tuning job. */
+    fun integrations(): Optional<List<Integration>> = body.integrations()
 
-    fun method(): Optional<Method> = Optional.ofNullable(method)
+    /** The method used for fine-tuning. */
+    fun method(): Optional<Method> = body.method()
 
-    fun seed(): Optional<Long> = Optional.ofNullable(seed)
+    /**
+     * The seed controls the reproducibility of the job. Passing in the same seed and job parameters
+     * should produce the same results, but may differ in rare cases. If a seed is not specified,
+     * one will be generated for you.
+     */
+    fun seed(): Optional<Long> = body.seed()
 
-    fun suffix(): Optional<String> = Optional.ofNullable(suffix)
+    /**
+     * A string of up to 64 characters that will be added to your fine-tuned model name.
+     *
+     * For example, a `suffix` of "custom-model-name" would produce a model name like
+     * `ft:gpt-4o-mini:openai:custom-model-name:7p4lURel`.
+     */
+    fun suffix(): Optional<String> = body.suffix()
 
-    fun validationFile(): Optional<String> = Optional.ofNullable(validationFile)
+    /**
+     * The ID of an uploaded file that contains validation data.
+     *
+     * If you provide this file, the data is used to generate validation metrics periodically during
+     * fine-tuning. These metrics can be viewed in the fine-tuning results file. The same data
+     * should not be present in both train and validation files.
+     *
+     * Your dataset must be formatted as a JSONL file. You must upload your file with the purpose
+     * `fine-tune`.
+     *
+     * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for more
+     * details.
+     */
+    fun validationFile(): Optional<String> = body.validationFile()
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
-    @JvmSynthetic
-    internal fun getBody(): FineTuningJobCreateBody {
-        return FineTuningJobCreateBody(
-            model,
-            trainingFile,
-            hyperparameters,
-            integrations,
-            method,
-            seed,
-            suffix,
-            validationFile,
-            additionalBodyProperties,
-        )
-    }
+    @JvmSynthetic internal fun getBody(): FineTuningJobCreateBody = body
 
     @JvmSynthetic internal fun getHeaders(): Headers = additionalHeaders
 
@@ -189,7 +221,7 @@ constructor(
             private var model: Model? = null
             private var trainingFile: String? = null
             private var hyperparameters: Hyperparameters? = null
-            private var integrations: List<Integration>? = null
+            private var integrations: MutableList<Integration>? = null
             private var method: Method? = null
             private var seed: Long? = null
             private var suffix: String? = null
@@ -214,6 +246,12 @@ constructor(
              * [supported models](https://platform.openai.com/docs/guides/fine-tuning#which-models-can-be-fine-tuned).
              */
             fun model(model: Model) = apply { this.model = model }
+
+            /**
+             * The name of the model to fine-tune. You can select one of the
+             * [supported models](https://platform.openai.com/docs/guides/fine-tuning#which-models-can-be-fine-tuned).
+             */
+            fun model(value: String) = apply { model = Model.of(value) }
 
             /**
              * The ID of an uploaded file that contains training data.
@@ -246,7 +284,12 @@ constructor(
 
             /** A list of integrations to enable for your fine-tuning job. */
             fun integrations(integrations: List<Integration>) = apply {
-                this.integrations = integrations
+                this.integrations = integrations.toMutableList()
+            }
+
+            /** A list of integrations to enable for your fine-tuning job. */
+            fun addIntegration(integration: Integration) = apply {
+                integrations = (integrations ?: mutableListOf()).apply { add(integration) }
             }
 
             /** The method used for fine-tuning. */
@@ -345,46 +388,28 @@ constructor(
     @NoAutoDetect
     class Builder {
 
-        private var model: Model? = null
-        private var trainingFile: String? = null
-        private var hyperparameters: Hyperparameters? = null
-        private var integrations: MutableList<Integration> = mutableListOf()
-        private var method: Method? = null
-        private var seed: Long? = null
-        private var suffix: String? = null
-        private var validationFile: String? = null
+        private var body: FineTuningJobCreateBody.Builder = FineTuningJobCreateBody.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
-        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(fineTuningJobCreateParams: FineTuningJobCreateParams) = apply {
-            model = fineTuningJobCreateParams.model
-            trainingFile = fineTuningJobCreateParams.trainingFile
-            hyperparameters = fineTuningJobCreateParams.hyperparameters
-            integrations =
-                fineTuningJobCreateParams.integrations?.toMutableList() ?: mutableListOf()
-            method = fineTuningJobCreateParams.method
-            seed = fineTuningJobCreateParams.seed
-            suffix = fineTuningJobCreateParams.suffix
-            validationFile = fineTuningJobCreateParams.validationFile
+            body = fineTuningJobCreateParams.body.toBuilder()
             additionalHeaders = fineTuningJobCreateParams.additionalHeaders.toBuilder()
             additionalQueryParams = fineTuningJobCreateParams.additionalQueryParams.toBuilder()
-            additionalBodyProperties =
-                fineTuningJobCreateParams.additionalBodyProperties.toMutableMap()
         }
 
         /**
          * The name of the model to fine-tune. You can select one of the
          * [supported models](https://platform.openai.com/docs/guides/fine-tuning#which-models-can-be-fine-tuned).
          */
-        fun model(model: Model) = apply { this.model = model }
+        fun model(model: Model) = apply { body.model(model) }
 
         /**
          * The name of the model to fine-tune. You can select one of the
          * [supported models](https://platform.openai.com/docs/guides/fine-tuning#which-models-can-be-fine-tuned).
          */
-        fun model(value: String) = apply { this.model = Model.of(value) }
+        fun model(value: String) = apply { body.model(value) }
 
         /**
          * The ID of an uploaded file that contains training data.
@@ -405,34 +430,33 @@ constructor(
          * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for more
          * details.
          */
-        fun trainingFile(trainingFile: String) = apply { this.trainingFile = trainingFile }
+        fun trainingFile(trainingFile: String) = apply { body.trainingFile(trainingFile) }
 
         /**
          * The hyperparameters used for the fine-tuning job. This value is now deprecated in favor
          * of `method`, and should be passed in under the `method` parameter.
          */
         fun hyperparameters(hyperparameters: Hyperparameters) = apply {
-            this.hyperparameters = hyperparameters
+            body.hyperparameters(hyperparameters)
         }
 
         /** A list of integrations to enable for your fine-tuning job. */
         fun integrations(integrations: List<Integration>) = apply {
-            this.integrations.clear()
-            this.integrations.addAll(integrations)
+            body.integrations(integrations)
         }
 
         /** A list of integrations to enable for your fine-tuning job. */
-        fun addIntegration(integration: Integration) = apply { this.integrations.add(integration) }
+        fun addIntegration(integration: Integration) = apply { body.addIntegration(integration) }
 
         /** The method used for fine-tuning. */
-        fun method(method: Method) = apply { this.method = method }
+        fun method(method: Method) = apply { body.method(method) }
 
         /**
          * The seed controls the reproducibility of the job. Passing in the same seed and job
          * parameters should produce the same results, but may differ in rare cases. If a seed is
          * not specified, one will be generated for you.
          */
-        fun seed(seed: Long) = apply { this.seed = seed }
+        fun seed(seed: Long) = apply { body.seed(seed) }
 
         /**
          * A string of up to 64 characters that will be added to your fine-tuned model name.
@@ -440,7 +464,7 @@ constructor(
          * For example, a `suffix` of "custom-model-name" would produce a model name like
          * `ft:gpt-4o-mini:openai:custom-model-name:7p4lURel`.
          */
-        fun suffix(suffix: String) = apply { this.suffix = suffix }
+        fun suffix(suffix: String) = apply { body.suffix(suffix) }
 
         /**
          * The ID of an uploaded file that contains validation data.
@@ -455,7 +479,7 @@ constructor(
          * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for more
          * details.
          */
-        fun validationFile(validationFile: String) = apply { this.validationFile = validationFile }
+        fun validationFile(validationFile: String) = apply { body.validationFile(validationFile) }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -556,40 +580,29 @@ constructor(
         }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.clear()
-            putAllAdditionalBodyProperties(additionalBodyProperties)
+            body.additionalProperties(additionalBodyProperties)
         }
 
         fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            additionalBodyProperties.put(key, value)
+            body.putAdditionalProperty(key, value)
         }
 
         fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
             apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
+                body.putAllAdditionalProperties(additionalBodyProperties)
             }
 
-        fun removeAdditionalBodyProperty(key: String) = apply {
-            additionalBodyProperties.remove(key)
-        }
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
 
         fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            keys.forEach(::removeAdditionalBodyProperty)
+            body.removeAllAdditionalProperties(keys)
         }
 
         fun build(): FineTuningJobCreateParams =
             FineTuningJobCreateParams(
-                checkNotNull(model) { "`model` is required but was not set" },
-                checkNotNull(trainingFile) { "`trainingFile` is required but was not set" },
-                hyperparameters,
-                integrations.toImmutable().ifEmpty { null },
-                method,
-                seed,
-                suffix,
-                validationFile,
+                body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
-                additionalBodyProperties.toImmutable(),
             )
     }
 
@@ -731,6 +744,12 @@ constructor(
              */
             fun batchSize(batchSize: BatchSize) = apply { this.batchSize = batchSize }
 
+            fun batchSize(behavior: BatchSize.Behavior) = apply {
+                this.batchSize = BatchSize.ofBehavior(behavior)
+            }
+
+            fun batchSize(integer: Long) = apply { this.batchSize = BatchSize.ofInteger(integer) }
+
             /**
              * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
              * overfitting.
@@ -739,11 +758,25 @@ constructor(
                 this.learningRateMultiplier = learningRateMultiplier
             }
 
+            fun learningRateMultiplier(behavior: LearningRateMultiplier.Behavior) = apply {
+                this.learningRateMultiplier = LearningRateMultiplier.ofBehavior(behavior)
+            }
+
+            fun learningRateMultiplier(number: Double) = apply {
+                this.learningRateMultiplier = LearningRateMultiplier.ofNumber(number)
+            }
+
             /**
              * The number of epochs to train the model for. An epoch refers to one full cycle
              * through the training dataset.
              */
             fun nEpochs(nEpochs: NEpochs) = apply { this.nEpochs = nEpochs }
+
+            fun nEpochs(behavior: NEpochs.Behavior) = apply {
+                this.nEpochs = NEpochs.ofBehavior(behavior)
+            }
+
+            fun nEpochs(integer: Long) = apply { this.nEpochs = NEpochs.ofInteger(integer) }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1443,7 +1476,7 @@ constructor(
                 private var project: String? = null
                 private var name: String? = null
                 private var entity: String? = null
-                private var tags: List<String>? = null
+                private var tags: MutableList<String>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -1476,7 +1509,16 @@ constructor(
                  * through directly to WandB. Some default tags are generated by OpenAI:
                  * "openai/finetune", "openai/{base-model}", "openai/{ftjob-abcdef}".
                  */
-                fun tags(tags: List<String>) = apply { this.tags = tags }
+                fun tags(tags: List<String>) = apply { this.tags = tags.toMutableList() }
+
+                /**
+                 * A list of tags to be attached to the newly created run. These tags are passed
+                 * through directly to WandB. Some default tags are generated by OpenAI:
+                 * "openai/finetune", "openai/{base-model}", "openai/{ftjob-abcdef}".
+                 */
+                fun addTag(tag: String) = apply {
+                    tags = (tags ?: mutableListOf()).apply { add(tag) }
+                }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -1773,11 +1815,23 @@ constructor(
                      */
                     fun beta(beta: Beta) = apply { this.beta = beta }
 
+                    fun beta(auto: Beta.Auto) = apply { this.beta = Beta.ofAuto(auto) }
+
+                    fun beta(manual: Double) = apply { this.beta = Beta.ofManual(manual) }
+
                     /**
                      * Number of examples in each batch. A larger batch size means that model
                      * parameters are updated less frequently, but with lower variance.
                      */
                     fun batchSize(batchSize: BatchSize) = apply { this.batchSize = batchSize }
+
+                    fun batchSize(auto: BatchSize.Auto) = apply {
+                        this.batchSize = BatchSize.ofAuto(auto)
+                    }
+
+                    fun batchSize(manual: Long) = apply {
+                        this.batchSize = BatchSize.ofManual(manual)
+                    }
 
                     /**
                      * Scaling factor for the learning rate. A smaller learning rate may be useful
@@ -1788,11 +1842,23 @@ constructor(
                             this.learningRateMultiplier = learningRateMultiplier
                         }
 
+                    fun learningRateMultiplier(auto: LearningRateMultiplier.Auto) = apply {
+                        this.learningRateMultiplier = LearningRateMultiplier.ofAuto(auto)
+                    }
+
+                    fun learningRateMultiplier(manual: Double) = apply {
+                        this.learningRateMultiplier = LearningRateMultiplier.ofManual(manual)
+                    }
+
                     /**
                      * The number of epochs to train the model for. An epoch refers to one full
                      * cycle through the training dataset.
                      */
                     fun nEpochs(nEpochs: NEpochs) = apply { this.nEpochs = nEpochs }
+
+                    fun nEpochs(auto: NEpochs.Auto) = apply { this.nEpochs = NEpochs.ofAuto(auto) }
+
+                    fun nEpochs(manual: Long) = apply { this.nEpochs = NEpochs.ofManual(manual) }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
@@ -2612,6 +2678,14 @@ constructor(
                      */
                     fun batchSize(batchSize: BatchSize) = apply { this.batchSize = batchSize }
 
+                    fun batchSize(auto: BatchSize.Auto) = apply {
+                        this.batchSize = BatchSize.ofAuto(auto)
+                    }
+
+                    fun batchSize(manual: Long) = apply {
+                        this.batchSize = BatchSize.ofManual(manual)
+                    }
+
                     /**
                      * Scaling factor for the learning rate. A smaller learning rate may be useful
                      * to avoid overfitting.
@@ -2621,11 +2695,23 @@ constructor(
                             this.learningRateMultiplier = learningRateMultiplier
                         }
 
+                    fun learningRateMultiplier(auto: LearningRateMultiplier.Auto) = apply {
+                        this.learningRateMultiplier = LearningRateMultiplier.ofAuto(auto)
+                    }
+
+                    fun learningRateMultiplier(manual: Double) = apply {
+                        this.learningRateMultiplier = LearningRateMultiplier.ofManual(manual)
+                    }
+
                     /**
                      * The number of epochs to train the model for. An epoch refers to one full
                      * cycle through the training dataset.
                      */
                     fun nEpochs(nEpochs: NEpochs) = apply { this.nEpochs = nEpochs }
+
+                    fun nEpochs(auto: NEpochs.Auto) = apply { this.nEpochs = NEpochs.ofAuto(auto) }
+
+                    fun nEpochs(manual: Long) = apply { this.nEpochs = NEpochs.ofManual(manual) }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
@@ -3238,11 +3324,11 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is FineTuningJobCreateParams && model == other.model && trainingFile == other.trainingFile && hyperparameters == other.hyperparameters && integrations == other.integrations && method == other.method && seed == other.seed && suffix == other.suffix && validationFile == other.validationFile && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return /* spotless:off */ other is FineTuningJobCreateParams && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(model, trainingFile, hyperparameters, integrations, method, seed, suffix, validationFile, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(body, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "FineTuningJobCreateParams{model=$model, trainingFile=$trainingFile, hyperparameters=$hyperparameters, integrations=$integrations, method=$method, seed=$seed, suffix=$suffix, validationFile=$validationFile, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
+        "FineTuningJobCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

@@ -31,43 +31,55 @@ import java.util.Optional
 
 class EmbeddingCreateParams
 constructor(
-    private val input: Input,
-    private val model: EmbeddingModel,
-    private val dimensions: Long?,
-    private val encodingFormat: EncodingFormat?,
-    private val user: String?,
+    private val body: EmbeddingCreateBody,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
-    private val additionalBodyProperties: Map<String, JsonValue>,
 ) {
 
-    fun input(): Input = input
+    /**
+     * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in a
+     * single request, pass an array of strings or array of token arrays. The input must not exceed
+     * the max input tokens for the model (8192 tokens for `text-embedding-ada-002`), cannot be an
+     * empty string, and any array must be 2048 dimensions or less.
+     * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
+     * for counting tokens.
+     */
+    fun input(): Input = body.input()
 
-    fun model(): EmbeddingModel = model
+    /**
+     * ID of the model to use. You can use the
+     * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all of
+     * your available models, or see our [Model overview](https://platform.openai.com/docs/models)
+     * for descriptions of them.
+     */
+    fun model(): EmbeddingModel = body.model()
 
-    fun dimensions(): Optional<Long> = Optional.ofNullable(dimensions)
+    /**
+     * The number of dimensions the resulting output embeddings should have. Only supported in
+     * `text-embedding-3` and later models.
+     */
+    fun dimensions(): Optional<Long> = body.dimensions()
 
-    fun encodingFormat(): Optional<EncodingFormat> = Optional.ofNullable(encodingFormat)
+    /**
+     * The format to return the embeddings in. Can be either `float` or
+     * [`base64`](https://pypi.org/project/pybase64/).
+     */
+    fun encodingFormat(): Optional<EncodingFormat> = body.encodingFormat()
 
-    fun user(): Optional<String> = Optional.ofNullable(user)
+    /**
+     * A unique identifier representing your end-user, which can help OpenAI to monitor and detect
+     * abuse.
+     * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+     */
+    fun user(): Optional<String> = body.user()
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
-    @JvmSynthetic
-    internal fun getBody(): EmbeddingCreateBody {
-        return EmbeddingCreateBody(
-            input,
-            model,
-            dimensions,
-            encodingFormat,
-            user,
-            additionalBodyProperties,
-        )
-    }
+    @JvmSynthetic internal fun getBody(): EmbeddingCreateBody = body
 
     @JvmSynthetic internal fun getHeaders(): Headers = additionalHeaders
 
@@ -166,6 +178,24 @@ constructor(
              */
             fun input(input: Input) = apply { this.input = input }
 
+            /** The string that will be turned into an embedding. */
+            fun input(string: String) = apply { this.input = Input.ofString(string) }
+
+            /** The array of strings that will be turned into an embedding. */
+            fun inputOfArrayOfStrings(arrayOfStrings: List<String>) = apply {
+                this.input = Input.ofArrayOfStrings(arrayOfStrings)
+            }
+
+            /** The array of integers that will be turned into an embedding. */
+            fun inputOfArrayOfTokens(arrayOfTokens: List<Long>) = apply {
+                this.input = Input.ofArrayOfTokens(arrayOfTokens)
+            }
+
+            /** The array of arrays containing integers that will be turned into an embedding. */
+            fun inputOfArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>) = apply {
+                this.input = Input.ofArrayOfTokenArrays(arrayOfTokenArrays)
+            }
+
             /**
              * ID of the model to use. You can use the
              * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see
@@ -173,6 +203,14 @@ constructor(
              * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
              */
             fun model(model: EmbeddingModel) = apply { this.model = model }
+
+            /**
+             * ID of the model to use. You can use the
+             * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see
+             * all of your available models, or see our
+             * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+             */
+            fun model(value: String) = apply { model = EmbeddingModel.of(value) }
 
             /**
              * The number of dimensions the resulting output embeddings should have. Only supported
@@ -253,25 +291,15 @@ constructor(
     @NoAutoDetect
     class Builder {
 
-        private var input: Input? = null
-        private var model: EmbeddingModel? = null
-        private var dimensions: Long? = null
-        private var encodingFormat: EncodingFormat? = null
-        private var user: String? = null
+        private var body: EmbeddingCreateBody.Builder = EmbeddingCreateBody.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
-        private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(embeddingCreateParams: EmbeddingCreateParams) = apply {
-            input = embeddingCreateParams.input
-            model = embeddingCreateParams.model
-            dimensions = embeddingCreateParams.dimensions
-            encodingFormat = embeddingCreateParams.encodingFormat
-            user = embeddingCreateParams.user
+            body = embeddingCreateParams.body.toBuilder()
             additionalHeaders = embeddingCreateParams.additionalHeaders.toBuilder()
             additionalQueryParams = embeddingCreateParams.additionalQueryParams.toBuilder()
-            additionalBodyProperties = embeddingCreateParams.additionalBodyProperties.toMutableMap()
         }
 
         /**
@@ -282,52 +310,24 @@ constructor(
          * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
          * for counting tokens.
          */
-        fun input(input: Input) = apply { this.input = input }
+        fun input(input: Input) = apply { body.input(input) }
 
-        /**
-         * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in
-         * a single request, pass an array of strings or array of token arrays. The input must not
-         * exceed the max input tokens for the model (8192 tokens for `text-embedding-ada-002`),
-         * cannot be an empty string, and any array must be 2048 dimensions or less.
-         * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
-         * for counting tokens.
-         */
-        fun input(string: String) = apply { this.input = Input.ofString(string) }
+        /** The string that will be turned into an embedding. */
+        fun input(string: String) = apply { body.input(string) }
 
-        /**
-         * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in
-         * a single request, pass an array of strings or array of token arrays. The input must not
-         * exceed the max input tokens for the model (8192 tokens for `text-embedding-ada-002`),
-         * cannot be an empty string, and any array must be 2048 dimensions or less.
-         * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
-         * for counting tokens.
-         */
+        /** The array of strings that will be turned into an embedding. */
         fun inputOfArrayOfStrings(arrayOfStrings: List<String>) = apply {
-            this.input = Input.ofArrayOfStrings(arrayOfStrings)
+            body.inputOfArrayOfStrings(arrayOfStrings)
         }
 
-        /**
-         * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in
-         * a single request, pass an array of strings or array of token arrays. The input must not
-         * exceed the max input tokens for the model (8192 tokens for `text-embedding-ada-002`),
-         * cannot be an empty string, and any array must be 2048 dimensions or less.
-         * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
-         * for counting tokens.
-         */
+        /** The array of integers that will be turned into an embedding. */
         fun inputOfArrayOfTokens(arrayOfTokens: List<Long>) = apply {
-            this.input = Input.ofArrayOfTokens(arrayOfTokens)
+            body.inputOfArrayOfTokens(arrayOfTokens)
         }
 
-        /**
-         * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in
-         * a single request, pass an array of strings or array of token arrays. The input must not
-         * exceed the max input tokens for the model (8192 tokens for `text-embedding-ada-002`),
-         * cannot be an empty string, and any array must be 2048 dimensions or less.
-         * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
-         * for counting tokens.
-         */
+        /** The array of arrays containing integers that will be turned into an embedding. */
         fun inputOfArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>) = apply {
-            this.input = Input.ofArrayOfTokenArrays(arrayOfTokenArrays)
+            body.inputOfArrayOfTokenArrays(arrayOfTokenArrays)
         }
 
         /**
@@ -336,7 +336,7 @@ constructor(
          * of your available models, or see our
          * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
          */
-        fun model(model: EmbeddingModel) = apply { this.model = model }
+        fun model(model: EmbeddingModel) = apply { body.model(model) }
 
         /**
          * ID of the model to use. You can use the
@@ -344,20 +344,20 @@ constructor(
          * of your available models, or see our
          * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
          */
-        fun model(value: String) = apply { this.model = EmbeddingModel.of(value) }
+        fun model(value: String) = apply { body.model(value) }
 
         /**
          * The number of dimensions the resulting output embeddings should have. Only supported in
          * `text-embedding-3` and later models.
          */
-        fun dimensions(dimensions: Long) = apply { this.dimensions = dimensions }
+        fun dimensions(dimensions: Long) = apply { body.dimensions(dimensions) }
 
         /**
          * The format to return the embeddings in. Can be either `float` or
          * [`base64`](https://pypi.org/project/pybase64/).
          */
         fun encodingFormat(encodingFormat: EncodingFormat) = apply {
-            this.encodingFormat = encodingFormat
+            body.encodingFormat(encodingFormat)
         }
 
         /**
@@ -365,7 +365,7 @@ constructor(
          * detect abuse.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
          */
-        fun user(user: String) = apply { this.user = user }
+        fun user(user: String) = apply { body.user(user) }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -466,37 +466,29 @@ constructor(
         }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            this.additionalBodyProperties.clear()
-            putAllAdditionalBodyProperties(additionalBodyProperties)
+            body.additionalProperties(additionalBodyProperties)
         }
 
         fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            additionalBodyProperties.put(key, value)
+            body.putAdditionalProperty(key, value)
         }
 
         fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
             apply {
-                this.additionalBodyProperties.putAll(additionalBodyProperties)
+                body.putAllAdditionalProperties(additionalBodyProperties)
             }
 
-        fun removeAdditionalBodyProperty(key: String) = apply {
-            additionalBodyProperties.remove(key)
-        }
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
 
         fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            keys.forEach(::removeAdditionalBodyProperty)
+            body.removeAllAdditionalProperties(keys)
         }
 
         fun build(): EmbeddingCreateParams =
             EmbeddingCreateParams(
-                checkNotNull(input) { "`input` is required but was not set" },
-                checkNotNull(model) { "`model` is required but was not set" },
-                dimensions,
-                encodingFormat,
-                user,
+                body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
-                additionalBodyProperties.toImmutable(),
             )
     }
 
@@ -705,11 +697,11 @@ constructor(
             return true
         }
 
-        return /* spotless:off */ other is EmbeddingCreateParams && input == other.input && model == other.model && dimensions == other.dimensions && encodingFormat == other.encodingFormat && user == other.user && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return /* spotless:off */ other is EmbeddingCreateParams && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(input, model, dimensions, encodingFormat, user, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(body, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "EmbeddingCreateParams{input=$input, model=$model, dimensions=$dimensions, encodingFormat=$encodingFormat, user=$user, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
+        "EmbeddingCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }
