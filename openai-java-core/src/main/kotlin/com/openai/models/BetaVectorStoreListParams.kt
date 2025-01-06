@@ -98,7 +98,15 @@ constructor(
          * obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page
          * of the list.
          */
-        fun after(after: String) = apply { this.after = after }
+        fun after(after: String?) = apply { this.after = after }
+
+        /**
+         * A cursor for use in pagination. `after` is an object ID that defines your place in the
+         * list. For instance, if you make a list request and receive 100 objects, ending with
+         * obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page
+         * of the list.
+         */
+        fun after(after: Optional<String>) = after(after.orElse(null))
 
         /**
          * A cursor for use in pagination. `before` is an object ID that defines your place in the
@@ -106,19 +114,46 @@ constructor(
          * obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous
          * page of the list.
          */
-        fun before(before: String) = apply { this.before = before }
+        fun before(before: String?) = apply { this.before = before }
+
+        /**
+         * A cursor for use in pagination. `before` is an object ID that defines your place in the
+         * list. For instance, if you make a list request and receive 100 objects, starting with
+         * obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous
+         * page of the list.
+         */
+        fun before(before: Optional<String>) = before(before.orElse(null))
 
         /**
          * A limit on the number of objects to be returned. Limit can range between 1 and 100, and
          * the default is 20.
          */
-        fun limit(limit: Long) = apply { this.limit = limit }
+        fun limit(limit: Long?) = apply { this.limit = limit }
+
+        /**
+         * A limit on the number of objects to be returned. Limit can range between 1 and 100, and
+         * the default is 20.
+         */
+        fun limit(limit: Long) = limit(limit as Long?)
+
+        /**
+         * A limit on the number of objects to be returned. Limit can range between 1 and 100, and
+         * the default is 20.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun limit(limit: Optional<Long>) = limit(limit.orElse(null) as Long?)
 
         /**
          * Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and
          * `desc` for descending order.
          */
-        fun order(order: Order) = apply { this.order = order }
+        fun order(order: Order?) = apply { this.order = order }
+
+        /**
+         * Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and
+         * `desc` for descending order.
+         */
+        fun order(order: Optional<Order>) = order(order.orElse(null))
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()

@@ -167,7 +167,10 @@ constructor(
             fun inputFileId(inputFileId: String) = apply { this.inputFileId = inputFileId }
 
             /** Optional custom metadata for the batch. */
-            fun metadata(metadata: Metadata) = apply { this.metadata = metadata }
+            fun metadata(metadata: Metadata?) = apply { this.metadata = metadata }
+
+            /** Optional custom metadata for the batch. */
+            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -269,7 +272,10 @@ constructor(
         fun inputFileId(inputFileId: String) = apply { body.inputFileId(inputFileId) }
 
         /** Optional custom metadata for the batch. */
-        fun metadata(metadata: Metadata) = apply { body.metadata(metadata) }
+        fun metadata(metadata: Metadata?) = apply { body.metadata(metadata) }
+
+        /** Optional custom metadata for the batch. */
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()

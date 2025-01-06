@@ -355,13 +355,22 @@ constructor(
             }
 
             /** The output of the tool call to be submitted to continue the run. */
-            fun output(output: String) = apply { this.output = output }
+            fun output(output: String?) = apply { this.output = output }
+
+            /** The output of the tool call to be submitted to continue the run. */
+            fun output(output: Optional<String>) = output(output.orElse(null))
 
             /**
              * The ID of the tool call in the `required_action` object within the run object the
              * output is being submitted for.
              */
-            fun toolCallId(toolCallId: String) = apply { this.toolCallId = toolCallId }
+            fun toolCallId(toolCallId: String?) = apply { this.toolCallId = toolCallId }
+
+            /**
+             * The ID of the tool call in the `required_action` object within the run object the
+             * output is being submitted for.
+             */
+            fun toolCallId(toolCallId: Optional<String>) = toolCallId(toolCallId.orElse(null))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()

@@ -9,6 +9,7 @@ import com.openai.core.http.PhantomReachableClosingHttpClient
 import com.openai.core.http.QueryParams
 import com.openai.core.http.RetryingHttpClient
 import java.time.Clock
+import java.util.Optional
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory
@@ -173,9 +174,13 @@ private constructor(
 
         fun apiKey(apiKey: String) = apply { this.apiKey = apiKey }
 
-        fun organization(organization: String) = apply { this.organization = organization }
+        fun organization(organization: String?) = apply { this.organization = organization }
 
-        fun project(project: String) = apply { this.project = project }
+        fun organization(organization: Optional<String>) = organization(organization.orElse(null))
+
+        fun project(project: String?) = apply { this.project = project }
+
+        fun project(project: Optional<String>) = project(project.orElse(null))
 
         fun fromEnv() = apply {
             System.getenv("OPENAI_API_KEY")?.let { apiKey(it) }

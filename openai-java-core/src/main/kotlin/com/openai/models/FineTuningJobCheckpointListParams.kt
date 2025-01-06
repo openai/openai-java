@@ -79,10 +79,20 @@ constructor(
         }
 
         /** Identifier for the last checkpoint ID from the previous pagination request. */
-        fun after(after: String) = apply { this.after = after }
+        fun after(after: String?) = apply { this.after = after }
+
+        /** Identifier for the last checkpoint ID from the previous pagination request. */
+        fun after(after: Optional<String>) = after(after.orElse(null))
 
         /** Number of checkpoints to retrieve. */
-        fun limit(limit: Long) = apply { this.limit = limit }
+        fun limit(limit: Long?) = apply { this.limit = limit }
+
+        /** Number of checkpoints to retrieve. */
+        fun limit(limit: Long) = limit(limit as Long?)
+
+        /** Number of checkpoints to retrieve. */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun limit(limit: Optional<Long>) = limit(limit.orElse(null) as Long?)
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
