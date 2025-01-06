@@ -174,9 +174,13 @@ constructor(
             fun role(role: Role) = apply { this.role = role }
 
             /** A list of files attached to the message, and the tools they should be added to. */
-            fun attachments(attachments: List<Attachment>) = apply {
-                this.attachments = attachments.toMutableList()
+            fun attachments(attachments: List<Attachment>?) = apply {
+                this.attachments = attachments?.toMutableList()
             }
+
+            /** A list of files attached to the message, and the tools they should be added to. */
+            fun attachments(attachments: Optional<List<Attachment>>) =
+                attachments(attachments.orElse(null))
 
             /** A list of files attached to the message, and the tools they should be added to. */
             fun addAttachment(attachment: Attachment) = apply {
@@ -188,7 +192,14 @@ constructor(
              * storing additional information about the object in a structured format. Keys can be a
              * maximum of 64 characters long and values can be a maximum of 512 characters long.
              */
-            fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
+            fun metadata(metadata: JsonValue?) = apply { this.metadata = metadata }
+
+            /**
+             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+             * storing additional information about the object in a structured format. Keys can be a
+             * maximum of 64 characters long and values can be a maximum of 512 characters long.
+             */
+            fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -289,7 +300,11 @@ constructor(
         fun role(role: Role) = apply { body.role(role) }
 
         /** A list of files attached to the message, and the tools they should be added to. */
-        fun attachments(attachments: List<Attachment>) = apply { body.attachments(attachments) }
+        fun attachments(attachments: List<Attachment>?) = apply { body.attachments(attachments) }
+
+        /** A list of files attached to the message, and the tools they should be added to. */
+        fun attachments(attachments: Optional<List<Attachment>>) =
+            attachments(attachments.orElse(null))
 
         /** A list of files attached to the message, and the tools they should be added to. */
         fun addAttachment(attachment: Attachment) = apply { body.addAttachment(attachment) }
@@ -299,7 +314,14 @@ constructor(
          * storing additional information about the object in a structured format. Keys can be a
          * maximum of 64 characters long and values can be a maximum of 512 characters long.
          */
-        fun metadata(metadata: JsonValue) = apply { body.metadata(metadata) }
+        fun metadata(metadata: JsonValue?) = apply { body.metadata(metadata) }
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format. Keys can be a
+         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         */
+        fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -647,10 +669,16 @@ constructor(
             }
 
             /** The ID of the file to attach to the message. */
-            fun fileId(fileId: String) = apply { this.fileId = fileId }
+            fun fileId(fileId: String?) = apply { this.fileId = fileId }
+
+            /** The ID of the file to attach to the message. */
+            fun fileId(fileId: Optional<String>) = fileId(fileId.orElse(null))
 
             /** The tools to add this file to. */
-            fun tools(tools: List<Tool>) = apply { this.tools = tools.toMutableList() }
+            fun tools(tools: List<Tool>?) = apply { this.tools = tools?.toMutableList() }
+
+            /** The tools to add this file to. */
+            fun tools(tools: Optional<List<Tool>>) = tools(tools.orElse(null))
 
             /** The tools to add this file to. */
             fun addTool(tool: Tool) = apply {

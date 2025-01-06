@@ -415,14 +415,26 @@ constructor(
              * useful for modifying the behavior on a per-run basis without overriding other
              * instructions.
              */
-            fun additionalInstructions(additionalInstructions: String) = apply {
+            fun additionalInstructions(additionalInstructions: String?) = apply {
                 this.additionalInstructions = additionalInstructions
             }
 
+            /**
+             * Appends additional instructions at the end of the instructions for the run. This is
+             * useful for modifying the behavior on a per-run basis without overriding other
+             * instructions.
+             */
+            fun additionalInstructions(additionalInstructions: Optional<String>) =
+                additionalInstructions(additionalInstructions.orElse(null))
+
             /** Adds additional messages to the thread before creating the run. */
-            fun additionalMessages(additionalMessages: List<AdditionalMessage>) = apply {
-                this.additionalMessages = additionalMessages.toMutableList()
+            fun additionalMessages(additionalMessages: List<AdditionalMessage>?) = apply {
+                this.additionalMessages = additionalMessages?.toMutableList()
             }
+
+            /** Adds additional messages to the thread before creating the run. */
+            fun additionalMessages(additionalMessages: Optional<List<AdditionalMessage>>) =
+                additionalMessages(additionalMessages.orElse(null))
 
             /** Adds additional messages to the thread before creating the run. */
             fun addAdditionalMessage(additionalMessage: AdditionalMessage) = apply {
@@ -435,7 +447,15 @@ constructor(
              * [instructions](https://platform.openai.com/docs/api-reference/assistants/createAssistant)
              * of the assistant. This is useful for modifying the behavior on a per-run basis.
              */
-            fun instructions(instructions: String) = apply { this.instructions = instructions }
+            fun instructions(instructions: String?) = apply { this.instructions = instructions }
+
+            /**
+             * Overrides the
+             * [instructions](https://platform.openai.com/docs/api-reference/assistants/createAssistant)
+             * of the assistant. This is useful for modifying the behavior on a per-run basis.
+             */
+            fun instructions(instructions: Optional<String>) =
+                instructions(instructions.orElse(null))
 
             /**
              * The maximum number of completion tokens that may be used over the course of the run.
@@ -444,8 +464,39 @@ constructor(
              * completion tokens specified, the run will end with status `incomplete`. See
              * `incomplete_details` for more info.
              */
-            fun maxCompletionTokens(maxCompletionTokens: Long) = apply {
+            fun maxCompletionTokens(maxCompletionTokens: Long?) = apply {
                 this.maxCompletionTokens = maxCompletionTokens
+            }
+
+            /**
+             * The maximum number of completion tokens that may be used over the course of the run.
+             * The run will make a best effort to use only the number of completion tokens
+             * specified, across multiple turns of the run. If the run exceeds the number of
+             * completion tokens specified, the run will end with status `incomplete`. See
+             * `incomplete_details` for more info.
+             */
+            fun maxCompletionTokens(maxCompletionTokens: Long) =
+                maxCompletionTokens(maxCompletionTokens as Long?)
+
+            /**
+             * The maximum number of completion tokens that may be used over the course of the run.
+             * The run will make a best effort to use only the number of completion tokens
+             * specified, across multiple turns of the run. If the run exceeds the number of
+             * completion tokens specified, the run will end with status `incomplete`. See
+             * `incomplete_details` for more info.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun maxCompletionTokens(maxCompletionTokens: Optional<Long>) =
+                maxCompletionTokens(maxCompletionTokens.orElse(null) as Long?)
+
+            /**
+             * The maximum number of prompt tokens that may be used over the course of the run. The
+             * run will make a best effort to use only the number of prompt tokens specified, across
+             * multiple turns of the run. If the run exceeds the number of prompt tokens specified,
+             * the run will end with status `incomplete`. See `incomplete_details` for more info.
+             */
+            fun maxPromptTokens(maxPromptTokens: Long?) = apply {
+                this.maxPromptTokens = maxPromptTokens
             }
 
             /**
@@ -454,16 +505,31 @@ constructor(
              * multiple turns of the run. If the run exceeds the number of prompt tokens specified,
              * the run will end with status `incomplete`. See `incomplete_details` for more info.
              */
-            fun maxPromptTokens(maxPromptTokens: Long) = apply {
-                this.maxPromptTokens = maxPromptTokens
-            }
+            fun maxPromptTokens(maxPromptTokens: Long) = maxPromptTokens(maxPromptTokens as Long?)
+
+            /**
+             * The maximum number of prompt tokens that may be used over the course of the run. The
+             * run will make a best effort to use only the number of prompt tokens specified, across
+             * multiple turns of the run. If the run exceeds the number of prompt tokens specified,
+             * the run will end with status `incomplete`. See `incomplete_details` for more info.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun maxPromptTokens(maxPromptTokens: Optional<Long>) =
+                maxPromptTokens(maxPromptTokens.orElse(null) as Long?)
 
             /**
              * Set of 16 key-value pairs that can be attached to an object. This can be useful for
              * storing additional information about the object in a structured format. Keys can be a
              * maximum of 64 characters long and values can be a maximum of 512 characters long.
              */
-            fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
+            fun metadata(metadata: JsonValue?) = apply { this.metadata = metadata }
+
+            /**
+             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+             * storing additional information about the object in a structured format. Keys can be a
+             * maximum of 64 characters long and values can be a maximum of 512 characters long.
+             */
+            fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
 
             /**
              * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be
@@ -471,7 +537,15 @@ constructor(
              * associated with the assistant. If not, the model associated with the assistant will
              * be used.
              */
-            fun model(model: ChatModel) = apply { this.model = model }
+            fun model(model: ChatModel?) = apply { this.model = model }
+
+            /**
+             * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be
+             * used to execute this run. If a value is provided here, it will override the model
+             * associated with the assistant. If not, the model associated with the assistant will
+             * be used.
+             */
+            fun model(model: Optional<ChatModel>) = model(model.orElse(null))
 
             /**
              * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be
@@ -486,8 +560,50 @@ constructor(
              * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
              * during tool use.
              */
-            fun parallelToolCalls(parallelToolCalls: Boolean) = apply {
+            fun parallelToolCalls(parallelToolCalls: Boolean?) = apply {
                 this.parallelToolCalls = parallelToolCalls
+            }
+
+            /**
+             * Whether to enable
+             * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+             * during tool use.
+             */
+            fun parallelToolCalls(parallelToolCalls: Boolean) =
+                parallelToolCalls(parallelToolCalls as Boolean?)
+
+            /**
+             * Whether to enable
+             * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+             * during tool use.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun parallelToolCalls(parallelToolCalls: Optional<Boolean>) =
+                parallelToolCalls(parallelToolCalls.orElse(null) as Boolean?)
+
+            /**
+             * Specifies the format that the model must output. Compatible with
+             * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
+             * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all
+             * GPT-3.5 Turbo models since `gpt-3.5-turbo-1106`.
+             *
+             * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
+             * Outputs which ensures the model will match your supplied JSON schema. Learn more in
+             * the
+             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             *
+             * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
+             * the model generates is valid JSON.
+             *
+             * **Important:** when using JSON mode, you **must** also instruct the model to produce
+             * JSON yourself via a system or user message. Without this, the model may generate an
+             * unending stream of whitespace until the generation reaches the token limit, resulting
+             * in a long-running and seemingly "stuck" request. Also note that the message content
+             * may be partially cut off if `finish_reason="length"`, which indicates the generation
+             * exceeded `max_tokens` or the conversation exceeded the max context length.
+             */
+            fun responseFormat(responseFormat: AssistantResponseFormatOption?) = apply {
+                this.responseFormat = responseFormat
             }
 
             /**
@@ -511,9 +627,8 @@ constructor(
              * may be partially cut off if `finish_reason="length"`, which indicates the generation
              * exceeded `max_tokens` or the conversation exceeded the max context length.
              */
-            fun responseFormat(responseFormat: AssistantResponseFormatOption) = apply {
-                this.responseFormat = responseFormat
-            }
+            fun responseFormat(responseFormat: Optional<AssistantResponseFormatOption>) =
+                responseFormat(responseFormat.orElse(null))
 
             /** `auto` is the default value */
             fun responseFormat(behavior: AssistantResponseFormatOption.Behavior) = apply {
@@ -544,7 +659,23 @@ constructor(
              * the output more random, while lower values like 0.2 will make it more focused and
              * deterministic.
              */
-            fun temperature(temperature: Double) = apply { this.temperature = temperature }
+            fun temperature(temperature: Double?) = apply { this.temperature = temperature }
+
+            /**
+             * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
+             * the output more random, while lower values like 0.2 will make it more focused and
+             * deterministic.
+             */
+            fun temperature(temperature: Double) = temperature(temperature as Double?)
+
+            /**
+             * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
+             * the output more random, while lower values like 0.2 will make it more focused and
+             * deterministic.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun temperature(temperature: Optional<Double>) =
+                temperature(temperature.orElse(null) as Double?)
 
             /**
              * Controls which (if any) tool is called by the model. `none` means the model will not
@@ -554,9 +685,20 @@ constructor(
              * Specifying a particular tool like `{"type": "file_search"}` or `{"type": "function",
              * "function": {"name": "my_function"}}` forces the model to call that tool.
              */
-            fun toolChoice(toolChoice: AssistantToolChoiceOption) = apply {
+            fun toolChoice(toolChoice: AssistantToolChoiceOption?) = apply {
                 this.toolChoice = toolChoice
             }
+
+            /**
+             * Controls which (if any) tool is called by the model. `none` means the model will not
+             * call any tools and instead generates a message. `auto` is the default value and means
+             * the model can pick between generating a message or calling one or more tools.
+             * `required` means the model must call one or more tools before responding to the user.
+             * Specifying a particular tool like `{"type": "file_search"}` or `{"type": "function",
+             * "function": {"name": "my_function"}}` forces the model to call that tool.
+             */
+            fun toolChoice(toolChoice: Optional<AssistantToolChoiceOption>) =
+                toolChoice(toolChoice.orElse(null))
 
             /**
              * `none` means the model will not call any tools and instead generates a message.
@@ -581,7 +723,13 @@ constructor(
              * Override the tools the assistant can use for this run. This is useful for modifying
              * the behavior on a per-run basis.
              */
-            fun tools(tools: List<AssistantTool>) = apply { this.tools = tools.toMutableList() }
+            fun tools(tools: List<AssistantTool>?) = apply { this.tools = tools?.toMutableList() }
+
+            /**
+             * Override the tools the assistant can use for this run. This is useful for modifying
+             * the behavior on a per-run basis.
+             */
+            fun tools(tools: Optional<List<AssistantTool>>) = tools(tools.orElse(null))
 
             /**
              * Override the tools the assistant can use for this run. This is useful for modifying
@@ -598,15 +746,41 @@ constructor(
              *
              * We generally recommend altering this or temperature but not both.
              */
-            fun topP(topP: Double) = apply { this.topP = topP }
+            fun topP(topP: Double?) = apply { this.topP = topP }
+
+            /**
+             * An alternative to sampling with temperature, called nucleus sampling, where the model
+             * considers the results of the tokens with top_p probability mass. So 0.1 means only
+             * the tokens comprising the top 10% probability mass are considered.
+             *
+             * We generally recommend altering this or temperature but not both.
+             */
+            fun topP(topP: Double) = topP(topP as Double?)
+
+            /**
+             * An alternative to sampling with temperature, called nucleus sampling, where the model
+             * considers the results of the tokens with top_p probability mass. So 0.1 means only
+             * the tokens comprising the top 10% probability mass are considered.
+             *
+             * We generally recommend altering this or temperature but not both.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
 
             /**
              * Controls for how a thread will be truncated prior to the run. Use this to control the
              * intial context window of the run.
              */
-            fun truncationStrategy(truncationStrategy: TruncationStrategy) = apply {
+            fun truncationStrategy(truncationStrategy: TruncationStrategy?) = apply {
                 this.truncationStrategy = truncationStrategy
             }
+
+            /**
+             * Controls for how a thread will be truncated prior to the run. Use this to control the
+             * intial context window of the run.
+             */
+            fun truncationStrategy(truncationStrategy: Optional<TruncationStrategy>) =
+                truncationStrategy(truncationStrategy.orElse(null))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -702,9 +876,20 @@ constructor(
          * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
          * for more information.
          */
-        fun include(include: List<RunStepInclude>) = apply {
-            this.include = include.toMutableList()
+        fun include(include: List<RunStepInclude>?) = apply {
+            this.include = include?.toMutableList()
         }
+
+        /**
+         * A list of additional fields to include in the response. Currently the only supported
+         * value is `step_details.tool_calls[*].file_search.results[*].content` to fetch the file
+         * search result content.
+         *
+         * See the
+         * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
+         * for more information.
+         */
+        fun include(include: Optional<List<RunStepInclude>>) = include(include.orElse(null))
 
         /**
          * A list of additional fields to include in the response. Currently the only supported
@@ -730,14 +915,26 @@ constructor(
          * useful for modifying the behavior on a per-run basis without overriding other
          * instructions.
          */
-        fun additionalInstructions(additionalInstructions: String) = apply {
+        fun additionalInstructions(additionalInstructions: String?) = apply {
             body.additionalInstructions(additionalInstructions)
         }
 
+        /**
+         * Appends additional instructions at the end of the instructions for the run. This is
+         * useful for modifying the behavior on a per-run basis without overriding other
+         * instructions.
+         */
+        fun additionalInstructions(additionalInstructions: Optional<String>) =
+            additionalInstructions(additionalInstructions.orElse(null))
+
         /** Adds additional messages to the thread before creating the run. */
-        fun additionalMessages(additionalMessages: List<AdditionalMessage>) = apply {
+        fun additionalMessages(additionalMessages: List<AdditionalMessage>?) = apply {
             body.additionalMessages(additionalMessages)
         }
+
+        /** Adds additional messages to the thread before creating the run. */
+        fun additionalMessages(additionalMessages: Optional<List<AdditionalMessage>>) =
+            additionalMessages(additionalMessages.orElse(null))
 
         /** Adds additional messages to the thread before creating the run. */
         fun addAdditionalMessage(additionalMessage: AdditionalMessage) = apply {
@@ -749,7 +946,14 @@ constructor(
          * [instructions](https://platform.openai.com/docs/api-reference/assistants/createAssistant)
          * of the assistant. This is useful for modifying the behavior on a per-run basis.
          */
-        fun instructions(instructions: String) = apply { body.instructions(instructions) }
+        fun instructions(instructions: String?) = apply { body.instructions(instructions) }
+
+        /**
+         * Overrides the
+         * [instructions](https://platform.openai.com/docs/api-reference/assistants/createAssistant)
+         * of the assistant. This is useful for modifying the behavior on a per-run basis.
+         */
+        fun instructions(instructions: Optional<String>) = instructions(instructions.orElse(null))
 
         /**
          * The maximum number of completion tokens that may be used over the course of the run. The
@@ -757,8 +961,37 @@ constructor(
          * multiple turns of the run. If the run exceeds the number of completion tokens specified,
          * the run will end with status `incomplete`. See `incomplete_details` for more info.
          */
-        fun maxCompletionTokens(maxCompletionTokens: Long) = apply {
+        fun maxCompletionTokens(maxCompletionTokens: Long?) = apply {
             body.maxCompletionTokens(maxCompletionTokens)
+        }
+
+        /**
+         * The maximum number of completion tokens that may be used over the course of the run. The
+         * run will make a best effort to use only the number of completion tokens specified, across
+         * multiple turns of the run. If the run exceeds the number of completion tokens specified,
+         * the run will end with status `incomplete`. See `incomplete_details` for more info.
+         */
+        fun maxCompletionTokens(maxCompletionTokens: Long) =
+            maxCompletionTokens(maxCompletionTokens as Long?)
+
+        /**
+         * The maximum number of completion tokens that may be used over the course of the run. The
+         * run will make a best effort to use only the number of completion tokens specified, across
+         * multiple turns of the run. If the run exceeds the number of completion tokens specified,
+         * the run will end with status `incomplete`. See `incomplete_details` for more info.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun maxCompletionTokens(maxCompletionTokens: Optional<Long>) =
+            maxCompletionTokens(maxCompletionTokens.orElse(null) as Long?)
+
+        /**
+         * The maximum number of prompt tokens that may be used over the course of the run. The run
+         * will make a best effort to use only the number of prompt tokens specified, across
+         * multiple turns of the run. If the run exceeds the number of prompt tokens specified, the
+         * run will end with status `incomplete`. See `incomplete_details` for more info.
+         */
+        fun maxPromptTokens(maxPromptTokens: Long?) = apply {
+            body.maxPromptTokens(maxPromptTokens)
         }
 
         /**
@@ -767,21 +1000,45 @@ constructor(
          * multiple turns of the run. If the run exceeds the number of prompt tokens specified, the
          * run will end with status `incomplete`. See `incomplete_details` for more info.
          */
-        fun maxPromptTokens(maxPromptTokens: Long) = apply { body.maxPromptTokens(maxPromptTokens) }
+        fun maxPromptTokens(maxPromptTokens: Long) = maxPromptTokens(maxPromptTokens as Long?)
+
+        /**
+         * The maximum number of prompt tokens that may be used over the course of the run. The run
+         * will make a best effort to use only the number of prompt tokens specified, across
+         * multiple turns of the run. If the run exceeds the number of prompt tokens specified, the
+         * run will end with status `incomplete`. See `incomplete_details` for more info.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun maxPromptTokens(maxPromptTokens: Optional<Long>) =
+            maxPromptTokens(maxPromptTokens.orElse(null) as Long?)
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
          * storing additional information about the object in a structured format. Keys can be a
          * maximum of 64 characters long and values can be a maximum of 512 characters long.
          */
-        fun metadata(metadata: JsonValue) = apply { body.metadata(metadata) }
+        fun metadata(metadata: JsonValue?) = apply { body.metadata(metadata) }
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format. Keys can be a
+         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         */
+        fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
 
         /**
          * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used
          * to execute this run. If a value is provided here, it will override the model associated
          * with the assistant. If not, the model associated with the assistant will be used.
          */
-        fun model(model: ChatModel) = apply { body.model(model) }
+        fun model(model: ChatModel?) = apply { body.model(model) }
+
+        /**
+         * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used
+         * to execute this run. If a value is provided here, it will override the model associated
+         * with the assistant. If not, the model associated with the assistant will be used.
+         */
+        fun model(model: Optional<ChatModel>) = model(model.orElse(null))
 
         /**
          * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used
@@ -795,8 +1052,49 @@ constructor(
          * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
          * during tool use.
          */
-        fun parallelToolCalls(parallelToolCalls: Boolean) = apply {
+        fun parallelToolCalls(parallelToolCalls: Boolean?) = apply {
             body.parallelToolCalls(parallelToolCalls)
+        }
+
+        /**
+         * Whether to enable
+         * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+         * during tool use.
+         */
+        fun parallelToolCalls(parallelToolCalls: Boolean) =
+            parallelToolCalls(parallelToolCalls as Boolean?)
+
+        /**
+         * Whether to enable
+         * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+         * during tool use.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun parallelToolCalls(parallelToolCalls: Optional<Boolean>) =
+            parallelToolCalls(parallelToolCalls.orElse(null) as Boolean?)
+
+        /**
+         * Specifies the format that the model must output. Compatible with
+         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
+         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
+         * Turbo models since `gpt-3.5-turbo-1106`.
+         *
+         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
+         * which ensures the model will match your supplied JSON schema. Learn more in the
+         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         *
+         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
+         * model generates is valid JSON.
+         *
+         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
+         * yourself via a system or user message. Without this, the model may generate an unending
+         * stream of whitespace until the generation reaches the token limit, resulting in a
+         * long-running and seemingly "stuck" request. Also note that the message content may be
+         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
+         * `max_tokens` or the conversation exceeded the max context length.
+         */
+        fun responseFormat(responseFormat: AssistantResponseFormatOption?) = apply {
+            body.responseFormat(responseFormat)
         }
 
         /**
@@ -819,9 +1117,8 @@ constructor(
          * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
          * `max_tokens` or the conversation exceeded the max context length.
          */
-        fun responseFormat(responseFormat: AssistantResponseFormatOption) = apply {
-            body.responseFormat(responseFormat)
-        }
+        fun responseFormat(responseFormat: Optional<AssistantResponseFormatOption>) =
+            responseFormat(responseFormat.orElse(null))
 
         /** `auto` is the default value */
         fun responseFormat(behavior: AssistantResponseFormatOption.Behavior) = apply {
@@ -845,7 +1142,23 @@ constructor(
          * output more random, while lower values like 0.2 will make it more focused and
          * deterministic.
          */
-        fun temperature(temperature: Double) = apply { body.temperature(temperature) }
+        fun temperature(temperature: Double?) = apply { body.temperature(temperature) }
+
+        /**
+         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+         * output more random, while lower values like 0.2 will make it more focused and
+         * deterministic.
+         */
+        fun temperature(temperature: Double) = temperature(temperature as Double?)
+
+        /**
+         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+         * output more random, while lower values like 0.2 will make it more focused and
+         * deterministic.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun temperature(temperature: Optional<Double>) =
+            temperature(temperature.orElse(null) as Double?)
 
         /**
          * Controls which (if any) tool is called by the model. `none` means the model will not call
@@ -855,9 +1168,20 @@ constructor(
          * particular tool like `{"type": "file_search"}` or `{"type": "function", "function":
          * {"name": "my_function"}}` forces the model to call that tool.
          */
-        fun toolChoice(toolChoice: AssistantToolChoiceOption) = apply {
+        fun toolChoice(toolChoice: AssistantToolChoiceOption?) = apply {
             body.toolChoice(toolChoice)
         }
+
+        /**
+         * Controls which (if any) tool is called by the model. `none` means the model will not call
+         * any tools and instead generates a message. `auto` is the default value and means the
+         * model can pick between generating a message or calling one or more tools. `required`
+         * means the model must call one or more tools before responding to the user. Specifying a
+         * particular tool like `{"type": "file_search"}` or `{"type": "function", "function":
+         * {"name": "my_function"}}` forces the model to call that tool.
+         */
+        fun toolChoice(toolChoice: Optional<AssistantToolChoiceOption>) =
+            toolChoice(toolChoice.orElse(null))
 
         /**
          * `none` means the model will not call any tools and instead generates a message. `auto`
@@ -879,7 +1203,13 @@ constructor(
          * Override the tools the assistant can use for this run. This is useful for modifying the
          * behavior on a per-run basis.
          */
-        fun tools(tools: List<AssistantTool>) = apply { body.tools(tools) }
+        fun tools(tools: List<AssistantTool>?) = apply { body.tools(tools) }
+
+        /**
+         * Override the tools the assistant can use for this run. This is useful for modifying the
+         * behavior on a per-run basis.
+         */
+        fun tools(tools: Optional<List<AssistantTool>>) = tools(tools.orElse(null))
 
         /**
          * Override the tools the assistant can use for this run. This is useful for modifying the
@@ -894,15 +1224,41 @@ constructor(
          *
          * We generally recommend altering this or temperature but not both.
          */
-        fun topP(topP: Double) = apply { body.topP(topP) }
+        fun topP(topP: Double?) = apply { body.topP(topP) }
+
+        /**
+         * An alternative to sampling with temperature, called nucleus sampling, where the model
+         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
+         * tokens comprising the top 10% probability mass are considered.
+         *
+         * We generally recommend altering this or temperature but not both.
+         */
+        fun topP(topP: Double) = topP(topP as Double?)
+
+        /**
+         * An alternative to sampling with temperature, called nucleus sampling, where the model
+         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
+         * tokens comprising the top 10% probability mass are considered.
+         *
+         * We generally recommend altering this or temperature but not both.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
 
         /**
          * Controls for how a thread will be truncated prior to the run. Use this to control the
          * intial context window of the run.
          */
-        fun truncationStrategy(truncationStrategy: TruncationStrategy) = apply {
+        fun truncationStrategy(truncationStrategy: TruncationStrategy?) = apply {
             body.truncationStrategy(truncationStrategy)
         }
+
+        /**
+         * Controls for how a thread will be truncated prior to the run. Use this to control the
+         * intial context window of the run.
+         */
+        fun truncationStrategy(truncationStrategy: Optional<TruncationStrategy>) =
+            truncationStrategy(truncationStrategy.orElse(null))
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -1123,9 +1479,13 @@ constructor(
             fun role(role: Role) = apply { this.role = role }
 
             /** A list of files attached to the message, and the tools they should be added to. */
-            fun attachments(attachments: List<Attachment>) = apply {
-                this.attachments = attachments.toMutableList()
+            fun attachments(attachments: List<Attachment>?) = apply {
+                this.attachments = attachments?.toMutableList()
             }
+
+            /** A list of files attached to the message, and the tools they should be added to. */
+            fun attachments(attachments: Optional<List<Attachment>>) =
+                attachments(attachments.orElse(null))
 
             /** A list of files attached to the message, and the tools they should be added to. */
             fun addAttachment(attachment: Attachment) = apply {
@@ -1137,7 +1497,14 @@ constructor(
              * storing additional information about the object in a structured format. Keys can be a
              * maximum of 64 characters long and values can be a maximum of 512 characters long.
              */
-            fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
+            fun metadata(metadata: JsonValue?) = apply { this.metadata = metadata }
+
+            /**
+             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+             * storing additional information about the object in a structured format. Keys can be a
+             * maximum of 64 characters long and values can be a maximum of 512 characters long.
+             */
+            fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1391,10 +1758,16 @@ constructor(
                 }
 
                 /** The ID of the file to attach to the message. */
-                fun fileId(fileId: String) = apply { this.fileId = fileId }
+                fun fileId(fileId: String?) = apply { this.fileId = fileId }
+
+                /** The ID of the file to attach to the message. */
+                fun fileId(fileId: Optional<String>) = fileId(fileId.orElse(null))
 
                 /** The tools to add this file to. */
-                fun tools(tools: List<Tool>) = apply { this.tools = tools.toMutableList() }
+                fun tools(tools: List<Tool>?) = apply { this.tools = tools?.toMutableList() }
+
+                /** The tools to add this file to. */
+                fun tools(tools: Optional<List<Tool>>) = tools(tools.orElse(null))
 
                 /** The tools to add this file to. */
                 fun addTool(tool: Tool) = apply {
@@ -1784,7 +2157,21 @@ constructor(
              * The number of most recent messages from the thread when constructing the context for
              * the run.
              */
-            fun lastMessages(lastMessages: Long) = apply { this.lastMessages = lastMessages }
+            fun lastMessages(lastMessages: Long?) = apply { this.lastMessages = lastMessages }
+
+            /**
+             * The number of most recent messages from the thread when constructing the context for
+             * the run.
+             */
+            fun lastMessages(lastMessages: Long) = lastMessages(lastMessages as Long?)
+
+            /**
+             * The number of most recent messages from the thread when constructing the context for
+             * the run.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun lastMessages(lastMessages: Optional<Long>) =
+                lastMessages(lastMessages.orElse(null) as Long?)
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()

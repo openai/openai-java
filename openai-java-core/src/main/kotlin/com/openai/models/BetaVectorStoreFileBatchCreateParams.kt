@@ -126,9 +126,16 @@ constructor(
              * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
              * strategy. Only applicable if `file_ids` is non-empty.
              */
-            fun chunkingStrategy(chunkingStrategy: FileChunkingStrategyParam) = apply {
+            fun chunkingStrategy(chunkingStrategy: FileChunkingStrategyParam?) = apply {
                 this.chunkingStrategy = chunkingStrategy
             }
+
+            /**
+             * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
+             * strategy. Only applicable if `file_ids` is non-empty.
+             */
+            fun chunkingStrategy(chunkingStrategy: Optional<FileChunkingStrategyParam>) =
+                chunkingStrategy(chunkingStrategy.orElse(null))
 
             /**
              * The default strategy. This strategy currently uses a `max_chunk_size_tokens` of `800`
@@ -240,9 +247,16 @@ constructor(
          * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
          * strategy. Only applicable if `file_ids` is non-empty.
          */
-        fun chunkingStrategy(chunkingStrategy: FileChunkingStrategyParam) = apply {
+        fun chunkingStrategy(chunkingStrategy: FileChunkingStrategyParam?) = apply {
             body.chunkingStrategy(chunkingStrategy)
         }
+
+        /**
+         * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
+         * strategy. Only applicable if `file_ids` is non-empty.
+         */
+        fun chunkingStrategy(chunkingStrategy: Optional<FileChunkingStrategyParam>) =
+            chunkingStrategy(chunkingStrategy.orElse(null))
 
         /**
          * The default strategy. This strategy currently uses a `max_chunk_size_tokens` of `800` and

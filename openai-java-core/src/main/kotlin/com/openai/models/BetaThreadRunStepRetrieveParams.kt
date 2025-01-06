@@ -103,9 +103,20 @@ constructor(
          * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
          * for more information.
          */
-        fun include(include: List<RunStepInclude>) = apply {
-            this.include = include.toMutableList()
+        fun include(include: List<RunStepInclude>?) = apply {
+            this.include = include?.toMutableList()
         }
+
+        /**
+         * A list of additional fields to include in the response. Currently the only supported
+         * value is `step_details.tool_calls[*].file_search.results[*].content` to fetch the file
+         * search result content.
+         *
+         * See the
+         * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
+         * for more information.
+         */
+        fun include(include: Optional<List<RunStepInclude>>) = include(include.orElse(null))
 
         /**
          * A list of additional fields to include in the response. Currently the only supported
