@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.1 (2025-01-06)
+
+Full Changelog: [v0.9.0...v0.9.1](https://github.com/openai/openai-java/compare/v0.9.0...v0.9.1)
+
+### Styles
+
+* **internal:** sort fields ([#82](https://github.com/openai/openai-java/issues/82)) ([219b48f](https://github.com/openai/openai-java/commit/219b48f7c6ff25eae8a9a082f8193c41aa18d0ac))
+
 ## 0.9.0 (2025-01-03)
 
 Full Changelog: [v0.8.1...v0.9.0](https://github.com/openai/openai-java/compare/v0.8.1...v0.9.0)
