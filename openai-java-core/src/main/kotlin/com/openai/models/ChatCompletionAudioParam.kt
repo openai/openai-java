@@ -25,19 +25,12 @@ import java.util.Objects
 class ChatCompletionAudioParam
 @JsonCreator
 private constructor(
-    @JsonProperty("voice") @ExcludeMissing private val voice: JsonField<Voice> = JsonMissing.of(),
     @JsonProperty("format")
     @ExcludeMissing
     private val format: JsonField<Format> = JsonMissing.of(),
+    @JsonProperty("voice") @ExcludeMissing private val voice: JsonField<Voice> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /**
-     * The voice the model uses to respond. Supported voices are `ash`, `ballad`, `coral`, `sage`,
-     * and `verse` (also supported but not recommended are `alloy`, `echo`, and `shimmer`; these
-     * voices are less expressive).
-     */
-    fun voice(): Voice = voice.getRequired("voice")
 
     /**
      * Specifies the output audio format. Must be one of `wav`, `mp3`, `flac`, `opus`, or `pcm16`.
@@ -49,12 +42,19 @@ private constructor(
      * and `verse` (also supported but not recommended are `alloy`, `echo`, and `shimmer`; these
      * voices are less expressive).
      */
-    @JsonProperty("voice") @ExcludeMissing fun _voice() = voice
+    fun voice(): Voice = voice.getRequired("voice")
 
     /**
      * Specifies the output audio format. Must be one of `wav`, `mp3`, `flac`, `opus`, or `pcm16`.
      */
     @JsonProperty("format") @ExcludeMissing fun _format() = format
+
+    /**
+     * The voice the model uses to respond. Supported voices are `ash`, `ballad`, `coral`, `sage`,
+     * and `verse` (also supported but not recommended are `alloy`, `echo`, and `shimmer`; these
+     * voices are less expressive).
+     */
+    @JsonProperty("voice") @ExcludeMissing fun _voice() = voice
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -64,8 +64,8 @@ private constructor(
 
     fun validate(): ChatCompletionAudioParam = apply {
         if (!validated) {
-            voice()
             format()
+            voice()
             validated = true
         }
     }
@@ -79,16 +79,28 @@ private constructor(
 
     class Builder {
 
-        private var voice: JsonField<Voice> = JsonMissing.of()
         private var format: JsonField<Format> = JsonMissing.of()
+        private var voice: JsonField<Voice> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(chatCompletionAudioParam: ChatCompletionAudioParam) = apply {
-            voice = chatCompletionAudioParam.voice
             format = chatCompletionAudioParam.format
+            voice = chatCompletionAudioParam.voice
             additionalProperties = chatCompletionAudioParam.additionalProperties.toMutableMap()
         }
+
+        /**
+         * Specifies the output audio format. Must be one of `wav`, `mp3`, `flac`, `opus`, or
+         * `pcm16`.
+         */
+        fun format(format: Format) = format(JsonField.of(format))
+
+        /**
+         * Specifies the output audio format. Must be one of `wav`, `mp3`, `flac`, `opus`, or
+         * `pcm16`.
+         */
+        fun format(format: JsonField<Format>) = apply { this.format = format }
 
         /**
          * The voice the model uses to respond. Supported voices are `ash`, `ballad`, `coral`,
@@ -103,18 +115,6 @@ private constructor(
          * `shimmer`; these voices are less expressive).
          */
         fun voice(voice: JsonField<Voice>) = apply { this.voice = voice }
-
-        /**
-         * Specifies the output audio format. Must be one of `wav`, `mp3`, `flac`, `opus`, or
-         * `pcm16`.
-         */
-        fun format(format: Format) = format(JsonField.of(format))
-
-        /**
-         * Specifies the output audio format. Must be one of `wav`, `mp3`, `flac`, `opus`, or
-         * `pcm16`.
-         */
-        fun format(format: JsonField<Format>) = apply { this.format = format }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -137,8 +137,8 @@ private constructor(
 
         fun build(): ChatCompletionAudioParam =
             ChatCompletionAudioParam(
-                voice,
                 format,
+                voice,
                 additionalProperties.toImmutable(),
             )
     }
@@ -316,15 +316,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionAudioParam && voice == other.voice && format == other.format && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionAudioParam && format == other.format && voice == other.voice && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(voice, format, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(format, voice, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ChatCompletionAudioParam{voice=$voice, format=$format, additionalProperties=$additionalProperties}"
+        "ChatCompletionAudioParam{format=$format, voice=$voice, additionalProperties=$additionalProperties}"
 }

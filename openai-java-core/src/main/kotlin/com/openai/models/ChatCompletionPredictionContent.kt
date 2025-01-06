@@ -35,18 +35,12 @@ import java.util.Optional
 class ChatCompletionPredictionContent
 @JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonProperty("content")
     @ExcludeMissing
     private val content: JsonField<Content> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /**
-     * The type of the predicted content you want to provide. This type is currently always
-     * `content`.
-     */
-    fun type(): Type = type.getRequired("type")
 
     /**
      * The content that should be matched when generating a model response. If generated tokens
@@ -58,13 +52,19 @@ private constructor(
      * The type of the predicted content you want to provide. This type is currently always
      * `content`.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    fun type(): Type = type.getRequired("type")
 
     /**
      * The content that should be matched when generating a model response. If generated tokens
      * would match this content, the entire model response can be returned much more quickly.
      */
     @JsonProperty("content") @ExcludeMissing fun _content() = content
+
+    /**
+     * The type of the predicted content you want to provide. This type is currently always
+     * `content`.
+     */
+    @JsonProperty("type") @ExcludeMissing fun _type() = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -74,8 +74,8 @@ private constructor(
 
     fun validate(): ChatCompletionPredictionContent = apply {
         if (!validated) {
-            type()
             content()
+            type()
             validated = true
         }
     }
@@ -89,30 +89,18 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type> = JsonMissing.of()
         private var content: JsonField<Content> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(chatCompletionPredictionContent: ChatCompletionPredictionContent) =
             apply {
-                type = chatCompletionPredictionContent.type
                 content = chatCompletionPredictionContent.content
+                type = chatCompletionPredictionContent.type
                 additionalProperties =
                     chatCompletionPredictionContent.additionalProperties.toMutableMap()
             }
-
-        /**
-         * The type of the predicted content you want to provide. This type is currently always
-         * `content`.
-         */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /**
-         * The type of the predicted content you want to provide. This type is currently always
-         * `content`.
-         */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
 
         /**
          * The content that should be matched when generating a model response. If generated tokens
@@ -125,6 +113,18 @@ private constructor(
          * would match this content, the entire model response can be returned much more quickly.
          */
         fun content(content: JsonField<Content>) = apply { this.content = content }
+
+        /**
+         * The type of the predicted content you want to provide. This type is currently always
+         * `content`.
+         */
+        fun type(type: Type) = type(JsonField.of(type))
+
+        /**
+         * The type of the predicted content you want to provide. This type is currently always
+         * `content`.
+         */
+        fun type(type: JsonField<Type>) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -147,8 +147,8 @@ private constructor(
 
         fun build(): ChatCompletionPredictionContent =
             ChatCompletionPredictionContent(
-                type,
                 content,
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -360,15 +360,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionPredictionContent && type == other.type && content == other.content && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionPredictionContent && content == other.content && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(type, content, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(content, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ChatCompletionPredictionContent{type=$type, content=$content, additionalProperties=$additionalProperties}"
+        "ChatCompletionPredictionContent{content=$content, type=$type, additionalProperties=$additionalProperties}"
 }

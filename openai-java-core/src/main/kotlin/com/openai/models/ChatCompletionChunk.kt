@@ -34,15 +34,15 @@ private constructor(
     @ExcludeMissing
     private val created: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("object")
+    @ExcludeMissing
+    private val object_: JsonField<Object> = JsonMissing.of(),
     @JsonProperty("service_tier")
     @ExcludeMissing
     private val serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
     @JsonProperty("system_fingerprint")
     @ExcludeMissing
     private val systemFingerprint: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
     @JsonProperty("usage")
     @ExcludeMissing
     private val usage: JsonField<CompletionUsage> = JsonMissing.of(),
@@ -68,6 +68,9 @@ private constructor(
     /** The model to generate the completion. */
     fun model(): String = model.getRequired("model")
 
+    /** The object type, which is always `chat.completion.chunk`. */
+    fun object_(): Object = object_.getRequired("object")
+
     /**
      * The service tier used for processing the request. This field is only included if the
      * `service_tier` parameter is specified in the request.
@@ -82,9 +85,6 @@ private constructor(
      */
     fun systemFingerprint(): Optional<String> =
         Optional.ofNullable(systemFingerprint.getNullable("system_fingerprint"))
-
-    /** The object type, which is always `chat.completion.chunk`. */
-    fun object_(): Object = object_.getRequired("object")
 
     /**
      * An optional field that will only be present when you set `stream_options: {"include_usage":
@@ -112,6 +112,9 @@ private constructor(
     /** The model to generate the completion. */
     @JsonProperty("model") @ExcludeMissing fun _model() = model
 
+    /** The object type, which is always `chat.completion.chunk`. */
+    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+
     /**
      * The service tier used for processing the request. This field is only included if the
      * `service_tier` parameter is specified in the request.
@@ -124,9 +127,6 @@ private constructor(
      * made that might impact determinism.
      */
     @JsonProperty("system_fingerprint") @ExcludeMissing fun _systemFingerprint() = systemFingerprint
-
-    /** The object type, which is always `chat.completion.chunk`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
 
     /**
      * An optional field that will only be present when you set `stream_options: {"include_usage":
@@ -147,9 +147,9 @@ private constructor(
             choices().forEach { it.validate() }
             created()
             model()
+            object_()
             serviceTier()
             systemFingerprint()
-            object_()
             usage().map { it.validate() }
             validated = true
         }
@@ -168,9 +168,9 @@ private constructor(
         private var choices: JsonField<List<Choice>> = JsonMissing.of()
         private var created: JsonField<Long> = JsonMissing.of()
         private var model: JsonField<String> = JsonMissing.of()
+        private var object_: JsonField<Object> = JsonMissing.of()
         private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
         private var systemFingerprint: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
         private var usage: JsonField<CompletionUsage> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -180,9 +180,9 @@ private constructor(
             choices = chatCompletionChunk.choices
             created = chatCompletionChunk.created
             model = chatCompletionChunk.model
+            object_ = chatCompletionChunk.object_
             serviceTier = chatCompletionChunk.serviceTier
             systemFingerprint = chatCompletionChunk.systemFingerprint
-            object_ = chatCompletionChunk.object_
             usage = chatCompletionChunk.usage
             additionalProperties = chatCompletionChunk.additionalProperties.toMutableMap()
         }
@@ -225,6 +225,12 @@ private constructor(
         /** The model to generate the completion. */
         fun model(model: JsonField<String>) = apply { this.model = model }
 
+        /** The object type, which is always `chat.completion.chunk`. */
+        fun object_(object_: Object) = object_(JsonField.of(object_))
+
+        /** The object type, which is always `chat.completion.chunk`. */
+        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+
         /**
          * The service tier used for processing the request. This field is only included if the
          * `service_tier` parameter is specified in the request.
@@ -255,12 +261,6 @@ private constructor(
         fun systemFingerprint(systemFingerprint: JsonField<String>) = apply {
             this.systemFingerprint = systemFingerprint
         }
-
-        /** The object type, which is always `chat.completion.chunk`. */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always `chat.completion.chunk`. */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
 
         /**
          * An optional field that will only be present when you set `stream_options:
@@ -301,9 +301,9 @@ private constructor(
                 choices.map { it.toImmutable() },
                 created,
                 model,
+                object_,
                 serviceTier,
                 systemFingerprint,
-                object_,
                 usage,
                 additionalProperties.toImmutable(),
             )
@@ -316,24 +316,21 @@ private constructor(
         @JsonProperty("delta")
         @ExcludeMissing
         private val delta: JsonField<Delta> = JsonMissing.of(),
-        @JsonProperty("logprobs")
-        @ExcludeMissing
-        private val logprobs: JsonField<Logprobs> = JsonMissing.of(),
         @JsonProperty("finish_reason")
         @ExcludeMissing
         private val finishReason: JsonField<FinishReason> = JsonMissing.of(),
         @JsonProperty("index")
         @ExcludeMissing
         private val index: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("logprobs")
+        @ExcludeMissing
+        private val logprobs: JsonField<Logprobs> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** A chat completion delta generated by streamed model responses. */
         fun delta(): Delta = delta.getRequired("delta")
-
-        /** Log probability information for the choice. */
-        fun logprobs(): Optional<Logprobs> = Optional.ofNullable(logprobs.getNullable("logprobs"))
 
         /**
          * The reason the model stopped generating tokens. This will be `stop` if the model hit a
@@ -348,11 +345,11 @@ private constructor(
         /** The index of the choice in the list of choices. */
         fun index(): Long = index.getRequired("index")
 
+        /** Log probability information for the choice. */
+        fun logprobs(): Optional<Logprobs> = Optional.ofNullable(logprobs.getNullable("logprobs"))
+
         /** A chat completion delta generated by streamed model responses. */
         @JsonProperty("delta") @ExcludeMissing fun _delta() = delta
-
-        /** Log probability information for the choice. */
-        @JsonProperty("logprobs") @ExcludeMissing fun _logprobs() = logprobs
 
         /**
          * The reason the model stopped generating tokens. This will be `stop` if the model hit a
@@ -366,6 +363,9 @@ private constructor(
         /** The index of the choice in the list of choices. */
         @JsonProperty("index") @ExcludeMissing fun _index() = index
 
+        /** Log probability information for the choice. */
+        @JsonProperty("logprobs") @ExcludeMissing fun _logprobs() = logprobs
+
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -375,9 +375,9 @@ private constructor(
         fun validate(): Choice = apply {
             if (!validated) {
                 delta().validate()
-                logprobs().map { it.validate() }
                 finishReason()
                 index()
+                logprobs().map { it.validate() }
                 validated = true
             }
         }
@@ -392,17 +392,17 @@ private constructor(
         class Builder {
 
             private var delta: JsonField<Delta> = JsonMissing.of()
-            private var logprobs: JsonField<Logprobs> = JsonMissing.of()
             private var finishReason: JsonField<FinishReason> = JsonMissing.of()
             private var index: JsonField<Long> = JsonMissing.of()
+            private var logprobs: JsonField<Logprobs> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(choice: Choice) = apply {
                 delta = choice.delta
-                logprobs = choice.logprobs
                 finishReason = choice.finishReason
                 index = choice.index
+                logprobs = choice.logprobs
                 additionalProperties = choice.additionalProperties.toMutableMap()
             }
 
@@ -411,12 +411,6 @@ private constructor(
 
             /** A chat completion delta generated by streamed model responses. */
             fun delta(delta: JsonField<Delta>) = apply { this.delta = delta }
-
-            /** Log probability information for the choice. */
-            fun logprobs(logprobs: Logprobs) = logprobs(JsonField.of(logprobs))
-
-            /** Log probability information for the choice. */
-            fun logprobs(logprobs: JsonField<Logprobs>) = apply { this.logprobs = logprobs }
 
             /**
              * The reason the model stopped generating tokens. This will be `stop` if the model hit
@@ -444,6 +438,12 @@ private constructor(
             /** The index of the choice in the list of choices. */
             fun index(index: JsonField<Long>) = apply { this.index = index }
 
+            /** Log probability information for the choice. */
+            fun logprobs(logprobs: Logprobs) = logprobs(JsonField.of(logprobs))
+
+            /** Log probability information for the choice. */
+            fun logprobs(logprobs: JsonField<Logprobs>) = apply { this.logprobs = logprobs }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -466,9 +466,9 @@ private constructor(
             fun build(): Choice =
                 Choice(
                     delta,
-                    logprobs,
                     finishReason,
                     index,
+                    logprobs,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -484,15 +484,15 @@ private constructor(
             @JsonProperty("function_call")
             @ExcludeMissing
             private val functionCall: JsonField<FunctionCall> = JsonMissing.of(),
-            @JsonProperty("tool_calls")
-            @ExcludeMissing
-            private val toolCalls: JsonField<List<ToolCall>> = JsonMissing.of(),
-            @JsonProperty("role")
-            @ExcludeMissing
-            private val role: JsonField<Role> = JsonMissing.of(),
             @JsonProperty("refusal")
             @ExcludeMissing
             private val refusal: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("role")
+            @ExcludeMissing
+            private val role: JsonField<Role> = JsonMissing.of(),
+            @JsonProperty("tool_calls")
+            @ExcludeMissing
+            private val toolCalls: JsonField<List<ToolCall>> = JsonMissing.of(),
             @JsonAnySetter
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
@@ -507,14 +507,14 @@ private constructor(
             fun functionCall(): Optional<FunctionCall> =
                 Optional.ofNullable(functionCall.getNullable("function_call"))
 
-            fun toolCalls(): Optional<List<ToolCall>> =
-                Optional.ofNullable(toolCalls.getNullable("tool_calls"))
+            /** The refusal message generated by the model. */
+            fun refusal(): Optional<String> = Optional.ofNullable(refusal.getNullable("refusal"))
 
             /** The role of the author of this message. */
             fun role(): Optional<Role> = Optional.ofNullable(role.getNullable("role"))
 
-            /** The refusal message generated by the model. */
-            fun refusal(): Optional<String> = Optional.ofNullable(refusal.getNullable("refusal"))
+            fun toolCalls(): Optional<List<ToolCall>> =
+                Optional.ofNullable(toolCalls.getNullable("tool_calls"))
 
             /** The contents of the chunk message. */
             @JsonProperty("content") @ExcludeMissing fun _content() = content
@@ -525,13 +525,13 @@ private constructor(
              */
             @JsonProperty("function_call") @ExcludeMissing fun _functionCall() = functionCall
 
-            @JsonProperty("tool_calls") @ExcludeMissing fun _toolCalls() = toolCalls
+            /** The refusal message generated by the model. */
+            @JsonProperty("refusal") @ExcludeMissing fun _refusal() = refusal
 
             /** The role of the author of this message. */
             @JsonProperty("role") @ExcludeMissing fun _role() = role
 
-            /** The refusal message generated by the model. */
-            @JsonProperty("refusal") @ExcludeMissing fun _refusal() = refusal
+            @JsonProperty("tool_calls") @ExcludeMissing fun _toolCalls() = toolCalls
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -543,9 +543,9 @@ private constructor(
                 if (!validated) {
                     content()
                     functionCall().map { it.validate() }
-                    toolCalls().map { it.forEach { it.validate() } }
-                    role()
                     refusal()
+                    role()
+                    toolCalls().map { it.forEach { it.validate() } }
                     validated = true
                 }
             }
@@ -561,18 +561,18 @@ private constructor(
 
                 private var content: JsonField<String> = JsonMissing.of()
                 private var functionCall: JsonField<FunctionCall> = JsonMissing.of()
-                private var toolCalls: JsonField<List<ToolCall>> = JsonMissing.of()
-                private var role: JsonField<Role> = JsonMissing.of()
                 private var refusal: JsonField<String> = JsonMissing.of()
+                private var role: JsonField<Role> = JsonMissing.of()
+                private var toolCalls: JsonField<List<ToolCall>> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(delta: Delta) = apply {
                     content = delta.content
                     functionCall = delta.functionCall
-                    toolCalls = delta.toolCalls
-                    role = delta.role
                     refusal = delta.refusal
+                    role = delta.role
+                    toolCalls = delta.toolCalls
                     additionalProperties = delta.additionalProperties.toMutableMap()
                 }
 
@@ -597,11 +597,11 @@ private constructor(
                     this.functionCall = functionCall
                 }
 
-                fun toolCalls(toolCalls: List<ToolCall>) = toolCalls(JsonField.of(toolCalls))
+                /** The refusal message generated by the model. */
+                fun refusal(refusal: String) = refusal(JsonField.of(refusal))
 
-                fun toolCalls(toolCalls: JsonField<List<ToolCall>>) = apply {
-                    this.toolCalls = toolCalls
-                }
+                /** The refusal message generated by the model. */
+                fun refusal(refusal: JsonField<String>) = apply { this.refusal = refusal }
 
                 /** The role of the author of this message. */
                 fun role(role: Role) = role(JsonField.of(role))
@@ -609,11 +609,11 @@ private constructor(
                 /** The role of the author of this message. */
                 fun role(role: JsonField<Role>) = apply { this.role = role }
 
-                /** The refusal message generated by the model. */
-                fun refusal(refusal: String) = refusal(JsonField.of(refusal))
+                fun toolCalls(toolCalls: List<ToolCall>) = toolCalls(JsonField.of(toolCalls))
 
-                /** The refusal message generated by the model. */
-                fun refusal(refusal: JsonField<String>) = apply { this.refusal = refusal }
+                fun toolCalls(toolCalls: JsonField<List<ToolCall>>) = apply {
+                    this.toolCalls = toolCalls
+                }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -641,9 +641,9 @@ private constructor(
                     Delta(
                         content,
                         functionCall,
-                        toolCalls.map { it.toImmutable() },
-                        role,
                         refusal,
+                        role,
+                        toolCalls.map { it.toImmutable() },
                         additionalProperties.toImmutable(),
                     )
             }
@@ -874,12 +874,12 @@ private constructor(
                 @JsonProperty("id")
                 @ExcludeMissing
                 private val id: JsonField<String> = JsonMissing.of(),
-                @JsonProperty("type")
-                @ExcludeMissing
-                private val type: JsonField<Type> = JsonMissing.of(),
                 @JsonProperty("function")
                 @ExcludeMissing
                 private val function: JsonField<Function> = JsonMissing.of(),
+                @JsonProperty("type")
+                @ExcludeMissing
+                private val type: JsonField<Type> = JsonMissing.of(),
                 @JsonAnySetter
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
@@ -889,21 +889,21 @@ private constructor(
                 /** The ID of the tool call. */
                 fun id(): Optional<String> = Optional.ofNullable(id.getNullable("id"))
 
-                /** The type of the tool. Currently, only `function` is supported. */
-                fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
-
                 fun function(): Optional<Function> =
                     Optional.ofNullable(function.getNullable("function"))
+
+                /** The type of the tool. Currently, only `function` is supported. */
+                fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
 
                 @JsonProperty("index") @ExcludeMissing fun _index() = index
 
                 /** The ID of the tool call. */
                 @JsonProperty("id") @ExcludeMissing fun _id() = id
 
+                @JsonProperty("function") @ExcludeMissing fun _function() = function
+
                 /** The type of the tool. Currently, only `function` is supported. */
                 @JsonProperty("type") @ExcludeMissing fun _type() = type
-
-                @JsonProperty("function") @ExcludeMissing fun _function() = function
 
                 @JsonAnyGetter
                 @ExcludeMissing
@@ -915,8 +915,8 @@ private constructor(
                     if (!validated) {
                         index()
                         id()
-                        type()
                         function().map { it.validate() }
+                        type()
                         validated = true
                     }
                 }
@@ -932,16 +932,16 @@ private constructor(
 
                     private var index: JsonField<Long> = JsonMissing.of()
                     private var id: JsonField<String> = JsonMissing.of()
-                    private var type: JsonField<Type> = JsonMissing.of()
                     private var function: JsonField<Function> = JsonMissing.of()
+                    private var type: JsonField<Type> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
                     internal fun from(toolCall: ToolCall) = apply {
                         index = toolCall.index
                         id = toolCall.id
-                        type = toolCall.type
                         function = toolCall.function
+                        type = toolCall.type
                         additionalProperties = toolCall.additionalProperties.toMutableMap()
                     }
 
@@ -955,15 +955,15 @@ private constructor(
                     /** The ID of the tool call. */
                     fun id(id: JsonField<String>) = apply { this.id = id }
 
+                    fun function(function: Function) = function(JsonField.of(function))
+
+                    fun function(function: JsonField<Function>) = apply { this.function = function }
+
                     /** The type of the tool. Currently, only `function` is supported. */
                     fun type(type: Type) = type(JsonField.of(type))
 
                     /** The type of the tool. Currently, only `function` is supported. */
                     fun type(type: JsonField<Type>) = apply { this.type = type }
-
-                    fun function(function: Function) = function(JsonField.of(function))
-
-                    fun function(function: JsonField<Function>) = apply { this.function = function }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
@@ -991,8 +991,8 @@ private constructor(
                         ToolCall(
                             index,
                             id,
-                            type,
                             function,
+                            type,
                             additionalProperties.toImmutable(),
                         )
                 }
@@ -1001,18 +1001,15 @@ private constructor(
                 class Function
                 @JsonCreator
                 private constructor(
-                    @JsonProperty("name")
-                    @ExcludeMissing
-                    private val name: JsonField<String> = JsonMissing.of(),
                     @JsonProperty("arguments")
                     @ExcludeMissing
                     private val arguments: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("name")
+                    @ExcludeMissing
+                    private val name: JsonField<String> = JsonMissing.of(),
                     @JsonAnySetter
                     private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
                 ) {
-
-                    /** The name of the function to call. */
-                    fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
 
                     /**
                      * The arguments to call the function with, as generated by the model in JSON
@@ -1024,7 +1021,7 @@ private constructor(
                         Optional.ofNullable(arguments.getNullable("arguments"))
 
                     /** The name of the function to call. */
-                    @JsonProperty("name") @ExcludeMissing fun _name() = name
+                    fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
 
                     /**
                      * The arguments to call the function with, as generated by the model in JSON
@@ -1034,6 +1031,9 @@ private constructor(
                      */
                     @JsonProperty("arguments") @ExcludeMissing fun _arguments() = arguments
 
+                    /** The name of the function to call. */
+                    @JsonProperty("name") @ExcludeMissing fun _name() = name
+
                     @JsonAnyGetter
                     @ExcludeMissing
                     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -1042,8 +1042,8 @@ private constructor(
 
                     fun validate(): Function = apply {
                         if (!validated) {
-                            name()
                             arguments()
+                            name()
                             validated = true
                         }
                     }
@@ -1057,23 +1057,17 @@ private constructor(
 
                     class Builder {
 
-                        private var name: JsonField<String> = JsonMissing.of()
                         private var arguments: JsonField<String> = JsonMissing.of()
+                        private var name: JsonField<String> = JsonMissing.of()
                         private var additionalProperties: MutableMap<String, JsonValue> =
                             mutableMapOf()
 
                         @JvmSynthetic
                         internal fun from(function: Function) = apply {
-                            name = function.name
                             arguments = function.arguments
+                            name = function.name
                             additionalProperties = function.additionalProperties.toMutableMap()
                         }
-
-                        /** The name of the function to call. */
-                        fun name(name: String) = name(JsonField.of(name))
-
-                        /** The name of the function to call. */
-                        fun name(name: JsonField<String>) = apply { this.name = name }
 
                         /**
                          * The arguments to call the function with, as generated by the model in
@@ -1092,6 +1086,12 @@ private constructor(
                         fun arguments(arguments: JsonField<String>) = apply {
                             this.arguments = arguments
                         }
+
+                        /** The name of the function to call. */
+                        fun name(name: String) = name(JsonField.of(name))
+
+                        /** The name of the function to call. */
+                        fun name(name: JsonField<String>) = apply { this.name = name }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                             apply {
@@ -1117,8 +1117,8 @@ private constructor(
 
                         fun build(): Function =
                             Function(
-                                name,
                                 arguments,
+                                name,
                                 additionalProperties.toImmutable(),
                             )
                     }
@@ -1128,17 +1128,17 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is Function && name == other.name && arguments == other.arguments && additionalProperties == other.additionalProperties /* spotless:on */
+                        return /* spotless:off */ other is Function && arguments == other.arguments && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
                     }
 
                     /* spotless:off */
-                    private val hashCode: Int by lazy { Objects.hash(name, arguments, additionalProperties) }
+                    private val hashCode: Int by lazy { Objects.hash(arguments, name, additionalProperties) }
                     /* spotless:on */
 
                     override fun hashCode(): Int = hashCode
 
                     override fun toString() =
-                        "Function{name=$name, arguments=$arguments, additionalProperties=$additionalProperties}"
+                        "Function{arguments=$arguments, name=$name, additionalProperties=$additionalProperties}"
                 }
 
                 class Type
@@ -1198,17 +1198,17 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is ToolCall && index == other.index && id == other.id && type == other.type && function == other.function && additionalProperties == other.additionalProperties /* spotless:on */
+                    return /* spotless:off */ other is ToolCall && index == other.index && id == other.id && function == other.function && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
                 }
 
                 /* spotless:off */
-                private val hashCode: Int by lazy { Objects.hash(index, id, type, function, additionalProperties) }
+                private val hashCode: Int by lazy { Objects.hash(index, id, function, type, additionalProperties) }
                 /* spotless:on */
 
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "ToolCall{index=$index, id=$id, type=$type, function=$function, additionalProperties=$additionalProperties}"
+                    "ToolCall{index=$index, id=$id, function=$function, type=$type, additionalProperties=$additionalProperties}"
             }
 
             override fun equals(other: Any?): Boolean {
@@ -1216,17 +1216,17 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Delta && content == other.content && functionCall == other.functionCall && toolCalls == other.toolCalls && role == other.role && refusal == other.refusal && additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is Delta && content == other.content && functionCall == other.functionCall && refusal == other.refusal && role == other.role && toolCalls == other.toolCalls && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(content, functionCall, toolCalls, role, refusal, additionalProperties) }
+            private val hashCode: Int by lazy { Objects.hash(content, functionCall, refusal, role, toolCalls, additionalProperties) }
             /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Delta{content=$content, functionCall=$functionCall, toolCalls=$toolCalls, role=$role, refusal=$refusal, additionalProperties=$additionalProperties}"
+                "Delta{content=$content, functionCall=$functionCall, refusal=$refusal, role=$role, toolCalls=$toolCalls, additionalProperties=$additionalProperties}"
         }
 
         class FinishReason
@@ -1438,17 +1438,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Choice && delta == other.delta && logprobs == other.logprobs && finishReason == other.finishReason && index == other.index && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Choice && delta == other.delta && finishReason == other.finishReason && index == other.index && logprobs == other.logprobs && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(delta, logprobs, finishReason, index, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(delta, finishReason, index, logprobs, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Choice{delta=$delta, logprobs=$logprobs, finishReason=$finishReason, index=$index, additionalProperties=$additionalProperties}"
+            "Choice{delta=$delta, finishReason=$finishReason, index=$index, logprobs=$logprobs, additionalProperties=$additionalProperties}"
     }
 
     class Object
@@ -1564,15 +1564,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionChunk && id == other.id && choices == other.choices && created == other.created && model == other.model && serviceTier == other.serviceTier && systemFingerprint == other.systemFingerprint && object_ == other.object_ && usage == other.usage && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionChunk && id == other.id && choices == other.choices && created == other.created && model == other.model && object_ == other.object_ && serviceTier == other.serviceTier && systemFingerprint == other.systemFingerprint && usage == other.usage && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, choices, created, model, serviceTier, systemFingerprint, object_, usage, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, choices, created, model, object_, serviceTier, systemFingerprint, usage, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ChatCompletionChunk{id=$id, choices=$choices, created=$created, model=$model, serviceTier=$serviceTier, systemFingerprint=$systemFingerprint, object_=$object_, usage=$usage, additionalProperties=$additionalProperties}"
+        "ChatCompletionChunk{id=$id, choices=$choices, created=$created, model=$model, object_=$object_, serviceTier=$serviceTier, systemFingerprint=$systemFingerprint, usage=$usage, additionalProperties=$additionalProperties}"
 }

@@ -23,32 +23,40 @@ class VectorStoreFileBatch
 @JsonCreator
 private constructor(
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
     @JsonProperty("created_at")
     @ExcludeMissing
     private val createdAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("vector_store_id")
-    @ExcludeMissing
-    private val vectorStoreId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("status")
-    @ExcludeMissing
-    private val status: JsonField<Status> = JsonMissing.of(),
     @JsonProperty("file_counts")
     @ExcludeMissing
     private val fileCounts: JsonField<FileCounts> = JsonMissing.of(),
+    @JsonProperty("object")
+    @ExcludeMissing
+    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("status")
+    @ExcludeMissing
+    private val status: JsonField<Status> = JsonMissing.of(),
+    @JsonProperty("vector_store_id")
+    @ExcludeMissing
+    private val vectorStoreId: JsonField<String> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The identifier, which can be referenced in API endpoints. */
     fun id(): String = id.getRequired("id")
 
+    /** The Unix timestamp (in seconds) for when the vector store files batch was created. */
+    fun createdAt(): Long = createdAt.getRequired("created_at")
+
+    fun fileCounts(): FileCounts = fileCounts.getRequired("file_counts")
+
     /** The object type, which is always `vector_store.file_batch`. */
     fun object_(): Object = object_.getRequired("object")
 
-    /** The Unix timestamp (in seconds) for when the vector store files batch was created. */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
+    /**
+     * The status of the vector store files batch, which can be either `in_progress`, `completed`,
+     * `cancelled` or `failed`.
+     */
+    fun status(): Status = status.getRequired("status")
 
     /**
      * The ID of the
@@ -57,29 +65,16 @@ private constructor(
      */
     fun vectorStoreId(): String = vectorStoreId.getRequired("vector_store_id")
 
-    /**
-     * The status of the vector store files batch, which can be either `in_progress`, `completed`,
-     * `cancelled` or `failed`.
-     */
-    fun status(): Status = status.getRequired("status")
-
-    fun fileCounts(): FileCounts = fileCounts.getRequired("file_counts")
-
     /** The identifier, which can be referenced in API endpoints. */
     @JsonProperty("id") @ExcludeMissing fun _id() = id
-
-    /** The object type, which is always `vector_store.file_batch`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
 
     /** The Unix timestamp (in seconds) for when the vector store files batch was created. */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
 
-    /**
-     * The ID of the
-     * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that the
-     * [File](https://platform.openai.com/docs/api-reference/files) is attached to.
-     */
-    @JsonProperty("vector_store_id") @ExcludeMissing fun _vectorStoreId() = vectorStoreId
+    @JsonProperty("file_counts") @ExcludeMissing fun _fileCounts() = fileCounts
+
+    /** The object type, which is always `vector_store.file_batch`. */
+    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
 
     /**
      * The status of the vector store files batch, which can be either `in_progress`, `completed`,
@@ -87,7 +82,12 @@ private constructor(
      */
     @JsonProperty("status") @ExcludeMissing fun _status() = status
 
-    @JsonProperty("file_counts") @ExcludeMissing fun _fileCounts() = fileCounts
+    /**
+     * The ID of the
+     * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that the
+     * [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+     */
+    @JsonProperty("vector_store_id") @ExcludeMissing fun _vectorStoreId() = vectorStoreId
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -98,11 +98,11 @@ private constructor(
     fun validate(): VectorStoreFileBatch = apply {
         if (!validated) {
             id()
-            object_()
             createdAt()
-            vectorStoreId()
-            status()
             fileCounts().validate()
+            object_()
+            status()
+            vectorStoreId()
             validated = true
         }
     }
@@ -117,21 +117,21 @@ private constructor(
     class Builder {
 
         private var id: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
         private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var vectorStoreId: JsonField<String> = JsonMissing.of()
-        private var status: JsonField<Status> = JsonMissing.of()
         private var fileCounts: JsonField<FileCounts> = JsonMissing.of()
+        private var object_: JsonField<Object> = JsonMissing.of()
+        private var status: JsonField<Status> = JsonMissing.of()
+        private var vectorStoreId: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(vectorStoreFileBatch: VectorStoreFileBatch) = apply {
             id = vectorStoreFileBatch.id
-            object_ = vectorStoreFileBatch.object_
             createdAt = vectorStoreFileBatch.createdAt
-            vectorStoreId = vectorStoreFileBatch.vectorStoreId
-            status = vectorStoreFileBatch.status
             fileCounts = vectorStoreFileBatch.fileCounts
+            object_ = vectorStoreFileBatch.object_
+            status = vectorStoreFileBatch.status
+            vectorStoreId = vectorStoreFileBatch.vectorStoreId
             additionalProperties = vectorStoreFileBatch.additionalProperties.toMutableMap()
         }
 
@@ -141,17 +141,33 @@ private constructor(
         /** The identifier, which can be referenced in API endpoints. */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
+        /** The Unix timestamp (in seconds) for when the vector store files batch was created. */
+        fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
+
+        /** The Unix timestamp (in seconds) for when the vector store files batch was created. */
+        fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
+
+        fun fileCounts(fileCounts: FileCounts) = fileCounts(JsonField.of(fileCounts))
+
+        fun fileCounts(fileCounts: JsonField<FileCounts>) = apply { this.fileCounts = fileCounts }
+
         /** The object type, which is always `vector_store.file_batch`. */
         fun object_(object_: Object) = object_(JsonField.of(object_))
 
         /** The object type, which is always `vector_store.file_batch`. */
         fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
 
-        /** The Unix timestamp (in seconds) for when the vector store files batch was created. */
-        fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
+        /**
+         * The status of the vector store files batch, which can be either `in_progress`,
+         * `completed`, `cancelled` or `failed`.
+         */
+        fun status(status: Status) = status(JsonField.of(status))
 
-        /** The Unix timestamp (in seconds) for when the vector store files batch was created. */
-        fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
+        /**
+         * The status of the vector store files batch, which can be either `in_progress`,
+         * `completed`, `cancelled` or `failed`.
+         */
+        fun status(status: JsonField<Status>) = apply { this.status = status }
 
         /**
          * The ID of the
@@ -168,22 +184,6 @@ private constructor(
         fun vectorStoreId(vectorStoreId: JsonField<String>) = apply {
             this.vectorStoreId = vectorStoreId
         }
-
-        /**
-         * The status of the vector store files batch, which can be either `in_progress`,
-         * `completed`, `cancelled` or `failed`.
-         */
-        fun status(status: Status) = status(JsonField.of(status))
-
-        /**
-         * The status of the vector store files batch, which can be either `in_progress`,
-         * `completed`, `cancelled` or `failed`.
-         */
-        fun status(status: JsonField<Status>) = apply { this.status = status }
-
-        fun fileCounts(fileCounts: FileCounts) = fileCounts(JsonField.of(fileCounts))
-
-        fun fileCounts(fileCounts: JsonField<FileCounts>) = apply { this.fileCounts = fileCounts }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -207,11 +207,11 @@ private constructor(
         fun build(): VectorStoreFileBatch =
             VectorStoreFileBatch(
                 id,
-                object_,
                 createdAt,
-                vectorStoreId,
-                status,
                 fileCounts,
+                object_,
+                status,
+                vectorStoreId,
                 additionalProperties.toImmutable(),
             )
     }
@@ -220,18 +220,18 @@ private constructor(
     class FileCounts
     @JsonCreator
     private constructor(
-        @JsonProperty("in_progress")
+        @JsonProperty("cancelled")
         @ExcludeMissing
-        private val inProgress: JsonField<Long> = JsonMissing.of(),
+        private val cancelled: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("completed")
         @ExcludeMissing
         private val completed: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("failed")
         @ExcludeMissing
         private val failed: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("cancelled")
+        @JsonProperty("in_progress")
         @ExcludeMissing
-        private val cancelled: JsonField<Long> = JsonMissing.of(),
+        private val inProgress: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("total")
         @ExcludeMissing
         private val total: JsonField<Long> = JsonMissing.of(),
@@ -239,8 +239,8 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The number of files that are currently being processed. */
-        fun inProgress(): Long = inProgress.getRequired("in_progress")
+        /** The number of files that where cancelled. */
+        fun cancelled(): Long = cancelled.getRequired("cancelled")
 
         /** The number of files that have been processed. */
         fun completed(): Long = completed.getRequired("completed")
@@ -248,14 +248,14 @@ private constructor(
         /** The number of files that have failed to process. */
         fun failed(): Long = failed.getRequired("failed")
 
-        /** The number of files that where cancelled. */
-        fun cancelled(): Long = cancelled.getRequired("cancelled")
+        /** The number of files that are currently being processed. */
+        fun inProgress(): Long = inProgress.getRequired("in_progress")
 
         /** The total number of files. */
         fun total(): Long = total.getRequired("total")
 
-        /** The number of files that are currently being processed. */
-        @JsonProperty("in_progress") @ExcludeMissing fun _inProgress() = inProgress
+        /** The number of files that where cancelled. */
+        @JsonProperty("cancelled") @ExcludeMissing fun _cancelled() = cancelled
 
         /** The number of files that have been processed. */
         @JsonProperty("completed") @ExcludeMissing fun _completed() = completed
@@ -263,8 +263,8 @@ private constructor(
         /** The number of files that have failed to process. */
         @JsonProperty("failed") @ExcludeMissing fun _failed() = failed
 
-        /** The number of files that where cancelled. */
-        @JsonProperty("cancelled") @ExcludeMissing fun _cancelled() = cancelled
+        /** The number of files that are currently being processed. */
+        @JsonProperty("in_progress") @ExcludeMissing fun _inProgress() = inProgress
 
         /** The total number of files. */
         @JsonProperty("total") @ExcludeMissing fun _total() = total
@@ -277,10 +277,10 @@ private constructor(
 
         fun validate(): FileCounts = apply {
             if (!validated) {
-                inProgress()
+                cancelled()
                 completed()
                 failed()
-                cancelled()
+                inProgress()
                 total()
                 validated = true
             }
@@ -295,28 +295,28 @@ private constructor(
 
         class Builder {
 
-            private var inProgress: JsonField<Long> = JsonMissing.of()
+            private var cancelled: JsonField<Long> = JsonMissing.of()
             private var completed: JsonField<Long> = JsonMissing.of()
             private var failed: JsonField<Long> = JsonMissing.of()
-            private var cancelled: JsonField<Long> = JsonMissing.of()
+            private var inProgress: JsonField<Long> = JsonMissing.of()
             private var total: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(fileCounts: FileCounts) = apply {
-                inProgress = fileCounts.inProgress
+                cancelled = fileCounts.cancelled
                 completed = fileCounts.completed
                 failed = fileCounts.failed
-                cancelled = fileCounts.cancelled
+                inProgress = fileCounts.inProgress
                 total = fileCounts.total
                 additionalProperties = fileCounts.additionalProperties.toMutableMap()
             }
 
-            /** The number of files that are currently being processed. */
-            fun inProgress(inProgress: Long) = inProgress(JsonField.of(inProgress))
+            /** The number of files that where cancelled. */
+            fun cancelled(cancelled: Long) = cancelled(JsonField.of(cancelled))
 
-            /** The number of files that are currently being processed. */
-            fun inProgress(inProgress: JsonField<Long>) = apply { this.inProgress = inProgress }
+            /** The number of files that where cancelled. */
+            fun cancelled(cancelled: JsonField<Long>) = apply { this.cancelled = cancelled }
 
             /** The number of files that have been processed. */
             fun completed(completed: Long) = completed(JsonField.of(completed))
@@ -330,11 +330,11 @@ private constructor(
             /** The number of files that have failed to process. */
             fun failed(failed: JsonField<Long>) = apply { this.failed = failed }
 
-            /** The number of files that where cancelled. */
-            fun cancelled(cancelled: Long) = cancelled(JsonField.of(cancelled))
+            /** The number of files that are currently being processed. */
+            fun inProgress(inProgress: Long) = inProgress(JsonField.of(inProgress))
 
-            /** The number of files that where cancelled. */
-            fun cancelled(cancelled: JsonField<Long>) = apply { this.cancelled = cancelled }
+            /** The number of files that are currently being processed. */
+            fun inProgress(inProgress: JsonField<Long>) = apply { this.inProgress = inProgress }
 
             /** The total number of files. */
             fun total(total: Long) = total(JsonField.of(total))
@@ -363,10 +363,10 @@ private constructor(
 
             fun build(): FileCounts =
                 FileCounts(
-                    inProgress,
+                    cancelled,
                     completed,
                     failed,
-                    cancelled,
+                    inProgress,
                     total,
                     additionalProperties.toImmutable(),
                 )
@@ -377,17 +377,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is FileCounts && inProgress == other.inProgress && completed == other.completed && failed == other.failed && cancelled == other.cancelled && total == other.total && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is FileCounts && cancelled == other.cancelled && completed == other.completed && failed == other.failed && inProgress == other.inProgress && total == other.total && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(inProgress, completed, failed, cancelled, total, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(cancelled, completed, failed, inProgress, total, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "FileCounts{inProgress=$inProgress, completed=$completed, failed=$failed, cancelled=$cancelled, total=$total, additionalProperties=$additionalProperties}"
+            "FileCounts{cancelled=$cancelled, completed=$completed, failed=$failed, inProgress=$inProgress, total=$total, additionalProperties=$additionalProperties}"
     }
 
     class Object
@@ -515,15 +515,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is VectorStoreFileBatch && id == other.id && object_ == other.object_ && createdAt == other.createdAt && vectorStoreId == other.vectorStoreId && status == other.status && fileCounts == other.fileCounts && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is VectorStoreFileBatch && id == other.id && createdAt == other.createdAt && fileCounts == other.fileCounts && object_ == other.object_ && status == other.status && vectorStoreId == other.vectorStoreId && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, object_, createdAt, vectorStoreId, status, fileCounts, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, createdAt, fileCounts, object_, status, vectorStoreId, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "VectorStoreFileBatch{id=$id, object_=$object_, createdAt=$createdAt, vectorStoreId=$vectorStoreId, status=$status, fileCounts=$fileCounts, additionalProperties=$additionalProperties}"
+        "VectorStoreFileBatch{id=$id, createdAt=$createdAt, fileCounts=$fileCounts, object_=$object_, status=$status, vectorStoreId=$vectorStoreId, additionalProperties=$additionalProperties}"
 }

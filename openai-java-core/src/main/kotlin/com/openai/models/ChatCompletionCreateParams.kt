@@ -1853,12 +1853,18 @@ constructor(
     class Function
     @JsonCreator
     private constructor(
-        @JsonProperty("description") private val description: String?,
         @JsonProperty("name") private val name: String,
+        @JsonProperty("description") private val description: String?,
         @JsonProperty("parameters") private val parameters: FunctionParameters?,
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
+
+        /**
+         * The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and
+         * dashes, with a maximum length of 64.
+         */
+        @JsonProperty("name") fun name(): String = name
 
         /**
          * A description of what the function does, used by the model to choose when and how to call
@@ -1866,12 +1872,6 @@ constructor(
          */
         @JsonProperty("description")
         fun description(): Optional<String> = Optional.ofNullable(description)
-
-        /**
-         * The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and
-         * dashes, with a maximum length of 64.
-         */
-        @JsonProperty("name") fun name(): String = name
 
         /**
          * The parameters the functions accepts, described as a JSON Schema object. See the
@@ -1897,30 +1897,30 @@ constructor(
 
         class Builder {
 
-            private var description: String? = null
             private var name: String? = null
+            private var description: String? = null
             private var parameters: FunctionParameters? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(function: Function) = apply {
-                description = function.description
                 name = function.name
+                description = function.description
                 parameters = function.parameters
                 additionalProperties = function.additionalProperties.toMutableMap()
             }
-
-            /**
-             * A description of what the function does, used by the model to choose when and how to
-             * call the function.
-             */
-            fun description(description: String) = apply { this.description = description }
 
             /**
              * The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores
              * and dashes, with a maximum length of 64.
              */
             fun name(name: String) = apply { this.name = name }
+
+            /**
+             * A description of what the function does, used by the model to choose when and how to
+             * call the function.
+             */
+            fun description(description: String) = apply { this.description = description }
 
             /**
              * The parameters the functions accepts, described as a JSON Schema object. See the
@@ -1953,8 +1953,8 @@ constructor(
 
             fun build(): Function =
                 Function(
-                    description,
                     checkNotNull(name) { "`name` is required but was not set" },
+                    description,
                     parameters,
                     additionalProperties.toImmutable(),
                 )
@@ -1965,17 +1965,17 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Function && description == other.description && name == other.name && parameters == other.parameters && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Function && name == other.name && description == other.description && parameters == other.parameters && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(description, name, parameters, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(name, description, parameters, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Function{description=$description, name=$name, parameters=$parameters, additionalProperties=$additionalProperties}"
+            "Function{name=$name, description=$description, parameters=$parameters, additionalProperties=$additionalProperties}"
     }
 
     /**

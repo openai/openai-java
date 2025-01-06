@@ -22,22 +22,22 @@ import java.util.Objects
 class ImageUrlContentBlock
 @JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonProperty("image_url")
     @ExcludeMissing
     private val imageUrl: JsonField<ImageUrl> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /** The type of the content part. */
-    fun type(): Type = type.getRequired("type")
 
     fun imageUrl(): ImageUrl = imageUrl.getRequired("image_url")
 
     /** The type of the content part. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    fun type(): Type = type.getRequired("type")
 
     @JsonProperty("image_url") @ExcludeMissing fun _imageUrl() = imageUrl
+
+    /** The type of the content part. */
+    @JsonProperty("type") @ExcludeMissing fun _type() = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -47,8 +47,8 @@ private constructor(
 
     fun validate(): ImageUrlContentBlock = apply {
         if (!validated) {
-            type()
             imageUrl().validate()
+            type()
             validated = true
         }
     }
@@ -62,26 +62,26 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type> = JsonMissing.of()
         private var imageUrl: JsonField<ImageUrl> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(imageUrlContentBlock: ImageUrlContentBlock) = apply {
-            type = imageUrlContentBlock.type
             imageUrl = imageUrlContentBlock.imageUrl
+            type = imageUrlContentBlock.type
             additionalProperties = imageUrlContentBlock.additionalProperties.toMutableMap()
         }
+
+        fun imageUrl(imageUrl: ImageUrl) = imageUrl(JsonField.of(imageUrl))
+
+        fun imageUrl(imageUrl: JsonField<ImageUrl>) = apply { this.imageUrl = imageUrl }
 
         /** The type of the content part. */
         fun type(type: Type) = type(JsonField.of(type))
 
         /** The type of the content part. */
         fun type(type: JsonField<Type>) = apply { this.type = type }
-
-        fun imageUrl(imageUrl: ImageUrl) = imageUrl(JsonField.of(imageUrl))
-
-        fun imageUrl(imageUrl: JsonField<ImageUrl>) = apply { this.imageUrl = imageUrl }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -104,8 +104,8 @@ private constructor(
 
         fun build(): ImageUrlContentBlock =
             ImageUrlContentBlock(
-                type,
                 imageUrl,
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -166,15 +166,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ImageUrlContentBlock && type == other.type && imageUrl == other.imageUrl && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ImageUrlContentBlock && imageUrl == other.imageUrl && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(type, imageUrl, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(imageUrl, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ImageUrlContentBlock{type=$type, imageUrl=$imageUrl, additionalProperties=$additionalProperties}"
+        "ImageUrlContentBlock{imageUrl=$imageUrl, type=$type, additionalProperties=$additionalProperties}"
 }

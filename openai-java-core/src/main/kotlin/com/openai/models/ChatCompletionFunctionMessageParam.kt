@@ -22,16 +22,13 @@ import java.util.Optional
 class ChatCompletionFunctionMessageParam
 @JsonCreator
 private constructor(
-    @JsonProperty("role") @ExcludeMissing private val role: JsonField<Role> = JsonMissing.of(),
     @JsonProperty("content")
     @ExcludeMissing
     private val content: JsonField<String> = JsonMissing.of(),
     @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("role") @ExcludeMissing private val role: JsonField<Role> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /** The role of the messages author, in this case `function`. */
-    fun role(): Role = role.getRequired("role")
 
     /** The contents of the function message. */
     fun content(): Optional<String> = Optional.ofNullable(content.getNullable("content"))
@@ -40,13 +37,16 @@ private constructor(
     fun name(): String = name.getRequired("name")
 
     /** The role of the messages author, in this case `function`. */
-    @JsonProperty("role") @ExcludeMissing fun _role() = role
+    fun role(): Role = role.getRequired("role")
 
     /** The contents of the function message. */
     @JsonProperty("content") @ExcludeMissing fun _content() = content
 
     /** The name of the function to call. */
     @JsonProperty("name") @ExcludeMissing fun _name() = name
+
+    /** The role of the messages author, in this case `function`. */
+    @JsonProperty("role") @ExcludeMissing fun _role() = role
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -56,9 +56,9 @@ private constructor(
 
     fun validate(): ChatCompletionFunctionMessageParam = apply {
         if (!validated) {
-            role()
             content()
             name()
+            role()
             validated = true
         }
     }
@@ -72,26 +72,20 @@ private constructor(
 
     class Builder {
 
-        private var role: JsonField<Role> = JsonMissing.of()
         private var content: JsonField<String> = JsonMissing.of()
         private var name: JsonField<String> = JsonMissing.of()
+        private var role: JsonField<Role> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(chatCompletionFunctionMessageParam: ChatCompletionFunctionMessageParam) =
             apply {
-                role = chatCompletionFunctionMessageParam.role
                 content = chatCompletionFunctionMessageParam.content
                 name = chatCompletionFunctionMessageParam.name
+                role = chatCompletionFunctionMessageParam.role
                 additionalProperties =
                     chatCompletionFunctionMessageParam.additionalProperties.toMutableMap()
             }
-
-        /** The role of the messages author, in this case `function`. */
-        fun role(role: Role) = role(JsonField.of(role))
-
-        /** The role of the messages author, in this case `function`. */
-        fun role(role: JsonField<Role>) = apply { this.role = role }
 
         /** The contents of the function message. */
         fun content(content: String) = content(JsonField.of(content))
@@ -104,6 +98,12 @@ private constructor(
 
         /** The name of the function to call. */
         fun name(name: JsonField<String>) = apply { this.name = name }
+
+        /** The role of the messages author, in this case `function`. */
+        fun role(role: Role) = role(JsonField.of(role))
+
+        /** The role of the messages author, in this case `function`. */
+        fun role(role: JsonField<Role>) = apply { this.role = role }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -126,9 +126,9 @@ private constructor(
 
         fun build(): ChatCompletionFunctionMessageParam =
             ChatCompletionFunctionMessageParam(
-                role,
                 content,
                 name,
+                role,
                 additionalProperties.toImmutable(),
             )
     }
@@ -189,15 +189,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionFunctionMessageParam && role == other.role && content == other.content && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionFunctionMessageParam && content == other.content && name == other.name && role == other.role && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(role, content, name, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(content, name, role, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ChatCompletionFunctionMessageParam{role=$role, content=$content, name=$name, additionalProperties=$additionalProperties}"
+        "ChatCompletionFunctionMessageParam{content=$content, name=$name, role=$role, additionalProperties=$additionalProperties}"
 }

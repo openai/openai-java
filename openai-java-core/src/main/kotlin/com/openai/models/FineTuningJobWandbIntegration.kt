@@ -28,10 +28,10 @@ private constructor(
     @JsonProperty("project")
     @ExcludeMissing
     private val project: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
     @JsonProperty("entity")
     @ExcludeMissing
     private val entity: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
     @JsonProperty("tags")
     @ExcludeMissing
     private val tags: JsonField<List<String>> = JsonMissing.of(),
@@ -41,15 +41,15 @@ private constructor(
     /** The name of the project that the new run will be created under. */
     fun project(): String = project.getRequired("project")
 
-    /** A display name to set for the run. If not set, we will use the Job ID as the name. */
-    fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
-
     /**
      * The entity to use for the run. This allows you to set the team or username of the WandB user
      * that you would like associated with the run. If not set, the default entity for the
      * registered WandB API key is used.
      */
     fun entity(): Optional<String> = Optional.ofNullable(entity.getNullable("entity"))
+
+    /** A display name to set for the run. If not set, we will use the Job ID as the name. */
+    fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
 
     /**
      * A list of tags to be attached to the newly created run. These tags are passed through
@@ -61,15 +61,15 @@ private constructor(
     /** The name of the project that the new run will be created under. */
     @JsonProperty("project") @ExcludeMissing fun _project() = project
 
-    /** A display name to set for the run. If not set, we will use the Job ID as the name. */
-    @JsonProperty("name") @ExcludeMissing fun _name() = name
-
     /**
      * The entity to use for the run. This allows you to set the team or username of the WandB user
      * that you would like associated with the run. If not set, the default entity for the
      * registered WandB API key is used.
      */
     @JsonProperty("entity") @ExcludeMissing fun _entity() = entity
+
+    /** A display name to set for the run. If not set, we will use the Job ID as the name. */
+    @JsonProperty("name") @ExcludeMissing fun _name() = name
 
     /**
      * A list of tags to be attached to the newly created run. These tags are passed through
@@ -87,8 +87,8 @@ private constructor(
     fun validate(): FineTuningJobWandbIntegration = apply {
         if (!validated) {
             project()
-            name()
             entity()
+            name()
             tags()
             validated = true
         }
@@ -104,16 +104,16 @@ private constructor(
     class Builder {
 
         private var project: JsonField<String> = JsonMissing.of()
-        private var name: JsonField<String> = JsonMissing.of()
         private var entity: JsonField<String> = JsonMissing.of()
+        private var name: JsonField<String> = JsonMissing.of()
         private var tags: JsonField<List<String>> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(fineTuningJobWandbIntegration: FineTuningJobWandbIntegration) = apply {
             project = fineTuningJobWandbIntegration.project
-            name = fineTuningJobWandbIntegration.name
             entity = fineTuningJobWandbIntegration.entity
+            name = fineTuningJobWandbIntegration.name
             tags = fineTuningJobWandbIntegration.tags
             additionalProperties = fineTuningJobWandbIntegration.additionalProperties.toMutableMap()
         }
@@ -123,12 +123,6 @@ private constructor(
 
         /** The name of the project that the new run will be created under. */
         fun project(project: JsonField<String>) = apply { this.project = project }
-
-        /** A display name to set for the run. If not set, we will use the Job ID as the name. */
-        fun name(name: String) = name(JsonField.of(name))
-
-        /** A display name to set for the run. If not set, we will use the Job ID as the name. */
-        fun name(name: JsonField<String>) = apply { this.name = name }
 
         /**
          * The entity to use for the run. This allows you to set the team or username of the WandB
@@ -143,6 +137,12 @@ private constructor(
          * registered WandB API key is used.
          */
         fun entity(entity: JsonField<String>) = apply { this.entity = entity }
+
+        /** A display name to set for the run. If not set, we will use the Job ID as the name. */
+        fun name(name: String) = name(JsonField.of(name))
+
+        /** A display name to set for the run. If not set, we will use the Job ID as the name. */
+        fun name(name: JsonField<String>) = apply { this.name = name }
 
         /**
          * A list of tags to be attached to the newly created run. These tags are passed through
@@ -180,8 +180,8 @@ private constructor(
         fun build(): FineTuningJobWandbIntegration =
             FineTuningJobWandbIntegration(
                 project,
-                name,
                 entity,
+                name,
                 tags.map { it.toImmutable() },
                 additionalProperties.toImmutable(),
             )
@@ -192,15 +192,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FineTuningJobWandbIntegration && project == other.project && name == other.name && entity == other.entity && tags == other.tags && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FineTuningJobWandbIntegration && project == other.project && entity == other.entity && name == other.name && tags == other.tags && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(project, name, entity, tags, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(project, entity, name, tags, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "FineTuningJobWandbIntegration{project=$project, name=$name, entity=$entity, tags=$tags, additionalProperties=$additionalProperties}"
+        "FineTuningJobWandbIntegration{project=$project, entity=$entity, name=$name, tags=$tags, additionalProperties=$additionalProperties}"
 }

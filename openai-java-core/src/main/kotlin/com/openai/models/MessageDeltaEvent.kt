@@ -23,32 +23,32 @@ class MessageDeltaEvent
 @JsonCreator
 private constructor(
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
     @JsonProperty("delta")
     @ExcludeMissing
     private val delta: JsonField<MessageDelta> = JsonMissing.of(),
+    @JsonProperty("object")
+    @ExcludeMissing
+    private val object_: JsonField<Object> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The identifier of the message, which can be referenced in API endpoints. */
     fun id(): String = id.getRequired("id")
 
-    /** The object type, which is always `thread.message.delta`. */
-    fun object_(): Object = object_.getRequired("object")
-
     /** The delta containing the fields that have changed on the Message. */
     fun delta(): MessageDelta = delta.getRequired("delta")
+
+    /** The object type, which is always `thread.message.delta`. */
+    fun object_(): Object = object_.getRequired("object")
 
     /** The identifier of the message, which can be referenced in API endpoints. */
     @JsonProperty("id") @ExcludeMissing fun _id() = id
 
-    /** The object type, which is always `thread.message.delta`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
-
     /** The delta containing the fields that have changed on the Message. */
     @JsonProperty("delta") @ExcludeMissing fun _delta() = delta
+
+    /** The object type, which is always `thread.message.delta`. */
+    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -59,8 +59,8 @@ private constructor(
     fun validate(): MessageDeltaEvent = apply {
         if (!validated) {
             id()
-            object_()
             delta().validate()
+            object_()
             validated = true
         }
     }
@@ -75,15 +75,15 @@ private constructor(
     class Builder {
 
         private var id: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
         private var delta: JsonField<MessageDelta> = JsonMissing.of()
+        private var object_: JsonField<Object> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(messageDeltaEvent: MessageDeltaEvent) = apply {
             id = messageDeltaEvent.id
-            object_ = messageDeltaEvent.object_
             delta = messageDeltaEvent.delta
+            object_ = messageDeltaEvent.object_
             additionalProperties = messageDeltaEvent.additionalProperties.toMutableMap()
         }
 
@@ -93,17 +93,17 @@ private constructor(
         /** The identifier of the message, which can be referenced in API endpoints. */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
-        /** The object type, which is always `thread.message.delta`. */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always `thread.message.delta`. */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
-
         /** The delta containing the fields that have changed on the Message. */
         fun delta(delta: MessageDelta) = delta(JsonField.of(delta))
 
         /** The delta containing the fields that have changed on the Message. */
         fun delta(delta: JsonField<MessageDelta>) = apply { this.delta = delta }
+
+        /** The object type, which is always `thread.message.delta`. */
+        fun object_(object_: Object) = object_(JsonField.of(object_))
+
+        /** The object type, which is always `thread.message.delta`. */
+        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -127,8 +127,8 @@ private constructor(
         fun build(): MessageDeltaEvent =
             MessageDeltaEvent(
                 id,
-                object_,
                 delta,
+                object_,
                 additionalProperties.toImmutable(),
             )
     }
@@ -189,15 +189,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is MessageDeltaEvent && id == other.id && object_ == other.object_ && delta == other.delta && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is MessageDeltaEvent && id == other.id && delta == other.delta && object_ == other.object_ && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, object_, delta, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, delta, object_, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "MessageDeltaEvent{id=$id, object_=$object_, delta=$delta, additionalProperties=$additionalProperties}"
+        "MessageDeltaEvent{id=$id, delta=$delta, object_=$object_, additionalProperties=$additionalProperties}"
 }

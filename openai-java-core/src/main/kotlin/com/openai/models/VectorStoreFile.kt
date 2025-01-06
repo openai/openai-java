@@ -24,24 +24,24 @@ class VectorStoreFile
 @JsonCreator
 private constructor(
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
-    @JsonProperty("usage_bytes")
-    @ExcludeMissing
-    private val usageBytes: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("created_at")
     @ExcludeMissing
     private val createdAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("vector_store_id")
-    @ExcludeMissing
-    private val vectorStoreId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("status")
-    @ExcludeMissing
-    private val status: JsonField<Status> = JsonMissing.of(),
     @JsonProperty("last_error")
     @ExcludeMissing
     private val lastError: JsonField<LastError> = JsonMissing.of(),
+    @JsonProperty("object")
+    @ExcludeMissing
+    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("status")
+    @ExcludeMissing
+    private val status: JsonField<Status> = JsonMissing.of(),
+    @JsonProperty("usage_bytes")
+    @ExcludeMissing
+    private val usageBytes: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("vector_store_id")
+    @ExcludeMissing
+    private val vectorStoreId: JsonField<String> = JsonMissing.of(),
     @JsonProperty("chunking_strategy")
     @ExcludeMissing
     private val chunkingStrategy: JsonField<FileChunkingStrategy> = JsonMissing.of(),
@@ -51,24 +51,16 @@ private constructor(
     /** The identifier, which can be referenced in API endpoints. */
     fun id(): String = id.getRequired("id")
 
-    /** The object type, which is always `vector_store.file`. */
-    fun object_(): Object = object_.getRequired("object")
-
-    /**
-     * The total vector store usage in bytes. Note that this may be different from the original file
-     * size.
-     */
-    fun usageBytes(): Long = usageBytes.getRequired("usage_bytes")
-
     /** The Unix timestamp (in seconds) for when the vector store file was created. */
     fun createdAt(): Long = createdAt.getRequired("created_at")
 
     /**
-     * The ID of the
-     * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that the
-     * [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+     * The last error associated with this vector store file. Will be `null` if there are no errors.
      */
-    fun vectorStoreId(): String = vectorStoreId.getRequired("vector_store_id")
+    fun lastError(): Optional<LastError> = Optional.ofNullable(lastError.getNullable("last_error"))
+
+    /** The object type, which is always `vector_store.file`. */
+    fun object_(): Object = object_.getRequired("object")
 
     /**
      * The status of the vector store file, which can be either `in_progress`, `completed`,
@@ -78,9 +70,17 @@ private constructor(
     fun status(): Status = status.getRequired("status")
 
     /**
-     * The last error associated with this vector store file. Will be `null` if there are no errors.
+     * The total vector store usage in bytes. Note that this may be different from the original file
+     * size.
      */
-    fun lastError(): Optional<LastError> = Optional.ofNullable(lastError.getNullable("last_error"))
+    fun usageBytes(): Long = usageBytes.getRequired("usage_bytes")
+
+    /**
+     * The ID of the
+     * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that the
+     * [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+     */
+    fun vectorStoreId(): String = vectorStoreId.getRequired("vector_store_id")
 
     /** The strategy used to chunk the file. */
     fun chunkingStrategy(): Optional<FileChunkingStrategy> =
@@ -89,24 +89,16 @@ private constructor(
     /** The identifier, which can be referenced in API endpoints. */
     @JsonProperty("id") @ExcludeMissing fun _id() = id
 
-    /** The object type, which is always `vector_store.file`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
-
-    /**
-     * The total vector store usage in bytes. Note that this may be different from the original file
-     * size.
-     */
-    @JsonProperty("usage_bytes") @ExcludeMissing fun _usageBytes() = usageBytes
-
     /** The Unix timestamp (in seconds) for when the vector store file was created. */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
 
     /**
-     * The ID of the
-     * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that the
-     * [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+     * The last error associated with this vector store file. Will be `null` if there are no errors.
      */
-    @JsonProperty("vector_store_id") @ExcludeMissing fun _vectorStoreId() = vectorStoreId
+    @JsonProperty("last_error") @ExcludeMissing fun _lastError() = lastError
+
+    /** The object type, which is always `vector_store.file`. */
+    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
 
     /**
      * The status of the vector store file, which can be either `in_progress`, `completed`,
@@ -116,9 +108,17 @@ private constructor(
     @JsonProperty("status") @ExcludeMissing fun _status() = status
 
     /**
-     * The last error associated with this vector store file. Will be `null` if there are no errors.
+     * The total vector store usage in bytes. Note that this may be different from the original file
+     * size.
      */
-    @JsonProperty("last_error") @ExcludeMissing fun _lastError() = lastError
+    @JsonProperty("usage_bytes") @ExcludeMissing fun _usageBytes() = usageBytes
+
+    /**
+     * The ID of the
+     * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that the
+     * [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+     */
+    @JsonProperty("vector_store_id") @ExcludeMissing fun _vectorStoreId() = vectorStoreId
 
     /** The strategy used to chunk the file. */
     @JsonProperty("chunking_strategy") @ExcludeMissing fun _chunkingStrategy() = chunkingStrategy
@@ -132,12 +132,12 @@ private constructor(
     fun validate(): VectorStoreFile = apply {
         if (!validated) {
             id()
-            object_()
-            usageBytes()
             createdAt()
-            vectorStoreId()
-            status()
             lastError().map { it.validate() }
+            object_()
+            status()
+            usageBytes()
+            vectorStoreId()
             chunkingStrategy()
             validated = true
         }
@@ -153,24 +153,24 @@ private constructor(
     class Builder {
 
         private var id: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
-        private var usageBytes: JsonField<Long> = JsonMissing.of()
         private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var vectorStoreId: JsonField<String> = JsonMissing.of()
-        private var status: JsonField<Status> = JsonMissing.of()
         private var lastError: JsonField<LastError> = JsonMissing.of()
+        private var object_: JsonField<Object> = JsonMissing.of()
+        private var status: JsonField<Status> = JsonMissing.of()
+        private var usageBytes: JsonField<Long> = JsonMissing.of()
+        private var vectorStoreId: JsonField<String> = JsonMissing.of()
         private var chunkingStrategy: JsonField<FileChunkingStrategy> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(vectorStoreFile: VectorStoreFile) = apply {
             id = vectorStoreFile.id
-            object_ = vectorStoreFile.object_
-            usageBytes = vectorStoreFile.usageBytes
             createdAt = vectorStoreFile.createdAt
-            vectorStoreId = vectorStoreFile.vectorStoreId
-            status = vectorStoreFile.status
             lastError = vectorStoreFile.lastError
+            object_ = vectorStoreFile.object_
+            status = vectorStoreFile.status
+            usageBytes = vectorStoreFile.usageBytes
+            vectorStoreId = vectorStoreFile.vectorStoreId
             chunkingStrategy = vectorStoreFile.chunkingStrategy
             additionalProperties = vectorStoreFile.additionalProperties.toMutableMap()
         }
@@ -181,24 +181,6 @@ private constructor(
         /** The identifier, which can be referenced in API endpoints. */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
-        /** The object type, which is always `vector_store.file`. */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always `vector_store.file`. */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
-
-        /**
-         * The total vector store usage in bytes. Note that this may be different from the original
-         * file size.
-         */
-        fun usageBytes(usageBytes: Long) = usageBytes(JsonField.of(usageBytes))
-
-        /**
-         * The total vector store usage in bytes. Note that this may be different from the original
-         * file size.
-         */
-        fun usageBytes(usageBytes: JsonField<Long>) = apply { this.usageBytes = usageBytes }
-
         /** The Unix timestamp (in seconds) for when the vector store file was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
@@ -206,20 +188,22 @@ private constructor(
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /**
-         * The ID of the
-         * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that
-         * the [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+         * The last error associated with this vector store file. Will be `null` if there are no
+         * errors.
          */
-        fun vectorStoreId(vectorStoreId: String) = vectorStoreId(JsonField.of(vectorStoreId))
+        fun lastError(lastError: LastError) = lastError(JsonField.of(lastError))
 
         /**
-         * The ID of the
-         * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that
-         * the [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+         * The last error associated with this vector store file. Will be `null` if there are no
+         * errors.
          */
-        fun vectorStoreId(vectorStoreId: JsonField<String>) = apply {
-            this.vectorStoreId = vectorStoreId
-        }
+        fun lastError(lastError: JsonField<LastError>) = apply { this.lastError = lastError }
+
+        /** The object type, which is always `vector_store.file`. */
+        fun object_(object_: Object) = object_(JsonField.of(object_))
+
+        /** The object type, which is always `vector_store.file`. */
+        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
 
         /**
          * The status of the vector store file, which can be either `in_progress`, `completed`,
@@ -236,16 +220,32 @@ private constructor(
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
         /**
-         * The last error associated with this vector store file. Will be `null` if there are no
-         * errors.
+         * The total vector store usage in bytes. Note that this may be different from the original
+         * file size.
          */
-        fun lastError(lastError: LastError) = lastError(JsonField.of(lastError))
+        fun usageBytes(usageBytes: Long) = usageBytes(JsonField.of(usageBytes))
 
         /**
-         * The last error associated with this vector store file. Will be `null` if there are no
-         * errors.
+         * The total vector store usage in bytes. Note that this may be different from the original
+         * file size.
          */
-        fun lastError(lastError: JsonField<LastError>) = apply { this.lastError = lastError }
+        fun usageBytes(usageBytes: JsonField<Long>) = apply { this.usageBytes = usageBytes }
+
+        /**
+         * The ID of the
+         * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that
+         * the [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+         */
+        fun vectorStoreId(vectorStoreId: String) = vectorStoreId(JsonField.of(vectorStoreId))
+
+        /**
+         * The ID of the
+         * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that
+         * the [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+         */
+        fun vectorStoreId(vectorStoreId: JsonField<String>) = apply {
+            this.vectorStoreId = vectorStoreId
+        }
 
         /** The strategy used to chunk the file. */
         fun chunkingStrategy(chunkingStrategy: FileChunkingStrategy) =
@@ -278,12 +278,12 @@ private constructor(
         fun build(): VectorStoreFile =
             VectorStoreFile(
                 id,
-                object_,
-                usageBytes,
                 createdAt,
-                vectorStoreId,
-                status,
                 lastError,
+                object_,
+                status,
+                usageBytes,
+                vectorStoreId,
                 chunkingStrategy,
                 additionalProperties.toImmutable(),
             )
@@ -595,15 +595,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is VectorStoreFile && id == other.id && object_ == other.object_ && usageBytes == other.usageBytes && createdAt == other.createdAt && vectorStoreId == other.vectorStoreId && status == other.status && lastError == other.lastError && chunkingStrategy == other.chunkingStrategy && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is VectorStoreFile && id == other.id && createdAt == other.createdAt && lastError == other.lastError && object_ == other.object_ && status == other.status && usageBytes == other.usageBytes && vectorStoreId == other.vectorStoreId && chunkingStrategy == other.chunkingStrategy && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, object_, usageBytes, createdAt, vectorStoreId, status, lastError, chunkingStrategy, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, createdAt, lastError, object_, status, usageBytes, vectorStoreId, chunkingStrategy, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "VectorStoreFile{id=$id, object_=$object_, usageBytes=$usageBytes, createdAt=$createdAt, vectorStoreId=$vectorStoreId, status=$status, lastError=$lastError, chunkingStrategy=$chunkingStrategy, additionalProperties=$additionalProperties}"
+        "VectorStoreFile{id=$id, createdAt=$createdAt, lastError=$lastError, object_=$object_, status=$status, usageBytes=$usageBytes, vectorStoreId=$vectorStoreId, chunkingStrategy=$chunkingStrategy, additionalProperties=$additionalProperties}"
 }

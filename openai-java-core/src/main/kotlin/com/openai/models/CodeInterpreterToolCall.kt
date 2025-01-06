@@ -35,15 +35,18 @@ class CodeInterpreterToolCall
 @JsonCreator
 private constructor(
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonProperty("code_interpreter")
     @ExcludeMissing
     private val codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The ID of the tool call. */
     fun id(): String = id.getRequired("id")
+
+    /** The Code Interpreter tool call definition. */
+    fun codeInterpreter(): CodeInterpreter = codeInterpreter.getRequired("code_interpreter")
 
     /**
      * The type of tool call. This is always going to be `code_interpreter` for this type of tool
@@ -51,20 +54,17 @@ private constructor(
      */
     fun type(): Type = type.getRequired("type")
 
-    /** The Code Interpreter tool call definition. */
-    fun codeInterpreter(): CodeInterpreter = codeInterpreter.getRequired("code_interpreter")
-
     /** The ID of the tool call. */
     @JsonProperty("id") @ExcludeMissing fun _id() = id
+
+    /** The Code Interpreter tool call definition. */
+    @JsonProperty("code_interpreter") @ExcludeMissing fun _codeInterpreter() = codeInterpreter
 
     /**
      * The type of tool call. This is always going to be `code_interpreter` for this type of tool
      * call.
      */
     @JsonProperty("type") @ExcludeMissing fun _type() = type
-
-    /** The Code Interpreter tool call definition. */
-    @JsonProperty("code_interpreter") @ExcludeMissing fun _codeInterpreter() = codeInterpreter
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -75,8 +75,8 @@ private constructor(
     fun validate(): CodeInterpreterToolCall = apply {
         if (!validated) {
             id()
-            type()
             codeInterpreter().validate()
+            type()
             validated = true
         }
     }
@@ -91,15 +91,15 @@ private constructor(
     class Builder {
 
         private var id: JsonField<String> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
         private var codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(codeInterpreterToolCall: CodeInterpreterToolCall) = apply {
             id = codeInterpreterToolCall.id
-            type = codeInterpreterToolCall.type
             codeInterpreter = codeInterpreterToolCall.codeInterpreter
+            type = codeInterpreterToolCall.type
             additionalProperties = codeInterpreterToolCall.additionalProperties.toMutableMap()
         }
 
@@ -108,6 +108,15 @@ private constructor(
 
         /** The ID of the tool call. */
         fun id(id: JsonField<String>) = apply { this.id = id }
+
+        /** The Code Interpreter tool call definition. */
+        fun codeInterpreter(codeInterpreter: CodeInterpreter) =
+            codeInterpreter(JsonField.of(codeInterpreter))
+
+        /** The Code Interpreter tool call definition. */
+        fun codeInterpreter(codeInterpreter: JsonField<CodeInterpreter>) = apply {
+            this.codeInterpreter = codeInterpreter
+        }
 
         /**
          * The type of tool call. This is always going to be `code_interpreter` for this type of
@@ -120,15 +129,6 @@ private constructor(
          * tool call.
          */
         fun type(type: JsonField<Type>) = apply { this.type = type }
-
-        /** The Code Interpreter tool call definition. */
-        fun codeInterpreter(codeInterpreter: CodeInterpreter) =
-            codeInterpreter(JsonField.of(codeInterpreter))
-
-        /** The Code Interpreter tool call definition. */
-        fun codeInterpreter(codeInterpreter: JsonField<CodeInterpreter>) = apply {
-            this.codeInterpreter = codeInterpreter
-        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -152,8 +152,8 @@ private constructor(
         fun build(): CodeInterpreterToolCall =
             CodeInterpreterToolCall(
                 id,
-                type,
                 codeInterpreter,
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -404,27 +404,27 @@ private constructor(
             class LogsOutput
             @JsonCreator
             private constructor(
-                @JsonProperty("type")
-                @ExcludeMissing
-                private val type: JsonField<Type> = JsonMissing.of(),
                 @JsonProperty("logs")
                 @ExcludeMissing
                 private val logs: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type")
+                @ExcludeMissing
+                private val type: JsonField<Type> = JsonMissing.of(),
                 @JsonAnySetter
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
-
-                /** Always `logs`. */
-                fun type(): Type = type.getRequired("type")
 
                 /** The text output from the Code Interpreter tool call. */
                 fun logs(): String = logs.getRequired("logs")
 
                 /** Always `logs`. */
-                @JsonProperty("type") @ExcludeMissing fun _type() = type
+                fun type(): Type = type.getRequired("type")
 
                 /** The text output from the Code Interpreter tool call. */
                 @JsonProperty("logs") @ExcludeMissing fun _logs() = logs
+
+                /** Always `logs`. */
+                @JsonProperty("type") @ExcludeMissing fun _type() = type
 
                 @JsonAnyGetter
                 @ExcludeMissing
@@ -434,8 +434,8 @@ private constructor(
 
                 fun validate(): LogsOutput = apply {
                     if (!validated) {
-                        type()
                         logs()
+                        type()
                         validated = true
                     }
                 }
@@ -449,28 +449,28 @@ private constructor(
 
                 class Builder {
 
-                    private var type: JsonField<Type> = JsonMissing.of()
                     private var logs: JsonField<String> = JsonMissing.of()
+                    private var type: JsonField<Type> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
                     internal fun from(logsOutput: LogsOutput) = apply {
-                        type = logsOutput.type
                         logs = logsOutput.logs
+                        type = logsOutput.type
                         additionalProperties = logsOutput.additionalProperties.toMutableMap()
                     }
-
-                    /** Always `logs`. */
-                    fun type(type: Type) = type(JsonField.of(type))
-
-                    /** Always `logs`. */
-                    fun type(type: JsonField<Type>) = apply { this.type = type }
 
                     /** The text output from the Code Interpreter tool call. */
                     fun logs(logs: String) = logs(JsonField.of(logs))
 
                     /** The text output from the Code Interpreter tool call. */
                     fun logs(logs: JsonField<String>) = apply { this.logs = logs }
+
+                    /** Always `logs`. */
+                    fun type(type: Type) = type(JsonField.of(type))
+
+                    /** Always `logs`. */
+                    fun type(type: JsonField<Type>) = apply { this.type = type }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
@@ -496,8 +496,8 @@ private constructor(
 
                     fun build(): LogsOutput =
                         LogsOutput(
-                            type,
                             logs,
+                            type,
                             additionalProperties.toImmutable(),
                         )
                 }
@@ -559,42 +559,42 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is LogsOutput && type == other.type && logs == other.logs && additionalProperties == other.additionalProperties /* spotless:on */
+                    return /* spotless:off */ other is LogsOutput && logs == other.logs && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
                 }
 
                 /* spotless:off */
-                private val hashCode: Int by lazy { Objects.hash(type, logs, additionalProperties) }
+                private val hashCode: Int by lazy { Objects.hash(logs, type, additionalProperties) }
                 /* spotless:on */
 
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "LogsOutput{type=$type, logs=$logs, additionalProperties=$additionalProperties}"
+                    "LogsOutput{logs=$logs, type=$type, additionalProperties=$additionalProperties}"
             }
 
             @NoAutoDetect
             class ImageOutput
             @JsonCreator
             private constructor(
-                @JsonProperty("type")
-                @ExcludeMissing
-                private val type: JsonField<Type> = JsonMissing.of(),
                 @JsonProperty("image")
                 @ExcludeMissing
                 private val image: JsonField<Image> = JsonMissing.of(),
+                @JsonProperty("type")
+                @ExcludeMissing
+                private val type: JsonField<Type> = JsonMissing.of(),
                 @JsonAnySetter
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
 
-                /** Always `image`. */
-                fun type(): Type = type.getRequired("type")
-
                 fun image(): Image = image.getRequired("image")
 
                 /** Always `image`. */
-                @JsonProperty("type") @ExcludeMissing fun _type() = type
+                fun type(): Type = type.getRequired("type")
 
                 @JsonProperty("image") @ExcludeMissing fun _image() = image
+
+                /** Always `image`. */
+                @JsonProperty("type") @ExcludeMissing fun _type() = type
 
                 @JsonAnyGetter
                 @ExcludeMissing
@@ -604,8 +604,8 @@ private constructor(
 
                 fun validate(): ImageOutput = apply {
                     if (!validated) {
-                        type()
                         image().validate()
+                        type()
                         validated = true
                     }
                 }
@@ -619,26 +619,26 @@ private constructor(
 
                 class Builder {
 
-                    private var type: JsonField<Type> = JsonMissing.of()
                     private var image: JsonField<Image> = JsonMissing.of()
+                    private var type: JsonField<Type> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
                     internal fun from(imageOutput: ImageOutput) = apply {
-                        type = imageOutput.type
                         image = imageOutput.image
+                        type = imageOutput.type
                         additionalProperties = imageOutput.additionalProperties.toMutableMap()
                     }
+
+                    fun image(image: Image) = image(JsonField.of(image))
+
+                    fun image(image: JsonField<Image>) = apply { this.image = image }
 
                     /** Always `image`. */
                     fun type(type: Type) = type(JsonField.of(type))
 
                     /** Always `image`. */
                     fun type(type: JsonField<Type>) = apply { this.type = type }
-
-                    fun image(image: Image) = image(JsonField.of(image))
-
-                    fun image(image: JsonField<Image>) = apply { this.image = image }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
@@ -664,8 +664,8 @@ private constructor(
 
                     fun build(): ImageOutput =
                         ImageOutput(
-                            type,
                             image,
+                            type,
                             additionalProperties.toImmutable(),
                         )
                 }
@@ -837,17 +837,17 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is ImageOutput && type == other.type && image == other.image && additionalProperties == other.additionalProperties /* spotless:on */
+                    return /* spotless:off */ other is ImageOutput && image == other.image && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
                 }
 
                 /* spotless:off */
-                private val hashCode: Int by lazy { Objects.hash(type, image, additionalProperties) }
+                private val hashCode: Int by lazy { Objects.hash(image, type, additionalProperties) }
                 /* spotless:on */
 
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "ImageOutput{type=$type, image=$image, additionalProperties=$additionalProperties}"
+                    "ImageOutput{image=$image, type=$type, additionalProperties=$additionalProperties}"
             }
         }
 
@@ -925,15 +925,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is CodeInterpreterToolCall && id == other.id && type == other.type && codeInterpreter == other.codeInterpreter && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is CodeInterpreterToolCall && id == other.id && codeInterpreter == other.codeInterpreter && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, type, codeInterpreter, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, codeInterpreter, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "CodeInterpreterToolCall{id=$id, type=$type, codeInterpreter=$codeInterpreter, additionalProperties=$additionalProperties}"
+        "CodeInterpreterToolCall{id=$id, codeInterpreter=$codeInterpreter, type=$type, additionalProperties=$additionalProperties}"
 }

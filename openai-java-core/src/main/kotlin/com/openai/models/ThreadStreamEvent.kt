@@ -26,18 +26,13 @@ import java.util.Optional
 class ThreadStreamEvent
 @JsonCreator
 private constructor(
+    @JsonProperty("data") @ExcludeMissing private val data: JsonField<Thread> = JsonMissing.of(),
+    @JsonProperty("event") @ExcludeMissing private val event: JsonField<Event> = JsonMissing.of(),
     @JsonProperty("enabled")
     @ExcludeMissing
     private val enabled: JsonField<Boolean> = JsonMissing.of(),
-    @JsonProperty("event") @ExcludeMissing private val event: JsonField<Event> = JsonMissing.of(),
-    @JsonProperty("data") @ExcludeMissing private val data: JsonField<Thread> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /** Whether to enable input audio transcription. */
-    fun enabled(): Optional<Boolean> = Optional.ofNullable(enabled.getNullable("enabled"))
-
-    fun event(): Event = event.getRequired("event")
 
     /**
      * Represents a thread that contains
@@ -45,16 +40,21 @@ private constructor(
      */
     fun data(): Thread = data.getRequired("data")
 
-    /** Whether to enable input audio transcription. */
-    @JsonProperty("enabled") @ExcludeMissing fun _enabled() = enabled
+    fun event(): Event = event.getRequired("event")
 
-    @JsonProperty("event") @ExcludeMissing fun _event() = event
+    /** Whether to enable input audio transcription. */
+    fun enabled(): Optional<Boolean> = Optional.ofNullable(enabled.getNullable("enabled"))
 
     /**
      * Represents a thread that contains
      * [messages](https://platform.openai.com/docs/api-reference/messages).
      */
     @JsonProperty("data") @ExcludeMissing fun _data() = data
+
+    @JsonProperty("event") @ExcludeMissing fun _event() = event
+
+    /** Whether to enable input audio transcription. */
+    @JsonProperty("enabled") @ExcludeMissing fun _enabled() = enabled
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -64,9 +64,9 @@ private constructor(
 
     fun validate(): ThreadStreamEvent = apply {
         if (!validated) {
-            enabled()
-            event()
             data().validate()
+            event()
+            enabled()
             validated = true
         }
     }
@@ -80,28 +80,18 @@ private constructor(
 
     class Builder {
 
-        private var enabled: JsonField<Boolean> = JsonMissing.of()
-        private var event: JsonField<Event> = JsonMissing.of()
         private var data: JsonField<Thread> = JsonMissing.of()
+        private var event: JsonField<Event> = JsonMissing.of()
+        private var enabled: JsonField<Boolean> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(threadStreamEvent: ThreadStreamEvent) = apply {
-            enabled = threadStreamEvent.enabled
-            event = threadStreamEvent.event
             data = threadStreamEvent.data
+            event = threadStreamEvent.event
+            enabled = threadStreamEvent.enabled
             additionalProperties = threadStreamEvent.additionalProperties.toMutableMap()
         }
-
-        /** Whether to enable input audio transcription. */
-        fun enabled(enabled: Boolean) = enabled(JsonField.of(enabled))
-
-        /** Whether to enable input audio transcription. */
-        fun enabled(enabled: JsonField<Boolean>) = apply { this.enabled = enabled }
-
-        fun event(event: Event) = event(JsonField.of(event))
-
-        fun event(event: JsonField<Event>) = apply { this.event = event }
 
         /**
          * Represents a thread that contains
@@ -114,6 +104,16 @@ private constructor(
          * [messages](https://platform.openai.com/docs/api-reference/messages).
          */
         fun data(data: JsonField<Thread>) = apply { this.data = data }
+
+        fun event(event: Event) = event(JsonField.of(event))
+
+        fun event(event: JsonField<Event>) = apply { this.event = event }
+
+        /** Whether to enable input audio transcription. */
+        fun enabled(enabled: Boolean) = enabled(JsonField.of(enabled))
+
+        /** Whether to enable input audio transcription. */
+        fun enabled(enabled: JsonField<Boolean>) = apply { this.enabled = enabled }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -136,9 +136,9 @@ private constructor(
 
         fun build(): ThreadStreamEvent =
             ThreadStreamEvent(
-                enabled,
-                event,
                 data,
+                event,
+                enabled,
                 additionalProperties.toImmutable(),
             )
     }
@@ -199,15 +199,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ThreadStreamEvent && enabled == other.enabled && event == other.event && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ThreadStreamEvent && data == other.data && event == other.event && enabled == other.enabled && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(enabled, event, data, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(data, event, enabled, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ThreadStreamEvent{enabled=$enabled, event=$event, data=$data, additionalProperties=$additionalProperties}"
+        "ThreadStreamEvent{data=$data, event=$event, enabled=$enabled, additionalProperties=$additionalProperties}"
 }

@@ -22,22 +22,22 @@ import java.util.Optional
 class ResponseFormatJsonSchema
 @JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonProperty("json_schema")
     @ExcludeMissing
     private val jsonSchema: JsonField<JsonSchema> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /** The type of response format being defined: `json_schema` */
-    fun type(): Type = type.getRequired("type")
 
     fun jsonSchema(): JsonSchema = jsonSchema.getRequired("json_schema")
 
     /** The type of response format being defined: `json_schema` */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    fun type(): Type = type.getRequired("type")
 
     @JsonProperty("json_schema") @ExcludeMissing fun _jsonSchema() = jsonSchema
+
+    /** The type of response format being defined: `json_schema` */
+    @JsonProperty("type") @ExcludeMissing fun _type() = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -47,8 +47,8 @@ private constructor(
 
     fun validate(): ResponseFormatJsonSchema = apply {
         if (!validated) {
-            type()
             jsonSchema().validate()
+            type()
             validated = true
         }
     }
@@ -62,26 +62,26 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type> = JsonMissing.of()
         private var jsonSchema: JsonField<JsonSchema> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(responseFormatJsonSchema: ResponseFormatJsonSchema) = apply {
-            type = responseFormatJsonSchema.type
             jsonSchema = responseFormatJsonSchema.jsonSchema
+            type = responseFormatJsonSchema.type
             additionalProperties = responseFormatJsonSchema.additionalProperties.toMutableMap()
         }
+
+        fun jsonSchema(jsonSchema: JsonSchema) = jsonSchema(JsonField.of(jsonSchema))
+
+        fun jsonSchema(jsonSchema: JsonField<JsonSchema>) = apply { this.jsonSchema = jsonSchema }
 
         /** The type of response format being defined: `json_schema` */
         fun type(type: Type) = type(JsonField.of(type))
 
         /** The type of response format being defined: `json_schema` */
         fun type(type: JsonField<Type>) = apply { this.type = type }
-
-        fun jsonSchema(jsonSchema: JsonSchema) = jsonSchema(JsonField.of(jsonSchema))
-
-        fun jsonSchema(jsonSchema: JsonField<JsonSchema>) = apply { this.jsonSchema = jsonSchema }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -104,8 +104,8 @@ private constructor(
 
         fun build(): ResponseFormatJsonSchema =
             ResponseFormatJsonSchema(
-                type,
                 jsonSchema,
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -114,12 +114,12 @@ private constructor(
     class JsonSchema
     @JsonCreator
     private constructor(
-        @JsonProperty("description")
-        @ExcludeMissing
-        private val description: JsonField<String> = JsonMissing.of(),
         @JsonProperty("name")
         @ExcludeMissing
         private val name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("description")
+        @ExcludeMissing
+        private val description: JsonField<String> = JsonMissing.of(),
         @JsonProperty("schema")
         @ExcludeMissing
         private val schema: JsonField<Schema> = JsonMissing.of(),
@@ -131,17 +131,17 @@ private constructor(
     ) {
 
         /**
+         * The name of the response format. Must be a-z, A-Z, 0-9, or contain underscores and
+         * dashes, with a maximum length of 64.
+         */
+        fun name(): String = name.getRequired("name")
+
+        /**
          * A description of what the response format is for, used by the model to determine how to
          * respond in the format.
          */
         fun description(): Optional<String> =
             Optional.ofNullable(description.getNullable("description"))
-
-        /**
-         * The name of the response format. Must be a-z, A-Z, 0-9, or contain underscores and
-         * dashes, with a maximum length of 64.
-         */
-        fun name(): String = name.getRequired("name")
 
         /** The schema for the response format, described as a JSON Schema object. */
         fun schema(): Optional<Schema> = Optional.ofNullable(schema.getNullable("schema"))
@@ -155,16 +155,16 @@ private constructor(
         fun strict(): Optional<Boolean> = Optional.ofNullable(strict.getNullable("strict"))
 
         /**
-         * A description of what the response format is for, used by the model to determine how to
-         * respond in the format.
-         */
-        @JsonProperty("description") @ExcludeMissing fun _description() = description
-
-        /**
          * The name of the response format. Must be a-z, A-Z, 0-9, or contain underscores and
          * dashes, with a maximum length of 64.
          */
         @JsonProperty("name") @ExcludeMissing fun _name() = name
+
+        /**
+         * A description of what the response format is for, used by the model to determine how to
+         * respond in the format.
+         */
+        @JsonProperty("description") @ExcludeMissing fun _description() = description
 
         /** The schema for the response format, described as a JSON Schema object. */
         @JsonProperty("schema") @ExcludeMissing fun _schema() = schema
@@ -185,8 +185,8 @@ private constructor(
 
         fun validate(): JsonSchema = apply {
             if (!validated) {
-                description()
                 name()
+                description()
                 schema().map { it.validate() }
                 strict()
                 validated = true
@@ -202,20 +202,32 @@ private constructor(
 
         class Builder {
 
-            private var description: JsonField<String> = JsonMissing.of()
             private var name: JsonField<String> = JsonMissing.of()
+            private var description: JsonField<String> = JsonMissing.of()
             private var schema: JsonField<Schema> = JsonMissing.of()
             private var strict: JsonField<Boolean> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(jsonSchema: JsonSchema) = apply {
-                description = jsonSchema.description
                 name = jsonSchema.name
+                description = jsonSchema.description
                 schema = jsonSchema.schema
                 strict = jsonSchema.strict
                 additionalProperties = jsonSchema.additionalProperties.toMutableMap()
             }
+
+            /**
+             * The name of the response format. Must be a-z, A-Z, 0-9, or contain underscores and
+             * dashes, with a maximum length of 64.
+             */
+            fun name(name: String) = name(JsonField.of(name))
+
+            /**
+             * The name of the response format. Must be a-z, A-Z, 0-9, or contain underscores and
+             * dashes, with a maximum length of 64.
+             */
+            fun name(name: JsonField<String>) = apply { this.name = name }
 
             /**
              * A description of what the response format is for, used by the model to determine how
@@ -230,18 +242,6 @@ private constructor(
             fun description(description: JsonField<String>) = apply {
                 this.description = description
             }
-
-            /**
-             * The name of the response format. Must be a-z, A-Z, 0-9, or contain underscores and
-             * dashes, with a maximum length of 64.
-             */
-            fun name(name: String) = name(JsonField.of(name))
-
-            /**
-             * The name of the response format. Must be a-z, A-Z, 0-9, or contain underscores and
-             * dashes, with a maximum length of 64.
-             */
-            fun name(name: JsonField<String>) = apply { this.name = name }
 
             /** The schema for the response format, described as a JSON Schema object. */
             fun schema(schema: Schema) = schema(JsonField.of(schema))
@@ -286,8 +286,8 @@ private constructor(
 
             fun build(): JsonSchema =
                 JsonSchema(
-                    description,
                     name,
+                    description,
                     schema,
                     strict,
                     additionalProperties.toImmutable(),
@@ -378,17 +378,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is JsonSchema && description == other.description && name == other.name && schema == other.schema && strict == other.strict && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is JsonSchema && name == other.name && description == other.description && schema == other.schema && strict == other.strict && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(description, name, schema, strict, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(name, description, schema, strict, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "JsonSchema{description=$description, name=$name, schema=$schema, strict=$strict, additionalProperties=$additionalProperties}"
+            "JsonSchema{name=$name, description=$description, schema=$schema, strict=$strict, additionalProperties=$additionalProperties}"
     }
 
     class Type
@@ -447,15 +447,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseFormatJsonSchema && type == other.type && jsonSchema == other.jsonSchema && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseFormatJsonSchema && jsonSchema == other.jsonSchema && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(type, jsonSchema, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(jsonSchema, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseFormatJsonSchema{type=$type, jsonSchema=$jsonSchema, additionalProperties=$additionalProperties}"
+        "ResponseFormatJsonSchema{jsonSchema=$jsonSchema, type=$type, additionalProperties=$additionalProperties}"
 }

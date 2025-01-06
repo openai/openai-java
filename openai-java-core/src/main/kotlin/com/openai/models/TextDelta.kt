@@ -20,23 +20,23 @@ import java.util.Optional
 class TextDelta
 @JsonCreator
 private constructor(
-    @JsonProperty("value") @ExcludeMissing private val value: JsonField<String> = JsonMissing.of(),
     @JsonProperty("annotations")
     @ExcludeMissing
     private val annotations: JsonField<List<AnnotationDelta>> = JsonMissing.of(),
+    @JsonProperty("value") @ExcludeMissing private val value: JsonField<String> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /** The data that makes up the text. */
-    fun value(): Optional<String> = Optional.ofNullable(value.getNullable("value"))
 
     fun annotations(): Optional<List<AnnotationDelta>> =
         Optional.ofNullable(annotations.getNullable("annotations"))
 
     /** The data that makes up the text. */
-    @JsonProperty("value") @ExcludeMissing fun _value() = value
+    fun value(): Optional<String> = Optional.ofNullable(value.getNullable("value"))
 
     @JsonProperty("annotations") @ExcludeMissing fun _annotations() = annotations
+
+    /** The data that makes up the text. */
+    @JsonProperty("value") @ExcludeMissing fun _value() = value
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -46,8 +46,8 @@ private constructor(
 
     fun validate(): TextDelta = apply {
         if (!validated) {
-            value()
             annotations()
+            value()
             validated = true
         }
     }
@@ -61,15 +61,21 @@ private constructor(
 
     class Builder {
 
-        private var value: JsonField<String> = JsonMissing.of()
         private var annotations: JsonField<List<AnnotationDelta>> = JsonMissing.of()
+        private var value: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(textDelta: TextDelta) = apply {
-            value = textDelta.value
             annotations = textDelta.annotations
+            value = textDelta.value
             additionalProperties = textDelta.additionalProperties.toMutableMap()
+        }
+
+        fun annotations(annotations: List<AnnotationDelta>) = annotations(JsonField.of(annotations))
+
+        fun annotations(annotations: JsonField<List<AnnotationDelta>>) = apply {
+            this.annotations = annotations
         }
 
         /** The data that makes up the text. */
@@ -77,12 +83,6 @@ private constructor(
 
         /** The data that makes up the text. */
         fun value(value: JsonField<String>) = apply { this.value = value }
-
-        fun annotations(annotations: List<AnnotationDelta>) = annotations(JsonField.of(annotations))
-
-        fun annotations(annotations: JsonField<List<AnnotationDelta>>) = apply {
-            this.annotations = annotations
-        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -105,8 +105,8 @@ private constructor(
 
         fun build(): TextDelta =
             TextDelta(
-                value,
                 annotations.map { it.toImmutable() },
+                value,
                 additionalProperties.toImmutable(),
             )
     }
@@ -116,15 +116,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is TextDelta && value == other.value && annotations == other.annotations && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is TextDelta && annotations == other.annotations && value == other.value && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(value, annotations, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(annotations, value, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "TextDelta{value=$value, annotations=$annotations, additionalProperties=$additionalProperties}"
+        "TextDelta{annotations=$annotations, value=$value, additionalProperties=$additionalProperties}"
 }

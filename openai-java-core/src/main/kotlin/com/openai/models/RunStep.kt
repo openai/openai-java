@@ -35,42 +35,42 @@ class RunStep
 @JsonCreator
 private constructor(
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
-    @JsonProperty("created_at")
-    @ExcludeMissing
-    private val createdAt: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("assistant_id")
     @ExcludeMissing
     private val assistantId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("thread_id")
+    @JsonProperty("cancelled_at")
     @ExcludeMissing
-    private val threadId: JsonField<String> = JsonMissing.of(),
+    private val cancelledAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("completed_at")
+    @ExcludeMissing
+    private val completedAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("created_at")
+    @ExcludeMissing
+    private val createdAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("expired_at")
+    @ExcludeMissing
+    private val expiredAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("failed_at")
+    @ExcludeMissing
+    private val failedAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("last_error")
+    @ExcludeMissing
+    private val lastError: JsonField<LastError> = JsonMissing.of(),
+    @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonValue = JsonMissing.of(),
+    @JsonProperty("object")
+    @ExcludeMissing
+    private val object_: JsonField<Object> = JsonMissing.of(),
     @JsonProperty("run_id") @ExcludeMissing private val runId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonProperty("status")
     @ExcludeMissing
     private val status: JsonField<Status> = JsonMissing.of(),
     @JsonProperty("step_details")
     @ExcludeMissing
     private val stepDetails: JsonField<StepDetails> = JsonMissing.of(),
-    @JsonProperty("last_error")
+    @JsonProperty("thread_id")
     @ExcludeMissing
-    private val lastError: JsonField<LastError> = JsonMissing.of(),
-    @JsonProperty("expired_at")
-    @ExcludeMissing
-    private val expiredAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("cancelled_at")
-    @ExcludeMissing
-    private val cancelledAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("failed_at")
-    @ExcludeMissing
-    private val failedAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("completed_at")
-    @ExcludeMissing
-    private val completedAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonValue = JsonMissing.of(),
+    private val threadId: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonProperty("usage") @ExcludeMissing private val usage: JsonField<Usage> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
@@ -78,31 +78,41 @@ private constructor(
     /** The identifier of the run step, which can be referenced in API endpoints. */
     fun id(): String = id.getRequired("id")
 
-    /** The object type, which is always `thread.run.step`. */
-    fun object_(): Object = object_.getRequired("object")
-
-    /** The Unix timestamp (in seconds) for when the run step was created. */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
-
     /**
      * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants)
      * associated with the run step.
      */
     fun assistantId(): String = assistantId.getRequired("assistant_id")
 
+    /** The Unix timestamp (in seconds) for when the run step was cancelled. */
+    fun cancelledAt(): Optional<Long> = Optional.ofNullable(cancelledAt.getNullable("cancelled_at"))
+
+    /** The Unix timestamp (in seconds) for when the run step completed. */
+    fun completedAt(): Optional<Long> = Optional.ofNullable(completedAt.getNullable("completed_at"))
+
+    /** The Unix timestamp (in seconds) for when the run step was created. */
+    fun createdAt(): Long = createdAt.getRequired("created_at")
+
     /**
-     * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was run.
+     * The Unix timestamp (in seconds) for when the run step expired. A step is considered expired
+     * if the parent run is expired.
      */
-    fun threadId(): String = threadId.getRequired("thread_id")
+    fun expiredAt(): Optional<Long> = Optional.ofNullable(expiredAt.getNullable("expired_at"))
+
+    /** The Unix timestamp (in seconds) for when the run step failed. */
+    fun failedAt(): Optional<Long> = Optional.ofNullable(failedAt.getNullable("failed_at"))
+
+    /** The last error associated with this run step. Will be `null` if there are no errors. */
+    fun lastError(): Optional<LastError> = Optional.ofNullable(lastError.getNullable("last_error"))
+
+    /** The object type, which is always `thread.run.step`. */
+    fun object_(): Object = object_.getRequired("object")
 
     /**
      * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) that this run step
      * is a part of.
      */
     fun runId(): String = runId.getRequired("run_id")
-
-    /** The type of run step, which can be either `message_creation` or `tool_calls`. */
-    fun type(): Type = type.getRequired("type")
 
     /**
      * The status of the run step, which can be either `in_progress`, `cancelled`, `failed`,
@@ -113,23 +123,13 @@ private constructor(
     /** The details of the run step. */
     fun stepDetails(): StepDetails = stepDetails.getRequired("step_details")
 
-    /** The last error associated with this run step. Will be `null` if there are no errors. */
-    fun lastError(): Optional<LastError> = Optional.ofNullable(lastError.getNullable("last_error"))
-
     /**
-     * The Unix timestamp (in seconds) for when the run step expired. A step is considered expired
-     * if the parent run is expired.
+     * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was run.
      */
-    fun expiredAt(): Optional<Long> = Optional.ofNullable(expiredAt.getNullable("expired_at"))
+    fun threadId(): String = threadId.getRequired("thread_id")
 
-    /** The Unix timestamp (in seconds) for when the run step was cancelled. */
-    fun cancelledAt(): Optional<Long> = Optional.ofNullable(cancelledAt.getNullable("cancelled_at"))
-
-    /** The Unix timestamp (in seconds) for when the run step failed. */
-    fun failedAt(): Optional<Long> = Optional.ofNullable(failedAt.getNullable("failed_at"))
-
-    /** The Unix timestamp (in seconds) for when the run step completed. */
-    fun completedAt(): Optional<Long> = Optional.ofNullable(completedAt.getNullable("completed_at"))
+    /** The type of run step, which can be either `message_creation` or `tool_calls`. */
+    fun type(): Type = type.getRequired("type")
 
     /**
      * Usage statistics related to the run step. This value will be `null` while the run step's
@@ -140,31 +140,48 @@ private constructor(
     /** The identifier of the run step, which can be referenced in API endpoints. */
     @JsonProperty("id") @ExcludeMissing fun _id() = id
 
-    /** The object type, which is always `thread.run.step`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
-
-    /** The Unix timestamp (in seconds) for when the run step was created. */
-    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
-
     /**
      * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants)
      * associated with the run step.
      */
     @JsonProperty("assistant_id") @ExcludeMissing fun _assistantId() = assistantId
 
+    /** The Unix timestamp (in seconds) for when the run step was cancelled. */
+    @JsonProperty("cancelled_at") @ExcludeMissing fun _cancelledAt() = cancelledAt
+
+    /** The Unix timestamp (in seconds) for when the run step completed. */
+    @JsonProperty("completed_at") @ExcludeMissing fun _completedAt() = completedAt
+
+    /** The Unix timestamp (in seconds) for when the run step was created. */
+    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
+
     /**
-     * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was run.
+     * The Unix timestamp (in seconds) for when the run step expired. A step is considered expired
+     * if the parent run is expired.
      */
-    @JsonProperty("thread_id") @ExcludeMissing fun _threadId() = threadId
+    @JsonProperty("expired_at") @ExcludeMissing fun _expiredAt() = expiredAt
+
+    /** The Unix timestamp (in seconds) for when the run step failed. */
+    @JsonProperty("failed_at") @ExcludeMissing fun _failedAt() = failedAt
+
+    /** The last error associated with this run step. Will be `null` if there are no errors. */
+    @JsonProperty("last_error") @ExcludeMissing fun _lastError() = lastError
+
+    /**
+     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
+     * additional information about the object in a structured format. Keys can be a maximum of 64
+     * characters long and values can be a maximum of 512 characters long.
+     */
+    @JsonProperty("metadata") @ExcludeMissing fun _metadata() = metadata
+
+    /** The object type, which is always `thread.run.step`. */
+    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
 
     /**
      * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) that this run step
      * is a part of.
      */
     @JsonProperty("run_id") @ExcludeMissing fun _runId() = runId
-
-    /** The type of run step, which can be either `message_creation` or `tool_calls`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
 
     /**
      * The status of the run step, which can be either `in_progress`, `cancelled`, `failed`,
@@ -175,30 +192,13 @@ private constructor(
     /** The details of the run step. */
     @JsonProperty("step_details") @ExcludeMissing fun _stepDetails() = stepDetails
 
-    /** The last error associated with this run step. Will be `null` if there are no errors. */
-    @JsonProperty("last_error") @ExcludeMissing fun _lastError() = lastError
-
     /**
-     * The Unix timestamp (in seconds) for when the run step expired. A step is considered expired
-     * if the parent run is expired.
+     * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was run.
      */
-    @JsonProperty("expired_at") @ExcludeMissing fun _expiredAt() = expiredAt
+    @JsonProperty("thread_id") @ExcludeMissing fun _threadId() = threadId
 
-    /** The Unix timestamp (in seconds) for when the run step was cancelled. */
-    @JsonProperty("cancelled_at") @ExcludeMissing fun _cancelledAt() = cancelledAt
-
-    /** The Unix timestamp (in seconds) for when the run step failed. */
-    @JsonProperty("failed_at") @ExcludeMissing fun _failedAt() = failedAt
-
-    /** The Unix timestamp (in seconds) for when the run step completed. */
-    @JsonProperty("completed_at") @ExcludeMissing fun _completedAt() = completedAt
-
-    /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format. Keys can be a maximum of 64
-     * characters long and values can be a maximum of 512 characters long.
-     */
-    @JsonProperty("metadata") @ExcludeMissing fun _metadata() = metadata
+    /** The type of run step, which can be either `message_creation` or `tool_calls`. */
+    @JsonProperty("type") @ExcludeMissing fun _type() = type
 
     /**
      * Usage statistics related to the run step. This value will be `null` while the run step's
@@ -215,19 +215,19 @@ private constructor(
     fun validate(): RunStep = apply {
         if (!validated) {
             id()
-            object_()
-            createdAt()
             assistantId()
-            threadId()
+            cancelledAt()
+            completedAt()
+            createdAt()
+            expiredAt()
+            failedAt()
+            lastError().map { it.validate() }
+            object_()
             runId()
-            type()
             status()
             stepDetails()
-            lastError().map { it.validate() }
-            expiredAt()
-            cancelledAt()
-            failedAt()
-            completedAt()
+            threadId()
+            type()
             usage().map { it.validate() }
             validated = true
         }
@@ -243,40 +243,40 @@ private constructor(
     class Builder {
 
         private var id: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
-        private var createdAt: JsonField<Long> = JsonMissing.of()
         private var assistantId: JsonField<String> = JsonMissing.of()
-        private var threadId: JsonField<String> = JsonMissing.of()
+        private var cancelledAt: JsonField<Long> = JsonMissing.of()
+        private var completedAt: JsonField<Long> = JsonMissing.of()
+        private var createdAt: JsonField<Long> = JsonMissing.of()
+        private var expiredAt: JsonField<Long> = JsonMissing.of()
+        private var failedAt: JsonField<Long> = JsonMissing.of()
+        private var lastError: JsonField<LastError> = JsonMissing.of()
+        private var metadata: JsonValue = JsonMissing.of()
+        private var object_: JsonField<Object> = JsonMissing.of()
         private var runId: JsonField<String> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
         private var status: JsonField<Status> = JsonMissing.of()
         private var stepDetails: JsonField<StepDetails> = JsonMissing.of()
-        private var lastError: JsonField<LastError> = JsonMissing.of()
-        private var expiredAt: JsonField<Long> = JsonMissing.of()
-        private var cancelledAt: JsonField<Long> = JsonMissing.of()
-        private var failedAt: JsonField<Long> = JsonMissing.of()
-        private var completedAt: JsonField<Long> = JsonMissing.of()
-        private var metadata: JsonValue = JsonMissing.of()
+        private var threadId: JsonField<String> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
         private var usage: JsonField<Usage> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(runStep: RunStep) = apply {
             id = runStep.id
-            object_ = runStep.object_
-            createdAt = runStep.createdAt
             assistantId = runStep.assistantId
-            threadId = runStep.threadId
+            cancelledAt = runStep.cancelledAt
+            completedAt = runStep.completedAt
+            createdAt = runStep.createdAt
+            expiredAt = runStep.expiredAt
+            failedAt = runStep.failedAt
+            lastError = runStep.lastError
+            metadata = runStep.metadata
+            object_ = runStep.object_
             runId = runStep.runId
-            type = runStep.type
             status = runStep.status
             stepDetails = runStep.stepDetails
-            lastError = runStep.lastError
-            expiredAt = runStep.expiredAt
-            cancelledAt = runStep.cancelledAt
-            failedAt = runStep.failedAt
-            completedAt = runStep.completedAt
-            metadata = runStep.metadata
+            threadId = runStep.threadId
+            type = runStep.type
             usage = runStep.usage
             additionalProperties = runStep.additionalProperties.toMutableMap()
         }
@@ -286,18 +286,6 @@ private constructor(
 
         /** The identifier of the run step, which can be referenced in API endpoints. */
         fun id(id: JsonField<String>) = apply { this.id = id }
-
-        /** The object type, which is always `thread.run.step`. */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always `thread.run.step`. */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
-
-        /** The Unix timestamp (in seconds) for when the run step was created. */
-        fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
-
-        /** The Unix timestamp (in seconds) for when the run step was created. */
-        fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /**
          * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants)
@@ -311,17 +299,60 @@ private constructor(
          */
         fun assistantId(assistantId: JsonField<String>) = apply { this.assistantId = assistantId }
 
-        /**
-         * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was
-         * run.
-         */
-        fun threadId(threadId: String) = threadId(JsonField.of(threadId))
+        /** The Unix timestamp (in seconds) for when the run step was cancelled. */
+        fun cancelledAt(cancelledAt: Long) = cancelledAt(JsonField.of(cancelledAt))
+
+        /** The Unix timestamp (in seconds) for when the run step was cancelled. */
+        fun cancelledAt(cancelledAt: JsonField<Long>) = apply { this.cancelledAt = cancelledAt }
+
+        /** The Unix timestamp (in seconds) for when the run step completed. */
+        fun completedAt(completedAt: Long) = completedAt(JsonField.of(completedAt))
+
+        /** The Unix timestamp (in seconds) for when the run step completed. */
+        fun completedAt(completedAt: JsonField<Long>) = apply { this.completedAt = completedAt }
+
+        /** The Unix timestamp (in seconds) for when the run step was created. */
+        fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
+
+        /** The Unix timestamp (in seconds) for when the run step was created. */
+        fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /**
-         * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was
-         * run.
+         * The Unix timestamp (in seconds) for when the run step expired. A step is considered
+         * expired if the parent run is expired.
          */
-        fun threadId(threadId: JsonField<String>) = apply { this.threadId = threadId }
+        fun expiredAt(expiredAt: Long) = expiredAt(JsonField.of(expiredAt))
+
+        /**
+         * The Unix timestamp (in seconds) for when the run step expired. A step is considered
+         * expired if the parent run is expired.
+         */
+        fun expiredAt(expiredAt: JsonField<Long>) = apply { this.expiredAt = expiredAt }
+
+        /** The Unix timestamp (in seconds) for when the run step failed. */
+        fun failedAt(failedAt: Long) = failedAt(JsonField.of(failedAt))
+
+        /** The Unix timestamp (in seconds) for when the run step failed. */
+        fun failedAt(failedAt: JsonField<Long>) = apply { this.failedAt = failedAt }
+
+        /** The last error associated with this run step. Will be `null` if there are no errors. */
+        fun lastError(lastError: LastError) = lastError(JsonField.of(lastError))
+
+        /** The last error associated with this run step. Will be `null` if there are no errors. */
+        fun lastError(lastError: JsonField<LastError>) = apply { this.lastError = lastError }
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format. Keys can be a
+         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         */
+        fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
+
+        /** The object type, which is always `thread.run.step`. */
+        fun object_(object_: Object) = object_(JsonField.of(object_))
+
+        /** The object type, which is always `thread.run.step`. */
+        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
 
         /**
          * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) that this run
@@ -334,12 +365,6 @@ private constructor(
          * step is a part of.
          */
         fun runId(runId: JsonField<String>) = apply { this.runId = runId }
-
-        /** The type of run step, which can be either `message_creation` or `tool_calls`. */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /** The type of run step, which can be either `message_creation` or `tool_calls`. */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
 
         /**
          * The status of the run step, which can be either `in_progress`, `cancelled`, `failed`,
@@ -361,48 +386,23 @@ private constructor(
             this.stepDetails = stepDetails
         }
 
-        /** The last error associated with this run step. Will be `null` if there are no errors. */
-        fun lastError(lastError: LastError) = lastError(JsonField.of(lastError))
-
-        /** The last error associated with this run step. Will be `null` if there are no errors. */
-        fun lastError(lastError: JsonField<LastError>) = apply { this.lastError = lastError }
+        /**
+         * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was
+         * run.
+         */
+        fun threadId(threadId: String) = threadId(JsonField.of(threadId))
 
         /**
-         * The Unix timestamp (in seconds) for when the run step expired. A step is considered
-         * expired if the parent run is expired.
+         * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was
+         * run.
          */
-        fun expiredAt(expiredAt: Long) = expiredAt(JsonField.of(expiredAt))
+        fun threadId(threadId: JsonField<String>) = apply { this.threadId = threadId }
 
-        /**
-         * The Unix timestamp (in seconds) for when the run step expired. A step is considered
-         * expired if the parent run is expired.
-         */
-        fun expiredAt(expiredAt: JsonField<Long>) = apply { this.expiredAt = expiredAt }
+        /** The type of run step, which can be either `message_creation` or `tool_calls`. */
+        fun type(type: Type) = type(JsonField.of(type))
 
-        /** The Unix timestamp (in seconds) for when the run step was cancelled. */
-        fun cancelledAt(cancelledAt: Long) = cancelledAt(JsonField.of(cancelledAt))
-
-        /** The Unix timestamp (in seconds) for when the run step was cancelled. */
-        fun cancelledAt(cancelledAt: JsonField<Long>) = apply { this.cancelledAt = cancelledAt }
-
-        /** The Unix timestamp (in seconds) for when the run step failed. */
-        fun failedAt(failedAt: Long) = failedAt(JsonField.of(failedAt))
-
-        /** The Unix timestamp (in seconds) for when the run step failed. */
-        fun failedAt(failedAt: JsonField<Long>) = apply { this.failedAt = failedAt }
-
-        /** The Unix timestamp (in seconds) for when the run step completed. */
-        fun completedAt(completedAt: Long) = completedAt(JsonField.of(completedAt))
-
-        /** The Unix timestamp (in seconds) for when the run step completed. */
-        fun completedAt(completedAt: JsonField<Long>) = apply { this.completedAt = completedAt }
-
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format. Keys can be a
-         * maximum of 64 characters long and values can be a maximum of 512 characters long.
-         */
-        fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
+        /** The type of run step, which can be either `message_creation` or `tool_calls`. */
+        fun type(type: JsonField<Type>) = apply { this.type = type }
 
         /**
          * Usage statistics related to the run step. This value will be `null` while the run step's
@@ -438,20 +438,20 @@ private constructor(
         fun build(): RunStep =
             RunStep(
                 id,
-                object_,
-                createdAt,
                 assistantId,
-                threadId,
+                cancelledAt,
+                completedAt,
+                createdAt,
+                expiredAt,
+                failedAt,
+                lastError,
+                metadata,
+                object_,
                 runId,
-                type,
                 status,
                 stepDetails,
-                lastError,
-                expiredAt,
-                cancelledAt,
-                failedAt,
-                completedAt,
-                metadata,
+                threadId,
+                type,
                 usage,
                 additionalProperties.toImmutable(),
             )
@@ -1113,15 +1113,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is RunStep && id == other.id && object_ == other.object_ && createdAt == other.createdAt && assistantId == other.assistantId && threadId == other.threadId && runId == other.runId && type == other.type && status == other.status && stepDetails == other.stepDetails && lastError == other.lastError && expiredAt == other.expiredAt && cancelledAt == other.cancelledAt && failedAt == other.failedAt && completedAt == other.completedAt && metadata == other.metadata && usage == other.usage && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is RunStep && id == other.id && assistantId == other.assistantId && cancelledAt == other.cancelledAt && completedAt == other.completedAt && createdAt == other.createdAt && expiredAt == other.expiredAt && failedAt == other.failedAt && lastError == other.lastError && metadata == other.metadata && object_ == other.object_ && runId == other.runId && status == other.status && stepDetails == other.stepDetails && threadId == other.threadId && type == other.type && usage == other.usage && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, object_, createdAt, assistantId, threadId, runId, type, status, stepDetails, lastError, expiredAt, cancelledAt, failedAt, completedAt, metadata, usage, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, assistantId, cancelledAt, completedAt, createdAt, expiredAt, failedAt, lastError, metadata, object_, runId, status, stepDetails, threadId, type, usage, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "RunStep{id=$id, object_=$object_, createdAt=$createdAt, assistantId=$assistantId, threadId=$threadId, runId=$runId, type=$type, status=$status, stepDetails=$stepDetails, lastError=$lastError, expiredAt=$expiredAt, cancelledAt=$cancelledAt, failedAt=$failedAt, completedAt=$completedAt, metadata=$metadata, usage=$usage, additionalProperties=$additionalProperties}"
+        "RunStep{id=$id, assistantId=$assistantId, cancelledAt=$cancelledAt, completedAt=$completedAt, createdAt=$createdAt, expiredAt=$expiredAt, failedAt=$failedAt, lastError=$lastError, metadata=$metadata, object_=$object_, runId=$runId, status=$status, stepDetails=$stepDetails, threadId=$threadId, type=$type, usage=$usage, additionalProperties=$additionalProperties}"
 }

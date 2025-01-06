@@ -23,30 +23,30 @@ class FunctionToolCall
 @JsonCreator
 private constructor(
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonProperty("function")
     @ExcludeMissing
     private val function: JsonField<Function> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The ID of the tool call object. */
     fun id(): String = id.getRequired("id")
 
-    /** The type of tool call. This is always going to be `function` for this type of tool call. */
-    fun type(): Type = type.getRequired("type")
-
     /** The definition of the function that was called. */
     fun function(): Function = function.getRequired("function")
+
+    /** The type of tool call. This is always going to be `function` for this type of tool call. */
+    fun type(): Type = type.getRequired("type")
 
     /** The ID of the tool call object. */
     @JsonProperty("id") @ExcludeMissing fun _id() = id
 
-    /** The type of tool call. This is always going to be `function` for this type of tool call. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
-
     /** The definition of the function that was called. */
     @JsonProperty("function") @ExcludeMissing fun _function() = function
+
+    /** The type of tool call. This is always going to be `function` for this type of tool call. */
+    @JsonProperty("type") @ExcludeMissing fun _type() = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -57,8 +57,8 @@ private constructor(
     fun validate(): FunctionToolCall = apply {
         if (!validated) {
             id()
-            type()
             function().validate()
+            type()
             validated = true
         }
     }
@@ -73,15 +73,15 @@ private constructor(
     class Builder {
 
         private var id: JsonField<String> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
         private var function: JsonField<Function> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(functionToolCall: FunctionToolCall) = apply {
             id = functionToolCall.id
-            type = functionToolCall.type
             function = functionToolCall.function
+            type = functionToolCall.type
             additionalProperties = functionToolCall.additionalProperties.toMutableMap()
         }
 
@@ -90,6 +90,12 @@ private constructor(
 
         /** The ID of the tool call object. */
         fun id(id: JsonField<String>) = apply { this.id = id }
+
+        /** The definition of the function that was called. */
+        fun function(function: Function) = function(JsonField.of(function))
+
+        /** The definition of the function that was called. */
+        fun function(function: JsonField<Function>) = apply { this.function = function }
 
         /**
          * The type of tool call. This is always going to be `function` for this type of tool call.
@@ -100,12 +106,6 @@ private constructor(
          * The type of tool call. This is always going to be `function` for this type of tool call.
          */
         fun type(type: JsonField<Type>) = apply { this.type = type }
-
-        /** The definition of the function that was called. */
-        fun function(function: Function) = function(JsonField.of(function))
-
-        /** The definition of the function that was called. */
-        fun function(function: JsonField<Function>) = apply { this.function = function }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -129,8 +129,8 @@ private constructor(
         fun build(): FunctionToolCall =
             FunctionToolCall(
                 id,
-                type,
                 function,
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -140,12 +140,12 @@ private constructor(
     class Function
     @JsonCreator
     private constructor(
-        @JsonProperty("name")
-        @ExcludeMissing
-        private val name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("arguments")
         @ExcludeMissing
         private val arguments: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("name")
+        @ExcludeMissing
+        private val name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("output")
         @ExcludeMissing
         private val output: JsonField<String> = JsonMissing.of(),
@@ -153,11 +153,11 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The name of the function. */
-        fun name(): String = name.getRequired("name")
-
         /** The arguments passed to the function. */
         fun arguments(): String = arguments.getRequired("arguments")
+
+        /** The name of the function. */
+        fun name(): String = name.getRequired("name")
 
         /**
          * The output of the function. This will be `null` if the outputs have not been
@@ -165,11 +165,11 @@ private constructor(
          */
         fun output(): Optional<String> = Optional.ofNullable(output.getNullable("output"))
 
-        /** The name of the function. */
-        @JsonProperty("name") @ExcludeMissing fun _name() = name
-
         /** The arguments passed to the function. */
         @JsonProperty("arguments") @ExcludeMissing fun _arguments() = arguments
+
+        /** The name of the function. */
+        @JsonProperty("name") @ExcludeMissing fun _name() = name
 
         /**
          * The output of the function. This will be `null` if the outputs have not been
@@ -185,8 +185,8 @@ private constructor(
 
         fun validate(): Function = apply {
             if (!validated) {
-                name()
                 arguments()
+                name()
                 output()
                 validated = true
             }
@@ -201,30 +201,30 @@ private constructor(
 
         class Builder {
 
-            private var name: JsonField<String> = JsonMissing.of()
             private var arguments: JsonField<String> = JsonMissing.of()
+            private var name: JsonField<String> = JsonMissing.of()
             private var output: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(function: Function) = apply {
-                name = function.name
                 arguments = function.arguments
+                name = function.name
                 output = function.output
                 additionalProperties = function.additionalProperties.toMutableMap()
             }
-
-            /** The name of the function. */
-            fun name(name: String) = name(JsonField.of(name))
-
-            /** The name of the function. */
-            fun name(name: JsonField<String>) = apply { this.name = name }
 
             /** The arguments passed to the function. */
             fun arguments(arguments: String) = arguments(JsonField.of(arguments))
 
             /** The arguments passed to the function. */
             fun arguments(arguments: JsonField<String>) = apply { this.arguments = arguments }
+
+            /** The name of the function. */
+            fun name(name: String) = name(JsonField.of(name))
+
+            /** The name of the function. */
+            fun name(name: JsonField<String>) = apply { this.name = name }
 
             /**
              * The output of the function. This will be `null` if the outputs have not been
@@ -261,8 +261,8 @@ private constructor(
 
             fun build(): Function =
                 Function(
-                    name,
                     arguments,
+                    name,
                     output,
                     additionalProperties.toImmutable(),
                 )
@@ -273,17 +273,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Function && name == other.name && arguments == other.arguments && output == other.output && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Function && arguments == other.arguments && name == other.name && output == other.output && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(name, arguments, output, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(arguments, name, output, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Function{name=$name, arguments=$arguments, output=$output, additionalProperties=$additionalProperties}"
+            "Function{arguments=$arguments, name=$name, output=$output, additionalProperties=$additionalProperties}"
     }
 
     class Type
@@ -342,15 +342,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FunctionToolCall && id == other.id && type == other.type && function == other.function && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FunctionToolCall && id == other.id && function == other.function && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, type, function, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, function, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "FunctionToolCall{id=$id, type=$type, function=$function, additionalProperties=$additionalProperties}"
+        "FunctionToolCall{id=$id, function=$function, type=$type, additionalProperties=$additionalProperties}"
 }

@@ -23,25 +23,25 @@ import java.util.Optional
 class MessageDelta
 @JsonCreator
 private constructor(
-    @JsonProperty("role") @ExcludeMissing private val role: JsonField<Role> = JsonMissing.of(),
     @JsonProperty("content")
     @ExcludeMissing
     private val content: JsonField<List<MessageContentDelta>> = JsonMissing.of(),
+    @JsonProperty("role") @ExcludeMissing private val role: JsonField<Role> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /** The entity that produced the message. One of `user` or `assistant`. */
-    fun role(): Optional<Role> = Optional.ofNullable(role.getNullable("role"))
 
     /** The content of the message in array of text and/or images. */
     fun content(): Optional<List<MessageContentDelta>> =
         Optional.ofNullable(content.getNullable("content"))
 
     /** The entity that produced the message. One of `user` or `assistant`. */
-    @JsonProperty("role") @ExcludeMissing fun _role() = role
+    fun role(): Optional<Role> = Optional.ofNullable(role.getNullable("role"))
 
     /** The content of the message in array of text and/or images. */
     @JsonProperty("content") @ExcludeMissing fun _content() = content
+
+    /** The entity that produced the message. One of `user` or `assistant`. */
+    @JsonProperty("role") @ExcludeMissing fun _role() = role
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -51,8 +51,8 @@ private constructor(
 
     fun validate(): MessageDelta = apply {
         if (!validated) {
-            role()
             content()
+            role()
             validated = true
         }
     }
@@ -66,22 +66,16 @@ private constructor(
 
     class Builder {
 
-        private var role: JsonField<Role> = JsonMissing.of()
         private var content: JsonField<List<MessageContentDelta>> = JsonMissing.of()
+        private var role: JsonField<Role> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(messageDelta: MessageDelta) = apply {
-            role = messageDelta.role
             content = messageDelta.content
+            role = messageDelta.role
             additionalProperties = messageDelta.additionalProperties.toMutableMap()
         }
-
-        /** The entity that produced the message. One of `user` or `assistant`. */
-        fun role(role: Role) = role(JsonField.of(role))
-
-        /** The entity that produced the message. One of `user` or `assistant`. */
-        fun role(role: JsonField<Role>) = apply { this.role = role }
 
         /** The content of the message in array of text and/or images. */
         fun content(content: List<MessageContentDelta>) = content(JsonField.of(content))
@@ -90,6 +84,12 @@ private constructor(
         fun content(content: JsonField<List<MessageContentDelta>>) = apply {
             this.content = content
         }
+
+        /** The entity that produced the message. One of `user` or `assistant`. */
+        fun role(role: Role) = role(JsonField.of(role))
+
+        /** The entity that produced the message. One of `user` or `assistant`. */
+        fun role(role: JsonField<Role>) = apply { this.role = role }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -112,8 +112,8 @@ private constructor(
 
         fun build(): MessageDelta =
             MessageDelta(
-                role,
                 content.map { it.toImmutable() },
+                role,
                 additionalProperties.toImmutable(),
             )
     }
@@ -180,15 +180,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is MessageDelta && role == other.role && content == other.content && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is MessageDelta && content == other.content && role == other.role && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(role, content, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(content, role, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "MessageDelta{role=$role, content=$content, additionalProperties=$additionalProperties}"
+        "MessageDelta{content=$content, role=$role, additionalProperties=$additionalProperties}"
 }

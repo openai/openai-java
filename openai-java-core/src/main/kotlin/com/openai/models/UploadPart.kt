@@ -26,12 +26,12 @@ private constructor(
     @JsonProperty("created_at")
     @ExcludeMissing
     private val createdAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("upload_id")
-    @ExcludeMissing
-    private val uploadId: JsonField<String> = JsonMissing.of(),
     @JsonProperty("object")
     @ExcludeMissing
     private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("upload_id")
+    @ExcludeMissing
+    private val uploadId: JsonField<String> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
@@ -41,11 +41,11 @@ private constructor(
     /** The Unix timestamp (in seconds) for when the Part was created. */
     fun createdAt(): Long = createdAt.getRequired("created_at")
 
-    /** The ID of the Upload object that this Part was added to. */
-    fun uploadId(): String = uploadId.getRequired("upload_id")
-
     /** The object type, which is always `upload.part`. */
     fun object_(): Object = object_.getRequired("object")
+
+    /** The ID of the Upload object that this Part was added to. */
+    fun uploadId(): String = uploadId.getRequired("upload_id")
 
     /** The upload Part unique identifier, which can be referenced in API endpoints. */
     @JsonProperty("id") @ExcludeMissing fun _id() = id
@@ -53,11 +53,11 @@ private constructor(
     /** The Unix timestamp (in seconds) for when the Part was created. */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
 
-    /** The ID of the Upload object that this Part was added to. */
-    @JsonProperty("upload_id") @ExcludeMissing fun _uploadId() = uploadId
-
     /** The object type, which is always `upload.part`. */
     @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+
+    /** The ID of the Upload object that this Part was added to. */
+    @JsonProperty("upload_id") @ExcludeMissing fun _uploadId() = uploadId
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -69,8 +69,8 @@ private constructor(
         if (!validated) {
             id()
             createdAt()
-            uploadId()
             object_()
+            uploadId()
             validated = true
         }
     }
@@ -86,16 +86,16 @@ private constructor(
 
         private var id: JsonField<String> = JsonMissing.of()
         private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var uploadId: JsonField<String> = JsonMissing.of()
         private var object_: JsonField<Object> = JsonMissing.of()
+        private var uploadId: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(uploadPart: UploadPart) = apply {
             id = uploadPart.id
             createdAt = uploadPart.createdAt
-            uploadId = uploadPart.uploadId
             object_ = uploadPart.object_
+            uploadId = uploadPart.uploadId
             additionalProperties = uploadPart.additionalProperties.toMutableMap()
         }
 
@@ -111,17 +111,17 @@ private constructor(
         /** The Unix timestamp (in seconds) for when the Part was created. */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
-        /** The ID of the Upload object that this Part was added to. */
-        fun uploadId(uploadId: String) = uploadId(JsonField.of(uploadId))
-
-        /** The ID of the Upload object that this Part was added to. */
-        fun uploadId(uploadId: JsonField<String>) = apply { this.uploadId = uploadId }
-
         /** The object type, which is always `upload.part`. */
         fun object_(object_: Object) = object_(JsonField.of(object_))
 
         /** The object type, which is always `upload.part`. */
         fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+
+        /** The ID of the Upload object that this Part was added to. */
+        fun uploadId(uploadId: String) = uploadId(JsonField.of(uploadId))
+
+        /** The ID of the Upload object that this Part was added to. */
+        fun uploadId(uploadId: JsonField<String>) = apply { this.uploadId = uploadId }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -146,8 +146,8 @@ private constructor(
             UploadPart(
                 id,
                 createdAt,
-                uploadId,
                 object_,
+                uploadId,
                 additionalProperties.toImmutable(),
             )
     }
@@ -208,15 +208,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is UploadPart && id == other.id && createdAt == other.createdAt && uploadId == other.uploadId && object_ == other.object_ && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is UploadPart && id == other.id && createdAt == other.createdAt && object_ == other.object_ && uploadId == other.uploadId && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, createdAt, uploadId, object_, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, createdAt, object_, uploadId, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "UploadPart{id=$id, createdAt=$createdAt, uploadId=$uploadId, object_=$object_, additionalProperties=$additionalProperties}"
+        "UploadPart{id=$id, createdAt=$createdAt, object_=$object_, uploadId=$uploadId, additionalProperties=$additionalProperties}"
 }

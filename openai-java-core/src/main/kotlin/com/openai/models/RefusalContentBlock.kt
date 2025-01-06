@@ -22,22 +22,22 @@ import java.util.Objects
 class RefusalContentBlock
 @JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonProperty("refusal")
     @ExcludeMissing
     private val refusal: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /** Always `refusal`. */
-    fun type(): Type = type.getRequired("type")
 
     fun refusal(): String = refusal.getRequired("refusal")
 
     /** Always `refusal`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    fun type(): Type = type.getRequired("type")
 
     @JsonProperty("refusal") @ExcludeMissing fun _refusal() = refusal
+
+    /** Always `refusal`. */
+    @JsonProperty("type") @ExcludeMissing fun _type() = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -47,8 +47,8 @@ private constructor(
 
     fun validate(): RefusalContentBlock = apply {
         if (!validated) {
-            type()
             refusal()
+            type()
             validated = true
         }
     }
@@ -62,26 +62,26 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type> = JsonMissing.of()
         private var refusal: JsonField<String> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(refusalContentBlock: RefusalContentBlock) = apply {
-            type = refusalContentBlock.type
             refusal = refusalContentBlock.refusal
+            type = refusalContentBlock.type
             additionalProperties = refusalContentBlock.additionalProperties.toMutableMap()
         }
+
+        fun refusal(refusal: String) = refusal(JsonField.of(refusal))
+
+        fun refusal(refusal: JsonField<String>) = apply { this.refusal = refusal }
 
         /** Always `refusal`. */
         fun type(type: Type) = type(JsonField.of(type))
 
         /** Always `refusal`. */
         fun type(type: JsonField<Type>) = apply { this.type = type }
-
-        fun refusal(refusal: String) = refusal(JsonField.of(refusal))
-
-        fun refusal(refusal: JsonField<String>) = apply { this.refusal = refusal }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -104,8 +104,8 @@ private constructor(
 
         fun build(): RefusalContentBlock =
             RefusalContentBlock(
-                type,
                 refusal,
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -166,15 +166,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is RefusalContentBlock && type == other.type && refusal == other.refusal && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is RefusalContentBlock && refusal == other.refusal && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(type, refusal, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(refusal, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "RefusalContentBlock{type=$type, refusal=$refusal, additionalProperties=$additionalProperties}"
+        "RefusalContentBlock{refusal=$refusal, type=$type, additionalProperties=$additionalProperties}"
 }

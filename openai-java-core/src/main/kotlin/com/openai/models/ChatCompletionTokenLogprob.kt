@@ -21,12 +21,12 @@ class ChatCompletionTokenLogprob
 @JsonCreator
 private constructor(
     @JsonProperty("token") @ExcludeMissing private val token: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("logprob")
-    @ExcludeMissing
-    private val logprob: JsonField<Double> = JsonMissing.of(),
     @JsonProperty("bytes")
     @ExcludeMissing
     private val bytes: JsonField<List<Long>> = JsonMissing.of(),
+    @JsonProperty("logprob")
+    @ExcludeMissing
+    private val logprob: JsonField<Double> = JsonMissing.of(),
     @JsonProperty("top_logprobs")
     @ExcludeMissing
     private val topLogprobs: JsonField<List<TopLogprob>> = JsonMissing.of(),
@@ -37,18 +37,18 @@ private constructor(
     fun token(): String = token.getRequired("token")
 
     /**
-     * The log probability of this token, if it is within the top 20 most likely tokens. Otherwise,
-     * the value `-9999.0` is used to signify that the token is very unlikely.
-     */
-    fun logprob(): Double = logprob.getRequired("logprob")
-
-    /**
      * A list of integers representing the UTF-8 bytes representation of the token. Useful in
      * instances where characters are represented by multiple tokens and their byte representations
      * must be combined to generate the correct text representation. Can be `null` if there is no
      * bytes representation for the token.
      */
     fun bytes(): Optional<List<Long>> = Optional.ofNullable(bytes.getNullable("bytes"))
+
+    /**
+     * The log probability of this token, if it is within the top 20 most likely tokens. Otherwise,
+     * the value `-9999.0` is used to signify that the token is very unlikely.
+     */
+    fun logprob(): Double = logprob.getRequired("logprob")
 
     /**
      * List of the most likely tokens and their log probability, at this token position. In rare
@@ -60,18 +60,18 @@ private constructor(
     @JsonProperty("token") @ExcludeMissing fun _token() = token
 
     /**
-     * The log probability of this token, if it is within the top 20 most likely tokens. Otherwise,
-     * the value `-9999.0` is used to signify that the token is very unlikely.
-     */
-    @JsonProperty("logprob") @ExcludeMissing fun _logprob() = logprob
-
-    /**
      * A list of integers representing the UTF-8 bytes representation of the token. Useful in
      * instances where characters are represented by multiple tokens and their byte representations
      * must be combined to generate the correct text representation. Can be `null` if there is no
      * bytes representation for the token.
      */
     @JsonProperty("bytes") @ExcludeMissing fun _bytes() = bytes
+
+    /**
+     * The log probability of this token, if it is within the top 20 most likely tokens. Otherwise,
+     * the value `-9999.0` is used to signify that the token is very unlikely.
+     */
+    @JsonProperty("logprob") @ExcludeMissing fun _logprob() = logprob
 
     /**
      * List of the most likely tokens and their log probability, at this token position. In rare
@@ -88,8 +88,8 @@ private constructor(
     fun validate(): ChatCompletionTokenLogprob = apply {
         if (!validated) {
             token()
-            logprob()
             bytes()
+            logprob()
             topLogprobs().forEach { it.validate() }
             validated = true
         }
@@ -105,16 +105,16 @@ private constructor(
     class Builder {
 
         private var token: JsonField<String> = JsonMissing.of()
-        private var logprob: JsonField<Double> = JsonMissing.of()
         private var bytes: JsonField<List<Long>> = JsonMissing.of()
+        private var logprob: JsonField<Double> = JsonMissing.of()
         private var topLogprobs: JsonField<List<TopLogprob>> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(chatCompletionTokenLogprob: ChatCompletionTokenLogprob) = apply {
             token = chatCompletionTokenLogprob.token
-            logprob = chatCompletionTokenLogprob.logprob
             bytes = chatCompletionTokenLogprob.bytes
+            logprob = chatCompletionTokenLogprob.logprob
             topLogprobs = chatCompletionTokenLogprob.topLogprobs
             additionalProperties = chatCompletionTokenLogprob.additionalProperties.toMutableMap()
         }
@@ -124,18 +124,6 @@ private constructor(
 
         /** The token. */
         fun token(token: JsonField<String>) = apply { this.token = token }
-
-        /**
-         * The log probability of this token, if it is within the top 20 most likely tokens.
-         * Otherwise, the value `-9999.0` is used to signify that the token is very unlikely.
-         */
-        fun logprob(logprob: Double) = logprob(JsonField.of(logprob))
-
-        /**
-         * The log probability of this token, if it is within the top 20 most likely tokens.
-         * Otherwise, the value `-9999.0` is used to signify that the token is very unlikely.
-         */
-        fun logprob(logprob: JsonField<Double>) = apply { this.logprob = logprob }
 
         /**
          * A list of integers representing the UTF-8 bytes representation of the token. Useful in
@@ -152,6 +140,18 @@ private constructor(
          * `null` if there is no bytes representation for the token.
          */
         fun bytes(bytes: JsonField<List<Long>>) = apply { this.bytes = bytes }
+
+        /**
+         * The log probability of this token, if it is within the top 20 most likely tokens.
+         * Otherwise, the value `-9999.0` is used to signify that the token is very unlikely.
+         */
+        fun logprob(logprob: Double) = logprob(JsonField.of(logprob))
+
+        /**
+         * The log probability of this token, if it is within the top 20 most likely tokens.
+         * Otherwise, the value `-9999.0` is used to signify that the token is very unlikely.
+         */
+        fun logprob(logprob: JsonField<Double>) = apply { this.logprob = logprob }
 
         /**
          * List of the most likely tokens and their log probability, at this token position. In rare
@@ -189,8 +189,8 @@ private constructor(
         fun build(): ChatCompletionTokenLogprob =
             ChatCompletionTokenLogprob(
                 token,
-                logprob,
                 bytes.map { it.toImmutable() },
+                logprob,
                 topLogprobs.map { it.toImmutable() },
                 additionalProperties.toImmutable(),
             )
@@ -203,24 +203,18 @@ private constructor(
         @JsonProperty("token")
         @ExcludeMissing
         private val token: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("logprob")
-        @ExcludeMissing
-        private val logprob: JsonField<Double> = JsonMissing.of(),
         @JsonProperty("bytes")
         @ExcludeMissing
         private val bytes: JsonField<List<Long>> = JsonMissing.of(),
+        @JsonProperty("logprob")
+        @ExcludeMissing
+        private val logprob: JsonField<Double> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** The token. */
         fun token(): String = token.getRequired("token")
-
-        /**
-         * The log probability of this token, if it is within the top 20 most likely tokens.
-         * Otherwise, the value `-9999.0` is used to signify that the token is very unlikely.
-         */
-        fun logprob(): Double = logprob.getRequired("logprob")
 
         /**
          * A list of integers representing the UTF-8 bytes representation of the token. Useful in
@@ -230,14 +224,14 @@ private constructor(
          */
         fun bytes(): Optional<List<Long>> = Optional.ofNullable(bytes.getNullable("bytes"))
 
-        /** The token. */
-        @JsonProperty("token") @ExcludeMissing fun _token() = token
-
         /**
          * The log probability of this token, if it is within the top 20 most likely tokens.
          * Otherwise, the value `-9999.0` is used to signify that the token is very unlikely.
          */
-        @JsonProperty("logprob") @ExcludeMissing fun _logprob() = logprob
+        fun logprob(): Double = logprob.getRequired("logprob")
+
+        /** The token. */
+        @JsonProperty("token") @ExcludeMissing fun _token() = token
 
         /**
          * A list of integers representing the UTF-8 bytes representation of the token. Useful in
@@ -246,6 +240,12 @@ private constructor(
          * `null` if there is no bytes representation for the token.
          */
         @JsonProperty("bytes") @ExcludeMissing fun _bytes() = bytes
+
+        /**
+         * The log probability of this token, if it is within the top 20 most likely tokens.
+         * Otherwise, the value `-9999.0` is used to signify that the token is very unlikely.
+         */
+        @JsonProperty("logprob") @ExcludeMissing fun _logprob() = logprob
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -256,8 +256,8 @@ private constructor(
         fun validate(): TopLogprob = apply {
             if (!validated) {
                 token()
-                logprob()
                 bytes()
+                logprob()
                 validated = true
             }
         }
@@ -272,15 +272,15 @@ private constructor(
         class Builder {
 
             private var token: JsonField<String> = JsonMissing.of()
-            private var logprob: JsonField<Double> = JsonMissing.of()
             private var bytes: JsonField<List<Long>> = JsonMissing.of()
+            private var logprob: JsonField<Double> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(topLogprob: TopLogprob) = apply {
                 token = topLogprob.token
-                logprob = topLogprob.logprob
                 bytes = topLogprob.bytes
+                logprob = topLogprob.logprob
                 additionalProperties = topLogprob.additionalProperties.toMutableMap()
             }
 
@@ -289,18 +289,6 @@ private constructor(
 
             /** The token. */
             fun token(token: JsonField<String>) = apply { this.token = token }
-
-            /**
-             * The log probability of this token, if it is within the top 20 most likely tokens.
-             * Otherwise, the value `-9999.0` is used to signify that the token is very unlikely.
-             */
-            fun logprob(logprob: Double) = logprob(JsonField.of(logprob))
-
-            /**
-             * The log probability of this token, if it is within the top 20 most likely tokens.
-             * Otherwise, the value `-9999.0` is used to signify that the token is very unlikely.
-             */
-            fun logprob(logprob: JsonField<Double>) = apply { this.logprob = logprob }
 
             /**
              * A list of integers representing the UTF-8 bytes representation of the token. Useful
@@ -317,6 +305,18 @@ private constructor(
              * `null` if there is no bytes representation for the token.
              */
             fun bytes(bytes: JsonField<List<Long>>) = apply { this.bytes = bytes }
+
+            /**
+             * The log probability of this token, if it is within the top 20 most likely tokens.
+             * Otherwise, the value `-9999.0` is used to signify that the token is very unlikely.
+             */
+            fun logprob(logprob: Double) = logprob(JsonField.of(logprob))
+
+            /**
+             * The log probability of this token, if it is within the top 20 most likely tokens.
+             * Otherwise, the value `-9999.0` is used to signify that the token is very unlikely.
+             */
+            fun logprob(logprob: JsonField<Double>) = apply { this.logprob = logprob }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -340,8 +340,8 @@ private constructor(
             fun build(): TopLogprob =
                 TopLogprob(
                     token,
-                    logprob,
                     bytes.map { it.toImmutable() },
+                    logprob,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -351,17 +351,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is TopLogprob && token == other.token && logprob == other.logprob && bytes == other.bytes && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is TopLogprob && token == other.token && bytes == other.bytes && logprob == other.logprob && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(token, logprob, bytes, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(token, bytes, logprob, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "TopLogprob{token=$token, logprob=$logprob, bytes=$bytes, additionalProperties=$additionalProperties}"
+            "TopLogprob{token=$token, bytes=$bytes, logprob=$logprob, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -369,15 +369,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionTokenLogprob && token == other.token && logprob == other.logprob && bytes == other.bytes && topLogprobs == other.topLogprobs && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionTokenLogprob && token == other.token && bytes == other.bytes && logprob == other.logprob && topLogprobs == other.topLogprobs && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(token, logprob, bytes, topLogprobs, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(token, bytes, logprob, topLogprobs, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ChatCompletionTokenLogprob{token=$token, logprob=$logprob, bytes=$bytes, topLogprobs=$topLogprobs, additionalProperties=$additionalProperties}"
+        "ChatCompletionTokenLogprob{token=$token, bytes=$bytes, logprob=$logprob, topLogprobs=$topLogprobs, additionalProperties=$additionalProperties}"
 }

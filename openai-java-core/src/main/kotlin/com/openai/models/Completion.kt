@@ -34,12 +34,12 @@ private constructor(
     @ExcludeMissing
     private val created: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("system_fingerprint")
-    @ExcludeMissing
-    private val systemFingerprint: JsonField<String> = JsonMissing.of(),
     @JsonProperty("object")
     @ExcludeMissing
     private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("system_fingerprint")
+    @ExcludeMissing
+    private val systemFingerprint: JsonField<String> = JsonMissing.of(),
     @JsonProperty("usage")
     @ExcludeMissing
     private val usage: JsonField<CompletionUsage> = JsonMissing.of(),
@@ -58,6 +58,9 @@ private constructor(
     /** The model used for completion. */
     fun model(): String = model.getRequired("model")
 
+    /** The object type, which is always "text_completion" */
+    fun object_(): Object = object_.getRequired("object")
+
     /**
      * This fingerprint represents the backend configuration that the model runs with.
      *
@@ -66,9 +69,6 @@ private constructor(
      */
     fun systemFingerprint(): Optional<String> =
         Optional.ofNullable(systemFingerprint.getNullable("system_fingerprint"))
-
-    /** The object type, which is always "text_completion" */
-    fun object_(): Object = object_.getRequired("object")
 
     /** Usage statistics for the completion request. */
     fun usage(): Optional<CompletionUsage> = Optional.ofNullable(usage.getNullable("usage"))
@@ -85,6 +85,9 @@ private constructor(
     /** The model used for completion. */
     @JsonProperty("model") @ExcludeMissing fun _model() = model
 
+    /** The object type, which is always "text_completion" */
+    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+
     /**
      * This fingerprint represents the backend configuration that the model runs with.
      *
@@ -92,9 +95,6 @@ private constructor(
      * changes have been made that might impact determinism.
      */
     @JsonProperty("system_fingerprint") @ExcludeMissing fun _systemFingerprint() = systemFingerprint
-
-    /** The object type, which is always "text_completion" */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
 
     /** Usage statistics for the completion request. */
     @JsonProperty("usage") @ExcludeMissing fun _usage() = usage
@@ -111,8 +111,8 @@ private constructor(
             choices().forEach { it.validate() }
             created()
             model()
-            systemFingerprint()
             object_()
+            systemFingerprint()
             usage().map { it.validate() }
             validated = true
         }
@@ -131,8 +131,8 @@ private constructor(
         private var choices: JsonField<List<CompletionChoice>> = JsonMissing.of()
         private var created: JsonField<Long> = JsonMissing.of()
         private var model: JsonField<String> = JsonMissing.of()
-        private var systemFingerprint: JsonField<String> = JsonMissing.of()
         private var object_: JsonField<Object> = JsonMissing.of()
+        private var systemFingerprint: JsonField<String> = JsonMissing.of()
         private var usage: JsonField<CompletionUsage> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -142,8 +142,8 @@ private constructor(
             choices = completion.choices
             created = completion.created
             model = completion.model
-            systemFingerprint = completion.systemFingerprint
             object_ = completion.object_
+            systemFingerprint = completion.systemFingerprint
             usage = completion.usage
             additionalProperties = completion.additionalProperties.toMutableMap()
         }
@@ -172,6 +172,12 @@ private constructor(
         /** The model used for completion. */
         fun model(model: JsonField<String>) = apply { this.model = model }
 
+        /** The object type, which is always "text_completion" */
+        fun object_(object_: Object) = object_(JsonField.of(object_))
+
+        /** The object type, which is always "text_completion" */
+        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+
         /**
          * This fingerprint represents the backend configuration that the model runs with.
          *
@@ -190,12 +196,6 @@ private constructor(
         fun systemFingerprint(systemFingerprint: JsonField<String>) = apply {
             this.systemFingerprint = systemFingerprint
         }
-
-        /** The object type, which is always "text_completion" */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always "text_completion" */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
 
         /** Usage statistics for the completion request. */
         fun usage(usage: CompletionUsage) = usage(JsonField.of(usage))
@@ -228,8 +228,8 @@ private constructor(
                 choices.map { it.toImmutable() },
                 created,
                 model,
-                systemFingerprint,
                 object_,
+                systemFingerprint,
                 usage,
                 additionalProperties.toImmutable(),
             )
@@ -291,15 +291,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Completion && id == other.id && choices == other.choices && created == other.created && model == other.model && systemFingerprint == other.systemFingerprint && object_ == other.object_ && usage == other.usage && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is Completion && id == other.id && choices == other.choices && created == other.created && model == other.model && object_ == other.object_ && systemFingerprint == other.systemFingerprint && usage == other.usage && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, choices, created, model, systemFingerprint, object_, usage, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, choices, created, model, object_, systemFingerprint, usage, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Completion{id=$id, choices=$choices, created=$created, model=$model, systemFingerprint=$systemFingerprint, object_=$object_, usage=$usage, additionalProperties=$additionalProperties}"
+        "Completion{id=$id, choices=$choices, created=$created, model=$model, object_=$object_, systemFingerprint=$systemFingerprint, usage=$usage, additionalProperties=$additionalProperties}"
 }
