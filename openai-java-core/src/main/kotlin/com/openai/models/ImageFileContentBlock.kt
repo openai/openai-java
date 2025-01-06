@@ -25,22 +25,22 @@ import java.util.Objects
 class ImageFileContentBlock
 @JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonProperty("image_file")
     @ExcludeMissing
     private val imageFile: JsonField<ImageFile> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /** Always `image_file`. */
-    fun type(): Type = type.getRequired("type")
 
     fun imageFile(): ImageFile = imageFile.getRequired("image_file")
 
     /** Always `image_file`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    fun type(): Type = type.getRequired("type")
 
     @JsonProperty("image_file") @ExcludeMissing fun _imageFile() = imageFile
+
+    /** Always `image_file`. */
+    @JsonProperty("type") @ExcludeMissing fun _type() = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -50,8 +50,8 @@ private constructor(
 
     fun validate(): ImageFileContentBlock = apply {
         if (!validated) {
-            type()
             imageFile().validate()
+            type()
             validated = true
         }
     }
@@ -65,26 +65,26 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type> = JsonMissing.of()
         private var imageFile: JsonField<ImageFile> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(imageFileContentBlock: ImageFileContentBlock) = apply {
-            type = imageFileContentBlock.type
             imageFile = imageFileContentBlock.imageFile
+            type = imageFileContentBlock.type
             additionalProperties = imageFileContentBlock.additionalProperties.toMutableMap()
         }
+
+        fun imageFile(imageFile: ImageFile) = imageFile(JsonField.of(imageFile))
+
+        fun imageFile(imageFile: JsonField<ImageFile>) = apply { this.imageFile = imageFile }
 
         /** Always `image_file`. */
         fun type(type: Type) = type(JsonField.of(type))
 
         /** Always `image_file`. */
         fun type(type: JsonField<Type>) = apply { this.type = type }
-
-        fun imageFile(imageFile: ImageFile) = imageFile(JsonField.of(imageFile))
-
-        fun imageFile(imageFile: JsonField<ImageFile>) = apply { this.imageFile = imageFile }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -107,8 +107,8 @@ private constructor(
 
         fun build(): ImageFileContentBlock =
             ImageFileContentBlock(
-                type,
                 imageFile,
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -169,15 +169,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ImageFileContentBlock && type == other.type && imageFile == other.imageFile && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ImageFileContentBlock && imageFile == other.imageFile && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(type, imageFile, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(imageFile, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ImageFileContentBlock{type=$type, imageFile=$imageFile, additionalProperties=$additionalProperties}"
+        "ImageFileContentBlock{imageFile=$imageFile, type=$type, additionalProperties=$additionalProperties}"
 }

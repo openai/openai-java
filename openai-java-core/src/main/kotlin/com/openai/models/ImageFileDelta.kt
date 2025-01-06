@@ -22,21 +22,14 @@ import java.util.Optional
 class ImageFileDelta
 @JsonCreator
 private constructor(
-    @JsonProperty("file_id")
-    @ExcludeMissing
-    private val fileId: JsonField<String> = JsonMissing.of(),
     @JsonProperty("detail")
     @ExcludeMissing
     private val detail: JsonField<Detail> = JsonMissing.of(),
+    @JsonProperty("file_id")
+    @ExcludeMissing
+    private val fileId: JsonField<String> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /**
-     * The [File](https://platform.openai.com/docs/api-reference/files) ID of the image in the
-     * message content. Set `purpose="vision"` when uploading the File if you need to later display
-     * the file content.
-     */
-    fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
 
     /**
      * Specifies the detail level of the image if specified by the user. `low` uses fewer tokens,
@@ -49,13 +42,20 @@ private constructor(
      * message content. Set `purpose="vision"` when uploading the File if you need to later display
      * the file content.
      */
-    @JsonProperty("file_id") @ExcludeMissing fun _fileId() = fileId
+    fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
 
     /**
      * Specifies the detail level of the image if specified by the user. `low` uses fewer tokens,
      * you can opt in to high resolution using `high`.
      */
     @JsonProperty("detail") @ExcludeMissing fun _detail() = detail
+
+    /**
+     * The [File](https://platform.openai.com/docs/api-reference/files) ID of the image in the
+     * message content. Set `purpose="vision"` when uploading the File if you need to later display
+     * the file content.
+     */
+    @JsonProperty("file_id") @ExcludeMissing fun _fileId() = fileId
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -65,8 +65,8 @@ private constructor(
 
     fun validate(): ImageFileDelta = apply {
         if (!validated) {
-            fileId()
             detail()
+            fileId()
             validated = true
         }
     }
@@ -80,16 +80,28 @@ private constructor(
 
     class Builder {
 
-        private var fileId: JsonField<String> = JsonMissing.of()
         private var detail: JsonField<Detail> = JsonMissing.of()
+        private var fileId: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(imageFileDelta: ImageFileDelta) = apply {
-            fileId = imageFileDelta.fileId
             detail = imageFileDelta.detail
+            fileId = imageFileDelta.fileId
             additionalProperties = imageFileDelta.additionalProperties.toMutableMap()
         }
+
+        /**
+         * Specifies the detail level of the image if specified by the user. `low` uses fewer
+         * tokens, you can opt in to high resolution using `high`.
+         */
+        fun detail(detail: Detail) = detail(JsonField.of(detail))
+
+        /**
+         * Specifies the detail level of the image if specified by the user. `low` uses fewer
+         * tokens, you can opt in to high resolution using `high`.
+         */
+        fun detail(detail: JsonField<Detail>) = apply { this.detail = detail }
 
         /**
          * The [File](https://platform.openai.com/docs/api-reference/files) ID of the image in the
@@ -104,18 +116,6 @@ private constructor(
          * display the file content.
          */
         fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
-
-        /**
-         * Specifies the detail level of the image if specified by the user. `low` uses fewer
-         * tokens, you can opt in to high resolution using `high`.
-         */
-        fun detail(detail: Detail) = detail(JsonField.of(detail))
-
-        /**
-         * Specifies the detail level of the image if specified by the user. `low` uses fewer
-         * tokens, you can opt in to high resolution using `high`.
-         */
-        fun detail(detail: JsonField<Detail>) = apply { this.detail = detail }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -138,8 +138,8 @@ private constructor(
 
         fun build(): ImageFileDelta =
             ImageFileDelta(
-                fileId,
                 detail,
+                fileId,
                 additionalProperties.toImmutable(),
             )
     }
@@ -212,15 +212,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ImageFileDelta && fileId == other.fileId && detail == other.detail && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ImageFileDelta && detail == other.detail && fileId == other.fileId && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(fileId, detail, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(detail, fileId, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ImageFileDelta{fileId=$fileId, detail=$detail, additionalProperties=$additionalProperties}"
+        "ImageFileDelta{detail=$detail, fileId=$fileId, additionalProperties=$additionalProperties}"
 }

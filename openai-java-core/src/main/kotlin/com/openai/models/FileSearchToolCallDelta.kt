@@ -22,39 +22,39 @@ import java.util.Optional
 class FileSearchToolCallDelta
 @JsonCreator
 private constructor(
-    @JsonProperty("index") @ExcludeMissing private val index: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonProperty("file_search")
     @ExcludeMissing
     private val fileSearch: JsonValue = JsonMissing.of(),
+    @JsonProperty("index") @ExcludeMissing private val index: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The index of the tool call in the tool calls array. */
     fun index(): Long = index.getRequired("index")
 
-    /** The ID of the tool call object. */
-    fun id(): Optional<String> = Optional.ofNullable(id.getNullable("id"))
-
     /**
      * The type of tool call. This is always going to be `file_search` for this type of tool call.
      */
     fun type(): Type = type.getRequired("type")
 
+    /** The ID of the tool call object. */
+    fun id(): Optional<String> = Optional.ofNullable(id.getNullable("id"))
+
+    /** For now, this is always going to be an empty object. */
+    @JsonProperty("file_search") @ExcludeMissing fun _fileSearch() = fileSearch
+
     /** The index of the tool call in the tool calls array. */
     @JsonProperty("index") @ExcludeMissing fun _index() = index
-
-    /** The ID of the tool call object. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
 
     /**
      * The type of tool call. This is always going to be `file_search` for this type of tool call.
      */
     @JsonProperty("type") @ExcludeMissing fun _type() = type
 
-    /** For now, this is always going to be an empty object. */
-    @JsonProperty("file_search") @ExcludeMissing fun _fileSearch() = fileSearch
+    /** The ID of the tool call object. */
+    @JsonProperty("id") @ExcludeMissing fun _id() = id
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -65,8 +65,8 @@ private constructor(
     fun validate(): FileSearchToolCallDelta = apply {
         if (!validated) {
             index()
-            id()
             type()
+            id()
             validated = true
         }
     }
@@ -80,32 +80,29 @@ private constructor(
 
     class Builder {
 
-        private var index: JsonField<Long> = JsonMissing.of()
-        private var id: JsonField<String> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
         private var fileSearch: JsonValue = JsonMissing.of()
+        private var index: JsonField<Long> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
+        private var id: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(fileSearchToolCallDelta: FileSearchToolCallDelta) = apply {
-            index = fileSearchToolCallDelta.index
-            id = fileSearchToolCallDelta.id
-            type = fileSearchToolCallDelta.type
             fileSearch = fileSearchToolCallDelta.fileSearch
+            index = fileSearchToolCallDelta.index
+            type = fileSearchToolCallDelta.type
+            id = fileSearchToolCallDelta.id
             additionalProperties = fileSearchToolCallDelta.additionalProperties.toMutableMap()
         }
+
+        /** For now, this is always going to be an empty object. */
+        fun fileSearch(fileSearch: JsonValue) = apply { this.fileSearch = fileSearch }
 
         /** The index of the tool call in the tool calls array. */
         fun index(index: Long) = index(JsonField.of(index))
 
         /** The index of the tool call in the tool calls array. */
         fun index(index: JsonField<Long>) = apply { this.index = index }
-
-        /** The ID of the tool call object. */
-        fun id(id: String) = id(JsonField.of(id))
-
-        /** The ID of the tool call object. */
-        fun id(id: JsonField<String>) = apply { this.id = id }
 
         /**
          * The type of tool call. This is always going to be `file_search` for this type of tool
@@ -119,8 +116,11 @@ private constructor(
          */
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
-        /** For now, this is always going to be an empty object. */
-        fun fileSearch(fileSearch: JsonValue) = apply { this.fileSearch = fileSearch }
+        /** The ID of the tool call object. */
+        fun id(id: String) = id(JsonField.of(id))
+
+        /** The ID of the tool call object. */
+        fun id(id: JsonField<String>) = apply { this.id = id }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -143,10 +143,10 @@ private constructor(
 
         fun build(): FileSearchToolCallDelta =
             FileSearchToolCallDelta(
-                index,
-                id,
-                type,
                 fileSearch,
+                index,
+                type,
+                id,
                 additionalProperties.toImmutable(),
             )
     }
@@ -207,15 +207,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FileSearchToolCallDelta && index == other.index && id == other.id && type == other.type && fileSearch == other.fileSearch && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FileSearchToolCallDelta && fileSearch == other.fileSearch && index == other.index && type == other.type && id == other.id && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(index, id, type, fileSearch, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(fileSearch, index, type, id, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "FileSearchToolCallDelta{index=$index, id=$id, type=$type, fileSearch=$fileSearch, additionalProperties=$additionalProperties}"
+        "FileSearchToolCallDelta{fileSearch=$fileSearch, index=$index, type=$type, id=$id, additionalProperties=$additionalProperties}"
 }

@@ -27,27 +27,27 @@ class Thread
 @JsonCreator
 private constructor(
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
     @JsonProperty("created_at")
     @ExcludeMissing
     private val createdAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonValue = JsonMissing.of(),
+    @JsonProperty("object")
+    @ExcludeMissing
+    private val object_: JsonField<Object> = JsonMissing.of(),
     @JsonProperty("tool_resources")
     @ExcludeMissing
     private val toolResources: JsonField<ToolResources> = JsonMissing.of(),
-    @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonValue = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The identifier, which can be referenced in API endpoints. */
     fun id(): String = id.getRequired("id")
 
-    /** The object type, which is always `thread`. */
-    fun object_(): Object = object_.getRequired("object")
-
     /** The Unix timestamp (in seconds) for when the thread was created. */
     fun createdAt(): Long = createdAt.getRequired("created_at")
+
+    /** The object type, which is always `thread`. */
+    fun object_(): Object = object_.getRequired("object")
 
     /**
      * A set of resources that are made available to the assistant's tools in this thread. The
@@ -60,18 +60,8 @@ private constructor(
     /** The identifier, which can be referenced in API endpoints. */
     @JsonProperty("id") @ExcludeMissing fun _id() = id
 
-    /** The object type, which is always `thread`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
-
     /** The Unix timestamp (in seconds) for when the thread was created. */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
-
-    /**
-     * A set of resources that are made available to the assistant's tools in this thread. The
-     * resources are specific to the type of tool. For example, the `code_interpreter` tool requires
-     * a list of file IDs, while the `file_search` tool requires a list of vector store IDs.
-     */
-    @JsonProperty("tool_resources") @ExcludeMissing fun _toolResources() = toolResources
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -79,6 +69,16 @@ private constructor(
      * characters long and values can be a maximum of 512 characters long.
      */
     @JsonProperty("metadata") @ExcludeMissing fun _metadata() = metadata
+
+    /** The object type, which is always `thread`. */
+    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+
+    /**
+     * A set of resources that are made available to the assistant's tools in this thread. The
+     * resources are specific to the type of tool. For example, the `code_interpreter` tool requires
+     * a list of file IDs, while the `file_search` tool requires a list of vector store IDs.
+     */
+    @JsonProperty("tool_resources") @ExcludeMissing fun _toolResources() = toolResources
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -89,8 +89,8 @@ private constructor(
     fun validate(): Thread = apply {
         if (!validated) {
             id()
-            object_()
             createdAt()
+            object_()
             toolResources().map { it.validate() }
             validated = true
         }
@@ -106,19 +106,19 @@ private constructor(
     class Builder {
 
         private var id: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
         private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var toolResources: JsonField<ToolResources> = JsonMissing.of()
         private var metadata: JsonValue = JsonMissing.of()
+        private var object_: JsonField<Object> = JsonMissing.of()
+        private var toolResources: JsonField<ToolResources> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(thread: Thread) = apply {
             id = thread.id
-            object_ = thread.object_
             createdAt = thread.createdAt
-            toolResources = thread.toolResources
             metadata = thread.metadata
+            object_ = thread.object_
+            toolResources = thread.toolResources
             additionalProperties = thread.additionalProperties.toMutableMap()
         }
 
@@ -128,17 +128,24 @@ private constructor(
         /** The identifier, which can be referenced in API endpoints. */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
-        /** The object type, which is always `thread`. */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always `thread`. */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
-
         /** The Unix timestamp (in seconds) for when the thread was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
         /** The Unix timestamp (in seconds) for when the thread was created. */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format. Keys can be a
+         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         */
+        fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
+
+        /** The object type, which is always `thread`. */
+        fun object_(object_: Object) = object_(JsonField.of(object_))
+
+        /** The object type, which is always `thread`. */
+        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
 
         /**
          * A set of resources that are made available to the assistant's tools in this thread. The
@@ -157,13 +164,6 @@ private constructor(
         fun toolResources(toolResources: JsonField<ToolResources>) = apply {
             this.toolResources = toolResources
         }
-
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format. Keys can be a
-         * maximum of 64 characters long and values can be a maximum of 512 characters long.
-         */
-        fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -187,10 +187,10 @@ private constructor(
         fun build(): Thread =
             Thread(
                 id,
-                object_,
                 createdAt,
-                toolResources,
                 metadata,
+                object_,
+                toolResources,
                 additionalProperties.toImmutable(),
             )
     }
@@ -615,15 +615,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Thread && id == other.id && object_ == other.object_ && createdAt == other.createdAt && toolResources == other.toolResources && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is Thread && id == other.id && createdAt == other.createdAt && metadata == other.metadata && object_ == other.object_ && toolResources == other.toolResources && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, object_, createdAt, toolResources, metadata, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, createdAt, metadata, object_, toolResources, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Thread{id=$id, object_=$object_, createdAt=$createdAt, toolResources=$toolResources, metadata=$metadata, additionalProperties=$additionalProperties}"
+        "Thread{id=$id, createdAt=$createdAt, metadata=$metadata, object_=$object_, toolResources=$toolResources, additionalProperties=$additionalProperties}"
 }

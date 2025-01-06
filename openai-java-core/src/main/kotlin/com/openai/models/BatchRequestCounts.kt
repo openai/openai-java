@@ -20,16 +20,13 @@ import java.util.Objects
 class BatchRequestCounts
 @JsonCreator
 private constructor(
-    @JsonProperty("total") @ExcludeMissing private val total: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("completed")
     @ExcludeMissing
     private val completed: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("failed") @ExcludeMissing private val failed: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("total") @ExcludeMissing private val total: JsonField<Long> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /** Total number of requests in the batch. */
-    fun total(): Long = total.getRequired("total")
 
     /** Number of requests that have been completed successfully. */
     fun completed(): Long = completed.getRequired("completed")
@@ -38,13 +35,16 @@ private constructor(
     fun failed(): Long = failed.getRequired("failed")
 
     /** Total number of requests in the batch. */
-    @JsonProperty("total") @ExcludeMissing fun _total() = total
+    fun total(): Long = total.getRequired("total")
 
     /** Number of requests that have been completed successfully. */
     @JsonProperty("completed") @ExcludeMissing fun _completed() = completed
 
     /** Number of requests that have failed. */
     @JsonProperty("failed") @ExcludeMissing fun _failed() = failed
+
+    /** Total number of requests in the batch. */
+    @JsonProperty("total") @ExcludeMissing fun _total() = total
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -54,9 +54,9 @@ private constructor(
 
     fun validate(): BatchRequestCounts = apply {
         if (!validated) {
-            total()
             completed()
             failed()
+            total()
             validated = true
         }
     }
@@ -70,24 +70,18 @@ private constructor(
 
     class Builder {
 
-        private var total: JsonField<Long> = JsonMissing.of()
         private var completed: JsonField<Long> = JsonMissing.of()
         private var failed: JsonField<Long> = JsonMissing.of()
+        private var total: JsonField<Long> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(batchRequestCounts: BatchRequestCounts) = apply {
-            total = batchRequestCounts.total
             completed = batchRequestCounts.completed
             failed = batchRequestCounts.failed
+            total = batchRequestCounts.total
             additionalProperties = batchRequestCounts.additionalProperties.toMutableMap()
         }
-
-        /** Total number of requests in the batch. */
-        fun total(total: Long) = total(JsonField.of(total))
-
-        /** Total number of requests in the batch. */
-        fun total(total: JsonField<Long>) = apply { this.total = total }
 
         /** Number of requests that have been completed successfully. */
         fun completed(completed: Long) = completed(JsonField.of(completed))
@@ -100,6 +94,12 @@ private constructor(
 
         /** Number of requests that have failed. */
         fun failed(failed: JsonField<Long>) = apply { this.failed = failed }
+
+        /** Total number of requests in the batch. */
+        fun total(total: Long) = total(JsonField.of(total))
+
+        /** Total number of requests in the batch. */
+        fun total(total: JsonField<Long>) = apply { this.total = total }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -122,9 +122,9 @@ private constructor(
 
         fun build(): BatchRequestCounts =
             BatchRequestCounts(
-                total,
                 completed,
                 failed,
+                total,
                 additionalProperties.toImmutable(),
             )
     }
@@ -134,15 +134,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is BatchRequestCounts && total == other.total && completed == other.completed && failed == other.failed && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is BatchRequestCounts && completed == other.completed && failed == other.failed && total == other.total && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(total, completed, failed, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(completed, failed, total, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "BatchRequestCounts{total=$total, completed=$completed, failed=$failed, additionalProperties=$additionalProperties}"
+        "BatchRequestCounts{completed=$completed, failed=$failed, total=$total, additionalProperties=$additionalProperties}"
 }

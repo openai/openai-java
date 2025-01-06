@@ -19,20 +19,14 @@ import java.util.Objects
 class StaticFileChunkingStrategy
 @JsonCreator
 private constructor(
-    @JsonProperty("max_chunk_size_tokens")
-    @ExcludeMissing
-    private val maxChunkSizeTokens: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("chunk_overlap_tokens")
     @ExcludeMissing
     private val chunkOverlapTokens: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("max_chunk_size_tokens")
+    @ExcludeMissing
+    private val maxChunkSizeTokens: JsonField<Long> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /**
-     * The maximum number of tokens in each chunk. The default value is `800`. The minimum value is
-     * `100` and the maximum value is `4096`.
-     */
-    fun maxChunkSizeTokens(): Long = maxChunkSizeTokens.getRequired("max_chunk_size_tokens")
 
     /**
      * The number of tokens that overlap between chunks. The default value is `400`.
@@ -45,9 +39,7 @@ private constructor(
      * The maximum number of tokens in each chunk. The default value is `800`. The minimum value is
      * `100` and the maximum value is `4096`.
      */
-    @JsonProperty("max_chunk_size_tokens")
-    @ExcludeMissing
-    fun _maxChunkSizeTokens() = maxChunkSizeTokens
+    fun maxChunkSizeTokens(): Long = maxChunkSizeTokens.getRequired("max_chunk_size_tokens")
 
     /**
      * The number of tokens that overlap between chunks. The default value is `400`.
@@ -58,6 +50,14 @@ private constructor(
     @ExcludeMissing
     fun _chunkOverlapTokens() = chunkOverlapTokens
 
+    /**
+     * The maximum number of tokens in each chunk. The default value is `800`. The minimum value is
+     * `100` and the maximum value is `4096`.
+     */
+    @JsonProperty("max_chunk_size_tokens")
+    @ExcludeMissing
+    fun _maxChunkSizeTokens() = maxChunkSizeTokens
+
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -66,8 +66,8 @@ private constructor(
 
     fun validate(): StaticFileChunkingStrategy = apply {
         if (!validated) {
-            maxChunkSizeTokens()
             chunkOverlapTokens()
+            maxChunkSizeTokens()
             validated = true
         }
     }
@@ -81,30 +81,15 @@ private constructor(
 
     class Builder {
 
-        private var maxChunkSizeTokens: JsonField<Long> = JsonMissing.of()
         private var chunkOverlapTokens: JsonField<Long> = JsonMissing.of()
+        private var maxChunkSizeTokens: JsonField<Long> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(staticFileChunkingStrategy: StaticFileChunkingStrategy) = apply {
-            maxChunkSizeTokens = staticFileChunkingStrategy.maxChunkSizeTokens
             chunkOverlapTokens = staticFileChunkingStrategy.chunkOverlapTokens
+            maxChunkSizeTokens = staticFileChunkingStrategy.maxChunkSizeTokens
             additionalProperties = staticFileChunkingStrategy.additionalProperties.toMutableMap()
-        }
-
-        /**
-         * The maximum number of tokens in each chunk. The default value is `800`. The minimum value
-         * is `100` and the maximum value is `4096`.
-         */
-        fun maxChunkSizeTokens(maxChunkSizeTokens: Long) =
-            maxChunkSizeTokens(JsonField.of(maxChunkSizeTokens))
-
-        /**
-         * The maximum number of tokens in each chunk. The default value is `800`. The minimum value
-         * is `100` and the maximum value is `4096`.
-         */
-        fun maxChunkSizeTokens(maxChunkSizeTokens: JsonField<Long>) = apply {
-            this.maxChunkSizeTokens = maxChunkSizeTokens
         }
 
         /**
@@ -122,6 +107,21 @@ private constructor(
          */
         fun chunkOverlapTokens(chunkOverlapTokens: JsonField<Long>) = apply {
             this.chunkOverlapTokens = chunkOverlapTokens
+        }
+
+        /**
+         * The maximum number of tokens in each chunk. The default value is `800`. The minimum value
+         * is `100` and the maximum value is `4096`.
+         */
+        fun maxChunkSizeTokens(maxChunkSizeTokens: Long) =
+            maxChunkSizeTokens(JsonField.of(maxChunkSizeTokens))
+
+        /**
+         * The maximum number of tokens in each chunk. The default value is `800`. The minimum value
+         * is `100` and the maximum value is `4096`.
+         */
+        fun maxChunkSizeTokens(maxChunkSizeTokens: JsonField<Long>) = apply {
+            this.maxChunkSizeTokens = maxChunkSizeTokens
         }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -145,8 +145,8 @@ private constructor(
 
         fun build(): StaticFileChunkingStrategy =
             StaticFileChunkingStrategy(
-                maxChunkSizeTokens,
                 chunkOverlapTokens,
+                maxChunkSizeTokens,
                 additionalProperties.toImmutable(),
             )
     }
@@ -156,15 +156,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is StaticFileChunkingStrategy && maxChunkSizeTokens == other.maxChunkSizeTokens && chunkOverlapTokens == other.chunkOverlapTokens && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is StaticFileChunkingStrategy && chunkOverlapTokens == other.chunkOverlapTokens && maxChunkSizeTokens == other.maxChunkSizeTokens && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(maxChunkSizeTokens, chunkOverlapTokens, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(chunkOverlapTokens, maxChunkSizeTokens, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "StaticFileChunkingStrategy{maxChunkSizeTokens=$maxChunkSizeTokens, chunkOverlapTokens=$chunkOverlapTokens, additionalProperties=$additionalProperties}"
+        "StaticFileChunkingStrategy{chunkOverlapTokens=$chunkOverlapTokens, maxChunkSizeTokens=$maxChunkSizeTokens, additionalProperties=$additionalProperties}"
 }

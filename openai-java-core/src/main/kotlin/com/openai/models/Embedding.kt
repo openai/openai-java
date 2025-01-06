@@ -22,18 +22,15 @@ import java.util.Objects
 class Embedding
 @JsonCreator
 private constructor(
-    @JsonProperty("index") @ExcludeMissing private val index: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("embedding")
     @ExcludeMissing
     private val embedding: JsonField<List<Double>> = JsonMissing.of(),
+    @JsonProperty("index") @ExcludeMissing private val index: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("object")
     @ExcludeMissing
     private val object_: JsonField<Object> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /** The index of the embedding in the list of embeddings. */
-    fun index(): Long = index.getRequired("index")
 
     /**
      * The embedding vector, which is a list of floats. The length of vector depends on the model as
@@ -41,17 +38,20 @@ private constructor(
      */
     fun embedding(): List<Double> = embedding.getRequired("embedding")
 
+    /** The index of the embedding in the list of embeddings. */
+    fun index(): Long = index.getRequired("index")
+
     /** The object type, which is always "embedding". */
     fun object_(): Object = object_.getRequired("object")
-
-    /** The index of the embedding in the list of embeddings. */
-    @JsonProperty("index") @ExcludeMissing fun _index() = index
 
     /**
      * The embedding vector, which is a list of floats. The length of vector depends on the model as
      * listed in the [embedding guide](https://platform.openai.com/docs/guides/embeddings).
      */
     @JsonProperty("embedding") @ExcludeMissing fun _embedding() = embedding
+
+    /** The index of the embedding in the list of embeddings. */
+    @JsonProperty("index") @ExcludeMissing fun _index() = index
 
     /** The object type, which is always "embedding". */
     @JsonProperty("object") @ExcludeMissing fun _object_() = object_
@@ -64,8 +64,8 @@ private constructor(
 
     fun validate(): Embedding = apply {
         if (!validated) {
-            index()
             embedding()
+            index()
             object_()
             validated = true
         }
@@ -80,24 +80,18 @@ private constructor(
 
     class Builder {
 
-        private var index: JsonField<Long> = JsonMissing.of()
         private var embedding: JsonField<List<Double>> = JsonMissing.of()
+        private var index: JsonField<Long> = JsonMissing.of()
         private var object_: JsonField<Object> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(embedding: Embedding) = apply {
-            index = embedding.index
             this.embedding = embedding.embedding
+            index = embedding.index
             object_ = embedding.object_
             additionalProperties = embedding.additionalProperties.toMutableMap()
         }
-
-        /** The index of the embedding in the list of embeddings. */
-        fun index(index: Long) = index(JsonField.of(index))
-
-        /** The index of the embedding in the list of embeddings. */
-        fun index(index: JsonField<Long>) = apply { this.index = index }
 
         /**
          * The embedding vector, which is a list of floats. The length of vector depends on the
@@ -112,6 +106,12 @@ private constructor(
          * [embedding guide](https://platform.openai.com/docs/guides/embeddings).
          */
         fun embedding(embedding: JsonField<List<Double>>) = apply { this.embedding = embedding }
+
+        /** The index of the embedding in the list of embeddings. */
+        fun index(index: Long) = index(JsonField.of(index))
+
+        /** The index of the embedding in the list of embeddings. */
+        fun index(index: JsonField<Long>) = apply { this.index = index }
 
         /** The object type, which is always "embedding". */
         fun object_(object_: Object) = object_(JsonField.of(object_))
@@ -140,8 +140,8 @@ private constructor(
 
         fun build(): Embedding =
             Embedding(
-                index,
                 embedding.map { it.toImmutable() },
+                index,
                 object_,
                 additionalProperties.toImmutable(),
             )
@@ -203,15 +203,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Embedding && index == other.index && embedding == other.embedding && object_ == other.object_ && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is Embedding && embedding == other.embedding && index == other.index && object_ == other.object_ && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(index, embedding, object_, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(embedding, index, object_, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Embedding{index=$index, embedding=$embedding, object_=$object_, additionalProperties=$additionalProperties}"
+        "Embedding{embedding=$embedding, index=$index, object_=$object_, additionalProperties=$additionalProperties}"
 }

@@ -21,22 +21,22 @@ import java.util.Objects
 class StaticFileChunkingStrategyParam
 @JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonProperty("static")
     @ExcludeMissing
     private val static_: JsonField<StaticFileChunkingStrategy> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /** Always `static`. */
-    fun type(): Type = type.getRequired("type")
 
     fun static_(): StaticFileChunkingStrategy = static_.getRequired("static")
 
     /** Always `static`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    fun type(): Type = type.getRequired("type")
 
     @JsonProperty("static") @ExcludeMissing fun _static_() = static_
+
+    /** Always `static`. */
+    @JsonProperty("type") @ExcludeMissing fun _type() = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -46,8 +46,8 @@ private constructor(
 
     fun validate(): StaticFileChunkingStrategyParam = apply {
         if (!validated) {
-            type()
             static_().validate()
+            type()
             validated = true
         }
     }
@@ -61,30 +61,30 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type> = JsonMissing.of()
         private var static_: JsonField<StaticFileChunkingStrategy> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(staticFileChunkingStrategyParam: StaticFileChunkingStrategyParam) =
             apply {
-                type = staticFileChunkingStrategyParam.type
                 static_ = staticFileChunkingStrategyParam.static_
+                type = staticFileChunkingStrategyParam.type
                 additionalProperties =
                     staticFileChunkingStrategyParam.additionalProperties.toMutableMap()
             }
-
-        /** Always `static`. */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /** Always `static`. */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
 
         fun static_(static_: StaticFileChunkingStrategy) = static_(JsonField.of(static_))
 
         fun static_(static_: JsonField<StaticFileChunkingStrategy>) = apply {
             this.static_ = static_
         }
+
+        /** Always `static`. */
+        fun type(type: Type) = type(JsonField.of(type))
+
+        /** Always `static`. */
+        fun type(type: JsonField<Type>) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -107,8 +107,8 @@ private constructor(
 
         fun build(): StaticFileChunkingStrategyParam =
             StaticFileChunkingStrategyParam(
-                type,
                 static_,
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -169,15 +169,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is StaticFileChunkingStrategyParam && type == other.type && static_ == other.static_ && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is StaticFileChunkingStrategyParam && static_ == other.static_ && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(type, static_, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(static_, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "StaticFileChunkingStrategyParam{type=$type, static_=$static_, additionalProperties=$additionalProperties}"
+        "StaticFileChunkingStrategyParam{static_=$static_, type=$type, additionalProperties=$additionalProperties}"
 }

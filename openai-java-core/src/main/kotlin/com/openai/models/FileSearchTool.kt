@@ -347,20 +347,15 @@ private constructor(
         class RankingOptions
         @JsonCreator
         private constructor(
-            @JsonProperty("ranker")
-            @ExcludeMissing
-            private val ranker: JsonField<Ranker> = JsonMissing.of(),
             @JsonProperty("score_threshold")
             @ExcludeMissing
             private val scoreThreshold: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("ranker")
+            @ExcludeMissing
+            private val ranker: JsonField<Ranker> = JsonMissing.of(),
             @JsonAnySetter
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
-
-            /**
-             * The ranker to use for the file search. If not specified will use the `auto` ranker.
-             */
-            fun ranker(): Optional<Ranker> = Optional.ofNullable(ranker.getNullable("ranker"))
 
             /**
              * The score threshold for the file search. All values must be a floating point number
@@ -371,13 +366,18 @@ private constructor(
             /**
              * The ranker to use for the file search. If not specified will use the `auto` ranker.
              */
-            @JsonProperty("ranker") @ExcludeMissing fun _ranker() = ranker
+            fun ranker(): Optional<Ranker> = Optional.ofNullable(ranker.getNullable("ranker"))
 
             /**
              * The score threshold for the file search. All values must be a floating point number
              * between 0 and 1.
              */
             @JsonProperty("score_threshold") @ExcludeMissing fun _scoreThreshold() = scoreThreshold
+
+            /**
+             * The ranker to use for the file search. If not specified will use the `auto` ranker.
+             */
+            @JsonProperty("ranker") @ExcludeMissing fun _ranker() = ranker
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -387,8 +387,8 @@ private constructor(
 
             fun validate(): RankingOptions = apply {
                 if (!validated) {
-                    ranker()
                     scoreThreshold()
+                    ranker()
                     validated = true
                 }
             }
@@ -402,28 +402,16 @@ private constructor(
 
             class Builder {
 
-                private var ranker: JsonField<Ranker> = JsonMissing.of()
                 private var scoreThreshold: JsonField<Double> = JsonMissing.of()
+                private var ranker: JsonField<Ranker> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(rankingOptions: RankingOptions) = apply {
-                    ranker = rankingOptions.ranker
                     scoreThreshold = rankingOptions.scoreThreshold
+                    ranker = rankingOptions.ranker
                     additionalProperties = rankingOptions.additionalProperties.toMutableMap()
                 }
-
-                /**
-                 * The ranker to use for the file search. If not specified will use the `auto`
-                 * ranker.
-                 */
-                fun ranker(ranker: Ranker) = ranker(JsonField.of(ranker))
-
-                /**
-                 * The ranker to use for the file search. If not specified will use the `auto`
-                 * ranker.
-                 */
-                fun ranker(ranker: JsonField<Ranker>) = apply { this.ranker = ranker }
 
                 /**
                  * The score threshold for the file search. All values must be a floating point
@@ -439,6 +427,18 @@ private constructor(
                 fun scoreThreshold(scoreThreshold: JsonField<Double>) = apply {
                     this.scoreThreshold = scoreThreshold
                 }
+
+                /**
+                 * The ranker to use for the file search. If not specified will use the `auto`
+                 * ranker.
+                 */
+                fun ranker(ranker: Ranker) = ranker(JsonField.of(ranker))
+
+                /**
+                 * The ranker to use for the file search. If not specified will use the `auto`
+                 * ranker.
+                 */
+                fun ranker(ranker: JsonField<Ranker>) = apply { this.ranker = ranker }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -464,8 +464,8 @@ private constructor(
 
                 fun build(): RankingOptions =
                     RankingOptions(
-                        ranker,
                         scoreThreshold,
+                        ranker,
                         additionalProperties.toImmutable(),
                     )
             }
@@ -532,17 +532,17 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is RankingOptions && ranker == other.ranker && scoreThreshold == other.scoreThreshold && additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is RankingOptions && scoreThreshold == other.scoreThreshold && ranker == other.ranker && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(ranker, scoreThreshold, additionalProperties) }
+            private val hashCode: Int by lazy { Objects.hash(scoreThreshold, ranker, additionalProperties) }
             /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "RankingOptions{ranker=$ranker, scoreThreshold=$scoreThreshold, additionalProperties=$additionalProperties}"
+                "RankingOptions{scoreThreshold=$scoreThreshold, ranker=$ranker, additionalProperties=$additionalProperties}"
         }
 
         override fun equals(other: Any?): Boolean {

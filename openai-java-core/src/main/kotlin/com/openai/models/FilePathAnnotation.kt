@@ -25,43 +25,43 @@ import java.util.Objects
 class FilePathAnnotation
 @JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
-    @JsonProperty("text") @ExcludeMissing private val text: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("end_index")
+    @ExcludeMissing
+    private val endIndex: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("file_path")
     @ExcludeMissing
     private val filePath: JsonField<FilePath> = JsonMissing.of(),
     @JsonProperty("start_index")
     @ExcludeMissing
     private val startIndex: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("end_index")
-    @ExcludeMissing
-    private val endIndex: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("text") @ExcludeMissing private val text: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** Always `file_path`. */
-    fun type(): Type = type.getRequired("type")
-
-    /** The text in the message content that needs to be replaced. */
-    fun text(): String = text.getRequired("text")
+    fun endIndex(): Long = endIndex.getRequired("end_index")
 
     fun filePath(): FilePath = filePath.getRequired("file_path")
 
     fun startIndex(): Long = startIndex.getRequired("start_index")
 
-    fun endIndex(): Long = endIndex.getRequired("end_index")
+    /** The text in the message content that needs to be replaced. */
+    fun text(): String = text.getRequired("text")
 
     /** Always `file_path`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    fun type(): Type = type.getRequired("type")
 
-    /** The text in the message content that needs to be replaced. */
-    @JsonProperty("text") @ExcludeMissing fun _text() = text
+    @JsonProperty("end_index") @ExcludeMissing fun _endIndex() = endIndex
 
     @JsonProperty("file_path") @ExcludeMissing fun _filePath() = filePath
 
     @JsonProperty("start_index") @ExcludeMissing fun _startIndex() = startIndex
 
-    @JsonProperty("end_index") @ExcludeMissing fun _endIndex() = endIndex
+    /** The text in the message content that needs to be replaced. */
+    @JsonProperty("text") @ExcludeMissing fun _text() = text
+
+    /** Always `file_path`. */
+    @JsonProperty("type") @ExcludeMissing fun _type() = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -71,11 +71,11 @@ private constructor(
 
     fun validate(): FilePathAnnotation = apply {
         if (!validated) {
-            type()
-            text()
+            endIndex()
             filePath().validate()
             startIndex()
-            endIndex()
+            text()
+            type()
             validated = true
         }
     }
@@ -89,34 +89,26 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type> = JsonMissing.of()
-        private var text: JsonField<String> = JsonMissing.of()
+        private var endIndex: JsonField<Long> = JsonMissing.of()
         private var filePath: JsonField<FilePath> = JsonMissing.of()
         private var startIndex: JsonField<Long> = JsonMissing.of()
-        private var endIndex: JsonField<Long> = JsonMissing.of()
+        private var text: JsonField<String> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(filePathAnnotation: FilePathAnnotation) = apply {
-            type = filePathAnnotation.type
-            text = filePathAnnotation.text
+            endIndex = filePathAnnotation.endIndex
             filePath = filePathAnnotation.filePath
             startIndex = filePathAnnotation.startIndex
-            endIndex = filePathAnnotation.endIndex
+            text = filePathAnnotation.text
+            type = filePathAnnotation.type
             additionalProperties = filePathAnnotation.additionalProperties.toMutableMap()
         }
 
-        /** Always `file_path`. */
-        fun type(type: Type) = type(JsonField.of(type))
+        fun endIndex(endIndex: Long) = endIndex(JsonField.of(endIndex))
 
-        /** Always `file_path`. */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
-
-        /** The text in the message content that needs to be replaced. */
-        fun text(text: String) = text(JsonField.of(text))
-
-        /** The text in the message content that needs to be replaced. */
-        fun text(text: JsonField<String>) = apply { this.text = text }
+        fun endIndex(endIndex: JsonField<Long>) = apply { this.endIndex = endIndex }
 
         fun filePath(filePath: FilePath) = filePath(JsonField.of(filePath))
 
@@ -126,9 +118,17 @@ private constructor(
 
         fun startIndex(startIndex: JsonField<Long>) = apply { this.startIndex = startIndex }
 
-        fun endIndex(endIndex: Long) = endIndex(JsonField.of(endIndex))
+        /** The text in the message content that needs to be replaced. */
+        fun text(text: String) = text(JsonField.of(text))
 
-        fun endIndex(endIndex: JsonField<Long>) = apply { this.endIndex = endIndex }
+        /** The text in the message content that needs to be replaced. */
+        fun text(text: JsonField<String>) = apply { this.text = text }
+
+        /** Always `file_path`. */
+        fun type(type: Type) = type(JsonField.of(type))
+
+        /** Always `file_path`. */
+        fun type(type: JsonField<Type>) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -151,11 +151,11 @@ private constructor(
 
         fun build(): FilePathAnnotation =
             FilePathAnnotation(
-                type,
-                text,
+                endIndex,
                 filePath,
                 startIndex,
-                endIndex,
+                text,
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -310,15 +310,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FilePathAnnotation && type == other.type && text == other.text && filePath == other.filePath && startIndex == other.startIndex && endIndex == other.endIndex && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FilePathAnnotation && endIndex == other.endIndex && filePath == other.filePath && startIndex == other.startIndex && text == other.text && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(type, text, filePath, startIndex, endIndex, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(endIndex, filePath, startIndex, text, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "FilePathAnnotation{type=$type, text=$text, filePath=$filePath, startIndex=$startIndex, endIndex=$endIndex, additionalProperties=$additionalProperties}"
+        "FilePathAnnotation{endIndex=$endIndex, filePath=$filePath, startIndex=$startIndex, text=$text, type=$type, additionalProperties=$additionalProperties}"
 }

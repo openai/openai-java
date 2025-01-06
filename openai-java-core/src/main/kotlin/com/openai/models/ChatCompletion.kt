@@ -31,15 +31,15 @@ private constructor(
     @ExcludeMissing
     private val created: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("object")
+    @ExcludeMissing
+    private val object_: JsonField<Object> = JsonMissing.of(),
     @JsonProperty("service_tier")
     @ExcludeMissing
     private val serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
     @JsonProperty("system_fingerprint")
     @ExcludeMissing
     private val systemFingerprint: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
     @JsonProperty("usage")
     @ExcludeMissing
     private val usage: JsonField<CompletionUsage> = JsonMissing.of(),
@@ -58,6 +58,9 @@ private constructor(
     /** The model used for the chat completion. */
     fun model(): String = model.getRequired("model")
 
+    /** The object type, which is always `chat.completion`. */
+    fun object_(): Object = object_.getRequired("object")
+
     /**
      * The service tier used for processing the request. This field is only included if the
      * `service_tier` parameter is specified in the request.
@@ -74,9 +77,6 @@ private constructor(
     fun systemFingerprint(): Optional<String> =
         Optional.ofNullable(systemFingerprint.getNullable("system_fingerprint"))
 
-    /** The object type, which is always `chat.completion`. */
-    fun object_(): Object = object_.getRequired("object")
-
     /** Usage statistics for the completion request. */
     fun usage(): Optional<CompletionUsage> = Optional.ofNullable(usage.getNullable("usage"))
 
@@ -92,6 +92,9 @@ private constructor(
     /** The model used for the chat completion. */
     @JsonProperty("model") @ExcludeMissing fun _model() = model
 
+    /** The object type, which is always `chat.completion`. */
+    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+
     /**
      * The service tier used for processing the request. This field is only included if the
      * `service_tier` parameter is specified in the request.
@@ -105,9 +108,6 @@ private constructor(
      * changes have been made that might impact determinism.
      */
     @JsonProperty("system_fingerprint") @ExcludeMissing fun _systemFingerprint() = systemFingerprint
-
-    /** The object type, which is always `chat.completion`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
 
     /** Usage statistics for the completion request. */
     @JsonProperty("usage") @ExcludeMissing fun _usage() = usage
@@ -124,9 +124,9 @@ private constructor(
             choices().forEach { it.validate() }
             created()
             model()
+            object_()
             serviceTier()
             systemFingerprint()
-            object_()
             usage().map { it.validate() }
             validated = true
         }
@@ -145,9 +145,9 @@ private constructor(
         private var choices: JsonField<List<Choice>> = JsonMissing.of()
         private var created: JsonField<Long> = JsonMissing.of()
         private var model: JsonField<String> = JsonMissing.of()
+        private var object_: JsonField<Object> = JsonMissing.of()
         private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
         private var systemFingerprint: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
         private var usage: JsonField<CompletionUsage> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -157,9 +157,9 @@ private constructor(
             choices = chatCompletion.choices
             created = chatCompletion.created
             model = chatCompletion.model
+            object_ = chatCompletion.object_
             serviceTier = chatCompletion.serviceTier
             systemFingerprint = chatCompletion.systemFingerprint
-            object_ = chatCompletion.object_
             usage = chatCompletion.usage
             additionalProperties = chatCompletion.additionalProperties.toMutableMap()
         }
@@ -187,6 +187,12 @@ private constructor(
 
         /** The model used for the chat completion. */
         fun model(model: JsonField<String>) = apply { this.model = model }
+
+        /** The object type, which is always `chat.completion`. */
+        fun object_(object_: Object) = object_(JsonField.of(object_))
+
+        /** The object type, which is always `chat.completion`. */
+        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
 
         /**
          * The service tier used for processing the request. This field is only included if the
@@ -221,12 +227,6 @@ private constructor(
             this.systemFingerprint = systemFingerprint
         }
 
-        /** The object type, which is always `chat.completion`. */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always `chat.completion`. */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
-
         /** Usage statistics for the completion request. */
         fun usage(usage: CompletionUsage) = usage(JsonField.of(usage))
 
@@ -258,9 +258,9 @@ private constructor(
                 choices.map { it.toImmutable() },
                 created,
                 model,
+                object_,
                 serviceTier,
                 systemFingerprint,
-                object_,
                 usage,
                 additionalProperties.toImmutable(),
             )
@@ -276,12 +276,12 @@ private constructor(
         @JsonProperty("index")
         @ExcludeMissing
         private val index: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("message")
-        @ExcludeMissing
-        private val message: JsonField<ChatCompletionMessage> = JsonMissing.of(),
         @JsonProperty("logprobs")
         @ExcludeMissing
         private val logprobs: JsonField<Logprobs> = JsonMissing.of(),
+        @JsonProperty("message")
+        @ExcludeMissing
+        private val message: JsonField<ChatCompletionMessage> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -298,11 +298,11 @@ private constructor(
         /** The index of the choice in the list of choices. */
         fun index(): Long = index.getRequired("index")
 
-        /** A chat completion message generated by the model. */
-        fun message(): ChatCompletionMessage = message.getRequired("message")
-
         /** Log probability information for the choice. */
         fun logprobs(): Optional<Logprobs> = Optional.ofNullable(logprobs.getNullable("logprobs"))
+
+        /** A chat completion message generated by the model. */
+        fun message(): ChatCompletionMessage = message.getRequired("message")
 
         /**
          * The reason the model stopped generating tokens. This will be `stop` if the model hit a
@@ -316,11 +316,11 @@ private constructor(
         /** The index of the choice in the list of choices. */
         @JsonProperty("index") @ExcludeMissing fun _index() = index
 
-        /** A chat completion message generated by the model. */
-        @JsonProperty("message") @ExcludeMissing fun _message() = message
-
         /** Log probability information for the choice. */
         @JsonProperty("logprobs") @ExcludeMissing fun _logprobs() = logprobs
+
+        /** A chat completion message generated by the model. */
+        @JsonProperty("message") @ExcludeMissing fun _message() = message
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -332,8 +332,8 @@ private constructor(
             if (!validated) {
                 finishReason()
                 index()
-                message().validate()
                 logprobs().map { it.validate() }
+                message().validate()
                 validated = true
             }
         }
@@ -349,16 +349,16 @@ private constructor(
 
             private var finishReason: JsonField<FinishReason> = JsonMissing.of()
             private var index: JsonField<Long> = JsonMissing.of()
-            private var message: JsonField<ChatCompletionMessage> = JsonMissing.of()
             private var logprobs: JsonField<Logprobs> = JsonMissing.of()
+            private var message: JsonField<ChatCompletionMessage> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(choice: Choice) = apply {
                 finishReason = choice.finishReason
                 index = choice.index
-                message = choice.message
                 logprobs = choice.logprobs
+                message = choice.message
                 additionalProperties = choice.additionalProperties.toMutableMap()
             }
 
@@ -388,6 +388,12 @@ private constructor(
             /** The index of the choice in the list of choices. */
             fun index(index: JsonField<Long>) = apply { this.index = index }
 
+            /** Log probability information for the choice. */
+            fun logprobs(logprobs: Logprobs) = logprobs(JsonField.of(logprobs))
+
+            /** Log probability information for the choice. */
+            fun logprobs(logprobs: JsonField<Logprobs>) = apply { this.logprobs = logprobs }
+
             /** A chat completion message generated by the model. */
             fun message(message: ChatCompletionMessage) = message(JsonField.of(message))
 
@@ -395,12 +401,6 @@ private constructor(
             fun message(message: JsonField<ChatCompletionMessage>) = apply {
                 this.message = message
             }
-
-            /** Log probability information for the choice. */
-            fun logprobs(logprobs: Logprobs) = logprobs(JsonField.of(logprobs))
-
-            /** Log probability information for the choice. */
-            fun logprobs(logprobs: JsonField<Logprobs>) = apply { this.logprobs = logprobs }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -425,8 +425,8 @@ private constructor(
                 Choice(
                     finishReason,
                     index,
-                    message,
                     logprobs,
+                    message,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -640,17 +640,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Choice && finishReason == other.finishReason && index == other.index && message == other.message && logprobs == other.logprobs && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Choice && finishReason == other.finishReason && index == other.index && logprobs == other.logprobs && message == other.message && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(finishReason, index, message, logprobs, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(finishReason, index, logprobs, message, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Choice{finishReason=$finishReason, index=$index, message=$message, logprobs=$logprobs, additionalProperties=$additionalProperties}"
+            "Choice{finishReason=$finishReason, index=$index, logprobs=$logprobs, message=$message, additionalProperties=$additionalProperties}"
     }
 
     class Object
@@ -766,15 +766,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletion && id == other.id && choices == other.choices && created == other.created && model == other.model && serviceTier == other.serviceTier && systemFingerprint == other.systemFingerprint && object_ == other.object_ && usage == other.usage && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletion && id == other.id && choices == other.choices && created == other.created && model == other.model && object_ == other.object_ && serviceTier == other.serviceTier && systemFingerprint == other.systemFingerprint && usage == other.usage && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, choices, created, model, serviceTier, systemFingerprint, object_, usage, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, choices, created, model, object_, serviceTier, systemFingerprint, usage, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ChatCompletion{id=$id, choices=$choices, created=$created, model=$model, serviceTier=$serviceTier, systemFingerprint=$systemFingerprint, object_=$object_, usage=$usage, additionalProperties=$additionalProperties}"
+        "ChatCompletion{id=$id, choices=$choices, created=$created, model=$model, object_=$object_, serviceTier=$serviceTier, systemFingerprint=$systemFingerprint, usage=$usage, additionalProperties=$additionalProperties}"
 }

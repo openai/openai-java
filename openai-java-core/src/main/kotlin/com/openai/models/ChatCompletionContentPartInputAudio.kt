@@ -22,22 +22,22 @@ import java.util.Objects
 class ChatCompletionContentPartInputAudio
 @JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonProperty("input_audio")
     @ExcludeMissing
     private val inputAudio: JsonField<InputAudio> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /** The type of the content part. Always `input_audio`. */
-    fun type(): Type = type.getRequired("type")
 
     fun inputAudio(): InputAudio = inputAudio.getRequired("input_audio")
 
     /** The type of the content part. Always `input_audio`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    fun type(): Type = type.getRequired("type")
 
     @JsonProperty("input_audio") @ExcludeMissing fun _inputAudio() = inputAudio
+
+    /** The type of the content part. Always `input_audio`. */
+    @JsonProperty("type") @ExcludeMissing fun _type() = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -47,8 +47,8 @@ private constructor(
 
     fun validate(): ChatCompletionContentPartInputAudio = apply {
         if (!validated) {
-            type()
             inputAudio().validate()
+            type()
             validated = true
         }
     }
@@ -62,29 +62,29 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type> = JsonMissing.of()
         private var inputAudio: JsonField<InputAudio> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(
             chatCompletionContentPartInputAudio: ChatCompletionContentPartInputAudio
         ) = apply {
-            type = chatCompletionContentPartInputAudio.type
             inputAudio = chatCompletionContentPartInputAudio.inputAudio
+            type = chatCompletionContentPartInputAudio.type
             additionalProperties =
                 chatCompletionContentPartInputAudio.additionalProperties.toMutableMap()
         }
+
+        fun inputAudio(inputAudio: InputAudio) = inputAudio(JsonField.of(inputAudio))
+
+        fun inputAudio(inputAudio: JsonField<InputAudio>) = apply { this.inputAudio = inputAudio }
 
         /** The type of the content part. Always `input_audio`. */
         fun type(type: Type) = type(JsonField.of(type))
 
         /** The type of the content part. Always `input_audio`. */
         fun type(type: JsonField<Type>) = apply { this.type = type }
-
-        fun inputAudio(inputAudio: InputAudio) = inputAudio(JsonField.of(inputAudio))
-
-        fun inputAudio(inputAudio: JsonField<InputAudio>) = apply { this.inputAudio = inputAudio }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -107,8 +107,8 @@ private constructor(
 
         fun build(): ChatCompletionContentPartInputAudio =
             ChatCompletionContentPartInputAudio(
-                type,
                 inputAudio,
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -343,15 +343,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionContentPartInputAudio && type == other.type && inputAudio == other.inputAudio && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionContentPartInputAudio && inputAudio == other.inputAudio && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(type, inputAudio, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(inputAudio, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ChatCompletionContentPartInputAudio{type=$type, inputAudio=$inputAudio, additionalProperties=$additionalProperties}"
+        "ChatCompletionContentPartInputAudio{inputAudio=$inputAudio, type=$type, additionalProperties=$additionalProperties}"
 }

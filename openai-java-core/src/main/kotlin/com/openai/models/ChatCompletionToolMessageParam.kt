@@ -32,30 +32,30 @@ import java.util.Optional
 class ChatCompletionToolMessageParam
 @JsonCreator
 private constructor(
-    @JsonProperty("role") @ExcludeMissing private val role: JsonField<Role> = JsonMissing.of(),
     @JsonProperty("content")
     @ExcludeMissing
     private val content: JsonField<Content> = JsonMissing.of(),
+    @JsonProperty("role") @ExcludeMissing private val role: JsonField<Role> = JsonMissing.of(),
     @JsonProperty("tool_call_id")
     @ExcludeMissing
     private val toolCallId: JsonField<String> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The role of the messages author, in this case `tool`. */
-    fun role(): Role = role.getRequired("role")
-
     /** The contents of the tool message. */
     fun content(): Content = content.getRequired("content")
+
+    /** The role of the messages author, in this case `tool`. */
+    fun role(): Role = role.getRequired("role")
 
     /** Tool call that this message is responding to. */
     fun toolCallId(): String = toolCallId.getRequired("tool_call_id")
 
-    /** The role of the messages author, in this case `tool`. */
-    @JsonProperty("role") @ExcludeMissing fun _role() = role
-
     /** The contents of the tool message. */
     @JsonProperty("content") @ExcludeMissing fun _content() = content
+
+    /** The role of the messages author, in this case `tool`. */
+    @JsonProperty("role") @ExcludeMissing fun _role() = role
 
     /** Tool call that this message is responding to. */
     @JsonProperty("tool_call_id") @ExcludeMissing fun _toolCallId() = toolCallId
@@ -68,8 +68,8 @@ private constructor(
 
     fun validate(): ChatCompletionToolMessageParam = apply {
         if (!validated) {
-            role()
             content()
+            role()
             toolCallId()
             validated = true
         }
@@ -84,31 +84,31 @@ private constructor(
 
     class Builder {
 
-        private var role: JsonField<Role> = JsonMissing.of()
         private var content: JsonField<Content> = JsonMissing.of()
+        private var role: JsonField<Role> = JsonMissing.of()
         private var toolCallId: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(chatCompletionToolMessageParam: ChatCompletionToolMessageParam) = apply {
-            role = chatCompletionToolMessageParam.role
             content = chatCompletionToolMessageParam.content
+            role = chatCompletionToolMessageParam.role
             toolCallId = chatCompletionToolMessageParam.toolCallId
             additionalProperties =
                 chatCompletionToolMessageParam.additionalProperties.toMutableMap()
         }
-
-        /** The role of the messages author, in this case `tool`. */
-        fun role(role: Role) = role(JsonField.of(role))
-
-        /** The role of the messages author, in this case `tool`. */
-        fun role(role: JsonField<Role>) = apply { this.role = role }
 
         /** The contents of the tool message. */
         fun content(content: Content) = content(JsonField.of(content))
 
         /** The contents of the tool message. */
         fun content(content: JsonField<Content>) = apply { this.content = content }
+
+        /** The role of the messages author, in this case `tool`. */
+        fun role(role: Role) = role(JsonField.of(role))
+
+        /** The role of the messages author, in this case `tool`. */
+        fun role(role: JsonField<Role>) = apply { this.role = role }
 
         /** Tool call that this message is responding to. */
         fun toolCallId(toolCallId: String) = toolCallId(JsonField.of(toolCallId))
@@ -137,8 +137,8 @@ private constructor(
 
         fun build(): ChatCompletionToolMessageParam =
             ChatCompletionToolMessageParam(
-                role,
                 content,
+                role,
                 toolCallId,
                 additionalProperties.toImmutable(),
             )
@@ -336,15 +336,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionToolMessageParam && role == other.role && content == other.content && toolCallId == other.toolCallId && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionToolMessageParam && content == other.content && role == other.role && toolCallId == other.toolCallId && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(role, content, toolCallId, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(content, role, toolCallId, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ChatCompletionToolMessageParam{role=$role, content=$content, toolCallId=$toolCallId, additionalProperties=$additionalProperties}"
+        "ChatCompletionToolMessageParam{content=$content, role=$role, toolCallId=$toolCallId, additionalProperties=$additionalProperties}"
 }

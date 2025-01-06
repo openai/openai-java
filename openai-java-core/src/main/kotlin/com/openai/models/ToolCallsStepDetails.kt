@@ -22,15 +22,12 @@ import java.util.Objects
 class ToolCallsStepDetails
 @JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonProperty("tool_calls")
     @ExcludeMissing
     private val toolCalls: JsonField<List<ToolCall>> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /** Always `tool_calls`. */
-    fun type(): Type = type.getRequired("type")
 
     /**
      * An array of tool calls the run step was involved in. These can be associated with one of
@@ -39,13 +36,16 @@ private constructor(
     fun toolCalls(): List<ToolCall> = toolCalls.getRequired("tool_calls")
 
     /** Always `tool_calls`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    fun type(): Type = type.getRequired("type")
 
     /**
      * An array of tool calls the run step was involved in. These can be associated with one of
      * three types of tools: `code_interpreter`, `file_search`, or `function`.
      */
     @JsonProperty("tool_calls") @ExcludeMissing fun _toolCalls() = toolCalls
+
+    /** Always `tool_calls`. */
+    @JsonProperty("type") @ExcludeMissing fun _type() = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -55,8 +55,8 @@ private constructor(
 
     fun validate(): ToolCallsStepDetails = apply {
         if (!validated) {
-            type()
             toolCalls()
+            type()
             validated = true
         }
     }
@@ -70,22 +70,16 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type> = JsonMissing.of()
         private var toolCalls: JsonField<List<ToolCall>> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(toolCallsStepDetails: ToolCallsStepDetails) = apply {
-            type = toolCallsStepDetails.type
             toolCalls = toolCallsStepDetails.toolCalls
+            type = toolCallsStepDetails.type
             additionalProperties = toolCallsStepDetails.additionalProperties.toMutableMap()
         }
-
-        /** Always `tool_calls`. */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /** Always `tool_calls`. */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
 
         /**
          * An array of tool calls the run step was involved in. These can be associated with one of
@@ -98,6 +92,12 @@ private constructor(
          * three types of tools: `code_interpreter`, `file_search`, or `function`.
          */
         fun toolCalls(toolCalls: JsonField<List<ToolCall>>) = apply { this.toolCalls = toolCalls }
+
+        /** Always `tool_calls`. */
+        fun type(type: Type) = type(JsonField.of(type))
+
+        /** Always `tool_calls`. */
+        fun type(type: JsonField<Type>) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -120,8 +120,8 @@ private constructor(
 
         fun build(): ToolCallsStepDetails =
             ToolCallsStepDetails(
-                type,
                 toolCalls.map { it.toImmutable() },
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -182,15 +182,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ToolCallsStepDetails && type == other.type && toolCalls == other.toolCalls && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ToolCallsStepDetails && toolCalls == other.toolCalls && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(type, toolCalls, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(toolCalls, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ToolCallsStepDetails{type=$type, toolCalls=$toolCalls, additionalProperties=$additionalProperties}"
+        "ToolCallsStepDetails{toolCalls=$toolCalls, type=$type, additionalProperties=$additionalProperties}"
 }

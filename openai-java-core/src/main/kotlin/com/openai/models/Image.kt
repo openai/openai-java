@@ -24,31 +24,31 @@ private constructor(
     @JsonProperty("b64_json")
     @ExcludeMissing
     private val b64Json: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("url") @ExcludeMissing private val url: JsonField<String> = JsonMissing.of(),
     @JsonProperty("revised_prompt")
     @ExcludeMissing
     private val revisedPrompt: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("url") @ExcludeMissing private val url: JsonField<String> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The base64-encoded JSON of the generated image, if `response_format` is `b64_json`. */
     fun b64Json(): Optional<String> = Optional.ofNullable(b64Json.getNullable("b64_json"))
 
-    /** The URL of the generated image, if `response_format` is `url` (default). */
-    fun url(): Optional<String> = Optional.ofNullable(url.getNullable("url"))
-
     /** The prompt that was used to generate the image, if there was any revision to the prompt. */
     fun revisedPrompt(): Optional<String> =
         Optional.ofNullable(revisedPrompt.getNullable("revised_prompt"))
 
+    /** The URL of the generated image, if `response_format` is `url` (default). */
+    fun url(): Optional<String> = Optional.ofNullable(url.getNullable("url"))
+
     /** The base64-encoded JSON of the generated image, if `response_format` is `b64_json`. */
     @JsonProperty("b64_json") @ExcludeMissing fun _b64Json() = b64Json
 
-    /** The URL of the generated image, if `response_format` is `url` (default). */
-    @JsonProperty("url") @ExcludeMissing fun _url() = url
-
     /** The prompt that was used to generate the image, if there was any revision to the prompt. */
     @JsonProperty("revised_prompt") @ExcludeMissing fun _revisedPrompt() = revisedPrompt
+
+    /** The URL of the generated image, if `response_format` is `url` (default). */
+    @JsonProperty("url") @ExcludeMissing fun _url() = url
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -59,8 +59,8 @@ private constructor(
     fun validate(): Image = apply {
         if (!validated) {
             b64Json()
-            url()
             revisedPrompt()
+            url()
             validated = true
         }
     }
@@ -75,15 +75,15 @@ private constructor(
     class Builder {
 
         private var b64Json: JsonField<String> = JsonMissing.of()
-        private var url: JsonField<String> = JsonMissing.of()
         private var revisedPrompt: JsonField<String> = JsonMissing.of()
+        private var url: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(image: Image) = apply {
             b64Json = image.b64Json
-            url = image.url
             revisedPrompt = image.revisedPrompt
+            url = image.url
             additionalProperties = image.additionalProperties.toMutableMap()
         }
 
@@ -92,12 +92,6 @@ private constructor(
 
         /** The base64-encoded JSON of the generated image, if `response_format` is `b64_json`. */
         fun b64Json(b64Json: JsonField<String>) = apply { this.b64Json = b64Json }
-
-        /** The URL of the generated image, if `response_format` is `url` (default). */
-        fun url(url: String) = url(JsonField.of(url))
-
-        /** The URL of the generated image, if `response_format` is `url` (default). */
-        fun url(url: JsonField<String>) = apply { this.url = url }
 
         /**
          * The prompt that was used to generate the image, if there was any revision to the prompt.
@@ -110,6 +104,12 @@ private constructor(
         fun revisedPrompt(revisedPrompt: JsonField<String>) = apply {
             this.revisedPrompt = revisedPrompt
         }
+
+        /** The URL of the generated image, if `response_format` is `url` (default). */
+        fun url(url: String) = url(JsonField.of(url))
+
+        /** The URL of the generated image, if `response_format` is `url` (default). */
+        fun url(url: JsonField<String>) = apply { this.url = url }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -133,8 +133,8 @@ private constructor(
         fun build(): Image =
             Image(
                 b64Json,
-                url,
                 revisedPrompt,
+                url,
                 additionalProperties.toImmutable(),
             )
     }
@@ -144,15 +144,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Image && b64Json == other.b64Json && url == other.url && revisedPrompt == other.revisedPrompt && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is Image && b64Json == other.b64Json && revisedPrompt == other.revisedPrompt && url == other.url && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(b64Json, url, revisedPrompt, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(b64Json, revisedPrompt, url, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Image{b64Json=$b64Json, url=$url, revisedPrompt=$revisedPrompt, additionalProperties=$additionalProperties}"
+        "Image{b64Json=$b64Json, revisedPrompt=$revisedPrompt, url=$url, additionalProperties=$additionalProperties}"
 }

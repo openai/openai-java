@@ -405,25 +405,25 @@ private constructor(
     class ThreadRunStepCreated
     @JsonCreator
     private constructor(
-        @JsonProperty("event")
-        @ExcludeMissing
-        private val event: JsonField<Event> = JsonMissing.of(),
         @JsonProperty("data")
         @ExcludeMissing
         private val data: JsonField<RunStep> = JsonMissing.of(),
+        @JsonProperty("event")
+        @ExcludeMissing
+        private val event: JsonField<Event> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        fun event(): Event = event.getRequired("event")
-
         /** Represents a step in execution of a run. */
         fun data(): RunStep = data.getRequired("data")
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        fun event(): Event = event.getRequired("event")
 
         /** Represents a step in execution of a run. */
         @JsonProperty("data") @ExcludeMissing fun _data() = data
+
+        @JsonProperty("event") @ExcludeMissing fun _event() = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -433,8 +433,8 @@ private constructor(
 
         fun validate(): ThreadRunStepCreated = apply {
             if (!validated) {
-                event()
                 data().validate()
+                event()
                 validated = true
             }
         }
@@ -448,26 +448,26 @@ private constructor(
 
         class Builder {
 
-            private var event: JsonField<Event> = JsonMissing.of()
             private var data: JsonField<RunStep> = JsonMissing.of()
+            private var event: JsonField<Event> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(threadRunStepCreated: ThreadRunStepCreated) = apply {
-                event = threadRunStepCreated.event
                 data = threadRunStepCreated.data
+                event = threadRunStepCreated.event
                 additionalProperties = threadRunStepCreated.additionalProperties.toMutableMap()
             }
-
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             /** Represents a step in execution of a run. */
             fun data(data: RunStep) = data(JsonField.of(data))
 
             /** Represents a step in execution of a run. */
             fun data(data: JsonField<RunStep>) = apply { this.data = data }
+
+            fun event(event: Event) = event(JsonField.of(event))
+
+            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -490,8 +490,8 @@ private constructor(
 
             fun build(): ThreadRunStepCreated =
                 ThreadRunStepCreated(
-                    event,
                     data,
+                    event,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -552,17 +552,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunStepCreated && event == other.event && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ThreadRunStepCreated && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(event, data, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ThreadRunStepCreated{event=$event, data=$data, additionalProperties=$additionalProperties}"
+            "ThreadRunStepCreated{data=$data, event=$event, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -574,25 +574,25 @@ private constructor(
     class ThreadRunStepInProgress
     @JsonCreator
     private constructor(
-        @JsonProperty("event")
-        @ExcludeMissing
-        private val event: JsonField<Event> = JsonMissing.of(),
         @JsonProperty("data")
         @ExcludeMissing
         private val data: JsonField<RunStep> = JsonMissing.of(),
+        @JsonProperty("event")
+        @ExcludeMissing
+        private val event: JsonField<Event> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        fun event(): Event = event.getRequired("event")
-
         /** Represents a step in execution of a run. */
         fun data(): RunStep = data.getRequired("data")
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        fun event(): Event = event.getRequired("event")
 
         /** Represents a step in execution of a run. */
         @JsonProperty("data") @ExcludeMissing fun _data() = data
+
+        @JsonProperty("event") @ExcludeMissing fun _event() = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -602,8 +602,8 @@ private constructor(
 
         fun validate(): ThreadRunStepInProgress = apply {
             if (!validated) {
-                event()
                 data().validate()
+                event()
                 validated = true
             }
         }
@@ -617,26 +617,26 @@ private constructor(
 
         class Builder {
 
-            private var event: JsonField<Event> = JsonMissing.of()
             private var data: JsonField<RunStep> = JsonMissing.of()
+            private var event: JsonField<Event> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(threadRunStepInProgress: ThreadRunStepInProgress) = apply {
-                event = threadRunStepInProgress.event
                 data = threadRunStepInProgress.data
+                event = threadRunStepInProgress.event
                 additionalProperties = threadRunStepInProgress.additionalProperties.toMutableMap()
             }
-
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             /** Represents a step in execution of a run. */
             fun data(data: RunStep) = data(JsonField.of(data))
 
             /** Represents a step in execution of a run. */
             fun data(data: JsonField<RunStep>) = apply { this.data = data }
+
+            fun event(event: Event) = event(JsonField.of(event))
+
+            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -659,8 +659,8 @@ private constructor(
 
             fun build(): ThreadRunStepInProgress =
                 ThreadRunStepInProgress(
-                    event,
                     data,
+                    event,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -721,17 +721,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunStepInProgress && event == other.event && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ThreadRunStepInProgress && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(event, data, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ThreadRunStepInProgress{event=$event, data=$data, additionalProperties=$additionalProperties}"
+            "ThreadRunStepInProgress{data=$data, event=$event, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -743,25 +743,25 @@ private constructor(
     class ThreadRunStepDelta
     @JsonCreator
     private constructor(
-        @JsonProperty("event")
-        @ExcludeMissing
-        private val event: JsonField<Event> = JsonMissing.of(),
         @JsonProperty("data")
         @ExcludeMissing
         private val data: JsonField<RunStepDeltaEvent> = JsonMissing.of(),
+        @JsonProperty("event")
+        @ExcludeMissing
+        private val event: JsonField<Event> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        fun event(): Event = event.getRequired("event")
-
         /** Represents a run step delta i.e. any changed fields on a run step during streaming. */
         fun data(): RunStepDeltaEvent = data.getRequired("data")
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        fun event(): Event = event.getRequired("event")
 
         /** Represents a run step delta i.e. any changed fields on a run step during streaming. */
         @JsonProperty("data") @ExcludeMissing fun _data() = data
+
+        @JsonProperty("event") @ExcludeMissing fun _event() = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -771,8 +771,8 @@ private constructor(
 
         fun validate(): ThreadRunStepDelta = apply {
             if (!validated) {
-                event()
                 data().validate()
+                event()
                 validated = true
             }
         }
@@ -786,20 +786,16 @@ private constructor(
 
         class Builder {
 
-            private var event: JsonField<Event> = JsonMissing.of()
             private var data: JsonField<RunStepDeltaEvent> = JsonMissing.of()
+            private var event: JsonField<Event> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(threadRunStepDelta: ThreadRunStepDelta) = apply {
-                event = threadRunStepDelta.event
                 data = threadRunStepDelta.data
+                event = threadRunStepDelta.event
                 additionalProperties = threadRunStepDelta.additionalProperties.toMutableMap()
             }
-
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             /**
              * Represents a run step delta i.e. any changed fields on a run step during streaming.
@@ -810,6 +806,10 @@ private constructor(
              * Represents a run step delta i.e. any changed fields on a run step during streaming.
              */
             fun data(data: JsonField<RunStepDeltaEvent>) = apply { this.data = data }
+
+            fun event(event: Event) = event(JsonField.of(event))
+
+            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -832,8 +832,8 @@ private constructor(
 
             fun build(): ThreadRunStepDelta =
                 ThreadRunStepDelta(
-                    event,
                     data,
+                    event,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -894,17 +894,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunStepDelta && event == other.event && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ThreadRunStepDelta && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(event, data, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ThreadRunStepDelta{event=$event, data=$data, additionalProperties=$additionalProperties}"
+            "ThreadRunStepDelta{data=$data, event=$event, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -916,25 +916,25 @@ private constructor(
     class ThreadRunStepCompleted
     @JsonCreator
     private constructor(
-        @JsonProperty("event")
-        @ExcludeMissing
-        private val event: JsonField<Event> = JsonMissing.of(),
         @JsonProperty("data")
         @ExcludeMissing
         private val data: JsonField<RunStep> = JsonMissing.of(),
+        @JsonProperty("event")
+        @ExcludeMissing
+        private val event: JsonField<Event> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        fun event(): Event = event.getRequired("event")
-
         /** Represents a step in execution of a run. */
         fun data(): RunStep = data.getRequired("data")
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        fun event(): Event = event.getRequired("event")
 
         /** Represents a step in execution of a run. */
         @JsonProperty("data") @ExcludeMissing fun _data() = data
+
+        @JsonProperty("event") @ExcludeMissing fun _event() = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -944,8 +944,8 @@ private constructor(
 
         fun validate(): ThreadRunStepCompleted = apply {
             if (!validated) {
-                event()
                 data().validate()
+                event()
                 validated = true
             }
         }
@@ -959,26 +959,26 @@ private constructor(
 
         class Builder {
 
-            private var event: JsonField<Event> = JsonMissing.of()
             private var data: JsonField<RunStep> = JsonMissing.of()
+            private var event: JsonField<Event> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(threadRunStepCompleted: ThreadRunStepCompleted) = apply {
-                event = threadRunStepCompleted.event
                 data = threadRunStepCompleted.data
+                event = threadRunStepCompleted.event
                 additionalProperties = threadRunStepCompleted.additionalProperties.toMutableMap()
             }
-
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             /** Represents a step in execution of a run. */
             fun data(data: RunStep) = data(JsonField.of(data))
 
             /** Represents a step in execution of a run. */
             fun data(data: JsonField<RunStep>) = apply { this.data = data }
+
+            fun event(event: Event) = event(JsonField.of(event))
+
+            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1001,8 +1001,8 @@ private constructor(
 
             fun build(): ThreadRunStepCompleted =
                 ThreadRunStepCompleted(
-                    event,
                     data,
+                    event,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1063,17 +1063,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunStepCompleted && event == other.event && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ThreadRunStepCompleted && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(event, data, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ThreadRunStepCompleted{event=$event, data=$data, additionalProperties=$additionalProperties}"
+            "ThreadRunStepCompleted{data=$data, event=$event, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -1084,25 +1084,25 @@ private constructor(
     class ThreadRunStepFailed
     @JsonCreator
     private constructor(
-        @JsonProperty("event")
-        @ExcludeMissing
-        private val event: JsonField<Event> = JsonMissing.of(),
         @JsonProperty("data")
         @ExcludeMissing
         private val data: JsonField<RunStep> = JsonMissing.of(),
+        @JsonProperty("event")
+        @ExcludeMissing
+        private val event: JsonField<Event> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        fun event(): Event = event.getRequired("event")
-
         /** Represents a step in execution of a run. */
         fun data(): RunStep = data.getRequired("data")
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        fun event(): Event = event.getRequired("event")
 
         /** Represents a step in execution of a run. */
         @JsonProperty("data") @ExcludeMissing fun _data() = data
+
+        @JsonProperty("event") @ExcludeMissing fun _event() = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1112,8 +1112,8 @@ private constructor(
 
         fun validate(): ThreadRunStepFailed = apply {
             if (!validated) {
-                event()
                 data().validate()
+                event()
                 validated = true
             }
         }
@@ -1127,26 +1127,26 @@ private constructor(
 
         class Builder {
 
-            private var event: JsonField<Event> = JsonMissing.of()
             private var data: JsonField<RunStep> = JsonMissing.of()
+            private var event: JsonField<Event> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(threadRunStepFailed: ThreadRunStepFailed) = apply {
-                event = threadRunStepFailed.event
                 data = threadRunStepFailed.data
+                event = threadRunStepFailed.event
                 additionalProperties = threadRunStepFailed.additionalProperties.toMutableMap()
             }
-
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             /** Represents a step in execution of a run. */
             fun data(data: RunStep) = data(JsonField.of(data))
 
             /** Represents a step in execution of a run. */
             fun data(data: JsonField<RunStep>) = apply { this.data = data }
+
+            fun event(event: Event) = event(JsonField.of(event))
+
+            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1169,8 +1169,8 @@ private constructor(
 
             fun build(): ThreadRunStepFailed =
                 ThreadRunStepFailed(
-                    event,
                     data,
+                    event,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1231,17 +1231,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunStepFailed && event == other.event && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ThreadRunStepFailed && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(event, data, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ThreadRunStepFailed{event=$event, data=$data, additionalProperties=$additionalProperties}"
+            "ThreadRunStepFailed{data=$data, event=$event, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -1253,25 +1253,25 @@ private constructor(
     class ThreadRunStepCancelled
     @JsonCreator
     private constructor(
-        @JsonProperty("event")
-        @ExcludeMissing
-        private val event: JsonField<Event> = JsonMissing.of(),
         @JsonProperty("data")
         @ExcludeMissing
         private val data: JsonField<RunStep> = JsonMissing.of(),
+        @JsonProperty("event")
+        @ExcludeMissing
+        private val event: JsonField<Event> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        fun event(): Event = event.getRequired("event")
-
         /** Represents a step in execution of a run. */
         fun data(): RunStep = data.getRequired("data")
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        fun event(): Event = event.getRequired("event")
 
         /** Represents a step in execution of a run. */
         @JsonProperty("data") @ExcludeMissing fun _data() = data
+
+        @JsonProperty("event") @ExcludeMissing fun _event() = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1281,8 +1281,8 @@ private constructor(
 
         fun validate(): ThreadRunStepCancelled = apply {
             if (!validated) {
-                event()
                 data().validate()
+                event()
                 validated = true
             }
         }
@@ -1296,26 +1296,26 @@ private constructor(
 
         class Builder {
 
-            private var event: JsonField<Event> = JsonMissing.of()
             private var data: JsonField<RunStep> = JsonMissing.of()
+            private var event: JsonField<Event> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(threadRunStepCancelled: ThreadRunStepCancelled) = apply {
-                event = threadRunStepCancelled.event
                 data = threadRunStepCancelled.data
+                event = threadRunStepCancelled.event
                 additionalProperties = threadRunStepCancelled.additionalProperties.toMutableMap()
             }
-
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             /** Represents a step in execution of a run. */
             fun data(data: RunStep) = data(JsonField.of(data))
 
             /** Represents a step in execution of a run. */
             fun data(data: JsonField<RunStep>) = apply { this.data = data }
+
+            fun event(event: Event) = event(JsonField.of(event))
+
+            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1338,8 +1338,8 @@ private constructor(
 
             fun build(): ThreadRunStepCancelled =
                 ThreadRunStepCancelled(
-                    event,
                     data,
+                    event,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1400,17 +1400,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunStepCancelled && event == other.event && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ThreadRunStepCancelled && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(event, data, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ThreadRunStepCancelled{event=$event, data=$data, additionalProperties=$additionalProperties}"
+            "ThreadRunStepCancelled{data=$data, event=$event, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -1421,25 +1421,25 @@ private constructor(
     class ThreadRunStepExpired
     @JsonCreator
     private constructor(
-        @JsonProperty("event")
-        @ExcludeMissing
-        private val event: JsonField<Event> = JsonMissing.of(),
         @JsonProperty("data")
         @ExcludeMissing
         private val data: JsonField<RunStep> = JsonMissing.of(),
+        @JsonProperty("event")
+        @ExcludeMissing
+        private val event: JsonField<Event> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        fun event(): Event = event.getRequired("event")
-
         /** Represents a step in execution of a run. */
         fun data(): RunStep = data.getRequired("data")
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        fun event(): Event = event.getRequired("event")
 
         /** Represents a step in execution of a run. */
         @JsonProperty("data") @ExcludeMissing fun _data() = data
+
+        @JsonProperty("event") @ExcludeMissing fun _event() = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1449,8 +1449,8 @@ private constructor(
 
         fun validate(): ThreadRunStepExpired = apply {
             if (!validated) {
-                event()
                 data().validate()
+                event()
                 validated = true
             }
         }
@@ -1464,26 +1464,26 @@ private constructor(
 
         class Builder {
 
-            private var event: JsonField<Event> = JsonMissing.of()
             private var data: JsonField<RunStep> = JsonMissing.of()
+            private var event: JsonField<Event> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(threadRunStepExpired: ThreadRunStepExpired) = apply {
-                event = threadRunStepExpired.event
                 data = threadRunStepExpired.data
+                event = threadRunStepExpired.event
                 additionalProperties = threadRunStepExpired.additionalProperties.toMutableMap()
             }
-
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             /** Represents a step in execution of a run. */
             fun data(data: RunStep) = data(JsonField.of(data))
 
             /** Represents a step in execution of a run. */
             fun data(data: JsonField<RunStep>) = apply { this.data = data }
+
+            fun event(event: Event) = event(JsonField.of(event))
+
+            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1506,8 +1506,8 @@ private constructor(
 
             fun build(): ThreadRunStepExpired =
                 ThreadRunStepExpired(
-                    event,
                     data,
+                    event,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1568,16 +1568,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunStepExpired && event == other.event && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ThreadRunStepExpired && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(event, data, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ThreadRunStepExpired{event=$event, data=$data, additionalProperties=$additionalProperties}"
+            "ThreadRunStepExpired{data=$data, event=$event, additionalProperties=$additionalProperties}"
     }
 }
