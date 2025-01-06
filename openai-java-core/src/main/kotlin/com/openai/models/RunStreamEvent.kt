@@ -465,15 +465,13 @@ private constructor(
     class ThreadRunCreated
     @JsonCreator
     private constructor(
+        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
         @JsonProperty("event")
         @ExcludeMissing
         private val event: JsonField<Event> = JsonMissing.of(),
-        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
-
-        fun event(): Event = event.getRequired("event")
 
         /**
          * Represents an execution run on a
@@ -481,13 +479,15 @@ private constructor(
          */
         fun data(): Run = data.getRequired("data")
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        fun event(): Event = event.getRequired("event")
 
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
         @JsonProperty("data") @ExcludeMissing fun _data() = data
+
+        @JsonProperty("event") @ExcludeMissing fun _event() = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -497,8 +497,8 @@ private constructor(
 
         fun validate(): ThreadRunCreated = apply {
             if (!validated) {
-                event()
                 data().validate()
+                event()
                 validated = true
             }
         }
@@ -512,20 +512,16 @@ private constructor(
 
         class Builder {
 
-            private var event: JsonField<Event> = JsonMissing.of()
             private var data: JsonField<Run> = JsonMissing.of()
+            private var event: JsonField<Event> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(threadRunCreated: ThreadRunCreated) = apply {
-                event = threadRunCreated.event
                 data = threadRunCreated.data
+                event = threadRunCreated.event
                 additionalProperties = threadRunCreated.additionalProperties.toMutableMap()
             }
-
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             /**
              * Represents an execution run on a
@@ -538,6 +534,10 @@ private constructor(
              * [thread](https://platform.openai.com/docs/api-reference/threads).
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
+
+            fun event(event: Event) = event(JsonField.of(event))
+
+            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -560,8 +560,8 @@ private constructor(
 
             fun build(): ThreadRunCreated =
                 ThreadRunCreated(
-                    event,
                     data,
+                    event,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -622,17 +622,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunCreated && event == other.event && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ThreadRunCreated && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(event, data, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ThreadRunCreated{event=$event, data=$data, additionalProperties=$additionalProperties}"
+            "ThreadRunCreated{data=$data, event=$event, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -643,15 +643,13 @@ private constructor(
     class ThreadRunQueued
     @JsonCreator
     private constructor(
+        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
         @JsonProperty("event")
         @ExcludeMissing
         private val event: JsonField<Event> = JsonMissing.of(),
-        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
-
-        fun event(): Event = event.getRequired("event")
 
         /**
          * Represents an execution run on a
@@ -659,13 +657,15 @@ private constructor(
          */
         fun data(): Run = data.getRequired("data")
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        fun event(): Event = event.getRequired("event")
 
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
         @JsonProperty("data") @ExcludeMissing fun _data() = data
+
+        @JsonProperty("event") @ExcludeMissing fun _event() = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -675,8 +675,8 @@ private constructor(
 
         fun validate(): ThreadRunQueued = apply {
             if (!validated) {
-                event()
                 data().validate()
+                event()
                 validated = true
             }
         }
@@ -690,20 +690,16 @@ private constructor(
 
         class Builder {
 
-            private var event: JsonField<Event> = JsonMissing.of()
             private var data: JsonField<Run> = JsonMissing.of()
+            private var event: JsonField<Event> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(threadRunQueued: ThreadRunQueued) = apply {
-                event = threadRunQueued.event
                 data = threadRunQueued.data
+                event = threadRunQueued.event
                 additionalProperties = threadRunQueued.additionalProperties.toMutableMap()
             }
-
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             /**
              * Represents an execution run on a
@@ -716,6 +712,10 @@ private constructor(
              * [thread](https://platform.openai.com/docs/api-reference/threads).
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
+
+            fun event(event: Event) = event(JsonField.of(event))
+
+            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -738,8 +738,8 @@ private constructor(
 
             fun build(): ThreadRunQueued =
                 ThreadRunQueued(
-                    event,
                     data,
+                    event,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -800,17 +800,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunQueued && event == other.event && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ThreadRunQueued && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(event, data, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ThreadRunQueued{event=$event, data=$data, additionalProperties=$additionalProperties}"
+            "ThreadRunQueued{data=$data, event=$event, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -821,15 +821,13 @@ private constructor(
     class ThreadRunInProgress
     @JsonCreator
     private constructor(
+        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
         @JsonProperty("event")
         @ExcludeMissing
         private val event: JsonField<Event> = JsonMissing.of(),
-        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
-
-        fun event(): Event = event.getRequired("event")
 
         /**
          * Represents an execution run on a
@@ -837,13 +835,15 @@ private constructor(
          */
         fun data(): Run = data.getRequired("data")
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        fun event(): Event = event.getRequired("event")
 
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
         @JsonProperty("data") @ExcludeMissing fun _data() = data
+
+        @JsonProperty("event") @ExcludeMissing fun _event() = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -853,8 +853,8 @@ private constructor(
 
         fun validate(): ThreadRunInProgress = apply {
             if (!validated) {
-                event()
                 data().validate()
+                event()
                 validated = true
             }
         }
@@ -868,20 +868,16 @@ private constructor(
 
         class Builder {
 
-            private var event: JsonField<Event> = JsonMissing.of()
             private var data: JsonField<Run> = JsonMissing.of()
+            private var event: JsonField<Event> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(threadRunInProgress: ThreadRunInProgress) = apply {
-                event = threadRunInProgress.event
                 data = threadRunInProgress.data
+                event = threadRunInProgress.event
                 additionalProperties = threadRunInProgress.additionalProperties.toMutableMap()
             }
-
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             /**
              * Represents an execution run on a
@@ -894,6 +890,10 @@ private constructor(
              * [thread](https://platform.openai.com/docs/api-reference/threads).
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
+
+            fun event(event: Event) = event(JsonField.of(event))
+
+            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -916,8 +916,8 @@ private constructor(
 
             fun build(): ThreadRunInProgress =
                 ThreadRunInProgress(
-                    event,
                     data,
+                    event,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -978,17 +978,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunInProgress && event == other.event && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ThreadRunInProgress && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(event, data, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ThreadRunInProgress{event=$event, data=$data, additionalProperties=$additionalProperties}"
+            "ThreadRunInProgress{data=$data, event=$event, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -999,15 +999,13 @@ private constructor(
     class ThreadRunRequiresAction
     @JsonCreator
     private constructor(
+        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
         @JsonProperty("event")
         @ExcludeMissing
         private val event: JsonField<Event> = JsonMissing.of(),
-        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
-
-        fun event(): Event = event.getRequired("event")
 
         /**
          * Represents an execution run on a
@@ -1015,13 +1013,15 @@ private constructor(
          */
         fun data(): Run = data.getRequired("data")
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        fun event(): Event = event.getRequired("event")
 
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
         @JsonProperty("data") @ExcludeMissing fun _data() = data
+
+        @JsonProperty("event") @ExcludeMissing fun _event() = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1031,8 +1031,8 @@ private constructor(
 
         fun validate(): ThreadRunRequiresAction = apply {
             if (!validated) {
-                event()
                 data().validate()
+                event()
                 validated = true
             }
         }
@@ -1046,20 +1046,16 @@ private constructor(
 
         class Builder {
 
-            private var event: JsonField<Event> = JsonMissing.of()
             private var data: JsonField<Run> = JsonMissing.of()
+            private var event: JsonField<Event> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(threadRunRequiresAction: ThreadRunRequiresAction) = apply {
-                event = threadRunRequiresAction.event
                 data = threadRunRequiresAction.data
+                event = threadRunRequiresAction.event
                 additionalProperties = threadRunRequiresAction.additionalProperties.toMutableMap()
             }
-
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             /**
              * Represents an execution run on a
@@ -1072,6 +1068,10 @@ private constructor(
              * [thread](https://platform.openai.com/docs/api-reference/threads).
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
+
+            fun event(event: Event) = event(JsonField.of(event))
+
+            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1094,8 +1094,8 @@ private constructor(
 
             fun build(): ThreadRunRequiresAction =
                 ThreadRunRequiresAction(
-                    event,
                     data,
+                    event,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1156,17 +1156,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunRequiresAction && event == other.event && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ThreadRunRequiresAction && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(event, data, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ThreadRunRequiresAction{event=$event, data=$data, additionalProperties=$additionalProperties}"
+            "ThreadRunRequiresAction{data=$data, event=$event, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -1176,15 +1176,13 @@ private constructor(
     class ThreadRunCompleted
     @JsonCreator
     private constructor(
+        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
         @JsonProperty("event")
         @ExcludeMissing
         private val event: JsonField<Event> = JsonMissing.of(),
-        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
-
-        fun event(): Event = event.getRequired("event")
 
         /**
          * Represents an execution run on a
@@ -1192,13 +1190,15 @@ private constructor(
          */
         fun data(): Run = data.getRequired("data")
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        fun event(): Event = event.getRequired("event")
 
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
         @JsonProperty("data") @ExcludeMissing fun _data() = data
+
+        @JsonProperty("event") @ExcludeMissing fun _event() = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1208,8 +1208,8 @@ private constructor(
 
         fun validate(): ThreadRunCompleted = apply {
             if (!validated) {
-                event()
                 data().validate()
+                event()
                 validated = true
             }
         }
@@ -1223,20 +1223,16 @@ private constructor(
 
         class Builder {
 
-            private var event: JsonField<Event> = JsonMissing.of()
             private var data: JsonField<Run> = JsonMissing.of()
+            private var event: JsonField<Event> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(threadRunCompleted: ThreadRunCompleted) = apply {
-                event = threadRunCompleted.event
                 data = threadRunCompleted.data
+                event = threadRunCompleted.event
                 additionalProperties = threadRunCompleted.additionalProperties.toMutableMap()
             }
-
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             /**
              * Represents an execution run on a
@@ -1249,6 +1245,10 @@ private constructor(
              * [thread](https://platform.openai.com/docs/api-reference/threads).
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
+
+            fun event(event: Event) = event(JsonField.of(event))
+
+            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1271,8 +1271,8 @@ private constructor(
 
             fun build(): ThreadRunCompleted =
                 ThreadRunCompleted(
-                    event,
                     data,
+                    event,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1333,17 +1333,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunCompleted && event == other.event && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ThreadRunCompleted && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(event, data, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ThreadRunCompleted{event=$event, data=$data, additionalProperties=$additionalProperties}"
+            "ThreadRunCompleted{data=$data, event=$event, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -1354,15 +1354,13 @@ private constructor(
     class ThreadRunIncomplete
     @JsonCreator
     private constructor(
+        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
         @JsonProperty("event")
         @ExcludeMissing
         private val event: JsonField<Event> = JsonMissing.of(),
-        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
-
-        fun event(): Event = event.getRequired("event")
 
         /**
          * Represents an execution run on a
@@ -1370,13 +1368,15 @@ private constructor(
          */
         fun data(): Run = data.getRequired("data")
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        fun event(): Event = event.getRequired("event")
 
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
         @JsonProperty("data") @ExcludeMissing fun _data() = data
+
+        @JsonProperty("event") @ExcludeMissing fun _event() = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1386,8 +1386,8 @@ private constructor(
 
         fun validate(): ThreadRunIncomplete = apply {
             if (!validated) {
-                event()
                 data().validate()
+                event()
                 validated = true
             }
         }
@@ -1401,20 +1401,16 @@ private constructor(
 
         class Builder {
 
-            private var event: JsonField<Event> = JsonMissing.of()
             private var data: JsonField<Run> = JsonMissing.of()
+            private var event: JsonField<Event> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(threadRunIncomplete: ThreadRunIncomplete) = apply {
-                event = threadRunIncomplete.event
                 data = threadRunIncomplete.data
+                event = threadRunIncomplete.event
                 additionalProperties = threadRunIncomplete.additionalProperties.toMutableMap()
             }
-
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             /**
              * Represents an execution run on a
@@ -1427,6 +1423,10 @@ private constructor(
              * [thread](https://platform.openai.com/docs/api-reference/threads).
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
+
+            fun event(event: Event) = event(JsonField.of(event))
+
+            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1449,8 +1449,8 @@ private constructor(
 
             fun build(): ThreadRunIncomplete =
                 ThreadRunIncomplete(
-                    event,
                     data,
+                    event,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1511,17 +1511,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunIncomplete && event == other.event && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ThreadRunIncomplete && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(event, data, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ThreadRunIncomplete{event=$event, data=$data, additionalProperties=$additionalProperties}"
+            "ThreadRunIncomplete{data=$data, event=$event, additionalProperties=$additionalProperties}"
     }
 
     /** Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) fails. */
@@ -1529,15 +1529,13 @@ private constructor(
     class ThreadRunFailed
     @JsonCreator
     private constructor(
+        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
         @JsonProperty("event")
         @ExcludeMissing
         private val event: JsonField<Event> = JsonMissing.of(),
-        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
-
-        fun event(): Event = event.getRequired("event")
 
         /**
          * Represents an execution run on a
@@ -1545,13 +1543,15 @@ private constructor(
          */
         fun data(): Run = data.getRequired("data")
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        fun event(): Event = event.getRequired("event")
 
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
         @JsonProperty("data") @ExcludeMissing fun _data() = data
+
+        @JsonProperty("event") @ExcludeMissing fun _event() = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1561,8 +1561,8 @@ private constructor(
 
         fun validate(): ThreadRunFailed = apply {
             if (!validated) {
-                event()
                 data().validate()
+                event()
                 validated = true
             }
         }
@@ -1576,20 +1576,16 @@ private constructor(
 
         class Builder {
 
-            private var event: JsonField<Event> = JsonMissing.of()
             private var data: JsonField<Run> = JsonMissing.of()
+            private var event: JsonField<Event> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(threadRunFailed: ThreadRunFailed) = apply {
-                event = threadRunFailed.event
                 data = threadRunFailed.data
+                event = threadRunFailed.event
                 additionalProperties = threadRunFailed.additionalProperties.toMutableMap()
             }
-
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             /**
              * Represents an execution run on a
@@ -1602,6 +1598,10 @@ private constructor(
              * [thread](https://platform.openai.com/docs/api-reference/threads).
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
+
+            fun event(event: Event) = event(JsonField.of(event))
+
+            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1624,8 +1624,8 @@ private constructor(
 
             fun build(): ThreadRunFailed =
                 ThreadRunFailed(
-                    event,
                     data,
+                    event,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1686,17 +1686,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunFailed && event == other.event && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ThreadRunFailed && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(event, data, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ThreadRunFailed{event=$event, data=$data, additionalProperties=$additionalProperties}"
+            "ThreadRunFailed{data=$data, event=$event, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -1707,15 +1707,13 @@ private constructor(
     class ThreadRunCancelling
     @JsonCreator
     private constructor(
+        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
         @JsonProperty("event")
         @ExcludeMissing
         private val event: JsonField<Event> = JsonMissing.of(),
-        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
-
-        fun event(): Event = event.getRequired("event")
 
         /**
          * Represents an execution run on a
@@ -1723,13 +1721,15 @@ private constructor(
          */
         fun data(): Run = data.getRequired("data")
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        fun event(): Event = event.getRequired("event")
 
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
         @JsonProperty("data") @ExcludeMissing fun _data() = data
+
+        @JsonProperty("event") @ExcludeMissing fun _event() = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1739,8 +1739,8 @@ private constructor(
 
         fun validate(): ThreadRunCancelling = apply {
             if (!validated) {
-                event()
                 data().validate()
+                event()
                 validated = true
             }
         }
@@ -1754,20 +1754,16 @@ private constructor(
 
         class Builder {
 
-            private var event: JsonField<Event> = JsonMissing.of()
             private var data: JsonField<Run> = JsonMissing.of()
+            private var event: JsonField<Event> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(threadRunCancelling: ThreadRunCancelling) = apply {
-                event = threadRunCancelling.event
                 data = threadRunCancelling.data
+                event = threadRunCancelling.event
                 additionalProperties = threadRunCancelling.additionalProperties.toMutableMap()
             }
-
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             /**
              * Represents an execution run on a
@@ -1780,6 +1776,10 @@ private constructor(
              * [thread](https://platform.openai.com/docs/api-reference/threads).
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
+
+            fun event(event: Event) = event(JsonField.of(event))
+
+            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1802,8 +1802,8 @@ private constructor(
 
             fun build(): ThreadRunCancelling =
                 ThreadRunCancelling(
-                    event,
                     data,
+                    event,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1864,17 +1864,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunCancelling && event == other.event && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ThreadRunCancelling && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(event, data, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ThreadRunCancelling{event=$event, data=$data, additionalProperties=$additionalProperties}"
+            "ThreadRunCancelling{data=$data, event=$event, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -1884,15 +1884,13 @@ private constructor(
     class ThreadRunCancelled
     @JsonCreator
     private constructor(
+        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
         @JsonProperty("event")
         @ExcludeMissing
         private val event: JsonField<Event> = JsonMissing.of(),
-        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
-
-        fun event(): Event = event.getRequired("event")
 
         /**
          * Represents an execution run on a
@@ -1900,13 +1898,15 @@ private constructor(
          */
         fun data(): Run = data.getRequired("data")
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        fun event(): Event = event.getRequired("event")
 
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
         @JsonProperty("data") @ExcludeMissing fun _data() = data
+
+        @JsonProperty("event") @ExcludeMissing fun _event() = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1916,8 +1916,8 @@ private constructor(
 
         fun validate(): ThreadRunCancelled = apply {
             if (!validated) {
-                event()
                 data().validate()
+                event()
                 validated = true
             }
         }
@@ -1931,20 +1931,16 @@ private constructor(
 
         class Builder {
 
-            private var event: JsonField<Event> = JsonMissing.of()
             private var data: JsonField<Run> = JsonMissing.of()
+            private var event: JsonField<Event> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(threadRunCancelled: ThreadRunCancelled) = apply {
-                event = threadRunCancelled.event
                 data = threadRunCancelled.data
+                event = threadRunCancelled.event
                 additionalProperties = threadRunCancelled.additionalProperties.toMutableMap()
             }
-
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             /**
              * Represents an execution run on a
@@ -1957,6 +1953,10 @@ private constructor(
              * [thread](https://platform.openai.com/docs/api-reference/threads).
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
+
+            fun event(event: Event) = event(JsonField.of(event))
+
+            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1979,8 +1979,8 @@ private constructor(
 
             fun build(): ThreadRunCancelled =
                 ThreadRunCancelled(
-                    event,
                     data,
+                    event,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -2041,17 +2041,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunCancelled && event == other.event && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ThreadRunCancelled && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(event, data, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ThreadRunCancelled{event=$event, data=$data, additionalProperties=$additionalProperties}"
+            "ThreadRunCancelled{data=$data, event=$event, additionalProperties=$additionalProperties}"
     }
 
     /** Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) expires. */
@@ -2059,15 +2059,13 @@ private constructor(
     class ThreadRunExpired
     @JsonCreator
     private constructor(
+        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
         @JsonProperty("event")
         @ExcludeMissing
         private val event: JsonField<Event> = JsonMissing.of(),
-        @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
-
-        fun event(): Event = event.getRequired("event")
 
         /**
          * Represents an execution run on a
@@ -2075,13 +2073,15 @@ private constructor(
          */
         fun data(): Run = data.getRequired("data")
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        fun event(): Event = event.getRequired("event")
 
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
         @JsonProperty("data") @ExcludeMissing fun _data() = data
+
+        @JsonProperty("event") @ExcludeMissing fun _event() = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -2091,8 +2091,8 @@ private constructor(
 
         fun validate(): ThreadRunExpired = apply {
             if (!validated) {
-                event()
                 data().validate()
+                event()
                 validated = true
             }
         }
@@ -2106,20 +2106,16 @@ private constructor(
 
         class Builder {
 
-            private var event: JsonField<Event> = JsonMissing.of()
             private var data: JsonField<Run> = JsonMissing.of()
+            private var event: JsonField<Event> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(threadRunExpired: ThreadRunExpired) = apply {
-                event = threadRunExpired.event
                 data = threadRunExpired.data
+                event = threadRunExpired.event
                 additionalProperties = threadRunExpired.additionalProperties.toMutableMap()
             }
-
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             /**
              * Represents an execution run on a
@@ -2132,6 +2128,10 @@ private constructor(
              * [thread](https://platform.openai.com/docs/api-reference/threads).
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
+
+            fun event(event: Event) = event(JsonField.of(event))
+
+            fun event(event: JsonField<Event>) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -2154,8 +2154,8 @@ private constructor(
 
             fun build(): ThreadRunExpired =
                 ThreadRunExpired(
-                    event,
                     data,
+                    event,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -2216,16 +2216,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunExpired && event == other.event && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ThreadRunExpired && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(event, data, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ThreadRunExpired{event=$event, data=$data, additionalProperties=$additionalProperties}"
+            "ThreadRunExpired{data=$data, event=$event, additionalProperties=$additionalProperties}"
     }
 }

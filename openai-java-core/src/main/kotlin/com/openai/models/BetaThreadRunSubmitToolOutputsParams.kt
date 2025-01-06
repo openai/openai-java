@@ -314,11 +314,14 @@ constructor(
     class ToolOutput
     @JsonCreator
     private constructor(
-        @JsonProperty("tool_call_id") private val toolCallId: String?,
         @JsonProperty("output") private val output: String?,
+        @JsonProperty("tool_call_id") private val toolCallId: String?,
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
+
+        /** The output of the tool call to be submitted to continue the run. */
+        @JsonProperty("output") fun output(): Optional<String> = Optional.ofNullable(output)
 
         /**
          * The ID of the tool call in the `required_action` object within the run object the output
@@ -326,9 +329,6 @@ constructor(
          */
         @JsonProperty("tool_call_id")
         fun toolCallId(): Optional<String> = Optional.ofNullable(toolCallId)
-
-        /** The output of the tool call to be submitted to continue the run. */
-        @JsonProperty("output") fun output(): Optional<String> = Optional.ofNullable(output)
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -343,25 +343,25 @@ constructor(
 
         class Builder {
 
-            private var toolCallId: String? = null
             private var output: String? = null
+            private var toolCallId: String? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(toolOutput: ToolOutput) = apply {
-                toolCallId = toolOutput.toolCallId
                 output = toolOutput.output
+                toolCallId = toolOutput.toolCallId
                 additionalProperties = toolOutput.additionalProperties.toMutableMap()
             }
+
+            /** The output of the tool call to be submitted to continue the run. */
+            fun output(output: String) = apply { this.output = output }
 
             /**
              * The ID of the tool call in the `required_action` object within the run object the
              * output is being submitted for.
              */
             fun toolCallId(toolCallId: String) = apply { this.toolCallId = toolCallId }
-
-            /** The output of the tool call to be submitted to continue the run. */
-            fun output(output: String) = apply { this.output = output }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -384,8 +384,8 @@ constructor(
 
             fun build(): ToolOutput =
                 ToolOutput(
-                    toolCallId,
                     output,
+                    toolCallId,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -395,17 +395,17 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ToolOutput && toolCallId == other.toolCallId && output == other.output && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ToolOutput && output == other.output && toolCallId == other.toolCallId && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(toolCallId, output, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(output, toolCallId, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ToolOutput{toolCallId=$toolCallId, output=$output, additionalProperties=$additionalProperties}"
+            "ToolOutput{output=$output, toolCallId=$toolCallId, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

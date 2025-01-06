@@ -22,22 +22,22 @@ import java.util.Objects
 class ChatCompletionContentPartText
 @JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonProperty("text") @ExcludeMissing private val text: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /** The type of the content part. */
-    fun type(): Type = type.getRequired("type")
 
     /** The text content. */
     fun text(): String = text.getRequired("text")
 
     /** The type of the content part. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    fun type(): Type = type.getRequired("type")
 
     /** The text content. */
     @JsonProperty("text") @ExcludeMissing fun _text() = text
+
+    /** The type of the content part. */
+    @JsonProperty("type") @ExcludeMissing fun _type() = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -47,8 +47,8 @@ private constructor(
 
     fun validate(): ChatCompletionContentPartText = apply {
         if (!validated) {
-            type()
             text()
+            type()
             validated = true
         }
     }
@@ -62,28 +62,28 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type> = JsonMissing.of()
         private var text: JsonField<String> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(chatCompletionContentPartText: ChatCompletionContentPartText) = apply {
-            type = chatCompletionContentPartText.type
             text = chatCompletionContentPartText.text
+            type = chatCompletionContentPartText.type
             additionalProperties = chatCompletionContentPartText.additionalProperties.toMutableMap()
         }
-
-        /** The type of the content part. */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /** The type of the content part. */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
 
         /** The text content. */
         fun text(text: String) = text(JsonField.of(text))
 
         /** The text content. */
         fun text(text: JsonField<String>) = apply { this.text = text }
+
+        /** The type of the content part. */
+        fun type(type: Type) = type(JsonField.of(type))
+
+        /** The type of the content part. */
+        fun type(type: JsonField<Type>) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -106,8 +106,8 @@ private constructor(
 
         fun build(): ChatCompletionContentPartText =
             ChatCompletionContentPartText(
-                type,
                 text,
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -168,15 +168,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionContentPartText && type == other.type && text == other.text && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionContentPartText && text == other.text && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(type, text, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(text, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ChatCompletionContentPartText{type=$type, text=$text, additionalProperties=$additionalProperties}"
+        "ChatCompletionContentPartText{text=$text, type=$type, additionalProperties=$additionalProperties}"
 }

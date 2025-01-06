@@ -29,16 +29,16 @@ class FileCitationDeltaAnnotation
 private constructor(
     @JsonProperty("index") @ExcludeMissing private val index: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
-    @JsonProperty("text") @ExcludeMissing private val text: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("end_index")
+    @ExcludeMissing
+    private val endIndex: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("file_citation")
     @ExcludeMissing
     private val fileCitation: JsonField<FileCitation> = JsonMissing.of(),
     @JsonProperty("start_index")
     @ExcludeMissing
     private val startIndex: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("end_index")
-    @ExcludeMissing
-    private val endIndex: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("text") @ExcludeMissing private val text: JsonField<String> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
@@ -48,15 +48,15 @@ private constructor(
     /** Always `file_citation`. */
     fun type(): Type = type.getRequired("type")
 
-    /** The text in the message content that needs to be replaced. */
-    fun text(): Optional<String> = Optional.ofNullable(text.getNullable("text"))
+    fun endIndex(): Optional<Long> = Optional.ofNullable(endIndex.getNullable("end_index"))
 
     fun fileCitation(): Optional<FileCitation> =
         Optional.ofNullable(fileCitation.getNullable("file_citation"))
 
     fun startIndex(): Optional<Long> = Optional.ofNullable(startIndex.getNullable("start_index"))
 
-    fun endIndex(): Optional<Long> = Optional.ofNullable(endIndex.getNullable("end_index"))
+    /** The text in the message content that needs to be replaced. */
+    fun text(): Optional<String> = Optional.ofNullable(text.getNullable("text"))
 
     /** The index of the annotation in the text content part. */
     @JsonProperty("index") @ExcludeMissing fun _index() = index
@@ -64,14 +64,14 @@ private constructor(
     /** Always `file_citation`. */
     @JsonProperty("type") @ExcludeMissing fun _type() = type
 
-    /** The text in the message content that needs to be replaced. */
-    @JsonProperty("text") @ExcludeMissing fun _text() = text
+    @JsonProperty("end_index") @ExcludeMissing fun _endIndex() = endIndex
 
     @JsonProperty("file_citation") @ExcludeMissing fun _fileCitation() = fileCitation
 
     @JsonProperty("start_index") @ExcludeMissing fun _startIndex() = startIndex
 
-    @JsonProperty("end_index") @ExcludeMissing fun _endIndex() = endIndex
+    /** The text in the message content that needs to be replaced. */
+    @JsonProperty("text") @ExcludeMissing fun _text() = text
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -83,10 +83,10 @@ private constructor(
         if (!validated) {
             index()
             type()
-            text()
+            endIndex()
             fileCitation().map { it.validate() }
             startIndex()
-            endIndex()
+            text()
             validated = true
         }
     }
@@ -102,20 +102,20 @@ private constructor(
 
         private var index: JsonField<Long> = JsonMissing.of()
         private var type: JsonField<Type> = JsonMissing.of()
-        private var text: JsonField<String> = JsonMissing.of()
+        private var endIndex: JsonField<Long> = JsonMissing.of()
         private var fileCitation: JsonField<FileCitation> = JsonMissing.of()
         private var startIndex: JsonField<Long> = JsonMissing.of()
-        private var endIndex: JsonField<Long> = JsonMissing.of()
+        private var text: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(fileCitationDeltaAnnotation: FileCitationDeltaAnnotation) = apply {
             index = fileCitationDeltaAnnotation.index
             type = fileCitationDeltaAnnotation.type
-            text = fileCitationDeltaAnnotation.text
+            endIndex = fileCitationDeltaAnnotation.endIndex
             fileCitation = fileCitationDeltaAnnotation.fileCitation
             startIndex = fileCitationDeltaAnnotation.startIndex
-            endIndex = fileCitationDeltaAnnotation.endIndex
+            text = fileCitationDeltaAnnotation.text
             additionalProperties = fileCitationDeltaAnnotation.additionalProperties.toMutableMap()
         }
 
@@ -131,11 +131,9 @@ private constructor(
         /** Always `file_citation`. */
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
-        /** The text in the message content that needs to be replaced. */
-        fun text(text: String) = text(JsonField.of(text))
+        fun endIndex(endIndex: Long) = endIndex(JsonField.of(endIndex))
 
-        /** The text in the message content that needs to be replaced. */
-        fun text(text: JsonField<String>) = apply { this.text = text }
+        fun endIndex(endIndex: JsonField<Long>) = apply { this.endIndex = endIndex }
 
         fun fileCitation(fileCitation: FileCitation) = fileCitation(JsonField.of(fileCitation))
 
@@ -147,9 +145,11 @@ private constructor(
 
         fun startIndex(startIndex: JsonField<Long>) = apply { this.startIndex = startIndex }
 
-        fun endIndex(endIndex: Long) = endIndex(JsonField.of(endIndex))
+        /** The text in the message content that needs to be replaced. */
+        fun text(text: String) = text(JsonField.of(text))
 
-        fun endIndex(endIndex: JsonField<Long>) = apply { this.endIndex = endIndex }
+        /** The text in the message content that needs to be replaced. */
+        fun text(text: JsonField<String>) = apply { this.text = text }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -174,10 +174,10 @@ private constructor(
             FileCitationDeltaAnnotation(
                 index,
                 type,
-                text,
+                endIndex,
                 fileCitation,
                 startIndex,
-                endIndex,
+                text,
                 additionalProperties.toImmutable(),
             )
     }
@@ -355,15 +355,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FileCitationDeltaAnnotation && index == other.index && type == other.type && text == other.text && fileCitation == other.fileCitation && startIndex == other.startIndex && endIndex == other.endIndex && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FileCitationDeltaAnnotation && index == other.index && type == other.type && endIndex == other.endIndex && fileCitation == other.fileCitation && startIndex == other.startIndex && text == other.text && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(index, type, text, fileCitation, startIndex, endIndex, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(index, type, endIndex, fileCitation, startIndex, text, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "FileCitationDeltaAnnotation{index=$index, type=$type, text=$text, fileCitation=$fileCitation, startIndex=$startIndex, endIndex=$endIndex, additionalProperties=$additionalProperties}"
+        "FileCitationDeltaAnnotation{index=$index, type=$type, endIndex=$endIndex, fileCitation=$fileCitation, startIndex=$startIndex, text=$text, additionalProperties=$additionalProperties}"
 }

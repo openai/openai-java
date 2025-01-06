@@ -21,16 +21,19 @@ class BatchError
 @JsonCreator
 private constructor(
     @JsonProperty("code") @ExcludeMissing private val code: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("line") @ExcludeMissing private val line: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("message")
     @ExcludeMissing
     private val message: JsonField<String> = JsonMissing.of(),
     @JsonProperty("param") @ExcludeMissing private val param: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("line") @ExcludeMissing private val line: JsonField<Long> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** An error code identifying the error type. */
     fun code(): Optional<String> = Optional.ofNullable(code.getNullable("code"))
+
+    /** The line number of the input file where the error occurred, if applicable. */
+    fun line(): Optional<Long> = Optional.ofNullable(line.getNullable("line"))
 
     /** A human-readable message providing more details about the error. */
     fun message(): Optional<String> = Optional.ofNullable(message.getNullable("message"))
@@ -38,20 +41,17 @@ private constructor(
     /** The name of the parameter that caused the error, if applicable. */
     fun param(): Optional<String> = Optional.ofNullable(param.getNullable("param"))
 
-    /** The line number of the input file where the error occurred, if applicable. */
-    fun line(): Optional<Long> = Optional.ofNullable(line.getNullable("line"))
-
     /** An error code identifying the error type. */
     @JsonProperty("code") @ExcludeMissing fun _code() = code
+
+    /** The line number of the input file where the error occurred, if applicable. */
+    @JsonProperty("line") @ExcludeMissing fun _line() = line
 
     /** A human-readable message providing more details about the error. */
     @JsonProperty("message") @ExcludeMissing fun _message() = message
 
     /** The name of the parameter that caused the error, if applicable. */
     @JsonProperty("param") @ExcludeMissing fun _param() = param
-
-    /** The line number of the input file where the error occurred, if applicable. */
-    @JsonProperty("line") @ExcludeMissing fun _line() = line
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -62,9 +62,9 @@ private constructor(
     fun validate(): BatchError = apply {
         if (!validated) {
             code()
+            line()
             message()
             param()
-            line()
             validated = true
         }
     }
@@ -79,17 +79,17 @@ private constructor(
     class Builder {
 
         private var code: JsonField<String> = JsonMissing.of()
+        private var line: JsonField<Long> = JsonMissing.of()
         private var message: JsonField<String> = JsonMissing.of()
         private var param: JsonField<String> = JsonMissing.of()
-        private var line: JsonField<Long> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(batchError: BatchError) = apply {
             code = batchError.code
+            line = batchError.line
             message = batchError.message
             param = batchError.param
-            line = batchError.line
             additionalProperties = batchError.additionalProperties.toMutableMap()
         }
 
@@ -98,6 +98,12 @@ private constructor(
 
         /** An error code identifying the error type. */
         fun code(code: JsonField<String>) = apply { this.code = code }
+
+        /** The line number of the input file where the error occurred, if applicable. */
+        fun line(line: Long) = line(JsonField.of(line))
+
+        /** The line number of the input file where the error occurred, if applicable. */
+        fun line(line: JsonField<Long>) = apply { this.line = line }
 
         /** A human-readable message providing more details about the error. */
         fun message(message: String) = message(JsonField.of(message))
@@ -110,12 +116,6 @@ private constructor(
 
         /** The name of the parameter that caused the error, if applicable. */
         fun param(param: JsonField<String>) = apply { this.param = param }
-
-        /** The line number of the input file where the error occurred, if applicable. */
-        fun line(line: Long) = line(JsonField.of(line))
-
-        /** The line number of the input file where the error occurred, if applicable. */
-        fun line(line: JsonField<Long>) = apply { this.line = line }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -139,9 +139,9 @@ private constructor(
         fun build(): BatchError =
             BatchError(
                 code,
+                line,
                 message,
                 param,
-                line,
                 additionalProperties.toImmutable(),
             )
     }
@@ -151,15 +151,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is BatchError && code == other.code && message == other.message && param == other.param && line == other.line && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is BatchError && code == other.code && line == other.line && message == other.message && param == other.param && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(code, message, param, line, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(code, line, message, param, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "BatchError{code=$code, message=$message, param=$param, line=$line, additionalProperties=$additionalProperties}"
+        "BatchError{code=$code, line=$line, message=$message, param=$param, additionalProperties=$additionalProperties}"
 }

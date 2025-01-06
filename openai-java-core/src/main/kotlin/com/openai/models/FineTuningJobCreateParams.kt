@@ -1443,8 +1443,8 @@ constructor(
         @JsonCreator
         private constructor(
             @JsonProperty("project") private val project: String,
-            @JsonProperty("name") private val name: String?,
             @JsonProperty("entity") private val entity: String?,
+            @JsonProperty("name") private val name: String?,
             @JsonProperty("tags") private val tags: List<String>?,
             @JsonAnySetter
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
@@ -1454,16 +1454,16 @@ constructor(
             @JsonProperty("project") fun project(): String = project
 
             /**
-             * A display name to set for the run. If not set, we will use the Job ID as the name.
-             */
-            @JsonProperty("name") fun name(): Optional<String> = Optional.ofNullable(name)
-
-            /**
              * The entity to use for the run. This allows you to set the team or username of the
              * WandB user that you would like associated with the run. If not set, the default
              * entity for the registered WandB API key is used.
              */
             @JsonProperty("entity") fun entity(): Optional<String> = Optional.ofNullable(entity)
+
+            /**
+             * A display name to set for the run. If not set, we will use the Job ID as the name.
+             */
+            @JsonProperty("name") fun name(): Optional<String> = Optional.ofNullable(name)
 
             /**
              * A list of tags to be attached to the newly created run. These tags are passed through
@@ -1486,16 +1486,16 @@ constructor(
             class Builder {
 
                 private var project: String? = null
-                private var name: String? = null
                 private var entity: String? = null
+                private var name: String? = null
                 private var tags: MutableList<String>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(wandb: Wandb) = apply {
                     project = wandb.project
-                    name = wandb.name
                     entity = wandb.entity
+                    name = wandb.name
                     tags = wandb.tags?.toMutableList()
                     additionalProperties = wandb.additionalProperties.toMutableMap()
                 }
@@ -1504,17 +1504,17 @@ constructor(
                 fun project(project: String) = apply { this.project = project }
 
                 /**
-                 * A display name to set for the run. If not set, we will use the Job ID as the
-                 * name.
-                 */
-                fun name(name: String) = apply { this.name = name }
-
-                /**
                  * The entity to use for the run. This allows you to set the team or username of the
                  * WandB user that you would like associated with the run. If not set, the default
                  * entity for the registered WandB API key is used.
                  */
                 fun entity(entity: String) = apply { this.entity = entity }
+
+                /**
+                 * A display name to set for the run. If not set, we will use the Job ID as the
+                 * name.
+                 */
+                fun name(name: String) = apply { this.name = name }
 
                 /**
                  * A list of tags to be attached to the newly created run. These tags are passed
@@ -1557,8 +1557,8 @@ constructor(
                 fun build(): Wandb =
                     Wandb(
                         checkNotNull(project) { "`project` is required but was not set" },
-                        name,
                         entity,
+                        name,
                         tags?.toImmutable(),
                         additionalProperties.toImmutable(),
                     )
@@ -1569,17 +1569,17 @@ constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Wandb && project == other.project && name == other.name && entity == other.entity && tags == other.tags && additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is Wandb && project == other.project && entity == other.entity && name == other.name && tags == other.tags && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(project, name, entity, tags, additionalProperties) }
+            private val hashCode: Int by lazy { Objects.hash(project, entity, name, tags, additionalProperties) }
             /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Wandb{project=$project, name=$name, entity=$entity, tags=$tags, additionalProperties=$additionalProperties}"
+                "Wandb{project=$project, entity=$entity, name=$name, tags=$tags, additionalProperties=$additionalProperties}"
         }
 
         override fun equals(other: Any?): Boolean {
@@ -1605,22 +1605,22 @@ constructor(
     class Method
     @JsonCreator
     private constructor(
-        @JsonProperty("type") private val type: Type?,
-        @JsonProperty("supervised") private val supervised: Supervised?,
         @JsonProperty("dpo") private val dpo: Dpo?,
+        @JsonProperty("supervised") private val supervised: Supervised?,
+        @JsonProperty("type") private val type: Type?,
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The type of method. Is either `supervised` or `dpo`. */
-        @JsonProperty("type") fun type(): Optional<Type> = Optional.ofNullable(type)
+        /** Configuration for the DPO fine-tuning method. */
+        @JsonProperty("dpo") fun dpo(): Optional<Dpo> = Optional.ofNullable(dpo)
 
         /** Configuration for the supervised fine-tuning method. */
         @JsonProperty("supervised")
         fun supervised(): Optional<Supervised> = Optional.ofNullable(supervised)
 
-        /** Configuration for the DPO fine-tuning method. */
-        @JsonProperty("dpo") fun dpo(): Optional<Dpo> = Optional.ofNullable(dpo)
+        /** The type of method. Is either `supervised` or `dpo`. */
+        @JsonProperty("type") fun type(): Optional<Type> = Optional.ofNullable(type)
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1635,27 +1635,27 @@ constructor(
 
         class Builder {
 
-            private var type: Type? = null
-            private var supervised: Supervised? = null
             private var dpo: Dpo? = null
+            private var supervised: Supervised? = null
+            private var type: Type? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(method: Method) = apply {
-                type = method.type
-                supervised = method.supervised
                 dpo = method.dpo
+                supervised = method.supervised
+                type = method.type
                 additionalProperties = method.additionalProperties.toMutableMap()
             }
 
-            /** The type of method. Is either `supervised` or `dpo`. */
-            fun type(type: Type) = apply { this.type = type }
+            /** Configuration for the DPO fine-tuning method. */
+            fun dpo(dpo: Dpo) = apply { this.dpo = dpo }
 
             /** Configuration for the supervised fine-tuning method. */
             fun supervised(supervised: Supervised) = apply { this.supervised = supervised }
 
-            /** Configuration for the DPO fine-tuning method. */
-            fun dpo(dpo: Dpo) = apply { this.dpo = dpo }
+            /** The type of method. Is either `supervised` or `dpo`. */
+            fun type(type: Type) = apply { this.type = type }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1678,9 +1678,9 @@ constructor(
 
             fun build(): Method =
                 Method(
-                    type,
-                    supervised,
                     dpo,
+                    supervised,
+                    type,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1756,8 +1756,8 @@ constructor(
             class Hyperparameters
             @JsonCreator
             private constructor(
-                @JsonProperty("beta") private val beta: Beta?,
                 @JsonProperty("batch_size") private val batchSize: BatchSize?,
+                @JsonProperty("beta") private val beta: Beta?,
                 @JsonProperty("learning_rate_multiplier")
                 private val learningRateMultiplier: LearningRateMultiplier?,
                 @JsonProperty("n_epochs") private val nEpochs: NEpochs?,
@@ -1766,17 +1766,17 @@ constructor(
             ) {
 
                 /**
-                 * The beta value for the DPO method. A higher beta value will increase the weight
-                 * of the penalty between the policy and reference model.
-                 */
-                @JsonProperty("beta") fun beta(): Optional<Beta> = Optional.ofNullable(beta)
-
-                /**
                  * Number of examples in each batch. A larger batch size means that model parameters
                  * are updated less frequently, but with lower variance.
                  */
                 @JsonProperty("batch_size")
                 fun batchSize(): Optional<BatchSize> = Optional.ofNullable(batchSize)
+
+                /**
+                 * The beta value for the DPO method. A higher beta value will increase the weight
+                 * of the penalty between the policy and reference model.
+                 */
+                @JsonProperty("beta") fun beta(): Optional<Beta> = Optional.ofNullable(beta)
 
                 /**
                  * Scaling factor for the learning rate. A smaller learning rate may be useful to
@@ -1806,30 +1806,20 @@ constructor(
 
                 class Builder {
 
-                    private var beta: Beta? = null
                     private var batchSize: BatchSize? = null
+                    private var beta: Beta? = null
                     private var learningRateMultiplier: LearningRateMultiplier? = null
                     private var nEpochs: NEpochs? = null
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
                     internal fun from(hyperparameters: Hyperparameters) = apply {
-                        beta = hyperparameters.beta
                         batchSize = hyperparameters.batchSize
+                        beta = hyperparameters.beta
                         learningRateMultiplier = hyperparameters.learningRateMultiplier
                         nEpochs = hyperparameters.nEpochs
                         additionalProperties = hyperparameters.additionalProperties.toMutableMap()
                     }
-
-                    /**
-                     * The beta value for the DPO method. A higher beta value will increase the
-                     * weight of the penalty between the policy and reference model.
-                     */
-                    fun beta(beta: Beta) = apply { this.beta = beta }
-
-                    fun beta(auto: Beta.Auto) = apply { this.beta = Beta.ofAuto(auto) }
-
-                    fun beta(manual: Double) = apply { this.beta = Beta.ofManual(manual) }
 
                     /**
                      * Number of examples in each batch. A larger batch size means that model
@@ -1844,6 +1834,16 @@ constructor(
                     fun batchSize(manual: Long) = apply {
                         this.batchSize = BatchSize.ofManual(manual)
                     }
+
+                    /**
+                     * The beta value for the DPO method. A higher beta value will increase the
+                     * weight of the penalty between the policy and reference model.
+                     */
+                    fun beta(beta: Beta) = apply { this.beta = beta }
+
+                    fun beta(auto: Beta.Auto) = apply { this.beta = Beta.ofAuto(auto) }
+
+                    fun beta(manual: Double) = apply { this.beta = Beta.ofManual(manual) }
 
                     /**
                      * Scaling factor for the learning rate. A smaller learning rate may be useful
@@ -1896,8 +1896,8 @@ constructor(
 
                     fun build(): Hyperparameters =
                         Hyperparameters(
-                            beta,
                             batchSize,
+                            beta,
                             learningRateMultiplier,
                             nEpochs,
                             additionalProperties.toImmutable(),
@@ -2541,17 +2541,17 @@ constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is Hyperparameters && beta == other.beta && batchSize == other.batchSize && learningRateMultiplier == other.learningRateMultiplier && nEpochs == other.nEpochs && additionalProperties == other.additionalProperties /* spotless:on */
+                    return /* spotless:off */ other is Hyperparameters && batchSize == other.batchSize && beta == other.beta && learningRateMultiplier == other.learningRateMultiplier && nEpochs == other.nEpochs && additionalProperties == other.additionalProperties /* spotless:on */
                 }
 
                 /* spotless:off */
-                private val hashCode: Int by lazy { Objects.hash(beta, batchSize, learningRateMultiplier, nEpochs, additionalProperties) }
+                private val hashCode: Int by lazy { Objects.hash(batchSize, beta, learningRateMultiplier, nEpochs, additionalProperties) }
                 /* spotless:on */
 
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "Hyperparameters{beta=$beta, batchSize=$batchSize, learningRateMultiplier=$learningRateMultiplier, nEpochs=$nEpochs, additionalProperties=$additionalProperties}"
+                    "Hyperparameters{batchSize=$batchSize, beta=$beta, learningRateMultiplier=$learningRateMultiplier, nEpochs=$nEpochs, additionalProperties=$additionalProperties}"
             }
 
             override fun equals(other: Any?): Boolean {
@@ -3346,17 +3346,17 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Method && type == other.type && supervised == other.supervised && dpo == other.dpo && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Method && dpo == other.dpo && supervised == other.supervised && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(type, supervised, dpo, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(dpo, supervised, type, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Method{type=$type, supervised=$supervised, dpo=$dpo, additionalProperties=$additionalProperties}"
+            "Method{dpo=$dpo, supervised=$supervised, type=$type, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

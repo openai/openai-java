@@ -24,52 +24,52 @@ class Assistant
 @JsonCreator
 private constructor(
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
     @JsonProperty("created_at")
     @ExcludeMissing
     private val createdAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
     @JsonProperty("description")
     @ExcludeMissing
     private val description: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
     @JsonProperty("instructions")
     @ExcludeMissing
     private val instructions: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonValue = JsonMissing.of(),
+    @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("object")
+    @ExcludeMissing
+    private val object_: JsonField<Object> = JsonMissing.of(),
     @JsonProperty("tools")
     @ExcludeMissing
     private val tools: JsonField<List<AssistantTool>> = JsonMissing.of(),
-    @JsonProperty("tool_resources")
-    @ExcludeMissing
-    private val toolResources: JsonField<ToolResources> = JsonMissing.of(),
-    @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonValue = JsonMissing.of(),
-    @JsonProperty("temperature")
-    @ExcludeMissing
-    private val temperature: JsonField<Double> = JsonMissing.of(),
-    @JsonProperty("top_p") @ExcludeMissing private val topP: JsonField<Double> = JsonMissing.of(),
     @JsonProperty("response_format")
     @ExcludeMissing
     private val responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of(),
+    @JsonProperty("temperature")
+    @ExcludeMissing
+    private val temperature: JsonField<Double> = JsonMissing.of(),
+    @JsonProperty("tool_resources")
+    @ExcludeMissing
+    private val toolResources: JsonField<ToolResources> = JsonMissing.of(),
+    @JsonProperty("top_p") @ExcludeMissing private val topP: JsonField<Double> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The identifier, which can be referenced in API endpoints. */
     fun id(): String = id.getRequired("id")
 
-    /** The object type, which is always `assistant`. */
-    fun object_(): Object = object_.getRequired("object")
-
     /** The Unix timestamp (in seconds) for when the assistant was created. */
     fun createdAt(): Long = createdAt.getRequired("created_at")
-
-    /** The name of the assistant. The maximum length is 256 characters. */
-    fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
 
     /** The description of the assistant. The maximum length is 512 characters. */
     fun description(): Optional<String> =
         Optional.ofNullable(description.getNullable("description"))
+
+    /**
+     * The system instructions that the assistant uses. The maximum length is 256,000 characters.
+     */
+    fun instructions(): Optional<String> =
+        Optional.ofNullable(instructions.getNullable("instructions"))
 
     /**
      * ID of the model to use. You can use the
@@ -79,41 +79,17 @@ private constructor(
      */
     fun model(): String = model.getRequired("model")
 
-    /**
-     * The system instructions that the assistant uses. The maximum length is 256,000 characters.
-     */
-    fun instructions(): Optional<String> =
-        Optional.ofNullable(instructions.getNullable("instructions"))
+    /** The name of the assistant. The maximum length is 256 characters. */
+    fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
+
+    /** The object type, which is always `assistant`. */
+    fun object_(): Object = object_.getRequired("object")
 
     /**
      * A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant.
      * Tools can be of types `code_interpreter`, `file_search`, or `function`.
      */
     fun tools(): List<AssistantTool> = tools.getRequired("tools")
-
-    /**
-     * A set of resources that are used by the assistant's tools. The resources are specific to the
-     * type of tool. For example, the `code_interpreter` tool requires a list of file IDs, while the
-     * `file_search` tool requires a list of vector store IDs.
-     */
-    fun toolResources(): Optional<ToolResources> =
-        Optional.ofNullable(toolResources.getNullable("tool_resources"))
-
-    /**
-     * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
-     * output more random, while lower values like 0.2 will make it more focused and deterministic.
-     */
-    fun temperature(): Optional<Double> =
-        Optional.ofNullable(temperature.getNullable("temperature"))
-
-    /**
-     * An alternative to sampling with temperature, called nucleus sampling, where the model
-     * considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens
-     * comprising the top 10% probability mass are considered.
-     *
-     * We generally recommend altering this or temperature but not both.
-     */
-    fun topP(): Optional<Double> = Optional.ofNullable(topP.getNullable("top_p"))
 
     /**
      * Specifies the format that the model must output. Compatible with
@@ -138,46 +114,43 @@ private constructor(
     fun responseFormat(): Optional<AssistantResponseFormatOption> =
         Optional.ofNullable(responseFormat.getNullable("response_format"))
 
-    /** The identifier, which can be referenced in API endpoints. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
-
-    /** The object type, which is always `assistant`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
-
-    /** The Unix timestamp (in seconds) for when the assistant was created. */
-    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
-
-    /** The name of the assistant. The maximum length is 256 characters. */
-    @JsonProperty("name") @ExcludeMissing fun _name() = name
-
-    /** The description of the assistant. The maximum length is 512 characters. */
-    @JsonProperty("description") @ExcludeMissing fun _description() = description
-
     /**
-     * ID of the model to use. You can use the
-     * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all of
-     * your available models, or see our [Model overview](https://platform.openai.com/docs/models)
-     * for descriptions of them.
+     * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+     * output more random, while lower values like 0.2 will make it more focused and deterministic.
      */
-    @JsonProperty("model") @ExcludeMissing fun _model() = model
-
-    /**
-     * The system instructions that the assistant uses. The maximum length is 256,000 characters.
-     */
-    @JsonProperty("instructions") @ExcludeMissing fun _instructions() = instructions
-
-    /**
-     * A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant.
-     * Tools can be of types `code_interpreter`, `file_search`, or `function`.
-     */
-    @JsonProperty("tools") @ExcludeMissing fun _tools() = tools
+    fun temperature(): Optional<Double> =
+        Optional.ofNullable(temperature.getNullable("temperature"))
 
     /**
      * A set of resources that are used by the assistant's tools. The resources are specific to the
      * type of tool. For example, the `code_interpreter` tool requires a list of file IDs, while the
      * `file_search` tool requires a list of vector store IDs.
      */
-    @JsonProperty("tool_resources") @ExcludeMissing fun _toolResources() = toolResources
+    fun toolResources(): Optional<ToolResources> =
+        Optional.ofNullable(toolResources.getNullable("tool_resources"))
+
+    /**
+     * An alternative to sampling with temperature, called nucleus sampling, where the model
+     * considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens
+     * comprising the top 10% probability mass are considered.
+     *
+     * We generally recommend altering this or temperature but not both.
+     */
+    fun topP(): Optional<Double> = Optional.ofNullable(topP.getNullable("top_p"))
+
+    /** The identifier, which can be referenced in API endpoints. */
+    @JsonProperty("id") @ExcludeMissing fun _id() = id
+
+    /** The Unix timestamp (in seconds) for when the assistant was created. */
+    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
+
+    /** The description of the assistant. The maximum length is 512 characters. */
+    @JsonProperty("description") @ExcludeMissing fun _description() = description
+
+    /**
+     * The system instructions that the assistant uses. The maximum length is 256,000 characters.
+     */
+    @JsonProperty("instructions") @ExcludeMissing fun _instructions() = instructions
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -187,19 +160,24 @@ private constructor(
     @JsonProperty("metadata") @ExcludeMissing fun _metadata() = metadata
 
     /**
-     * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
-     * output more random, while lower values like 0.2 will make it more focused and deterministic.
+     * ID of the model to use. You can use the
+     * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all of
+     * your available models, or see our [Model overview](https://platform.openai.com/docs/models)
+     * for descriptions of them.
      */
-    @JsonProperty("temperature") @ExcludeMissing fun _temperature() = temperature
+    @JsonProperty("model") @ExcludeMissing fun _model() = model
+
+    /** The name of the assistant. The maximum length is 256 characters. */
+    @JsonProperty("name") @ExcludeMissing fun _name() = name
+
+    /** The object type, which is always `assistant`. */
+    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
 
     /**
-     * An alternative to sampling with temperature, called nucleus sampling, where the model
-     * considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens
-     * comprising the top 10% probability mass are considered.
-     *
-     * We generally recommend altering this or temperature but not both.
+     * A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant.
+     * Tools can be of types `code_interpreter`, `file_search`, or `function`.
      */
-    @JsonProperty("top_p") @ExcludeMissing fun _topP() = topP
+    @JsonProperty("tools") @ExcludeMissing fun _tools() = tools
 
     /**
      * Specifies the format that the model must output. Compatible with
@@ -223,6 +201,28 @@ private constructor(
      */
     @JsonProperty("response_format") @ExcludeMissing fun _responseFormat() = responseFormat
 
+    /**
+     * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+     * output more random, while lower values like 0.2 will make it more focused and deterministic.
+     */
+    @JsonProperty("temperature") @ExcludeMissing fun _temperature() = temperature
+
+    /**
+     * A set of resources that are used by the assistant's tools. The resources are specific to the
+     * type of tool. For example, the `code_interpreter` tool requires a list of file IDs, while the
+     * `file_search` tool requires a list of vector store IDs.
+     */
+    @JsonProperty("tool_resources") @ExcludeMissing fun _toolResources() = toolResources
+
+    /**
+     * An alternative to sampling with temperature, called nucleus sampling, where the model
+     * considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens
+     * comprising the top 10% probability mass are considered.
+     *
+     * We generally recommend altering this or temperature but not both.
+     */
+    @JsonProperty("top_p") @ExcludeMissing fun _topP() = topP
+
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -232,17 +232,17 @@ private constructor(
     fun validate(): Assistant = apply {
         if (!validated) {
             id()
-            object_()
             createdAt()
-            name()
             description()
-            model()
             instructions()
+            model()
+            name()
+            object_()
             tools()
-            toolResources().map { it.validate() }
-            temperature()
-            topP()
             responseFormat()
+            temperature()
+            toolResources().map { it.validate() }
+            topP()
             validated = true
         }
     }
@@ -257,35 +257,35 @@ private constructor(
     class Builder {
 
         private var id: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
         private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var name: JsonField<String> = JsonMissing.of()
         private var description: JsonField<String> = JsonMissing.of()
-        private var model: JsonField<String> = JsonMissing.of()
         private var instructions: JsonField<String> = JsonMissing.of()
-        private var tools: JsonField<List<AssistantTool>> = JsonMissing.of()
-        private var toolResources: JsonField<ToolResources> = JsonMissing.of()
         private var metadata: JsonValue = JsonMissing.of()
-        private var temperature: JsonField<Double> = JsonMissing.of()
-        private var topP: JsonField<Double> = JsonMissing.of()
+        private var model: JsonField<String> = JsonMissing.of()
+        private var name: JsonField<String> = JsonMissing.of()
+        private var object_: JsonField<Object> = JsonMissing.of()
+        private var tools: JsonField<List<AssistantTool>> = JsonMissing.of()
         private var responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of()
+        private var temperature: JsonField<Double> = JsonMissing.of()
+        private var toolResources: JsonField<ToolResources> = JsonMissing.of()
+        private var topP: JsonField<Double> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(assistant: Assistant) = apply {
             id = assistant.id
-            object_ = assistant.object_
             createdAt = assistant.createdAt
-            name = assistant.name
             description = assistant.description
-            model = assistant.model
             instructions = assistant.instructions
-            tools = assistant.tools
-            toolResources = assistant.toolResources
             metadata = assistant.metadata
-            temperature = assistant.temperature
-            topP = assistant.topP
+            model = assistant.model
+            name = assistant.name
+            object_ = assistant.object_
+            tools = assistant.tools
             responseFormat = assistant.responseFormat
+            temperature = assistant.temperature
+            toolResources = assistant.toolResources
+            topP = assistant.topP
             additionalProperties = assistant.additionalProperties.toMutableMap()
         }
 
@@ -295,29 +295,38 @@ private constructor(
         /** The identifier, which can be referenced in API endpoints. */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
-        /** The object type, which is always `assistant`. */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always `assistant`. */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
-
         /** The Unix timestamp (in seconds) for when the assistant was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
         /** The Unix timestamp (in seconds) for when the assistant was created. */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
-        /** The name of the assistant. The maximum length is 256 characters. */
-        fun name(name: String) = name(JsonField.of(name))
-
-        /** The name of the assistant. The maximum length is 256 characters. */
-        fun name(name: JsonField<String>) = apply { this.name = name }
-
         /** The description of the assistant. The maximum length is 512 characters. */
         fun description(description: String) = description(JsonField.of(description))
 
         /** The description of the assistant. The maximum length is 512 characters. */
         fun description(description: JsonField<String>) = apply { this.description = description }
+
+        /**
+         * The system instructions that the assistant uses. The maximum length is 256,000
+         * characters.
+         */
+        fun instructions(instructions: String) = instructions(JsonField.of(instructions))
+
+        /**
+         * The system instructions that the assistant uses. The maximum length is 256,000
+         * characters.
+         */
+        fun instructions(instructions: JsonField<String>) = apply {
+            this.instructions = instructions
+        }
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format. Keys can be a
+         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         */
+        fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
         /**
          * ID of the model to use. You can use the
@@ -335,19 +344,17 @@ private constructor(
          */
         fun model(model: JsonField<String>) = apply { this.model = model }
 
-        /**
-         * The system instructions that the assistant uses. The maximum length is 256,000
-         * characters.
-         */
-        fun instructions(instructions: String) = instructions(JsonField.of(instructions))
+        /** The name of the assistant. The maximum length is 256 characters. */
+        fun name(name: String) = name(JsonField.of(name))
 
-        /**
-         * The system instructions that the assistant uses. The maximum length is 256,000
-         * characters.
-         */
-        fun instructions(instructions: JsonField<String>) = apply {
-            this.instructions = instructions
-        }
+        /** The name of the assistant. The maximum length is 256 characters. */
+        fun name(name: JsonField<String>) = apply { this.name = name }
+
+        /** The object type, which is always `assistant`. */
+        fun object_(object_: Object) = object_(JsonField.of(object_))
+
+        /** The object type, which is always `assistant`. */
+        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
 
         /**
          * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
@@ -360,61 +367,6 @@ private constructor(
          * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
          */
         fun tools(tools: JsonField<List<AssistantTool>>) = apply { this.tools = tools }
-
-        /**
-         * A set of resources that are used by the assistant's tools. The resources are specific to
-         * the type of tool. For example, the `code_interpreter` tool requires a list of file IDs,
-         * while the `file_search` tool requires a list of vector store IDs.
-         */
-        fun toolResources(toolResources: ToolResources) = toolResources(JsonField.of(toolResources))
-
-        /**
-         * A set of resources that are used by the assistant's tools. The resources are specific to
-         * the type of tool. For example, the `code_interpreter` tool requires a list of file IDs,
-         * while the `file_search` tool requires a list of vector store IDs.
-         */
-        fun toolResources(toolResources: JsonField<ToolResources>) = apply {
-            this.toolResources = toolResources
-        }
-
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format. Keys can be a
-         * maximum of 64 characters long and values can be a maximum of 512 characters long.
-         */
-        fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
-
-        /**
-         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
-         * output more random, while lower values like 0.2 will make it more focused and
-         * deterministic.
-         */
-        fun temperature(temperature: Double) = temperature(JsonField.of(temperature))
-
-        /**
-         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
-         * output more random, while lower values like 0.2 will make it more focused and
-         * deterministic.
-         */
-        fun temperature(temperature: JsonField<Double>) = apply { this.temperature = temperature }
-
-        /**
-         * An alternative to sampling with temperature, called nucleus sampling, where the model
-         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
-         * tokens comprising the top 10% probability mass are considered.
-         *
-         * We generally recommend altering this or temperature but not both.
-         */
-        fun topP(topP: Double) = topP(JsonField.of(topP))
-
-        /**
-         * An alternative to sampling with temperature, called nucleus sampling, where the model
-         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
-         * tokens comprising the top 10% probability mass are considered.
-         *
-         * We generally recommend altering this or temperature but not both.
-         */
-        fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -463,6 +415,54 @@ private constructor(
             this.responseFormat = responseFormat
         }
 
+        /**
+         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+         * output more random, while lower values like 0.2 will make it more focused and
+         * deterministic.
+         */
+        fun temperature(temperature: Double) = temperature(JsonField.of(temperature))
+
+        /**
+         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+         * output more random, while lower values like 0.2 will make it more focused and
+         * deterministic.
+         */
+        fun temperature(temperature: JsonField<Double>) = apply { this.temperature = temperature }
+
+        /**
+         * A set of resources that are used by the assistant's tools. The resources are specific to
+         * the type of tool. For example, the `code_interpreter` tool requires a list of file IDs,
+         * while the `file_search` tool requires a list of vector store IDs.
+         */
+        fun toolResources(toolResources: ToolResources) = toolResources(JsonField.of(toolResources))
+
+        /**
+         * A set of resources that are used by the assistant's tools. The resources are specific to
+         * the type of tool. For example, the `code_interpreter` tool requires a list of file IDs,
+         * while the `file_search` tool requires a list of vector store IDs.
+         */
+        fun toolResources(toolResources: JsonField<ToolResources>) = apply {
+            this.toolResources = toolResources
+        }
+
+        /**
+         * An alternative to sampling with temperature, called nucleus sampling, where the model
+         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
+         * tokens comprising the top 10% probability mass are considered.
+         *
+         * We generally recommend altering this or temperature but not both.
+         */
+        fun topP(topP: Double) = topP(JsonField.of(topP))
+
+        /**
+         * An alternative to sampling with temperature, called nucleus sampling, where the model
+         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
+         * tokens comprising the top 10% probability mass are considered.
+         *
+         * We generally recommend altering this or temperature but not both.
+         */
+        fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -485,18 +485,18 @@ private constructor(
         fun build(): Assistant =
             Assistant(
                 id,
-                object_,
                 createdAt,
-                name,
                 description,
-                model,
                 instructions,
-                tools.map { it.toImmutable() },
-                toolResources,
                 metadata,
-                temperature,
-                topP,
+                model,
+                name,
+                object_,
+                tools.map { it.toImmutable() },
                 responseFormat,
+                temperature,
+                toolResources,
+                topP,
                 additionalProperties.toImmutable(),
             )
     }
@@ -921,15 +921,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Assistant && id == other.id && object_ == other.object_ && createdAt == other.createdAt && name == other.name && description == other.description && model == other.model && instructions == other.instructions && tools == other.tools && toolResources == other.toolResources && metadata == other.metadata && temperature == other.temperature && topP == other.topP && responseFormat == other.responseFormat && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is Assistant && id == other.id && createdAt == other.createdAt && description == other.description && instructions == other.instructions && metadata == other.metadata && model == other.model && name == other.name && object_ == other.object_ && tools == other.tools && responseFormat == other.responseFormat && temperature == other.temperature && toolResources == other.toolResources && topP == other.topP && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, object_, createdAt, name, description, model, instructions, tools, toolResources, metadata, temperature, topP, responseFormat, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, createdAt, description, instructions, metadata, model, name, object_, tools, responseFormat, temperature, toolResources, topP, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Assistant{id=$id, object_=$object_, createdAt=$createdAt, name=$name, description=$description, model=$model, instructions=$instructions, tools=$tools, toolResources=$toolResources, metadata=$metadata, temperature=$temperature, topP=$topP, responseFormat=$responseFormat, additionalProperties=$additionalProperties}"
+        "Assistant{id=$id, createdAt=$createdAt, description=$description, instructions=$instructions, metadata=$metadata, model=$model, name=$name, object_=$object_, tools=$tools, responseFormat=$responseFormat, temperature=$temperature, toolResources=$toolResources, topP=$topP, additionalProperties=$additionalProperties}"
 }

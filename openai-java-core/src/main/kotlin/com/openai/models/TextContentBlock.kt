@@ -22,20 +22,20 @@ import java.util.Objects
 class TextContentBlock
 @JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonProperty("text") @ExcludeMissing private val text: JsonField<Text> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /** Always `text`. */
-    fun type(): Type = type.getRequired("type")
 
     fun text(): Text = text.getRequired("text")
 
     /** Always `text`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    fun type(): Type = type.getRequired("type")
 
     @JsonProperty("text") @ExcludeMissing fun _text() = text
+
+    /** Always `text`. */
+    @JsonProperty("type") @ExcludeMissing fun _type() = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -45,8 +45,8 @@ private constructor(
 
     fun validate(): TextContentBlock = apply {
         if (!validated) {
-            type()
             text().validate()
+            type()
             validated = true
         }
     }
@@ -60,26 +60,26 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type> = JsonMissing.of()
         private var text: JsonField<Text> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(textContentBlock: TextContentBlock) = apply {
-            type = textContentBlock.type
             text = textContentBlock.text
+            type = textContentBlock.type
             additionalProperties = textContentBlock.additionalProperties.toMutableMap()
         }
+
+        fun text(text: Text) = text(JsonField.of(text))
+
+        fun text(text: JsonField<Text>) = apply { this.text = text }
 
         /** Always `text`. */
         fun type(type: Type) = type(JsonField.of(type))
 
         /** Always `text`. */
         fun type(type: JsonField<Type>) = apply { this.type = type }
-
-        fun text(text: Text) = text(JsonField.of(text))
-
-        fun text(text: JsonField<Text>) = apply { this.text = text }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -102,8 +102,8 @@ private constructor(
 
         fun build(): TextContentBlock =
             TextContentBlock(
-                type,
                 text,
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -164,15 +164,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is TextContentBlock && type == other.type && text == other.text && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is TextContentBlock && text == other.text && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(type, text, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(text, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "TextContentBlock{type=$type, text=$text, additionalProperties=$additionalProperties}"
+        "TextContentBlock{text=$text, type=$type, additionalProperties=$additionalProperties}"
 }

@@ -20,10 +20,10 @@ import java.util.Optional
 class FunctionDefinition
 @JsonCreator
 private constructor(
+    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
     @JsonProperty("description")
     @ExcludeMissing
     private val description: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
     @JsonProperty("parameters")
     @ExcludeMissing
     private val parameters: JsonField<FunctionParameters> = JsonMissing.of(),
@@ -34,17 +34,17 @@ private constructor(
 ) {
 
     /**
+     * The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and
+     * dashes, with a maximum length of 64.
+     */
+    fun name(): String = name.getRequired("name")
+
+    /**
      * A description of what the function does, used by the model to choose when and how to call the
      * function.
      */
     fun description(): Optional<String> =
         Optional.ofNullable(description.getNullable("description"))
-
-    /**
-     * The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and
-     * dashes, with a maximum length of 64.
-     */
-    fun name(): String = name.getRequired("name")
 
     /**
      * The parameters the functions accepts, described as a JSON Schema object. See the
@@ -66,16 +66,16 @@ private constructor(
     fun strict(): Optional<Boolean> = Optional.ofNullable(strict.getNullable("strict"))
 
     /**
-     * A description of what the function does, used by the model to choose when and how to call the
-     * function.
-     */
-    @JsonProperty("description") @ExcludeMissing fun _description() = description
-
-    /**
      * The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and
      * dashes, with a maximum length of 64.
      */
     @JsonProperty("name") @ExcludeMissing fun _name() = name
+
+    /**
+     * A description of what the function does, used by the model to choose when and how to call the
+     * function.
+     */
+    @JsonProperty("description") @ExcludeMissing fun _description() = description
 
     /**
      * The parameters the functions accepts, described as a JSON Schema object. See the
@@ -103,8 +103,8 @@ private constructor(
 
     fun validate(): FunctionDefinition = apply {
         if (!validated) {
-            description()
             name()
+            description()
             parameters().map { it.validate() }
             strict()
             validated = true
@@ -120,32 +120,20 @@ private constructor(
 
     class Builder {
 
-        private var description: JsonField<String> = JsonMissing.of()
         private var name: JsonField<String> = JsonMissing.of()
+        private var description: JsonField<String> = JsonMissing.of()
         private var parameters: JsonField<FunctionParameters> = JsonMissing.of()
         private var strict: JsonField<Boolean> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(functionDefinition: FunctionDefinition) = apply {
-            description = functionDefinition.description
             name = functionDefinition.name
+            description = functionDefinition.description
             parameters = functionDefinition.parameters
             strict = functionDefinition.strict
             additionalProperties = functionDefinition.additionalProperties.toMutableMap()
         }
-
-        /**
-         * A description of what the function does, used by the model to choose when and how to call
-         * the function.
-         */
-        fun description(description: String) = description(JsonField.of(description))
-
-        /**
-         * A description of what the function does, used by the model to choose when and how to call
-         * the function.
-         */
-        fun description(description: JsonField<String>) = apply { this.description = description }
 
         /**
          * The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and
@@ -158,6 +146,18 @@ private constructor(
          * dashes, with a maximum length of 64.
          */
         fun name(name: JsonField<String>) = apply { this.name = name }
+
+        /**
+         * A description of what the function does, used by the model to choose when and how to call
+         * the function.
+         */
+        fun description(description: String) = description(JsonField.of(description))
+
+        /**
+         * A description of what the function does, used by the model to choose when and how to call
+         * the function.
+         */
+        fun description(description: JsonField<String>) = apply { this.description = description }
 
         /**
          * The parameters the functions accepts, described as a JSON Schema object. See the
@@ -218,8 +218,8 @@ private constructor(
 
         fun build(): FunctionDefinition =
             FunctionDefinition(
-                description,
                 name,
+                description,
                 parameters,
                 strict,
                 additionalProperties.toImmutable(),
@@ -231,15 +231,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FunctionDefinition && description == other.description && name == other.name && parameters == other.parameters && strict == other.strict && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FunctionDefinition && name == other.name && description == other.description && parameters == other.parameters && strict == other.strict && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(description, name, parameters, strict, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(name, description, parameters, strict, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "FunctionDefinition{description=$description, name=$name, parameters=$parameters, strict=$strict, additionalProperties=$additionalProperties}"
+        "FunctionDefinition{name=$name, description=$description, parameters=$parameters, strict=$strict, additionalProperties=$additionalProperties}"
 }

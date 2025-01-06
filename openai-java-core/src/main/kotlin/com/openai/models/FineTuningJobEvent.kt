@@ -23,9 +23,6 @@ import java.util.Optional
 class FineTuningJobEvent
 @JsonCreator
 private constructor(
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
     @JsonProperty("created_at")
     @ExcludeMissing
@@ -34,13 +31,13 @@ private constructor(
     @JsonProperty("message")
     @ExcludeMissing
     private val message: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("object")
+    @ExcludeMissing
+    private val object_: JsonField<Object> = JsonMissing.of(),
     @JsonProperty("data") @ExcludeMissing private val data: JsonValue = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /** The object type, which is always "fine_tuning.job.event". */
-    fun object_(): Object = object_.getRequired("object")
 
     /** The object identifier. */
     fun id(): String = id.getRequired("id")
@@ -54,11 +51,11 @@ private constructor(
     /** The message of the event. */
     fun message(): String = message.getRequired("message")
 
+    /** The object type, which is always "fine_tuning.job.event". */
+    fun object_(): Object = object_.getRequired("object")
+
     /** The type of event. */
     fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
-
-    /** The object type, which is always "fine_tuning.job.event". */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
 
     /** The object identifier. */
     @JsonProperty("id") @ExcludeMissing fun _id() = id
@@ -72,11 +69,14 @@ private constructor(
     /** The message of the event. */
     @JsonProperty("message") @ExcludeMissing fun _message() = message
 
-    /** The type of event. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    /** The object type, which is always "fine_tuning.job.event". */
+    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
 
     /** The data associated with the event. */
     @JsonProperty("data") @ExcludeMissing fun _data() = data
+
+    /** The type of event. */
+    @JsonProperty("type") @ExcludeMissing fun _type() = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -86,11 +86,11 @@ private constructor(
 
     fun validate(): FineTuningJobEvent = apply {
         if (!validated) {
-            object_()
             id()
             createdAt()
             level()
             message()
+            object_()
             type()
             validated = true
         }
@@ -105,32 +105,26 @@ private constructor(
 
     class Builder {
 
-        private var object_: JsonField<Object> = JsonMissing.of()
         private var id: JsonField<String> = JsonMissing.of()
         private var createdAt: JsonField<Long> = JsonMissing.of()
         private var level: JsonField<Level> = JsonMissing.of()
         private var message: JsonField<String> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var object_: JsonField<Object> = JsonMissing.of()
         private var data: JsonValue = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(fineTuningJobEvent: FineTuningJobEvent) = apply {
-            object_ = fineTuningJobEvent.object_
             id = fineTuningJobEvent.id
             createdAt = fineTuningJobEvent.createdAt
             level = fineTuningJobEvent.level
             message = fineTuningJobEvent.message
-            type = fineTuningJobEvent.type
+            object_ = fineTuningJobEvent.object_
             data = fineTuningJobEvent.data
+            type = fineTuningJobEvent.type
             additionalProperties = fineTuningJobEvent.additionalProperties.toMutableMap()
         }
-
-        /** The object type, which is always "fine_tuning.job.event". */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always "fine_tuning.job.event". */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
 
         /** The object identifier. */
         fun id(id: String) = id(JsonField.of(id))
@@ -156,14 +150,20 @@ private constructor(
         /** The message of the event. */
         fun message(message: JsonField<String>) = apply { this.message = message }
 
+        /** The object type, which is always "fine_tuning.job.event". */
+        fun object_(object_: Object) = object_(JsonField.of(object_))
+
+        /** The object type, which is always "fine_tuning.job.event". */
+        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+
+        /** The data associated with the event. */
+        fun data(data: JsonValue) = apply { this.data = data }
+
         /** The type of event. */
         fun type(type: Type) = type(JsonField.of(type))
 
         /** The type of event. */
         fun type(type: JsonField<Type>) = apply { this.type = type }
-
-        /** The data associated with the event. */
-        fun data(data: JsonValue) = apply { this.data = data }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -186,13 +186,13 @@ private constructor(
 
         fun build(): FineTuningJobEvent =
             FineTuningJobEvent(
-                object_,
                 id,
                 createdAt,
                 level,
                 message,
-                type,
+                object_,
                 data,
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -373,15 +373,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FineTuningJobEvent && object_ == other.object_ && id == other.id && createdAt == other.createdAt && level == other.level && message == other.message && type == other.type && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FineTuningJobEvent && id == other.id && createdAt == other.createdAt && level == other.level && message == other.message && object_ == other.object_ && data == other.data && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(object_, id, createdAt, level, message, type, data, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, createdAt, level, message, object_, data, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "FineTuningJobEvent{object_=$object_, id=$id, createdAt=$createdAt, level=$level, message=$message, type=$type, data=$data, additionalProperties=$additionalProperties}"
+        "FineTuningJobEvent{id=$id, createdAt=$createdAt, level=$level, message=$message, object_=$object_, data=$data, type=$type, additionalProperties=$additionalProperties}"
 }

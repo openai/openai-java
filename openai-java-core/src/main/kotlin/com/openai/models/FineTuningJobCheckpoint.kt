@@ -33,18 +33,18 @@ private constructor(
     @JsonProperty("fine_tuned_model_checkpoint")
     @ExcludeMissing
     private val fineTunedModelCheckpoint: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("step_number")
-    @ExcludeMissing
-    private val stepNumber: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("metrics")
-    @ExcludeMissing
-    private val metrics: JsonField<Metrics> = JsonMissing.of(),
     @JsonProperty("fine_tuning_job_id")
     @ExcludeMissing
     private val fineTuningJobId: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("metrics")
+    @ExcludeMissing
+    private val metrics: JsonField<Metrics> = JsonMissing.of(),
     @JsonProperty("object")
     @ExcludeMissing
     private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("step_number")
+    @ExcludeMissing
+    private val stepNumber: JsonField<Long> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
@@ -58,17 +58,17 @@ private constructor(
     fun fineTunedModelCheckpoint(): String =
         fineTunedModelCheckpoint.getRequired("fine_tuned_model_checkpoint")
 
-    /** The step number that the checkpoint was created at. */
-    fun stepNumber(): Long = stepNumber.getRequired("step_number")
+    /** The name of the fine-tuning job that this checkpoint was created from. */
+    fun fineTuningJobId(): String = fineTuningJobId.getRequired("fine_tuning_job_id")
 
     /** Metrics at the step number during the fine-tuning job. */
     fun metrics(): Metrics = metrics.getRequired("metrics")
 
-    /** The name of the fine-tuning job that this checkpoint was created from. */
-    fun fineTuningJobId(): String = fineTuningJobId.getRequired("fine_tuning_job_id")
-
     /** The object type, which is always "fine_tuning.job.checkpoint". */
     fun object_(): Object = object_.getRequired("object")
+
+    /** The step number that the checkpoint was created at. */
+    fun stepNumber(): Long = stepNumber.getRequired("step_number")
 
     /** The checkpoint identifier, which can be referenced in the API endpoints. */
     @JsonProperty("id") @ExcludeMissing fun _id() = id
@@ -81,17 +81,17 @@ private constructor(
     @ExcludeMissing
     fun _fineTunedModelCheckpoint() = fineTunedModelCheckpoint
 
-    /** The step number that the checkpoint was created at. */
-    @JsonProperty("step_number") @ExcludeMissing fun _stepNumber() = stepNumber
+    /** The name of the fine-tuning job that this checkpoint was created from. */
+    @JsonProperty("fine_tuning_job_id") @ExcludeMissing fun _fineTuningJobId() = fineTuningJobId
 
     /** Metrics at the step number during the fine-tuning job. */
     @JsonProperty("metrics") @ExcludeMissing fun _metrics() = metrics
 
-    /** The name of the fine-tuning job that this checkpoint was created from. */
-    @JsonProperty("fine_tuning_job_id") @ExcludeMissing fun _fineTuningJobId() = fineTuningJobId
-
     /** The object type, which is always "fine_tuning.job.checkpoint". */
     @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+
+    /** The step number that the checkpoint was created at. */
+    @JsonProperty("step_number") @ExcludeMissing fun _stepNumber() = stepNumber
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -104,10 +104,10 @@ private constructor(
             id()
             createdAt()
             fineTunedModelCheckpoint()
-            stepNumber()
-            metrics().validate()
             fineTuningJobId()
+            metrics().validate()
             object_()
+            stepNumber()
             validated = true
         }
     }
@@ -124,10 +124,10 @@ private constructor(
         private var id: JsonField<String> = JsonMissing.of()
         private var createdAt: JsonField<Long> = JsonMissing.of()
         private var fineTunedModelCheckpoint: JsonField<String> = JsonMissing.of()
-        private var stepNumber: JsonField<Long> = JsonMissing.of()
-        private var metrics: JsonField<Metrics> = JsonMissing.of()
         private var fineTuningJobId: JsonField<String> = JsonMissing.of()
+        private var metrics: JsonField<Metrics> = JsonMissing.of()
         private var object_: JsonField<Object> = JsonMissing.of()
+        private var stepNumber: JsonField<Long> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -135,10 +135,10 @@ private constructor(
             id = fineTuningJobCheckpoint.id
             createdAt = fineTuningJobCheckpoint.createdAt
             fineTunedModelCheckpoint = fineTuningJobCheckpoint.fineTunedModelCheckpoint
-            stepNumber = fineTuningJobCheckpoint.stepNumber
-            metrics = fineTuningJobCheckpoint.metrics
             fineTuningJobId = fineTuningJobCheckpoint.fineTuningJobId
+            metrics = fineTuningJobCheckpoint.metrics
             object_ = fineTuningJobCheckpoint.object_
+            stepNumber = fineTuningJobCheckpoint.stepNumber
             additionalProperties = fineTuningJobCheckpoint.additionalProperties.toMutableMap()
         }
 
@@ -163,18 +163,6 @@ private constructor(
             this.fineTunedModelCheckpoint = fineTunedModelCheckpoint
         }
 
-        /** The step number that the checkpoint was created at. */
-        fun stepNumber(stepNumber: Long) = stepNumber(JsonField.of(stepNumber))
-
-        /** The step number that the checkpoint was created at. */
-        fun stepNumber(stepNumber: JsonField<Long>) = apply { this.stepNumber = stepNumber }
-
-        /** Metrics at the step number during the fine-tuning job. */
-        fun metrics(metrics: Metrics) = metrics(JsonField.of(metrics))
-
-        /** Metrics at the step number during the fine-tuning job. */
-        fun metrics(metrics: JsonField<Metrics>) = apply { this.metrics = metrics }
-
         /** The name of the fine-tuning job that this checkpoint was created from. */
         fun fineTuningJobId(fineTuningJobId: String) =
             fineTuningJobId(JsonField.of(fineTuningJobId))
@@ -184,11 +172,23 @@ private constructor(
             this.fineTuningJobId = fineTuningJobId
         }
 
+        /** Metrics at the step number during the fine-tuning job. */
+        fun metrics(metrics: Metrics) = metrics(JsonField.of(metrics))
+
+        /** Metrics at the step number during the fine-tuning job. */
+        fun metrics(metrics: JsonField<Metrics>) = apply { this.metrics = metrics }
+
         /** The object type, which is always "fine_tuning.job.checkpoint". */
         fun object_(object_: Object) = object_(JsonField.of(object_))
 
         /** The object type, which is always "fine_tuning.job.checkpoint". */
         fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+
+        /** The step number that the checkpoint was created at. */
+        fun stepNumber(stepNumber: Long) = stepNumber(JsonField.of(stepNumber))
+
+        /** The step number that the checkpoint was created at. */
+        fun stepNumber(stepNumber: JsonField<Long>) = apply { this.stepNumber = stepNumber }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -214,10 +214,10 @@ private constructor(
                 id,
                 createdAt,
                 fineTunedModelCheckpoint,
-                stepNumber,
-                metrics,
                 fineTuningJobId,
+                metrics,
                 object_,
+                stepNumber,
                 additionalProperties.toImmutable(),
             )
     }
@@ -227,6 +227,12 @@ private constructor(
     class Metrics
     @JsonCreator
     private constructor(
+        @JsonProperty("full_valid_loss")
+        @ExcludeMissing
+        private val fullValidLoss: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("full_valid_mean_token_accuracy")
+        @ExcludeMissing
+        private val fullValidMeanTokenAccuracy: JsonField<Double> = JsonMissing.of(),
         @JsonProperty("step")
         @ExcludeMissing
         private val step: JsonField<Double> = JsonMissing.of(),
@@ -242,15 +248,17 @@ private constructor(
         @JsonProperty("valid_mean_token_accuracy")
         @ExcludeMissing
         private val validMeanTokenAccuracy: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("full_valid_loss")
-        @ExcludeMissing
-        private val fullValidLoss: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("full_valid_mean_token_accuracy")
-        @ExcludeMissing
-        private val fullValidMeanTokenAccuracy: JsonField<Double> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
+
+        fun fullValidLoss(): Optional<Double> =
+            Optional.ofNullable(fullValidLoss.getNullable("full_valid_loss"))
+
+        fun fullValidMeanTokenAccuracy(): Optional<Double> =
+            Optional.ofNullable(
+                fullValidMeanTokenAccuracy.getNullable("full_valid_mean_token_accuracy")
+            )
 
         fun step(): Optional<Double> = Optional.ofNullable(step.getNullable("step"))
 
@@ -264,13 +272,11 @@ private constructor(
         fun validMeanTokenAccuracy(): Optional<Double> =
             Optional.ofNullable(validMeanTokenAccuracy.getNullable("valid_mean_token_accuracy"))
 
-        fun fullValidLoss(): Optional<Double> =
-            Optional.ofNullable(fullValidLoss.getNullable("full_valid_loss"))
+        @JsonProperty("full_valid_loss") @ExcludeMissing fun _fullValidLoss() = fullValidLoss
 
-        fun fullValidMeanTokenAccuracy(): Optional<Double> =
-            Optional.ofNullable(
-                fullValidMeanTokenAccuracy.getNullable("full_valid_mean_token_accuracy")
-            )
+        @JsonProperty("full_valid_mean_token_accuracy")
+        @ExcludeMissing
+        fun _fullValidMeanTokenAccuracy() = fullValidMeanTokenAccuracy
 
         @JsonProperty("step") @ExcludeMissing fun _step() = step
 
@@ -286,12 +292,6 @@ private constructor(
         @ExcludeMissing
         fun _validMeanTokenAccuracy() = validMeanTokenAccuracy
 
-        @JsonProperty("full_valid_loss") @ExcludeMissing fun _fullValidLoss() = fullValidLoss
-
-        @JsonProperty("full_valid_mean_token_accuracy")
-        @ExcludeMissing
-        fun _fullValidMeanTokenAccuracy() = fullValidMeanTokenAccuracy
-
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -300,13 +300,13 @@ private constructor(
 
         fun validate(): Metrics = apply {
             if (!validated) {
+                fullValidLoss()
+                fullValidMeanTokenAccuracy()
                 step()
                 trainLoss()
                 trainMeanTokenAccuracy()
                 validLoss()
                 validMeanTokenAccuracy()
-                fullValidLoss()
-                fullValidMeanTokenAccuracy()
                 validated = true
             }
         }
@@ -320,25 +320,38 @@ private constructor(
 
         class Builder {
 
+            private var fullValidLoss: JsonField<Double> = JsonMissing.of()
+            private var fullValidMeanTokenAccuracy: JsonField<Double> = JsonMissing.of()
             private var step: JsonField<Double> = JsonMissing.of()
             private var trainLoss: JsonField<Double> = JsonMissing.of()
             private var trainMeanTokenAccuracy: JsonField<Double> = JsonMissing.of()
             private var validLoss: JsonField<Double> = JsonMissing.of()
             private var validMeanTokenAccuracy: JsonField<Double> = JsonMissing.of()
-            private var fullValidLoss: JsonField<Double> = JsonMissing.of()
-            private var fullValidMeanTokenAccuracy: JsonField<Double> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(metrics: Metrics) = apply {
+                fullValidLoss = metrics.fullValidLoss
+                fullValidMeanTokenAccuracy = metrics.fullValidMeanTokenAccuracy
                 step = metrics.step
                 trainLoss = metrics.trainLoss
                 trainMeanTokenAccuracy = metrics.trainMeanTokenAccuracy
                 validLoss = metrics.validLoss
                 validMeanTokenAccuracy = metrics.validMeanTokenAccuracy
-                fullValidLoss = metrics.fullValidLoss
-                fullValidMeanTokenAccuracy = metrics.fullValidMeanTokenAccuracy
                 additionalProperties = metrics.additionalProperties.toMutableMap()
+            }
+
+            fun fullValidLoss(fullValidLoss: Double) = fullValidLoss(JsonField.of(fullValidLoss))
+
+            fun fullValidLoss(fullValidLoss: JsonField<Double>) = apply {
+                this.fullValidLoss = fullValidLoss
+            }
+
+            fun fullValidMeanTokenAccuracy(fullValidMeanTokenAccuracy: Double) =
+                fullValidMeanTokenAccuracy(JsonField.of(fullValidMeanTokenAccuracy))
+
+            fun fullValidMeanTokenAccuracy(fullValidMeanTokenAccuracy: JsonField<Double>) = apply {
+                this.fullValidMeanTokenAccuracy = fullValidMeanTokenAccuracy
             }
 
             fun step(step: Double) = step(JsonField.of(step))
@@ -367,19 +380,6 @@ private constructor(
                 this.validMeanTokenAccuracy = validMeanTokenAccuracy
             }
 
-            fun fullValidLoss(fullValidLoss: Double) = fullValidLoss(JsonField.of(fullValidLoss))
-
-            fun fullValidLoss(fullValidLoss: JsonField<Double>) = apply {
-                this.fullValidLoss = fullValidLoss
-            }
-
-            fun fullValidMeanTokenAccuracy(fullValidMeanTokenAccuracy: Double) =
-                fullValidMeanTokenAccuracy(JsonField.of(fullValidMeanTokenAccuracy))
-
-            fun fullValidMeanTokenAccuracy(fullValidMeanTokenAccuracy: JsonField<Double>) = apply {
-                this.fullValidMeanTokenAccuracy = fullValidMeanTokenAccuracy
-            }
-
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -401,13 +401,13 @@ private constructor(
 
             fun build(): Metrics =
                 Metrics(
+                    fullValidLoss,
+                    fullValidMeanTokenAccuracy,
                     step,
                     trainLoss,
                     trainMeanTokenAccuracy,
                     validLoss,
                     validMeanTokenAccuracy,
-                    fullValidLoss,
-                    fullValidMeanTokenAccuracy,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -417,17 +417,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Metrics && step == other.step && trainLoss == other.trainLoss && trainMeanTokenAccuracy == other.trainMeanTokenAccuracy && validLoss == other.validLoss && validMeanTokenAccuracy == other.validMeanTokenAccuracy && fullValidLoss == other.fullValidLoss && fullValidMeanTokenAccuracy == other.fullValidMeanTokenAccuracy && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Metrics && fullValidLoss == other.fullValidLoss && fullValidMeanTokenAccuracy == other.fullValidMeanTokenAccuracy && step == other.step && trainLoss == other.trainLoss && trainMeanTokenAccuracy == other.trainMeanTokenAccuracy && validLoss == other.validLoss && validMeanTokenAccuracy == other.validMeanTokenAccuracy && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(step, trainLoss, trainMeanTokenAccuracy, validLoss, validMeanTokenAccuracy, fullValidLoss, fullValidMeanTokenAccuracy, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(fullValidLoss, fullValidMeanTokenAccuracy, step, trainLoss, trainMeanTokenAccuracy, validLoss, validMeanTokenAccuracy, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Metrics{step=$step, trainLoss=$trainLoss, trainMeanTokenAccuracy=$trainMeanTokenAccuracy, validLoss=$validLoss, validMeanTokenAccuracy=$validMeanTokenAccuracy, fullValidLoss=$fullValidLoss, fullValidMeanTokenAccuracy=$fullValidMeanTokenAccuracy, additionalProperties=$additionalProperties}"
+            "Metrics{fullValidLoss=$fullValidLoss, fullValidMeanTokenAccuracy=$fullValidMeanTokenAccuracy, step=$step, trainLoss=$trainLoss, trainMeanTokenAccuracy=$trainMeanTokenAccuracy, validLoss=$validLoss, validMeanTokenAccuracy=$validMeanTokenAccuracy, additionalProperties=$additionalProperties}"
     }
 
     class Object
@@ -486,15 +486,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FineTuningJobCheckpoint && id == other.id && createdAt == other.createdAt && fineTunedModelCheckpoint == other.fineTunedModelCheckpoint && stepNumber == other.stepNumber && metrics == other.metrics && fineTuningJobId == other.fineTuningJobId && object_ == other.object_ && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FineTuningJobCheckpoint && id == other.id && createdAt == other.createdAt && fineTunedModelCheckpoint == other.fineTunedModelCheckpoint && fineTuningJobId == other.fineTuningJobId && metrics == other.metrics && object_ == other.object_ && stepNumber == other.stepNumber && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, createdAt, fineTunedModelCheckpoint, stepNumber, metrics, fineTuningJobId, object_, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, createdAt, fineTunedModelCheckpoint, fineTuningJobId, metrics, object_, stepNumber, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "FineTuningJobCheckpoint{id=$id, createdAt=$createdAt, fineTunedModelCheckpoint=$fineTunedModelCheckpoint, stepNumber=$stepNumber, metrics=$metrics, fineTuningJobId=$fineTuningJobId, object_=$object_, additionalProperties=$additionalProperties}"
+        "FineTuningJobCheckpoint{id=$id, createdAt=$createdAt, fineTunedModelCheckpoint=$fineTunedModelCheckpoint, fineTuningJobId=$fineTuningJobId, metrics=$metrics, object_=$object_, stepNumber=$stepNumber, additionalProperties=$additionalProperties}"
 }

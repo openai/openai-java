@@ -996,20 +996,13 @@ constructor(
             class VectorStore
             @JsonCreator
             private constructor(
-                @JsonProperty("file_ids") private val fileIds: List<String>?,
                 @JsonProperty("chunking_strategy")
                 private val chunkingStrategy: FileChunkingStrategyParam?,
+                @JsonProperty("file_ids") private val fileIds: List<String>?,
                 @JsonProperty("metadata") private val metadata: JsonValue?,
                 @JsonAnySetter
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
-
-                /**
-                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to add
-                 * to the vector store. There can be a maximum of 10000 files in a vector store.
-                 */
-                @JsonProperty("file_ids")
-                fun fileIds(): Optional<List<String>> = Optional.ofNullable(fileIds)
 
                 /**
                  * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
@@ -1018,6 +1011,13 @@ constructor(
                 @JsonProperty("chunking_strategy")
                 fun chunkingStrategy(): Optional<FileChunkingStrategyParam> =
                     Optional.ofNullable(chunkingStrategy)
+
+                /**
+                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to add
+                 * to the vector store. There can be a maximum of 10000 files in a vector store.
+                 */
+                @JsonProperty("file_ids")
+                fun fileIds(): Optional<List<String>> = Optional.ofNullable(fileIds)
 
                 /**
                  * Set of 16 key-value pairs that can be attached to a vector store. This can be
@@ -1041,35 +1041,17 @@ constructor(
 
                 class Builder {
 
-                    private var fileIds: MutableList<String>? = null
                     private var chunkingStrategy: FileChunkingStrategyParam? = null
+                    private var fileIds: MutableList<String>? = null
                     private var metadata: JsonValue? = null
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
                     internal fun from(vectorStore: VectorStore) = apply {
-                        fileIds = vectorStore.fileIds?.toMutableList()
                         chunkingStrategy = vectorStore.chunkingStrategy
+                        fileIds = vectorStore.fileIds?.toMutableList()
                         metadata = vectorStore.metadata
                         additionalProperties = vectorStore.additionalProperties.toMutableMap()
-                    }
-
-                    /**
-                     * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to
-                     * add to the vector store. There can be a maximum of 10000 files in a vector
-                     * store.
-                     */
-                    fun fileIds(fileIds: List<String>) = apply {
-                        this.fileIds = fileIds.toMutableList()
-                    }
-
-                    /**
-                     * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to
-                     * add to the vector store. There can be a maximum of 10000 files in a vector
-                     * store.
-                     */
-                    fun addFileId(fileId: String) = apply {
-                        fileIds = (fileIds ?: mutableListOf()).apply { add(fileId) }
                     }
 
                     /**
@@ -1100,6 +1082,24 @@ constructor(
                             FileChunkingStrategyParam.ofStaticFileChunkingStrategyParam(
                                 staticFileChunkingStrategyParam
                             )
+                    }
+
+                    /**
+                     * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to
+                     * add to the vector store. There can be a maximum of 10000 files in a vector
+                     * store.
+                     */
+                    fun fileIds(fileIds: List<String>) = apply {
+                        this.fileIds = fileIds.toMutableList()
+                    }
+
+                    /**
+                     * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to
+                     * add to the vector store. There can be a maximum of 10000 files in a vector
+                     * store.
+                     */
+                    fun addFileId(fileId: String) = apply {
+                        fileIds = (fileIds ?: mutableListOf()).apply { add(fileId) }
                     }
 
                     /**
@@ -1134,8 +1134,8 @@ constructor(
 
                     fun build(): VectorStore =
                         VectorStore(
-                            fileIds?.toImmutable(),
                             chunkingStrategy,
+                            fileIds?.toImmutable(),
                             metadata,
                             additionalProperties.toImmutable(),
                         )
@@ -1146,17 +1146,17 @@ constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is VectorStore && fileIds == other.fileIds && chunkingStrategy == other.chunkingStrategy && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
+                    return /* spotless:off */ other is VectorStore && chunkingStrategy == other.chunkingStrategy && fileIds == other.fileIds && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
                 }
 
                 /* spotless:off */
-                private val hashCode: Int by lazy { Objects.hash(fileIds, chunkingStrategy, metadata, additionalProperties) }
+                private val hashCode: Int by lazy { Objects.hash(chunkingStrategy, fileIds, metadata, additionalProperties) }
                 /* spotless:on */
 
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "VectorStore{fileIds=$fileIds, chunkingStrategy=$chunkingStrategy, metadata=$metadata, additionalProperties=$additionalProperties}"
+                    "VectorStore{chunkingStrategy=$chunkingStrategy, fileIds=$fileIds, metadata=$metadata, additionalProperties=$additionalProperties}"
             }
 
             override fun equals(other: Any?): Boolean {

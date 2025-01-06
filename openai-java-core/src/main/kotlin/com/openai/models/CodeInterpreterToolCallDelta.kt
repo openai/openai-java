@@ -35,8 +35,8 @@ class CodeInterpreterToolCallDelta
 @JsonCreator
 private constructor(
     @JsonProperty("index") @ExcludeMissing private val index: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
     @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
     @JsonProperty("code_interpreter")
     @ExcludeMissing
     private val codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of(),
@@ -46,14 +46,14 @@ private constructor(
     /** The index of the tool call in the tool calls array. */
     fun index(): Long = index.getRequired("index")
 
-    /** The ID of the tool call. */
-    fun id(): Optional<String> = Optional.ofNullable(id.getNullable("id"))
-
     /**
      * The type of tool call. This is always going to be `code_interpreter` for this type of tool
      * call.
      */
     fun type(): Type = type.getRequired("type")
+
+    /** The ID of the tool call. */
+    fun id(): Optional<String> = Optional.ofNullable(id.getNullable("id"))
 
     /** The Code Interpreter tool call definition. */
     fun codeInterpreter(): Optional<CodeInterpreter> =
@@ -62,14 +62,14 @@ private constructor(
     /** The index of the tool call in the tool calls array. */
     @JsonProperty("index") @ExcludeMissing fun _index() = index
 
-    /** The ID of the tool call. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
-
     /**
      * The type of tool call. This is always going to be `code_interpreter` for this type of tool
      * call.
      */
     @JsonProperty("type") @ExcludeMissing fun _type() = type
+
+    /** The ID of the tool call. */
+    @JsonProperty("id") @ExcludeMissing fun _id() = id
 
     /** The Code Interpreter tool call definition. */
     @JsonProperty("code_interpreter") @ExcludeMissing fun _codeInterpreter() = codeInterpreter
@@ -83,8 +83,8 @@ private constructor(
     fun validate(): CodeInterpreterToolCallDelta = apply {
         if (!validated) {
             index()
-            id()
             type()
+            id()
             codeInterpreter().map { it.validate() }
             validated = true
         }
@@ -100,16 +100,16 @@ private constructor(
     class Builder {
 
         private var index: JsonField<Long> = JsonMissing.of()
-        private var id: JsonField<String> = JsonMissing.of()
         private var type: JsonField<Type> = JsonMissing.of()
+        private var id: JsonField<String> = JsonMissing.of()
         private var codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(codeInterpreterToolCallDelta: CodeInterpreterToolCallDelta) = apply {
             index = codeInterpreterToolCallDelta.index
-            id = codeInterpreterToolCallDelta.id
             type = codeInterpreterToolCallDelta.type
+            id = codeInterpreterToolCallDelta.id
             codeInterpreter = codeInterpreterToolCallDelta.codeInterpreter
             additionalProperties = codeInterpreterToolCallDelta.additionalProperties.toMutableMap()
         }
@@ -119,12 +119,6 @@ private constructor(
 
         /** The index of the tool call in the tool calls array. */
         fun index(index: JsonField<Long>) = apply { this.index = index }
-
-        /** The ID of the tool call. */
-        fun id(id: String) = id(JsonField.of(id))
-
-        /** The ID of the tool call. */
-        fun id(id: JsonField<String>) = apply { this.id = id }
 
         /**
          * The type of tool call. This is always going to be `code_interpreter` for this type of
@@ -137,6 +131,12 @@ private constructor(
          * tool call.
          */
         fun type(type: JsonField<Type>) = apply { this.type = type }
+
+        /** The ID of the tool call. */
+        fun id(id: String) = id(JsonField.of(id))
+
+        /** The ID of the tool call. */
+        fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The Code Interpreter tool call definition. */
         fun codeInterpreter(codeInterpreter: CodeInterpreter) =
@@ -169,8 +169,8 @@ private constructor(
         fun build(): CodeInterpreterToolCallDelta =
             CodeInterpreterToolCallDelta(
                 index,
-                id,
                 type,
+                id,
                 codeInterpreter,
                 additionalProperties.toImmutable(),
             )
@@ -513,15 +513,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is CodeInterpreterToolCallDelta && index == other.index && id == other.id && type == other.type && codeInterpreter == other.codeInterpreter && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is CodeInterpreterToolCallDelta && index == other.index && type == other.type && id == other.id && codeInterpreter == other.codeInterpreter && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(index, id, type, codeInterpreter, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(index, type, id, codeInterpreter, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "CodeInterpreterToolCallDelta{index=$index, id=$id, type=$type, codeInterpreter=$codeInterpreter, additionalProperties=$additionalProperties}"
+        "CodeInterpreterToolCallDelta{index=$index, type=$type, id=$id, codeInterpreter=$codeInterpreter, additionalProperties=$additionalProperties}"
 }

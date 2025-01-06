@@ -59,6 +59,7 @@ private constructor(
     @JsonProperty("result_files")
     @ExcludeMissing
     private val resultFiles: JsonField<List<String>> = JsonMissing.of(),
+    @JsonProperty("seed") @ExcludeMissing private val seed: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("status")
     @ExcludeMissing
     private val status: JsonField<Status> = JsonMissing.of(),
@@ -71,14 +72,13 @@ private constructor(
     @JsonProperty("validation_file")
     @ExcludeMissing
     private val validationFile: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("estimated_finish")
+    @ExcludeMissing
+    private val estimatedFinish: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("integrations")
     @ExcludeMissing
     private val integrations: JsonField<List<FineTuningJobWandbIntegrationObject>> =
         JsonMissing.of(),
-    @JsonProperty("seed") @ExcludeMissing private val seed: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("estimated_finish")
-    @ExcludeMissing
-    private val estimatedFinish: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("method")
     @ExcludeMissing
     private val method: JsonField<Method> = JsonMissing.of(),
@@ -131,6 +131,9 @@ private constructor(
      */
     fun resultFiles(): List<String> = resultFiles.getRequired("result_files")
 
+    /** The seed used for the fine-tuning job. */
+    fun seed(): Long = seed.getRequired("seed")
+
     /**
      * The current status of the fine-tuning job, which can be either `validating_files`, `queued`,
      * `running`, `succeeded`, `failed`, or `cancelled`.
@@ -157,19 +160,16 @@ private constructor(
     fun validationFile(): Optional<String> =
         Optional.ofNullable(validationFile.getNullable("validation_file"))
 
-    /** A list of integrations to enable for this fine-tuning job. */
-    fun integrations(): Optional<List<FineTuningJobWandbIntegrationObject>> =
-        Optional.ofNullable(integrations.getNullable("integrations"))
-
-    /** The seed used for the fine-tuning job. */
-    fun seed(): Long = seed.getRequired("seed")
-
     /**
      * The Unix timestamp (in seconds) for when the fine-tuning job is estimated to finish. The
      * value will be null if the fine-tuning job is not running.
      */
     fun estimatedFinish(): Optional<Long> =
         Optional.ofNullable(estimatedFinish.getNullable("estimated_finish"))
+
+    /** A list of integrations to enable for this fine-tuning job. */
+    fun integrations(): Optional<List<FineTuningJobWandbIntegrationObject>> =
+        Optional.ofNullable(integrations.getNullable("integrations"))
 
     /** The method used for fine-tuning. */
     fun method(): Optional<Method> = Optional.ofNullable(method.getNullable("method"))
@@ -219,6 +219,9 @@ private constructor(
      */
     @JsonProperty("result_files") @ExcludeMissing fun _resultFiles() = resultFiles
 
+    /** The seed used for the fine-tuning job. */
+    @JsonProperty("seed") @ExcludeMissing fun _seed() = seed
+
     /**
      * The current status of the fine-tuning job, which can be either `validating_files`, `queued`,
      * `running`, `succeeded`, `failed`, or `cancelled`.
@@ -243,17 +246,14 @@ private constructor(
      */
     @JsonProperty("validation_file") @ExcludeMissing fun _validationFile() = validationFile
 
-    /** A list of integrations to enable for this fine-tuning job. */
-    @JsonProperty("integrations") @ExcludeMissing fun _integrations() = integrations
-
-    /** The seed used for the fine-tuning job. */
-    @JsonProperty("seed") @ExcludeMissing fun _seed() = seed
-
     /**
      * The Unix timestamp (in seconds) for when the fine-tuning job is estimated to finish. The
      * value will be null if the fine-tuning job is not running.
      */
     @JsonProperty("estimated_finish") @ExcludeMissing fun _estimatedFinish() = estimatedFinish
+
+    /** A list of integrations to enable for this fine-tuning job. */
+    @JsonProperty("integrations") @ExcludeMissing fun _integrations() = integrations
 
     /** The method used for fine-tuning. */
     @JsonProperty("method") @ExcludeMissing fun _method() = method
@@ -276,13 +276,13 @@ private constructor(
             object_()
             organizationId()
             resultFiles()
+            seed()
             status()
             trainedTokens()
             trainingFile()
             validationFile()
-            integrations().map { it.forEach { it.validate() } }
-            seed()
             estimatedFinish()
+            integrations().map { it.forEach { it.validate() } }
             method().map { it.validate() }
             validated = true
         }
@@ -307,14 +307,14 @@ private constructor(
         private var object_: JsonField<Object> = JsonMissing.of()
         private var organizationId: JsonField<String> = JsonMissing.of()
         private var resultFiles: JsonField<List<String>> = JsonMissing.of()
+        private var seed: JsonField<Long> = JsonMissing.of()
         private var status: JsonField<Status> = JsonMissing.of()
         private var trainedTokens: JsonField<Long> = JsonMissing.of()
         private var trainingFile: JsonField<String> = JsonMissing.of()
         private var validationFile: JsonField<String> = JsonMissing.of()
+        private var estimatedFinish: JsonField<Long> = JsonMissing.of()
         private var integrations: JsonField<List<FineTuningJobWandbIntegrationObject>> =
             JsonMissing.of()
-        private var seed: JsonField<Long> = JsonMissing.of()
-        private var estimatedFinish: JsonField<Long> = JsonMissing.of()
         private var method: JsonField<Method> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -330,13 +330,13 @@ private constructor(
             object_ = fineTuningJob.object_
             organizationId = fineTuningJob.organizationId
             resultFiles = fineTuningJob.resultFiles
+            seed = fineTuningJob.seed
             status = fineTuningJob.status
             trainedTokens = fineTuningJob.trainedTokens
             trainingFile = fineTuningJob.trainingFile
             validationFile = fineTuningJob.validationFile
-            integrations = fineTuningJob.integrations
-            seed = fineTuningJob.seed
             estimatedFinish = fineTuningJob.estimatedFinish
+            integrations = fineTuningJob.integrations
             method = fineTuningJob.method
             additionalProperties = fineTuningJob.additionalProperties.toMutableMap()
         }
@@ -442,6 +442,12 @@ private constructor(
             this.resultFiles = resultFiles
         }
 
+        /** The seed used for the fine-tuning job. */
+        fun seed(seed: Long) = seed(JsonField.of(seed))
+
+        /** The seed used for the fine-tuning job. */
+        fun seed(seed: JsonField<Long>) = apply { this.seed = seed }
+
         /**
          * The current status of the fine-tuning job, which can be either `validating_files`,
          * `queued`, `running`, `succeeded`, `failed`, or `cancelled`.
@@ -496,22 +502,6 @@ private constructor(
             this.validationFile = validationFile
         }
 
-        /** A list of integrations to enable for this fine-tuning job. */
-        fun integrations(integrations: List<FineTuningJobWandbIntegrationObject>) =
-            integrations(JsonField.of(integrations))
-
-        /** A list of integrations to enable for this fine-tuning job. */
-        fun integrations(integrations: JsonField<List<FineTuningJobWandbIntegrationObject>>) =
-            apply {
-                this.integrations = integrations
-            }
-
-        /** The seed used for the fine-tuning job. */
-        fun seed(seed: Long) = seed(JsonField.of(seed))
-
-        /** The seed used for the fine-tuning job. */
-        fun seed(seed: JsonField<Long>) = apply { this.seed = seed }
-
         /**
          * The Unix timestamp (in seconds) for when the fine-tuning job is estimated to finish. The
          * value will be null if the fine-tuning job is not running.
@@ -525,6 +515,16 @@ private constructor(
         fun estimatedFinish(estimatedFinish: JsonField<Long>) = apply {
             this.estimatedFinish = estimatedFinish
         }
+
+        /** A list of integrations to enable for this fine-tuning job. */
+        fun integrations(integrations: List<FineTuningJobWandbIntegrationObject>) =
+            integrations(JsonField.of(integrations))
+
+        /** A list of integrations to enable for this fine-tuning job. */
+        fun integrations(integrations: JsonField<List<FineTuningJobWandbIntegrationObject>>) =
+            apply {
+                this.integrations = integrations
+            }
 
         /** The method used for fine-tuning. */
         fun method(method: Method) = method(JsonField.of(method))
@@ -563,13 +563,13 @@ private constructor(
                 object_,
                 organizationId,
                 resultFiles.map { it.toImmutable() },
+                seed,
                 status,
                 trainedTokens,
                 trainingFile,
                 validationFile,
-                integrations.map { it.toImmutable() },
-                seed,
                 estimatedFinish,
+                integrations.map { it.toImmutable() },
                 method,
                 additionalProperties.toImmutable(),
             )
@@ -1548,33 +1548,33 @@ private constructor(
     class Method
     @JsonCreator
     private constructor(
-        @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+        @JsonProperty("dpo") @ExcludeMissing private val dpo: JsonField<Dpo> = JsonMissing.of(),
         @JsonProperty("supervised")
         @ExcludeMissing
         private val supervised: JsonField<Supervised> = JsonMissing.of(),
-        @JsonProperty("dpo") @ExcludeMissing private val dpo: JsonField<Dpo> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The type of method. Is either `supervised` or `dpo`. */
-        fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
+        /** Configuration for the DPO fine-tuning method. */
+        fun dpo(): Optional<Dpo> = Optional.ofNullable(dpo.getNullable("dpo"))
 
         /** Configuration for the supervised fine-tuning method. */
         fun supervised(): Optional<Supervised> =
             Optional.ofNullable(supervised.getNullable("supervised"))
 
-        /** Configuration for the DPO fine-tuning method. */
-        fun dpo(): Optional<Dpo> = Optional.ofNullable(dpo.getNullable("dpo"))
-
         /** The type of method. Is either `supervised` or `dpo`. */
-        @JsonProperty("type") @ExcludeMissing fun _type() = type
+        fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
+
+        /** Configuration for the DPO fine-tuning method. */
+        @JsonProperty("dpo") @ExcludeMissing fun _dpo() = dpo
 
         /** Configuration for the supervised fine-tuning method. */
         @JsonProperty("supervised") @ExcludeMissing fun _supervised() = supervised
 
-        /** Configuration for the DPO fine-tuning method. */
-        @JsonProperty("dpo") @ExcludeMissing fun _dpo() = dpo
+        /** The type of method. Is either `supervised` or `dpo`. */
+        @JsonProperty("type") @ExcludeMissing fun _type() = type
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1584,9 +1584,9 @@ private constructor(
 
         fun validate(): Method = apply {
             if (!validated) {
-                type()
-                supervised().map { it.validate() }
                 dpo().map { it.validate() }
+                supervised().map { it.validate() }
+                type()
                 validated = true
             }
         }
@@ -1600,24 +1600,24 @@ private constructor(
 
         class Builder {
 
-            private var type: JsonField<Type> = JsonMissing.of()
-            private var supervised: JsonField<Supervised> = JsonMissing.of()
             private var dpo: JsonField<Dpo> = JsonMissing.of()
+            private var supervised: JsonField<Supervised> = JsonMissing.of()
+            private var type: JsonField<Type> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(method: Method) = apply {
-                type = method.type
-                supervised = method.supervised
                 dpo = method.dpo
+                supervised = method.supervised
+                type = method.type
                 additionalProperties = method.additionalProperties.toMutableMap()
             }
 
-            /** The type of method. Is either `supervised` or `dpo`. */
-            fun type(type: Type) = type(JsonField.of(type))
+            /** Configuration for the DPO fine-tuning method. */
+            fun dpo(dpo: Dpo) = dpo(JsonField.of(dpo))
 
-            /** The type of method. Is either `supervised` or `dpo`. */
-            fun type(type: JsonField<Type>) = apply { this.type = type }
+            /** Configuration for the DPO fine-tuning method. */
+            fun dpo(dpo: JsonField<Dpo>) = apply { this.dpo = dpo }
 
             /** Configuration for the supervised fine-tuning method. */
             fun supervised(supervised: Supervised) = supervised(JsonField.of(supervised))
@@ -1627,11 +1627,11 @@ private constructor(
                 this.supervised = supervised
             }
 
-            /** Configuration for the DPO fine-tuning method. */
-            fun dpo(dpo: Dpo) = dpo(JsonField.of(dpo))
+            /** The type of method. Is either `supervised` or `dpo`. */
+            fun type(type: Type) = type(JsonField.of(type))
 
-            /** Configuration for the DPO fine-tuning method. */
-            fun dpo(dpo: JsonField<Dpo>) = apply { this.dpo = dpo }
+            /** The type of method. Is either `supervised` or `dpo`. */
+            fun type(type: JsonField<Type>) = apply { this.type = type }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1654,9 +1654,9 @@ private constructor(
 
             fun build(): Method =
                 Method(
-                    type,
-                    supervised,
                     dpo,
+                    supervised,
+                    type,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1752,12 +1752,12 @@ private constructor(
             class Hyperparameters
             @JsonCreator
             private constructor(
-                @JsonProperty("beta")
-                @ExcludeMissing
-                private val beta: JsonField<Beta> = JsonMissing.of(),
                 @JsonProperty("batch_size")
                 @ExcludeMissing
                 private val batchSize: JsonField<BatchSize> = JsonMissing.of(),
+                @JsonProperty("beta")
+                @ExcludeMissing
+                private val beta: JsonField<Beta> = JsonMissing.of(),
                 @JsonProperty("learning_rate_multiplier")
                 @ExcludeMissing
                 private val learningRateMultiplier: JsonField<LearningRateMultiplier> =
@@ -1770,17 +1770,17 @@ private constructor(
             ) {
 
                 /**
-                 * The beta value for the DPO method. A higher beta value will increase the weight
-                 * of the penalty between the policy and reference model.
-                 */
-                fun beta(): Optional<Beta> = Optional.ofNullable(beta.getNullable("beta"))
-
-                /**
                  * Number of examples in each batch. A larger batch size means that model parameters
                  * are updated less frequently, but with lower variance.
                  */
                 fun batchSize(): Optional<BatchSize> =
                     Optional.ofNullable(batchSize.getNullable("batch_size"))
+
+                /**
+                 * The beta value for the DPO method. A higher beta value will increase the weight
+                 * of the penalty between the policy and reference model.
+                 */
+                fun beta(): Optional<Beta> = Optional.ofNullable(beta.getNullable("beta"))
 
                 /**
                  * Scaling factor for the learning rate. A smaller learning rate may be useful to
@@ -1799,16 +1799,16 @@ private constructor(
                     Optional.ofNullable(nEpochs.getNullable("n_epochs"))
 
                 /**
-                 * The beta value for the DPO method. A higher beta value will increase the weight
-                 * of the penalty between the policy and reference model.
-                 */
-                @JsonProperty("beta") @ExcludeMissing fun _beta() = beta
-
-                /**
                  * Number of examples in each batch. A larger batch size means that model parameters
                  * are updated less frequently, but with lower variance.
                  */
                 @JsonProperty("batch_size") @ExcludeMissing fun _batchSize() = batchSize
+
+                /**
+                 * The beta value for the DPO method. A higher beta value will increase the weight
+                 * of the penalty between the policy and reference model.
+                 */
+                @JsonProperty("beta") @ExcludeMissing fun _beta() = beta
 
                 /**
                  * Scaling factor for the learning rate. A smaller learning rate may be useful to
@@ -1832,8 +1832,8 @@ private constructor(
 
                 fun validate(): Hyperparameters = apply {
                     if (!validated) {
-                        beta()
                         batchSize()
+                        beta()
                         learningRateMultiplier()
                         nEpochs()
                         validated = true
@@ -1849,8 +1849,8 @@ private constructor(
 
                 class Builder {
 
-                    private var beta: JsonField<Beta> = JsonMissing.of()
                     private var batchSize: JsonField<BatchSize> = JsonMissing.of()
+                    private var beta: JsonField<Beta> = JsonMissing.of()
                     private var learningRateMultiplier: JsonField<LearningRateMultiplier> =
                         JsonMissing.of()
                     private var nEpochs: JsonField<NEpochs> = JsonMissing.of()
@@ -1858,24 +1858,12 @@ private constructor(
 
                     @JvmSynthetic
                     internal fun from(hyperparameters: Hyperparameters) = apply {
-                        beta = hyperparameters.beta
                         batchSize = hyperparameters.batchSize
+                        beta = hyperparameters.beta
                         learningRateMultiplier = hyperparameters.learningRateMultiplier
                         nEpochs = hyperparameters.nEpochs
                         additionalProperties = hyperparameters.additionalProperties.toMutableMap()
                     }
-
-                    /**
-                     * The beta value for the DPO method. A higher beta value will increase the
-                     * weight of the penalty between the policy and reference model.
-                     */
-                    fun beta(beta: Beta) = beta(JsonField.of(beta))
-
-                    /**
-                     * The beta value for the DPO method. A higher beta value will increase the
-                     * weight of the penalty between the policy and reference model.
-                     */
-                    fun beta(beta: JsonField<Beta>) = apply { this.beta = beta }
 
                     /**
                      * Number of examples in each batch. A larger batch size means that model
@@ -1890,6 +1878,18 @@ private constructor(
                     fun batchSize(batchSize: JsonField<BatchSize>) = apply {
                         this.batchSize = batchSize
                     }
+
+                    /**
+                     * The beta value for the DPO method. A higher beta value will increase the
+                     * weight of the penalty between the policy and reference model.
+                     */
+                    fun beta(beta: Beta) = beta(JsonField.of(beta))
+
+                    /**
+                     * The beta value for the DPO method. A higher beta value will increase the
+                     * weight of the penalty between the policy and reference model.
+                     */
+                    fun beta(beta: JsonField<Beta>) = apply { this.beta = beta }
 
                     /**
                      * Scaling factor for the learning rate. A smaller learning rate may be useful
@@ -1942,8 +1942,8 @@ private constructor(
 
                     fun build(): Hyperparameters =
                         Hyperparameters(
-                            beta,
                             batchSize,
+                            beta,
                             learningRateMultiplier,
                             nEpochs,
                             additionalProperties.toImmutable(),
@@ -2633,17 +2633,17 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is Hyperparameters && beta == other.beta && batchSize == other.batchSize && learningRateMultiplier == other.learningRateMultiplier && nEpochs == other.nEpochs && additionalProperties == other.additionalProperties /* spotless:on */
+                    return /* spotless:off */ other is Hyperparameters && batchSize == other.batchSize && beta == other.beta && learningRateMultiplier == other.learningRateMultiplier && nEpochs == other.nEpochs && additionalProperties == other.additionalProperties /* spotless:on */
                 }
 
                 /* spotless:off */
-                private val hashCode: Int by lazy { Objects.hash(beta, batchSize, learningRateMultiplier, nEpochs, additionalProperties) }
+                private val hashCode: Int by lazy { Objects.hash(batchSize, beta, learningRateMultiplier, nEpochs, additionalProperties) }
                 /* spotless:on */
 
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "Hyperparameters{beta=$beta, batchSize=$batchSize, learningRateMultiplier=$learningRateMultiplier, nEpochs=$nEpochs, additionalProperties=$additionalProperties}"
+                    "Hyperparameters{batchSize=$batchSize, beta=$beta, learningRateMultiplier=$learningRateMultiplier, nEpochs=$nEpochs, additionalProperties=$additionalProperties}"
             }
 
             override fun equals(other: Any?): Boolean {
@@ -3532,17 +3532,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Method && type == other.type && supervised == other.supervised && dpo == other.dpo && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Method && dpo == other.dpo && supervised == other.supervised && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(type, supervised, dpo, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(dpo, supervised, type, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Method{type=$type, supervised=$supervised, dpo=$dpo, additionalProperties=$additionalProperties}"
+            "Method{dpo=$dpo, supervised=$supervised, type=$type, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -3550,15 +3550,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FineTuningJob && id == other.id && createdAt == other.createdAt && error == other.error && fineTunedModel == other.fineTunedModel && finishedAt == other.finishedAt && hyperparameters == other.hyperparameters && model == other.model && object_ == other.object_ && organizationId == other.organizationId && resultFiles == other.resultFiles && status == other.status && trainedTokens == other.trainedTokens && trainingFile == other.trainingFile && validationFile == other.validationFile && integrations == other.integrations && seed == other.seed && estimatedFinish == other.estimatedFinish && method == other.method && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FineTuningJob && id == other.id && createdAt == other.createdAt && error == other.error && fineTunedModel == other.fineTunedModel && finishedAt == other.finishedAt && hyperparameters == other.hyperparameters && model == other.model && object_ == other.object_ && organizationId == other.organizationId && resultFiles == other.resultFiles && seed == other.seed && status == other.status && trainedTokens == other.trainedTokens && trainingFile == other.trainingFile && validationFile == other.validationFile && estimatedFinish == other.estimatedFinish && integrations == other.integrations && method == other.method && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, createdAt, error, fineTunedModel, finishedAt, hyperparameters, model, object_, organizationId, resultFiles, status, trainedTokens, trainingFile, validationFile, integrations, seed, estimatedFinish, method, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, createdAt, error, fineTunedModel, finishedAt, hyperparameters, model, object_, organizationId, resultFiles, seed, status, trainedTokens, trainingFile, validationFile, estimatedFinish, integrations, method, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "FineTuningJob{id=$id, createdAt=$createdAt, error=$error, fineTunedModel=$fineTunedModel, finishedAt=$finishedAt, hyperparameters=$hyperparameters, model=$model, object_=$object_, organizationId=$organizationId, resultFiles=$resultFiles, status=$status, trainedTokens=$trainedTokens, trainingFile=$trainingFile, validationFile=$validationFile, integrations=$integrations, seed=$seed, estimatedFinish=$estimatedFinish, method=$method, additionalProperties=$additionalProperties}"
+        "FineTuningJob{id=$id, createdAt=$createdAt, error=$error, fineTunedModel=$fineTunedModel, finishedAt=$finishedAt, hyperparameters=$hyperparameters, model=$model, object_=$object_, organizationId=$organizationId, resultFiles=$resultFiles, seed=$seed, status=$status, trainedTokens=$trainedTokens, trainingFile=$trainingFile, validationFile=$validationFile, estimatedFinish=$estimatedFinish, integrations=$integrations, method=$method, additionalProperties=$additionalProperties}"
 }

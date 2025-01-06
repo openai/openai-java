@@ -22,22 +22,22 @@ import java.util.Objects
 class MessageCreationStepDetails
 @JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonProperty("message_creation")
     @ExcludeMissing
     private val messageCreation: JsonField<MessageCreation> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /** Always `message_creation`. */
-    fun type(): Type = type.getRequired("type")
 
     fun messageCreation(): MessageCreation = messageCreation.getRequired("message_creation")
 
     /** Always `message_creation`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    fun type(): Type = type.getRequired("type")
 
     @JsonProperty("message_creation") @ExcludeMissing fun _messageCreation() = messageCreation
+
+    /** Always `message_creation`. */
+    @JsonProperty("type") @ExcludeMissing fun _type() = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -47,8 +47,8 @@ private constructor(
 
     fun validate(): MessageCreationStepDetails = apply {
         if (!validated) {
-            type()
             messageCreation().validate()
+            type()
             validated = true
         }
     }
@@ -62,22 +62,16 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type> = JsonMissing.of()
         private var messageCreation: JsonField<MessageCreation> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(messageCreationStepDetails: MessageCreationStepDetails) = apply {
-            type = messageCreationStepDetails.type
             messageCreation = messageCreationStepDetails.messageCreation
+            type = messageCreationStepDetails.type
             additionalProperties = messageCreationStepDetails.additionalProperties.toMutableMap()
         }
-
-        /** Always `message_creation`. */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /** Always `message_creation`. */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
 
         fun messageCreation(messageCreation: MessageCreation) =
             messageCreation(JsonField.of(messageCreation))
@@ -85,6 +79,12 @@ private constructor(
         fun messageCreation(messageCreation: JsonField<MessageCreation>) = apply {
             this.messageCreation = messageCreation
         }
+
+        /** Always `message_creation`. */
+        fun type(type: Type) = type(JsonField.of(type))
+
+        /** Always `message_creation`. */
+        fun type(type: JsonField<Type>) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -107,8 +107,8 @@ private constructor(
 
         fun build(): MessageCreationStepDetails =
             MessageCreationStepDetails(
-                type,
                 messageCreation,
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -264,15 +264,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is MessageCreationStepDetails && type == other.type && messageCreation == other.messageCreation && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is MessageCreationStepDetails && messageCreation == other.messageCreation && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(type, messageCreation, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(messageCreation, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "MessageCreationStepDetails{type=$type, messageCreation=$messageCreation, additionalProperties=$additionalProperties}"
+        "MessageCreationStepDetails{messageCreation=$messageCreation, type=$type, additionalProperties=$additionalProperties}"
 }

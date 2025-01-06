@@ -24,57 +24,61 @@ class VectorStore
 @JsonCreator
 private constructor(
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
     @JsonProperty("created_at")
     @ExcludeMissing
     private val createdAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("usage_bytes")
-    @ExcludeMissing
-    private val usageBytes: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("file_counts")
     @ExcludeMissing
     private val fileCounts: JsonField<FileCounts> = JsonMissing.of(),
+    @JsonProperty("last_active_at")
+    @ExcludeMissing
+    private val lastActiveAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonValue = JsonMissing.of(),
+    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("object")
+    @ExcludeMissing
+    private val object_: JsonField<Object> = JsonMissing.of(),
     @JsonProperty("status")
     @ExcludeMissing
     private val status: JsonField<Status> = JsonMissing.of(),
+    @JsonProperty("usage_bytes")
+    @ExcludeMissing
+    private val usageBytes: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("expires_after")
     @ExcludeMissing
     private val expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of(),
     @JsonProperty("expires_at")
     @ExcludeMissing
     private val expiresAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("last_active_at")
-    @ExcludeMissing
-    private val lastActiveAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonValue = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The identifier, which can be referenced in API endpoints. */
     fun id(): String = id.getRequired("id")
 
-    /** The object type, which is always `vector_store`. */
-    fun object_(): Object = object_.getRequired("object")
-
     /** The Unix timestamp (in seconds) for when the vector store was created. */
     fun createdAt(): Long = createdAt.getRequired("created_at")
+
+    fun fileCounts(): FileCounts = fileCounts.getRequired("file_counts")
+
+    /** The Unix timestamp (in seconds) for when the vector store was last active. */
+    fun lastActiveAt(): Optional<Long> =
+        Optional.ofNullable(lastActiveAt.getNullable("last_active_at"))
 
     /** The name of the vector store. */
     fun name(): String = name.getRequired("name")
 
-    /** The total number of bytes used by the files in the vector store. */
-    fun usageBytes(): Long = usageBytes.getRequired("usage_bytes")
-
-    fun fileCounts(): FileCounts = fileCounts.getRequired("file_counts")
+    /** The object type, which is always `vector_store`. */
+    fun object_(): Object = object_.getRequired("object")
 
     /**
      * The status of the vector store, which can be either `expired`, `in_progress`, or `completed`.
      * A status of `completed` indicates that the vector store is ready for use.
      */
     fun status(): Status = status.getRequired("status")
+
+    /** The total number of bytes used by the files in the vector store. */
+    fun usageBytes(): Long = usageBytes.getRequired("usage_bytes")
 
     /** The expiration policy for a vector store. */
     fun expiresAfter(): Optional<ExpiresAfter> =
@@ -83,38 +87,13 @@ private constructor(
     /** The Unix timestamp (in seconds) for when the vector store will expire. */
     fun expiresAt(): Optional<Long> = Optional.ofNullable(expiresAt.getNullable("expires_at"))
 
-    /** The Unix timestamp (in seconds) for when the vector store was last active. */
-    fun lastActiveAt(): Optional<Long> =
-        Optional.ofNullable(lastActiveAt.getNullable("last_active_at"))
-
     /** The identifier, which can be referenced in API endpoints. */
     @JsonProperty("id") @ExcludeMissing fun _id() = id
-
-    /** The object type, which is always `vector_store`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
 
     /** The Unix timestamp (in seconds) for when the vector store was created. */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
 
-    /** The name of the vector store. */
-    @JsonProperty("name") @ExcludeMissing fun _name() = name
-
-    /** The total number of bytes used by the files in the vector store. */
-    @JsonProperty("usage_bytes") @ExcludeMissing fun _usageBytes() = usageBytes
-
     @JsonProperty("file_counts") @ExcludeMissing fun _fileCounts() = fileCounts
-
-    /**
-     * The status of the vector store, which can be either `expired`, `in_progress`, or `completed`.
-     * A status of `completed` indicates that the vector store is ready for use.
-     */
-    @JsonProperty("status") @ExcludeMissing fun _status() = status
-
-    /** The expiration policy for a vector store. */
-    @JsonProperty("expires_after") @ExcludeMissing fun _expiresAfter() = expiresAfter
-
-    /** The Unix timestamp (in seconds) for when the vector store will expire. */
-    @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt() = expiresAt
 
     /** The Unix timestamp (in seconds) for when the vector store was last active. */
     @JsonProperty("last_active_at") @ExcludeMissing fun _lastActiveAt() = lastActiveAt
@@ -126,6 +105,27 @@ private constructor(
      */
     @JsonProperty("metadata") @ExcludeMissing fun _metadata() = metadata
 
+    /** The name of the vector store. */
+    @JsonProperty("name") @ExcludeMissing fun _name() = name
+
+    /** The object type, which is always `vector_store`. */
+    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+
+    /**
+     * The status of the vector store, which can be either `expired`, `in_progress`, or `completed`.
+     * A status of `completed` indicates that the vector store is ready for use.
+     */
+    @JsonProperty("status") @ExcludeMissing fun _status() = status
+
+    /** The total number of bytes used by the files in the vector store. */
+    @JsonProperty("usage_bytes") @ExcludeMissing fun _usageBytes() = usageBytes
+
+    /** The expiration policy for a vector store. */
+    @JsonProperty("expires_after") @ExcludeMissing fun _expiresAfter() = expiresAfter
+
+    /** The Unix timestamp (in seconds) for when the vector store will expire. */
+    @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt() = expiresAt
+
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -135,15 +135,15 @@ private constructor(
     fun validate(): VectorStore = apply {
         if (!validated) {
             id()
-            object_()
             createdAt()
-            name()
-            usageBytes()
             fileCounts().validate()
+            lastActiveAt()
+            name()
+            object_()
             status()
+            usageBytes()
             expiresAfter().map { it.validate() }
             expiresAt()
-            lastActiveAt()
             validated = true
         }
     }
@@ -158,31 +158,31 @@ private constructor(
     class Builder {
 
         private var id: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
         private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var name: JsonField<String> = JsonMissing.of()
-        private var usageBytes: JsonField<Long> = JsonMissing.of()
         private var fileCounts: JsonField<FileCounts> = JsonMissing.of()
-        private var status: JsonField<Status> = JsonMissing.of()
-        private var expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of()
-        private var expiresAt: JsonField<Long> = JsonMissing.of()
         private var lastActiveAt: JsonField<Long> = JsonMissing.of()
         private var metadata: JsonValue = JsonMissing.of()
+        private var name: JsonField<String> = JsonMissing.of()
+        private var object_: JsonField<Object> = JsonMissing.of()
+        private var status: JsonField<Status> = JsonMissing.of()
+        private var usageBytes: JsonField<Long> = JsonMissing.of()
+        private var expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of()
+        private var expiresAt: JsonField<Long> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(vectorStore: VectorStore) = apply {
             id = vectorStore.id
-            object_ = vectorStore.object_
             createdAt = vectorStore.createdAt
-            name = vectorStore.name
-            usageBytes = vectorStore.usageBytes
             fileCounts = vectorStore.fileCounts
-            status = vectorStore.status
-            expiresAfter = vectorStore.expiresAfter
-            expiresAt = vectorStore.expiresAt
             lastActiveAt = vectorStore.lastActiveAt
             metadata = vectorStore.metadata
+            name = vectorStore.name
+            object_ = vectorStore.object_
+            status = vectorStore.status
+            usageBytes = vectorStore.usageBytes
+            expiresAfter = vectorStore.expiresAfter
+            expiresAt = vectorStore.expiresAt
             additionalProperties = vectorStore.additionalProperties.toMutableMap()
         }
 
@@ -192,17 +192,28 @@ private constructor(
         /** The identifier, which can be referenced in API endpoints. */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
-        /** The object type, which is always `vector_store`. */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always `vector_store`. */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
-
         /** The Unix timestamp (in seconds) for when the vector store was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
         /** The Unix timestamp (in seconds) for when the vector store was created. */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
+
+        fun fileCounts(fileCounts: FileCounts) = fileCounts(JsonField.of(fileCounts))
+
+        fun fileCounts(fileCounts: JsonField<FileCounts>) = apply { this.fileCounts = fileCounts }
+
+        /** The Unix timestamp (in seconds) for when the vector store was last active. */
+        fun lastActiveAt(lastActiveAt: Long) = lastActiveAt(JsonField.of(lastActiveAt))
+
+        /** The Unix timestamp (in seconds) for when the vector store was last active. */
+        fun lastActiveAt(lastActiveAt: JsonField<Long>) = apply { this.lastActiveAt = lastActiveAt }
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format. Keys can be a
+         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         */
+        fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
         /** The name of the vector store. */
         fun name(name: String) = name(JsonField.of(name))
@@ -210,15 +221,11 @@ private constructor(
         /** The name of the vector store. */
         fun name(name: JsonField<String>) = apply { this.name = name }
 
-        /** The total number of bytes used by the files in the vector store. */
-        fun usageBytes(usageBytes: Long) = usageBytes(JsonField.of(usageBytes))
+        /** The object type, which is always `vector_store`. */
+        fun object_(object_: Object) = object_(JsonField.of(object_))
 
-        /** The total number of bytes used by the files in the vector store. */
-        fun usageBytes(usageBytes: JsonField<Long>) = apply { this.usageBytes = usageBytes }
-
-        fun fileCounts(fileCounts: FileCounts) = fileCounts(JsonField.of(fileCounts))
-
-        fun fileCounts(fileCounts: JsonField<FileCounts>) = apply { this.fileCounts = fileCounts }
+        /** The object type, which is always `vector_store`. */
+        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
 
         /**
          * The status of the vector store, which can be either `expired`, `in_progress`, or
@@ -231,6 +238,12 @@ private constructor(
          * `completed`. A status of `completed` indicates that the vector store is ready for use.
          */
         fun status(status: JsonField<Status>) = apply { this.status = status }
+
+        /** The total number of bytes used by the files in the vector store. */
+        fun usageBytes(usageBytes: Long) = usageBytes(JsonField.of(usageBytes))
+
+        /** The total number of bytes used by the files in the vector store. */
+        fun usageBytes(usageBytes: JsonField<Long>) = apply { this.usageBytes = usageBytes }
 
         /** The expiration policy for a vector store. */
         fun expiresAfter(expiresAfter: ExpiresAfter) = expiresAfter(JsonField.of(expiresAfter))
@@ -245,19 +258,6 @@ private constructor(
 
         /** The Unix timestamp (in seconds) for when the vector store will expire. */
         fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
-
-        /** The Unix timestamp (in seconds) for when the vector store was last active. */
-        fun lastActiveAt(lastActiveAt: Long) = lastActiveAt(JsonField.of(lastActiveAt))
-
-        /** The Unix timestamp (in seconds) for when the vector store was last active. */
-        fun lastActiveAt(lastActiveAt: JsonField<Long>) = apply { this.lastActiveAt = lastActiveAt }
-
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format. Keys can be a
-         * maximum of 64 characters long and values can be a maximum of 512 characters long.
-         */
-        fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -281,16 +281,16 @@ private constructor(
         fun build(): VectorStore =
             VectorStore(
                 id,
-                object_,
                 createdAt,
-                name,
-                usageBytes,
                 fileCounts,
-                status,
-                expiresAfter,
-                expiresAt,
                 lastActiveAt,
                 metadata,
+                name,
+                object_,
+                status,
+                usageBytes,
+                expiresAfter,
+                expiresAt,
                 additionalProperties.toImmutable(),
             )
     }
@@ -299,18 +299,18 @@ private constructor(
     class FileCounts
     @JsonCreator
     private constructor(
-        @JsonProperty("in_progress")
+        @JsonProperty("cancelled")
         @ExcludeMissing
-        private val inProgress: JsonField<Long> = JsonMissing.of(),
+        private val cancelled: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("completed")
         @ExcludeMissing
         private val completed: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("failed")
         @ExcludeMissing
         private val failed: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("cancelled")
+        @JsonProperty("in_progress")
         @ExcludeMissing
-        private val cancelled: JsonField<Long> = JsonMissing.of(),
+        private val inProgress: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("total")
         @ExcludeMissing
         private val total: JsonField<Long> = JsonMissing.of(),
@@ -318,8 +318,8 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The number of files that are currently being processed. */
-        fun inProgress(): Long = inProgress.getRequired("in_progress")
+        /** The number of files that were cancelled. */
+        fun cancelled(): Long = cancelled.getRequired("cancelled")
 
         /** The number of files that have been successfully processed. */
         fun completed(): Long = completed.getRequired("completed")
@@ -327,14 +327,14 @@ private constructor(
         /** The number of files that have failed to process. */
         fun failed(): Long = failed.getRequired("failed")
 
-        /** The number of files that were cancelled. */
-        fun cancelled(): Long = cancelled.getRequired("cancelled")
+        /** The number of files that are currently being processed. */
+        fun inProgress(): Long = inProgress.getRequired("in_progress")
 
         /** The total number of files. */
         fun total(): Long = total.getRequired("total")
 
-        /** The number of files that are currently being processed. */
-        @JsonProperty("in_progress") @ExcludeMissing fun _inProgress() = inProgress
+        /** The number of files that were cancelled. */
+        @JsonProperty("cancelled") @ExcludeMissing fun _cancelled() = cancelled
 
         /** The number of files that have been successfully processed. */
         @JsonProperty("completed") @ExcludeMissing fun _completed() = completed
@@ -342,8 +342,8 @@ private constructor(
         /** The number of files that have failed to process. */
         @JsonProperty("failed") @ExcludeMissing fun _failed() = failed
 
-        /** The number of files that were cancelled. */
-        @JsonProperty("cancelled") @ExcludeMissing fun _cancelled() = cancelled
+        /** The number of files that are currently being processed. */
+        @JsonProperty("in_progress") @ExcludeMissing fun _inProgress() = inProgress
 
         /** The total number of files. */
         @JsonProperty("total") @ExcludeMissing fun _total() = total
@@ -356,10 +356,10 @@ private constructor(
 
         fun validate(): FileCounts = apply {
             if (!validated) {
-                inProgress()
+                cancelled()
                 completed()
                 failed()
-                cancelled()
+                inProgress()
                 total()
                 validated = true
             }
@@ -374,28 +374,28 @@ private constructor(
 
         class Builder {
 
-            private var inProgress: JsonField<Long> = JsonMissing.of()
+            private var cancelled: JsonField<Long> = JsonMissing.of()
             private var completed: JsonField<Long> = JsonMissing.of()
             private var failed: JsonField<Long> = JsonMissing.of()
-            private var cancelled: JsonField<Long> = JsonMissing.of()
+            private var inProgress: JsonField<Long> = JsonMissing.of()
             private var total: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(fileCounts: FileCounts) = apply {
-                inProgress = fileCounts.inProgress
+                cancelled = fileCounts.cancelled
                 completed = fileCounts.completed
                 failed = fileCounts.failed
-                cancelled = fileCounts.cancelled
+                inProgress = fileCounts.inProgress
                 total = fileCounts.total
                 additionalProperties = fileCounts.additionalProperties.toMutableMap()
             }
 
-            /** The number of files that are currently being processed. */
-            fun inProgress(inProgress: Long) = inProgress(JsonField.of(inProgress))
+            /** The number of files that were cancelled. */
+            fun cancelled(cancelled: Long) = cancelled(JsonField.of(cancelled))
 
-            /** The number of files that are currently being processed. */
-            fun inProgress(inProgress: JsonField<Long>) = apply { this.inProgress = inProgress }
+            /** The number of files that were cancelled. */
+            fun cancelled(cancelled: JsonField<Long>) = apply { this.cancelled = cancelled }
 
             /** The number of files that have been successfully processed. */
             fun completed(completed: Long) = completed(JsonField.of(completed))
@@ -409,11 +409,11 @@ private constructor(
             /** The number of files that have failed to process. */
             fun failed(failed: JsonField<Long>) = apply { this.failed = failed }
 
-            /** The number of files that were cancelled. */
-            fun cancelled(cancelled: Long) = cancelled(JsonField.of(cancelled))
+            /** The number of files that are currently being processed. */
+            fun inProgress(inProgress: Long) = inProgress(JsonField.of(inProgress))
 
-            /** The number of files that were cancelled. */
-            fun cancelled(cancelled: JsonField<Long>) = apply { this.cancelled = cancelled }
+            /** The number of files that are currently being processed. */
+            fun inProgress(inProgress: JsonField<Long>) = apply { this.inProgress = inProgress }
 
             /** The total number of files. */
             fun total(total: Long) = total(JsonField.of(total))
@@ -442,10 +442,10 @@ private constructor(
 
             fun build(): FileCounts =
                 FileCounts(
-                    inProgress,
+                    cancelled,
                     completed,
                     failed,
-                    cancelled,
+                    inProgress,
                     total,
                     additionalProperties.toImmutable(),
                 )
@@ -456,17 +456,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is FileCounts && inProgress == other.inProgress && completed == other.completed && failed == other.failed && cancelled == other.cancelled && total == other.total && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is FileCounts && cancelled == other.cancelled && completed == other.completed && failed == other.failed && inProgress == other.inProgress && total == other.total && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(inProgress, completed, failed, cancelled, total, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(cancelled, completed, failed, inProgress, total, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "FileCounts{inProgress=$inProgress, completed=$completed, failed=$failed, cancelled=$cancelled, total=$total, additionalProperties=$additionalProperties}"
+            "FileCounts{cancelled=$cancelled, completed=$completed, failed=$failed, inProgress=$inProgress, total=$total, additionalProperties=$additionalProperties}"
     }
 
     class Object
@@ -767,15 +767,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is VectorStore && id == other.id && object_ == other.object_ && createdAt == other.createdAt && name == other.name && usageBytes == other.usageBytes && fileCounts == other.fileCounts && status == other.status && expiresAfter == other.expiresAfter && expiresAt == other.expiresAt && lastActiveAt == other.lastActiveAt && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is VectorStore && id == other.id && createdAt == other.createdAt && fileCounts == other.fileCounts && lastActiveAt == other.lastActiveAt && metadata == other.metadata && name == other.name && object_ == other.object_ && status == other.status && usageBytes == other.usageBytes && expiresAfter == other.expiresAfter && expiresAt == other.expiresAt && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, object_, createdAt, name, usageBytes, fileCounts, status, expiresAfter, expiresAt, lastActiveAt, metadata, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, createdAt, fileCounts, lastActiveAt, metadata, name, object_, status, usageBytes, expiresAfter, expiresAt, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "VectorStore{id=$id, object_=$object_, createdAt=$createdAt, name=$name, usageBytes=$usageBytes, fileCounts=$fileCounts, status=$status, expiresAfter=$expiresAfter, expiresAt=$expiresAt, lastActiveAt=$lastActiveAt, metadata=$metadata, additionalProperties=$additionalProperties}"
+        "VectorStore{id=$id, createdAt=$createdAt, fileCounts=$fileCounts, lastActiveAt=$lastActiveAt, metadata=$metadata, name=$name, object_=$object_, status=$status, usageBytes=$usageBytes, expiresAfter=$expiresAfter, expiresAt=$expiresAt, additionalProperties=$additionalProperties}"
 }

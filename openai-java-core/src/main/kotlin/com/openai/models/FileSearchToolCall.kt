@@ -23,34 +23,34 @@ class FileSearchToolCall
 @JsonCreator
 private constructor(
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonProperty("file_search")
     @ExcludeMissing
     private val fileSearch: JsonField<FileSearch> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The ID of the tool call object. */
     fun id(): String = id.getRequired("id")
 
+    /** For now, this is always going to be an empty object. */
+    fun fileSearch(): FileSearch = fileSearch.getRequired("file_search")
+
     /**
      * The type of tool call. This is always going to be `file_search` for this type of tool call.
      */
     fun type(): Type = type.getRequired("type")
 
-    /** For now, this is always going to be an empty object. */
-    fun fileSearch(): FileSearch = fileSearch.getRequired("file_search")
-
     /** The ID of the tool call object. */
     @JsonProperty("id") @ExcludeMissing fun _id() = id
+
+    /** For now, this is always going to be an empty object. */
+    @JsonProperty("file_search") @ExcludeMissing fun _fileSearch() = fileSearch
 
     /**
      * The type of tool call. This is always going to be `file_search` for this type of tool call.
      */
     @JsonProperty("type") @ExcludeMissing fun _type() = type
-
-    /** For now, this is always going to be an empty object. */
-    @JsonProperty("file_search") @ExcludeMissing fun _fileSearch() = fileSearch
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -61,8 +61,8 @@ private constructor(
     fun validate(): FileSearchToolCall = apply {
         if (!validated) {
             id()
-            type()
             fileSearch().validate()
+            type()
             validated = true
         }
     }
@@ -77,15 +77,15 @@ private constructor(
     class Builder {
 
         private var id: JsonField<String> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
         private var fileSearch: JsonField<FileSearch> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(fileSearchToolCall: FileSearchToolCall) = apply {
             id = fileSearchToolCall.id
-            type = fileSearchToolCall.type
             fileSearch = fileSearchToolCall.fileSearch
+            type = fileSearchToolCall.type
             additionalProperties = fileSearchToolCall.additionalProperties.toMutableMap()
         }
 
@@ -94,6 +94,12 @@ private constructor(
 
         /** The ID of the tool call object. */
         fun id(id: JsonField<String>) = apply { this.id = id }
+
+        /** For now, this is always going to be an empty object. */
+        fun fileSearch(fileSearch: FileSearch) = fileSearch(JsonField.of(fileSearch))
+
+        /** For now, this is always going to be an empty object. */
+        fun fileSearch(fileSearch: JsonField<FileSearch>) = apply { this.fileSearch = fileSearch }
 
         /**
          * The type of tool call. This is always going to be `file_search` for this type of tool
@@ -106,12 +112,6 @@ private constructor(
          * call.
          */
         fun type(type: JsonField<Type>) = apply { this.type = type }
-
-        /** For now, this is always going to be an empty object. */
-        fun fileSearch(fileSearch: FileSearch) = fileSearch(JsonField.of(fileSearch))
-
-        /** For now, this is always going to be an empty object. */
-        fun fileSearch(fileSearch: JsonField<FileSearch>) = apply { this.fileSearch = fileSearch }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -135,8 +135,8 @@ private constructor(
         fun build(): FileSearchToolCall =
             FileSearchToolCall(
                 id,
-                type,
                 fileSearch,
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -600,27 +600,27 @@ private constructor(
             class Content
             @JsonCreator
             private constructor(
-                @JsonProperty("type")
-                @ExcludeMissing
-                private val type: JsonField<Type> = JsonMissing.of(),
                 @JsonProperty("text")
                 @ExcludeMissing
                 private val text: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type")
+                @ExcludeMissing
+                private val type: JsonField<Type> = JsonMissing.of(),
                 @JsonAnySetter
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
-
-                /** The type of the content. */
-                fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
 
                 /** The text content of the file. */
                 fun text(): Optional<String> = Optional.ofNullable(text.getNullable("text"))
 
                 /** The type of the content. */
-                @JsonProperty("type") @ExcludeMissing fun _type() = type
+                fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
 
                 /** The text content of the file. */
                 @JsonProperty("text") @ExcludeMissing fun _text() = text
+
+                /** The type of the content. */
+                @JsonProperty("type") @ExcludeMissing fun _type() = type
 
                 @JsonAnyGetter
                 @ExcludeMissing
@@ -630,8 +630,8 @@ private constructor(
 
                 fun validate(): Content = apply {
                     if (!validated) {
-                        type()
                         text()
+                        type()
                         validated = true
                     }
                 }
@@ -645,28 +645,28 @@ private constructor(
 
                 class Builder {
 
-                    private var type: JsonField<Type> = JsonMissing.of()
                     private var text: JsonField<String> = JsonMissing.of()
+                    private var type: JsonField<Type> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
                     internal fun from(content: Content) = apply {
-                        type = content.type
                         text = content.text
+                        type = content.type
                         additionalProperties = content.additionalProperties.toMutableMap()
                     }
-
-                    /** The type of the content. */
-                    fun type(type: Type) = type(JsonField.of(type))
-
-                    /** The type of the content. */
-                    fun type(type: JsonField<Type>) = apply { this.type = type }
 
                     /** The text content of the file. */
                     fun text(text: String) = text(JsonField.of(text))
 
                     /** The text content of the file. */
                     fun text(text: JsonField<String>) = apply { this.text = text }
+
+                    /** The type of the content. */
+                    fun type(type: Type) = type(JsonField.of(type))
+
+                    /** The type of the content. */
+                    fun type(type: JsonField<Type>) = apply { this.type = type }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
@@ -692,8 +692,8 @@ private constructor(
 
                     fun build(): Content =
                         Content(
-                            type,
                             text,
+                            type,
                             additionalProperties.toImmutable(),
                         )
                 }
@@ -755,17 +755,17 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is Content && type == other.type && text == other.text && additionalProperties == other.additionalProperties /* spotless:on */
+                    return /* spotless:off */ other is Content && text == other.text && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
                 }
 
                 /* spotless:off */
-                private val hashCode: Int by lazy { Objects.hash(type, text, additionalProperties) }
+                private val hashCode: Int by lazy { Objects.hash(text, type, additionalProperties) }
                 /* spotless:on */
 
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "Content{type=$type, text=$text, additionalProperties=$additionalProperties}"
+                    "Content{text=$text, type=$type, additionalProperties=$additionalProperties}"
             }
 
             override fun equals(other: Any?): Boolean {
@@ -860,15 +860,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FileSearchToolCall && id == other.id && type == other.type && fileSearch == other.fileSearch && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FileSearchToolCall && id == other.id && fileSearch == other.fileSearch && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, type, fileSearch, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, fileSearch, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "FileSearchToolCall{id=$id, type=$type, fileSearch=$fileSearch, additionalProperties=$additionalProperties}"
+        "FileSearchToolCall{id=$id, fileSearch=$fileSearch, type=$type, additionalProperties=$additionalProperties}"
 }

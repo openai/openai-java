@@ -22,22 +22,22 @@ import java.util.Objects
 class ChatCompletionNamedToolChoice
 @JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonProperty("function")
     @ExcludeMissing
     private val function: JsonField<Function> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /** The type of the tool. Currently, only `function` is supported. */
-    fun type(): Type = type.getRequired("type")
 
     fun function(): Function = function.getRequired("function")
 
     /** The type of the tool. Currently, only `function` is supported. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    fun type(): Type = type.getRequired("type")
 
     @JsonProperty("function") @ExcludeMissing fun _function() = function
+
+    /** The type of the tool. Currently, only `function` is supported. */
+    @JsonProperty("type") @ExcludeMissing fun _type() = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -47,8 +47,8 @@ private constructor(
 
     fun validate(): ChatCompletionNamedToolChoice = apply {
         if (!validated) {
-            type()
             function().validate()
+            type()
             validated = true
         }
     }
@@ -62,26 +62,26 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type> = JsonMissing.of()
         private var function: JsonField<Function> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(chatCompletionNamedToolChoice: ChatCompletionNamedToolChoice) = apply {
-            type = chatCompletionNamedToolChoice.type
             function = chatCompletionNamedToolChoice.function
+            type = chatCompletionNamedToolChoice.type
             additionalProperties = chatCompletionNamedToolChoice.additionalProperties.toMutableMap()
         }
+
+        fun function(function: Function) = function(JsonField.of(function))
+
+        fun function(function: JsonField<Function>) = apply { this.function = function }
 
         /** The type of the tool. Currently, only `function` is supported. */
         fun type(type: Type) = type(JsonField.of(type))
 
         /** The type of the tool. Currently, only `function` is supported. */
         fun type(type: JsonField<Type>) = apply { this.type = type }
-
-        fun function(function: Function) = function(JsonField.of(function))
-
-        fun function(function: JsonField<Function>) = apply { this.function = function }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -104,8 +104,8 @@ private constructor(
 
         fun build(): ChatCompletionNamedToolChoice =
             ChatCompletionNamedToolChoice(
-                type,
                 function,
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -259,15 +259,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionNamedToolChoice && type == other.type && function == other.function && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionNamedToolChoice && function == other.function && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(type, function, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(function, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ChatCompletionNamedToolChoice{type=$type, function=$function, additionalProperties=$additionalProperties}"
+        "ChatCompletionNamedToolChoice{function=$function, type=$type, additionalProperties=$additionalProperties}"
 }

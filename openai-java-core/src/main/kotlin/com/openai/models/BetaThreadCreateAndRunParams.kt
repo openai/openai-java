@@ -954,8 +954,8 @@ constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("messages") private val messages: List<Message>?,
-        @JsonProperty("tool_resources") private val toolResources: ToolResources?,
         @JsonProperty("metadata") private val metadata: JsonValue?,
+        @JsonProperty("tool_resources") private val toolResources: ToolResources?,
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -968,6 +968,14 @@ constructor(
         fun messages(): Optional<List<Message>> = Optional.ofNullable(messages)
 
         /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format. Keys can be a
+         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         */
+        @JsonProperty("metadata")
+        fun metadata(): Optional<JsonValue> = Optional.ofNullable(metadata)
+
+        /**
          * A set of resources that are made available to the assistant's tools in this thread. The
          * resources are specific to the type of tool. For example, the `code_interpreter` tool
          * requires a list of file IDs, while the `file_search` tool requires a list of vector store
@@ -975,14 +983,6 @@ constructor(
          */
         @JsonProperty("tool_resources")
         fun toolResources(): Optional<ToolResources> = Optional.ofNullable(toolResources)
-
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format. Keys can be a
-         * maximum of 64 characters long and values can be a maximum of 512 characters long.
-         */
-        @JsonProperty("metadata")
-        fun metadata(): Optional<JsonValue> = Optional.ofNullable(metadata)
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -998,15 +998,15 @@ constructor(
         class Builder {
 
             private var messages: MutableList<Message>? = null
-            private var toolResources: ToolResources? = null
             private var metadata: JsonValue? = null
+            private var toolResources: ToolResources? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(thread: Thread) = apply {
                 messages = thread.messages?.toMutableList()
-                toolResources = thread.toolResources
                 metadata = thread.metadata
+                toolResources = thread.toolResources
                 additionalProperties = thread.additionalProperties.toMutableMap()
             }
 
@@ -1027,6 +1027,13 @@ constructor(
             }
 
             /**
+             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+             * storing additional information about the object in a structured format. Keys can be a
+             * maximum of 64 characters long and values can be a maximum of 512 characters long.
+             */
+            fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
+
+            /**
              * A set of resources that are made available to the assistant's tools in this thread.
              * The resources are specific to the type of tool. For example, the `code_interpreter`
              * tool requires a list of file IDs, while the `file_search` tool requires a list of
@@ -1035,13 +1042,6 @@ constructor(
             fun toolResources(toolResources: ToolResources) = apply {
                 this.toolResources = toolResources
             }
-
-            /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format. Keys can be a
-             * maximum of 64 characters long and values can be a maximum of 512 characters long.
-             */
-            fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1065,8 +1065,8 @@ constructor(
             fun build(): Thread =
                 Thread(
                     messages?.toImmutable(),
-                    toolResources,
                     metadata,
+                    toolResources,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1075,13 +1075,16 @@ constructor(
         class Message
         @JsonCreator
         private constructor(
-            @JsonProperty("role") private val role: Role,
             @JsonProperty("content") private val content: Content,
+            @JsonProperty("role") private val role: Role,
             @JsonProperty("attachments") private val attachments: List<Attachment>?,
             @JsonProperty("metadata") private val metadata: JsonValue?,
             @JsonAnySetter
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
+
+            /** The text contents of the message. */
+            @JsonProperty("content") fun content(): Content = content
 
             /**
              * The role of the entity that is creating the message. Allowed values include:
@@ -1091,9 +1094,6 @@ constructor(
              *   insert messages from the assistant into the conversation.
              */
             @JsonProperty("role") fun role(): Role = role
-
-            /** The text contents of the message. */
-            @JsonProperty("content") fun content(): Content = content
 
             /** A list of files attached to the message, and the tools they should be added to. */
             @JsonProperty("attachments")
@@ -1120,29 +1120,20 @@ constructor(
 
             class Builder {
 
-                private var role: Role? = null
                 private var content: Content? = null
+                private var role: Role? = null
                 private var attachments: MutableList<Attachment>? = null
                 private var metadata: JsonValue? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(message: Message) = apply {
-                    role = message.role
                     content = message.content
+                    role = message.role
                     attachments = message.attachments?.toMutableList()
                     metadata = message.metadata
                     additionalProperties = message.additionalProperties.toMutableMap()
                 }
-
-                /**
-                 * The role of the entity that is creating the message. Allowed values include:
-                 * - `user`: Indicates the message is sent by an actual user and should be used in
-                 *   most cases to represent user-generated messages.
-                 * - `assistant`: Indicates the message is generated by the assistant. Use this
-                 *   value to insert messages from the assistant into the conversation.
-                 */
-                fun role(role: Role) = apply { this.role = role }
 
                 /** The text contents of the message. */
                 fun content(content: Content) = apply { this.content = content }
@@ -1160,6 +1151,15 @@ constructor(
                 fun contentOfArrayOfContentParts(
                     arrayOfContentParts: List<MessageContentPartParam>
                 ) = apply { this.content = Content.ofArrayOfContentParts(arrayOfContentParts) }
+
+                /**
+                 * The role of the entity that is creating the message. Allowed values include:
+                 * - `user`: Indicates the message is sent by an actual user and should be used in
+                 *   most cases to represent user-generated messages.
+                 * - `assistant`: Indicates the message is generated by the assistant. Use this
+                 *   value to insert messages from the assistant into the conversation.
+                 */
+                fun role(role: Role) = apply { this.role = role }
 
                 /**
                  * A list of files attached to the message, and the tools they should be added to.
@@ -1207,8 +1207,8 @@ constructor(
 
                 fun build(): Message =
                     Message(
-                        checkNotNull(role) { "`role` is required but was not set" },
                         checkNotNull(content) { "`content` is required but was not set" },
+                        checkNotNull(role) { "`role` is required but was not set" },
                         attachments?.toImmutable(),
                         metadata,
                         additionalProperties.toImmutable(),
@@ -1762,17 +1762,17 @@ constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Message && role == other.role && content == other.content && attachments == other.attachments && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is Message && content == other.content && role == other.role && attachments == other.attachments && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(role, content, attachments, metadata, additionalProperties) }
+            private val hashCode: Int by lazy { Objects.hash(content, role, attachments, metadata, additionalProperties) }
             /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Message{role=$role, content=$content, attachments=$attachments, metadata=$metadata, additionalProperties=$additionalProperties}"
+                "Message{content=$content, role=$role, attachments=$attachments, metadata=$metadata, additionalProperties=$additionalProperties}"
         }
 
         /**
@@ -2085,21 +2085,13 @@ constructor(
                 class VectorStore
                 @JsonCreator
                 private constructor(
-                    @JsonProperty("file_ids") private val fileIds: List<String>?,
                     @JsonProperty("chunking_strategy")
                     private val chunkingStrategy: FileChunkingStrategyParam?,
+                    @JsonProperty("file_ids") private val fileIds: List<String>?,
                     @JsonProperty("metadata") private val metadata: JsonValue?,
                     @JsonAnySetter
                     private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
                 ) {
-
-                    /**
-                     * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to
-                     * add to the vector store. There can be a maximum of 10000 files in a vector
-                     * store.
-                     */
-                    @JsonProperty("file_ids")
-                    fun fileIds(): Optional<List<String>> = Optional.ofNullable(fileIds)
 
                     /**
                      * The chunking strategy used to chunk the file(s). If not set, will use the
@@ -2108,6 +2100,14 @@ constructor(
                     @JsonProperty("chunking_strategy")
                     fun chunkingStrategy(): Optional<FileChunkingStrategyParam> =
                         Optional.ofNullable(chunkingStrategy)
+
+                    /**
+                     * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to
+                     * add to the vector store. There can be a maximum of 10000 files in a vector
+                     * store.
+                     */
+                    @JsonProperty("file_ids")
+                    fun fileIds(): Optional<List<String>> = Optional.ofNullable(fileIds)
 
                     /**
                      * Set of 16 key-value pairs that can be attached to a vector store. This can be
@@ -2131,36 +2131,18 @@ constructor(
 
                     class Builder {
 
-                        private var fileIds: MutableList<String>? = null
                         private var chunkingStrategy: FileChunkingStrategyParam? = null
+                        private var fileIds: MutableList<String>? = null
                         private var metadata: JsonValue? = null
                         private var additionalProperties: MutableMap<String, JsonValue> =
                             mutableMapOf()
 
                         @JvmSynthetic
                         internal fun from(vectorStore: VectorStore) = apply {
-                            fileIds = vectorStore.fileIds?.toMutableList()
                             chunkingStrategy = vectorStore.chunkingStrategy
+                            fileIds = vectorStore.fileIds?.toMutableList()
                             metadata = vectorStore.metadata
                             additionalProperties = vectorStore.additionalProperties.toMutableMap()
-                        }
-
-                        /**
-                         * A list of [file](https://platform.openai.com/docs/api-reference/files)
-                         * IDs to add to the vector store. There can be a maximum of 10000 files in
-                         * a vector store.
-                         */
-                        fun fileIds(fileIds: List<String>) = apply {
-                            this.fileIds = fileIds.toMutableList()
-                        }
-
-                        /**
-                         * A list of [file](https://platform.openai.com/docs/api-reference/files)
-                         * IDs to add to the vector store. There can be a maximum of 10000 files in
-                         * a vector store.
-                         */
-                        fun addFileId(fileId: String) = apply {
-                            fileIds = (fileIds ?: mutableListOf()).apply { add(fileId) }
                         }
 
                         /**
@@ -2191,6 +2173,24 @@ constructor(
                                 FileChunkingStrategyParam.ofStaticFileChunkingStrategyParam(
                                     staticFileChunkingStrategyParam
                                 )
+                        }
+
+                        /**
+                         * A list of [file](https://platform.openai.com/docs/api-reference/files)
+                         * IDs to add to the vector store. There can be a maximum of 10000 files in
+                         * a vector store.
+                         */
+                        fun fileIds(fileIds: List<String>) = apply {
+                            this.fileIds = fileIds.toMutableList()
+                        }
+
+                        /**
+                         * A list of [file](https://platform.openai.com/docs/api-reference/files)
+                         * IDs to add to the vector store. There can be a maximum of 10000 files in
+                         * a vector store.
+                         */
+                        fun addFileId(fileId: String) = apply {
+                            fileIds = (fileIds ?: mutableListOf()).apply { add(fileId) }
                         }
 
                         /**
@@ -2225,8 +2225,8 @@ constructor(
 
                         fun build(): VectorStore =
                             VectorStore(
-                                fileIds?.toImmutable(),
                                 chunkingStrategy,
+                                fileIds?.toImmutable(),
                                 metadata,
                                 additionalProperties.toImmutable(),
                             )
@@ -2237,17 +2237,17 @@ constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is VectorStore && fileIds == other.fileIds && chunkingStrategy == other.chunkingStrategy && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
+                        return /* spotless:off */ other is VectorStore && chunkingStrategy == other.chunkingStrategy && fileIds == other.fileIds && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
                     }
 
                     /* spotless:off */
-                    private val hashCode: Int by lazy { Objects.hash(fileIds, chunkingStrategy, metadata, additionalProperties) }
+                    private val hashCode: Int by lazy { Objects.hash(chunkingStrategy, fileIds, metadata, additionalProperties) }
                     /* spotless:on */
 
                     override fun hashCode(): Int = hashCode
 
                     override fun toString() =
-                        "VectorStore{fileIds=$fileIds, chunkingStrategy=$chunkingStrategy, metadata=$metadata, additionalProperties=$additionalProperties}"
+                        "VectorStore{chunkingStrategy=$chunkingStrategy, fileIds=$fileIds, metadata=$metadata, additionalProperties=$additionalProperties}"
                 }
 
                 override fun equals(other: Any?): Boolean {
@@ -2291,17 +2291,17 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Thread && messages == other.messages && toolResources == other.toolResources && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Thread && messages == other.messages && metadata == other.metadata && toolResources == other.toolResources && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(messages, toolResources, metadata, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(messages, metadata, toolResources, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Thread{messages=$messages, toolResources=$toolResources, metadata=$metadata, additionalProperties=$additionalProperties}"
+            "Thread{messages=$messages, metadata=$metadata, toolResources=$toolResources, additionalProperties=$additionalProperties}"
     }
 
     /**

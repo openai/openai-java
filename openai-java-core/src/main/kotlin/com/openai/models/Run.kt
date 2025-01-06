@@ -27,93 +27,81 @@ class Run
 @JsonCreator
 private constructor(
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
-    @JsonProperty("created_at")
-    @ExcludeMissing
-    private val createdAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("thread_id")
-    @ExcludeMissing
-    private val threadId: JsonField<String> = JsonMissing.of(),
     @JsonProperty("assistant_id")
     @ExcludeMissing
     private val assistantId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("status")
-    @ExcludeMissing
-    private val status: JsonField<RunStatus> = JsonMissing.of(),
-    @JsonProperty("required_action")
-    @ExcludeMissing
-    private val requiredAction: JsonField<RequiredAction> = JsonMissing.of(),
-    @JsonProperty("last_error")
-    @ExcludeMissing
-    private val lastError: JsonField<LastError> = JsonMissing.of(),
-    @JsonProperty("expires_at")
-    @ExcludeMissing
-    private val expiresAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("started_at")
-    @ExcludeMissing
-    private val startedAt: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("cancelled_at")
     @ExcludeMissing
     private val cancelledAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("failed_at")
-    @ExcludeMissing
-    private val failedAt: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("completed_at")
     @ExcludeMissing
     private val completedAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("created_at")
+    @ExcludeMissing
+    private val createdAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("expires_at")
+    @ExcludeMissing
+    private val expiresAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("failed_at")
+    @ExcludeMissing
+    private val failedAt: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("incomplete_details")
     @ExcludeMissing
     private val incompleteDetails: JsonField<IncompleteDetails> = JsonMissing.of(),
-    @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
     @JsonProperty("instructions")
     @ExcludeMissing
     private val instructions: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("last_error")
+    @ExcludeMissing
+    private val lastError: JsonField<LastError> = JsonMissing.of(),
+    @JsonProperty("max_completion_tokens")
+    @ExcludeMissing
+    private val maxCompletionTokens: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("max_prompt_tokens")
+    @ExcludeMissing
+    private val maxPromptTokens: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonValue = JsonMissing.of(),
+    @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("object")
+    @ExcludeMissing
+    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("parallel_tool_calls")
+    @ExcludeMissing
+    private val parallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
+    @JsonProperty("required_action")
+    @ExcludeMissing
+    private val requiredAction: JsonField<RequiredAction> = JsonMissing.of(),
+    @JsonProperty("response_format")
+    @ExcludeMissing
+    private val responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of(),
+    @JsonProperty("started_at")
+    @ExcludeMissing
+    private val startedAt: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("status")
+    @ExcludeMissing
+    private val status: JsonField<RunStatus> = JsonMissing.of(),
+    @JsonProperty("thread_id")
+    @ExcludeMissing
+    private val threadId: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("tool_choice")
+    @ExcludeMissing
+    private val toolChoice: JsonField<AssistantToolChoiceOption> = JsonMissing.of(),
     @JsonProperty("tools")
     @ExcludeMissing
     private val tools: JsonField<List<AssistantTool>> = JsonMissing.of(),
-    @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonValue = JsonMissing.of(),
+    @JsonProperty("truncation_strategy")
+    @ExcludeMissing
+    private val truncationStrategy: JsonField<TruncationStrategy> = JsonMissing.of(),
     @JsonProperty("usage") @ExcludeMissing private val usage: JsonField<Usage> = JsonMissing.of(),
     @JsonProperty("temperature")
     @ExcludeMissing
     private val temperature: JsonField<Double> = JsonMissing.of(),
     @JsonProperty("top_p") @ExcludeMissing private val topP: JsonField<Double> = JsonMissing.of(),
-    @JsonProperty("max_prompt_tokens")
-    @ExcludeMissing
-    private val maxPromptTokens: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("max_completion_tokens")
-    @ExcludeMissing
-    private val maxCompletionTokens: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("truncation_strategy")
-    @ExcludeMissing
-    private val truncationStrategy: JsonField<TruncationStrategy> = JsonMissing.of(),
-    @JsonProperty("tool_choice")
-    @ExcludeMissing
-    private val toolChoice: JsonField<AssistantToolChoiceOption> = JsonMissing.of(),
-    @JsonProperty("parallel_tool_calls")
-    @ExcludeMissing
-    private val parallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
-    @JsonProperty("response_format")
-    @ExcludeMissing
-    private val responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The identifier, which can be referenced in API endpoints. */
     fun id(): String = id.getRequired("id")
-
-    /** The object type, which is always `thread.run`. */
-    fun object_(): Object = object_.getRequired("object")
-
-    /** The Unix timestamp (in seconds) for when the run was created. */
-    fun createdAt(): Long = createdAt.getRequired("created_at")
-
-    /**
-     * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was
-     * executed on as a part of this run.
-     */
-    fun threadId(): String = threadId.getRequired("thread_id")
 
     /**
      * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for
@@ -121,45 +109,24 @@ private constructor(
      */
     fun assistantId(): String = assistantId.getRequired("assistant_id")
 
-    /**
-     * The status of the run, which can be either `queued`, `in_progress`, `requires_action`,
-     * `cancelling`, `cancelled`, `failed`, `completed`, `incomplete`, or `expired`.
-     */
-    fun status(): RunStatus = status.getRequired("status")
-
-    /**
-     * Details on the action required to continue the run. Will be `null` if no action is required.
-     */
-    fun requiredAction(): Optional<RequiredAction> =
-        Optional.ofNullable(requiredAction.getNullable("required_action"))
-
-    /** The last error associated with this run. Will be `null` if there are no errors. */
-    fun lastError(): Optional<LastError> = Optional.ofNullable(lastError.getNullable("last_error"))
-
-    /** The Unix timestamp (in seconds) for when the run will expire. */
-    fun expiresAt(): Optional<Long> = Optional.ofNullable(expiresAt.getNullable("expires_at"))
-
-    /** The Unix timestamp (in seconds) for when the run was started. */
-    fun startedAt(): Optional<Long> = Optional.ofNullable(startedAt.getNullable("started_at"))
-
     /** The Unix timestamp (in seconds) for when the run was cancelled. */
     fun cancelledAt(): Optional<Long> = Optional.ofNullable(cancelledAt.getNullable("cancelled_at"))
-
-    /** The Unix timestamp (in seconds) for when the run failed. */
-    fun failedAt(): Optional<Long> = Optional.ofNullable(failedAt.getNullable("failed_at"))
 
     /** The Unix timestamp (in seconds) for when the run was completed. */
     fun completedAt(): Optional<Long> = Optional.ofNullable(completedAt.getNullable("completed_at"))
 
+    /** The Unix timestamp (in seconds) for when the run was created. */
+    fun createdAt(): Long = createdAt.getRequired("created_at")
+
+    /** The Unix timestamp (in seconds) for when the run will expire. */
+    fun expiresAt(): Optional<Long> = Optional.ofNullable(expiresAt.getNullable("expires_at"))
+
+    /** The Unix timestamp (in seconds) for when the run failed. */
+    fun failedAt(): Optional<Long> = Optional.ofNullable(failedAt.getNullable("failed_at"))
+
     /** Details on why the run is incomplete. Will be `null` if the run is not incomplete. */
     fun incompleteDetails(): Optional<IncompleteDetails> =
         Optional.ofNullable(incompleteDetails.getNullable("incomplete_details"))
-
-    /**
-     * The model that the [assistant](https://platform.openai.com/docs/api-reference/assistants)
-     * used for this run.
-     */
-    fun model(): String = model.getRequired("model")
 
     /**
      * The instructions that the
@@ -167,30 +134,8 @@ private constructor(
      */
     fun instructions(): String = instructions.getRequired("instructions")
 
-    /**
-     * The list of tools that the
-     * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
-     */
-    fun tools(): List<AssistantTool> = tools.getRequired("tools")
-
-    /**
-     * Usage statistics related to the run. This value will be `null` if the run is not in a
-     * terminal state (i.e. `in_progress`, `queued`, etc.).
-     */
-    fun usage(): Optional<Usage> = Optional.ofNullable(usage.getNullable("usage"))
-
-    /** The sampling temperature used for this run. If not set, defaults to 1. */
-    fun temperature(): Optional<Double> =
-        Optional.ofNullable(temperature.getNullable("temperature"))
-
-    /** The nucleus sampling value used for this run. If not set, defaults to 1. */
-    fun topP(): Optional<Double> = Optional.ofNullable(topP.getNullable("top_p"))
-
-    /**
-     * The maximum number of prompt tokens specified to have been used over the course of the run.
-     */
-    fun maxPromptTokens(): Optional<Long> =
-        Optional.ofNullable(maxPromptTokens.getNullable("max_prompt_tokens"))
+    /** The last error associated with this run. Will be `null` if there are no errors. */
+    fun lastError(): Optional<LastError> = Optional.ofNullable(lastError.getNullable("last_error"))
 
     /**
      * The maximum number of completion tokens specified to have been used over the course of the
@@ -200,22 +145,19 @@ private constructor(
         Optional.ofNullable(maxCompletionTokens.getNullable("max_completion_tokens"))
 
     /**
-     * Controls for how a thread will be truncated prior to the run. Use this to control the intial
-     * context window of the run.
+     * The maximum number of prompt tokens specified to have been used over the course of the run.
      */
-    fun truncationStrategy(): Optional<TruncationStrategy> =
-        Optional.ofNullable(truncationStrategy.getNullable("truncation_strategy"))
+    fun maxPromptTokens(): Optional<Long> =
+        Optional.ofNullable(maxPromptTokens.getNullable("max_prompt_tokens"))
 
     /**
-     * Controls which (if any) tool is called by the model. `none` means the model will not call any
-     * tools and instead generates a message. `auto` is the default value and means the model can
-     * pick between generating a message or calling one or more tools. `required` means the model
-     * must call one or more tools before responding to the user. Specifying a particular tool like
-     * `{"type": "file_search"}` or `{"type": "function", "function": {"name": "my_function"}}`
-     * forces the model to call that tool.
+     * The model that the [assistant](https://platform.openai.com/docs/api-reference/assistants)
+     * used for this run.
      */
-    fun toolChoice(): Optional<AssistantToolChoiceOption> =
-        Optional.ofNullable(toolChoice.getNullable("tool_choice"))
+    fun model(): String = model.getRequired("model")
+
+    /** The object type, which is always `thread.run`. */
+    fun object_(): Object = object_.getRequired("object")
 
     /**
      * Whether to enable
@@ -223,6 +165,12 @@ private constructor(
      * during tool use.
      */
     fun parallelToolCalls(): Boolean = parallelToolCalls.getRequired("parallel_tool_calls")
+
+    /**
+     * Details on the action required to continue the run. Will be `null` if no action is required.
+     */
+    fun requiredAction(): Optional<RequiredAction> =
+        Optional.ofNullable(requiredAction.getNullable("required_action"))
 
     /**
      * Specifies the format that the model must output. Compatible with
@@ -247,20 +195,60 @@ private constructor(
     fun responseFormat(): Optional<AssistantResponseFormatOption> =
         Optional.ofNullable(responseFormat.getNullable("response_format"))
 
-    /** The identifier, which can be referenced in API endpoints. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    /** The Unix timestamp (in seconds) for when the run was started. */
+    fun startedAt(): Optional<Long> = Optional.ofNullable(startedAt.getNullable("started_at"))
 
-    /** The object type, which is always `thread.run`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
-
-    /** The Unix timestamp (in seconds) for when the run was created. */
-    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
+    /**
+     * The status of the run, which can be either `queued`, `in_progress`, `requires_action`,
+     * `cancelling`, `cancelled`, `failed`, `completed`, `incomplete`, or `expired`.
+     */
+    fun status(): RunStatus = status.getRequired("status")
 
     /**
      * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was
      * executed on as a part of this run.
      */
-    @JsonProperty("thread_id") @ExcludeMissing fun _threadId() = threadId
+    fun threadId(): String = threadId.getRequired("thread_id")
+
+    /**
+     * Controls which (if any) tool is called by the model. `none` means the model will not call any
+     * tools and instead generates a message. `auto` is the default value and means the model can
+     * pick between generating a message or calling one or more tools. `required` means the model
+     * must call one or more tools before responding to the user. Specifying a particular tool like
+     * `{"type": "file_search"}` or `{"type": "function", "function": {"name": "my_function"}}`
+     * forces the model to call that tool.
+     */
+    fun toolChoice(): Optional<AssistantToolChoiceOption> =
+        Optional.ofNullable(toolChoice.getNullable("tool_choice"))
+
+    /**
+     * The list of tools that the
+     * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
+     */
+    fun tools(): List<AssistantTool> = tools.getRequired("tools")
+
+    /**
+     * Controls for how a thread will be truncated prior to the run. Use this to control the intial
+     * context window of the run.
+     */
+    fun truncationStrategy(): Optional<TruncationStrategy> =
+        Optional.ofNullable(truncationStrategy.getNullable("truncation_strategy"))
+
+    /**
+     * Usage statistics related to the run. This value will be `null` if the run is not in a
+     * terminal state (i.e. `in_progress`, `queued`, etc.).
+     */
+    fun usage(): Optional<Usage> = Optional.ofNullable(usage.getNullable("usage"))
+
+    /** The sampling temperature used for this run. If not set, defaults to 1. */
+    fun temperature(): Optional<Double> =
+        Optional.ofNullable(temperature.getNullable("temperature"))
+
+    /** The nucleus sampling value used for this run. If not set, defaults to 1. */
+    fun topP(): Optional<Double> = Optional.ofNullable(topP.getNullable("top_p"))
+
+    /** The identifier, which can be referenced in API endpoints. */
+    @JsonProperty("id") @ExcludeMissing fun _id() = id
 
     /**
      * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for
@@ -268,43 +256,23 @@ private constructor(
      */
     @JsonProperty("assistant_id") @ExcludeMissing fun _assistantId() = assistantId
 
-    /**
-     * The status of the run, which can be either `queued`, `in_progress`, `requires_action`,
-     * `cancelling`, `cancelled`, `failed`, `completed`, `incomplete`, or `expired`.
-     */
-    @JsonProperty("status") @ExcludeMissing fun _status() = status
-
-    /**
-     * Details on the action required to continue the run. Will be `null` if no action is required.
-     */
-    @JsonProperty("required_action") @ExcludeMissing fun _requiredAction() = requiredAction
-
-    /** The last error associated with this run. Will be `null` if there are no errors. */
-    @JsonProperty("last_error") @ExcludeMissing fun _lastError() = lastError
-
-    /** The Unix timestamp (in seconds) for when the run will expire. */
-    @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt() = expiresAt
-
-    /** The Unix timestamp (in seconds) for when the run was started. */
-    @JsonProperty("started_at") @ExcludeMissing fun _startedAt() = startedAt
-
     /** The Unix timestamp (in seconds) for when the run was cancelled. */
     @JsonProperty("cancelled_at") @ExcludeMissing fun _cancelledAt() = cancelledAt
-
-    /** The Unix timestamp (in seconds) for when the run failed. */
-    @JsonProperty("failed_at") @ExcludeMissing fun _failedAt() = failedAt
 
     /** The Unix timestamp (in seconds) for when the run was completed. */
     @JsonProperty("completed_at") @ExcludeMissing fun _completedAt() = completedAt
 
+    /** The Unix timestamp (in seconds) for when the run was created. */
+    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
+
+    /** The Unix timestamp (in seconds) for when the run will expire. */
+    @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt() = expiresAt
+
+    /** The Unix timestamp (in seconds) for when the run failed. */
+    @JsonProperty("failed_at") @ExcludeMissing fun _failedAt() = failedAt
+
     /** Details on why the run is incomplete. Will be `null` if the run is not incomplete. */
     @JsonProperty("incomplete_details") @ExcludeMissing fun _incompleteDetails() = incompleteDetails
-
-    /**
-     * The model that the [assistant](https://platform.openai.com/docs/api-reference/assistants)
-     * used for this run.
-     */
-    @JsonProperty("model") @ExcludeMissing fun _model() = model
 
     /**
      * The instructions that the
@@ -312,35 +280,8 @@ private constructor(
      */
     @JsonProperty("instructions") @ExcludeMissing fun _instructions() = instructions
 
-    /**
-     * The list of tools that the
-     * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
-     */
-    @JsonProperty("tools") @ExcludeMissing fun _tools() = tools
-
-    /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format. Keys can be a maximum of 64
-     * characters long and values can be a maximum of 512 characters long.
-     */
-    @JsonProperty("metadata") @ExcludeMissing fun _metadata() = metadata
-
-    /**
-     * Usage statistics related to the run. This value will be `null` if the run is not in a
-     * terminal state (i.e. `in_progress`, `queued`, etc.).
-     */
-    @JsonProperty("usage") @ExcludeMissing fun _usage() = usage
-
-    /** The sampling temperature used for this run. If not set, defaults to 1. */
-    @JsonProperty("temperature") @ExcludeMissing fun _temperature() = temperature
-
-    /** The nucleus sampling value used for this run. If not set, defaults to 1. */
-    @JsonProperty("top_p") @ExcludeMissing fun _topP() = topP
-
-    /**
-     * The maximum number of prompt tokens specified to have been used over the course of the run.
-     */
-    @JsonProperty("max_prompt_tokens") @ExcludeMissing fun _maxPromptTokens() = maxPromptTokens
+    /** The last error associated with this run. Will be `null` if there are no errors. */
+    @JsonProperty("last_error") @ExcludeMissing fun _lastError() = lastError
 
     /**
      * The maximum number of completion tokens specified to have been used over the course of the
@@ -351,22 +292,25 @@ private constructor(
     fun _maxCompletionTokens() = maxCompletionTokens
 
     /**
-     * Controls for how a thread will be truncated prior to the run. Use this to control the intial
-     * context window of the run.
+     * The maximum number of prompt tokens specified to have been used over the course of the run.
      */
-    @JsonProperty("truncation_strategy")
-    @ExcludeMissing
-    fun _truncationStrategy() = truncationStrategy
+    @JsonProperty("max_prompt_tokens") @ExcludeMissing fun _maxPromptTokens() = maxPromptTokens
 
     /**
-     * Controls which (if any) tool is called by the model. `none` means the model will not call any
-     * tools and instead generates a message. `auto` is the default value and means the model can
-     * pick between generating a message or calling one or more tools. `required` means the model
-     * must call one or more tools before responding to the user. Specifying a particular tool like
-     * `{"type": "file_search"}` or `{"type": "function", "function": {"name": "my_function"}}`
-     * forces the model to call that tool.
+     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
+     * additional information about the object in a structured format. Keys can be a maximum of 64
+     * characters long and values can be a maximum of 512 characters long.
      */
-    @JsonProperty("tool_choice") @ExcludeMissing fun _toolChoice() = toolChoice
+    @JsonProperty("metadata") @ExcludeMissing fun _metadata() = metadata
+
+    /**
+     * The model that the [assistant](https://platform.openai.com/docs/api-reference/assistants)
+     * used for this run.
+     */
+    @JsonProperty("model") @ExcludeMissing fun _model() = model
+
+    /** The object type, which is always `thread.run`. */
+    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
 
     /**
      * Whether to enable
@@ -376,6 +320,11 @@ private constructor(
     @JsonProperty("parallel_tool_calls")
     @ExcludeMissing
     fun _parallelToolCalls() = parallelToolCalls
+
+    /**
+     * Details on the action required to continue the run. Will be `null` if no action is required.
+     */
+    @JsonProperty("required_action") @ExcludeMissing fun _requiredAction() = requiredAction
 
     /**
      * Specifies the format that the model must output. Compatible with
@@ -399,6 +348,57 @@ private constructor(
      */
     @JsonProperty("response_format") @ExcludeMissing fun _responseFormat() = responseFormat
 
+    /** The Unix timestamp (in seconds) for when the run was started. */
+    @JsonProperty("started_at") @ExcludeMissing fun _startedAt() = startedAt
+
+    /**
+     * The status of the run, which can be either `queued`, `in_progress`, `requires_action`,
+     * `cancelling`, `cancelled`, `failed`, `completed`, `incomplete`, or `expired`.
+     */
+    @JsonProperty("status") @ExcludeMissing fun _status() = status
+
+    /**
+     * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was
+     * executed on as a part of this run.
+     */
+    @JsonProperty("thread_id") @ExcludeMissing fun _threadId() = threadId
+
+    /**
+     * Controls which (if any) tool is called by the model. `none` means the model will not call any
+     * tools and instead generates a message. `auto` is the default value and means the model can
+     * pick between generating a message or calling one or more tools. `required` means the model
+     * must call one or more tools before responding to the user. Specifying a particular tool like
+     * `{"type": "file_search"}` or `{"type": "function", "function": {"name": "my_function"}}`
+     * forces the model to call that tool.
+     */
+    @JsonProperty("tool_choice") @ExcludeMissing fun _toolChoice() = toolChoice
+
+    /**
+     * The list of tools that the
+     * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
+     */
+    @JsonProperty("tools") @ExcludeMissing fun _tools() = tools
+
+    /**
+     * Controls for how a thread will be truncated prior to the run. Use this to control the intial
+     * context window of the run.
+     */
+    @JsonProperty("truncation_strategy")
+    @ExcludeMissing
+    fun _truncationStrategy() = truncationStrategy
+
+    /**
+     * Usage statistics related to the run. This value will be `null` if the run is not in a
+     * terminal state (i.e. `in_progress`, `queued`, etc.).
+     */
+    @JsonProperty("usage") @ExcludeMissing fun _usage() = usage
+
+    /** The sampling temperature used for this run. If not set, defaults to 1. */
+    @JsonProperty("temperature") @ExcludeMissing fun _temperature() = temperature
+
+    /** The nucleus sampling value used for this run. If not set, defaults to 1. */
+    @JsonProperty("top_p") @ExcludeMissing fun _topP() = topP
+
     @JsonAnyGetter
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -408,31 +408,31 @@ private constructor(
     fun validate(): Run = apply {
         if (!validated) {
             id()
-            object_()
-            createdAt()
-            threadId()
             assistantId()
-            status()
-            requiredAction().map { it.validate() }
-            lastError().map { it.validate() }
-            expiresAt()
-            startedAt()
             cancelledAt()
-            failedAt()
             completedAt()
+            createdAt()
+            expiresAt()
+            failedAt()
             incompleteDetails().map { it.validate() }
-            model()
             instructions()
+            lastError().map { it.validate() }
+            maxCompletionTokens()
+            maxPromptTokens()
+            model()
+            object_()
+            parallelToolCalls()
+            requiredAction().map { it.validate() }
+            responseFormat()
+            startedAt()
+            status()
+            threadId()
+            toolChoice()
             tools()
+            truncationStrategy().map { it.validate() }
             usage().map { it.validate() }
             temperature()
             topP()
-            maxPromptTokens()
-            maxCompletionTokens()
-            truncationStrategy().map { it.validate() }
-            toolChoice()
-            parallelToolCalls()
-            responseFormat()
             validated = true
         }
     }
@@ -447,63 +447,63 @@ private constructor(
     class Builder {
 
         private var id: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
-        private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var threadId: JsonField<String> = JsonMissing.of()
         private var assistantId: JsonField<String> = JsonMissing.of()
-        private var status: JsonField<RunStatus> = JsonMissing.of()
-        private var requiredAction: JsonField<RequiredAction> = JsonMissing.of()
-        private var lastError: JsonField<LastError> = JsonMissing.of()
-        private var expiresAt: JsonField<Long> = JsonMissing.of()
-        private var startedAt: JsonField<Long> = JsonMissing.of()
         private var cancelledAt: JsonField<Long> = JsonMissing.of()
-        private var failedAt: JsonField<Long> = JsonMissing.of()
         private var completedAt: JsonField<Long> = JsonMissing.of()
+        private var createdAt: JsonField<Long> = JsonMissing.of()
+        private var expiresAt: JsonField<Long> = JsonMissing.of()
+        private var failedAt: JsonField<Long> = JsonMissing.of()
         private var incompleteDetails: JsonField<IncompleteDetails> = JsonMissing.of()
-        private var model: JsonField<String> = JsonMissing.of()
         private var instructions: JsonField<String> = JsonMissing.of()
-        private var tools: JsonField<List<AssistantTool>> = JsonMissing.of()
+        private var lastError: JsonField<LastError> = JsonMissing.of()
+        private var maxCompletionTokens: JsonField<Long> = JsonMissing.of()
+        private var maxPromptTokens: JsonField<Long> = JsonMissing.of()
         private var metadata: JsonValue = JsonMissing.of()
+        private var model: JsonField<String> = JsonMissing.of()
+        private var object_: JsonField<Object> = JsonMissing.of()
+        private var parallelToolCalls: JsonField<Boolean> = JsonMissing.of()
+        private var requiredAction: JsonField<RequiredAction> = JsonMissing.of()
+        private var responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of()
+        private var startedAt: JsonField<Long> = JsonMissing.of()
+        private var status: JsonField<RunStatus> = JsonMissing.of()
+        private var threadId: JsonField<String> = JsonMissing.of()
+        private var toolChoice: JsonField<AssistantToolChoiceOption> = JsonMissing.of()
+        private var tools: JsonField<List<AssistantTool>> = JsonMissing.of()
+        private var truncationStrategy: JsonField<TruncationStrategy> = JsonMissing.of()
         private var usage: JsonField<Usage> = JsonMissing.of()
         private var temperature: JsonField<Double> = JsonMissing.of()
         private var topP: JsonField<Double> = JsonMissing.of()
-        private var maxPromptTokens: JsonField<Long> = JsonMissing.of()
-        private var maxCompletionTokens: JsonField<Long> = JsonMissing.of()
-        private var truncationStrategy: JsonField<TruncationStrategy> = JsonMissing.of()
-        private var toolChoice: JsonField<AssistantToolChoiceOption> = JsonMissing.of()
-        private var parallelToolCalls: JsonField<Boolean> = JsonMissing.of()
-        private var responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(run: Run) = apply {
             id = run.id
-            object_ = run.object_
-            createdAt = run.createdAt
-            threadId = run.threadId
             assistantId = run.assistantId
-            status = run.status
-            requiredAction = run.requiredAction
-            lastError = run.lastError
-            expiresAt = run.expiresAt
-            startedAt = run.startedAt
             cancelledAt = run.cancelledAt
-            failedAt = run.failedAt
             completedAt = run.completedAt
+            createdAt = run.createdAt
+            expiresAt = run.expiresAt
+            failedAt = run.failedAt
             incompleteDetails = run.incompleteDetails
-            model = run.model
             instructions = run.instructions
-            tools = run.tools
+            lastError = run.lastError
+            maxCompletionTokens = run.maxCompletionTokens
+            maxPromptTokens = run.maxPromptTokens
             metadata = run.metadata
+            model = run.model
+            object_ = run.object_
+            parallelToolCalls = run.parallelToolCalls
+            requiredAction = run.requiredAction
+            responseFormat = run.responseFormat
+            startedAt = run.startedAt
+            status = run.status
+            threadId = run.threadId
+            toolChoice = run.toolChoice
+            tools = run.tools
+            truncationStrategy = run.truncationStrategy
             usage = run.usage
             temperature = run.temperature
             topP = run.topP
-            maxPromptTokens = run.maxPromptTokens
-            maxCompletionTokens = run.maxCompletionTokens
-            truncationStrategy = run.truncationStrategy
-            toolChoice = run.toolChoice
-            parallelToolCalls = run.parallelToolCalls
-            responseFormat = run.responseFormat
             additionalProperties = run.additionalProperties.toMutableMap()
         }
 
@@ -512,30 +512,6 @@ private constructor(
 
         /** The identifier, which can be referenced in API endpoints. */
         fun id(id: JsonField<String>) = apply { this.id = id }
-
-        /** The object type, which is always `thread.run`. */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always `thread.run`. */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
-
-        /** The Unix timestamp (in seconds) for when the run was created. */
-        fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
-
-        /** The Unix timestamp (in seconds) for when the run was created. */
-        fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
-
-        /**
-         * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was
-         * executed on as a part of this run.
-         */
-        fun threadId(threadId: String) = threadId(JsonField.of(threadId))
-
-        /**
-         * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was
-         * executed on as a part of this run.
-         */
-        fun threadId(threadId: JsonField<String>) = apply { this.threadId = threadId }
 
         /**
          * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) used
@@ -549,38 +525,23 @@ private constructor(
          */
         fun assistantId(assistantId: JsonField<String>) = apply { this.assistantId = assistantId }
 
-        /**
-         * The status of the run, which can be either `queued`, `in_progress`, `requires_action`,
-         * `cancelling`, `cancelled`, `failed`, `completed`, `incomplete`, or `expired`.
-         */
-        fun status(status: RunStatus) = status(JsonField.of(status))
+        /** The Unix timestamp (in seconds) for when the run was cancelled. */
+        fun cancelledAt(cancelledAt: Long) = cancelledAt(JsonField.of(cancelledAt))
 
-        /**
-         * The status of the run, which can be either `queued`, `in_progress`, `requires_action`,
-         * `cancelling`, `cancelled`, `failed`, `completed`, `incomplete`, or `expired`.
-         */
-        fun status(status: JsonField<RunStatus>) = apply { this.status = status }
+        /** The Unix timestamp (in seconds) for when the run was cancelled. */
+        fun cancelledAt(cancelledAt: JsonField<Long>) = apply { this.cancelledAt = cancelledAt }
 
-        /**
-         * Details on the action required to continue the run. Will be `null` if no action is
-         * required.
-         */
-        fun requiredAction(requiredAction: RequiredAction) =
-            requiredAction(JsonField.of(requiredAction))
+        /** The Unix timestamp (in seconds) for when the run was completed. */
+        fun completedAt(completedAt: Long) = completedAt(JsonField.of(completedAt))
 
-        /**
-         * Details on the action required to continue the run. Will be `null` if no action is
-         * required.
-         */
-        fun requiredAction(requiredAction: JsonField<RequiredAction>) = apply {
-            this.requiredAction = requiredAction
-        }
+        /** The Unix timestamp (in seconds) for when the run was completed. */
+        fun completedAt(completedAt: JsonField<Long>) = apply { this.completedAt = completedAt }
 
-        /** The last error associated with this run. Will be `null` if there are no errors. */
-        fun lastError(lastError: LastError) = lastError(JsonField.of(lastError))
+        /** The Unix timestamp (in seconds) for when the run was created. */
+        fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
-        /** The last error associated with this run. Will be `null` if there are no errors. */
-        fun lastError(lastError: JsonField<LastError>) = apply { this.lastError = lastError }
+        /** The Unix timestamp (in seconds) for when the run was created. */
+        fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /** The Unix timestamp (in seconds) for when the run will expire. */
         fun expiresAt(expiresAt: Long) = expiresAt(JsonField.of(expiresAt))
@@ -588,29 +549,11 @@ private constructor(
         /** The Unix timestamp (in seconds) for when the run will expire. */
         fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
 
-        /** The Unix timestamp (in seconds) for when the run was started. */
-        fun startedAt(startedAt: Long) = startedAt(JsonField.of(startedAt))
-
-        /** The Unix timestamp (in seconds) for when the run was started. */
-        fun startedAt(startedAt: JsonField<Long>) = apply { this.startedAt = startedAt }
-
-        /** The Unix timestamp (in seconds) for when the run was cancelled. */
-        fun cancelledAt(cancelledAt: Long) = cancelledAt(JsonField.of(cancelledAt))
-
-        /** The Unix timestamp (in seconds) for when the run was cancelled. */
-        fun cancelledAt(cancelledAt: JsonField<Long>) = apply { this.cancelledAt = cancelledAt }
-
         /** The Unix timestamp (in seconds) for when the run failed. */
         fun failedAt(failedAt: Long) = failedAt(JsonField.of(failedAt))
 
         /** The Unix timestamp (in seconds) for when the run failed. */
         fun failedAt(failedAt: JsonField<Long>) = apply { this.failedAt = failedAt }
-
-        /** The Unix timestamp (in seconds) for when the run was completed. */
-        fun completedAt(completedAt: Long) = completedAt(JsonField.of(completedAt))
-
-        /** The Unix timestamp (in seconds) for when the run was completed. */
-        fun completedAt(completedAt: JsonField<Long>) = apply { this.completedAt = completedAt }
 
         /** Details on why the run is incomplete. Will be `null` if the run is not incomplete. */
         fun incompleteDetails(incompleteDetails: IncompleteDetails) =
@@ -620,18 +563,6 @@ private constructor(
         fun incompleteDetails(incompleteDetails: JsonField<IncompleteDetails>) = apply {
             this.incompleteDetails = incompleteDetails
         }
-
-        /**
-         * The model that the [assistant](https://platform.openai.com/docs/api-reference/assistants)
-         * used for this run.
-         */
-        fun model(model: String) = model(JsonField.of(model))
-
-        /**
-         * The model that the [assistant](https://platform.openai.com/docs/api-reference/assistants)
-         * used for this run.
-         */
-        fun model(model: JsonField<String>) = apply { this.model = model }
 
         /**
          * The instructions that the
@@ -647,62 +578,11 @@ private constructor(
             this.instructions = instructions
         }
 
-        /**
-         * The list of tools that the
-         * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
-         */
-        fun tools(tools: List<AssistantTool>) = tools(JsonField.of(tools))
+        /** The last error associated with this run. Will be `null` if there are no errors. */
+        fun lastError(lastError: LastError) = lastError(JsonField.of(lastError))
 
-        /**
-         * The list of tools that the
-         * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
-         */
-        fun tools(tools: JsonField<List<AssistantTool>>) = apply { this.tools = tools }
-
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format. Keys can be a
-         * maximum of 64 characters long and values can be a maximum of 512 characters long.
-         */
-        fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
-
-        /**
-         * Usage statistics related to the run. This value will be `null` if the run is not in a
-         * terminal state (i.e. `in_progress`, `queued`, etc.).
-         */
-        fun usage(usage: Usage) = usage(JsonField.of(usage))
-
-        /**
-         * Usage statistics related to the run. This value will be `null` if the run is not in a
-         * terminal state (i.e. `in_progress`, `queued`, etc.).
-         */
-        fun usage(usage: JsonField<Usage>) = apply { this.usage = usage }
-
-        /** The sampling temperature used for this run. If not set, defaults to 1. */
-        fun temperature(temperature: Double) = temperature(JsonField.of(temperature))
-
-        /** The sampling temperature used for this run. If not set, defaults to 1. */
-        fun temperature(temperature: JsonField<Double>) = apply { this.temperature = temperature }
-
-        /** The nucleus sampling value used for this run. If not set, defaults to 1. */
-        fun topP(topP: Double) = topP(JsonField.of(topP))
-
-        /** The nucleus sampling value used for this run. If not set, defaults to 1. */
-        fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
-
-        /**
-         * The maximum number of prompt tokens specified to have been used over the course of the
-         * run.
-         */
-        fun maxPromptTokens(maxPromptTokens: Long) = maxPromptTokens(JsonField.of(maxPromptTokens))
-
-        /**
-         * The maximum number of prompt tokens specified to have been used over the course of the
-         * run.
-         */
-        fun maxPromptTokens(maxPromptTokens: JsonField<Long>) = apply {
-            this.maxPromptTokens = maxPromptTokens
-        }
+        /** The last error associated with this run. Will be `null` if there are no errors. */
+        fun lastError(lastError: JsonField<LastError>) = apply { this.lastError = lastError }
 
         /**
          * The maximum number of completion tokens specified to have been used over the course of
@@ -720,41 +600,43 @@ private constructor(
         }
 
         /**
-         * Controls for how a thread will be truncated prior to the run. Use this to control the
-         * intial context window of the run.
+         * The maximum number of prompt tokens specified to have been used over the course of the
+         * run.
          */
-        fun truncationStrategy(truncationStrategy: TruncationStrategy) =
-            truncationStrategy(JsonField.of(truncationStrategy))
+        fun maxPromptTokens(maxPromptTokens: Long) = maxPromptTokens(JsonField.of(maxPromptTokens))
 
         /**
-         * Controls for how a thread will be truncated prior to the run. Use this to control the
-         * intial context window of the run.
+         * The maximum number of prompt tokens specified to have been used over the course of the
+         * run.
          */
-        fun truncationStrategy(truncationStrategy: JsonField<TruncationStrategy>) = apply {
-            this.truncationStrategy = truncationStrategy
+        fun maxPromptTokens(maxPromptTokens: JsonField<Long>) = apply {
+            this.maxPromptTokens = maxPromptTokens
         }
 
         /**
-         * Controls which (if any) tool is called by the model. `none` means the model will not call
-         * any tools and instead generates a message. `auto` is the default value and means the
-         * model can pick between generating a message or calling one or more tools. `required`
-         * means the model must call one or more tools before responding to the user. Specifying a
-         * particular tool like `{"type": "file_search"}` or `{"type": "function", "function":
-         * {"name": "my_function"}}` forces the model to call that tool.
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format. Keys can be a
+         * maximum of 64 characters long and values can be a maximum of 512 characters long.
          */
-        fun toolChoice(toolChoice: AssistantToolChoiceOption) = toolChoice(JsonField.of(toolChoice))
+        fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
         /**
-         * Controls which (if any) tool is called by the model. `none` means the model will not call
-         * any tools and instead generates a message. `auto` is the default value and means the
-         * model can pick between generating a message or calling one or more tools. `required`
-         * means the model must call one or more tools before responding to the user. Specifying a
-         * particular tool like `{"type": "file_search"}` or `{"type": "function", "function":
-         * {"name": "my_function"}}` forces the model to call that tool.
+         * The model that the [assistant](https://platform.openai.com/docs/api-reference/assistants)
+         * used for this run.
          */
-        fun toolChoice(toolChoice: JsonField<AssistantToolChoiceOption>) = apply {
-            this.toolChoice = toolChoice
-        }
+        fun model(model: String) = model(JsonField.of(model))
+
+        /**
+         * The model that the [assistant](https://platform.openai.com/docs/api-reference/assistants)
+         * used for this run.
+         */
+        fun model(model: JsonField<String>) = apply { this.model = model }
+
+        /** The object type, which is always `thread.run`. */
+        fun object_(object_: Object) = object_(JsonField.of(object_))
+
+        /** The object type, which is always `thread.run`. */
+        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
 
         /**
          * Whether to enable
@@ -771,6 +653,21 @@ private constructor(
          */
         fun parallelToolCalls(parallelToolCalls: JsonField<Boolean>) = apply {
             this.parallelToolCalls = parallelToolCalls
+        }
+
+        /**
+         * Details on the action required to continue the run. Will be `null` if no action is
+         * required.
+         */
+        fun requiredAction(requiredAction: RequiredAction) =
+            requiredAction(JsonField.of(requiredAction))
+
+        /**
+         * Details on the action required to continue the run. Will be `null` if no action is
+         * required.
+         */
+        fun requiredAction(requiredAction: JsonField<RequiredAction>) = apply {
+            this.requiredAction = requiredAction
         }
 
         /**
@@ -820,6 +717,109 @@ private constructor(
             this.responseFormat = responseFormat
         }
 
+        /** The Unix timestamp (in seconds) for when the run was started. */
+        fun startedAt(startedAt: Long) = startedAt(JsonField.of(startedAt))
+
+        /** The Unix timestamp (in seconds) for when the run was started. */
+        fun startedAt(startedAt: JsonField<Long>) = apply { this.startedAt = startedAt }
+
+        /**
+         * The status of the run, which can be either `queued`, `in_progress`, `requires_action`,
+         * `cancelling`, `cancelled`, `failed`, `completed`, `incomplete`, or `expired`.
+         */
+        fun status(status: RunStatus) = status(JsonField.of(status))
+
+        /**
+         * The status of the run, which can be either `queued`, `in_progress`, `requires_action`,
+         * `cancelling`, `cancelled`, `failed`, `completed`, `incomplete`, or `expired`.
+         */
+        fun status(status: JsonField<RunStatus>) = apply { this.status = status }
+
+        /**
+         * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was
+         * executed on as a part of this run.
+         */
+        fun threadId(threadId: String) = threadId(JsonField.of(threadId))
+
+        /**
+         * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was
+         * executed on as a part of this run.
+         */
+        fun threadId(threadId: JsonField<String>) = apply { this.threadId = threadId }
+
+        /**
+         * Controls which (if any) tool is called by the model. `none` means the model will not call
+         * any tools and instead generates a message. `auto` is the default value and means the
+         * model can pick between generating a message or calling one or more tools. `required`
+         * means the model must call one or more tools before responding to the user. Specifying a
+         * particular tool like `{"type": "file_search"}` or `{"type": "function", "function":
+         * {"name": "my_function"}}` forces the model to call that tool.
+         */
+        fun toolChoice(toolChoice: AssistantToolChoiceOption) = toolChoice(JsonField.of(toolChoice))
+
+        /**
+         * Controls which (if any) tool is called by the model. `none` means the model will not call
+         * any tools and instead generates a message. `auto` is the default value and means the
+         * model can pick between generating a message or calling one or more tools. `required`
+         * means the model must call one or more tools before responding to the user. Specifying a
+         * particular tool like `{"type": "file_search"}` or `{"type": "function", "function":
+         * {"name": "my_function"}}` forces the model to call that tool.
+         */
+        fun toolChoice(toolChoice: JsonField<AssistantToolChoiceOption>) = apply {
+            this.toolChoice = toolChoice
+        }
+
+        /**
+         * The list of tools that the
+         * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
+         */
+        fun tools(tools: List<AssistantTool>) = tools(JsonField.of(tools))
+
+        /**
+         * The list of tools that the
+         * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
+         */
+        fun tools(tools: JsonField<List<AssistantTool>>) = apply { this.tools = tools }
+
+        /**
+         * Controls for how a thread will be truncated prior to the run. Use this to control the
+         * intial context window of the run.
+         */
+        fun truncationStrategy(truncationStrategy: TruncationStrategy) =
+            truncationStrategy(JsonField.of(truncationStrategy))
+
+        /**
+         * Controls for how a thread will be truncated prior to the run. Use this to control the
+         * intial context window of the run.
+         */
+        fun truncationStrategy(truncationStrategy: JsonField<TruncationStrategy>) = apply {
+            this.truncationStrategy = truncationStrategy
+        }
+
+        /**
+         * Usage statistics related to the run. This value will be `null` if the run is not in a
+         * terminal state (i.e. `in_progress`, `queued`, etc.).
+         */
+        fun usage(usage: Usage) = usage(JsonField.of(usage))
+
+        /**
+         * Usage statistics related to the run. This value will be `null` if the run is not in a
+         * terminal state (i.e. `in_progress`, `queued`, etc.).
+         */
+        fun usage(usage: JsonField<Usage>) = apply { this.usage = usage }
+
+        /** The sampling temperature used for this run. If not set, defaults to 1. */
+        fun temperature(temperature: Double) = temperature(JsonField.of(temperature))
+
+        /** The sampling temperature used for this run. If not set, defaults to 1. */
+        fun temperature(temperature: JsonField<Double>) = apply { this.temperature = temperature }
+
+        /** The nucleus sampling value used for this run. If not set, defaults to 1. */
+        fun topP(topP: Double) = topP(JsonField.of(topP))
+
+        /** The nucleus sampling value used for this run. If not set, defaults to 1. */
+        fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -842,32 +842,32 @@ private constructor(
         fun build(): Run =
             Run(
                 id,
-                object_,
-                createdAt,
-                threadId,
                 assistantId,
-                status,
-                requiredAction,
-                lastError,
-                expiresAt,
-                startedAt,
                 cancelledAt,
-                failedAt,
                 completedAt,
+                createdAt,
+                expiresAt,
+                failedAt,
                 incompleteDetails,
-                model,
                 instructions,
-                tools.map { it.toImmutable() },
+                lastError,
+                maxCompletionTokens,
+                maxPromptTokens,
                 metadata,
+                model,
+                object_,
+                parallelToolCalls,
+                requiredAction,
+                responseFormat,
+                startedAt,
+                status,
+                threadId,
+                toolChoice,
+                tools.map { it.toImmutable() },
+                truncationStrategy,
                 usage,
                 temperature,
                 topP,
-                maxPromptTokens,
-                maxCompletionTokens,
-                truncationStrategy,
-                toolChoice,
-                parallelToolCalls,
-                responseFormat,
                 additionalProperties.toImmutable(),
             )
     }
@@ -1274,28 +1274,28 @@ private constructor(
     class RequiredAction
     @JsonCreator
     private constructor(
-        @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
         @JsonProperty("submit_tool_outputs")
         @ExcludeMissing
         private val submitToolOutputs: JsonField<SubmitToolOutputs> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
-
-        /** For now, this is always `submit_tool_outputs`. */
-        fun type(): Type = type.getRequired("type")
 
         /** Details on the tool outputs needed for this run to continue. */
         fun submitToolOutputs(): SubmitToolOutputs =
             submitToolOutputs.getRequired("submit_tool_outputs")
 
         /** For now, this is always `submit_tool_outputs`. */
-        @JsonProperty("type") @ExcludeMissing fun _type() = type
+        fun type(): Type = type.getRequired("type")
 
         /** Details on the tool outputs needed for this run to continue. */
         @JsonProperty("submit_tool_outputs")
         @ExcludeMissing
         fun _submitToolOutputs() = submitToolOutputs
+
+        /** For now, this is always `submit_tool_outputs`. */
+        @JsonProperty("type") @ExcludeMissing fun _type() = type
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1305,8 +1305,8 @@ private constructor(
 
         fun validate(): RequiredAction = apply {
             if (!validated) {
-                type()
                 submitToolOutputs().validate()
+                type()
                 validated = true
             }
         }
@@ -1320,22 +1320,16 @@ private constructor(
 
         class Builder {
 
-            private var type: JsonField<Type> = JsonMissing.of()
             private var submitToolOutputs: JsonField<SubmitToolOutputs> = JsonMissing.of()
+            private var type: JsonField<Type> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(requiredAction: RequiredAction) = apply {
-                type = requiredAction.type
                 submitToolOutputs = requiredAction.submitToolOutputs
+                type = requiredAction.type
                 additionalProperties = requiredAction.additionalProperties.toMutableMap()
             }
-
-            /** For now, this is always `submit_tool_outputs`. */
-            fun type(type: Type) = type(JsonField.of(type))
-
-            /** For now, this is always `submit_tool_outputs`. */
-            fun type(type: JsonField<Type>) = apply { this.type = type }
 
             /** Details on the tool outputs needed for this run to continue. */
             fun submitToolOutputs(submitToolOutputs: SubmitToolOutputs) =
@@ -1345,6 +1339,12 @@ private constructor(
             fun submitToolOutputs(submitToolOutputs: JsonField<SubmitToolOutputs>) = apply {
                 this.submitToolOutputs = submitToolOutputs
             }
+
+            /** For now, this is always `submit_tool_outputs`. */
+            fun type(type: Type) = type(JsonField.of(type))
+
+            /** For now, this is always `submit_tool_outputs`. */
+            fun type(type: JsonField<Type>) = apply { this.type = type }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1367,8 +1367,8 @@ private constructor(
 
             fun build(): RequiredAction =
                 RequiredAction(
-                    type,
                     submitToolOutputs,
+                    type,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1537,17 +1537,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is RequiredAction && type == other.type && submitToolOutputs == other.submitToolOutputs && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is RequiredAction && submitToolOutputs == other.submitToolOutputs && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(type, submitToolOutputs, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(submitToolOutputs, type, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "RequiredAction{type=$type, submitToolOutputs=$submitToolOutputs, additionalProperties=$additionalProperties}"
+            "RequiredAction{submitToolOutputs=$submitToolOutputs, type=$type, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -1913,15 +1913,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Run && id == other.id && object_ == other.object_ && createdAt == other.createdAt && threadId == other.threadId && assistantId == other.assistantId && status == other.status && requiredAction == other.requiredAction && lastError == other.lastError && expiresAt == other.expiresAt && startedAt == other.startedAt && cancelledAt == other.cancelledAt && failedAt == other.failedAt && completedAt == other.completedAt && incompleteDetails == other.incompleteDetails && model == other.model && instructions == other.instructions && tools == other.tools && metadata == other.metadata && usage == other.usage && temperature == other.temperature && topP == other.topP && maxPromptTokens == other.maxPromptTokens && maxCompletionTokens == other.maxCompletionTokens && truncationStrategy == other.truncationStrategy && toolChoice == other.toolChoice && parallelToolCalls == other.parallelToolCalls && responseFormat == other.responseFormat && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is Run && id == other.id && assistantId == other.assistantId && cancelledAt == other.cancelledAt && completedAt == other.completedAt && createdAt == other.createdAt && expiresAt == other.expiresAt && failedAt == other.failedAt && incompleteDetails == other.incompleteDetails && instructions == other.instructions && lastError == other.lastError && maxCompletionTokens == other.maxCompletionTokens && maxPromptTokens == other.maxPromptTokens && metadata == other.metadata && model == other.model && object_ == other.object_ && parallelToolCalls == other.parallelToolCalls && requiredAction == other.requiredAction && responseFormat == other.responseFormat && startedAt == other.startedAt && status == other.status && threadId == other.threadId && toolChoice == other.toolChoice && tools == other.tools && truncationStrategy == other.truncationStrategy && usage == other.usage && temperature == other.temperature && topP == other.topP && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, object_, createdAt, threadId, assistantId, status, requiredAction, lastError, expiresAt, startedAt, cancelledAt, failedAt, completedAt, incompleteDetails, model, instructions, tools, metadata, usage, temperature, topP, maxPromptTokens, maxCompletionTokens, truncationStrategy, toolChoice, parallelToolCalls, responseFormat, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, assistantId, cancelledAt, completedAt, createdAt, expiresAt, failedAt, incompleteDetails, instructions, lastError, maxCompletionTokens, maxPromptTokens, metadata, model, object_, parallelToolCalls, requiredAction, responseFormat, startedAt, status, threadId, toolChoice, tools, truncationStrategy, usage, temperature, topP, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Run{id=$id, object_=$object_, createdAt=$createdAt, threadId=$threadId, assistantId=$assistantId, status=$status, requiredAction=$requiredAction, lastError=$lastError, expiresAt=$expiresAt, startedAt=$startedAt, cancelledAt=$cancelledAt, failedAt=$failedAt, completedAt=$completedAt, incompleteDetails=$incompleteDetails, model=$model, instructions=$instructions, tools=$tools, metadata=$metadata, usage=$usage, temperature=$temperature, topP=$topP, maxPromptTokens=$maxPromptTokens, maxCompletionTokens=$maxCompletionTokens, truncationStrategy=$truncationStrategy, toolChoice=$toolChoice, parallelToolCalls=$parallelToolCalls, responseFormat=$responseFormat, additionalProperties=$additionalProperties}"
+        "Run{id=$id, assistantId=$assistantId, cancelledAt=$cancelledAt, completedAt=$completedAt, createdAt=$createdAt, expiresAt=$expiresAt, failedAt=$failedAt, incompleteDetails=$incompleteDetails, instructions=$instructions, lastError=$lastError, maxCompletionTokens=$maxCompletionTokens, maxPromptTokens=$maxPromptTokens, metadata=$metadata, model=$model, object_=$object_, parallelToolCalls=$parallelToolCalls, requiredAction=$requiredAction, responseFormat=$responseFormat, startedAt=$startedAt, status=$status, threadId=$threadId, toolChoice=$toolChoice, tools=$tools, truncationStrategy=$truncationStrategy, usage=$usage, temperature=$temperature, topP=$topP, additionalProperties=$additionalProperties}"
 }

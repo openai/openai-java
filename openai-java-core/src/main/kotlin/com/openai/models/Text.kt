@@ -19,22 +19,22 @@ import java.util.Objects
 class Text
 @JsonCreator
 private constructor(
-    @JsonProperty("value") @ExcludeMissing private val value: JsonField<String> = JsonMissing.of(),
     @JsonProperty("annotations")
     @ExcludeMissing
     private val annotations: JsonField<List<Annotation>> = JsonMissing.of(),
+    @JsonProperty("value") @ExcludeMissing private val value: JsonField<String> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /** The data that makes up the text. */
-    fun value(): String = value.getRequired("value")
 
     fun annotations(): List<Annotation> = annotations.getRequired("annotations")
 
     /** The data that makes up the text. */
-    @JsonProperty("value") @ExcludeMissing fun _value() = value
+    fun value(): String = value.getRequired("value")
 
     @JsonProperty("annotations") @ExcludeMissing fun _annotations() = annotations
+
+    /** The data that makes up the text. */
+    @JsonProperty("value") @ExcludeMissing fun _value() = value
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -44,8 +44,8 @@ private constructor(
 
     fun validate(): Text = apply {
         if (!validated) {
-            value()
             annotations()
+            value()
             validated = true
         }
     }
@@ -59,15 +59,21 @@ private constructor(
 
     class Builder {
 
-        private var value: JsonField<String> = JsonMissing.of()
         private var annotations: JsonField<List<Annotation>> = JsonMissing.of()
+        private var value: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(text: Text) = apply {
-            value = text.value
             annotations = text.annotations
+            value = text.value
             additionalProperties = text.additionalProperties.toMutableMap()
+        }
+
+        fun annotations(annotations: List<Annotation>) = annotations(JsonField.of(annotations))
+
+        fun annotations(annotations: JsonField<List<Annotation>>) = apply {
+            this.annotations = annotations
         }
 
         /** The data that makes up the text. */
@@ -75,12 +81,6 @@ private constructor(
 
         /** The data that makes up the text. */
         fun value(value: JsonField<String>) = apply { this.value = value }
-
-        fun annotations(annotations: List<Annotation>) = annotations(JsonField.of(annotations))
-
-        fun annotations(annotations: JsonField<List<Annotation>>) = apply {
-            this.annotations = annotations
-        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -103,8 +103,8 @@ private constructor(
 
         fun build(): Text =
             Text(
-                value,
                 annotations.map { it.toImmutable() },
+                value,
                 additionalProperties.toImmutable(),
             )
     }
@@ -114,15 +114,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Text && value == other.value && annotations == other.annotations && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is Text && annotations == other.annotations && value == other.value && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(value, annotations, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(annotations, value, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Text{value=$value, annotations=$annotations, additionalProperties=$additionalProperties}"
+        "Text{annotations=$annotations, value=$value, additionalProperties=$additionalProperties}"
 }

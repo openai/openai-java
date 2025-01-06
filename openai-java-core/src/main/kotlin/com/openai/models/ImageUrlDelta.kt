@@ -22,15 +22,12 @@ import java.util.Optional
 class ImageUrlDelta
 @JsonCreator
 private constructor(
-    @JsonProperty("url") @ExcludeMissing private val url: JsonField<String> = JsonMissing.of(),
     @JsonProperty("detail")
     @ExcludeMissing
     private val detail: JsonField<Detail> = JsonMissing.of(),
+    @JsonProperty("url") @ExcludeMissing private val url: JsonField<String> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /** The URL of the image, must be a supported image types: jpeg, jpg, png, gif, webp. */
-    fun url(): Optional<String> = Optional.ofNullable(url.getNullable("url"))
 
     /**
      * Specifies the detail level of the image. `low` uses fewer tokens, you can opt in to high
@@ -39,13 +36,16 @@ private constructor(
     fun detail(): Optional<Detail> = Optional.ofNullable(detail.getNullable("detail"))
 
     /** The URL of the image, must be a supported image types: jpeg, jpg, png, gif, webp. */
-    @JsonProperty("url") @ExcludeMissing fun _url() = url
+    fun url(): Optional<String> = Optional.ofNullable(url.getNullable("url"))
 
     /**
      * Specifies the detail level of the image. `low` uses fewer tokens, you can opt in to high
      * resolution using `high`.
      */
     @JsonProperty("detail") @ExcludeMissing fun _detail() = detail
+
+    /** The URL of the image, must be a supported image types: jpeg, jpg, png, gif, webp. */
+    @JsonProperty("url") @ExcludeMissing fun _url() = url
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -55,8 +55,8 @@ private constructor(
 
     fun validate(): ImageUrlDelta = apply {
         if (!validated) {
-            url()
             detail()
+            url()
             validated = true
         }
     }
@@ -70,22 +70,16 @@ private constructor(
 
     class Builder {
 
-        private var url: JsonField<String> = JsonMissing.of()
         private var detail: JsonField<Detail> = JsonMissing.of()
+        private var url: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(imageUrlDelta: ImageUrlDelta) = apply {
-            url = imageUrlDelta.url
             detail = imageUrlDelta.detail
+            url = imageUrlDelta.url
             additionalProperties = imageUrlDelta.additionalProperties.toMutableMap()
         }
-
-        /** The URL of the image, must be a supported image types: jpeg, jpg, png, gif, webp. */
-        fun url(url: String) = url(JsonField.of(url))
-
-        /** The URL of the image, must be a supported image types: jpeg, jpg, png, gif, webp. */
-        fun url(url: JsonField<String>) = apply { this.url = url }
 
         /**
          * Specifies the detail level of the image. `low` uses fewer tokens, you can opt in to high
@@ -98,6 +92,12 @@ private constructor(
          * resolution using `high`.
          */
         fun detail(detail: JsonField<Detail>) = apply { this.detail = detail }
+
+        /** The URL of the image, must be a supported image types: jpeg, jpg, png, gif, webp. */
+        fun url(url: String) = url(JsonField.of(url))
+
+        /** The URL of the image, must be a supported image types: jpeg, jpg, png, gif, webp. */
+        fun url(url: JsonField<String>) = apply { this.url = url }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -120,8 +120,8 @@ private constructor(
 
         fun build(): ImageUrlDelta =
             ImageUrlDelta(
-                url,
                 detail,
+                url,
                 additionalProperties.toImmutable(),
             )
     }
@@ -194,15 +194,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ImageUrlDelta && url == other.url && detail == other.detail && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ImageUrlDelta && detail == other.detail && url == other.url && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(url, detail, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(detail, url, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ImageUrlDelta{url=$url, detail=$detail, additionalProperties=$additionalProperties}"
+        "ImageUrlDelta{detail=$detail, url=$url, additionalProperties=$additionalProperties}"
 }
