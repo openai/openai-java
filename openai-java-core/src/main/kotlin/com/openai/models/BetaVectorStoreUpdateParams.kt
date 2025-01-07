@@ -19,6 +19,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
+/** Modifies a vector store. */
 class BetaVectorStoreUpdateParams
 constructor(
     private val vectorStoreId: String,

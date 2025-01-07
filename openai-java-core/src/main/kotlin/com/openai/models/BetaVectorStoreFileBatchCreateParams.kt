@@ -16,6 +16,7 @@ import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
+/** Create a vector store file batch. */
 class BetaVectorStoreFileBatchCreateParams
 constructor(
     private val vectorStoreId: String,

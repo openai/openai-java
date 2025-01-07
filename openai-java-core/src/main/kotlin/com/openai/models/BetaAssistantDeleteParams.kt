@@ -10,6 +10,7 @@ import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
+/** Delete an assistant. */
 class BetaAssistantDeleteParams
 constructor(
     private val assistantId: String,

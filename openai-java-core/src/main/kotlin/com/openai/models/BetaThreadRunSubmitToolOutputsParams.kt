@@ -16,6 +16,11 @@ import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
+/**
+ * When a run has the `status: "requires_action"` and `required_action.type` is
+ * `submit_tool_outputs`, this endpoint can be used to submit the outputs from the tool calls once
+ * they're all completed. All outputs must be submitted in a single request.
+ */
 class BetaThreadRunSubmitToolOutputsParams
 constructor(
     private val threadId: String,

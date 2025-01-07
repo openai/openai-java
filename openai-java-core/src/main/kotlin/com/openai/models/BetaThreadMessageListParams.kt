@@ -12,6 +12,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
+/** Returns a list of messages for a given thread. */
 class BetaThreadMessageListParams
 constructor(
     private val threadId: String,

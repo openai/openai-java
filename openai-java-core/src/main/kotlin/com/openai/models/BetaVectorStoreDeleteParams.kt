@@ -10,6 +10,7 @@ import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
+/** Delete a vector store. */
 class BetaVectorStoreDeleteParams
 constructor(
     private val vectorStoreId: String,

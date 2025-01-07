@@ -10,6 +10,7 @@ import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
+/** Cancels the Upload. No Parts may be added after an Upload is cancelled. */
 class UploadCancelParams
 constructor(
     private val uploadId: String,

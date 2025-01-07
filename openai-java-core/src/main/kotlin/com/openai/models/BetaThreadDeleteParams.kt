@@ -10,6 +10,7 @@ import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
+/** Delete a thread. */
 class BetaThreadDeleteParams
 constructor(
     private val threadId: String,

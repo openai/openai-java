@@ -16,6 +16,11 @@ import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
+/**
+ * Create a vector store file by attaching a
+ * [File](https://platform.openai.com/docs/api-reference/files) to a
+ * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object).
+ */
 class BetaVectorStoreFileCreateParams
 constructor(
     private val vectorStoreId: String,

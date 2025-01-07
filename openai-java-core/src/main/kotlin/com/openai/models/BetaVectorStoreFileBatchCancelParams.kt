@@ -10,6 +10,10 @@ import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
+/**
+ * Cancel a vector store file batch. This attempts to cancel the processing of files in this batch
+ * as soon as possible.
+ */
 class BetaVectorStoreFileBatchCancelParams
 constructor(
     private val vectorStoreId: String,

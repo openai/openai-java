@@ -16,6 +16,7 @@ import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
+/** Create an assistant with a model and instructions. */
 class BetaAssistantCreateParams
 constructor(
     private val body: BetaAssistantCreateBody,

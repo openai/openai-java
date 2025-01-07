@@ -10,6 +10,11 @@ import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
+/**
+ * Delete a vector store file. This will remove the file from the vector store but the file itself
+ * will not be deleted. To delete the file, use the
+ * [delete file](https://platform.openai.com/docs/api-reference/files/delete) endpoint.
+ */
 class BetaVectorStoreFileDeleteParams
 constructor(
     private val vectorStoreId: String,
