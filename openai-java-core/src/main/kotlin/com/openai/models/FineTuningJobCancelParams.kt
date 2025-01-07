@@ -10,6 +10,7 @@ import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
+/** Immediately cancel a fine-tune job. */
 class FineTuningJobCancelParams
 constructor(
     private val fineTuningJobId: String,

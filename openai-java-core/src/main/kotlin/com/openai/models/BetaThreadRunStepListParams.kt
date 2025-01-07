@@ -13,6 +13,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
+/** Returns a list of run steps belonging to a run. */
 class BetaThreadRunStepListParams
 constructor(
     private val threadId: String,

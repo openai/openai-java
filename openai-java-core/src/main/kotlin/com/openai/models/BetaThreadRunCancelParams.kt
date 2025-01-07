@@ -10,6 +10,7 @@ import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
+/** Cancels a run that is `in_progress`. */
 class BetaThreadRunCancelParams
 constructor(
     private val threadId: String,

@@ -27,6 +27,10 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
+/**
+ * Classifies if text and/or image inputs are potentially harmful. Learn more in the
+ * [moderation guide](https://platform.openai.com/docs/guides/moderation).
+ */
 class ModerationCreateParams
 constructor(
     private val body: ModerationCreateBody,

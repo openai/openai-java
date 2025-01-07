@@ -30,6 +30,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
+/** Create a thread and run it in one request. */
 class BetaThreadCreateAndRunParams
 constructor(
     private val body: BetaThreadCreateAndRunBody,

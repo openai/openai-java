@@ -7,6 +7,7 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import java.util.Objects
 
+/** Returns information about a specific file. */
 class FileRetrieveParams
 constructor(
     private val fileId: String,

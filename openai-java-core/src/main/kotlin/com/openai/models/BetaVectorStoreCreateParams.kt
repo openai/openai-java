@@ -19,6 +19,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
+/** Create a vector store. */
 class BetaVectorStoreCreateParams
 constructor(
     private val body: BetaVectorStoreCreateBody,

@@ -19,6 +19,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
+/** Creates an image given a prompt. */
 class ImageGenerateParams
 constructor(
     private val body: ImageGenerateBody,

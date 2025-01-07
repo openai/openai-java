@@ -10,6 +10,7 @@ import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
+/** Delete a file. */
 class FileDeleteParams
 constructor(
     private val fileId: String,

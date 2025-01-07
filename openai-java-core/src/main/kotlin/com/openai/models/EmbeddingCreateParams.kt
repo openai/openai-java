@@ -29,6 +29,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
+/** Creates an embedding vector representing the input text. */
 class EmbeddingCreateParams
 constructor(
     private val body: EmbeddingCreateBody,

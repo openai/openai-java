@@ -8,6 +8,7 @@ import com.openai.core.http.QueryParams
 import java.util.Objects
 import java.util.Optional
 
+/** List your organization's batches. */
 class BatchListParams
 constructor(
     private val after: String?,

@@ -7,6 +7,10 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import java.util.Objects
 
+/**
+ * Lists the currently available models, and provides basic information about each one such as the
+ * owner and availability.
+ */
 class ModelListParams
 constructor(
     private val additionalHeaders: Headers,
