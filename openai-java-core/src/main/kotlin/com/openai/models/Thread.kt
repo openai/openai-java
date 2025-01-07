@@ -46,6 +46,13 @@ private constructor(
     /** The Unix timestamp (in seconds) for when the thread was created. */
     fun createdAt(): Long = createdAt.getRequired("created_at")
 
+    /**
+     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
+     * additional information about the object in a structured format. Keys can be a maximum of 64
+     * characters long and values can be a maximum of 512 characters long.
+     */
+    @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+
     /** The object type, which is always `thread`. */
     fun object_(): Object = object_.getRequired("object")
 
@@ -58,27 +65,22 @@ private constructor(
         Optional.ofNullable(toolResources.getNullable("tool_resources"))
 
     /** The identifier, which can be referenced in API endpoints. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** The Unix timestamp (in seconds) for when the thread was created. */
-    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
-
-    /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format. Keys can be a maximum of 64
-     * characters long and values can be a maximum of 512 characters long.
-     */
-    @JsonProperty("metadata") @ExcludeMissing fun _metadata() = metadata
+    @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
     /** The object type, which is always `thread`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /**
      * A set of resources that are made available to the assistant's tools in this thread. The
      * resources are specific to the type of tool. For example, the `code_interpreter` tool requires
      * a list of file IDs, while the `file_search` tool requires a list of vector store IDs.
      */
-    @JsonProperty("tool_resources") @ExcludeMissing fun _toolResources() = toolResources
+    @JsonProperty("tool_resources")
+    @ExcludeMissing
+    fun _toolResources(): JsonField<ToolResources> = toolResources
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -105,11 +107,11 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var metadata: JsonValue = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
-        private var toolResources: JsonField<ToolResources> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var createdAt: JsonField<Long>? = null
+        private var metadata: JsonValue? = null
+        private var object_: JsonField<Object>? = null
+        private var toolResources: JsonField<ToolResources>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -153,7 +155,17 @@ private constructor(
          * requires a list of file IDs, while the `file_search` tool requires a list of vector store
          * IDs.
          */
-        fun toolResources(toolResources: ToolResources) = toolResources(JsonField.of(toolResources))
+        fun toolResources(toolResources: ToolResources?) =
+            toolResources(JsonField.ofNullable(toolResources))
+
+        /**
+         * A set of resources that are made available to the assistant's tools in this thread. The
+         * resources are specific to the type of tool. For example, the `code_interpreter` tool
+         * requires a list of file IDs, while the `file_search` tool requires a list of vector store
+         * IDs.
+         */
+        fun toolResources(toolResources: Optional<ToolResources>) =
+            toolResources(toolResources.orElse(null))
 
         /**
          * A set of resources that are made available to the assistant's tools in this thread. The
@@ -186,11 +198,11 @@ private constructor(
 
         fun build(): Thread =
             Thread(
-                id,
-                createdAt,
-                metadata,
-                object_,
-                toolResources,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
+                checkNotNull(metadata) { "`metadata` is required but was not set" },
+                checkNotNull(object_) { "`object_` is required but was not set" },
+                checkNotNull(toolResources) { "`toolResources` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }
@@ -271,9 +283,13 @@ private constructor(
         fun fileSearch(): Optional<FileSearch> =
             Optional.ofNullable(fileSearch.getNullable("file_search"))
 
-        @JsonProperty("code_interpreter") @ExcludeMissing fun _codeInterpreter() = codeInterpreter
+        @JsonProperty("code_interpreter")
+        @ExcludeMissing
+        fun _codeInterpreter(): JsonField<CodeInterpreter> = codeInterpreter
 
-        @JsonProperty("file_search") @ExcludeMissing fun _fileSearch() = fileSearch
+        @JsonProperty("file_search")
+        @ExcludeMissing
+        fun _fileSearch(): JsonField<FileSearch> = fileSearch
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -373,7 +389,9 @@ private constructor(
              * available to the `code_interpreter` tool. There can be a maximum of 20 files
              * associated with the tool.
              */
-            @JsonProperty("file_ids") @ExcludeMissing fun _fileIds() = fileIds
+            @JsonProperty("file_ids")
+            @ExcludeMissing
+            fun _fileIds(): JsonField<List<String>> = fileIds
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -397,12 +415,12 @@ private constructor(
 
             class Builder {
 
-                private var fileIds: JsonField<List<String>> = JsonMissing.of()
+                private var fileIds: JsonField<MutableList<String>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(codeInterpreter: CodeInterpreter) = apply {
-                    fileIds = codeInterpreter.fileIds
+                    fileIds = codeInterpreter.fileIds.map { it.toMutableList() }
                     additionalProperties = codeInterpreter.additionalProperties.toMutableMap()
                 }
 
@@ -418,7 +436,27 @@ private constructor(
                  * available to the `code_interpreter` tool. There can be a maximum of 20 files
                  * associated with the tool.
                  */
-                fun fileIds(fileIds: JsonField<List<String>>) = apply { this.fileIds = fileIds }
+                fun fileIds(fileIds: JsonField<List<String>>) = apply {
+                    this.fileIds = fileIds.map { it.toMutableList() }
+                }
+
+                /**
+                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
+                 * available to the `code_interpreter` tool. There can be a maximum of 20 files
+                 * associated with the tool.
+                 */
+                fun addFileId(fileId: String) = apply {
+                    fileIds =
+                        (fileIds ?: JsonField.of(mutableListOf())).apply {
+                            asKnown()
+                                .orElseThrow {
+                                    IllegalStateException(
+                                        "Field was set to non-list type: ${javaClass.simpleName}"
+                                    )
+                                }
+                                .add(fileId)
+                        }
+                }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -444,7 +482,7 @@ private constructor(
 
                 fun build(): CodeInterpreter =
                     CodeInterpreter(
-                        fileIds.map { it.toImmutable() },
+                        (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
                         additionalProperties.toImmutable()
                     )
             }
@@ -493,7 +531,9 @@ private constructor(
              * attached to this thread. There can be a maximum of 1 vector store attached to the
              * thread.
              */
-            @JsonProperty("vector_store_ids") @ExcludeMissing fun _vectorStoreIds() = vectorStoreIds
+            @JsonProperty("vector_store_ids")
+            @ExcludeMissing
+            fun _vectorStoreIds(): JsonField<List<String>> = vectorStoreIds
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -517,12 +557,12 @@ private constructor(
 
             class Builder {
 
-                private var vectorStoreIds: JsonField<List<String>> = JsonMissing.of()
+                private var vectorStoreIds: JsonField<MutableList<String>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(fileSearch: FileSearch) = apply {
-                    vectorStoreIds = fileSearch.vectorStoreIds
+                    vectorStoreIds = fileSearch.vectorStoreIds.map { it.toMutableList() }
                     additionalProperties = fileSearch.additionalProperties.toMutableMap()
                 }
 
@@ -542,7 +582,26 @@ private constructor(
                  * thread.
                  */
                 fun vectorStoreIds(vectorStoreIds: JsonField<List<String>>) = apply {
-                    this.vectorStoreIds = vectorStoreIds
+                    this.vectorStoreIds = vectorStoreIds.map { it.toMutableList() }
+                }
+
+                /**
+                 * The
+                 * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+                 * attached to this thread. There can be a maximum of 1 vector store attached to the
+                 * thread.
+                 */
+                fun addVectorStoreId(vectorStoreId: String) = apply {
+                    vectorStoreIds =
+                        (vectorStoreIds ?: JsonField.of(mutableListOf())).apply {
+                            asKnown()
+                                .orElseThrow {
+                                    IllegalStateException(
+                                        "Field was set to non-list type: ${javaClass.simpleName}"
+                                    )
+                                }
+                                .add(vectorStoreId)
+                        }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -569,7 +628,7 @@ private constructor(
 
                 fun build(): FileSearch =
                     FileSearch(
-                        vectorStoreIds.map { it.toImmutable() },
+                        (vectorStoreIds ?: JsonMissing.of()).map { it.toImmutable() },
                         additionalProperties.toImmutable()
                     )
             }

@@ -44,16 +44,16 @@ private constructor(
     fun function(): Optional<Function> = Optional.ofNullable(function.getNullable("function"))
 
     /** The index of the tool call in the tool calls array. */
-    @JsonProperty("index") @ExcludeMissing fun _index() = index
+    @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
     /** The type of tool call. This is always going to be `function` for this type of tool call. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     /** The ID of the tool call object. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** The definition of the function that was called. */
-    @JsonProperty("function") @ExcludeMissing fun _function() = function
+    @JsonProperty("function") @ExcludeMissing fun _function(): JsonField<Function> = function
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -80,8 +80,8 @@ private constructor(
 
     class Builder {
 
-        private var index: JsonField<Long> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var index: JsonField<Long>? = null
+        private var type: JsonField<Type>? = null
         private var id: JsonField<String> = JsonMissing.of()
         private var function: JsonField<Function> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -144,8 +144,8 @@ private constructor(
 
         fun build(): FunctionToolCallDelta =
             FunctionToolCallDelta(
-                index,
-                type,
+                checkNotNull(index) { "`index` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 id,
                 function,
                 additionalProperties.toImmutable(),
@@ -234,16 +234,16 @@ private constructor(
         fun output(): Optional<String> = Optional.ofNullable(output.getNullable("output"))
 
         /** The arguments passed to the function. */
-        @JsonProperty("arguments") @ExcludeMissing fun _arguments() = arguments
+        @JsonProperty("arguments") @ExcludeMissing fun _arguments(): JsonField<String> = arguments
 
         /** The name of the function. */
-        @JsonProperty("name") @ExcludeMissing fun _name() = name
+        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         /**
          * The output of the function. This will be `null` if the outputs have not been
          * [submitted](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs) yet.
          */
-        @JsonProperty("output") @ExcludeMissing fun _output() = output
+        @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<String> = output
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -299,7 +299,14 @@ private constructor(
              * [submitted](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs)
              * yet.
              */
-            fun output(output: String) = output(JsonField.of(output))
+            fun output(output: String?) = output(JsonField.ofNullable(output))
+
+            /**
+             * The output of the function. This will be `null` if the outputs have not been
+             * [submitted](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs)
+             * yet.
+             */
+            fun output(output: Optional<String>) = output(output.orElse(null))
 
             /**
              * The output of the function. This will be `null` if the outputs have not been

@@ -38,12 +38,12 @@ private constructor(
     fun text(): Optional<TextDelta> = Optional.ofNullable(text.getNullable("text"))
 
     /** The index of the content part in the message. */
-    @JsonProperty("index") @ExcludeMissing fun _index() = index
+    @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
     /** Always `text`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
-    @JsonProperty("text") @ExcludeMissing fun _text() = text
+    @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<TextDelta> = text
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -69,8 +69,8 @@ private constructor(
 
     class Builder {
 
-        private var index: JsonField<Long> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var index: JsonField<Long>? = null
+        private var type: JsonField<Type>? = null
         private var text: JsonField<TextDelta> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -119,8 +119,8 @@ private constructor(
 
         fun build(): TextDeltaBlock =
             TextDeltaBlock(
-                index,
-                type,
+                checkNotNull(index) { "`index` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 text,
                 additionalProperties.toImmutable(),
             )

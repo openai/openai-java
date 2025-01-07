@@ -81,37 +81,39 @@ private constructor(
         Optional.ofNullable(statusDetails.getNullable("status_details"))
 
     /** The file identifier, which can be referenced in the API endpoints. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** The size of the file, in bytes. */
-    @JsonProperty("bytes") @ExcludeMissing fun _bytes() = bytes
+    @JsonProperty("bytes") @ExcludeMissing fun _bytes(): JsonField<Long> = bytes
 
     /** The Unix timestamp (in seconds) for when the file was created. */
-    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
+    @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
     /** The name of the file. */
-    @JsonProperty("filename") @ExcludeMissing fun _filename() = filename
+    @JsonProperty("filename") @ExcludeMissing fun _filename(): JsonField<String> = filename
 
     /** The object type, which is always `file`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /**
      * The intended purpose of the file. Supported values are `assistants`, `assistants_output`,
      * `batch`, `batch_output`, `fine-tune`, `fine-tune-results` and `vision`.
      */
-    @JsonProperty("purpose") @ExcludeMissing fun _purpose() = purpose
+    @JsonProperty("purpose") @ExcludeMissing fun _purpose(): JsonField<Purpose> = purpose
 
     /**
      * Deprecated. The current status of the file, which can be either `uploaded`, `processed`, or
      * `error`.
      */
-    @JsonProperty("status") @ExcludeMissing fun _status() = status
+    @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
     /**
      * Deprecated. For details on why a fine-tuning training file failed validation, see the `error`
      * field on `fine_tuning.job`.
      */
-    @JsonProperty("status_details") @ExcludeMissing fun _statusDetails() = statusDetails
+    @JsonProperty("status_details")
+    @ExcludeMissing
+    fun _statusDetails(): JsonField<String> = statusDetails
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -142,13 +144,13 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var bytes: JsonField<Long> = JsonMissing.of()
-        private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var filename: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
-        private var purpose: JsonField<Purpose> = JsonMissing.of()
-        private var status: JsonField<Status> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var bytes: JsonField<Long>? = null
+        private var createdAt: JsonField<Long>? = null
+        private var filename: JsonField<String>? = null
+        private var object_: JsonField<Object>? = null
+        private var purpose: JsonField<Purpose>? = null
+        private var status: JsonField<Status>? = null
         private var statusDetails: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -254,13 +256,13 @@ private constructor(
 
         fun build(): FileObject =
             FileObject(
-                id,
-                bytes,
-                createdAt,
-                filename,
-                object_,
-                purpose,
-                status,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(bytes) { "`bytes` is required but was not set" },
+                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
+                checkNotNull(filename) { "`filename` is required but was not set" },
+                checkNotNull(object_) { "`object_` is required but was not set" },
+                checkNotNull(purpose) { "`purpose` is required but was not set" },
+                checkNotNull(status) { "`status` is required but was not set" },
                 statusDetails,
                 additionalProperties.toImmutable(),
             )

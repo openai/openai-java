@@ -59,19 +59,21 @@ private constructor(
     fun text(): Optional<String> = Optional.ofNullable(text.getNullable("text"))
 
     /** The index of the annotation in the text content part. */
-    @JsonProperty("index") @ExcludeMissing fun _index() = index
+    @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
     /** Always `file_citation`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
-    @JsonProperty("end_index") @ExcludeMissing fun _endIndex() = endIndex
+    @JsonProperty("end_index") @ExcludeMissing fun _endIndex(): JsonField<Long> = endIndex
 
-    @JsonProperty("file_citation") @ExcludeMissing fun _fileCitation() = fileCitation
+    @JsonProperty("file_citation")
+    @ExcludeMissing
+    fun _fileCitation(): JsonField<FileCitation> = fileCitation
 
-    @JsonProperty("start_index") @ExcludeMissing fun _startIndex() = startIndex
+    @JsonProperty("start_index") @ExcludeMissing fun _startIndex(): JsonField<Long> = startIndex
 
     /** The text in the message content that needs to be replaced. */
-    @JsonProperty("text") @ExcludeMissing fun _text() = text
+    @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -100,8 +102,8 @@ private constructor(
 
     class Builder {
 
-        private var index: JsonField<Long> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var index: JsonField<Long>? = null
+        private var type: JsonField<Type>? = null
         private var endIndex: JsonField<Long> = JsonMissing.of()
         private var fileCitation: JsonField<FileCitation> = JsonMissing.of()
         private var startIndex: JsonField<Long> = JsonMissing.of()
@@ -172,8 +174,8 @@ private constructor(
 
         fun build(): FileCitationDeltaAnnotation =
             FileCitationDeltaAnnotation(
-                index,
-                type,
+                checkNotNull(index) { "`index` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 endIndex,
                 fileCitation,
                 startIndex,
@@ -254,10 +256,10 @@ private constructor(
         fun quote(): Optional<String> = Optional.ofNullable(quote.getNullable("quote"))
 
         /** The ID of the specific File the citation is from. */
-        @JsonProperty("file_id") @ExcludeMissing fun _fileId() = fileId
+        @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
         /** The specific quote in the file. */
-        @JsonProperty("quote") @ExcludeMissing fun _quote() = quote
+        @JsonProperty("quote") @ExcludeMissing fun _quote(): JsonField<String> = quote
 
         @JsonAnyGetter
         @ExcludeMissing

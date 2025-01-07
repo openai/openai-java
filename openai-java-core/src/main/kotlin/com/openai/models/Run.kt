@@ -151,6 +151,13 @@ private constructor(
         Optional.ofNullable(maxPromptTokens.getNullable("max_prompt_tokens"))
 
     /**
+     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
+     * additional information about the object in a structured format. Keys can be a maximum of 64
+     * characters long and values can be a maximum of 512 characters long.
+     */
+    @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+
+    /**
      * The model that the [assistant](https://platform.openai.com/docs/api-reference/assistants)
      * used for this run.
      */
@@ -248,40 +255,46 @@ private constructor(
     fun topP(): Optional<Double> = Optional.ofNullable(topP.getNullable("top_p"))
 
     /** The identifier, which can be referenced in API endpoints. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /**
      * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) used for
      * execution of this run.
      */
-    @JsonProperty("assistant_id") @ExcludeMissing fun _assistantId() = assistantId
+    @JsonProperty("assistant_id")
+    @ExcludeMissing
+    fun _assistantId(): JsonField<String> = assistantId
 
     /** The Unix timestamp (in seconds) for when the run was cancelled. */
-    @JsonProperty("cancelled_at") @ExcludeMissing fun _cancelledAt() = cancelledAt
+    @JsonProperty("cancelled_at") @ExcludeMissing fun _cancelledAt(): JsonField<Long> = cancelledAt
 
     /** The Unix timestamp (in seconds) for when the run was completed. */
-    @JsonProperty("completed_at") @ExcludeMissing fun _completedAt() = completedAt
+    @JsonProperty("completed_at") @ExcludeMissing fun _completedAt(): JsonField<Long> = completedAt
 
     /** The Unix timestamp (in seconds) for when the run was created. */
-    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
+    @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
     /** The Unix timestamp (in seconds) for when the run will expire. */
-    @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt() = expiresAt
+    @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt(): JsonField<Long> = expiresAt
 
     /** The Unix timestamp (in seconds) for when the run failed. */
-    @JsonProperty("failed_at") @ExcludeMissing fun _failedAt() = failedAt
+    @JsonProperty("failed_at") @ExcludeMissing fun _failedAt(): JsonField<Long> = failedAt
 
     /** Details on why the run is incomplete. Will be `null` if the run is not incomplete. */
-    @JsonProperty("incomplete_details") @ExcludeMissing fun _incompleteDetails() = incompleteDetails
+    @JsonProperty("incomplete_details")
+    @ExcludeMissing
+    fun _incompleteDetails(): JsonField<IncompleteDetails> = incompleteDetails
 
     /**
      * The instructions that the
      * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
      */
-    @JsonProperty("instructions") @ExcludeMissing fun _instructions() = instructions
+    @JsonProperty("instructions")
+    @ExcludeMissing
+    fun _instructions(): JsonField<String> = instructions
 
     /** The last error associated with this run. Will be `null` if there are no errors. */
-    @JsonProperty("last_error") @ExcludeMissing fun _lastError() = lastError
+    @JsonProperty("last_error") @ExcludeMissing fun _lastError(): JsonField<LastError> = lastError
 
     /**
      * The maximum number of completion tokens specified to have been used over the course of the
@@ -289,28 +302,23 @@ private constructor(
      */
     @JsonProperty("max_completion_tokens")
     @ExcludeMissing
-    fun _maxCompletionTokens() = maxCompletionTokens
+    fun _maxCompletionTokens(): JsonField<Long> = maxCompletionTokens
 
     /**
      * The maximum number of prompt tokens specified to have been used over the course of the run.
      */
-    @JsonProperty("max_prompt_tokens") @ExcludeMissing fun _maxPromptTokens() = maxPromptTokens
-
-    /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format. Keys can be a maximum of 64
-     * characters long and values can be a maximum of 512 characters long.
-     */
-    @JsonProperty("metadata") @ExcludeMissing fun _metadata() = metadata
+    @JsonProperty("max_prompt_tokens")
+    @ExcludeMissing
+    fun _maxPromptTokens(): JsonField<Long> = maxPromptTokens
 
     /**
      * The model that the [assistant](https://platform.openai.com/docs/api-reference/assistants)
      * used for this run.
      */
-    @JsonProperty("model") @ExcludeMissing fun _model() = model
+    @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
 
     /** The object type, which is always `thread.run`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /**
      * Whether to enable
@@ -319,12 +327,14 @@ private constructor(
      */
     @JsonProperty("parallel_tool_calls")
     @ExcludeMissing
-    fun _parallelToolCalls() = parallelToolCalls
+    fun _parallelToolCalls(): JsonField<Boolean> = parallelToolCalls
 
     /**
      * Details on the action required to continue the run. Will be `null` if no action is required.
      */
-    @JsonProperty("required_action") @ExcludeMissing fun _requiredAction() = requiredAction
+    @JsonProperty("required_action")
+    @ExcludeMissing
+    fun _requiredAction(): JsonField<RequiredAction> = requiredAction
 
     /**
      * Specifies the format that the model must output. Compatible with
@@ -346,22 +356,24 @@ private constructor(
      * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
      * `max_tokens` or the conversation exceeded the max context length.
      */
-    @JsonProperty("response_format") @ExcludeMissing fun _responseFormat() = responseFormat
+    @JsonProperty("response_format")
+    @ExcludeMissing
+    fun _responseFormat(): JsonField<AssistantResponseFormatOption> = responseFormat
 
     /** The Unix timestamp (in seconds) for when the run was started. */
-    @JsonProperty("started_at") @ExcludeMissing fun _startedAt() = startedAt
+    @JsonProperty("started_at") @ExcludeMissing fun _startedAt(): JsonField<Long> = startedAt
 
     /**
      * The status of the run, which can be either `queued`, `in_progress`, `requires_action`,
      * `cancelling`, `cancelled`, `failed`, `completed`, `incomplete`, or `expired`.
      */
-    @JsonProperty("status") @ExcludeMissing fun _status() = status
+    @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<RunStatus> = status
 
     /**
      * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was
      * executed on as a part of this run.
      */
-    @JsonProperty("thread_id") @ExcludeMissing fun _threadId() = threadId
+    @JsonProperty("thread_id") @ExcludeMissing fun _threadId(): JsonField<String> = threadId
 
     /**
      * Controls which (if any) tool is called by the model. `none` means the model will not call any
@@ -371,13 +383,15 @@ private constructor(
      * `{"type": "file_search"}` or `{"type": "function", "function": {"name": "my_function"}}`
      * forces the model to call that tool.
      */
-    @JsonProperty("tool_choice") @ExcludeMissing fun _toolChoice() = toolChoice
+    @JsonProperty("tool_choice")
+    @ExcludeMissing
+    fun _toolChoice(): JsonField<AssistantToolChoiceOption> = toolChoice
 
     /**
      * The list of tools that the
      * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
      */
-    @JsonProperty("tools") @ExcludeMissing fun _tools() = tools
+    @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<AssistantTool>> = tools
 
     /**
      * Controls for how a thread will be truncated prior to the run. Use this to control the intial
@@ -385,19 +399,19 @@ private constructor(
      */
     @JsonProperty("truncation_strategy")
     @ExcludeMissing
-    fun _truncationStrategy() = truncationStrategy
+    fun _truncationStrategy(): JsonField<TruncationStrategy> = truncationStrategy
 
     /**
      * Usage statistics related to the run. This value will be `null` if the run is not in a
      * terminal state (i.e. `in_progress`, `queued`, etc.).
      */
-    @JsonProperty("usage") @ExcludeMissing fun _usage() = usage
+    @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<Usage> = usage
 
     /** The sampling temperature used for this run. If not set, defaults to 1. */
-    @JsonProperty("temperature") @ExcludeMissing fun _temperature() = temperature
+    @JsonProperty("temperature") @ExcludeMissing fun _temperature(): JsonField<Double> = temperature
 
     /** The nucleus sampling value used for this run. If not set, defaults to 1. */
-    @JsonProperty("top_p") @ExcludeMissing fun _topP() = topP
+    @JsonProperty("top_p") @ExcludeMissing fun _topP(): JsonField<Double> = topP
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -446,31 +460,31 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var assistantId: JsonField<String> = JsonMissing.of()
-        private var cancelledAt: JsonField<Long> = JsonMissing.of()
-        private var completedAt: JsonField<Long> = JsonMissing.of()
-        private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var expiresAt: JsonField<Long> = JsonMissing.of()
-        private var failedAt: JsonField<Long> = JsonMissing.of()
-        private var incompleteDetails: JsonField<IncompleteDetails> = JsonMissing.of()
-        private var instructions: JsonField<String> = JsonMissing.of()
-        private var lastError: JsonField<LastError> = JsonMissing.of()
-        private var maxCompletionTokens: JsonField<Long> = JsonMissing.of()
-        private var maxPromptTokens: JsonField<Long> = JsonMissing.of()
-        private var metadata: JsonValue = JsonMissing.of()
-        private var model: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
-        private var parallelToolCalls: JsonField<Boolean> = JsonMissing.of()
-        private var requiredAction: JsonField<RequiredAction> = JsonMissing.of()
-        private var responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of()
-        private var startedAt: JsonField<Long> = JsonMissing.of()
-        private var status: JsonField<RunStatus> = JsonMissing.of()
-        private var threadId: JsonField<String> = JsonMissing.of()
-        private var toolChoice: JsonField<AssistantToolChoiceOption> = JsonMissing.of()
-        private var tools: JsonField<List<AssistantTool>> = JsonMissing.of()
-        private var truncationStrategy: JsonField<TruncationStrategy> = JsonMissing.of()
-        private var usage: JsonField<Usage> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var assistantId: JsonField<String>? = null
+        private var cancelledAt: JsonField<Long>? = null
+        private var completedAt: JsonField<Long>? = null
+        private var createdAt: JsonField<Long>? = null
+        private var expiresAt: JsonField<Long>? = null
+        private var failedAt: JsonField<Long>? = null
+        private var incompleteDetails: JsonField<IncompleteDetails>? = null
+        private var instructions: JsonField<String>? = null
+        private var lastError: JsonField<LastError>? = null
+        private var maxCompletionTokens: JsonField<Long>? = null
+        private var maxPromptTokens: JsonField<Long>? = null
+        private var metadata: JsonValue? = null
+        private var model: JsonField<String>? = null
+        private var object_: JsonField<Object>? = null
+        private var parallelToolCalls: JsonField<Boolean>? = null
+        private var requiredAction: JsonField<RequiredAction>? = null
+        private var responseFormat: JsonField<AssistantResponseFormatOption>? = null
+        private var startedAt: JsonField<Long>? = null
+        private var status: JsonField<RunStatus>? = null
+        private var threadId: JsonField<String>? = null
+        private var toolChoice: JsonField<AssistantToolChoiceOption>? = null
+        private var tools: JsonField<MutableList<AssistantTool>>? = null
+        private var truncationStrategy: JsonField<TruncationStrategy>? = null
+        private var usage: JsonField<Usage>? = null
         private var temperature: JsonField<Double> = JsonMissing.of()
         private var topP: JsonField<Double> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -499,7 +513,7 @@ private constructor(
             status = run.status
             threadId = run.threadId
             toolChoice = run.toolChoice
-            tools = run.tools
+            tools = run.tools.map { it.toMutableList() }
             truncationStrategy = run.truncationStrategy
             usage = run.usage
             temperature = run.temperature
@@ -526,13 +540,29 @@ private constructor(
         fun assistantId(assistantId: JsonField<String>) = apply { this.assistantId = assistantId }
 
         /** The Unix timestamp (in seconds) for when the run was cancelled. */
-        fun cancelledAt(cancelledAt: Long) = cancelledAt(JsonField.of(cancelledAt))
+        fun cancelledAt(cancelledAt: Long?) = cancelledAt(JsonField.ofNullable(cancelledAt))
+
+        /** The Unix timestamp (in seconds) for when the run was cancelled. */
+        fun cancelledAt(cancelledAt: Long) = cancelledAt(cancelledAt as Long?)
+
+        /** The Unix timestamp (in seconds) for when the run was cancelled. */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun cancelledAt(cancelledAt: Optional<Long>) =
+            cancelledAt(cancelledAt.orElse(null) as Long?)
 
         /** The Unix timestamp (in seconds) for when the run was cancelled. */
         fun cancelledAt(cancelledAt: JsonField<Long>) = apply { this.cancelledAt = cancelledAt }
 
         /** The Unix timestamp (in seconds) for when the run was completed. */
-        fun completedAt(completedAt: Long) = completedAt(JsonField.of(completedAt))
+        fun completedAt(completedAt: Long?) = completedAt(JsonField.ofNullable(completedAt))
+
+        /** The Unix timestamp (in seconds) for when the run was completed. */
+        fun completedAt(completedAt: Long) = completedAt(completedAt as Long?)
+
+        /** The Unix timestamp (in seconds) for when the run was completed. */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun completedAt(completedAt: Optional<Long>) =
+            completedAt(completedAt.orElse(null) as Long?)
 
         /** The Unix timestamp (in seconds) for when the run was completed. */
         fun completedAt(completedAt: JsonField<Long>) = apply { this.completedAt = completedAt }
@@ -544,20 +574,38 @@ private constructor(
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /** The Unix timestamp (in seconds) for when the run will expire. */
-        fun expiresAt(expiresAt: Long) = expiresAt(JsonField.of(expiresAt))
+        fun expiresAt(expiresAt: Long?) = expiresAt(JsonField.ofNullable(expiresAt))
+
+        /** The Unix timestamp (in seconds) for when the run will expire. */
+        fun expiresAt(expiresAt: Long) = expiresAt(expiresAt as Long?)
+
+        /** The Unix timestamp (in seconds) for when the run will expire. */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun expiresAt(expiresAt: Optional<Long>) = expiresAt(expiresAt.orElse(null) as Long?)
 
         /** The Unix timestamp (in seconds) for when the run will expire. */
         fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
 
         /** The Unix timestamp (in seconds) for when the run failed. */
-        fun failedAt(failedAt: Long) = failedAt(JsonField.of(failedAt))
+        fun failedAt(failedAt: Long?) = failedAt(JsonField.ofNullable(failedAt))
+
+        /** The Unix timestamp (in seconds) for when the run failed. */
+        fun failedAt(failedAt: Long) = failedAt(failedAt as Long?)
+
+        /** The Unix timestamp (in seconds) for when the run failed. */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun failedAt(failedAt: Optional<Long>) = failedAt(failedAt.orElse(null) as Long?)
 
         /** The Unix timestamp (in seconds) for when the run failed. */
         fun failedAt(failedAt: JsonField<Long>) = apply { this.failedAt = failedAt }
 
         /** Details on why the run is incomplete. Will be `null` if the run is not incomplete. */
-        fun incompleteDetails(incompleteDetails: IncompleteDetails) =
-            incompleteDetails(JsonField.of(incompleteDetails))
+        fun incompleteDetails(incompleteDetails: IncompleteDetails?) =
+            incompleteDetails(JsonField.ofNullable(incompleteDetails))
+
+        /** Details on why the run is incomplete. Will be `null` if the run is not incomplete. */
+        fun incompleteDetails(incompleteDetails: Optional<IncompleteDetails>) =
+            incompleteDetails(incompleteDetails.orElse(null))
 
         /** Details on why the run is incomplete. Will be `null` if the run is not incomplete. */
         fun incompleteDetails(incompleteDetails: JsonField<IncompleteDetails>) = apply {
@@ -579,7 +627,10 @@ private constructor(
         }
 
         /** The last error associated with this run. Will be `null` if there are no errors. */
-        fun lastError(lastError: LastError) = lastError(JsonField.of(lastError))
+        fun lastError(lastError: LastError?) = lastError(JsonField.ofNullable(lastError))
+
+        /** The last error associated with this run. Will be `null` if there are no errors. */
+        fun lastError(lastError: Optional<LastError>) = lastError(lastError.orElse(null))
 
         /** The last error associated with this run. Will be `null` if there are no errors. */
         fun lastError(lastError: JsonField<LastError>) = apply { this.lastError = lastError }
@@ -588,8 +639,23 @@ private constructor(
          * The maximum number of completion tokens specified to have been used over the course of
          * the run.
          */
+        fun maxCompletionTokens(maxCompletionTokens: Long?) =
+            maxCompletionTokens(JsonField.ofNullable(maxCompletionTokens))
+
+        /**
+         * The maximum number of completion tokens specified to have been used over the course of
+         * the run.
+         */
         fun maxCompletionTokens(maxCompletionTokens: Long) =
-            maxCompletionTokens(JsonField.of(maxCompletionTokens))
+            maxCompletionTokens(maxCompletionTokens as Long?)
+
+        /**
+         * The maximum number of completion tokens specified to have been used over the course of
+         * the run.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun maxCompletionTokens(maxCompletionTokens: Optional<Long>) =
+            maxCompletionTokens(maxCompletionTokens.orElse(null) as Long?)
 
         /**
          * The maximum number of completion tokens specified to have been used over the course of
@@ -603,7 +669,22 @@ private constructor(
          * The maximum number of prompt tokens specified to have been used over the course of the
          * run.
          */
-        fun maxPromptTokens(maxPromptTokens: Long) = maxPromptTokens(JsonField.of(maxPromptTokens))
+        fun maxPromptTokens(maxPromptTokens: Long?) =
+            maxPromptTokens(JsonField.ofNullable(maxPromptTokens))
+
+        /**
+         * The maximum number of prompt tokens specified to have been used over the course of the
+         * run.
+         */
+        fun maxPromptTokens(maxPromptTokens: Long) = maxPromptTokens(maxPromptTokens as Long?)
+
+        /**
+         * The maximum number of prompt tokens specified to have been used over the course of the
+         * run.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun maxPromptTokens(maxPromptTokens: Optional<Long>) =
+            maxPromptTokens(maxPromptTokens.orElse(null) as Long?)
 
         /**
          * The maximum number of prompt tokens specified to have been used over the course of the
@@ -659,8 +740,15 @@ private constructor(
          * Details on the action required to continue the run. Will be `null` if no action is
          * required.
          */
-        fun requiredAction(requiredAction: RequiredAction) =
-            requiredAction(JsonField.of(requiredAction))
+        fun requiredAction(requiredAction: RequiredAction?) =
+            requiredAction(JsonField.ofNullable(requiredAction))
+
+        /**
+         * Details on the action required to continue the run. Will be `null` if no action is
+         * required.
+         */
+        fun requiredAction(requiredAction: Optional<RequiredAction>) =
+            requiredAction(requiredAction.orElse(null))
 
         /**
          * Details on the action required to continue the run. Will be `null` if no action is
@@ -690,8 +778,31 @@ private constructor(
          * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
          * `max_tokens` or the conversation exceeded the max context length.
          */
-        fun responseFormat(responseFormat: AssistantResponseFormatOption) =
-            responseFormat(JsonField.of(responseFormat))
+        fun responseFormat(responseFormat: AssistantResponseFormatOption?) =
+            responseFormat(JsonField.ofNullable(responseFormat))
+
+        /**
+         * Specifies the format that the model must output. Compatible with
+         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
+         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
+         * Turbo models since `gpt-3.5-turbo-1106`.
+         *
+         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
+         * which ensures the model will match your supplied JSON schema. Learn more in the
+         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         *
+         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
+         * model generates is valid JSON.
+         *
+         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
+         * yourself via a system or user message. Without this, the model may generate an unending
+         * stream of whitespace until the generation reaches the token limit, resulting in a
+         * long-running and seemingly "stuck" request. Also note that the message content may be
+         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
+         * `max_tokens` or the conversation exceeded the max context length.
+         */
+        fun responseFormat(responseFormat: Optional<AssistantResponseFormatOption>) =
+            responseFormat(responseFormat.orElse(null))
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -717,8 +828,32 @@ private constructor(
             this.responseFormat = responseFormat
         }
 
+        /** `auto` is the default value */
+        fun responseFormat(behavior: AssistantResponseFormatOption.Behavior) =
+            responseFormat(AssistantResponseFormatOption.ofBehavior(behavior))
+
+        fun responseFormat(responseFormatText: ResponseFormatText) =
+            responseFormat(AssistantResponseFormatOption.ofResponseFormatText(responseFormatText))
+
+        fun responseFormat(responseFormatJsonObject: ResponseFormatJsonObject) =
+            responseFormat(
+                AssistantResponseFormatOption.ofResponseFormatJsonObject(responseFormatJsonObject)
+            )
+
+        fun responseFormat(responseFormatJsonSchema: ResponseFormatJsonSchema) =
+            responseFormat(
+                AssistantResponseFormatOption.ofResponseFormatJsonSchema(responseFormatJsonSchema)
+            )
+
         /** The Unix timestamp (in seconds) for when the run was started. */
-        fun startedAt(startedAt: Long) = startedAt(JsonField.of(startedAt))
+        fun startedAt(startedAt: Long?) = startedAt(JsonField.ofNullable(startedAt))
+
+        /** The Unix timestamp (in seconds) for when the run was started. */
+        fun startedAt(startedAt: Long) = startedAt(startedAt as Long?)
+
+        /** The Unix timestamp (in seconds) for when the run was started. */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun startedAt(startedAt: Optional<Long>) = startedAt(startedAt.orElse(null) as Long?)
 
         /** The Unix timestamp (in seconds) for when the run was started. */
         fun startedAt(startedAt: JsonField<Long>) = apply { this.startedAt = startedAt }
@@ -755,7 +890,19 @@ private constructor(
          * particular tool like `{"type": "file_search"}` or `{"type": "function", "function":
          * {"name": "my_function"}}` forces the model to call that tool.
          */
-        fun toolChoice(toolChoice: AssistantToolChoiceOption) = toolChoice(JsonField.of(toolChoice))
+        fun toolChoice(toolChoice: AssistantToolChoiceOption?) =
+            toolChoice(JsonField.ofNullable(toolChoice))
+
+        /**
+         * Controls which (if any) tool is called by the model. `none` means the model will not call
+         * any tools and instead generates a message. `auto` is the default value and means the
+         * model can pick between generating a message or calling one or more tools. `required`
+         * means the model must call one or more tools before responding to the user. Specifying a
+         * particular tool like `{"type": "file_search"}` or `{"type": "function", "function":
+         * {"name": "my_function"}}` forces the model to call that tool.
+         */
+        fun toolChoice(toolChoice: Optional<AssistantToolChoiceOption>) =
+            toolChoice(toolChoice.orElse(null))
 
         /**
          * Controls which (if any) tool is called by the model. `none` means the model will not call
@@ -770,6 +917,20 @@ private constructor(
         }
 
         /**
+         * `none` means the model will not call any tools and instead generates a message. `auto`
+         * means the model can pick between generating a message or calling one or more tools.
+         * `required` means the model must call one or more tools before responding to the user.
+         */
+        fun toolChoice(behavior: AssistantToolChoiceOption.Behavior) =
+            toolChoice(AssistantToolChoiceOption.ofBehavior(behavior))
+
+        /**
+         * Specifies a tool the model should use. Use to force the model to call a specific tool.
+         */
+        fun toolChoice(assistantToolChoice: AssistantToolChoice) =
+            toolChoice(AssistantToolChoiceOption.ofAssistantToolChoice(assistantToolChoice))
+
+        /**
          * The list of tools that the
          * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
          */
@@ -779,14 +940,40 @@ private constructor(
          * The list of tools that the
          * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
          */
-        fun tools(tools: JsonField<List<AssistantTool>>) = apply { this.tools = tools }
+        fun tools(tools: JsonField<List<AssistantTool>>) = apply {
+            this.tools = tools.map { it.toMutableList() }
+        }
+
+        /**
+         * The list of tools that the
+         * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
+         */
+        fun addTool(tool: AssistantTool) = apply {
+            tools =
+                (tools ?: JsonField.of(mutableListOf())).apply {
+                    asKnown()
+                        .orElseThrow {
+                            IllegalStateException(
+                                "Field was set to non-list type: ${javaClass.simpleName}"
+                            )
+                        }
+                        .add(tool)
+                }
+        }
 
         /**
          * Controls for how a thread will be truncated prior to the run. Use this to control the
          * intial context window of the run.
          */
-        fun truncationStrategy(truncationStrategy: TruncationStrategy) =
-            truncationStrategy(JsonField.of(truncationStrategy))
+        fun truncationStrategy(truncationStrategy: TruncationStrategy?) =
+            truncationStrategy(JsonField.ofNullable(truncationStrategy))
+
+        /**
+         * Controls for how a thread will be truncated prior to the run. Use this to control the
+         * intial context window of the run.
+         */
+        fun truncationStrategy(truncationStrategy: Optional<TruncationStrategy>) =
+            truncationStrategy(truncationStrategy.orElse(null))
 
         /**
          * Controls for how a thread will be truncated prior to the run. Use this to control the
@@ -800,7 +987,13 @@ private constructor(
          * Usage statistics related to the run. This value will be `null` if the run is not in a
          * terminal state (i.e. `in_progress`, `queued`, etc.).
          */
-        fun usage(usage: Usage) = usage(JsonField.of(usage))
+        fun usage(usage: Usage?) = usage(JsonField.ofNullable(usage))
+
+        /**
+         * Usage statistics related to the run. This value will be `null` if the run is not in a
+         * terminal state (i.e. `in_progress`, `queued`, etc.).
+         */
+        fun usage(usage: Optional<Usage>) = usage(usage.orElse(null))
 
         /**
          * Usage statistics related to the run. This value will be `null` if the run is not in a
@@ -809,13 +1002,28 @@ private constructor(
         fun usage(usage: JsonField<Usage>) = apply { this.usage = usage }
 
         /** The sampling temperature used for this run. If not set, defaults to 1. */
-        fun temperature(temperature: Double) = temperature(JsonField.of(temperature))
+        fun temperature(temperature: Double?) = temperature(JsonField.ofNullable(temperature))
+
+        /** The sampling temperature used for this run. If not set, defaults to 1. */
+        fun temperature(temperature: Double) = temperature(temperature as Double?)
+
+        /** The sampling temperature used for this run. If not set, defaults to 1. */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun temperature(temperature: Optional<Double>) =
+            temperature(temperature.orElse(null) as Double?)
 
         /** The sampling temperature used for this run. If not set, defaults to 1. */
         fun temperature(temperature: JsonField<Double>) = apply { this.temperature = temperature }
 
         /** The nucleus sampling value used for this run. If not set, defaults to 1. */
-        fun topP(topP: Double) = topP(JsonField.of(topP))
+        fun topP(topP: Double?) = topP(JsonField.ofNullable(topP))
+
+        /** The nucleus sampling value used for this run. If not set, defaults to 1. */
+        fun topP(topP: Double) = topP(topP as Double?)
+
+        /** The nucleus sampling value used for this run. If not set, defaults to 1. */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
 
         /** The nucleus sampling value used for this run. If not set, defaults to 1. */
         fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
@@ -841,31 +1049,40 @@ private constructor(
 
         fun build(): Run =
             Run(
-                id,
-                assistantId,
-                cancelledAt,
-                completedAt,
-                createdAt,
-                expiresAt,
-                failedAt,
-                incompleteDetails,
-                instructions,
-                lastError,
-                maxCompletionTokens,
-                maxPromptTokens,
-                metadata,
-                model,
-                object_,
-                parallelToolCalls,
-                requiredAction,
-                responseFormat,
-                startedAt,
-                status,
-                threadId,
-                toolChoice,
-                tools.map { it.toImmutable() },
-                truncationStrategy,
-                usage,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(assistantId) { "`assistantId` is required but was not set" },
+                checkNotNull(cancelledAt) { "`cancelledAt` is required but was not set" },
+                checkNotNull(completedAt) { "`completedAt` is required but was not set" },
+                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
+                checkNotNull(expiresAt) { "`expiresAt` is required but was not set" },
+                checkNotNull(failedAt) { "`failedAt` is required but was not set" },
+                checkNotNull(incompleteDetails) {
+                    "`incompleteDetails` is required but was not set"
+                },
+                checkNotNull(instructions) { "`instructions` is required but was not set" },
+                checkNotNull(lastError) { "`lastError` is required but was not set" },
+                checkNotNull(maxCompletionTokens) {
+                    "`maxCompletionTokens` is required but was not set"
+                },
+                checkNotNull(maxPromptTokens) { "`maxPromptTokens` is required but was not set" },
+                checkNotNull(metadata) { "`metadata` is required but was not set" },
+                checkNotNull(model) { "`model` is required but was not set" },
+                checkNotNull(object_) { "`object_` is required but was not set" },
+                checkNotNull(parallelToolCalls) {
+                    "`parallelToolCalls` is required but was not set"
+                },
+                checkNotNull(requiredAction) { "`requiredAction` is required but was not set" },
+                checkNotNull(responseFormat) { "`responseFormat` is required but was not set" },
+                checkNotNull(startedAt) { "`startedAt` is required but was not set" },
+                checkNotNull(status) { "`status` is required but was not set" },
+                checkNotNull(threadId) { "`threadId` is required but was not set" },
+                checkNotNull(toolChoice) { "`toolChoice` is required but was not set" },
+                checkNotNull(tools) { "`tools` is required but was not set" }
+                    .map { it.toImmutable() },
+                checkNotNull(truncationStrategy) {
+                    "`truncationStrategy` is required but was not set"
+                },
+                checkNotNull(usage) { "`usage` is required but was not set" },
                 temperature,
                 topP,
                 additionalProperties.toImmutable(),
@@ -894,7 +1111,7 @@ private constructor(
          * The reason why the run is incomplete. This will point to which specific token limit was
          * reached over the course of the run.
          */
-        @JsonProperty("reason") @ExcludeMissing fun _reason() = reason
+        @JsonProperty("reason") @ExcludeMissing fun _reason(): JsonField<Reason> = reason
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1057,10 +1274,10 @@ private constructor(
         fun message(): String = message.getRequired("message")
 
         /** One of `server_error`, `rate_limit_exceeded`, or `invalid_prompt`. */
-        @JsonProperty("code") @ExcludeMissing fun _code() = code
+        @JsonProperty("code") @ExcludeMissing fun _code(): JsonField<Code> = code
 
         /** A human-readable description of the error. */
-        @JsonProperty("message") @ExcludeMissing fun _message() = message
+        @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1085,8 +1302,8 @@ private constructor(
 
         class Builder {
 
-            private var code: JsonField<Code> = JsonMissing.of()
-            private var message: JsonField<String> = JsonMissing.of()
+            private var code: JsonField<Code>? = null
+            private var message: JsonField<String>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1129,8 +1346,8 @@ private constructor(
 
             fun build(): LastError =
                 LastError(
-                    code,
-                    message,
+                    checkNotNull(code) { "`code` is required but was not set" },
+                    checkNotNull(message) { "`message` is required but was not set" },
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1292,10 +1509,10 @@ private constructor(
         /** Details on the tool outputs needed for this run to continue. */
         @JsonProperty("submit_tool_outputs")
         @ExcludeMissing
-        fun _submitToolOutputs() = submitToolOutputs
+        fun _submitToolOutputs(): JsonField<SubmitToolOutputs> = submitToolOutputs
 
         /** For now, this is always `submit_tool_outputs`. */
-        @JsonProperty("type") @ExcludeMissing fun _type() = type
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1320,8 +1537,8 @@ private constructor(
 
         class Builder {
 
-            private var submitToolOutputs: JsonField<SubmitToolOutputs> = JsonMissing.of()
-            private var type: JsonField<Type> = JsonMissing.of()
+            private var submitToolOutputs: JsonField<SubmitToolOutputs>? = null
+            private var type: JsonField<Type>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1367,8 +1584,10 @@ private constructor(
 
             fun build(): RequiredAction =
                 RequiredAction(
-                    submitToolOutputs,
-                    type,
+                    checkNotNull(submitToolOutputs) {
+                        "`submitToolOutputs` is required but was not set"
+                    },
+                    checkNotNull(type) { "`type` is required but was not set" },
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1391,7 +1610,9 @@ private constructor(
                 toolCalls.getRequired("tool_calls")
 
             /** A list of the relevant tool calls. */
-            @JsonProperty("tool_calls") @ExcludeMissing fun _toolCalls() = toolCalls
+            @JsonProperty("tool_calls")
+            @ExcludeMissing
+            fun _toolCalls(): JsonField<List<RequiredActionFunctionToolCall>> = toolCalls
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -1415,13 +1636,13 @@ private constructor(
 
             class Builder {
 
-                private var toolCalls: JsonField<List<RequiredActionFunctionToolCall>> =
-                    JsonMissing.of()
+                private var toolCalls: JsonField<MutableList<RequiredActionFunctionToolCall>>? =
+                    null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(submitToolOutputs: SubmitToolOutputs) = apply {
-                    toolCalls = submitToolOutputs.toolCalls
+                    toolCalls = submitToolOutputs.toolCalls.map { it.toMutableList() }
                     additionalProperties = submitToolOutputs.additionalProperties.toMutableMap()
                 }
 
@@ -1431,7 +1652,21 @@ private constructor(
 
                 /** A list of the relevant tool calls. */
                 fun toolCalls(toolCalls: JsonField<List<RequiredActionFunctionToolCall>>) = apply {
-                    this.toolCalls = toolCalls
+                    this.toolCalls = toolCalls.map { it.toMutableList() }
+                }
+
+                /** A list of the relevant tool calls. */
+                fun addToolCall(toolCall: RequiredActionFunctionToolCall) = apply {
+                    toolCalls =
+                        (toolCalls ?: JsonField.of(mutableListOf())).apply {
+                            asKnown()
+                                .orElseThrow {
+                                    IllegalStateException(
+                                        "Field was set to non-list type: ${javaClass.simpleName}"
+                                    )
+                                }
+                                .add(toolCall)
+                        }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1458,7 +1693,8 @@ private constructor(
 
                 fun build(): SubmitToolOutputs =
                     SubmitToolOutputs(
-                        toolCalls.map { it.toImmutable() },
+                        checkNotNull(toolCalls) { "`toolCalls` is required but was not set" }
+                            .map { it.toImmutable() },
                         additionalProperties.toImmutable()
                     )
             }
@@ -1587,13 +1823,15 @@ private constructor(
          * thread. When set to `auto`, messages in the middle of the thread will be dropped to fit
          * the context length of the model, `max_prompt_tokens`.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type() = type
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
         /**
          * The number of most recent messages from the thread when constructing the context for the
          * run.
          */
-        @JsonProperty("last_messages") @ExcludeMissing fun _lastMessages() = lastMessages
+        @JsonProperty("last_messages")
+        @ExcludeMissing
+        fun _lastMessages(): JsonField<Long> = lastMessages
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1618,7 +1856,7 @@ private constructor(
 
         class Builder {
 
-            private var type: JsonField<Type> = JsonMissing.of()
+            private var type: JsonField<Type>? = null
             private var lastMessages: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -1649,7 +1887,21 @@ private constructor(
              * The number of most recent messages from the thread when constructing the context for
              * the run.
              */
-            fun lastMessages(lastMessages: Long) = lastMessages(JsonField.of(lastMessages))
+            fun lastMessages(lastMessages: Long?) = lastMessages(JsonField.ofNullable(lastMessages))
+
+            /**
+             * The number of most recent messages from the thread when constructing the context for
+             * the run.
+             */
+            fun lastMessages(lastMessages: Long) = lastMessages(lastMessages as Long?)
+
+            /**
+             * The number of most recent messages from the thread when constructing the context for
+             * the run.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun lastMessages(lastMessages: Optional<Long>) =
+                lastMessages(lastMessages.orElse(null) as Long?)
 
             /**
              * The number of most recent messages from the thread when constructing the context for
@@ -1680,7 +1932,7 @@ private constructor(
 
             fun build(): TruncationStrategy =
                 TruncationStrategy(
-                    type,
+                    checkNotNull(type) { "`type` is required but was not set" },
                     lastMessages,
                     additionalProperties.toImmutable(),
                 )
@@ -1794,13 +2046,17 @@ private constructor(
         /** Number of completion tokens used over the course of the run. */
         @JsonProperty("completion_tokens")
         @ExcludeMissing
-        fun _completionTokens() = completionTokens
+        fun _completionTokens(): JsonField<Long> = completionTokens
 
         /** Number of prompt tokens used over the course of the run. */
-        @JsonProperty("prompt_tokens") @ExcludeMissing fun _promptTokens() = promptTokens
+        @JsonProperty("prompt_tokens")
+        @ExcludeMissing
+        fun _promptTokens(): JsonField<Long> = promptTokens
 
         /** Total number of tokens used (prompt + completion). */
-        @JsonProperty("total_tokens") @ExcludeMissing fun _totalTokens() = totalTokens
+        @JsonProperty("total_tokens")
+        @ExcludeMissing
+        fun _totalTokens(): JsonField<Long> = totalTokens
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1826,9 +2082,9 @@ private constructor(
 
         class Builder {
 
-            private var completionTokens: JsonField<Long> = JsonMissing.of()
-            private var promptTokens: JsonField<Long> = JsonMissing.of()
-            private var totalTokens: JsonField<Long> = JsonMissing.of()
+            private var completionTokens: JsonField<Long>? = null
+            private var promptTokens: JsonField<Long>? = null
+            private var totalTokens: JsonField<Long>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1883,9 +2139,11 @@ private constructor(
 
             fun build(): Usage =
                 Usage(
-                    completionTokens,
-                    promptTokens,
-                    totalTokens,
+                    checkNotNull(completionTokens) {
+                        "`completionTokens` is required but was not set"
+                    },
+                    checkNotNull(promptTokens) { "`promptTokens` is required but was not set" },
+                    checkNotNull(totalTokens) { "`totalTokens` is required but was not set" },
                     additionalProperties.toImmutable(),
                 )
         }

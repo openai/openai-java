@@ -37,12 +37,12 @@ private constructor(
     fun image(): Optional<Image> = Optional.ofNullable(image.getNullable("image"))
 
     /** The index of the output in the outputs array. */
-    @JsonProperty("index") @ExcludeMissing fun _index() = index
+    @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
     /** Always `image`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
-    @JsonProperty("image") @ExcludeMissing fun _image() = image
+    @JsonProperty("image") @ExcludeMissing fun _image(): JsonField<Image> = image
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -68,8 +68,8 @@ private constructor(
 
     class Builder {
 
-        private var index: JsonField<Long> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var index: JsonField<Long>? = null
+        private var type: JsonField<Type>? = null
         private var image: JsonField<Image> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -118,8 +118,8 @@ private constructor(
 
         fun build(): CodeInterpreterOutputImage =
             CodeInterpreterOutputImage(
-                index,
-                type,
+                checkNotNull(index) { "`index` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 image,
                 additionalProperties.toImmutable(),
             )
@@ -191,7 +191,7 @@ private constructor(
         fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
 
         /** The [file](https://platform.openai.com/docs/api-reference/files) ID of the image. */
-        @JsonProperty("file_id") @ExcludeMissing fun _fileId() = fileId
+        @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
         @JsonAnyGetter
         @ExcludeMissing

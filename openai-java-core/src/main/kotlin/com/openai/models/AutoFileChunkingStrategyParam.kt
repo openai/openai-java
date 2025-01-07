@@ -33,7 +33,7 @@ private constructor(
     fun type(): Type = type.getRequired("type")
 
     /** Always `auto`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -57,7 +57,7 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var type: JsonField<Type>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -92,7 +92,10 @@ private constructor(
         }
 
         fun build(): AutoFileChunkingStrategyParam =
-            AutoFileChunkingStrategyParam(type, additionalProperties.toImmutable())
+            AutoFileChunkingStrategyParam(
+                checkNotNull(type) { "`type` is required but was not set" },
+                additionalProperties.toImmutable()
+            )
     }
 
     class Type

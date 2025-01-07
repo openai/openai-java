@@ -48,16 +48,16 @@ private constructor(
     fun ownedBy(): String = ownedBy.getRequired("owned_by")
 
     /** The model identifier, which can be referenced in the API endpoints. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** The Unix timestamp (in seconds) when the model was created. */
-    @JsonProperty("created") @ExcludeMissing fun _created() = created
+    @JsonProperty("created") @ExcludeMissing fun _created(): JsonField<Long> = created
 
     /** The object type, which is always "model". */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /** The organization that owns the model. */
-    @JsonProperty("owned_by") @ExcludeMissing fun _ownedBy() = ownedBy
+    @JsonProperty("owned_by") @ExcludeMissing fun _ownedBy(): JsonField<String> = ownedBy
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -84,10 +84,10 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var created: JsonField<Long> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
-        private var ownedBy: JsonField<String> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var created: JsonField<Long>? = null
+        private var object_: JsonField<Object>? = null
+        private var ownedBy: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -144,10 +144,10 @@ private constructor(
 
         fun build(): Model =
             Model(
-                id,
-                created,
-                object_,
-                ownedBy,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(created) { "`created` is required but was not set" },
+                checkNotNull(object_) { "`object_` is required but was not set" },
+                checkNotNull(ownedBy) { "`ownedBy` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }

@@ -35,10 +35,10 @@ private constructor(
     /** The type of the content part. */
     fun type(): Type = type.getRequired("type")
 
-    @JsonProperty("image_url") @ExcludeMissing fun _imageUrl() = imageUrl
+    @JsonProperty("image_url") @ExcludeMissing fun _imageUrl(): JsonField<ImageUrl> = imageUrl
 
     /** The type of the content part. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -63,8 +63,8 @@ private constructor(
 
     class Builder {
 
-        private var imageUrl: JsonField<ImageUrl> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var imageUrl: JsonField<ImageUrl>? = null
+        private var type: JsonField<Type>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -106,8 +106,8 @@ private constructor(
 
         fun build(): ChatCompletionContentPartImage =
             ChatCompletionContentPartImage(
-                imageUrl,
-                type,
+                checkNotNull(imageUrl) { "`imageUrl` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }
@@ -134,13 +134,13 @@ private constructor(
         fun detail(): Optional<Detail> = Optional.ofNullable(detail.getNullable("detail"))
 
         /** Either a URL of the image or the base64 encoded image data. */
-        @JsonProperty("url") @ExcludeMissing fun _url() = url
+        @JsonProperty("url") @ExcludeMissing fun _url(): JsonField<String> = url
 
         /**
          * Specifies the detail level of the image. Learn more in the
          * [Vision guide](https://platform.openai.com/docs/guides/vision#low-or-high-fidelity-image-understanding).
          */
-        @JsonProperty("detail") @ExcludeMissing fun _detail() = detail
+        @JsonProperty("detail") @ExcludeMissing fun _detail(): JsonField<Detail> = detail
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -165,7 +165,7 @@ private constructor(
 
         class Builder {
 
-            private var url: JsonField<String> = JsonMissing.of()
+            private var url: JsonField<String>? = null
             private var detail: JsonField<Detail> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -215,7 +215,7 @@ private constructor(
 
             fun build(): ImageUrl =
                 ImageUrl(
-                    url,
+                    checkNotNull(url) { "`url` is required but was not set" },
                     detail,
                     additionalProperties.toImmutable(),
                 )

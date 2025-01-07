@@ -52,13 +52,13 @@ private constructor(
     fun toolCallId(): String = toolCallId.getRequired("tool_call_id")
 
     /** The contents of the tool message. */
-    @JsonProperty("content") @ExcludeMissing fun _content() = content
+    @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<Content> = content
 
     /** The role of the messages author, in this case `tool`. */
-    @JsonProperty("role") @ExcludeMissing fun _role() = role
+    @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
 
     /** Tool call that this message is responding to. */
-    @JsonProperty("tool_call_id") @ExcludeMissing fun _toolCallId() = toolCallId
+    @JsonProperty("tool_call_id") @ExcludeMissing fun _toolCallId(): JsonField<String> = toolCallId
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -84,9 +84,9 @@ private constructor(
 
     class Builder {
 
-        private var content: JsonField<Content> = JsonMissing.of()
-        private var role: JsonField<Role> = JsonMissing.of()
-        private var toolCallId: JsonField<String> = JsonMissing.of()
+        private var content: JsonField<Content>? = null
+        private var role: JsonField<Role>? = null
+        private var toolCallId: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -103,6 +103,16 @@ private constructor(
 
         /** The contents of the tool message. */
         fun content(content: JsonField<Content>) = apply { this.content = content }
+
+        /** The contents of the tool message. */
+        fun content(textContent: String) = content(Content.ofTextContent(textContent))
+
+        /**
+         * An array of content parts with a defined type. For tool messages, only type `text` is
+         * supported.
+         */
+        fun contentOfArrayOfContentParts(arrayOfContentParts: List<ChatCompletionContentPartText>) =
+            content(Content.ofArrayOfContentParts(arrayOfContentParts))
 
         /** The role of the messages author, in this case `tool`. */
         fun role(role: Role) = role(JsonField.of(role))
@@ -137,9 +147,9 @@ private constructor(
 
         fun build(): ChatCompletionToolMessageParam =
             ChatCompletionToolMessageParam(
-                content,
-                role,
-                toolCallId,
+                checkNotNull(content) { "`content` is required but was not set" },
+                checkNotNull(role) { "`role` is required but was not set" },
+                checkNotNull(toolCallId) { "`toolCallId` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }

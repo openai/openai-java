@@ -18,6 +18,7 @@ import com.openai.core.BaseSerializer
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
+import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.getOrThrow
@@ -74,11 +75,48 @@ constructor(
      */
     fun user(): Optional<String> = body.user()
 
+    /**
+     * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in a
+     * single request, pass an array of strings or array of token arrays. The input must not exceed
+     * the max input tokens for the model (8192 tokens for `text-embedding-ada-002`), cannot be an
+     * empty string, and any array must be 2048 dimensions or less.
+     * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
+     * for counting tokens.
+     */
+    fun _input(): JsonField<Input> = body._input()
+
+    /**
+     * ID of the model to use. You can use the
+     * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all of
+     * your available models, or see our [Model overview](https://platform.openai.com/docs/models)
+     * for descriptions of them.
+     */
+    fun _model(): JsonField<EmbeddingModel> = body._model()
+
+    /**
+     * The number of dimensions the resulting output embeddings should have. Only supported in
+     * `text-embedding-3` and later models.
+     */
+    fun _dimensions(): JsonField<Long> = body._dimensions()
+
+    /**
+     * The format to return the embeddings in. Can be either `float` or
+     * [`base64`](https://pypi.org/project/pybase64/).
+     */
+    fun _encodingFormat(): JsonField<EncodingFormat> = body._encodingFormat()
+
+    /**
+     * A unique identifier representing your end-user, which can help OpenAI to monitor and detect
+     * abuse.
+     * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+     */
+    fun _user(): JsonField<String> = body._user()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     @JvmSynthetic internal fun getBody(): EmbeddingCreateBody = body
 
@@ -90,11 +128,21 @@ constructor(
     class EmbeddingCreateBody
     @JsonCreator
     internal constructor(
-        @JsonProperty("input") private val input: Input,
-        @JsonProperty("model") private val model: EmbeddingModel,
-        @JsonProperty("dimensions") private val dimensions: Long?,
-        @JsonProperty("encoding_format") private val encodingFormat: EncodingFormat?,
-        @JsonProperty("user") private val user: String?,
+        @JsonProperty("input")
+        @ExcludeMissing
+        private val input: JsonField<Input> = JsonMissing.of(),
+        @JsonProperty("model")
+        @ExcludeMissing
+        private val model: JsonField<EmbeddingModel> = JsonMissing.of(),
+        @JsonProperty("dimensions")
+        @ExcludeMissing
+        private val dimensions: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("encoding_format")
+        @ExcludeMissing
+        private val encodingFormat: JsonField<EncodingFormat> = JsonMissing.of(),
+        @JsonProperty("user")
+        @ExcludeMissing
+        private val user: JsonField<String> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -107,7 +155,7 @@ constructor(
          * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
          * for counting tokens.
          */
-        @JsonProperty("input") fun input(): Input = input
+        fun input(): Input = input.getRequired("input")
 
         /**
          * ID of the model to use. You can use the
@@ -115,32 +163,83 @@ constructor(
          * of your available models, or see our
          * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
          */
-        @JsonProperty("model") fun model(): EmbeddingModel = model
+        fun model(): EmbeddingModel = model.getRequired("model")
 
         /**
          * The number of dimensions the resulting output embeddings should have. Only supported in
          * `text-embedding-3` and later models.
          */
-        @JsonProperty("dimensions")
-        fun dimensions(): Optional<Long> = Optional.ofNullable(dimensions)
+        fun dimensions(): Optional<Long> = Optional.ofNullable(dimensions.getNullable("dimensions"))
 
         /**
          * The format to return the embeddings in. Can be either `float` or
          * [`base64`](https://pypi.org/project/pybase64/).
          */
-        @JsonProperty("encoding_format")
-        fun encodingFormat(): Optional<EncodingFormat> = Optional.ofNullable(encodingFormat)
+        fun encodingFormat(): Optional<EncodingFormat> =
+            Optional.ofNullable(encodingFormat.getNullable("encoding_format"))
 
         /**
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
          * detect abuse.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
          */
-        @JsonProperty("user") fun user(): Optional<String> = Optional.ofNullable(user)
+        fun user(): Optional<String> = Optional.ofNullable(user.getNullable("user"))
+
+        /**
+         * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in
+         * a single request, pass an array of strings or array of token arrays. The input must not
+         * exceed the max input tokens for the model (8192 tokens for `text-embedding-ada-002`),
+         * cannot be an empty string, and any array must be 2048 dimensions or less.
+         * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
+         * for counting tokens.
+         */
+        @JsonProperty("input") @ExcludeMissing fun _input(): JsonField<Input> = input
+
+        /**
+         * ID of the model to use. You can use the
+         * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all
+         * of your available models, or see our
+         * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+         */
+        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<EmbeddingModel> = model
+
+        /**
+         * The number of dimensions the resulting output embeddings should have. Only supported in
+         * `text-embedding-3` and later models.
+         */
+        @JsonProperty("dimensions") @ExcludeMissing fun _dimensions(): JsonField<Long> = dimensions
+
+        /**
+         * The format to return the embeddings in. Can be either `float` or
+         * [`base64`](https://pypi.org/project/pybase64/).
+         */
+        @JsonProperty("encoding_format")
+        @ExcludeMissing
+        fun _encodingFormat(): JsonField<EncodingFormat> = encodingFormat
+
+        /**
+         * A unique identifier representing your end-user, which can help OpenAI to monitor and
+         * detect abuse.
+         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         */
+        @JsonProperty("user") @ExcludeMissing fun _user(): JsonField<String> = user
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): EmbeddingCreateBody = apply {
+            if (!validated) {
+                input()
+                model()
+                dimensions()
+                encodingFormat()
+                user()
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -151,11 +250,11 @@ constructor(
 
         class Builder {
 
-            private var input: Input? = null
-            private var model: EmbeddingModel? = null
-            private var dimensions: Long? = null
-            private var encodingFormat: EncodingFormat? = null
-            private var user: String? = null
+            private var input: JsonField<Input>? = null
+            private var model: JsonField<EmbeddingModel>? = null
+            private var dimensions: JsonField<Long> = JsonMissing.of()
+            private var encodingFormat: JsonField<EncodingFormat> = JsonMissing.of()
+            private var user: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -177,25 +276,33 @@ constructor(
              * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
              * for counting tokens.
              */
-            fun input(input: Input) = apply { this.input = input }
+            fun input(input: Input) = input(JsonField.of(input))
+
+            /**
+             * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs
+             * in a single request, pass an array of strings or array of token arrays. The input
+             * must not exceed the max input tokens for the model (8192 tokens for
+             * `text-embedding-ada-002`), cannot be an empty string, and any array must be 2048
+             * dimensions or less.
+             * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
+             * for counting tokens.
+             */
+            fun input(input: JsonField<Input>) = apply { this.input = input }
 
             /** The string that will be turned into an embedding. */
-            fun input(string: String) = apply { this.input = Input.ofString(string) }
+            fun input(string: String) = input(Input.ofString(string))
 
             /** The array of strings that will be turned into an embedding. */
-            fun inputOfArrayOfStrings(arrayOfStrings: List<String>) = apply {
-                this.input = Input.ofArrayOfStrings(arrayOfStrings)
-            }
+            fun inputOfArrayOfStrings(arrayOfStrings: List<String>) =
+                input(Input.ofArrayOfStrings(arrayOfStrings))
 
             /** The array of integers that will be turned into an embedding. */
-            fun inputOfArrayOfTokens(arrayOfTokens: List<Long>) = apply {
-                this.input = Input.ofArrayOfTokens(arrayOfTokens)
-            }
+            fun inputOfArrayOfTokens(arrayOfTokens: List<Long>) =
+                input(Input.ofArrayOfTokens(arrayOfTokens))
 
             /** The array of arrays containing integers that will be turned into an embedding. */
-            fun inputOfArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>) = apply {
-                this.input = Input.ofArrayOfTokenArrays(arrayOfTokenArrays)
-            }
+            fun inputOfArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>) =
+                input(Input.ofArrayOfTokenArrays(arrayOfTokenArrays))
 
             /**
              * ID of the model to use. You can use the
@@ -203,7 +310,7 @@ constructor(
              * all of your available models, or see our
              * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
              */
-            fun model(model: EmbeddingModel) = apply { this.model = model }
+            fun model(model: EmbeddingModel) = model(JsonField.of(model))
 
             /**
              * ID of the model to use. You can use the
@@ -211,56 +318,56 @@ constructor(
              * all of your available models, or see our
              * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
              */
-            fun model(value: String) = apply { model = EmbeddingModel.of(value) }
+            fun model(model: JsonField<EmbeddingModel>) = apply { this.model = model }
+
+            /**
+             * ID of the model to use. You can use the
+             * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see
+             * all of your available models, or see our
+             * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+             */
+            fun model(value: String) = apply { model(EmbeddingModel.of(value)) }
 
             /**
              * The number of dimensions the resulting output embeddings should have. Only supported
              * in `text-embedding-3` and later models.
              */
-            fun dimensions(dimensions: Long?) = apply { this.dimensions = dimensions }
+            fun dimensions(dimensions: Long) = dimensions(JsonField.of(dimensions))
 
             /**
              * The number of dimensions the resulting output embeddings should have. Only supported
              * in `text-embedding-3` and later models.
              */
-            fun dimensions(dimensions: Long) = dimensions(dimensions as Long?)
-
-            /**
-             * The number of dimensions the resulting output embeddings should have. Only supported
-             * in `text-embedding-3` and later models.
-             */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun dimensions(dimensions: Optional<Long>) =
-                dimensions(dimensions.orElse(null) as Long?)
+            fun dimensions(dimensions: JsonField<Long>) = apply { this.dimensions = dimensions }
 
             /**
              * The format to return the embeddings in. Can be either `float` or
              * [`base64`](https://pypi.org/project/pybase64/).
              */
-            fun encodingFormat(encodingFormat: EncodingFormat?) = apply {
+            fun encodingFormat(encodingFormat: EncodingFormat) =
+                encodingFormat(JsonField.of(encodingFormat))
+
+            /**
+             * The format to return the embeddings in. Can be either `float` or
+             * [`base64`](https://pypi.org/project/pybase64/).
+             */
+            fun encodingFormat(encodingFormat: JsonField<EncodingFormat>) = apply {
                 this.encodingFormat = encodingFormat
             }
 
             /**
-             * The format to return the embeddings in. Can be either `float` or
-             * [`base64`](https://pypi.org/project/pybase64/).
+             * A unique identifier representing your end-user, which can help OpenAI to monitor and
+             * detect abuse.
+             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
              */
-            fun encodingFormat(encodingFormat: Optional<EncodingFormat>) =
-                encodingFormat(encodingFormat.orElse(null))
+            fun user(user: String) = user(JsonField.of(user))
 
             /**
              * A unique identifier representing your end-user, which can help OpenAI to monitor and
              * detect abuse.
              * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
              */
-            fun user(user: String?) = apply { this.user = user }
-
-            /**
-             * A unique identifier representing your end-user, which can help OpenAI to monitor and
-             * detect abuse.
-             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
-             */
-            fun user(user: Optional<String>) = user(user.orElse(null))
+            fun user(user: JsonField<String>) = apply { this.user = user }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -341,6 +448,16 @@ constructor(
          */
         fun input(input: Input) = apply { body.input(input) }
 
+        /**
+         * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in
+         * a single request, pass an array of strings or array of token arrays. The input must not
+         * exceed the max input tokens for the model (8192 tokens for `text-embedding-ada-002`),
+         * cannot be an empty string, and any array must be 2048 dimensions or less.
+         * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
+         * for counting tokens.
+         */
+        fun input(input: JsonField<Input>) = apply { body.input(input) }
+
         /** The string that will be turned into an embedding. */
         fun input(string: String) = apply { body.input(string) }
 
@@ -373,32 +490,33 @@ constructor(
          * of your available models, or see our
          * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
          */
+        fun model(model: JsonField<EmbeddingModel>) = apply { body.model(model) }
+
+        /**
+         * ID of the model to use. You can use the
+         * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all
+         * of your available models, or see our
+         * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+         */
         fun model(value: String) = apply { body.model(value) }
 
         /**
          * The number of dimensions the resulting output embeddings should have. Only supported in
          * `text-embedding-3` and later models.
          */
-        fun dimensions(dimensions: Long?) = apply { body.dimensions(dimensions) }
+        fun dimensions(dimensions: Long) = apply { body.dimensions(dimensions) }
 
         /**
          * The number of dimensions the resulting output embeddings should have. Only supported in
          * `text-embedding-3` and later models.
          */
-        fun dimensions(dimensions: Long) = dimensions(dimensions as Long?)
-
-        /**
-         * The number of dimensions the resulting output embeddings should have. Only supported in
-         * `text-embedding-3` and later models.
-         */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun dimensions(dimensions: Optional<Long>) = dimensions(dimensions.orElse(null) as Long?)
+        fun dimensions(dimensions: JsonField<Long>) = apply { body.dimensions(dimensions) }
 
         /**
          * The format to return the embeddings in. Can be either `float` or
          * [`base64`](https://pypi.org/project/pybase64/).
          */
-        fun encodingFormat(encodingFormat: EncodingFormat?) = apply {
+        fun encodingFormat(encodingFormat: EncodingFormat) = apply {
             body.encodingFormat(encodingFormat)
         }
 
@@ -406,22 +524,42 @@ constructor(
          * The format to return the embeddings in. Can be either `float` or
          * [`base64`](https://pypi.org/project/pybase64/).
          */
-        fun encodingFormat(encodingFormat: Optional<EncodingFormat>) =
-            encodingFormat(encodingFormat.orElse(null))
+        fun encodingFormat(encodingFormat: JsonField<EncodingFormat>) = apply {
+            body.encodingFormat(encodingFormat)
+        }
 
         /**
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
          * detect abuse.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
          */
-        fun user(user: String?) = apply { body.user(user) }
+        fun user(user: String) = apply { body.user(user) }
 
         /**
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
          * detect abuse.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
          */
-        fun user(user: Optional<String>) = user(user.orElse(null))
+        fun user(user: JsonField<String>) = apply { body.user(user) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -521,25 +659,6 @@ constructor(
             additionalQueryParams.removeAll(keys)
         }
 
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            body.additionalProperties(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            body.putAdditionalProperty(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                body.putAllAdditionalProperties(additionalBodyProperties)
-            }
-
-        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
-
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            body.removeAllAdditionalProperties(keys)
-        }
-
         fun build(): EmbeddingCreateParams =
             EmbeddingCreateParams(
                 body.build(),
@@ -566,6 +685,8 @@ constructor(
         private val arrayOfTokenArrays: List<List<Long>>? = null,
         private val _json: JsonValue? = null,
     ) {
+
+        private var validated: Boolean = false
 
         /** The string that will be turned into an embedding. */
         fun string(): Optional<String> = Optional.ofNullable(string)
@@ -604,6 +725,20 @@ constructor(
                 arrayOfTokens != null -> visitor.visitArrayOfTokens(arrayOfTokens)
                 arrayOfTokenArrays != null -> visitor.visitArrayOfTokenArrays(arrayOfTokenArrays)
                 else -> visitor.unknown(_json)
+            }
+        }
+
+        fun validate(): Input = apply {
+            if (!validated) {
+                if (
+                    string == null &&
+                        arrayOfStrings == null &&
+                        arrayOfTokens == null &&
+                        arrayOfTokenArrays == null
+                ) {
+                    throw OpenAIInvalidDataException("Unknown Input: $_json")
+                }
+                validated = true
             }
         }
 

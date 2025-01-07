@@ -39,13 +39,13 @@ private constructor(
     fun type(): Type = type.getRequired("type")
 
     /** The ID of the tool call. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** The function that the model called. */
-    @JsonProperty("function") @ExcludeMissing fun _function() = function
+    @JsonProperty("function") @ExcludeMissing fun _function(): JsonField<Function> = function
 
     /** The type of the tool. Currently, only `function` is supported. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -71,9 +71,9 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var function: JsonField<Function> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var function: JsonField<Function>? = null
+        private var type: JsonField<Type>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -123,9 +123,9 @@ private constructor(
 
         fun build(): ChatCompletionMessageToolCall =
             ChatCompletionMessageToolCall(
-                id,
-                function,
-                type,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(function) { "`function` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }
@@ -162,10 +162,10 @@ private constructor(
          * defined by your function schema. Validate the arguments in your code before calling your
          * function.
          */
-        @JsonProperty("arguments") @ExcludeMissing fun _arguments() = arguments
+        @JsonProperty("arguments") @ExcludeMissing fun _arguments(): JsonField<String> = arguments
 
         /** The name of the function to call. */
-        @JsonProperty("name") @ExcludeMissing fun _name() = name
+        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -190,8 +190,8 @@ private constructor(
 
         class Builder {
 
-            private var arguments: JsonField<String> = JsonMissing.of()
-            private var name: JsonField<String> = JsonMissing.of()
+            private var arguments: JsonField<String>? = null
+            private var name: JsonField<String>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -244,8 +244,8 @@ private constructor(
 
             fun build(): Function =
                 Function(
-                    arguments,
-                    name,
+                    checkNotNull(arguments) { "`arguments` is required but was not set" },
+                    checkNotNull(name) { "`name` is required but was not set" },
                     additionalProperties.toImmutable(),
                 )
         }

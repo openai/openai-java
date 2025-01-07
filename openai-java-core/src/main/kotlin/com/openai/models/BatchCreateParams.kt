@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
+import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.http.Headers
@@ -55,11 +56,39 @@ constructor(
     /** Optional custom metadata for the batch. */
     fun metadata(): Optional<Metadata> = body.metadata()
 
+    /**
+     * The time frame within which the batch should be processed. Currently only `24h` is supported.
+     */
+    fun _completionWindow(): JsonField<CompletionWindow> = body._completionWindow()
+
+    /**
+     * The endpoint to be used for all requests in the batch. Currently `/v1/chat/completions`,
+     * `/v1/embeddings`, and `/v1/completions` are supported. Note that `/v1/embeddings` batches are
+     * also restricted to a maximum of 50,000 embedding inputs across all requests in the batch.
+     */
+    fun _endpoint(): JsonField<Endpoint> = body._endpoint()
+
+    /**
+     * The ID of an uploaded file that contains requests for the new batch.
+     *
+     * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for how to
+     * upload a file.
+     *
+     * Your input file must be formatted as a
+     * [JSONL file](https://platform.openai.com/docs/api-reference/batch/request-input), and must be
+     * uploaded with the purpose `batch`. The file can contain up to 50,000 requests, and can be up
+     * to 200 MB in size.
+     */
+    fun _inputFileId(): JsonField<String> = body._inputFileId()
+
+    /** Optional custom metadata for the batch. */
+    fun _metadata(): JsonField<Metadata> = body._metadata()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     @JvmSynthetic internal fun getBody(): BatchCreateBody = body
 
@@ -71,10 +100,18 @@ constructor(
     class BatchCreateBody
     @JsonCreator
     internal constructor(
-        @JsonProperty("completion_window") private val completionWindow: CompletionWindow,
-        @JsonProperty("endpoint") private val endpoint: Endpoint,
-        @JsonProperty("input_file_id") private val inputFileId: String,
-        @JsonProperty("metadata") private val metadata: Metadata?,
+        @JsonProperty("completion_window")
+        @ExcludeMissing
+        private val completionWindow: JsonField<CompletionWindow> = JsonMissing.of(),
+        @JsonProperty("endpoint")
+        @ExcludeMissing
+        private val endpoint: JsonField<Endpoint> = JsonMissing.of(),
+        @JsonProperty("input_file_id")
+        @ExcludeMissing
+        private val inputFileId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("metadata")
+        @ExcludeMissing
+        private val metadata: JsonField<Metadata> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -83,8 +120,7 @@ constructor(
          * The time frame within which the batch should be processed. Currently only `24h` is
          * supported.
          */
-        @JsonProperty("completion_window")
-        fun completionWindow(): CompletionWindow = completionWindow
+        fun completionWindow(): CompletionWindow = completionWindow.getRequired("completion_window")
 
         /**
          * The endpoint to be used for all requests in the batch. Currently `/v1/chat/completions`,
@@ -92,7 +128,7 @@ constructor(
          * are also restricted to a maximum of 50,000 embedding inputs across all requests in the
          * batch.
          */
-        @JsonProperty("endpoint") fun endpoint(): Endpoint = endpoint
+        fun endpoint(): Endpoint = endpoint.getRequired("endpoint")
 
         /**
          * The ID of an uploaded file that contains requests for the new batch.
@@ -105,14 +141,60 @@ constructor(
          * must be uploaded with the purpose `batch`. The file can contain up to 50,000 requests,
          * and can be up to 200 MB in size.
          */
-        @JsonProperty("input_file_id") fun inputFileId(): String = inputFileId
+        fun inputFileId(): String = inputFileId.getRequired("input_file_id")
 
         /** Optional custom metadata for the batch. */
-        @JsonProperty("metadata") fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata)
+        fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
+
+        /**
+         * The time frame within which the batch should be processed. Currently only `24h` is
+         * supported.
+         */
+        @JsonProperty("completion_window")
+        @ExcludeMissing
+        fun _completionWindow(): JsonField<CompletionWindow> = completionWindow
+
+        /**
+         * The endpoint to be used for all requests in the batch. Currently `/v1/chat/completions`,
+         * `/v1/embeddings`, and `/v1/completions` are supported. Note that `/v1/embeddings` batches
+         * are also restricted to a maximum of 50,000 embedding inputs across all requests in the
+         * batch.
+         */
+        @JsonProperty("endpoint") @ExcludeMissing fun _endpoint(): JsonField<Endpoint> = endpoint
+
+        /**
+         * The ID of an uploaded file that contains requests for the new batch.
+         *
+         * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for how to
+         * upload a file.
+         *
+         * Your input file must be formatted as a
+         * [JSONL file](https://platform.openai.com/docs/api-reference/batch/request-input), and
+         * must be uploaded with the purpose `batch`. The file can contain up to 50,000 requests,
+         * and can be up to 200 MB in size.
+         */
+        @JsonProperty("input_file_id")
+        @ExcludeMissing
+        fun _inputFileId(): JsonField<String> = inputFileId
+
+        /** Optional custom metadata for the batch. */
+        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): BatchCreateBody = apply {
+            if (!validated) {
+                completionWindow()
+                endpoint()
+                inputFileId()
+                metadata().map { it.validate() }
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -123,10 +205,10 @@ constructor(
 
         class Builder {
 
-            private var completionWindow: CompletionWindow? = null
-            private var endpoint: Endpoint? = null
-            private var inputFileId: String? = null
-            private var metadata: Metadata? = null
+            private var completionWindow: JsonField<CompletionWindow>? = null
+            private var endpoint: JsonField<Endpoint>? = null
+            private var inputFileId: JsonField<String>? = null
+            private var metadata: JsonField<Metadata> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -142,7 +224,14 @@ constructor(
              * The time frame within which the batch should be processed. Currently only `24h` is
              * supported.
              */
-            fun completionWindow(completionWindow: CompletionWindow) = apply {
+            fun completionWindow(completionWindow: CompletionWindow) =
+                completionWindow(JsonField.of(completionWindow))
+
+            /**
+             * The time frame within which the batch should be processed. Currently only `24h` is
+             * supported.
+             */
+            fun completionWindow(completionWindow: JsonField<CompletionWindow>) = apply {
                 this.completionWindow = completionWindow
             }
 
@@ -152,7 +241,15 @@ constructor(
              * that `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding
              * inputs across all requests in the batch.
              */
-            fun endpoint(endpoint: Endpoint) = apply { this.endpoint = endpoint }
+            fun endpoint(endpoint: Endpoint) = endpoint(JsonField.of(endpoint))
+
+            /**
+             * The endpoint to be used for all requests in the batch. Currently
+             * `/v1/chat/completions`, `/v1/embeddings`, and `/v1/completions` are supported. Note
+             * that `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding
+             * inputs across all requests in the batch.
+             */
+            fun endpoint(endpoint: JsonField<Endpoint>) = apply { this.endpoint = endpoint }
 
             /**
              * The ID of an uploaded file that contains requests for the new batch.
@@ -165,13 +262,31 @@ constructor(
              * must be uploaded with the purpose `batch`. The file can contain up to 50,000
              * requests, and can be up to 200 MB in size.
              */
-            fun inputFileId(inputFileId: String) = apply { this.inputFileId = inputFileId }
+            fun inputFileId(inputFileId: String) = inputFileId(JsonField.of(inputFileId))
+
+            /**
+             * The ID of an uploaded file that contains requests for the new batch.
+             *
+             * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for
+             * how to upload a file.
+             *
+             * Your input file must be formatted as a
+             * [JSONL file](https://platform.openai.com/docs/api-reference/batch/request-input), and
+             * must be uploaded with the purpose `batch`. The file can contain up to 50,000
+             * requests, and can be up to 200 MB in size.
+             */
+            fun inputFileId(inputFileId: JsonField<String>) = apply {
+                this.inputFileId = inputFileId
+            }
 
             /** Optional custom metadata for the batch. */
-            fun metadata(metadata: Metadata?) = apply { this.metadata = metadata }
+            fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
 
             /** Optional custom metadata for the batch. */
             fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+
+            /** Optional custom metadata for the batch. */
+            fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -252,12 +367,28 @@ constructor(
         }
 
         /**
+         * The time frame within which the batch should be processed. Currently only `24h` is
+         * supported.
+         */
+        fun completionWindow(completionWindow: JsonField<CompletionWindow>) = apply {
+            body.completionWindow(completionWindow)
+        }
+
+        /**
          * The endpoint to be used for all requests in the batch. Currently `/v1/chat/completions`,
          * `/v1/embeddings`, and `/v1/completions` are supported. Note that `/v1/embeddings` batches
          * are also restricted to a maximum of 50,000 embedding inputs across all requests in the
          * batch.
          */
         fun endpoint(endpoint: Endpoint) = apply { body.endpoint(endpoint) }
+
+        /**
+         * The endpoint to be used for all requests in the batch. Currently `/v1/chat/completions`,
+         * `/v1/embeddings`, and `/v1/completions` are supported. Note that `/v1/embeddings` batches
+         * are also restricted to a maximum of 50,000 embedding inputs across all requests in the
+         * batch.
+         */
+        fun endpoint(endpoint: JsonField<Endpoint>) = apply { body.endpoint(endpoint) }
 
         /**
          * The ID of an uploaded file that contains requests for the new batch.
@@ -272,11 +403,46 @@ constructor(
          */
         fun inputFileId(inputFileId: String) = apply { body.inputFileId(inputFileId) }
 
+        /**
+         * The ID of an uploaded file that contains requests for the new batch.
+         *
+         * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for how to
+         * upload a file.
+         *
+         * Your input file must be formatted as a
+         * [JSONL file](https://platform.openai.com/docs/api-reference/batch/request-input), and
+         * must be uploaded with the purpose `batch`. The file can contain up to 50,000 requests,
+         * and can be up to 200 MB in size.
+         */
+        fun inputFileId(inputFileId: JsonField<String>) = apply { body.inputFileId(inputFileId) }
+
         /** Optional custom metadata for the batch. */
         fun metadata(metadata: Metadata?) = apply { body.metadata(metadata) }
 
         /** Optional custom metadata for the batch. */
         fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+
+        /** Optional custom metadata for the batch. */
+        fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -374,25 +540,6 @@ constructor(
 
         fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
             additionalQueryParams.removeAll(keys)
-        }
-
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            body.additionalProperties(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            body.putAdditionalProperty(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                body.putAllAdditionalProperties(additionalBodyProperties)
-            }
-
-        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
-
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            body.removeAllAdditionalProperties(keys)
         }
 
         fun build(): BatchCreateParams =
@@ -529,6 +676,14 @@ constructor(
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): Metadata = apply {
+            if (!validated) {
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 

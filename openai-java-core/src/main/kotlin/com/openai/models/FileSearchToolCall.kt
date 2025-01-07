@@ -42,15 +42,17 @@ private constructor(
     fun type(): Type = type.getRequired("type")
 
     /** The ID of the tool call object. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** For now, this is always going to be an empty object. */
-    @JsonProperty("file_search") @ExcludeMissing fun _fileSearch() = fileSearch
+    @JsonProperty("file_search")
+    @ExcludeMissing
+    fun _fileSearch(): JsonField<FileSearch> = fileSearch
 
     /**
      * The type of tool call. This is always going to be `file_search` for this type of tool call.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -76,9 +78,9 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var fileSearch: JsonField<FileSearch> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var fileSearch: JsonField<FileSearch>? = null
+        private var type: JsonField<Type>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -134,9 +136,9 @@ private constructor(
 
         fun build(): FileSearchToolCall =
             FileSearchToolCall(
-                id,
-                fileSearch,
-                type,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(fileSearch) { "`fileSearch` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }
@@ -164,10 +166,12 @@ private constructor(
         fun results(): Optional<List<Result>> = Optional.ofNullable(results.getNullable("results"))
 
         /** The ranking options for the file search. */
-        @JsonProperty("ranking_options") @ExcludeMissing fun _rankingOptions() = rankingOptions
+        @JsonProperty("ranking_options")
+        @ExcludeMissing
+        fun _rankingOptions(): JsonField<RankingOptions> = rankingOptions
 
         /** The results of the file search. */
-        @JsonProperty("results") @ExcludeMissing fun _results() = results
+        @JsonProperty("results") @ExcludeMissing fun _results(): JsonField<List<Result>> = results
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -193,13 +197,13 @@ private constructor(
         class Builder {
 
             private var rankingOptions: JsonField<RankingOptions> = JsonMissing.of()
-            private var results: JsonField<List<Result>> = JsonMissing.of()
+            private var results: JsonField<MutableList<Result>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(fileSearch: FileSearch) = apply {
                 rankingOptions = fileSearch.rankingOptions
-                results = fileSearch.results
+                results = fileSearch.results.map { it.toMutableList() }
                 additionalProperties = fileSearch.additionalProperties.toMutableMap()
             }
 
@@ -216,7 +220,23 @@ private constructor(
             fun results(results: List<Result>) = results(JsonField.of(results))
 
             /** The results of the file search. */
-            fun results(results: JsonField<List<Result>>) = apply { this.results = results }
+            fun results(results: JsonField<List<Result>>) = apply {
+                this.results = results.map { it.toMutableList() }
+            }
+
+            /** The results of the file search. */
+            fun addResult(result: Result) = apply {
+                results =
+                    (results ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(result)
+                    }
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -240,7 +260,7 @@ private constructor(
             fun build(): FileSearch =
                 FileSearch(
                     rankingOptions,
-                    results.map { it.toImmutable() },
+                    (results ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toImmutable(),
                 )
         }
@@ -270,13 +290,15 @@ private constructor(
             fun scoreThreshold(): Double = scoreThreshold.getRequired("score_threshold")
 
             /** The ranker used for the file search. */
-            @JsonProperty("ranker") @ExcludeMissing fun _ranker() = ranker
+            @JsonProperty("ranker") @ExcludeMissing fun _ranker(): JsonField<Ranker> = ranker
 
             /**
              * The score threshold for the file search. All values must be a floating point number
              * between 0 and 1.
              */
-            @JsonProperty("score_threshold") @ExcludeMissing fun _scoreThreshold() = scoreThreshold
+            @JsonProperty("score_threshold")
+            @ExcludeMissing
+            fun _scoreThreshold(): JsonField<Double> = scoreThreshold
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -301,8 +323,8 @@ private constructor(
 
             class Builder {
 
-                private var ranker: JsonField<Ranker> = JsonMissing.of()
-                private var scoreThreshold: JsonField<Double> = JsonMissing.of()
+                private var ranker: JsonField<Ranker>? = null
+                private var scoreThreshold: JsonField<Double>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -357,8 +379,10 @@ private constructor(
 
                 fun build(): RankingOptions =
                     RankingOptions(
-                        ranker,
-                        scoreThreshold,
+                        checkNotNull(ranker) { "`ranker` is required but was not set" },
+                        checkNotNull(scoreThreshold) {
+                            "`scoreThreshold` is required but was not set"
+                        },
                         additionalProperties.toImmutable(),
                     )
             }
@@ -472,21 +496,23 @@ private constructor(
                 Optional.ofNullable(content.getNullable("content"))
 
             /** The ID of the file that result was found in. */
-            @JsonProperty("file_id") @ExcludeMissing fun _fileId() = fileId
+            @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
             /** The name of the file that result was found in. */
-            @JsonProperty("file_name") @ExcludeMissing fun _fileName() = fileName
+            @JsonProperty("file_name") @ExcludeMissing fun _fileName(): JsonField<String> = fileName
 
             /**
              * The score of the result. All values must be a floating point number between 0 and 1.
              */
-            @JsonProperty("score") @ExcludeMissing fun _score() = score
+            @JsonProperty("score") @ExcludeMissing fun _score(): JsonField<Double> = score
 
             /**
              * The content of the result that was found. The content is only included if requested
              * via the include query parameter.
              */
-            @JsonProperty("content") @ExcludeMissing fun _content() = content
+            @JsonProperty("content")
+            @ExcludeMissing
+            fun _content(): JsonField<List<Content>> = content
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -513,10 +539,10 @@ private constructor(
 
             class Builder {
 
-                private var fileId: JsonField<String> = JsonMissing.of()
-                private var fileName: JsonField<String> = JsonMissing.of()
-                private var score: JsonField<Double> = JsonMissing.of()
-                private var content: JsonField<List<Content>> = JsonMissing.of()
+                private var fileId: JsonField<String>? = null
+                private var fileName: JsonField<String>? = null
+                private var score: JsonField<Double>? = null
+                private var content: JsonField<MutableList<Content>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -524,7 +550,7 @@ private constructor(
                     fileId = result.fileId
                     fileName = result.fileName
                     score = result.score
-                    content = result.content
+                    content = result.content.map { it.toMutableList() }
                     additionalProperties = result.additionalProperties.toMutableMap()
                 }
 
@@ -562,7 +588,26 @@ private constructor(
                  * The content of the result that was found. The content is only included if
                  * requested via the include query parameter.
                  */
-                fun content(content: JsonField<List<Content>>) = apply { this.content = content }
+                fun content(content: JsonField<List<Content>>) = apply {
+                    this.content = content.map { it.toMutableList() }
+                }
+
+                /**
+                 * The content of the result that was found. The content is only included if
+                 * requested via the include query parameter.
+                 */
+                fun addContent(content: Content) = apply {
+                    this.content =
+                        (this.content ?: JsonField.of(mutableListOf())).apply {
+                            asKnown()
+                                .orElseThrow {
+                                    IllegalStateException(
+                                        "Field was set to non-list type: ${javaClass.simpleName}"
+                                    )
+                                }
+                                .add(content)
+                        }
+                }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -588,10 +633,10 @@ private constructor(
 
                 fun build(): Result =
                     Result(
-                        fileId,
-                        fileName,
-                        score,
-                        content.map { it.toImmutable() },
+                        checkNotNull(fileId) { "`fileId` is required but was not set" },
+                        checkNotNull(fileName) { "`fileName` is required but was not set" },
+                        checkNotNull(score) { "`score` is required but was not set" },
+                        (content ?: JsonMissing.of()).map { it.toImmutable() },
                         additionalProperties.toImmutable(),
                     )
             }
@@ -617,10 +662,10 @@ private constructor(
                 fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
 
                 /** The text content of the file. */
-                @JsonProperty("text") @ExcludeMissing fun _text() = text
+                @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
                 /** The type of the content. */
-                @JsonProperty("type") @ExcludeMissing fun _type() = type
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                 @JsonAnyGetter
                 @ExcludeMissing

@@ -341,9 +341,9 @@ private constructor(
          * Represents a message within a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
-        @JsonProperty("data") @ExcludeMissing fun _data() = data
+        @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Message> = data
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<Event> = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -368,8 +368,8 @@ private constructor(
 
         class Builder {
 
-            private var data: JsonField<Message> = JsonMissing.of()
-            private var event: JsonField<Event> = JsonMissing.of()
+            private var data: JsonField<Message>? = null
+            private var event: JsonField<Event>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -416,8 +416,8 @@ private constructor(
 
             fun build(): ThreadMessageCreated =
                 ThreadMessageCreated(
-                    data,
-                    event,
+                    checkNotNull(data) { "`data` is required but was not set" },
+                    checkNotNull(event) { "`event` is required but was not set" },
                     additionalProperties.toImmutable(),
                 )
         }
@@ -521,9 +521,9 @@ private constructor(
          * Represents a message within a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
-        @JsonProperty("data") @ExcludeMissing fun _data() = data
+        @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Message> = data
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<Event> = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -548,8 +548,8 @@ private constructor(
 
         class Builder {
 
-            private var data: JsonField<Message> = JsonMissing.of()
-            private var event: JsonField<Event> = JsonMissing.of()
+            private var data: JsonField<Message>? = null
+            private var event: JsonField<Event>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -596,8 +596,8 @@ private constructor(
 
             fun build(): ThreadMessageInProgress =
                 ThreadMessageInProgress(
-                    data,
-                    event,
+                    checkNotNull(data) { "`data` is required but was not set" },
+                    checkNotNull(event) { "`event` is required but was not set" },
                     additionalProperties.toImmutable(),
                 )
         }
@@ -695,9 +695,9 @@ private constructor(
         fun event(): Event = event.getRequired("event")
 
         /** Represents a message delta i.e. any changed fields on a message during streaming. */
-        @JsonProperty("data") @ExcludeMissing fun _data() = data
+        @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<MessageDeltaEvent> = data
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<Event> = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -722,8 +722,8 @@ private constructor(
 
         class Builder {
 
-            private var data: JsonField<MessageDeltaEvent> = JsonMissing.of()
-            private var event: JsonField<Event> = JsonMissing.of()
+            private var data: JsonField<MessageDeltaEvent>? = null
+            private var event: JsonField<Event>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -764,8 +764,8 @@ private constructor(
 
             fun build(): ThreadMessageDelta =
                 ThreadMessageDelta(
-                    data,
-                    event,
+                    checkNotNull(data) { "`data` is required but was not set" },
+                    checkNotNull(event) { "`event` is required but was not set" },
                     additionalProperties.toImmutable(),
                 )
         }
@@ -869,9 +869,9 @@ private constructor(
          * Represents a message within a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
-        @JsonProperty("data") @ExcludeMissing fun _data() = data
+        @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Message> = data
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<Event> = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -896,8 +896,8 @@ private constructor(
 
         class Builder {
 
-            private var data: JsonField<Message> = JsonMissing.of()
-            private var event: JsonField<Event> = JsonMissing.of()
+            private var data: JsonField<Message>? = null
+            private var event: JsonField<Event>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -944,8 +944,8 @@ private constructor(
 
             fun build(): ThreadMessageCompleted =
                 ThreadMessageCompleted(
-                    data,
-                    event,
+                    checkNotNull(data) { "`data` is required but was not set" },
+                    checkNotNull(event) { "`event` is required but was not set" },
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1049,9 +1049,9 @@ private constructor(
          * Represents a message within a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
-        @JsonProperty("data") @ExcludeMissing fun _data() = data
+        @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Message> = data
 
-        @JsonProperty("event") @ExcludeMissing fun _event() = event
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<Event> = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1076,8 +1076,8 @@ private constructor(
 
         class Builder {
 
-            private var data: JsonField<Message> = JsonMissing.of()
-            private var event: JsonField<Event> = JsonMissing.of()
+            private var data: JsonField<Message>? = null
+            private var event: JsonField<Event>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1124,8 +1124,8 @@ private constructor(
 
             fun build(): ThreadMessageIncomplete =
                 ThreadMessageIncomplete(
-                    data,
-                    event,
+                    checkNotNull(data) { "`data` is required but was not set" },
+                    checkNotNull(event) { "`event` is required but was not set" },
                     additionalProperties.toImmutable(),
                 )
         }

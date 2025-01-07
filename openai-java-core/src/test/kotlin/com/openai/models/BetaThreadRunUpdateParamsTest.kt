@@ -27,7 +27,7 @@ class BetaThreadRunUpdateParamsTest {
                 .build()
         val body = params.getBody()
         assertThat(body).isNotNull
-        assertThat(body.metadata()).contains(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
     }
 
     @Test

@@ -27,7 +27,7 @@ private constructor(
     fun name(): String = name.getRequired("name")
 
     /** The name of the function to call. */
-    @JsonProperty("name") @ExcludeMissing fun _name() = name
+    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -51,7 +51,7 @@ private constructor(
 
     class Builder {
 
-        private var name: JsonField<String> = JsonMissing.of()
+        private var name: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -86,7 +86,10 @@ private constructor(
         }
 
         fun build(): AssistantToolChoiceFunction =
-            AssistantToolChoiceFunction(name, additionalProperties.toImmutable())
+            AssistantToolChoiceFunction(
+                checkNotNull(name) { "`name` is required but was not set" },
+                additionalProperties.toImmutable()
+            )
     }
 
     override fun equals(other: Any?): Boolean {

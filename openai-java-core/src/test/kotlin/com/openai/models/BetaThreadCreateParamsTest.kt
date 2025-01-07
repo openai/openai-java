@@ -178,7 +178,7 @@ class BetaThreadCreateParamsTest {
                         .build()
                 )
             )
-        assertThat(body.metadata()).contains(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.toolResources())
             .contains(
                 BetaThreadCreateParams.ToolResources.builder()

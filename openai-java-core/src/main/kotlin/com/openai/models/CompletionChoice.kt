@@ -53,13 +53,15 @@ private constructor(
      * specified in the request was reached, or `content_filter` if content was omitted due to a
      * flag from our content filters.
      */
-    @JsonProperty("finish_reason") @ExcludeMissing fun _finishReason() = finishReason
+    @JsonProperty("finish_reason")
+    @ExcludeMissing
+    fun _finishReason(): JsonField<FinishReason> = finishReason
 
-    @JsonProperty("index") @ExcludeMissing fun _index() = index
+    @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
-    @JsonProperty("logprobs") @ExcludeMissing fun _logprobs() = logprobs
+    @JsonProperty("logprobs") @ExcludeMissing fun _logprobs(): JsonField<Logprobs> = logprobs
 
-    @JsonProperty("text") @ExcludeMissing fun _text() = text
+    @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -86,10 +88,10 @@ private constructor(
 
     class Builder {
 
-        private var finishReason: JsonField<FinishReason> = JsonMissing.of()
-        private var index: JsonField<Long> = JsonMissing.of()
-        private var logprobs: JsonField<Logprobs> = JsonMissing.of()
-        private var text: JsonField<String> = JsonMissing.of()
+        private var finishReason: JsonField<FinishReason>? = null
+        private var index: JsonField<Long>? = null
+        private var logprobs: JsonField<Logprobs>? = null
+        private var text: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -123,7 +125,9 @@ private constructor(
 
         fun index(index: JsonField<Long>) = apply { this.index = index }
 
-        fun logprobs(logprobs: Logprobs) = logprobs(JsonField.of(logprobs))
+        fun logprobs(logprobs: Logprobs?) = logprobs(JsonField.ofNullable(logprobs))
+
+        fun logprobs(logprobs: Optional<Logprobs>) = logprobs(logprobs.orElse(null))
 
         fun logprobs(logprobs: JsonField<Logprobs>) = apply { this.logprobs = logprobs }
 
@@ -152,10 +156,10 @@ private constructor(
 
         fun build(): CompletionChoice =
             CompletionChoice(
-                finishReason,
-                index,
-                logprobs,
-                text,
+                checkNotNull(finishReason) { "`finishReason` is required but was not set" },
+                checkNotNull(index) { "`index` is required but was not set" },
+                checkNotNull(logprobs) { "`logprobs` is required but was not set" },
+                checkNotNull(text) { "`text` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }
@@ -254,13 +258,19 @@ private constructor(
         fun topLogprobs(): Optional<List<TopLogprob>> =
             Optional.ofNullable(topLogprobs.getNullable("top_logprobs"))
 
-        @JsonProperty("text_offset") @ExcludeMissing fun _textOffset() = textOffset
+        @JsonProperty("text_offset")
+        @ExcludeMissing
+        fun _textOffset(): JsonField<List<Long>> = textOffset
 
-        @JsonProperty("token_logprobs") @ExcludeMissing fun _tokenLogprobs() = tokenLogprobs
+        @JsonProperty("token_logprobs")
+        @ExcludeMissing
+        fun _tokenLogprobs(): JsonField<List<Double>> = tokenLogprobs
 
-        @JsonProperty("tokens") @ExcludeMissing fun _tokens() = tokens
+        @JsonProperty("tokens") @ExcludeMissing fun _tokens(): JsonField<List<String>> = tokens
 
-        @JsonProperty("top_logprobs") @ExcludeMissing fun _topLogprobs() = topLogprobs
+        @JsonProperty("top_logprobs")
+        @ExcludeMissing
+        fun _topLogprobs(): JsonField<List<TopLogprob>> = topLogprobs
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -287,42 +297,96 @@ private constructor(
 
         class Builder {
 
-            private var textOffset: JsonField<List<Long>> = JsonMissing.of()
-            private var tokenLogprobs: JsonField<List<Double>> = JsonMissing.of()
-            private var tokens: JsonField<List<String>> = JsonMissing.of()
-            private var topLogprobs: JsonField<List<TopLogprob>> = JsonMissing.of()
+            private var textOffset: JsonField<MutableList<Long>>? = null
+            private var tokenLogprobs: JsonField<MutableList<Double>>? = null
+            private var tokens: JsonField<MutableList<String>>? = null
+            private var topLogprobs: JsonField<MutableList<TopLogprob>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(logprobs: Logprobs) = apply {
-                textOffset = logprobs.textOffset
-                tokenLogprobs = logprobs.tokenLogprobs
-                tokens = logprobs.tokens
-                topLogprobs = logprobs.topLogprobs
+                textOffset = logprobs.textOffset.map { it.toMutableList() }
+                tokenLogprobs = logprobs.tokenLogprobs.map { it.toMutableList() }
+                tokens = logprobs.tokens.map { it.toMutableList() }
+                topLogprobs = logprobs.topLogprobs.map { it.toMutableList() }
                 additionalProperties = logprobs.additionalProperties.toMutableMap()
             }
 
             fun textOffset(textOffset: List<Long>) = textOffset(JsonField.of(textOffset))
 
             fun textOffset(textOffset: JsonField<List<Long>>) = apply {
-                this.textOffset = textOffset
+                this.textOffset = textOffset.map { it.toMutableList() }
+            }
+
+            fun addTextOffset(textOffset: Long) = apply {
+                this.textOffset =
+                    (this.textOffset ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(textOffset)
+                    }
             }
 
             fun tokenLogprobs(tokenLogprobs: List<Double>) =
                 tokenLogprobs(JsonField.of(tokenLogprobs))
 
             fun tokenLogprobs(tokenLogprobs: JsonField<List<Double>>) = apply {
-                this.tokenLogprobs = tokenLogprobs
+                this.tokenLogprobs = tokenLogprobs.map { it.toMutableList() }
+            }
+
+            fun addTokenLogprob(tokenLogprob: Double) = apply {
+                tokenLogprobs =
+                    (tokenLogprobs ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(tokenLogprob)
+                    }
             }
 
             fun tokens(tokens: List<String>) = tokens(JsonField.of(tokens))
 
-            fun tokens(tokens: JsonField<List<String>>) = apply { this.tokens = tokens }
+            fun tokens(tokens: JsonField<List<String>>) = apply {
+                this.tokens = tokens.map { it.toMutableList() }
+            }
+
+            fun addToken(token: String) = apply {
+                tokens =
+                    (tokens ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(token)
+                    }
+            }
 
             fun topLogprobs(topLogprobs: List<TopLogprob>) = topLogprobs(JsonField.of(topLogprobs))
 
             fun topLogprobs(topLogprobs: JsonField<List<TopLogprob>>) = apply {
-                this.topLogprobs = topLogprobs
+                this.topLogprobs = topLogprobs.map { it.toMutableList() }
+            }
+
+            fun addTopLogprob(topLogprob: TopLogprob) = apply {
+                topLogprobs =
+                    (topLogprobs ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(topLogprob)
+                    }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -346,10 +410,10 @@ private constructor(
 
             fun build(): Logprobs =
                 Logprobs(
-                    textOffset.map { it.toImmutable() },
-                    tokenLogprobs.map { it.toImmutable() },
-                    tokens.map { it.toImmutable() },
-                    topLogprobs.map { it.toImmutable() },
+                    (textOffset ?: JsonMissing.of()).map { it.toImmutable() },
+                    (tokenLogprobs ?: JsonMissing.of()).map { it.toImmutable() },
+                    (tokens ?: JsonMissing.of()).map { it.toImmutable() },
+                    (topLogprobs ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toImmutable(),
                 )
         }

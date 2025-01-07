@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
+import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.http.Headers
@@ -47,16 +48,34 @@ constructor(
      * additional information about the object in a structured format. Keys can be a maximum of 64
      * characters long and values can be a maximum of 512 characters long.
      */
-    fun metadata(): Optional<JsonValue> = body.metadata()
+    fun _metadata(): JsonValue = body._metadata()
 
     /** The name of the vector store. */
     fun name(): Optional<String> = body.name()
 
+    /**
+     * The chunking strategy used to chunk the file(s). If not set, will use the `auto` strategy.
+     * Only applicable if `file_ids` is non-empty.
+     */
+    fun _chunkingStrategy(): JsonField<FileChunkingStrategyParam> = body._chunkingStrategy()
+
+    /** The expiration policy for a vector store. */
+    fun _expiresAfter(): JsonField<ExpiresAfter> = body._expiresAfter()
+
+    /**
+     * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the vector
+     * store should use. Useful for tools like `file_search` that can access files.
+     */
+    fun _fileIds(): JsonField<List<String>> = body._fileIds()
+
+    /** The name of the vector store. */
+    fun _name(): JsonField<String> = body._name()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     @JvmSynthetic internal fun getBody(): BetaVectorStoreCreateBody = body
 
@@ -68,11 +87,21 @@ constructor(
     class BetaVectorStoreCreateBody
     @JsonCreator
     internal constructor(
-        @JsonProperty("chunking_strategy") private val chunkingStrategy: FileChunkingStrategyParam?,
-        @JsonProperty("expires_after") private val expiresAfter: ExpiresAfter?,
-        @JsonProperty("file_ids") private val fileIds: List<String>?,
-        @JsonProperty("metadata") private val metadata: JsonValue?,
-        @JsonProperty("name") private val name: String?,
+        @JsonProperty("chunking_strategy")
+        @ExcludeMissing
+        private val chunkingStrategy: JsonField<FileChunkingStrategyParam> = JsonMissing.of(),
+        @JsonProperty("expires_after")
+        @ExcludeMissing
+        private val expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of(),
+        @JsonProperty("file_ids")
+        @ExcludeMissing
+        private val fileIds: JsonField<List<String>> = JsonMissing.of(),
+        @JsonProperty("metadata")
+        @ExcludeMissing
+        private val metadata: JsonValue = JsonMissing.of(),
+        @JsonProperty("name")
+        @ExcludeMissing
+        private val name: JsonField<String> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -81,35 +110,66 @@ constructor(
          * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
          * strategy. Only applicable if `file_ids` is non-empty.
          */
-        @JsonProperty("chunking_strategy")
         fun chunkingStrategy(): Optional<FileChunkingStrategyParam> =
-            Optional.ofNullable(chunkingStrategy)
+            Optional.ofNullable(chunkingStrategy.getNullable("chunking_strategy"))
 
         /** The expiration policy for a vector store. */
-        @JsonProperty("expires_after")
-        fun expiresAfter(): Optional<ExpiresAfter> = Optional.ofNullable(expiresAfter)
+        fun expiresAfter(): Optional<ExpiresAfter> =
+            Optional.ofNullable(expiresAfter.getNullable("expires_after"))
 
         /**
          * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
          * vector store should use. Useful for tools like `file_search` that can access files.
          */
-        @JsonProperty("file_ids")
-        fun fileIds(): Optional<List<String>> = Optional.ofNullable(fileIds)
+        fun fileIds(): Optional<List<String>> = Optional.ofNullable(fileIds.getNullable("file_ids"))
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
          * storing additional information about the object in a structured format. Keys can be a
          * maximum of 64 characters long and values can be a maximum of 512 characters long.
          */
-        @JsonProperty("metadata")
-        fun metadata(): Optional<JsonValue> = Optional.ofNullable(metadata)
+        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
 
         /** The name of the vector store. */
-        @JsonProperty("name") fun name(): Optional<String> = Optional.ofNullable(name)
+        fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
+
+        /**
+         * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
+         * strategy. Only applicable if `file_ids` is non-empty.
+         */
+        @JsonProperty("chunking_strategy")
+        @ExcludeMissing
+        fun _chunkingStrategy(): JsonField<FileChunkingStrategyParam> = chunkingStrategy
+
+        /** The expiration policy for a vector store. */
+        @JsonProperty("expires_after")
+        @ExcludeMissing
+        fun _expiresAfter(): JsonField<ExpiresAfter> = expiresAfter
+
+        /**
+         * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
+         * vector store should use. Useful for tools like `file_search` that can access files.
+         */
+        @JsonProperty("file_ids") @ExcludeMissing fun _fileIds(): JsonField<List<String>> = fileIds
+
+        /** The name of the vector store. */
+        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): BetaVectorStoreCreateBody = apply {
+            if (!validated) {
+                chunkingStrategy()
+                expiresAfter().map { it.validate() }
+                fileIds()
+                name()
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -120,18 +180,18 @@ constructor(
 
         class Builder {
 
-            private var chunkingStrategy: FileChunkingStrategyParam? = null
-            private var expiresAfter: ExpiresAfter? = null
-            private var fileIds: MutableList<String>? = null
-            private var metadata: JsonValue? = null
-            private var name: String? = null
+            private var chunkingStrategy: JsonField<FileChunkingStrategyParam> = JsonMissing.of()
+            private var expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of()
+            private var fileIds: JsonField<MutableList<String>>? = null
+            private var metadata: JsonValue = JsonMissing.of()
+            private var name: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(betaVectorStoreCreateBody: BetaVectorStoreCreateBody) = apply {
                 chunkingStrategy = betaVectorStoreCreateBody.chunkingStrategy
                 expiresAfter = betaVectorStoreCreateBody.expiresAfter
-                fileIds = betaVectorStoreCreateBody.fileIds?.toMutableList()
+                fileIds = betaVectorStoreCreateBody.fileIds.map { it.toMutableList() }
                 metadata = betaVectorStoreCreateBody.metadata
                 name = betaVectorStoreCreateBody.name
                 additionalProperties = betaVectorStoreCreateBody.additionalProperties.toMutableMap()
@@ -141,64 +201,72 @@ constructor(
              * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
              * strategy. Only applicable if `file_ids` is non-empty.
              */
-            fun chunkingStrategy(chunkingStrategy: FileChunkingStrategyParam?) = apply {
-                this.chunkingStrategy = chunkingStrategy
-            }
+            fun chunkingStrategy(chunkingStrategy: FileChunkingStrategyParam) =
+                chunkingStrategy(JsonField.of(chunkingStrategy))
 
             /**
              * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
              * strategy. Only applicable if `file_ids` is non-empty.
              */
-            fun chunkingStrategy(chunkingStrategy: Optional<FileChunkingStrategyParam>) =
-                chunkingStrategy(chunkingStrategy.orElse(null))
+            fun chunkingStrategy(chunkingStrategy: JsonField<FileChunkingStrategyParam>) = apply {
+                this.chunkingStrategy = chunkingStrategy
+            }
 
             /**
              * The default strategy. This strategy currently uses a `max_chunk_size_tokens` of `800`
              * and `chunk_overlap_tokens` of `400`.
              */
             fun chunkingStrategy(autoFileChunkingStrategyParam: AutoFileChunkingStrategyParam) =
-                apply {
-                    this.chunkingStrategy =
-                        FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
-                            autoFileChunkingStrategyParam
-                        )
-                }
+                chunkingStrategy(
+                    FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
+                        autoFileChunkingStrategyParam
+                    )
+                )
 
             fun chunkingStrategy(staticFileChunkingStrategyParam: StaticFileChunkingStrategyParam) =
-                apply {
-                    this.chunkingStrategy =
-                        FileChunkingStrategyParam.ofStaticFileChunkingStrategyParam(
-                            staticFileChunkingStrategyParam
-                        )
-                }
+                chunkingStrategy(
+                    FileChunkingStrategyParam.ofStaticFileChunkingStrategyParam(
+                        staticFileChunkingStrategyParam
+                    )
+                )
 
             /** The expiration policy for a vector store. */
-            fun expiresAfter(expiresAfter: ExpiresAfter?) = apply {
+            fun expiresAfter(expiresAfter: ExpiresAfter) = expiresAfter(JsonField.of(expiresAfter))
+
+            /** The expiration policy for a vector store. */
+            fun expiresAfter(expiresAfter: JsonField<ExpiresAfter>) = apply {
                 this.expiresAfter = expiresAfter
             }
 
-            /** The expiration policy for a vector store. */
-            fun expiresAfter(expiresAfter: Optional<ExpiresAfter>) =
-                expiresAfter(expiresAfter.orElse(null))
+            /**
+             * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
+             * vector store should use. Useful for tools like `file_search` that can access files.
+             */
+            fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
 
             /**
              * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
              * vector store should use. Useful for tools like `file_search` that can access files.
              */
-            fun fileIds(fileIds: List<String>?) = apply { this.fileIds = fileIds?.toMutableList() }
-
-            /**
-             * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
-             * vector store should use. Useful for tools like `file_search` that can access files.
-             */
-            fun fileIds(fileIds: Optional<List<String>>) = fileIds(fileIds.orElse(null))
+            fun fileIds(fileIds: JsonField<List<String>>) = apply {
+                this.fileIds = fileIds.map { it.toMutableList() }
+            }
 
             /**
              * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
              * vector store should use. Useful for tools like `file_search` that can access files.
              */
             fun addFileId(fileId: String) = apply {
-                fileIds = (fileIds ?: mutableListOf()).apply { add(fileId) }
+                fileIds =
+                    (fileIds ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(fileId)
+                    }
             }
 
             /**
@@ -206,20 +274,13 @@ constructor(
              * storing additional information about the object in a structured format. Keys can be a
              * maximum of 64 characters long and values can be a maximum of 512 characters long.
              */
-            fun metadata(metadata: JsonValue?) = apply { this.metadata = metadata }
-
-            /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format. Keys can be a
-             * maximum of 64 characters long and values can be a maximum of 512 characters long.
-             */
-            fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
+            fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
             /** The name of the vector store. */
-            fun name(name: String?) = apply { this.name = name }
+            fun name(name: String) = name(JsonField.of(name))
 
             /** The name of the vector store. */
-            fun name(name: Optional<String>) = name(name.orElse(null))
+            fun name(name: JsonField<String>) = apply { this.name = name }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -244,7 +305,7 @@ constructor(
                 BetaVectorStoreCreateBody(
                     chunkingStrategy,
                     expiresAfter,
-                    fileIds?.toImmutable(),
+                    (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
                     metadata,
                     name,
                     additionalProperties.toImmutable(),
@@ -294,7 +355,7 @@ constructor(
          * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
          * strategy. Only applicable if `file_ids` is non-empty.
          */
-        fun chunkingStrategy(chunkingStrategy: FileChunkingStrategyParam?) = apply {
+        fun chunkingStrategy(chunkingStrategy: FileChunkingStrategyParam) = apply {
             body.chunkingStrategy(chunkingStrategy)
         }
 
@@ -302,8 +363,9 @@ constructor(
          * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
          * strategy. Only applicable if `file_ids` is non-empty.
          */
-        fun chunkingStrategy(chunkingStrategy: Optional<FileChunkingStrategyParam>) =
-            chunkingStrategy(chunkingStrategy.orElse(null))
+        fun chunkingStrategy(chunkingStrategy: JsonField<FileChunkingStrategyParam>) = apply {
+            body.chunkingStrategy(chunkingStrategy)
+        }
 
         /**
          * The default strategy. This strategy currently uses a `max_chunk_size_tokens` of `800` and
@@ -319,23 +381,24 @@ constructor(
             }
 
         /** The expiration policy for a vector store. */
-        fun expiresAfter(expiresAfter: ExpiresAfter?) = apply { body.expiresAfter(expiresAfter) }
+        fun expiresAfter(expiresAfter: ExpiresAfter) = apply { body.expiresAfter(expiresAfter) }
 
         /** The expiration policy for a vector store. */
-        fun expiresAfter(expiresAfter: Optional<ExpiresAfter>) =
-            expiresAfter(expiresAfter.orElse(null))
+        fun expiresAfter(expiresAfter: JsonField<ExpiresAfter>) = apply {
+            body.expiresAfter(expiresAfter)
+        }
 
         /**
          * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
          * vector store should use. Useful for tools like `file_search` that can access files.
          */
-        fun fileIds(fileIds: List<String>?) = apply { body.fileIds(fileIds) }
+        fun fileIds(fileIds: List<String>) = apply { body.fileIds(fileIds) }
 
         /**
          * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
          * vector store should use. Useful for tools like `file_search` that can access files.
          */
-        fun fileIds(fileIds: Optional<List<String>>) = fileIds(fileIds.orElse(null))
+        fun fileIds(fileIds: JsonField<List<String>>) = apply { body.fileIds(fileIds) }
 
         /**
          * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
@@ -348,20 +411,32 @@ constructor(
          * storing additional information about the object in a structured format. Keys can be a
          * maximum of 64 characters long and values can be a maximum of 512 characters long.
          */
-        fun metadata(metadata: JsonValue?) = apply { body.metadata(metadata) }
-
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format. Keys can be a
-         * maximum of 64 characters long and values can be a maximum of 512 characters long.
-         */
-        fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
+        fun metadata(metadata: JsonValue) = apply { body.metadata(metadata) }
 
         /** The name of the vector store. */
-        fun name(name: String?) = apply { body.name(name) }
+        fun name(name: String) = apply { body.name(name) }
 
         /** The name of the vector store. */
-        fun name(name: Optional<String>) = name(name.orElse(null))
+        fun name(name: JsonField<String>) = apply { body.name(name) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -461,25 +536,6 @@ constructor(
             additionalQueryParams.removeAll(keys)
         }
 
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            body.additionalProperties(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            body.putAdditionalProperty(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                body.putAllAdditionalProperties(additionalBodyProperties)
-            }
-
-        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
-
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            body.removeAllAdditionalProperties(keys)
-        }
-
         fun build(): BetaVectorStoreCreateParams =
             BetaVectorStoreCreateParams(
                 body.build(),
@@ -493,8 +549,10 @@ constructor(
     class ExpiresAfter
     @JsonCreator
     private constructor(
-        @JsonProperty("anchor") private val anchor: Anchor,
-        @JsonProperty("days") private val days: Long,
+        @JsonProperty("anchor")
+        @ExcludeMissing
+        private val anchor: JsonField<Anchor> = JsonMissing.of(),
+        @JsonProperty("days") @ExcludeMissing private val days: JsonField<Long> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -503,14 +561,33 @@ constructor(
          * Anchor timestamp after which the expiration policy applies. Supported anchors:
          * `last_active_at`.
          */
-        @JsonProperty("anchor") fun anchor(): Anchor = anchor
+        fun anchor(): Anchor = anchor.getRequired("anchor")
 
         /** The number of days after the anchor time that the vector store will expire. */
-        @JsonProperty("days") fun days(): Long = days
+        fun days(): Long = days.getRequired("days")
+
+        /**
+         * Anchor timestamp after which the expiration policy applies. Supported anchors:
+         * `last_active_at`.
+         */
+        @JsonProperty("anchor") @ExcludeMissing fun _anchor(): JsonField<Anchor> = anchor
+
+        /** The number of days after the anchor time that the vector store will expire. */
+        @JsonProperty("days") @ExcludeMissing fun _days(): JsonField<Long> = days
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): ExpiresAfter = apply {
+            if (!validated) {
+                anchor()
+                days()
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -521,8 +598,8 @@ constructor(
 
         class Builder {
 
-            private var anchor: Anchor? = null
-            private var days: Long? = null
+            private var anchor: JsonField<Anchor>? = null
+            private var days: JsonField<Long>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -536,10 +613,19 @@ constructor(
              * Anchor timestamp after which the expiration policy applies. Supported anchors:
              * `last_active_at`.
              */
-            fun anchor(anchor: Anchor) = apply { this.anchor = anchor }
+            fun anchor(anchor: Anchor) = anchor(JsonField.of(anchor))
+
+            /**
+             * Anchor timestamp after which the expiration policy applies. Supported anchors:
+             * `last_active_at`.
+             */
+            fun anchor(anchor: JsonField<Anchor>) = apply { this.anchor = anchor }
 
             /** The number of days after the anchor time that the vector store will expire. */
-            fun days(days: Long) = apply { this.days = days }
+            fun days(days: Long) = days(JsonField.of(days))
+
+            /** The number of days after the anchor time that the vector store will expire. */
+            fun days(days: JsonField<Long>) = apply { this.days = days }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()

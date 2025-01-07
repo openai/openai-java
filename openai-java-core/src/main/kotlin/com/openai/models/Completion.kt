@@ -74,19 +74,21 @@ private constructor(
     fun usage(): Optional<CompletionUsage> = Optional.ofNullable(usage.getNullable("usage"))
 
     /** A unique identifier for the completion. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** The list of completion choices the model generated for the input prompt. */
-    @JsonProperty("choices") @ExcludeMissing fun _choices() = choices
+    @JsonProperty("choices")
+    @ExcludeMissing
+    fun _choices(): JsonField<List<CompletionChoice>> = choices
 
     /** The Unix timestamp (in seconds) of when the completion was created. */
-    @JsonProperty("created") @ExcludeMissing fun _created() = created
+    @JsonProperty("created") @ExcludeMissing fun _created(): JsonField<Long> = created
 
     /** The model used for completion. */
-    @JsonProperty("model") @ExcludeMissing fun _model() = model
+    @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
 
     /** The object type, which is always "text_completion" */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /**
      * This fingerprint represents the backend configuration that the model runs with.
@@ -94,10 +96,12 @@ private constructor(
      * Can be used in conjunction with the `seed` request parameter to understand when backend
      * changes have been made that might impact determinism.
      */
-    @JsonProperty("system_fingerprint") @ExcludeMissing fun _systemFingerprint() = systemFingerprint
+    @JsonProperty("system_fingerprint")
+    @ExcludeMissing
+    fun _systemFingerprint(): JsonField<String> = systemFingerprint
 
     /** Usage statistics for the completion request. */
-    @JsonProperty("usage") @ExcludeMissing fun _usage() = usage
+    @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<CompletionUsage> = usage
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -127,11 +131,11 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var choices: JsonField<List<CompletionChoice>> = JsonMissing.of()
-        private var created: JsonField<Long> = JsonMissing.of()
-        private var model: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var choices: JsonField<MutableList<CompletionChoice>>? = null
+        private var created: JsonField<Long>? = null
+        private var model: JsonField<String>? = null
+        private var object_: JsonField<Object>? = null
         private var systemFingerprint: JsonField<String> = JsonMissing.of()
         private var usage: JsonField<CompletionUsage> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -139,7 +143,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(completion: Completion) = apply {
             id = completion.id
-            choices = completion.choices
+            choices = completion.choices.map { it.toMutableList() }
             created = completion.created
             model = completion.model
             object_ = completion.object_
@@ -158,7 +162,23 @@ private constructor(
         fun choices(choices: List<CompletionChoice>) = choices(JsonField.of(choices))
 
         /** The list of completion choices the model generated for the input prompt. */
-        fun choices(choices: JsonField<List<CompletionChoice>>) = apply { this.choices = choices }
+        fun choices(choices: JsonField<List<CompletionChoice>>) = apply {
+            this.choices = choices.map { it.toMutableList() }
+        }
+
+        /** The list of completion choices the model generated for the input prompt. */
+        fun addChoice(choice: CompletionChoice) = apply {
+            choices =
+                (choices ?: JsonField.of(mutableListOf())).apply {
+                    asKnown()
+                        .orElseThrow {
+                            IllegalStateException(
+                                "Field was set to non-list type: ${javaClass.simpleName}"
+                            )
+                        }
+                        .add(choice)
+                }
+        }
 
         /** The Unix timestamp (in seconds) of when the completion was created. */
         fun created(created: Long) = created(JsonField.of(created))
@@ -224,11 +244,12 @@ private constructor(
 
         fun build(): Completion =
             Completion(
-                id,
-                choices.map { it.toImmutable() },
-                created,
-                model,
-                object_,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(choices) { "`choices` is required but was not set" }
+                    .map { it.toImmutable() },
+                checkNotNull(created) { "`created` is required but was not set" },
+                checkNotNull(model) { "`model` is required but was not set" },
+                checkNotNull(object_) { "`object_` is required but was not set" },
                 systemFingerprint,
                 usage,
                 additionalProperties.toImmutable(),

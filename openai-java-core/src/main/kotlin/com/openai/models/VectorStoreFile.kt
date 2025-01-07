@@ -87,41 +87,45 @@ private constructor(
         Optional.ofNullable(chunkingStrategy.getNullable("chunking_strategy"))
 
     /** The identifier, which can be referenced in API endpoints. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** The Unix timestamp (in seconds) for when the vector store file was created. */
-    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
+    @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
     /**
      * The last error associated with this vector store file. Will be `null` if there are no errors.
      */
-    @JsonProperty("last_error") @ExcludeMissing fun _lastError() = lastError
+    @JsonProperty("last_error") @ExcludeMissing fun _lastError(): JsonField<LastError> = lastError
 
     /** The object type, which is always `vector_store.file`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /**
      * The status of the vector store file, which can be either `in_progress`, `completed`,
      * `cancelled`, or `failed`. The status `completed` indicates that the vector store file is
      * ready for use.
      */
-    @JsonProperty("status") @ExcludeMissing fun _status() = status
+    @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
     /**
      * The total vector store usage in bytes. Note that this may be different from the original file
      * size.
      */
-    @JsonProperty("usage_bytes") @ExcludeMissing fun _usageBytes() = usageBytes
+    @JsonProperty("usage_bytes") @ExcludeMissing fun _usageBytes(): JsonField<Long> = usageBytes
 
     /**
      * The ID of the
      * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that the
      * [File](https://platform.openai.com/docs/api-reference/files) is attached to.
      */
-    @JsonProperty("vector_store_id") @ExcludeMissing fun _vectorStoreId() = vectorStoreId
+    @JsonProperty("vector_store_id")
+    @ExcludeMissing
+    fun _vectorStoreId(): JsonField<String> = vectorStoreId
 
     /** The strategy used to chunk the file. */
-    @JsonProperty("chunking_strategy") @ExcludeMissing fun _chunkingStrategy() = chunkingStrategy
+    @JsonProperty("chunking_strategy")
+    @ExcludeMissing
+    fun _chunkingStrategy(): JsonField<FileChunkingStrategy> = chunkingStrategy
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -152,13 +156,13 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var lastError: JsonField<LastError> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
-        private var status: JsonField<Status> = JsonMissing.of()
-        private var usageBytes: JsonField<Long> = JsonMissing.of()
-        private var vectorStoreId: JsonField<String> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var createdAt: JsonField<Long>? = null
+        private var lastError: JsonField<LastError>? = null
+        private var object_: JsonField<Object>? = null
+        private var status: JsonField<Status>? = null
+        private var usageBytes: JsonField<Long>? = null
+        private var vectorStoreId: JsonField<String>? = null
         private var chunkingStrategy: JsonField<FileChunkingStrategy> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -191,7 +195,13 @@ private constructor(
          * The last error associated with this vector store file. Will be `null` if there are no
          * errors.
          */
-        fun lastError(lastError: LastError) = lastError(JsonField.of(lastError))
+        fun lastError(lastError: LastError?) = lastError(JsonField.ofNullable(lastError))
+
+        /**
+         * The last error associated with this vector store file. Will be `null` if there are no
+         * errors.
+         */
+        fun lastError(lastError: Optional<LastError>) = lastError(lastError.orElse(null))
 
         /**
          * The last error associated with this vector store file. Will be `null` if there are no
@@ -256,6 +266,24 @@ private constructor(
             this.chunkingStrategy = chunkingStrategy
         }
 
+        fun chunkingStrategy(staticFileChunkingStrategyObject: StaticFileChunkingStrategyObject) =
+            chunkingStrategy(
+                FileChunkingStrategy.ofStaticFileChunkingStrategyObject(
+                    staticFileChunkingStrategyObject
+                )
+            )
+
+        /**
+         * This is returned when the chunking strategy is unknown. Typically, this is because the
+         * file was indexed before the `chunking_strategy` concept was introduced in the API.
+         */
+        fun chunkingStrategy(otherFileChunkingStrategyObject: OtherFileChunkingStrategyObject) =
+            chunkingStrategy(
+                FileChunkingStrategy.ofOtherFileChunkingStrategyObject(
+                    otherFileChunkingStrategyObject
+                )
+            )
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -277,13 +305,13 @@ private constructor(
 
         fun build(): VectorStoreFile =
             VectorStoreFile(
-                id,
-                createdAt,
-                lastError,
-                object_,
-                status,
-                usageBytes,
-                vectorStoreId,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
+                checkNotNull(lastError) { "`lastError` is required but was not set" },
+                checkNotNull(object_) { "`object_` is required but was not set" },
+                checkNotNull(status) { "`status` is required but was not set" },
+                checkNotNull(usageBytes) { "`usageBytes` is required but was not set" },
+                checkNotNull(vectorStoreId) { "`vectorStoreId` is required but was not set" },
                 chunkingStrategy,
                 additionalProperties.toImmutable(),
             )
@@ -311,10 +339,10 @@ private constructor(
         fun message(): String = message.getRequired("message")
 
         /** One of `server_error` or `rate_limit_exceeded`. */
-        @JsonProperty("code") @ExcludeMissing fun _code() = code
+        @JsonProperty("code") @ExcludeMissing fun _code(): JsonField<Code> = code
 
         /** A human-readable description of the error. */
-        @JsonProperty("message") @ExcludeMissing fun _message() = message
+        @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -339,8 +367,8 @@ private constructor(
 
         class Builder {
 
-            private var code: JsonField<Code> = JsonMissing.of()
-            private var message: JsonField<String> = JsonMissing.of()
+            private var code: JsonField<Code>? = null
+            private var message: JsonField<String>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -383,8 +411,8 @@ private constructor(
 
             fun build(): LastError =
                 LastError(
-                    code,
-                    message,
+                    checkNotNull(code) { "`code` is required but was not set" },
+                    checkNotNull(message) { "`message` is required but was not set" },
                     additionalProperties.toImmutable(),
                 )
         }

@@ -48,16 +48,16 @@ private constructor(
     fun uploadId(): String = uploadId.getRequired("upload_id")
 
     /** The upload Part unique identifier, which can be referenced in API endpoints. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** The Unix timestamp (in seconds) for when the Part was created. */
-    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
+    @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
     /** The object type, which is always `upload.part`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /** The ID of the Upload object that this Part was added to. */
-    @JsonProperty("upload_id") @ExcludeMissing fun _uploadId() = uploadId
+    @JsonProperty("upload_id") @ExcludeMissing fun _uploadId(): JsonField<String> = uploadId
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -84,10 +84,10 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
-        private var uploadId: JsonField<String> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var createdAt: JsonField<Long>? = null
+        private var object_: JsonField<Object>? = null
+        private var uploadId: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -144,10 +144,10 @@ private constructor(
 
         fun build(): UploadPart =
             UploadPart(
-                id,
-                createdAt,
-                object_,
-                uploadId,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
+                checkNotNull(object_) { "`object_` is required but was not set" },
+                checkNotNull(uploadId) { "`uploadId` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }

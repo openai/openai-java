@@ -36,10 +36,10 @@ private constructor(
     fun type(): Type = type.getRequired("type")
 
     /** Contains either an image URL or a data URL for a base64 encoded image. */
-    @JsonProperty("image_url") @ExcludeMissing fun _imageUrl() = imageUrl
+    @JsonProperty("image_url") @ExcludeMissing fun _imageUrl(): JsonField<ImageUrl> = imageUrl
 
     /** Always `image_url`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -64,8 +64,8 @@ private constructor(
 
     class Builder {
 
-        private var imageUrl: JsonField<ImageUrl> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var imageUrl: JsonField<ImageUrl>? = null
+        private var type: JsonField<Type>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -108,8 +108,8 @@ private constructor(
 
         fun build(): ModerationImageUrlInput =
             ModerationImageUrlInput(
-                imageUrl,
-                type,
+                checkNotNull(imageUrl) { "`imageUrl` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }
@@ -128,7 +128,7 @@ private constructor(
         fun url(): String = url.getRequired("url")
 
         /** Either a URL of the image or the base64 encoded image data. */
-        @JsonProperty("url") @ExcludeMissing fun _url() = url
+        @JsonProperty("url") @ExcludeMissing fun _url(): JsonField<String> = url
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -152,7 +152,7 @@ private constructor(
 
         class Builder {
 
-            private var url: JsonField<String> = JsonMissing.of()
+            private var url: JsonField<String>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -186,7 +186,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): ImageUrl = ImageUrl(url, additionalProperties.toImmutable())
+            fun build(): ImageUrl =
+                ImageUrl(
+                    checkNotNull(url) { "`url` is required but was not set" },
+                    additionalProperties.toImmutable()
+                )
         }
 
         override fun equals(other: Any?): Boolean {

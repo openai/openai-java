@@ -43,13 +43,13 @@ private constructor(
     /**
      * The external URL of the image, must be a supported image types: jpeg, jpg, png, gif, webp.
      */
-    @JsonProperty("url") @ExcludeMissing fun _url() = url
+    @JsonProperty("url") @ExcludeMissing fun _url(): JsonField<String> = url
 
     /**
      * Specifies the detail level of the image. `low` uses fewer tokens, you can opt in to high
      * resolution using `high`. Default value is `auto`
      */
-    @JsonProperty("detail") @ExcludeMissing fun _detail() = detail
+    @JsonProperty("detail") @ExcludeMissing fun _detail(): JsonField<Detail> = detail
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -74,7 +74,7 @@ private constructor(
 
     class Builder {
 
-        private var url: JsonField<String> = JsonMissing.of()
+        private var url: JsonField<String>? = null
         private var detail: JsonField<Detail> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -130,7 +130,7 @@ private constructor(
 
         fun build(): ImageUrl =
             ImageUrl(
-                url,
+                checkNotNull(url) { "`url` is required but was not set" },
                 detail,
                 additionalProperties.toImmutable(),
             )

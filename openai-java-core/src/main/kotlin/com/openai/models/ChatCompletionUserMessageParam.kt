@@ -54,16 +54,16 @@ private constructor(
     fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
 
     /** The contents of the user message. */
-    @JsonProperty("content") @ExcludeMissing fun _content() = content
+    @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<Content> = content
 
     /** The role of the messages author, in this case `user`. */
-    @JsonProperty("role") @ExcludeMissing fun _role() = role
+    @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
 
     /**
      * An optional name for the participant. Provides the model information to differentiate between
      * participants of the same role.
      */
-    @JsonProperty("name") @ExcludeMissing fun _name() = name
+    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -89,8 +89,8 @@ private constructor(
 
     class Builder {
 
-        private var content: JsonField<Content> = JsonMissing.of()
-        private var role: JsonField<Role> = JsonMissing.of()
+        private var content: JsonField<Content>? = null
+        private var role: JsonField<Role>? = null
         private var name: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -108,6 +108,17 @@ private constructor(
 
         /** The contents of the user message. */
         fun content(content: JsonField<Content>) = apply { this.content = content }
+
+        /** The text contents of the message. */
+        fun content(textContent: String) = content(Content.ofTextContent(textContent))
+
+        /**
+         * An array of content parts with a defined type. Supported options differ based on the
+         * [model](https://platform.openai.com/docs/models) being used to generate the response. Can
+         * contain text, image, or audio inputs.
+         */
+        fun contentOfArrayOfContentParts(arrayOfContentParts: List<ChatCompletionContentPart>) =
+            content(Content.ofArrayOfContentParts(arrayOfContentParts))
 
         /** The role of the messages author, in this case `user`. */
         fun role(role: Role) = role(JsonField.of(role))
@@ -148,8 +159,8 @@ private constructor(
 
         fun build(): ChatCompletionUserMessageParam =
             ChatCompletionUserMessageParam(
-                content,
-                role,
+                checkNotNull(content) { "`content` is required but was not set" },
+                checkNotNull(role) { "`role` is required but was not set" },
                 name,
                 additionalProperties.toImmutable(),
             )

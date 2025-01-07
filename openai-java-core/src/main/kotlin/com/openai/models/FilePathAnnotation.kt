@@ -51,17 +51,17 @@ private constructor(
     /** Always `file_path`. */
     fun type(): Type = type.getRequired("type")
 
-    @JsonProperty("end_index") @ExcludeMissing fun _endIndex() = endIndex
+    @JsonProperty("end_index") @ExcludeMissing fun _endIndex(): JsonField<Long> = endIndex
 
-    @JsonProperty("file_path") @ExcludeMissing fun _filePath() = filePath
+    @JsonProperty("file_path") @ExcludeMissing fun _filePath(): JsonField<FilePath> = filePath
 
-    @JsonProperty("start_index") @ExcludeMissing fun _startIndex() = startIndex
+    @JsonProperty("start_index") @ExcludeMissing fun _startIndex(): JsonField<Long> = startIndex
 
     /** The text in the message content that needs to be replaced. */
-    @JsonProperty("text") @ExcludeMissing fun _text() = text
+    @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
     /** Always `file_path`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -89,11 +89,11 @@ private constructor(
 
     class Builder {
 
-        private var endIndex: JsonField<Long> = JsonMissing.of()
-        private var filePath: JsonField<FilePath> = JsonMissing.of()
-        private var startIndex: JsonField<Long> = JsonMissing.of()
-        private var text: JsonField<String> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var endIndex: JsonField<Long>? = null
+        private var filePath: JsonField<FilePath>? = null
+        private var startIndex: JsonField<Long>? = null
+        private var text: JsonField<String>? = null
+        private var type: JsonField<Type>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -151,11 +151,11 @@ private constructor(
 
         fun build(): FilePathAnnotation =
             FilePathAnnotation(
-                endIndex,
-                filePath,
-                startIndex,
-                text,
-                type,
+                checkNotNull(endIndex) { "`endIndex` is required but was not set" },
+                checkNotNull(filePath) { "`filePath` is required but was not set" },
+                checkNotNull(startIndex) { "`startIndex` is required but was not set" },
+                checkNotNull(text) { "`text` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }
@@ -175,7 +175,7 @@ private constructor(
         fun fileId(): String = fileId.getRequired("file_id")
 
         /** The ID of the file that was generated. */
-        @JsonProperty("file_id") @ExcludeMissing fun _fileId() = fileId
+        @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -199,7 +199,7 @@ private constructor(
 
         class Builder {
 
-            private var fileId: JsonField<String> = JsonMissing.of()
+            private var fileId: JsonField<String>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -233,7 +233,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): FilePath = FilePath(fileId, additionalProperties.toImmutable())
+            fun build(): FilePath =
+                FilePath(
+                    checkNotNull(fileId) { "`fileId` is required but was not set" },
+                    additionalProperties.toImmutable()
+                )
         }
 
         override fun equals(other: Any?): Boolean {

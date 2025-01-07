@@ -44,12 +44,14 @@ private constructor(
         Optional.ofNullable(imageFile.getNullable("image_file"))
 
     /** The index of the content part in the message. */
-    @JsonProperty("index") @ExcludeMissing fun _index() = index
+    @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
     /** Always `image_file`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
-    @JsonProperty("image_file") @ExcludeMissing fun _imageFile() = imageFile
+    @JsonProperty("image_file")
+    @ExcludeMissing
+    fun _imageFile(): JsonField<ImageFileDelta> = imageFile
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -75,8 +77,8 @@ private constructor(
 
     class Builder {
 
-        private var index: JsonField<Long> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var index: JsonField<Long>? = null
+        private var type: JsonField<Type>? = null
         private var imageFile: JsonField<ImageFileDelta> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -125,8 +127,8 @@ private constructor(
 
         fun build(): ImageFileDeltaBlock =
             ImageFileDeltaBlock(
-                index,
-                type,
+                checkNotNull(index) { "`index` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 imageFile,
                 additionalProperties.toImmutable(),
             )
