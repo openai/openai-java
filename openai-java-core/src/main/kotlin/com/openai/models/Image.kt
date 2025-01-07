@@ -42,13 +42,15 @@ private constructor(
     fun url(): Optional<String> = Optional.ofNullable(url.getNullable("url"))
 
     /** The base64-encoded JSON of the generated image, if `response_format` is `b64_json`. */
-    @JsonProperty("b64_json") @ExcludeMissing fun _b64Json() = b64Json
+    @JsonProperty("b64_json") @ExcludeMissing fun _b64Json(): JsonField<String> = b64Json
 
     /** The prompt that was used to generate the image, if there was any revision to the prompt. */
-    @JsonProperty("revised_prompt") @ExcludeMissing fun _revisedPrompt() = revisedPrompt
+    @JsonProperty("revised_prompt")
+    @ExcludeMissing
+    fun _revisedPrompt(): JsonField<String> = revisedPrompt
 
     /** The URL of the generated image, if `response_format` is `url` (default). */
-    @JsonProperty("url") @ExcludeMissing fun _url() = url
+    @JsonProperty("url") @ExcludeMissing fun _url(): JsonField<String> = url
 
     @JsonAnyGetter
     @ExcludeMissing

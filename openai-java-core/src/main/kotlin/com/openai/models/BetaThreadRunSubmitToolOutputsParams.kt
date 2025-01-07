@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
+import com.openai.core.JsonField
+import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.http.Headers
@@ -37,11 +39,14 @@ constructor(
     /** A list of tools for which the outputs are being submitted. */
     fun toolOutputs(): List<ToolOutput> = body.toolOutputs()
 
+    /** A list of tools for which the outputs are being submitted. */
+    fun _toolOutputs(): JsonField<List<ToolOutput>> = body._toolOutputs()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     @JvmSynthetic internal fun getBody(): BetaThreadRunSubmitToolOutputsBody = body
 
@@ -61,17 +66,33 @@ constructor(
     class BetaThreadRunSubmitToolOutputsBody
     @JsonCreator
     internal constructor(
-        @JsonProperty("tool_outputs") private val toolOutputs: List<ToolOutput>,
+        @JsonProperty("tool_outputs")
+        @ExcludeMissing
+        private val toolOutputs: JsonField<List<ToolOutput>> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** A list of tools for which the outputs are being submitted. */
-        @JsonProperty("tool_outputs") fun toolOutputs(): List<ToolOutput> = toolOutputs
+        fun toolOutputs(): List<ToolOutput> = toolOutputs.getRequired("tool_outputs")
+
+        /** A list of tools for which the outputs are being submitted. */
+        @JsonProperty("tool_outputs")
+        @ExcludeMissing
+        fun _toolOutputs(): JsonField<List<ToolOutput>> = toolOutputs
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): BetaThreadRunSubmitToolOutputsBody = apply {
+            if (!validated) {
+                toolOutputs().forEach { it.validate() }
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -82,26 +103,39 @@ constructor(
 
         class Builder {
 
-            private var toolOutputs: MutableList<ToolOutput>? = null
+            private var toolOutputs: JsonField<MutableList<ToolOutput>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(
                 betaThreadRunSubmitToolOutputsBody: BetaThreadRunSubmitToolOutputsBody
             ) = apply {
-                toolOutputs = betaThreadRunSubmitToolOutputsBody.toolOutputs.toMutableList()
+                toolOutputs =
+                    betaThreadRunSubmitToolOutputsBody.toolOutputs.map { it.toMutableList() }
                 additionalProperties =
                     betaThreadRunSubmitToolOutputsBody.additionalProperties.toMutableMap()
             }
 
             /** A list of tools for which the outputs are being submitted. */
-            fun toolOutputs(toolOutputs: List<ToolOutput>) = apply {
-                this.toolOutputs = toolOutputs.toMutableList()
+            fun toolOutputs(toolOutputs: List<ToolOutput>) = toolOutputs(JsonField.of(toolOutputs))
+
+            /** A list of tools for which the outputs are being submitted. */
+            fun toolOutputs(toolOutputs: JsonField<List<ToolOutput>>) = apply {
+                this.toolOutputs = toolOutputs.map { it.toMutableList() }
             }
 
             /** A list of tools for which the outputs are being submitted. */
             fun addToolOutput(toolOutput: ToolOutput) = apply {
-                toolOutputs = (toolOutputs ?: mutableListOf()).apply { add(toolOutput) }
+                toolOutputs =
+                    (toolOutputs ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(toolOutput)
+                    }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -126,7 +160,7 @@ constructor(
             fun build(): BetaThreadRunSubmitToolOutputsBody =
                 BetaThreadRunSubmitToolOutputsBody(
                     checkNotNull(toolOutputs) { "`toolOutputs` is required but was not set" }
-                        .toImmutable(),
+                        .map { it.toImmutable() },
                     additionalProperties.toImmutable()
                 )
         }
@@ -186,7 +220,31 @@ constructor(
         fun toolOutputs(toolOutputs: List<ToolOutput>) = apply { body.toolOutputs(toolOutputs) }
 
         /** A list of tools for which the outputs are being submitted. */
+        fun toolOutputs(toolOutputs: JsonField<List<ToolOutput>>) = apply {
+            body.toolOutputs(toolOutputs)
+        }
+
+        /** A list of tools for which the outputs are being submitted. */
         fun addToolOutput(toolOutput: ToolOutput) = apply { body.addToolOutput(toolOutput) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -286,25 +344,6 @@ constructor(
             additionalQueryParams.removeAll(keys)
         }
 
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            body.additionalProperties(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            body.putAdditionalProperty(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                body.putAllAdditionalProperties(additionalBodyProperties)
-            }
-
-        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
-
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            body.removeAllAdditionalProperties(keys)
-        }
-
         fun build(): BetaThreadRunSubmitToolOutputsParams =
             BetaThreadRunSubmitToolOutputsParams(
                 checkNotNull(threadId) { "`threadId` is required but was not set" },
@@ -319,25 +358,50 @@ constructor(
     class ToolOutput
     @JsonCreator
     private constructor(
-        @JsonProperty("output") private val output: String?,
-        @JsonProperty("tool_call_id") private val toolCallId: String?,
+        @JsonProperty("output")
+        @ExcludeMissing
+        private val output: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("tool_call_id")
+        @ExcludeMissing
+        private val toolCallId: JsonField<String> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** The output of the tool call to be submitted to continue the run. */
-        @JsonProperty("output") fun output(): Optional<String> = Optional.ofNullable(output)
+        fun output(): Optional<String> = Optional.ofNullable(output.getNullable("output"))
+
+        /**
+         * The ID of the tool call in the `required_action` object within the run object the output
+         * is being submitted for.
+         */
+        fun toolCallId(): Optional<String> =
+            Optional.ofNullable(toolCallId.getNullable("tool_call_id"))
+
+        /** The output of the tool call to be submitted to continue the run. */
+        @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<String> = output
 
         /**
          * The ID of the tool call in the `required_action` object within the run object the output
          * is being submitted for.
          */
         @JsonProperty("tool_call_id")
-        fun toolCallId(): Optional<String> = Optional.ofNullable(toolCallId)
+        @ExcludeMissing
+        fun _toolCallId(): JsonField<String> = toolCallId
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): ToolOutput = apply {
+            if (!validated) {
+                output()
+                toolCallId()
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -348,8 +412,8 @@ constructor(
 
         class Builder {
 
-            private var output: String? = null
-            private var toolCallId: String? = null
+            private var output: JsonField<String> = JsonMissing.of()
+            private var toolCallId: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -360,22 +424,22 @@ constructor(
             }
 
             /** The output of the tool call to be submitted to continue the run. */
-            fun output(output: String?) = apply { this.output = output }
+            fun output(output: String) = output(JsonField.of(output))
 
             /** The output of the tool call to be submitted to continue the run. */
-            fun output(output: Optional<String>) = output(output.orElse(null))
+            fun output(output: JsonField<String>) = apply { this.output = output }
 
             /**
              * The ID of the tool call in the `required_action` object within the run object the
              * output is being submitted for.
              */
-            fun toolCallId(toolCallId: String?) = apply { this.toolCallId = toolCallId }
+            fun toolCallId(toolCallId: String) = toolCallId(JsonField.of(toolCallId))
 
             /**
              * The ID of the tool call in the `required_action` object within the run object the
              * output is being submitted for.
              */
-            fun toolCallId(toolCallId: Optional<String>) = toolCallId(toolCallId.orElse(null))
+            fun toolCallId(toolCallId: JsonField<String>) = apply { this.toolCallId = toolCallId }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()

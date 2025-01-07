@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
+import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.http.Headers
@@ -75,11 +76,59 @@ constructor(
      */
     fun user(): Optional<String> = body.user()
 
+    /**
+     * A text description of the desired image(s). The maximum length is 1000 characters for
+     * `dall-e-2` and 4000 characters for `dall-e-3`.
+     */
+    fun _prompt(): JsonField<String> = body._prompt()
+
+    /** The model to use for image generation. */
+    fun _model(): JsonField<ImageModel> = body._model()
+
+    /**
+     * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
+     * supported.
+     */
+    fun _n(): JsonField<Long> = body._n()
+
+    /**
+     * The quality of the image that will be generated. `hd` creates images with finer details and
+     * greater consistency across the image. This param is only supported for `dall-e-3`.
+     */
+    fun _quality(): JsonField<Quality> = body._quality()
+
+    /**
+     * The format in which the generated images are returned. Must be one of `url` or `b64_json`.
+     * URLs are only valid for 60 minutes after the image has been generated.
+     */
+    fun _responseFormat(): JsonField<ResponseFormat> = body._responseFormat()
+
+    /**
+     * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024` for
+     * `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for `dall-e-3` models.
+     */
+    fun _size(): JsonField<Size> = body._size()
+
+    /**
+     * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes the
+     * model to lean towards generating hyper-real and dramatic images. Natural causes the model to
+     * produce more natural, less hyper-real looking images. This param is only supported for
+     * `dall-e-3`.
+     */
+    fun _style(): JsonField<Style> = body._style()
+
+    /**
+     * A unique identifier representing your end-user, which can help OpenAI to monitor and detect
+     * abuse.
+     * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+     */
+    fun _user(): JsonField<String> = body._user()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     @JvmSynthetic internal fun getBody(): ImageGenerateBody = body
 
@@ -91,14 +140,26 @@ constructor(
     class ImageGenerateBody
     @JsonCreator
     internal constructor(
-        @JsonProperty("prompt") private val prompt: String,
-        @JsonProperty("model") private val model: ImageModel?,
-        @JsonProperty("n") private val n: Long?,
-        @JsonProperty("quality") private val quality: Quality?,
-        @JsonProperty("response_format") private val responseFormat: ResponseFormat?,
-        @JsonProperty("size") private val size: Size?,
-        @JsonProperty("style") private val style: Style?,
-        @JsonProperty("user") private val user: String?,
+        @JsonProperty("prompt")
+        @ExcludeMissing
+        private val prompt: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("model")
+        @ExcludeMissing
+        private val model: JsonField<ImageModel> = JsonMissing.of(),
+        @JsonProperty("n") @ExcludeMissing private val n: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("quality")
+        @ExcludeMissing
+        private val quality: JsonField<Quality> = JsonMissing.of(),
+        @JsonProperty("response_format")
+        @ExcludeMissing
+        private val responseFormat: JsonField<ResponseFormat> = JsonMissing.of(),
+        @JsonProperty("size") @ExcludeMissing private val size: JsonField<Size> = JsonMissing.of(),
+        @JsonProperty("style")
+        @ExcludeMissing
+        private val style: JsonField<Style> = JsonMissing.of(),
+        @JsonProperty("user")
+        @ExcludeMissing
+        private val user: JsonField<String> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -107,36 +168,36 @@ constructor(
          * A text description of the desired image(s). The maximum length is 1000 characters for
          * `dall-e-2` and 4000 characters for `dall-e-3`.
          */
-        @JsonProperty("prompt") fun prompt(): String = prompt
+        fun prompt(): String = prompt.getRequired("prompt")
 
         /** The model to use for image generation. */
-        @JsonProperty("model") fun model(): Optional<ImageModel> = Optional.ofNullable(model)
+        fun model(): Optional<ImageModel> = Optional.ofNullable(model.getNullable("model"))
 
         /**
          * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
          * supported.
          */
-        @JsonProperty("n") fun n(): Optional<Long> = Optional.ofNullable(n)
+        fun n(): Optional<Long> = Optional.ofNullable(n.getNullable("n"))
 
         /**
          * The quality of the image that will be generated. `hd` creates images with finer details
          * and greater consistency across the image. This param is only supported for `dall-e-3`.
          */
-        @JsonProperty("quality") fun quality(): Optional<Quality> = Optional.ofNullable(quality)
+        fun quality(): Optional<Quality> = Optional.ofNullable(quality.getNullable("quality"))
 
         /**
          * The format in which the generated images are returned. Must be one of `url` or
          * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
          */
-        @JsonProperty("response_format")
-        fun responseFormat(): Optional<ResponseFormat> = Optional.ofNullable(responseFormat)
+        fun responseFormat(): Optional<ResponseFormat> =
+            Optional.ofNullable(responseFormat.getNullable("response_format"))
 
         /**
          * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024` for
          * `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for `dall-e-3`
          * models.
          */
-        @JsonProperty("size") fun size(): Optional<Size> = Optional.ofNullable(size)
+        fun size(): Optional<Size> = Optional.ofNullable(size.getNullable("size"))
 
         /**
          * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes the
@@ -144,18 +205,85 @@ constructor(
          * to produce more natural, less hyper-real looking images. This param is only supported for
          * `dall-e-3`.
          */
-        @JsonProperty("style") fun style(): Optional<Style> = Optional.ofNullable(style)
+        fun style(): Optional<Style> = Optional.ofNullable(style.getNullable("style"))
 
         /**
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
          * detect abuse.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
          */
-        @JsonProperty("user") fun user(): Optional<String> = Optional.ofNullable(user)
+        fun user(): Optional<String> = Optional.ofNullable(user.getNullable("user"))
+
+        /**
+         * A text description of the desired image(s). The maximum length is 1000 characters for
+         * `dall-e-2` and 4000 characters for `dall-e-3`.
+         */
+        @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<String> = prompt
+
+        /** The model to use for image generation. */
+        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<ImageModel> = model
+
+        /**
+         * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
+         * supported.
+         */
+        @JsonProperty("n") @ExcludeMissing fun _n(): JsonField<Long> = n
+
+        /**
+         * The quality of the image that will be generated. `hd` creates images with finer details
+         * and greater consistency across the image. This param is only supported for `dall-e-3`.
+         */
+        @JsonProperty("quality") @ExcludeMissing fun _quality(): JsonField<Quality> = quality
+
+        /**
+         * The format in which the generated images are returned. Must be one of `url` or
+         * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
+         */
+        @JsonProperty("response_format")
+        @ExcludeMissing
+        fun _responseFormat(): JsonField<ResponseFormat> = responseFormat
+
+        /**
+         * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024` for
+         * `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for `dall-e-3`
+         * models.
+         */
+        @JsonProperty("size") @ExcludeMissing fun _size(): JsonField<Size> = size
+
+        /**
+         * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes the
+         * model to lean towards generating hyper-real and dramatic images. Natural causes the model
+         * to produce more natural, less hyper-real looking images. This param is only supported for
+         * `dall-e-3`.
+         */
+        @JsonProperty("style") @ExcludeMissing fun _style(): JsonField<Style> = style
+
+        /**
+         * A unique identifier representing your end-user, which can help OpenAI to monitor and
+         * detect abuse.
+         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         */
+        @JsonProperty("user") @ExcludeMissing fun _user(): JsonField<String> = user
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): ImageGenerateBody = apply {
+            if (!validated) {
+                prompt()
+                model()
+                n()
+                quality()
+                responseFormat()
+                size()
+                style()
+                user()
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -166,14 +294,14 @@ constructor(
 
         class Builder {
 
-            private var prompt: String? = null
-            private var model: ImageModel? = null
-            private var n: Long? = null
-            private var quality: Quality? = null
-            private var responseFormat: ResponseFormat? = null
-            private var size: Size? = null
-            private var style: Style? = null
-            private var user: String? = null
+            private var prompt: JsonField<String>? = null
+            private var model: JsonField<ImageModel> = JsonMissing.of()
+            private var n: JsonField<Long> = JsonMissing.of()
+            private var quality: JsonField<Quality> = JsonMissing.of()
+            private var responseFormat: JsonField<ResponseFormat> = JsonMissing.of()
+            private var size: JsonField<Size> = JsonMissing.of()
+            private var style: JsonField<Style> = JsonMissing.of()
+            private var user: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -193,22 +321,31 @@ constructor(
              * A text description of the desired image(s). The maximum length is 1000 characters for
              * `dall-e-2` and 4000 characters for `dall-e-3`.
              */
-            fun prompt(prompt: String) = apply { this.prompt = prompt }
+            fun prompt(prompt: String) = prompt(JsonField.of(prompt))
+
+            /**
+             * A text description of the desired image(s). The maximum length is 1000 characters for
+             * `dall-e-2` and 4000 characters for `dall-e-3`.
+             */
+            fun prompt(prompt: JsonField<String>) = apply { this.prompt = prompt }
 
             /** The model to use for image generation. */
-            fun model(model: ImageModel?) = apply { this.model = model }
+            fun model(model: ImageModel?) = model(JsonField.ofNullable(model))
 
             /** The model to use for image generation. */
             fun model(model: Optional<ImageModel>) = model(model.orElse(null))
 
             /** The model to use for image generation. */
-            fun model(value: String) = apply { model = ImageModel.of(value) }
+            fun model(model: JsonField<ImageModel>) = apply { this.model = model }
+
+            /** The model to use for image generation. */
+            fun model(value: String) = apply { model(ImageModel.of(value)) }
 
             /**
              * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
              * `n=1` is supported.
              */
-            fun n(n: Long?) = apply { this.n = n }
+            fun n(n: Long?) = n(JsonField.ofNullable(n))
 
             /**
              * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
@@ -224,26 +361,31 @@ constructor(
             fun n(n: Optional<Long>) = n(n.orElse(null) as Long?)
 
             /**
-             * The quality of the image that will be generated. `hd` creates images with finer
-             * details and greater consistency across the image. This param is only supported for
-             * `dall-e-3`.
+             * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
+             * `n=1` is supported.
              */
-            fun quality(quality: Quality?) = apply { this.quality = quality }
+            fun n(n: JsonField<Long>) = apply { this.n = n }
 
             /**
              * The quality of the image that will be generated. `hd` creates images with finer
              * details and greater consistency across the image. This param is only supported for
              * `dall-e-3`.
              */
-            fun quality(quality: Optional<Quality>) = quality(quality.orElse(null))
+            fun quality(quality: Quality) = quality(JsonField.of(quality))
+
+            /**
+             * The quality of the image that will be generated. `hd` creates images with finer
+             * details and greater consistency across the image. This param is only supported for
+             * `dall-e-3`.
+             */
+            fun quality(quality: JsonField<Quality>) = apply { this.quality = quality }
 
             /**
              * The format in which the generated images are returned. Must be one of `url` or
              * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
              */
-            fun responseFormat(responseFormat: ResponseFormat?) = apply {
-                this.responseFormat = responseFormat
-            }
+            fun responseFormat(responseFormat: ResponseFormat?) =
+                responseFormat(JsonField.ofNullable(responseFormat))
 
             /**
              * The format in which the generated images are returned. Must be one of `url` or
@@ -253,11 +395,19 @@ constructor(
                 responseFormat(responseFormat.orElse(null))
 
             /**
+             * The format in which the generated images are returned. Must be one of `url` or
+             * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
+             */
+            fun responseFormat(responseFormat: JsonField<ResponseFormat>) = apply {
+                this.responseFormat = responseFormat
+            }
+
+            /**
              * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`
              * for `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for
              * `dall-e-3` models.
              */
-            fun size(size: Size?) = apply { this.size = size }
+            fun size(size: Size?) = size(JsonField.ofNullable(size))
 
             /**
              * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`
@@ -267,12 +417,19 @@ constructor(
             fun size(size: Optional<Size>) = size(size.orElse(null))
 
             /**
+             * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`
+             * for `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for
+             * `dall-e-3` models.
+             */
+            fun size(size: JsonField<Size>) = apply { this.size = size }
+
+            /**
              * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes
              * the model to lean towards generating hyper-real and dramatic images. Natural causes
              * the model to produce more natural, less hyper-real looking images. This param is only
              * supported for `dall-e-3`.
              */
-            fun style(style: Style?) = apply { this.style = style }
+            fun style(style: Style?) = style(JsonField.ofNullable(style))
 
             /**
              * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes
@@ -283,18 +440,26 @@ constructor(
             fun style(style: Optional<Style>) = style(style.orElse(null))
 
             /**
-             * A unique identifier representing your end-user, which can help OpenAI to monitor and
-             * detect abuse.
-             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+             * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes
+             * the model to lean towards generating hyper-real and dramatic images. Natural causes
+             * the model to produce more natural, less hyper-real looking images. This param is only
+             * supported for `dall-e-3`.
              */
-            fun user(user: String?) = apply { this.user = user }
+            fun style(style: JsonField<Style>) = apply { this.style = style }
 
             /**
              * A unique identifier representing your end-user, which can help OpenAI to monitor and
              * detect abuse.
              * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
              */
-            fun user(user: Optional<String>) = user(user.orElse(null))
+            fun user(user: String) = user(JsonField.of(user))
+
+            /**
+             * A unique identifier representing your end-user, which can help OpenAI to monitor and
+             * detect abuse.
+             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+             */
+            fun user(user: JsonField<String>) = apply { this.user = user }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -374,11 +539,20 @@ constructor(
          */
         fun prompt(prompt: String) = apply { body.prompt(prompt) }
 
+        /**
+         * A text description of the desired image(s). The maximum length is 1000 characters for
+         * `dall-e-2` and 4000 characters for `dall-e-3`.
+         */
+        fun prompt(prompt: JsonField<String>) = apply { body.prompt(prompt) }
+
         /** The model to use for image generation. */
         fun model(model: ImageModel?) = apply { body.model(model) }
 
         /** The model to use for image generation. */
         fun model(model: Optional<ImageModel>) = model(model.orElse(null))
+
+        /** The model to use for image generation. */
+        fun model(model: JsonField<ImageModel>) = apply { body.model(model) }
 
         /** The model to use for image generation. */
         fun model(value: String) = apply { body.model(value) }
@@ -403,16 +577,22 @@ constructor(
         fun n(n: Optional<Long>) = n(n.orElse(null) as Long?)
 
         /**
-         * The quality of the image that will be generated. `hd` creates images with finer details
-         * and greater consistency across the image. This param is only supported for `dall-e-3`.
+         * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
+         * supported.
          */
-        fun quality(quality: Quality?) = apply { body.quality(quality) }
+        fun n(n: JsonField<Long>) = apply { body.n(n) }
 
         /**
          * The quality of the image that will be generated. `hd` creates images with finer details
          * and greater consistency across the image. This param is only supported for `dall-e-3`.
          */
-        fun quality(quality: Optional<Quality>) = quality(quality.orElse(null))
+        fun quality(quality: Quality) = apply { body.quality(quality) }
+
+        /**
+         * The quality of the image that will be generated. `hd` creates images with finer details
+         * and greater consistency across the image. This param is only supported for `dall-e-3`.
+         */
+        fun quality(quality: JsonField<Quality>) = apply { body.quality(quality) }
 
         /**
          * The format in which the generated images are returned. Must be one of `url` or
@@ -430,6 +610,14 @@ constructor(
             responseFormat(responseFormat.orElse(null))
 
         /**
+         * The format in which the generated images are returned. Must be one of `url` or
+         * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
+         */
+        fun responseFormat(responseFormat: JsonField<ResponseFormat>) = apply {
+            body.responseFormat(responseFormat)
+        }
+
+        /**
          * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024` for
          * `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for `dall-e-3`
          * models.
@@ -442,6 +630,13 @@ constructor(
          * models.
          */
         fun size(size: Optional<Size>) = size(size.orElse(null))
+
+        /**
+         * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024` for
+         * `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for `dall-e-3`
+         * models.
+         */
+        fun size(size: JsonField<Size>) = apply { body.size(size) }
 
         /**
          * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes the
@@ -460,18 +655,45 @@ constructor(
         fun style(style: Optional<Style>) = style(style.orElse(null))
 
         /**
-         * A unique identifier representing your end-user, which can help OpenAI to monitor and
-         * detect abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes the
+         * model to lean towards generating hyper-real and dramatic images. Natural causes the model
+         * to produce more natural, less hyper-real looking images. This param is only supported for
+         * `dall-e-3`.
          */
-        fun user(user: String?) = apply { body.user(user) }
+        fun style(style: JsonField<Style>) = apply { body.style(style) }
 
         /**
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
          * detect abuse.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
          */
-        fun user(user: Optional<String>) = user(user.orElse(null))
+        fun user(user: String) = apply { body.user(user) }
+
+        /**
+         * A unique identifier representing your end-user, which can help OpenAI to monitor and
+         * detect abuse.
+         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         */
+        fun user(user: JsonField<String>) = apply { body.user(user) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -569,25 +791,6 @@ constructor(
 
         fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
             additionalQueryParams.removeAll(keys)
-        }
-
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            body.additionalProperties(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            body.putAdditionalProperty(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                body.putAllAdditionalProperties(additionalBodyProperties)
-            }
-
-        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
-
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            body.removeAllAdditionalProperties(keys)
         }
 
         fun build(): ImageGenerateParams =

@@ -49,13 +49,13 @@ private constructor(
      * message content. Set `purpose="vision"` when uploading the File if you need to later display
      * the file content.
      */
-    @JsonProperty("file_id") @ExcludeMissing fun _fileId() = fileId
+    @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
     /**
      * Specifies the detail level of the image if specified by the user. `low` uses fewer tokens,
      * you can opt in to high resolution using `high`.
      */
-    @JsonProperty("detail") @ExcludeMissing fun _detail() = detail
+    @JsonProperty("detail") @ExcludeMissing fun _detail(): JsonField<Detail> = detail
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -80,7 +80,7 @@ private constructor(
 
     class Builder {
 
-        private var fileId: JsonField<String> = JsonMissing.of()
+        private var fileId: JsonField<String>? = null
         private var detail: JsonField<Detail> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -138,7 +138,7 @@ private constructor(
 
         fun build(): ImageFile =
             ImageFile(
-                fileId,
+                checkNotNull(fileId) { "`fileId` is required but was not set" },
                 detail,
                 additionalProperties.toImmutable(),
             )

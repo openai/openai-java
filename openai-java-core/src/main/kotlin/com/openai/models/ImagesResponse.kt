@@ -32,9 +32,9 @@ private constructor(
 
     fun data(): List<Image> = data.getRequired("data")
 
-    @JsonProperty("created") @ExcludeMissing fun _created() = created
+    @JsonProperty("created") @ExcludeMissing fun _created(): JsonField<Long> = created
 
-    @JsonProperty("data") @ExcludeMissing fun _data() = data
+    @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<List<Image>> = data
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -59,14 +59,14 @@ private constructor(
 
     class Builder {
 
-        private var created: JsonField<Long> = JsonMissing.of()
-        private var data: JsonField<List<Image>> = JsonMissing.of()
+        private var created: JsonField<Long>? = null
+        private var data: JsonField<MutableList<Image>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(imagesResponse: ImagesResponse) = apply {
             created = imagesResponse.created
-            data = imagesResponse.data
+            data = imagesResponse.data.map { it.toMutableList() }
             additionalProperties = imagesResponse.additionalProperties.toMutableMap()
         }
 
@@ -76,7 +76,22 @@ private constructor(
 
         fun data(data: List<Image>) = data(JsonField.of(data))
 
-        fun data(data: JsonField<List<Image>>) = apply { this.data = data }
+        fun data(data: JsonField<List<Image>>) = apply {
+            this.data = data.map { it.toMutableList() }
+        }
+
+        fun addData(data: Image) = apply {
+            this.data =
+                (this.data ?: JsonField.of(mutableListOf())).apply {
+                    asKnown()
+                        .orElseThrow {
+                            IllegalStateException(
+                                "Field was set to non-list type: ${javaClass.simpleName}"
+                            )
+                        }
+                        .add(data)
+                }
+        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -99,8 +114,9 @@ private constructor(
 
         fun build(): ImagesResponse =
             ImagesResponse(
-                created,
-                data.map { it.toImmutable() },
+                checkNotNull(created) { "`created` is required but was not set" },
+                checkNotNull(data) { "`data` is required but was not set" }
+                    .map { it.toImmutable() },
                 additionalProperties.toImmutable(),
             )
     }

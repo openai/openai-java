@@ -81,25 +81,27 @@ private constructor(
     fun usage(): Optional<CompletionUsage> = Optional.ofNullable(usage.getNullable("usage"))
 
     /** A unique identifier for the chat completion. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** A list of chat completion choices. Can be more than one if `n` is greater than 1. */
-    @JsonProperty("choices") @ExcludeMissing fun _choices() = choices
+    @JsonProperty("choices") @ExcludeMissing fun _choices(): JsonField<List<Choice>> = choices
 
     /** The Unix timestamp (in seconds) of when the chat completion was created. */
-    @JsonProperty("created") @ExcludeMissing fun _created() = created
+    @JsonProperty("created") @ExcludeMissing fun _created(): JsonField<Long> = created
 
     /** The model used for the chat completion. */
-    @JsonProperty("model") @ExcludeMissing fun _model() = model
+    @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
 
     /** The object type, which is always `chat.completion`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /**
      * The service tier used for processing the request. This field is only included if the
      * `service_tier` parameter is specified in the request.
      */
-    @JsonProperty("service_tier") @ExcludeMissing fun _serviceTier() = serviceTier
+    @JsonProperty("service_tier")
+    @ExcludeMissing
+    fun _serviceTier(): JsonField<ServiceTier> = serviceTier
 
     /**
      * This fingerprint represents the backend configuration that the model runs with.
@@ -107,10 +109,12 @@ private constructor(
      * Can be used in conjunction with the `seed` request parameter to understand when backend
      * changes have been made that might impact determinism.
      */
-    @JsonProperty("system_fingerprint") @ExcludeMissing fun _systemFingerprint() = systemFingerprint
+    @JsonProperty("system_fingerprint")
+    @ExcludeMissing
+    fun _systemFingerprint(): JsonField<String> = systemFingerprint
 
     /** Usage statistics for the completion request. */
-    @JsonProperty("usage") @ExcludeMissing fun _usage() = usage
+    @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<CompletionUsage> = usage
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -141,11 +145,11 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var choices: JsonField<List<Choice>> = JsonMissing.of()
-        private var created: JsonField<Long> = JsonMissing.of()
-        private var model: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var choices: JsonField<MutableList<Choice>>? = null
+        private var created: JsonField<Long>? = null
+        private var model: JsonField<String>? = null
+        private var object_: JsonField<Object>? = null
         private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
         private var systemFingerprint: JsonField<String> = JsonMissing.of()
         private var usage: JsonField<CompletionUsage> = JsonMissing.of()
@@ -154,7 +158,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(chatCompletion: ChatCompletion) = apply {
             id = chatCompletion.id
-            choices = chatCompletion.choices
+            choices = chatCompletion.choices.map { it.toMutableList() }
             created = chatCompletion.created
             model = chatCompletion.model
             object_ = chatCompletion.object_
@@ -174,7 +178,23 @@ private constructor(
         fun choices(choices: List<Choice>) = choices(JsonField.of(choices))
 
         /** A list of chat completion choices. Can be more than one if `n` is greater than 1. */
-        fun choices(choices: JsonField<List<Choice>>) = apply { this.choices = choices }
+        fun choices(choices: JsonField<List<Choice>>) = apply {
+            this.choices = choices.map { it.toMutableList() }
+        }
+
+        /** A list of chat completion choices. Can be more than one if `n` is greater than 1. */
+        fun addChoice(choice: Choice) = apply {
+            choices =
+                (choices ?: JsonField.of(mutableListOf())).apply {
+                    asKnown()
+                        .orElseThrow {
+                            IllegalStateException(
+                                "Field was set to non-list type: ${javaClass.simpleName}"
+                            )
+                        }
+                        .add(choice)
+                }
+        }
 
         /** The Unix timestamp (in seconds) of when the chat completion was created. */
         fun created(created: Long) = created(JsonField.of(created))
@@ -198,7 +218,13 @@ private constructor(
          * The service tier used for processing the request. This field is only included if the
          * `service_tier` parameter is specified in the request.
          */
-        fun serviceTier(serviceTier: ServiceTier) = serviceTier(JsonField.of(serviceTier))
+        fun serviceTier(serviceTier: ServiceTier?) = serviceTier(JsonField.ofNullable(serviceTier))
+
+        /**
+         * The service tier used for processing the request. This field is only included if the
+         * `service_tier` parameter is specified in the request.
+         */
+        fun serviceTier(serviceTier: Optional<ServiceTier>) = serviceTier(serviceTier.orElse(null))
 
         /**
          * The service tier used for processing the request. This field is only included if the
@@ -254,11 +280,12 @@ private constructor(
 
         fun build(): ChatCompletion =
             ChatCompletion(
-                id,
-                choices.map { it.toImmutable() },
-                created,
-                model,
-                object_,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(choices) { "`choices` is required but was not set" }
+                    .map { it.toImmutable() },
+                checkNotNull(created) { "`created` is required but was not set" },
+                checkNotNull(model) { "`model` is required but was not set" },
+                checkNotNull(object_) { "`object_` is required but was not set" },
                 serviceTier,
                 systemFingerprint,
                 usage,
@@ -311,16 +338,20 @@ private constructor(
          * flag from our content filters, `tool_calls` if the model called a tool, or
          * `function_call` (deprecated) if the model called a function.
          */
-        @JsonProperty("finish_reason") @ExcludeMissing fun _finishReason() = finishReason
+        @JsonProperty("finish_reason")
+        @ExcludeMissing
+        fun _finishReason(): JsonField<FinishReason> = finishReason
 
         /** The index of the choice in the list of choices. */
-        @JsonProperty("index") @ExcludeMissing fun _index() = index
+        @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
         /** Log probability information for the choice. */
-        @JsonProperty("logprobs") @ExcludeMissing fun _logprobs() = logprobs
+        @JsonProperty("logprobs") @ExcludeMissing fun _logprobs(): JsonField<Logprobs> = logprobs
 
         /** A chat completion message generated by the model. */
-        @JsonProperty("message") @ExcludeMissing fun _message() = message
+        @JsonProperty("message")
+        @ExcludeMissing
+        fun _message(): JsonField<ChatCompletionMessage> = message
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -347,10 +378,10 @@ private constructor(
 
         class Builder {
 
-            private var finishReason: JsonField<FinishReason> = JsonMissing.of()
-            private var index: JsonField<Long> = JsonMissing.of()
-            private var logprobs: JsonField<Logprobs> = JsonMissing.of()
-            private var message: JsonField<ChatCompletionMessage> = JsonMissing.of()
+            private var finishReason: JsonField<FinishReason>? = null
+            private var index: JsonField<Long>? = null
+            private var logprobs: JsonField<Logprobs>? = null
+            private var message: JsonField<ChatCompletionMessage>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -389,7 +420,10 @@ private constructor(
             fun index(index: JsonField<Long>) = apply { this.index = index }
 
             /** Log probability information for the choice. */
-            fun logprobs(logprobs: Logprobs) = logprobs(JsonField.of(logprobs))
+            fun logprobs(logprobs: Logprobs?) = logprobs(JsonField.ofNullable(logprobs))
+
+            /** Log probability information for the choice. */
+            fun logprobs(logprobs: Optional<Logprobs>) = logprobs(logprobs.orElse(null))
 
             /** Log probability information for the choice. */
             fun logprobs(logprobs: JsonField<Logprobs>) = apply { this.logprobs = logprobs }
@@ -423,10 +457,10 @@ private constructor(
 
             fun build(): Choice =
                 Choice(
-                    finishReason,
-                    index,
-                    logprobs,
-                    message,
+                    checkNotNull(finishReason) { "`finishReason` is required but was not set" },
+                    checkNotNull(index) { "`index` is required but was not set" },
+                    checkNotNull(logprobs) { "`logprobs` is required but was not set" },
+                    checkNotNull(message) { "`message` is required but was not set" },
                     additionalProperties.toImmutable(),
                 )
         }
@@ -530,10 +564,14 @@ private constructor(
                 Optional.ofNullable(refusal.getNullable("refusal"))
 
             /** A list of message content tokens with log probability information. */
-            @JsonProperty("content") @ExcludeMissing fun _content() = content
+            @JsonProperty("content")
+            @ExcludeMissing
+            fun _content(): JsonField<List<ChatCompletionTokenLogprob>> = content
 
             /** A list of message refusal tokens with log probability information. */
-            @JsonProperty("refusal") @ExcludeMissing fun _refusal() = refusal
+            @JsonProperty("refusal")
+            @ExcludeMissing
+            fun _refusal(): JsonField<List<ChatCompletionTokenLogprob>> = refusal
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -558,33 +596,69 @@ private constructor(
 
             class Builder {
 
-                private var content: JsonField<List<ChatCompletionTokenLogprob>> = JsonMissing.of()
-                private var refusal: JsonField<List<ChatCompletionTokenLogprob>> = JsonMissing.of()
+                private var content: JsonField<MutableList<ChatCompletionTokenLogprob>>? = null
+                private var refusal: JsonField<MutableList<ChatCompletionTokenLogprob>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(logprobs: Logprobs) = apply {
-                    content = logprobs.content
-                    refusal = logprobs.refusal
+                    content = logprobs.content.map { it.toMutableList() }
+                    refusal = logprobs.refusal.map { it.toMutableList() }
                     additionalProperties = logprobs.additionalProperties.toMutableMap()
                 }
 
                 /** A list of message content tokens with log probability information. */
-                fun content(content: List<ChatCompletionTokenLogprob>) =
-                    content(JsonField.of(content))
+                fun content(content: List<ChatCompletionTokenLogprob>?) =
+                    content(JsonField.ofNullable(content))
+
+                /** A list of message content tokens with log probability information. */
+                fun content(content: Optional<List<ChatCompletionTokenLogprob>>) =
+                    content(content.orElse(null))
 
                 /** A list of message content tokens with log probability information. */
                 fun content(content: JsonField<List<ChatCompletionTokenLogprob>>) = apply {
-                    this.content = content
+                    this.content = content.map { it.toMutableList() }
+                }
+
+                /** A list of message content tokens with log probability information. */
+                fun addContent(content: ChatCompletionTokenLogprob) = apply {
+                    this.content =
+                        (this.content ?: JsonField.of(mutableListOf())).apply {
+                            asKnown()
+                                .orElseThrow {
+                                    IllegalStateException(
+                                        "Field was set to non-list type: ${javaClass.simpleName}"
+                                    )
+                                }
+                                .add(content)
+                        }
                 }
 
                 /** A list of message refusal tokens with log probability information. */
-                fun refusal(refusal: List<ChatCompletionTokenLogprob>) =
-                    refusal(JsonField.of(refusal))
+                fun refusal(refusal: List<ChatCompletionTokenLogprob>?) =
+                    refusal(JsonField.ofNullable(refusal))
+
+                /** A list of message refusal tokens with log probability information. */
+                fun refusal(refusal: Optional<List<ChatCompletionTokenLogprob>>) =
+                    refusal(refusal.orElse(null))
 
                 /** A list of message refusal tokens with log probability information. */
                 fun refusal(refusal: JsonField<List<ChatCompletionTokenLogprob>>) = apply {
-                    this.refusal = refusal
+                    this.refusal = refusal.map { it.toMutableList() }
+                }
+
+                /** A list of message refusal tokens with log probability information. */
+                fun addRefusal(refusal: ChatCompletionTokenLogprob) = apply {
+                    this.refusal =
+                        (this.refusal ?: JsonField.of(mutableListOf())).apply {
+                            asKnown()
+                                .orElseThrow {
+                                    IllegalStateException(
+                                        "Field was set to non-list type: ${javaClass.simpleName}"
+                                    )
+                                }
+                                .add(refusal)
+                        }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -611,8 +685,10 @@ private constructor(
 
                 fun build(): Logprobs =
                     Logprobs(
-                        content.map { it.toImmutable() },
-                        refusal.map { it.toImmutable() },
+                        checkNotNull(content) { "`content` is required but was not set" }
+                            .map { it.toImmutable() },
+                        checkNotNull(refusal) { "`refusal` is required but was not set" }
+                            .map { it.toImmutable() },
                         additionalProperties.toImmutable(),
                     )
             }

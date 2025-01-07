@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
+import com.openai.core.JsonField
+import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.http.Headers
@@ -61,11 +63,33 @@ constructor(
      */
     fun purpose(): FilePurpose = body.purpose()
 
+    /** The number of bytes in the file you are uploading. */
+    fun _bytes(): JsonField<Long> = body._bytes()
+
+    /** The name of the file to upload. */
+    fun _filename(): JsonField<String> = body._filename()
+
+    /**
+     * The MIME type of the file.
+     *
+     * This must fall within the supported MIME types for your file purpose. See the supported MIME
+     * types for assistants and vision.
+     */
+    fun _mimeType(): JsonField<String> = body._mimeType()
+
+    /**
+     * The intended purpose of the uploaded file.
+     *
+     * See the
+     * [documentation on File purposes](https://platform.openai.com/docs/api-reference/files/create#files-create-purpose).
+     */
+    fun _purpose(): JsonField<FilePurpose> = body._purpose()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     @JvmSynthetic internal fun getBody(): UploadCreateBody = body
 
@@ -77,19 +101,27 @@ constructor(
     class UploadCreateBody
     @JsonCreator
     internal constructor(
-        @JsonProperty("bytes") private val bytes: Long,
-        @JsonProperty("filename") private val filename: String,
-        @JsonProperty("mime_type") private val mimeType: String,
-        @JsonProperty("purpose") private val purpose: FilePurpose,
+        @JsonProperty("bytes")
+        @ExcludeMissing
+        private val bytes: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("filename")
+        @ExcludeMissing
+        private val filename: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("mime_type")
+        @ExcludeMissing
+        private val mimeType: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("purpose")
+        @ExcludeMissing
+        private val purpose: JsonField<FilePurpose> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** The number of bytes in the file you are uploading. */
-        @JsonProperty("bytes") fun bytes(): Long = bytes
+        fun bytes(): Long = bytes.getRequired("bytes")
 
         /** The name of the file to upload. */
-        @JsonProperty("filename") fun filename(): String = filename
+        fun filename(): String = filename.getRequired("filename")
 
         /**
          * The MIME type of the file.
@@ -97,7 +129,7 @@ constructor(
          * This must fall within the supported MIME types for your file purpose. See the supported
          * MIME types for assistants and vision.
          */
-        @JsonProperty("mime_type") fun mimeType(): String = mimeType
+        fun mimeType(): String = mimeType.getRequired("mime_type")
 
         /**
          * The intended purpose of the uploaded file.
@@ -105,11 +137,45 @@ constructor(
          * See the
          * [documentation on File purposes](https://platform.openai.com/docs/api-reference/files/create#files-create-purpose).
          */
-        @JsonProperty("purpose") fun purpose(): FilePurpose = purpose
+        fun purpose(): FilePurpose = purpose.getRequired("purpose")
+
+        /** The number of bytes in the file you are uploading. */
+        @JsonProperty("bytes") @ExcludeMissing fun _bytes(): JsonField<Long> = bytes
+
+        /** The name of the file to upload. */
+        @JsonProperty("filename") @ExcludeMissing fun _filename(): JsonField<String> = filename
+
+        /**
+         * The MIME type of the file.
+         *
+         * This must fall within the supported MIME types for your file purpose. See the supported
+         * MIME types for assistants and vision.
+         */
+        @JsonProperty("mime_type") @ExcludeMissing fun _mimeType(): JsonField<String> = mimeType
+
+        /**
+         * The intended purpose of the uploaded file.
+         *
+         * See the
+         * [documentation on File purposes](https://platform.openai.com/docs/api-reference/files/create#files-create-purpose).
+         */
+        @JsonProperty("purpose") @ExcludeMissing fun _purpose(): JsonField<FilePurpose> = purpose
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): UploadCreateBody = apply {
+            if (!validated) {
+                bytes()
+                filename()
+                mimeType()
+                purpose()
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -120,10 +186,10 @@ constructor(
 
         class Builder {
 
-            private var bytes: Long? = null
-            private var filename: String? = null
-            private var mimeType: String? = null
-            private var purpose: FilePurpose? = null
+            private var bytes: JsonField<Long>? = null
+            private var filename: JsonField<String>? = null
+            private var mimeType: JsonField<String>? = null
+            private var purpose: JsonField<FilePurpose>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -136,10 +202,16 @@ constructor(
             }
 
             /** The number of bytes in the file you are uploading. */
-            fun bytes(bytes: Long) = apply { this.bytes = bytes }
+            fun bytes(bytes: Long) = bytes(JsonField.of(bytes))
+
+            /** The number of bytes in the file you are uploading. */
+            fun bytes(bytes: JsonField<Long>) = apply { this.bytes = bytes }
 
             /** The name of the file to upload. */
-            fun filename(filename: String) = apply { this.filename = filename }
+            fun filename(filename: String) = filename(JsonField.of(filename))
+
+            /** The name of the file to upload. */
+            fun filename(filename: JsonField<String>) = apply { this.filename = filename }
 
             /**
              * The MIME type of the file.
@@ -147,7 +219,15 @@ constructor(
              * This must fall within the supported MIME types for your file purpose. See the
              * supported MIME types for assistants and vision.
              */
-            fun mimeType(mimeType: String) = apply { this.mimeType = mimeType }
+            fun mimeType(mimeType: String) = mimeType(JsonField.of(mimeType))
+
+            /**
+             * The MIME type of the file.
+             *
+             * This must fall within the supported MIME types for your file purpose. See the
+             * supported MIME types for assistants and vision.
+             */
+            fun mimeType(mimeType: JsonField<String>) = apply { this.mimeType = mimeType }
 
             /**
              * The intended purpose of the uploaded file.
@@ -155,7 +235,15 @@ constructor(
              * See the
              * [documentation on File purposes](https://platform.openai.com/docs/api-reference/files/create#files-create-purpose).
              */
-            fun purpose(purpose: FilePurpose) = apply { this.purpose = purpose }
+            fun purpose(purpose: FilePurpose) = purpose(JsonField.of(purpose))
+
+            /**
+             * The intended purpose of the uploaded file.
+             *
+             * See the
+             * [documentation on File purposes](https://platform.openai.com/docs/api-reference/files/create#files-create-purpose).
+             */
+            fun purpose(purpose: JsonField<FilePurpose>) = apply { this.purpose = purpose }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -228,8 +316,14 @@ constructor(
         /** The number of bytes in the file you are uploading. */
         fun bytes(bytes: Long) = apply { body.bytes(bytes) }
 
+        /** The number of bytes in the file you are uploading. */
+        fun bytes(bytes: JsonField<Long>) = apply { body.bytes(bytes) }
+
         /** The name of the file to upload. */
         fun filename(filename: String) = apply { body.filename(filename) }
+
+        /** The name of the file to upload. */
+        fun filename(filename: JsonField<String>) = apply { body.filename(filename) }
 
         /**
          * The MIME type of the file.
@@ -240,12 +334,47 @@ constructor(
         fun mimeType(mimeType: String) = apply { body.mimeType(mimeType) }
 
         /**
+         * The MIME type of the file.
+         *
+         * This must fall within the supported MIME types for your file purpose. See the supported
+         * MIME types for assistants and vision.
+         */
+        fun mimeType(mimeType: JsonField<String>) = apply { body.mimeType(mimeType) }
+
+        /**
          * The intended purpose of the uploaded file.
          *
          * See the
          * [documentation on File purposes](https://platform.openai.com/docs/api-reference/files/create#files-create-purpose).
          */
         fun purpose(purpose: FilePurpose) = apply { body.purpose(purpose) }
+
+        /**
+         * The intended purpose of the uploaded file.
+         *
+         * See the
+         * [documentation on File purposes](https://platform.openai.com/docs/api-reference/files/create#files-create-purpose).
+         */
+        fun purpose(purpose: JsonField<FilePurpose>) = apply { body.purpose(purpose) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -343,25 +472,6 @@ constructor(
 
         fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
             additionalQueryParams.removeAll(keys)
-        }
-
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            body.additionalProperties(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            body.putAdditionalProperty(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                body.putAllAdditionalProperties(additionalBodyProperties)
-            }
-
-        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
-
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            body.removeAllAdditionalProperties(keys)
         }
 
         fun build(): UploadCreateParams =

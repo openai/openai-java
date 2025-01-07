@@ -57,7 +57,7 @@ private constructor(
     fun topLogprobs(): List<TopLogprob> = topLogprobs.getRequired("top_logprobs")
 
     /** The token. */
-    @JsonProperty("token") @ExcludeMissing fun _token() = token
+    @JsonProperty("token") @ExcludeMissing fun _token(): JsonField<String> = token
 
     /**
      * A list of integers representing the UTF-8 bytes representation of the token. Useful in
@@ -65,19 +65,21 @@ private constructor(
      * must be combined to generate the correct text representation. Can be `null` if there is no
      * bytes representation for the token.
      */
-    @JsonProperty("bytes") @ExcludeMissing fun _bytes() = bytes
+    @JsonProperty("bytes") @ExcludeMissing fun _bytes(): JsonField<List<Long>> = bytes
 
     /**
      * The log probability of this token, if it is within the top 20 most likely tokens. Otherwise,
      * the value `-9999.0` is used to signify that the token is very unlikely.
      */
-    @JsonProperty("logprob") @ExcludeMissing fun _logprob() = logprob
+    @JsonProperty("logprob") @ExcludeMissing fun _logprob(): JsonField<Double> = logprob
 
     /**
      * List of the most likely tokens and their log probability, at this token position. In rare
      * cases, there may be fewer than the number of requested `top_logprobs` returned.
      */
-    @JsonProperty("top_logprobs") @ExcludeMissing fun _topLogprobs() = topLogprobs
+    @JsonProperty("top_logprobs")
+    @ExcludeMissing
+    fun _topLogprobs(): JsonField<List<TopLogprob>> = topLogprobs
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -104,18 +106,18 @@ private constructor(
 
     class Builder {
 
-        private var token: JsonField<String> = JsonMissing.of()
-        private var bytes: JsonField<List<Long>> = JsonMissing.of()
-        private var logprob: JsonField<Double> = JsonMissing.of()
-        private var topLogprobs: JsonField<List<TopLogprob>> = JsonMissing.of()
+        private var token: JsonField<String>? = null
+        private var bytes: JsonField<MutableList<Long>>? = null
+        private var logprob: JsonField<Double>? = null
+        private var topLogprobs: JsonField<MutableList<TopLogprob>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(chatCompletionTokenLogprob: ChatCompletionTokenLogprob) = apply {
             token = chatCompletionTokenLogprob.token
-            bytes = chatCompletionTokenLogprob.bytes
+            bytes = chatCompletionTokenLogprob.bytes.map { it.toMutableList() }
             logprob = chatCompletionTokenLogprob.logprob
-            topLogprobs = chatCompletionTokenLogprob.topLogprobs
+            topLogprobs = chatCompletionTokenLogprob.topLogprobs.map { it.toMutableList() }
             additionalProperties = chatCompletionTokenLogprob.additionalProperties.toMutableMap()
         }
 
@@ -131,7 +133,7 @@ private constructor(
          * representations must be combined to generate the correct text representation. Can be
          * `null` if there is no bytes representation for the token.
          */
-        fun bytes(bytes: List<Long>) = bytes(JsonField.of(bytes))
+        fun bytes(bytes: List<Long>?) = bytes(JsonField.ofNullable(bytes))
 
         /**
          * A list of integers representing the UTF-8 bytes representation of the token. Useful in
@@ -139,7 +141,36 @@ private constructor(
          * representations must be combined to generate the correct text representation. Can be
          * `null` if there is no bytes representation for the token.
          */
-        fun bytes(bytes: JsonField<List<Long>>) = apply { this.bytes = bytes }
+        fun bytes(bytes: Optional<List<Long>>) = bytes(bytes.orElse(null))
+
+        /**
+         * A list of integers representing the UTF-8 bytes representation of the token. Useful in
+         * instances where characters are represented by multiple tokens and their byte
+         * representations must be combined to generate the correct text representation. Can be
+         * `null` if there is no bytes representation for the token.
+         */
+        fun bytes(bytes: JsonField<List<Long>>) = apply {
+            this.bytes = bytes.map { it.toMutableList() }
+        }
+
+        /**
+         * A list of integers representing the UTF-8 bytes representation of the token. Useful in
+         * instances where characters are represented by multiple tokens and their byte
+         * representations must be combined to generate the correct text representation. Can be
+         * `null` if there is no bytes representation for the token.
+         */
+        fun addByte(byte_: Long) = apply {
+            bytes =
+                (bytes ?: JsonField.of(mutableListOf())).apply {
+                    asKnown()
+                        .orElseThrow {
+                            IllegalStateException(
+                                "Field was set to non-list type: ${javaClass.simpleName}"
+                            )
+                        }
+                        .add(byte_)
+                }
+        }
 
         /**
          * The log probability of this token, if it is within the top 20 most likely tokens.
@@ -164,7 +195,24 @@ private constructor(
          * cases, there may be fewer than the number of requested `top_logprobs` returned.
          */
         fun topLogprobs(topLogprobs: JsonField<List<TopLogprob>>) = apply {
-            this.topLogprobs = topLogprobs
+            this.topLogprobs = topLogprobs.map { it.toMutableList() }
+        }
+
+        /**
+         * List of the most likely tokens and their log probability, at this token position. In rare
+         * cases, there may be fewer than the number of requested `top_logprobs` returned.
+         */
+        fun addTopLogprob(topLogprob: TopLogprob) = apply {
+            topLogprobs =
+                (topLogprobs ?: JsonField.of(mutableListOf())).apply {
+                    asKnown()
+                        .orElseThrow {
+                            IllegalStateException(
+                                "Field was set to non-list type: ${javaClass.simpleName}"
+                            )
+                        }
+                        .add(topLogprob)
+                }
         }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -188,10 +236,12 @@ private constructor(
 
         fun build(): ChatCompletionTokenLogprob =
             ChatCompletionTokenLogprob(
-                token,
-                bytes.map { it.toImmutable() },
-                logprob,
-                topLogprobs.map { it.toImmutable() },
+                checkNotNull(token) { "`token` is required but was not set" },
+                checkNotNull(bytes) { "`bytes` is required but was not set" }
+                    .map { it.toImmutable() },
+                checkNotNull(logprob) { "`logprob` is required but was not set" },
+                checkNotNull(topLogprobs) { "`topLogprobs` is required but was not set" }
+                    .map { it.toImmutable() },
                 additionalProperties.toImmutable(),
             )
     }
@@ -231,7 +281,7 @@ private constructor(
         fun logprob(): Double = logprob.getRequired("logprob")
 
         /** The token. */
-        @JsonProperty("token") @ExcludeMissing fun _token() = token
+        @JsonProperty("token") @ExcludeMissing fun _token(): JsonField<String> = token
 
         /**
          * A list of integers representing the UTF-8 bytes representation of the token. Useful in
@@ -239,13 +289,13 @@ private constructor(
          * representations must be combined to generate the correct text representation. Can be
          * `null` if there is no bytes representation for the token.
          */
-        @JsonProperty("bytes") @ExcludeMissing fun _bytes() = bytes
+        @JsonProperty("bytes") @ExcludeMissing fun _bytes(): JsonField<List<Long>> = bytes
 
         /**
          * The log probability of this token, if it is within the top 20 most likely tokens.
          * Otherwise, the value `-9999.0` is used to signify that the token is very unlikely.
          */
-        @JsonProperty("logprob") @ExcludeMissing fun _logprob() = logprob
+        @JsonProperty("logprob") @ExcludeMissing fun _logprob(): JsonField<Double> = logprob
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -271,15 +321,15 @@ private constructor(
 
         class Builder {
 
-            private var token: JsonField<String> = JsonMissing.of()
-            private var bytes: JsonField<List<Long>> = JsonMissing.of()
-            private var logprob: JsonField<Double> = JsonMissing.of()
+            private var token: JsonField<String>? = null
+            private var bytes: JsonField<MutableList<Long>>? = null
+            private var logprob: JsonField<Double>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(topLogprob: TopLogprob) = apply {
                 token = topLogprob.token
-                bytes = topLogprob.bytes
+                bytes = topLogprob.bytes.map { it.toMutableList() }
                 logprob = topLogprob.logprob
                 additionalProperties = topLogprob.additionalProperties.toMutableMap()
             }
@@ -296,7 +346,7 @@ private constructor(
              * representations must be combined to generate the correct text representation. Can be
              * `null` if there is no bytes representation for the token.
              */
-            fun bytes(bytes: List<Long>) = bytes(JsonField.of(bytes))
+            fun bytes(bytes: List<Long>?) = bytes(JsonField.ofNullable(bytes))
 
             /**
              * A list of integers representing the UTF-8 bytes representation of the token. Useful
@@ -304,7 +354,36 @@ private constructor(
              * representations must be combined to generate the correct text representation. Can be
              * `null` if there is no bytes representation for the token.
              */
-            fun bytes(bytes: JsonField<List<Long>>) = apply { this.bytes = bytes }
+            fun bytes(bytes: Optional<List<Long>>) = bytes(bytes.orElse(null))
+
+            /**
+             * A list of integers representing the UTF-8 bytes representation of the token. Useful
+             * in instances where characters are represented by multiple tokens and their byte
+             * representations must be combined to generate the correct text representation. Can be
+             * `null` if there is no bytes representation for the token.
+             */
+            fun bytes(bytes: JsonField<List<Long>>) = apply {
+                this.bytes = bytes.map { it.toMutableList() }
+            }
+
+            /**
+             * A list of integers representing the UTF-8 bytes representation of the token. Useful
+             * in instances where characters are represented by multiple tokens and their byte
+             * representations must be combined to generate the correct text representation. Can be
+             * `null` if there is no bytes representation for the token.
+             */
+            fun addByte(byte_: Long) = apply {
+                bytes =
+                    (bytes ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(byte_)
+                    }
+            }
 
             /**
              * The log probability of this token, if it is within the top 20 most likely tokens.
@@ -339,9 +418,10 @@ private constructor(
 
             fun build(): TopLogprob =
                 TopLogprob(
-                    token,
-                    bytes.map { it.toImmutable() },
-                    logprob,
+                    checkNotNull(token) { "`token` is required but was not set" },
+                    checkNotNull(bytes) { "`bytes` is required but was not set" }
+                        .map { it.toImmutable() },
+                    checkNotNull(logprob) { "`logprob` is required but was not set" },
                     additionalProperties.toImmutable(),
                 )
         }

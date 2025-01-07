@@ -55,16 +55,18 @@ private constructor(
     fun type(): Type = type.getRequired("type")
 
     /** The ID of the tool call. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** The Code Interpreter tool call definition. */
-    @JsonProperty("code_interpreter") @ExcludeMissing fun _codeInterpreter() = codeInterpreter
+    @JsonProperty("code_interpreter")
+    @ExcludeMissing
+    fun _codeInterpreter(): JsonField<CodeInterpreter> = codeInterpreter
 
     /**
      * The type of tool call. This is always going to be `code_interpreter` for this type of tool
      * call.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -90,9 +92,9 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var codeInterpreter: JsonField<CodeInterpreter>? = null
+        private var type: JsonField<Type>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -151,9 +153,9 @@ private constructor(
 
         fun build(): CodeInterpreterToolCall =
             CodeInterpreterToolCall(
-                id,
-                codeInterpreter,
-                type,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(codeInterpreter) { "`codeInterpreter` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }
@@ -184,14 +186,14 @@ private constructor(
         fun outputs(): List<Output> = outputs.getRequired("outputs")
 
         /** The input to the Code Interpreter tool call. */
-        @JsonProperty("input") @ExcludeMissing fun _input() = input
+        @JsonProperty("input") @ExcludeMissing fun _input(): JsonField<String> = input
 
         /**
          * The outputs from the Code Interpreter tool call. Code Interpreter can output one or more
          * items, including text (`logs`) or images (`image`). Each of these are represented by a
          * different object type.
          */
-        @JsonProperty("outputs") @ExcludeMissing fun _outputs() = outputs
+        @JsonProperty("outputs") @ExcludeMissing fun _outputs(): JsonField<List<Output>> = outputs
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -216,14 +218,14 @@ private constructor(
 
         class Builder {
 
-            private var input: JsonField<String> = JsonMissing.of()
-            private var outputs: JsonField<List<Output>> = JsonMissing.of()
+            private var input: JsonField<String>? = null
+            private var outputs: JsonField<MutableList<Output>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(codeInterpreter: CodeInterpreter) = apply {
                 input = codeInterpreter.input
-                outputs = codeInterpreter.outputs
+                outputs = codeInterpreter.outputs.map { it.toMutableList() }
                 additionalProperties = codeInterpreter.additionalProperties.toMutableMap()
             }
 
@@ -245,7 +247,27 @@ private constructor(
              * more items, including text (`logs`) or images (`image`). Each of these are
              * represented by a different object type.
              */
-            fun outputs(outputs: JsonField<List<Output>>) = apply { this.outputs = outputs }
+            fun outputs(outputs: JsonField<List<Output>>) = apply {
+                this.outputs = outputs.map { it.toMutableList() }
+            }
+
+            /**
+             * The outputs from the Code Interpreter tool call. Code Interpreter can output one or
+             * more items, including text (`logs`) or images (`image`). Each of these are
+             * represented by a different object type.
+             */
+            fun addOutput(output: Output) = apply {
+                outputs =
+                    (outputs ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(output)
+                    }
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -268,8 +290,9 @@ private constructor(
 
             fun build(): CodeInterpreter =
                 CodeInterpreter(
-                    input,
-                    outputs.map { it.toImmutable() },
+                    checkNotNull(input) { "`input` is required but was not set" },
+                    checkNotNull(outputs) { "`outputs` is required but was not set" }
+                        .map { it.toImmutable() },
                     additionalProperties.toImmutable(),
                 )
         }
@@ -421,10 +444,10 @@ private constructor(
                 fun type(): Type = type.getRequired("type")
 
                 /** The text output from the Code Interpreter tool call. */
-                @JsonProperty("logs") @ExcludeMissing fun _logs() = logs
+                @JsonProperty("logs") @ExcludeMissing fun _logs(): JsonField<String> = logs
 
                 /** Always `logs`. */
-                @JsonProperty("type") @ExcludeMissing fun _type() = type
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                 @JsonAnyGetter
                 @ExcludeMissing
@@ -449,8 +472,8 @@ private constructor(
 
                 class Builder {
 
-                    private var logs: JsonField<String> = JsonMissing.of()
-                    private var type: JsonField<Type> = JsonMissing.of()
+                    private var logs: JsonField<String>? = null
+                    private var type: JsonField<Type>? = null
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
@@ -496,8 +519,8 @@ private constructor(
 
                     fun build(): LogsOutput =
                         LogsOutput(
-                            logs,
-                            type,
+                            checkNotNull(logs) { "`logs` is required but was not set" },
+                            checkNotNull(type) { "`type` is required but was not set" },
                             additionalProperties.toImmutable(),
                         )
                 }
@@ -591,10 +614,10 @@ private constructor(
                 /** Always `image`. */
                 fun type(): Type = type.getRequired("type")
 
-                @JsonProperty("image") @ExcludeMissing fun _image() = image
+                @JsonProperty("image") @ExcludeMissing fun _image(): JsonField<Image> = image
 
                 /** Always `image`. */
-                @JsonProperty("type") @ExcludeMissing fun _type() = type
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                 @JsonAnyGetter
                 @ExcludeMissing
@@ -619,8 +642,8 @@ private constructor(
 
                 class Builder {
 
-                    private var image: JsonField<Image> = JsonMissing.of()
-                    private var type: JsonField<Type> = JsonMissing.of()
+                    private var image: JsonField<Image>? = null
+                    private var type: JsonField<Type>? = null
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
@@ -664,8 +687,8 @@ private constructor(
 
                     fun build(): ImageOutput =
                         ImageOutput(
-                            image,
-                            type,
+                            checkNotNull(image) { "`image` is required but was not set" },
+                            checkNotNull(type) { "`type` is required but was not set" },
                             additionalProperties.toImmutable(),
                         )
                 }
@@ -691,7 +714,9 @@ private constructor(
                      * The [file](https://platform.openai.com/docs/api-reference/files) ID of the
                      * image.
                      */
-                    @JsonProperty("file_id") @ExcludeMissing fun _fileId() = fileId
+                    @JsonProperty("file_id")
+                    @ExcludeMissing
+                    fun _fileId(): JsonField<String> = fileId
 
                     @JsonAnyGetter
                     @ExcludeMissing
@@ -715,7 +740,7 @@ private constructor(
 
                     class Builder {
 
-                        private var fileId: JsonField<String> = JsonMissing.of()
+                        private var fileId: JsonField<String>? = null
                         private var additionalProperties: MutableMap<String, JsonValue> =
                             mutableMapOf()
 
@@ -759,7 +784,11 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
-                        fun build(): Image = Image(fileId, additionalProperties.toImmutable())
+                        fun build(): Image =
+                            Image(
+                                checkNotNull(fileId) { "`fileId` is required but was not set" },
+                                additionalProperties.toImmutable()
+                            )
                     }
 
                     override fun equals(other: Any?): Boolean {

@@ -34,10 +34,12 @@ private constructor(
     /** The type of the content part. Always `input_audio`. */
     fun type(): Type = type.getRequired("type")
 
-    @JsonProperty("input_audio") @ExcludeMissing fun _inputAudio() = inputAudio
+    @JsonProperty("input_audio")
+    @ExcludeMissing
+    fun _inputAudio(): JsonField<InputAudio> = inputAudio
 
     /** The type of the content part. Always `input_audio`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -62,8 +64,8 @@ private constructor(
 
     class Builder {
 
-        private var inputAudio: JsonField<InputAudio> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var inputAudio: JsonField<InputAudio>? = null
+        private var type: JsonField<Type>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -107,8 +109,8 @@ private constructor(
 
         fun build(): ChatCompletionContentPartInputAudio =
             ChatCompletionContentPartInputAudio(
-                inputAudio,
-                type,
+                checkNotNull(inputAudio) { "`inputAudio` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }
@@ -134,10 +136,10 @@ private constructor(
         fun format(): Format = format.getRequired("format")
 
         /** Base64 encoded audio data. */
-        @JsonProperty("data") @ExcludeMissing fun _data() = data
+        @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<String> = data
 
         /** The format of the encoded audio data. Currently supports "wav" and "mp3". */
-        @JsonProperty("format") @ExcludeMissing fun _format() = format
+        @JsonProperty("format") @ExcludeMissing fun _format(): JsonField<Format> = format
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -162,8 +164,8 @@ private constructor(
 
         class Builder {
 
-            private var data: JsonField<String> = JsonMissing.of()
-            private var format: JsonField<Format> = JsonMissing.of()
+            private var data: JsonField<String>? = null
+            private var format: JsonField<Format>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -206,8 +208,8 @@ private constructor(
 
             fun build(): InputAudio =
                 InputAudio(
-                    data,
-                    format,
+                    checkNotNull(data) { "`data` is required but was not set" },
+                    checkNotNull(format) { "`format` is required but was not set" },
                     additionalProperties.toImmutable(),
                 )
         }

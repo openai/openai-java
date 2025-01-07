@@ -81,35 +81,35 @@ private constructor(
     fun file(): Optional<FileObject> = Optional.ofNullable(file.getNullable("file"))
 
     /** The Upload unique identifier, which can be referenced in API endpoints. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** The intended number of bytes to be uploaded. */
-    @JsonProperty("bytes") @ExcludeMissing fun _bytes() = bytes
+    @JsonProperty("bytes") @ExcludeMissing fun _bytes(): JsonField<Long> = bytes
 
     /** The Unix timestamp (in seconds) for when the Upload was created. */
-    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
+    @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
     /** The Unix timestamp (in seconds) for when the Upload was created. */
-    @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt() = expiresAt
+    @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt(): JsonField<Long> = expiresAt
 
     /** The name of the file to be uploaded. */
-    @JsonProperty("filename") @ExcludeMissing fun _filename() = filename
+    @JsonProperty("filename") @ExcludeMissing fun _filename(): JsonField<String> = filename
 
     /** The object type, which is always "upload". */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /**
      * The intended purpose of the file.
      * [Please refer here](https://platform.openai.com/docs/api-reference/files/object#files/object-purpose)
      * for acceptable values.
      */
-    @JsonProperty("purpose") @ExcludeMissing fun _purpose() = purpose
+    @JsonProperty("purpose") @ExcludeMissing fun _purpose(): JsonField<String> = purpose
 
     /** The status of the Upload. */
-    @JsonProperty("status") @ExcludeMissing fun _status() = status
+    @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
     /** The ready File object after the Upload is completed. */
-    @JsonProperty("file") @ExcludeMissing fun _file() = file
+    @JsonProperty("file") @ExcludeMissing fun _file(): JsonField<FileObject> = file
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -141,14 +141,14 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var bytes: JsonField<Long> = JsonMissing.of()
-        private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var expiresAt: JsonField<Long> = JsonMissing.of()
-        private var filename: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
-        private var purpose: JsonField<String> = JsonMissing.of()
-        private var status: JsonField<Status> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var bytes: JsonField<Long>? = null
+        private var createdAt: JsonField<Long>? = null
+        private var expiresAt: JsonField<Long>? = null
+        private var filename: JsonField<String>? = null
+        private var object_: JsonField<Object>? = null
+        private var purpose: JsonField<String>? = null
+        private var status: JsonField<Status>? = null
         private var file: JsonField<FileObject> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -223,7 +223,10 @@ private constructor(
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
         /** The ready File object after the Upload is completed. */
-        fun file(file: FileObject) = file(JsonField.of(file))
+        fun file(file: FileObject?) = file(JsonField.ofNullable(file))
+
+        /** The ready File object after the Upload is completed. */
+        fun file(file: Optional<FileObject>) = file(file.orElse(null))
 
         /** The ready File object after the Upload is completed. */
         fun file(file: JsonField<FileObject>) = apply { this.file = file }
@@ -249,14 +252,14 @@ private constructor(
 
         fun build(): Upload =
             Upload(
-                id,
-                bytes,
-                createdAt,
-                expiresAt,
-                filename,
-                object_,
-                purpose,
-                status,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(bytes) { "`bytes` is required but was not set" },
+                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
+                checkNotNull(expiresAt) { "`expiresAt` is required but was not set" },
+                checkNotNull(filename) { "`filename` is required but was not set" },
+                checkNotNull(object_) { "`object_` is required but was not set" },
+                checkNotNull(purpose) { "`purpose` is required but was not set" },
+                checkNotNull(status) { "`status` is required but was not set" },
                 file,
                 additionalProperties.toImmutable(),
             )

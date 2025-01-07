@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
+import com.openai.core.JsonField
+import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.http.Headers
@@ -45,7 +47,7 @@ constructor(
      * additional information about the object in a structured format. Keys can be a maximum of 64
      * characters long and values can be a maximum of 512 characters long.
      */
-    fun metadata(): Optional<JsonValue> = body.metadata()
+    fun _metadata(): JsonValue = body._metadata()
 
     /** The name of the assistant. The maximum length is 256 characters. */
     fun name(): Optional<String> = body.name()
@@ -100,11 +102,80 @@ constructor(
      */
     fun topP(): Optional<Double> = body.topP()
 
+    /**
+     * ID of the model to use. You can use the
+     * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all of
+     * your available models, or see our [Model overview](https://platform.openai.com/docs/models)
+     * for descriptions of them.
+     */
+    fun _model(): JsonField<ChatModel> = body._model()
+
+    /** The description of the assistant. The maximum length is 512 characters. */
+    fun _description(): JsonField<String> = body._description()
+
+    /**
+     * The system instructions that the assistant uses. The maximum length is 256,000 characters.
+     */
+    fun _instructions(): JsonField<String> = body._instructions()
+
+    /** The name of the assistant. The maximum length is 256 characters. */
+    fun _name(): JsonField<String> = body._name()
+
+    /**
+     * Specifies the format that the model must output. Compatible with
+     * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
+     * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5 Turbo
+     * models since `gpt-3.5-turbo-1106`.
+     *
+     * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs which
+     * ensures the model will match your supplied JSON schema. Learn more in the
+     * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+     *
+     * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the model
+     * generates is valid JSON.
+     *
+     * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
+     * yourself via a system or user message. Without this, the model may generate an unending
+     * stream of whitespace until the generation reaches the token limit, resulting in a
+     * long-running and seemingly "stuck" request. Also note that the message content may be
+     * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
+     * `max_tokens` or the conversation exceeded the max context length.
+     */
+    fun _responseFormat(): JsonField<AssistantResponseFormatOption> = body._responseFormat()
+
+    /**
+     * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+     * output more random, while lower values like 0.2 will make it more focused and deterministic.
+     */
+    fun _temperature(): JsonField<Double> = body._temperature()
+
+    /**
+     * A set of resources that are used by the assistant's tools. The resources are specific to the
+     * type of tool. For example, the `code_interpreter` tool requires a list of file IDs, while the
+     * `file_search` tool requires a list of vector store IDs.
+     */
+    fun _toolResources(): JsonField<ToolResources> = body._toolResources()
+
+    /**
+     * A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant.
+     * Tools can be of types `code_interpreter`, `file_search`, or `function`.
+     */
+    fun _tools(): JsonField<List<AssistantTool>> = body._tools()
+
+    /**
+     * An alternative to sampling with temperature, called nucleus sampling, where the model
+     * considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens
+     * comprising the top 10% probability mass are considered.
+     *
+     * We generally recommend altering this or temperature but not both.
+     */
+    fun _topP(): JsonField<Double> = body._topP()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     @JvmSynthetic internal fun getBody(): BetaAssistantCreateBody = body
 
@@ -116,16 +187,36 @@ constructor(
     class BetaAssistantCreateBody
     @JsonCreator
     internal constructor(
-        @JsonProperty("model") private val model: ChatModel,
-        @JsonProperty("description") private val description: String?,
-        @JsonProperty("instructions") private val instructions: String?,
-        @JsonProperty("metadata") private val metadata: JsonValue?,
-        @JsonProperty("name") private val name: String?,
-        @JsonProperty("response_format") private val responseFormat: AssistantResponseFormatOption?,
-        @JsonProperty("temperature") private val temperature: Double?,
-        @JsonProperty("tool_resources") private val toolResources: ToolResources?,
-        @JsonProperty("tools") private val tools: List<AssistantTool>?,
-        @JsonProperty("top_p") private val topP: Double?,
+        @JsonProperty("model")
+        @ExcludeMissing
+        private val model: JsonField<ChatModel> = JsonMissing.of(),
+        @JsonProperty("description")
+        @ExcludeMissing
+        private val description: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("instructions")
+        @ExcludeMissing
+        private val instructions: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("metadata")
+        @ExcludeMissing
+        private val metadata: JsonValue = JsonMissing.of(),
+        @JsonProperty("name")
+        @ExcludeMissing
+        private val name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("response_format")
+        @ExcludeMissing
+        private val responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of(),
+        @JsonProperty("temperature")
+        @ExcludeMissing
+        private val temperature: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("tool_resources")
+        @ExcludeMissing
+        private val toolResources: JsonField<ToolResources> = JsonMissing.of(),
+        @JsonProperty("tools")
+        @ExcludeMissing
+        private val tools: JsonField<List<AssistantTool>> = JsonMissing.of(),
+        @JsonProperty("top_p")
+        @ExcludeMissing
+        private val topP: JsonField<Double> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -136,29 +227,106 @@ constructor(
          * of your available models, or see our
          * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
          */
-        @JsonProperty("model") fun model(): ChatModel = model
+        fun model(): ChatModel = model.getRequired("model")
 
         /** The description of the assistant. The maximum length is 512 characters. */
-        @JsonProperty("description")
-        fun description(): Optional<String> = Optional.ofNullable(description)
+        fun description(): Optional<String> =
+            Optional.ofNullable(description.getNullable("description"))
 
         /**
          * The system instructions that the assistant uses. The maximum length is 256,000
          * characters.
          */
-        @JsonProperty("instructions")
-        fun instructions(): Optional<String> = Optional.ofNullable(instructions)
+        fun instructions(): Optional<String> =
+            Optional.ofNullable(instructions.getNullable("instructions"))
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
          * storing additional information about the object in a structured format. Keys can be a
          * maximum of 64 characters long and values can be a maximum of 512 characters long.
          */
-        @JsonProperty("metadata")
-        fun metadata(): Optional<JsonValue> = Optional.ofNullable(metadata)
+        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
 
         /** The name of the assistant. The maximum length is 256 characters. */
-        @JsonProperty("name") fun name(): Optional<String> = Optional.ofNullable(name)
+        fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
+
+        /**
+         * Specifies the format that the model must output. Compatible with
+         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
+         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
+         * Turbo models since `gpt-3.5-turbo-1106`.
+         *
+         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
+         * which ensures the model will match your supplied JSON schema. Learn more in the
+         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         *
+         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
+         * model generates is valid JSON.
+         *
+         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
+         * yourself via a system or user message. Without this, the model may generate an unending
+         * stream of whitespace until the generation reaches the token limit, resulting in a
+         * long-running and seemingly "stuck" request. Also note that the message content may be
+         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
+         * `max_tokens` or the conversation exceeded the max context length.
+         */
+        fun responseFormat(): Optional<AssistantResponseFormatOption> =
+            Optional.ofNullable(responseFormat.getNullable("response_format"))
+
+        /**
+         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+         * output more random, while lower values like 0.2 will make it more focused and
+         * deterministic.
+         */
+        fun temperature(): Optional<Double> =
+            Optional.ofNullable(temperature.getNullable("temperature"))
+
+        /**
+         * A set of resources that are used by the assistant's tools. The resources are specific to
+         * the type of tool. For example, the `code_interpreter` tool requires a list of file IDs,
+         * while the `file_search` tool requires a list of vector store IDs.
+         */
+        fun toolResources(): Optional<ToolResources> =
+            Optional.ofNullable(toolResources.getNullable("tool_resources"))
+
+        /**
+         * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
+         * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+         */
+        fun tools(): Optional<List<AssistantTool>> = Optional.ofNullable(tools.getNullable("tools"))
+
+        /**
+         * An alternative to sampling with temperature, called nucleus sampling, where the model
+         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
+         * tokens comprising the top 10% probability mass are considered.
+         *
+         * We generally recommend altering this or temperature but not both.
+         */
+        fun topP(): Optional<Double> = Optional.ofNullable(topP.getNullable("top_p"))
+
+        /**
+         * ID of the model to use. You can use the
+         * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all
+         * of your available models, or see our
+         * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+         */
+        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<ChatModel> = model
+
+        /** The description of the assistant. The maximum length is 512 characters. */
+        @JsonProperty("description")
+        @ExcludeMissing
+        fun _description(): JsonField<String> = description
+
+        /**
+         * The system instructions that the assistant uses. The maximum length is 256,000
+         * characters.
+         */
+        @JsonProperty("instructions")
+        @ExcludeMissing
+        fun _instructions(): JsonField<String> = instructions
+
+        /** The name of the assistant. The maximum length is 256 characters. */
+        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -181,8 +349,8 @@ constructor(
          * `max_tokens` or the conversation exceeded the max context length.
          */
         @JsonProperty("response_format")
-        fun responseFormat(): Optional<AssistantResponseFormatOption> =
-            Optional.ofNullable(responseFormat)
+        @ExcludeMissing
+        fun _responseFormat(): JsonField<AssistantResponseFormatOption> = responseFormat
 
         /**
          * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
@@ -190,7 +358,8 @@ constructor(
          * deterministic.
          */
         @JsonProperty("temperature")
-        fun temperature(): Optional<Double> = Optional.ofNullable(temperature)
+        @ExcludeMissing
+        fun _temperature(): JsonField<Double> = temperature
 
         /**
          * A set of resources that are used by the assistant's tools. The resources are specific to
@@ -198,14 +367,14 @@ constructor(
          * while the `file_search` tool requires a list of vector store IDs.
          */
         @JsonProperty("tool_resources")
-        fun toolResources(): Optional<ToolResources> = Optional.ofNullable(toolResources)
+        @ExcludeMissing
+        fun _toolResources(): JsonField<ToolResources> = toolResources
 
         /**
          * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
          * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
          */
-        @JsonProperty("tools")
-        fun tools(): Optional<List<AssistantTool>> = Optional.ofNullable(tools)
+        @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<AssistantTool>> = tools
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -214,11 +383,28 @@ constructor(
          *
          * We generally recommend altering this or temperature but not both.
          */
-        @JsonProperty("top_p") fun topP(): Optional<Double> = Optional.ofNullable(topP)
+        @JsonProperty("top_p") @ExcludeMissing fun _topP(): JsonField<Double> = topP
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): BetaAssistantCreateBody = apply {
+            if (!validated) {
+                model()
+                description()
+                instructions()
+                name()
+                responseFormat()
+                temperature()
+                toolResources().map { it.validate() }
+                tools()
+                topP()
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -229,16 +415,16 @@ constructor(
 
         class Builder {
 
-            private var model: ChatModel? = null
-            private var description: String? = null
-            private var instructions: String? = null
-            private var metadata: JsonValue? = null
-            private var name: String? = null
-            private var responseFormat: AssistantResponseFormatOption? = null
-            private var temperature: Double? = null
-            private var toolResources: ToolResources? = null
-            private var tools: MutableList<AssistantTool>? = null
-            private var topP: Double? = null
+            private var model: JsonField<ChatModel>? = null
+            private var description: JsonField<String> = JsonMissing.of()
+            private var instructions: JsonField<String> = JsonMissing.of()
+            private var metadata: JsonValue = JsonMissing.of()
+            private var name: JsonField<String> = JsonMissing.of()
+            private var responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of()
+            private var temperature: JsonField<Double> = JsonMissing.of()
+            private var toolResources: JsonField<ToolResources> = JsonMissing.of()
+            private var tools: JsonField<MutableList<AssistantTool>>? = null
+            private var topP: JsonField<Double> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -251,7 +437,7 @@ constructor(
                 responseFormat = betaAssistantCreateBody.responseFormat
                 temperature = betaAssistantCreateBody.temperature
                 toolResources = betaAssistantCreateBody.toolResources
-                tools = betaAssistantCreateBody.tools?.toMutableList()
+                tools = betaAssistantCreateBody.tools.map { it.toMutableList() }
                 topP = betaAssistantCreateBody.topP
                 additionalProperties = betaAssistantCreateBody.additionalProperties.toMutableMap()
             }
@@ -262,7 +448,7 @@ constructor(
              * all of your available models, or see our
              * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
              */
-            fun model(model: ChatModel) = apply { this.model = model }
+            fun model(model: ChatModel) = model(JsonField.of(model))
 
             /**
              * ID of the model to use. You can use the
@@ -270,19 +456,33 @@ constructor(
              * all of your available models, or see our
              * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
              */
-            fun model(value: String) = apply { model = ChatModel.of(value) }
+            fun model(model: JsonField<ChatModel>) = apply { this.model = model }
+
+            /**
+             * ID of the model to use. You can use the
+             * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see
+             * all of your available models, or see our
+             * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+             */
+            fun model(value: String) = apply { model(ChatModel.of(value)) }
 
             /** The description of the assistant. The maximum length is 512 characters. */
-            fun description(description: String?) = apply { this.description = description }
+            fun description(description: String?) = description(JsonField.ofNullable(description))
 
             /** The description of the assistant. The maximum length is 512 characters. */
             fun description(description: Optional<String>) = description(description.orElse(null))
+
+            /** The description of the assistant. The maximum length is 512 characters. */
+            fun description(description: JsonField<String>) = apply {
+                this.description = description
+            }
 
             /**
              * The system instructions that the assistant uses. The maximum length is 256,000
              * characters.
              */
-            fun instructions(instructions: String?) = apply { this.instructions = instructions }
+            fun instructions(instructions: String?) =
+                instructions(JsonField.ofNullable(instructions))
 
             /**
              * The system instructions that the assistant uses. The maximum length is 256,000
@@ -292,24 +492,28 @@ constructor(
                 instructions(instructions.orElse(null))
 
             /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format. Keys can be a
-             * maximum of 64 characters long and values can be a maximum of 512 characters long.
+             * The system instructions that the assistant uses. The maximum length is 256,000
+             * characters.
              */
-            fun metadata(metadata: JsonValue?) = apply { this.metadata = metadata }
+            fun instructions(instructions: JsonField<String>) = apply {
+                this.instructions = instructions
+            }
 
             /**
              * Set of 16 key-value pairs that can be attached to an object. This can be useful for
              * storing additional information about the object in a structured format. Keys can be a
              * maximum of 64 characters long and values can be a maximum of 512 characters long.
              */
-            fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
+            fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
             /** The name of the assistant. The maximum length is 256 characters. */
-            fun name(name: String?) = apply { this.name = name }
+            fun name(name: String?) = name(JsonField.ofNullable(name))
 
             /** The name of the assistant. The maximum length is 256 characters. */
             fun name(name: Optional<String>) = name(name.orElse(null))
+
+            /** The name of the assistant. The maximum length is 256 characters. */
+            fun name(name: JsonField<String>) = apply { this.name = name }
 
             /**
              * Specifies the format that the model must output. Compatible with
@@ -332,9 +536,8 @@ constructor(
              * may be partially cut off if `finish_reason="length"`, which indicates the generation
              * exceeded `max_tokens` or the conversation exceeded the max context length.
              */
-            fun responseFormat(responseFormat: AssistantResponseFormatOption?) = apply {
-                this.responseFormat = responseFormat
-            }
+            fun responseFormat(responseFormat: AssistantResponseFormatOption?) =
+                responseFormat(JsonField.ofNullable(responseFormat))
 
             /**
              * Specifies the format that the model must output. Compatible with
@@ -360,36 +563,60 @@ constructor(
             fun responseFormat(responseFormat: Optional<AssistantResponseFormatOption>) =
                 responseFormat(responseFormat.orElse(null))
 
+            /**
+             * Specifies the format that the model must output. Compatible with
+             * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
+             * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all
+             * GPT-3.5 Turbo models since `gpt-3.5-turbo-1106`.
+             *
+             * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
+             * Outputs which ensures the model will match your supplied JSON schema. Learn more in
+             * the
+             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             *
+             * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
+             * the model generates is valid JSON.
+             *
+             * **Important:** when using JSON mode, you **must** also instruct the model to produce
+             * JSON yourself via a system or user message. Without this, the model may generate an
+             * unending stream of whitespace until the generation reaches the token limit, resulting
+             * in a long-running and seemingly "stuck" request. Also note that the message content
+             * may be partially cut off if `finish_reason="length"`, which indicates the generation
+             * exceeded `max_tokens` or the conversation exceeded the max context length.
+             */
+            fun responseFormat(responseFormat: JsonField<AssistantResponseFormatOption>) = apply {
+                this.responseFormat = responseFormat
+            }
+
             /** `auto` is the default value */
-            fun responseFormat(behavior: AssistantResponseFormatOption.Behavior) = apply {
-                this.responseFormat = AssistantResponseFormatOption.ofBehavior(behavior)
-            }
+            fun responseFormat(behavior: AssistantResponseFormatOption.Behavior) =
+                responseFormat(AssistantResponseFormatOption.ofBehavior(behavior))
 
-            fun responseFormat(responseFormatText: ResponseFormatText) = apply {
-                this.responseFormat =
+            fun responseFormat(responseFormatText: ResponseFormatText) =
+                responseFormat(
                     AssistantResponseFormatOption.ofResponseFormatText(responseFormatText)
-            }
+                )
 
-            fun responseFormat(responseFormatJsonObject: ResponseFormatJsonObject) = apply {
-                this.responseFormat =
+            fun responseFormat(responseFormatJsonObject: ResponseFormatJsonObject) =
+                responseFormat(
                     AssistantResponseFormatOption.ofResponseFormatJsonObject(
                         responseFormatJsonObject
                     )
-            }
+                )
 
-            fun responseFormat(responseFormatJsonSchema: ResponseFormatJsonSchema) = apply {
-                this.responseFormat =
+            fun responseFormat(responseFormatJsonSchema: ResponseFormatJsonSchema) =
+                responseFormat(
                     AssistantResponseFormatOption.ofResponseFormatJsonSchema(
                         responseFormatJsonSchema
                     )
-            }
+                )
 
             /**
              * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
              * the output more random, while lower values like 0.2 will make it more focused and
              * deterministic.
              */
-            fun temperature(temperature: Double?) = apply { this.temperature = temperature }
+            fun temperature(temperature: Double?) = temperature(JsonField.ofNullable(temperature))
 
             /**
              * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
@@ -408,13 +635,21 @@ constructor(
                 temperature(temperature.orElse(null) as Double?)
 
             /**
+             * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
+             * the output more random, while lower values like 0.2 will make it more focused and
+             * deterministic.
+             */
+            fun temperature(temperature: JsonField<Double>) = apply {
+                this.temperature = temperature
+            }
+
+            /**
              * A set of resources that are used by the assistant's tools. The resources are specific
              * to the type of tool. For example, the `code_interpreter` tool requires a list of file
              * IDs, while the `file_search` tool requires a list of vector store IDs.
              */
-            fun toolResources(toolResources: ToolResources?) = apply {
-                this.toolResources = toolResources
-            }
+            fun toolResources(toolResources: ToolResources?) =
+                toolResources(JsonField.ofNullable(toolResources))
 
             /**
              * A set of resources that are used by the assistant's tools. The resources are specific
@@ -425,23 +660,43 @@ constructor(
                 toolResources(toolResources.orElse(null))
 
             /**
-             * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
-             * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+             * A set of resources that are used by the assistant's tools. The resources are specific
+             * to the type of tool. For example, the `code_interpreter` tool requires a list of file
+             * IDs, while the `file_search` tool requires a list of vector store IDs.
              */
-            fun tools(tools: List<AssistantTool>?) = apply { this.tools = tools?.toMutableList() }
+            fun toolResources(toolResources: JsonField<ToolResources>) = apply {
+                this.toolResources = toolResources
+            }
 
             /**
              * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
              * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
              */
-            fun tools(tools: Optional<List<AssistantTool>>) = tools(tools.orElse(null))
+            fun tools(tools: List<AssistantTool>) = tools(JsonField.of(tools))
+
+            /**
+             * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
+             * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+             */
+            fun tools(tools: JsonField<List<AssistantTool>>) = apply {
+                this.tools = tools.map { it.toMutableList() }
+            }
 
             /**
              * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
              * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
              */
             fun addTool(tool: AssistantTool) = apply {
-                tools = (tools ?: mutableListOf()).apply { add(tool) }
+                tools =
+                    (tools ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(tool)
+                    }
             }
 
             /**
@@ -451,7 +706,7 @@ constructor(
              *
              * We generally recommend altering this or temperature but not both.
              */
-            fun topP(topP: Double?) = apply { this.topP = topP }
+            fun topP(topP: Double?) = topP(JsonField.ofNullable(topP))
 
             /**
              * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -471,6 +726,15 @@ constructor(
              */
             @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
             fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
+
+            /**
+             * An alternative to sampling with temperature, called nucleus sampling, where the model
+             * considers the results of the tokens with top_p probability mass. So 0.1 means only
+             * the tokens comprising the top 10% probability mass are considered.
+             *
+             * We generally recommend altering this or temperature but not both.
+             */
+            fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -501,7 +765,7 @@ constructor(
                     responseFormat,
                     temperature,
                     toolResources,
-                    tools?.toImmutable(),
+                    (tools ?: JsonMissing.of()).map { it.toImmutable() },
                     topP,
                     additionalProperties.toImmutable(),
                 )
@@ -560,6 +824,14 @@ constructor(
          * of your available models, or see our
          * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
          */
+        fun model(model: JsonField<ChatModel>) = apply { body.model(model) }
+
+        /**
+         * ID of the model to use. You can use the
+         * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all
+         * of your available models, or see our
+         * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+         */
         fun model(value: String) = apply { body.model(value) }
 
         /** The description of the assistant. The maximum length is 512 characters. */
@@ -567,6 +839,9 @@ constructor(
 
         /** The description of the assistant. The maximum length is 512 characters. */
         fun description(description: Optional<String>) = description(description.orElse(null))
+
+        /** The description of the assistant. The maximum length is 512 characters. */
+        fun description(description: JsonField<String>) = apply { body.description(description) }
 
         /**
          * The system instructions that the assistant uses. The maximum length is 256,000
@@ -581,24 +856,28 @@ constructor(
         fun instructions(instructions: Optional<String>) = instructions(instructions.orElse(null))
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format. Keys can be a
-         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         * The system instructions that the assistant uses. The maximum length is 256,000
+         * characters.
          */
-        fun metadata(metadata: JsonValue?) = apply { body.metadata(metadata) }
+        fun instructions(instructions: JsonField<String>) = apply {
+            body.instructions(instructions)
+        }
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
          * storing additional information about the object in a structured format. Keys can be a
          * maximum of 64 characters long and values can be a maximum of 512 characters long.
          */
-        fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
+        fun metadata(metadata: JsonValue) = apply { body.metadata(metadata) }
 
         /** The name of the assistant. The maximum length is 256 characters. */
         fun name(name: String?) = apply { body.name(name) }
 
         /** The name of the assistant. The maximum length is 256 characters. */
         fun name(name: Optional<String>) = name(name.orElse(null))
+
+        /** The name of the assistant. The maximum length is 256 characters. */
+        fun name(name: JsonField<String>) = apply { body.name(name) }
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -647,6 +926,30 @@ constructor(
         fun responseFormat(responseFormat: Optional<AssistantResponseFormatOption>) =
             responseFormat(responseFormat.orElse(null))
 
+        /**
+         * Specifies the format that the model must output. Compatible with
+         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
+         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
+         * Turbo models since `gpt-3.5-turbo-1106`.
+         *
+         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
+         * which ensures the model will match your supplied JSON schema. Learn more in the
+         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         *
+         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
+         * model generates is valid JSON.
+         *
+         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
+         * yourself via a system or user message. Without this, the model may generate an unending
+         * stream of whitespace until the generation reaches the token limit, resulting in a
+         * long-running and seemingly "stuck" request. Also note that the message content may be
+         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
+         * `max_tokens` or the conversation exceeded the max context length.
+         */
+        fun responseFormat(responseFormat: JsonField<AssistantResponseFormatOption>) = apply {
+            body.responseFormat(responseFormat)
+        }
+
         /** `auto` is the default value */
         fun responseFormat(behavior: AssistantResponseFormatOption.Behavior) = apply {
             body.responseFormat(behavior)
@@ -688,6 +991,13 @@ constructor(
             temperature(temperature.orElse(null) as Double?)
 
         /**
+         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+         * output more random, while lower values like 0.2 will make it more focused and
+         * deterministic.
+         */
+        fun temperature(temperature: JsonField<Double>) = apply { body.temperature(temperature) }
+
+        /**
          * A set of resources that are used by the assistant's tools. The resources are specific to
          * the type of tool. For example, the `code_interpreter` tool requires a list of file IDs,
          * while the `file_search` tool requires a list of vector store IDs.
@@ -705,16 +1015,25 @@ constructor(
             toolResources(toolResources.orElse(null))
 
         /**
-         * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
-         * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+         * A set of resources that are used by the assistant's tools. The resources are specific to
+         * the type of tool. For example, the `code_interpreter` tool requires a list of file IDs,
+         * while the `file_search` tool requires a list of vector store IDs.
          */
-        fun tools(tools: List<AssistantTool>?) = apply { body.tools(tools) }
+        fun toolResources(toolResources: JsonField<ToolResources>) = apply {
+            body.toolResources(toolResources)
+        }
 
         /**
          * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
          * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
          */
-        fun tools(tools: Optional<List<AssistantTool>>) = tools(tools.orElse(null))
+        fun tools(tools: List<AssistantTool>) = apply { body.tools(tools) }
+
+        /**
+         * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
+         * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+         */
+        fun tools(tools: JsonField<List<AssistantTool>>) = apply { body.tools(tools) }
 
         /**
          * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
@@ -749,6 +1068,34 @@ constructor(
          */
         @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
         fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
+
+        /**
+         * An alternative to sampling with temperature, called nucleus sampling, where the model
+         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
+         * tokens comprising the top 10% probability mass are considered.
+         *
+         * We generally recommend altering this or temperature but not both.
+         */
+        fun topP(topP: JsonField<Double>) = apply { body.topP(topP) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -848,25 +1195,6 @@ constructor(
             additionalQueryParams.removeAll(keys)
         }
 
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            body.additionalProperties(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            body.putAdditionalProperty(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                body.putAllAdditionalProperties(additionalBodyProperties)
-            }
-
-        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
-
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            body.removeAllAdditionalProperties(keys)
-        }
-
         fun build(): BetaAssistantCreateParams =
             BetaAssistantCreateParams(
                 body.build(),
@@ -884,21 +1212,43 @@ constructor(
     class ToolResources
     @JsonCreator
     private constructor(
-        @JsonProperty("code_interpreter") private val codeInterpreter: CodeInterpreter?,
-        @JsonProperty("file_search") private val fileSearch: FileSearch?,
+        @JsonProperty("code_interpreter")
+        @ExcludeMissing
+        private val codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of(),
+        @JsonProperty("file_search")
+        @ExcludeMissing
+        private val fileSearch: JsonField<FileSearch> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
+        fun codeInterpreter(): Optional<CodeInterpreter> =
+            Optional.ofNullable(codeInterpreter.getNullable("code_interpreter"))
+
+        fun fileSearch(): Optional<FileSearch> =
+            Optional.ofNullable(fileSearch.getNullable("file_search"))
+
         @JsonProperty("code_interpreter")
-        fun codeInterpreter(): Optional<CodeInterpreter> = Optional.ofNullable(codeInterpreter)
+        @ExcludeMissing
+        fun _codeInterpreter(): JsonField<CodeInterpreter> = codeInterpreter
 
         @JsonProperty("file_search")
-        fun fileSearch(): Optional<FileSearch> = Optional.ofNullable(fileSearch)
+        @ExcludeMissing
+        fun _fileSearch(): JsonField<FileSearch> = fileSearch
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): ToolResources = apply {
+            if (!validated) {
+                codeInterpreter().map { it.validate() }
+                fileSearch().map { it.validate() }
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -909,8 +1259,8 @@ constructor(
 
         class Builder {
 
-            private var codeInterpreter: CodeInterpreter? = null
-            private var fileSearch: FileSearch? = null
+            private var codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of()
+            private var fileSearch: JsonField<FileSearch> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -920,16 +1270,18 @@ constructor(
                 additionalProperties = toolResources.additionalProperties.toMutableMap()
             }
 
-            fun codeInterpreter(codeInterpreter: CodeInterpreter?) = apply {
+            fun codeInterpreter(codeInterpreter: CodeInterpreter) =
+                codeInterpreter(JsonField.of(codeInterpreter))
+
+            fun codeInterpreter(codeInterpreter: JsonField<CodeInterpreter>) = apply {
                 this.codeInterpreter = codeInterpreter
             }
 
-            fun codeInterpreter(codeInterpreter: Optional<CodeInterpreter>) =
-                codeInterpreter(codeInterpreter.orElse(null))
+            fun fileSearch(fileSearch: FileSearch) = fileSearch(JsonField.of(fileSearch))
 
-            fun fileSearch(fileSearch: FileSearch?) = apply { this.fileSearch = fileSearch }
-
-            fun fileSearch(fileSearch: Optional<FileSearch>) = fileSearch(fileSearch.orElse(null))
+            fun fileSearch(fileSearch: JsonField<FileSearch>) = apply {
+                this.fileSearch = fileSearch
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -962,7 +1314,9 @@ constructor(
         class CodeInterpreter
         @JsonCreator
         private constructor(
-            @JsonProperty("file_ids") private val fileIds: List<String>?,
+            @JsonProperty("file_ids")
+            @ExcludeMissing
+            private val fileIds: JsonField<List<String>> = JsonMissing.of(),
             @JsonAnySetter
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
@@ -972,12 +1326,30 @@ constructor(
              * available to the `code_interpreter` tool. There can be a maximum of 20 files
              * associated with the tool.
              */
+            fun fileIds(): Optional<List<String>> =
+                Optional.ofNullable(fileIds.getNullable("file_ids"))
+
+            /**
+             * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
+             * available to the `code_interpreter` tool. There can be a maximum of 20 files
+             * associated with the tool.
+             */
             @JsonProperty("file_ids")
-            fun fileIds(): Optional<List<String>> = Optional.ofNullable(fileIds)
+            @ExcludeMissing
+            fun _fileIds(): JsonField<List<String>> = fileIds
 
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            private var validated: Boolean = false
+
+            fun validate(): CodeInterpreter = apply {
+                if (!validated) {
+                    fileIds()
+                    validated = true
+                }
+            }
 
             fun toBuilder() = Builder().from(this)
 
@@ -988,12 +1360,12 @@ constructor(
 
             class Builder {
 
-                private var fileIds: MutableList<String>? = null
+                private var fileIds: JsonField<MutableList<String>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(codeInterpreter: CodeInterpreter) = apply {
-                    fileIds = codeInterpreter.fileIds?.toMutableList()
+                    fileIds = codeInterpreter.fileIds.map { it.toMutableList() }
                     additionalProperties = codeInterpreter.additionalProperties.toMutableMap()
                 }
 
@@ -1002,8 +1374,15 @@ constructor(
                  * available to the `code_interpreter` tool. There can be a maximum of 20 files
                  * associated with the tool.
                  */
-                fun fileIds(fileIds: List<String>?) = apply {
-                    this.fileIds = fileIds?.toMutableList()
+                fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
+
+                /**
+                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
+                 * available to the `code_interpreter` tool. There can be a maximum of 20 files
+                 * associated with the tool.
+                 */
+                fun fileIds(fileIds: JsonField<List<String>>) = apply {
+                    this.fileIds = fileIds.map { it.toMutableList() }
                 }
 
                 /**
@@ -1011,15 +1390,17 @@ constructor(
                  * available to the `code_interpreter` tool. There can be a maximum of 20 files
                  * associated with the tool.
                  */
-                fun fileIds(fileIds: Optional<List<String>>) = fileIds(fileIds.orElse(null))
-
-                /**
-                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
-                 * available to the `code_interpreter` tool. There can be a maximum of 20 files
-                 * associated with the tool.
-                 */
                 fun addFileId(fileId: String) = apply {
-                    fileIds = (fileIds ?: mutableListOf()).apply { add(fileId) }
+                    fileIds =
+                        (fileIds ?: JsonField.of(mutableListOf())).apply {
+                            asKnown()
+                                .orElseThrow {
+                                    IllegalStateException(
+                                        "Field was set to non-list type: ${javaClass.simpleName}"
+                                    )
+                                }
+                                .add(fileId)
+                        }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1045,7 +1426,10 @@ constructor(
                 }
 
                 fun build(): CodeInterpreter =
-                    CodeInterpreter(fileIds?.toImmutable(), additionalProperties.toImmutable())
+                    CodeInterpreter(
+                        (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
+                        additionalProperties.toImmutable()
+                    )
             }
 
             override fun equals(other: Any?): Boolean {
@@ -1070,8 +1454,12 @@ constructor(
         class FileSearch
         @JsonCreator
         private constructor(
-            @JsonProperty("vector_store_ids") private val vectorStoreIds: List<String>?,
-            @JsonProperty("vector_stores") private val vectorStores: List<VectorStore>?,
+            @JsonProperty("vector_store_ids")
+            @ExcludeMissing
+            private val vectorStoreIds: JsonField<List<String>> = JsonMissing.of(),
+            @JsonProperty("vector_stores")
+            @ExcludeMissing
+            private val vectorStores: JsonField<List<VectorStore>> = JsonMissing.of(),
             @JsonAnySetter
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
@@ -1082,8 +1470,27 @@ constructor(
              * attached to this assistant. There can be a maximum of 1 vector store attached to the
              * assistant.
              */
+            fun vectorStoreIds(): Optional<List<String>> =
+                Optional.ofNullable(vectorStoreIds.getNullable("vector_store_ids"))
+
+            /**
+             * A helper to create a
+             * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+             * with file_ids and attach it to this assistant. There can be a maximum of 1 vector
+             * store attached to the assistant.
+             */
+            fun vectorStores(): Optional<List<VectorStore>> =
+                Optional.ofNullable(vectorStores.getNullable("vector_stores"))
+
+            /**
+             * The
+             * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+             * attached to this assistant. There can be a maximum of 1 vector store attached to the
+             * assistant.
+             */
             @JsonProperty("vector_store_ids")
-            fun vectorStoreIds(): Optional<List<String>> = Optional.ofNullable(vectorStoreIds)
+            @ExcludeMissing
+            fun _vectorStoreIds(): JsonField<List<String>> = vectorStoreIds
 
             /**
              * A helper to create a
@@ -1092,11 +1499,22 @@ constructor(
              * store attached to the assistant.
              */
             @JsonProperty("vector_stores")
-            fun vectorStores(): Optional<List<VectorStore>> = Optional.ofNullable(vectorStores)
+            @ExcludeMissing
+            fun _vectorStores(): JsonField<List<VectorStore>> = vectorStores
 
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            private var validated: Boolean = false
+
+            fun validate(): FileSearch = apply {
+                if (!validated) {
+                    vectorStoreIds()
+                    vectorStores().map { it.forEach { it.validate() } }
+                    validated = true
+                }
+            }
 
             fun toBuilder() = Builder().from(this)
 
@@ -1107,14 +1525,14 @@ constructor(
 
             class Builder {
 
-                private var vectorStoreIds: MutableList<String>? = null
-                private var vectorStores: MutableList<VectorStore>? = null
+                private var vectorStoreIds: JsonField<MutableList<String>>? = null
+                private var vectorStores: JsonField<MutableList<VectorStore>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(fileSearch: FileSearch) = apply {
-                    vectorStoreIds = fileSearch.vectorStoreIds?.toMutableList()
-                    vectorStores = fileSearch.vectorStores?.toMutableList()
+                    vectorStoreIds = fileSearch.vectorStoreIds.map { it.toMutableList() }
+                    vectorStores = fileSearch.vectorStores.map { it.toMutableList() }
                     additionalProperties = fileSearch.additionalProperties.toMutableMap()
                 }
 
@@ -1124,9 +1542,8 @@ constructor(
                  * attached to this assistant. There can be a maximum of 1 vector store attached to
                  * the assistant.
                  */
-                fun vectorStoreIds(vectorStoreIds: List<String>?) = apply {
-                    this.vectorStoreIds = vectorStoreIds?.toMutableList()
-                }
+                fun vectorStoreIds(vectorStoreIds: List<String>) =
+                    vectorStoreIds(JsonField.of(vectorStoreIds))
 
                 /**
                  * The
@@ -1134,8 +1551,9 @@ constructor(
                  * attached to this assistant. There can be a maximum of 1 vector store attached to
                  * the assistant.
                  */
-                fun vectorStoreIds(vectorStoreIds: Optional<List<String>>) =
-                    vectorStoreIds(vectorStoreIds.orElse(null))
+                fun vectorStoreIds(vectorStoreIds: JsonField<List<String>>) = apply {
+                    this.vectorStoreIds = vectorStoreIds.map { it.toMutableList() }
+                }
 
                 /**
                  * The
@@ -1145,7 +1563,15 @@ constructor(
                  */
                 fun addVectorStoreId(vectorStoreId: String) = apply {
                     vectorStoreIds =
-                        (vectorStoreIds ?: mutableListOf()).apply { add(vectorStoreId) }
+                        (vectorStoreIds ?: JsonField.of(mutableListOf())).apply {
+                            asKnown()
+                                .orElseThrow {
+                                    IllegalStateException(
+                                        "Field was set to non-list type: ${javaClass.simpleName}"
+                                    )
+                                }
+                                .add(vectorStoreId)
+                        }
                 }
 
                 /**
@@ -1154,9 +1580,8 @@ constructor(
                  * with file_ids and attach it to this assistant. There can be a maximum of 1 vector
                  * store attached to the assistant.
                  */
-                fun vectorStores(vectorStores: List<VectorStore>?) = apply {
-                    this.vectorStores = vectorStores?.toMutableList()
-                }
+                fun vectorStores(vectorStores: List<VectorStore>) =
+                    vectorStores(JsonField.of(vectorStores))
 
                 /**
                  * A helper to create a
@@ -1164,8 +1589,9 @@ constructor(
                  * with file_ids and attach it to this assistant. There can be a maximum of 1 vector
                  * store attached to the assistant.
                  */
-                fun vectorStores(vectorStores: Optional<List<VectorStore>>) =
-                    vectorStores(vectorStores.orElse(null))
+                fun vectorStores(vectorStores: JsonField<List<VectorStore>>) = apply {
+                    this.vectorStores = vectorStores.map { it.toMutableList() }
+                }
 
                 /**
                  * A helper to create a
@@ -1174,7 +1600,16 @@ constructor(
                  * store attached to the assistant.
                  */
                 fun addVectorStore(vectorStore: VectorStore) = apply {
-                    vectorStores = (vectorStores ?: mutableListOf()).apply { add(vectorStore) }
+                    vectorStores =
+                        (vectorStores ?: JsonField.of(mutableListOf())).apply {
+                            asKnown()
+                                .orElseThrow {
+                                    IllegalStateException(
+                                        "Field was set to non-list type: ${javaClass.simpleName}"
+                                    )
+                                }
+                                .add(vectorStore)
+                        }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1201,8 +1636,8 @@ constructor(
 
                 fun build(): FileSearch =
                     FileSearch(
-                        vectorStoreIds?.toImmutable(),
-                        vectorStores?.toImmutable(),
+                        (vectorStoreIds ?: JsonMissing.of()).map { it.toImmutable() },
+                        (vectorStores ?: JsonMissing.of()).map { it.toImmutable() },
                         additionalProperties.toImmutable(),
                     )
             }
@@ -1212,9 +1647,15 @@ constructor(
             @JsonCreator
             private constructor(
                 @JsonProperty("chunking_strategy")
-                private val chunkingStrategy: FileChunkingStrategyParam?,
-                @JsonProperty("file_ids") private val fileIds: List<String>?,
-                @JsonProperty("metadata") private val metadata: JsonValue?,
+                @ExcludeMissing
+                private val chunkingStrategy: JsonField<FileChunkingStrategyParam> =
+                    JsonMissing.of(),
+                @JsonProperty("file_ids")
+                @ExcludeMissing
+                private val fileIds: JsonField<List<String>> = JsonMissing.of(),
+                @JsonProperty("metadata")
+                @ExcludeMissing
+                private val metadata: JsonValue = JsonMissing.of(),
                 @JsonAnySetter
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
@@ -1223,16 +1664,15 @@ constructor(
                  * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
                  * strategy. Only applicable if `file_ids` is non-empty.
                  */
-                @JsonProperty("chunking_strategy")
                 fun chunkingStrategy(): Optional<FileChunkingStrategyParam> =
-                    Optional.ofNullable(chunkingStrategy)
+                    Optional.ofNullable(chunkingStrategy.getNullable("chunking_strategy"))
 
                 /**
                  * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to add
                  * to the vector store. There can be a maximum of 10000 files in a vector store.
                  */
-                @JsonProperty("file_ids")
-                fun fileIds(): Optional<List<String>> = Optional.ofNullable(fileIds)
+                fun fileIds(): Optional<List<String>> =
+                    Optional.ofNullable(fileIds.getNullable("file_ids"))
 
                 /**
                  * Set of 16 key-value pairs that can be attached to a vector store. This can be
@@ -1240,12 +1680,37 @@ constructor(
                  * format. Keys can be a maximum of 64 characters long and values can be a maximum
                  * of 512 characters long.
                  */
-                @JsonProperty("metadata")
-                fun metadata(): Optional<JsonValue> = Optional.ofNullable(metadata)
+                @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+
+                /**
+                 * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
+                 * strategy. Only applicable if `file_ids` is non-empty.
+                 */
+                @JsonProperty("chunking_strategy")
+                @ExcludeMissing
+                fun _chunkingStrategy(): JsonField<FileChunkingStrategyParam> = chunkingStrategy
+
+                /**
+                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to add
+                 * to the vector store. There can be a maximum of 10000 files in a vector store.
+                 */
+                @JsonProperty("file_ids")
+                @ExcludeMissing
+                fun _fileIds(): JsonField<List<String>> = fileIds
 
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                private var validated: Boolean = false
+
+                fun validate(): VectorStore = apply {
+                    if (!validated) {
+                        chunkingStrategy()
+                        fileIds()
+                        validated = true
+                    }
+                }
 
                 fun toBuilder() = Builder().from(this)
 
@@ -1256,15 +1721,16 @@ constructor(
 
                 class Builder {
 
-                    private var chunkingStrategy: FileChunkingStrategyParam? = null
-                    private var fileIds: MutableList<String>? = null
-                    private var metadata: JsonValue? = null
+                    private var chunkingStrategy: JsonField<FileChunkingStrategyParam> =
+                        JsonMissing.of()
+                    private var fileIds: JsonField<MutableList<String>>? = null
+                    private var metadata: JsonValue = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
                     internal fun from(vectorStore: VectorStore) = apply {
                         chunkingStrategy = vectorStore.chunkingStrategy
-                        fileIds = vectorStore.fileIds?.toMutableList()
+                        fileIds = vectorStore.fileIds.map { it.toMutableList() }
                         metadata = vectorStore.metadata
                         additionalProperties = vectorStore.additionalProperties.toMutableMap()
                     }
@@ -1273,16 +1739,17 @@ constructor(
                      * The chunking strategy used to chunk the file(s). If not set, will use the
                      * `auto` strategy. Only applicable if `file_ids` is non-empty.
                      */
-                    fun chunkingStrategy(chunkingStrategy: FileChunkingStrategyParam?) = apply {
-                        this.chunkingStrategy = chunkingStrategy
-                    }
+                    fun chunkingStrategy(chunkingStrategy: FileChunkingStrategyParam) =
+                        chunkingStrategy(JsonField.of(chunkingStrategy))
 
                     /**
                      * The chunking strategy used to chunk the file(s). If not set, will use the
                      * `auto` strategy. Only applicable if `file_ids` is non-empty.
                      */
-                    fun chunkingStrategy(chunkingStrategy: Optional<FileChunkingStrategyParam>) =
-                        chunkingStrategy(chunkingStrategy.orElse(null))
+                    fun chunkingStrategy(chunkingStrategy: JsonField<FileChunkingStrategyParam>) =
+                        apply {
+                            this.chunkingStrategy = chunkingStrategy
+                        }
 
                     /**
                      * The default strategy. This strategy currently uses a `max_chunk_size_tokens`
@@ -1290,37 +1757,37 @@ constructor(
                      */
                     fun chunkingStrategy(
                         autoFileChunkingStrategyParam: AutoFileChunkingStrategyParam
-                    ) = apply {
-                        this.chunkingStrategy =
+                    ) =
+                        chunkingStrategy(
                             FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
                                 autoFileChunkingStrategyParam
                             )
-                    }
+                        )
 
                     fun chunkingStrategy(
                         staticFileChunkingStrategyParam: StaticFileChunkingStrategyParam
-                    ) = apply {
-                        this.chunkingStrategy =
+                    ) =
+                        chunkingStrategy(
                             FileChunkingStrategyParam.ofStaticFileChunkingStrategyParam(
                                 staticFileChunkingStrategyParam
                             )
-                    }
+                        )
 
                     /**
                      * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to
                      * add to the vector store. There can be a maximum of 10000 files in a vector
                      * store.
                      */
-                    fun fileIds(fileIds: List<String>?) = apply {
-                        this.fileIds = fileIds?.toMutableList()
-                    }
+                    fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
 
                     /**
                      * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to
                      * add to the vector store. There can be a maximum of 10000 files in a vector
                      * store.
                      */
-                    fun fileIds(fileIds: Optional<List<String>>) = fileIds(fileIds.orElse(null))
+                    fun fileIds(fileIds: JsonField<List<String>>) = apply {
+                        this.fileIds = fileIds.map { it.toMutableList() }
+                    }
 
                     /**
                      * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to
@@ -1328,7 +1795,16 @@ constructor(
                      * store.
                      */
                     fun addFileId(fileId: String) = apply {
-                        fileIds = (fileIds ?: mutableListOf()).apply { add(fileId) }
+                        fileIds =
+                            (fileIds ?: JsonField.of(mutableListOf())).apply {
+                                asKnown()
+                                    .orElseThrow {
+                                        IllegalStateException(
+                                            "Field was set to non-list type: ${javaClass.simpleName}"
+                                        )
+                                    }
+                                    .add(fileId)
+                            }
                     }
 
                     /**
@@ -1337,15 +1813,7 @@ constructor(
                      * structured format. Keys can be a maximum of 64 characters long and values can
                      * be a maximum of 512 characters long.
                      */
-                    fun metadata(metadata: JsonValue?) = apply { this.metadata = metadata }
-
-                    /**
-                     * Set of 16 key-value pairs that can be attached to a vector store. This can be
-                     * useful for storing additional information about the vector store in a
-                     * structured format. Keys can be a maximum of 64 characters long and values can
-                     * be a maximum of 512 characters long.
-                     */
-                    fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
+                    fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
@@ -1372,7 +1840,7 @@ constructor(
                     fun build(): VectorStore =
                         VectorStore(
                             chunkingStrategy,
-                            fileIds?.toImmutable(),
+                            (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
                             metadata,
                             additionalProperties.toImmutable(),
                         )

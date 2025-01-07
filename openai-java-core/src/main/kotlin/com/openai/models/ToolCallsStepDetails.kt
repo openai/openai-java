@@ -42,10 +42,12 @@ private constructor(
      * An array of tool calls the run step was involved in. These can be associated with one of
      * three types of tools: `code_interpreter`, `file_search`, or `function`.
      */
-    @JsonProperty("tool_calls") @ExcludeMissing fun _toolCalls() = toolCalls
+    @JsonProperty("tool_calls")
+    @ExcludeMissing
+    fun _toolCalls(): JsonField<List<ToolCall>> = toolCalls
 
     /** Always `tool_calls`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -70,13 +72,13 @@ private constructor(
 
     class Builder {
 
-        private var toolCalls: JsonField<List<ToolCall>> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var toolCalls: JsonField<MutableList<ToolCall>>? = null
+        private var type: JsonField<Type>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(toolCallsStepDetails: ToolCallsStepDetails) = apply {
-            toolCalls = toolCallsStepDetails.toolCalls
+            toolCalls = toolCallsStepDetails.toolCalls.map { it.toMutableList() }
             type = toolCallsStepDetails.type
             additionalProperties = toolCallsStepDetails.additionalProperties.toMutableMap()
         }
@@ -91,7 +93,26 @@ private constructor(
          * An array of tool calls the run step was involved in. These can be associated with one of
          * three types of tools: `code_interpreter`, `file_search`, or `function`.
          */
-        fun toolCalls(toolCalls: JsonField<List<ToolCall>>) = apply { this.toolCalls = toolCalls }
+        fun toolCalls(toolCalls: JsonField<List<ToolCall>>) = apply {
+            this.toolCalls = toolCalls.map { it.toMutableList() }
+        }
+
+        /**
+         * An array of tool calls the run step was involved in. These can be associated with one of
+         * three types of tools: `code_interpreter`, `file_search`, or `function`.
+         */
+        fun addToolCall(toolCall: ToolCall) = apply {
+            toolCalls =
+                (toolCalls ?: JsonField.of(mutableListOf())).apply {
+                    asKnown()
+                        .orElseThrow {
+                            IllegalStateException(
+                                "Field was set to non-list type: ${javaClass.simpleName}"
+                            )
+                        }
+                        .add(toolCall)
+                }
+        }
 
         /** Always `tool_calls`. */
         fun type(type: Type) = type(JsonField.of(type))
@@ -120,8 +141,9 @@ private constructor(
 
         fun build(): ToolCallsStepDetails =
             ToolCallsStepDetails(
-                toolCalls.map { it.toImmutable() },
-                type,
+                checkNotNull(toolCalls) { "`toolCalls` is required but was not set" }
+                    .map { it.toImmutable() },
+                checkNotNull(type) { "`type` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }

@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
+import com.openai.core.JsonField
+import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.http.Headers
@@ -47,11 +49,20 @@ constructor(
      */
     fun md5(): Optional<String> = body.md5()
 
+    /** The ordered list of Part IDs. */
+    fun _partIds(): JsonField<List<String>> = body._partIds()
+
+    /**
+     * The optional md5 checksum for the file contents to verify if the bytes uploaded matches what
+     * you expect.
+     */
+    fun _md5(): JsonField<String> = body._md5()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     @JvmSynthetic internal fun getBody(): UploadCompleteBody = body
 
@@ -70,24 +81,45 @@ constructor(
     class UploadCompleteBody
     @JsonCreator
     internal constructor(
-        @JsonProperty("part_ids") private val partIds: List<String>,
-        @JsonProperty("md5") private val md5: String?,
+        @JsonProperty("part_ids")
+        @ExcludeMissing
+        private val partIds: JsonField<List<String>> = JsonMissing.of(),
+        @JsonProperty("md5") @ExcludeMissing private val md5: JsonField<String> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** The ordered list of Part IDs. */
-        @JsonProperty("part_ids") fun partIds(): List<String> = partIds
+        fun partIds(): List<String> = partIds.getRequired("part_ids")
 
         /**
          * The optional md5 checksum for the file contents to verify if the bytes uploaded matches
          * what you expect.
          */
-        @JsonProperty("md5") fun md5(): Optional<String> = Optional.ofNullable(md5)
+        fun md5(): Optional<String> = Optional.ofNullable(md5.getNullable("md5"))
+
+        /** The ordered list of Part IDs. */
+        @JsonProperty("part_ids") @ExcludeMissing fun _partIds(): JsonField<List<String>> = partIds
+
+        /**
+         * The optional md5 checksum for the file contents to verify if the bytes uploaded matches
+         * what you expect.
+         */
+        @JsonProperty("md5") @ExcludeMissing fun _md5(): JsonField<String> = md5
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): UploadCompleteBody = apply {
+            if (!validated) {
+                partIds()
+                md5()
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -98,36 +130,50 @@ constructor(
 
         class Builder {
 
-            private var partIds: MutableList<String>? = null
-            private var md5: String? = null
+            private var partIds: JsonField<MutableList<String>>? = null
+            private var md5: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(uploadCompleteBody: UploadCompleteBody) = apply {
-                partIds = uploadCompleteBody.partIds.toMutableList()
+                partIds = uploadCompleteBody.partIds.map { it.toMutableList() }
                 md5 = uploadCompleteBody.md5
                 additionalProperties = uploadCompleteBody.additionalProperties.toMutableMap()
             }
 
             /** The ordered list of Part IDs. */
-            fun partIds(partIds: List<String>) = apply { this.partIds = partIds.toMutableList() }
+            fun partIds(partIds: List<String>) = partIds(JsonField.of(partIds))
+
+            /** The ordered list of Part IDs. */
+            fun partIds(partIds: JsonField<List<String>>) = apply {
+                this.partIds = partIds.map { it.toMutableList() }
+            }
 
             /** The ordered list of Part IDs. */
             fun addPartId(partId: String) = apply {
-                partIds = (partIds ?: mutableListOf()).apply { add(partId) }
+                partIds =
+                    (partIds ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(partId)
+                    }
             }
 
             /**
              * The optional md5 checksum for the file contents to verify if the bytes uploaded
              * matches what you expect.
              */
-            fun md5(md5: String?) = apply { this.md5 = md5 }
+            fun md5(md5: String) = md5(JsonField.of(md5))
 
             /**
              * The optional md5 checksum for the file contents to verify if the bytes uploaded
              * matches what you expect.
              */
-            fun md5(md5: Optional<String>) = md5(md5.orElse(null))
+            fun md5(md5: JsonField<String>) = apply { this.md5 = md5 }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -150,7 +196,8 @@ constructor(
 
             fun build(): UploadCompleteBody =
                 UploadCompleteBody(
-                    checkNotNull(partIds) { "`partIds` is required but was not set" }.toImmutable(),
+                    checkNotNull(partIds) { "`partIds` is required but was not set" }
+                        .map { it.toImmutable() },
                     md5,
                     additionalProperties.toImmutable(),
                 )
@@ -203,19 +250,41 @@ constructor(
         fun partIds(partIds: List<String>) = apply { body.partIds(partIds) }
 
         /** The ordered list of Part IDs. */
+        fun partIds(partIds: JsonField<List<String>>) = apply { body.partIds(partIds) }
+
+        /** The ordered list of Part IDs. */
         fun addPartId(partId: String) = apply { body.addPartId(partId) }
 
         /**
          * The optional md5 checksum for the file contents to verify if the bytes uploaded matches
          * what you expect.
          */
-        fun md5(md5: String?) = apply { body.md5(md5) }
+        fun md5(md5: String) = apply { body.md5(md5) }
 
         /**
          * The optional md5 checksum for the file contents to verify if the bytes uploaded matches
          * what you expect.
          */
-        fun md5(md5: Optional<String>) = md5(md5.orElse(null))
+        fun md5(md5: JsonField<String>) = apply { body.md5(md5) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -313,25 +382,6 @@ constructor(
 
         fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
             additionalQueryParams.removeAll(keys)
-        }
-
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            body.additionalProperties(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            body.putAdditionalProperty(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                body.putAllAdditionalProperties(additionalBodyProperties)
-            }
-
-        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
-
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            body.removeAllAdditionalProperties(keys)
         }
 
         fun build(): UploadCompleteParams =

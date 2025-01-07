@@ -134,6 +134,13 @@ private constructor(
     fun inProgressAt(): Optional<Long> =
         Optional.ofNullable(inProgressAt.getNullable("in_progress_at"))
 
+    /**
+     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
+     * additional information about the object in a structured format. Keys can be a maximum of 64
+     * characters long and values can be a maximum of 512 characters long.
+     */
+    @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+
     /** The ID of the file containing the outputs of successfully executed requests. */
     fun outputFileId(): Optional<String> =
         Optional.ofNullable(outputFileId.getNullable("output_file_id"))
@@ -142,67 +149,76 @@ private constructor(
     fun requestCounts(): Optional<BatchRequestCounts> =
         Optional.ofNullable(requestCounts.getNullable("request_counts"))
 
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** The time frame within which the batch should be processed. */
-    @JsonProperty("completion_window") @ExcludeMissing fun _completionWindow() = completionWindow
+    @JsonProperty("completion_window")
+    @ExcludeMissing
+    fun _completionWindow(): JsonField<String> = completionWindow
 
     /** The Unix timestamp (in seconds) for when the batch was created. */
-    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
+    @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
     /** The OpenAI API endpoint used by the batch. */
-    @JsonProperty("endpoint") @ExcludeMissing fun _endpoint() = endpoint
+    @JsonProperty("endpoint") @ExcludeMissing fun _endpoint(): JsonField<String> = endpoint
 
     /** The ID of the input file for the batch. */
-    @JsonProperty("input_file_id") @ExcludeMissing fun _inputFileId() = inputFileId
+    @JsonProperty("input_file_id")
+    @ExcludeMissing
+    fun _inputFileId(): JsonField<String> = inputFileId
 
     /** The object type, which is always `batch`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /** The current status of the batch. */
-    @JsonProperty("status") @ExcludeMissing fun _status() = status
+    @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
     /** The Unix timestamp (in seconds) for when the batch was cancelled. */
-    @JsonProperty("cancelled_at") @ExcludeMissing fun _cancelledAt() = cancelledAt
+    @JsonProperty("cancelled_at") @ExcludeMissing fun _cancelledAt(): JsonField<Long> = cancelledAt
 
     /** The Unix timestamp (in seconds) for when the batch started cancelling. */
-    @JsonProperty("cancelling_at") @ExcludeMissing fun _cancellingAt() = cancellingAt
+    @JsonProperty("cancelling_at")
+    @ExcludeMissing
+    fun _cancellingAt(): JsonField<Long> = cancellingAt
 
     /** The Unix timestamp (in seconds) for when the batch was completed. */
-    @JsonProperty("completed_at") @ExcludeMissing fun _completedAt() = completedAt
+    @JsonProperty("completed_at") @ExcludeMissing fun _completedAt(): JsonField<Long> = completedAt
 
     /** The ID of the file containing the outputs of requests with errors. */
-    @JsonProperty("error_file_id") @ExcludeMissing fun _errorFileId() = errorFileId
+    @JsonProperty("error_file_id")
+    @ExcludeMissing
+    fun _errorFileId(): JsonField<String> = errorFileId
 
-    @JsonProperty("errors") @ExcludeMissing fun _errors() = errors
+    @JsonProperty("errors") @ExcludeMissing fun _errors(): JsonField<Errors> = errors
 
     /** The Unix timestamp (in seconds) for when the batch expired. */
-    @JsonProperty("expired_at") @ExcludeMissing fun _expiredAt() = expiredAt
+    @JsonProperty("expired_at") @ExcludeMissing fun _expiredAt(): JsonField<Long> = expiredAt
 
     /** The Unix timestamp (in seconds) for when the batch will expire. */
-    @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt() = expiresAt
+    @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt(): JsonField<Long> = expiresAt
 
     /** The Unix timestamp (in seconds) for when the batch failed. */
-    @JsonProperty("failed_at") @ExcludeMissing fun _failedAt() = failedAt
+    @JsonProperty("failed_at") @ExcludeMissing fun _failedAt(): JsonField<Long> = failedAt
 
     /** The Unix timestamp (in seconds) for when the batch started finalizing. */
-    @JsonProperty("finalizing_at") @ExcludeMissing fun _finalizingAt() = finalizingAt
+    @JsonProperty("finalizing_at")
+    @ExcludeMissing
+    fun _finalizingAt(): JsonField<Long> = finalizingAt
 
     /** The Unix timestamp (in seconds) for when the batch started processing. */
-    @JsonProperty("in_progress_at") @ExcludeMissing fun _inProgressAt() = inProgressAt
-
-    /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format. Keys can be a maximum of 64
-     * characters long and values can be a maximum of 512 characters long.
-     */
-    @JsonProperty("metadata") @ExcludeMissing fun _metadata() = metadata
+    @JsonProperty("in_progress_at")
+    @ExcludeMissing
+    fun _inProgressAt(): JsonField<Long> = inProgressAt
 
     /** The ID of the file containing the outputs of successfully executed requests. */
-    @JsonProperty("output_file_id") @ExcludeMissing fun _outputFileId() = outputFileId
+    @JsonProperty("output_file_id")
+    @ExcludeMissing
+    fun _outputFileId(): JsonField<String> = outputFileId
 
     /** The request counts for different statuses within the batch. */
-    @JsonProperty("request_counts") @ExcludeMissing fun _requestCounts() = requestCounts
+    @JsonProperty("request_counts")
+    @ExcludeMissing
+    fun _requestCounts(): JsonField<BatchRequestCounts> = requestCounts
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -244,13 +260,13 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var completionWindow: JsonField<String> = JsonMissing.of()
-        private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var endpoint: JsonField<String> = JsonMissing.of()
-        private var inputFileId: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
-        private var status: JsonField<Status> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var completionWindow: JsonField<String>? = null
+        private var createdAt: JsonField<Long>? = null
+        private var endpoint: JsonField<String>? = null
+        private var inputFileId: JsonField<String>? = null
+        private var object_: JsonField<Object>? = null
+        private var status: JsonField<Status>? = null
         private var cancelledAt: JsonField<Long> = JsonMissing.of()
         private var cancellingAt: JsonField<Long> = JsonMissing.of()
         private var completedAt: JsonField<Long> = JsonMissing.of()
@@ -437,13 +453,13 @@ private constructor(
 
         fun build(): Batch =
             Batch(
-                id,
-                completionWindow,
-                createdAt,
-                endpoint,
-                inputFileId,
-                object_,
-                status,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(completionWindow) { "`completionWindow` is required but was not set" },
+                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
+                checkNotNull(endpoint) { "`endpoint` is required but was not set" },
+                checkNotNull(inputFileId) { "`inputFileId` is required but was not set" },
+                checkNotNull(object_) { "`object_` is required but was not set" },
+                checkNotNull(status) { "`status` is required but was not set" },
                 cancelledAt,
                 cancellingAt,
                 completedAt,
@@ -624,10 +640,10 @@ private constructor(
         /** The object type, which is always `list`. */
         fun object_(): Optional<String> = Optional.ofNullable(object_.getNullable("object"))
 
-        @JsonProperty("data") @ExcludeMissing fun _data() = data
+        @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<List<BatchError>> = data
 
         /** The object type, which is always `list`. */
-        @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+        @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<String> = object_
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -652,20 +668,35 @@ private constructor(
 
         class Builder {
 
-            private var data: JsonField<List<BatchError>> = JsonMissing.of()
+            private var data: JsonField<MutableList<BatchError>>? = null
             private var object_: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(errors: Errors) = apply {
-                data = errors.data
+                data = errors.data.map { it.toMutableList() }
                 object_ = errors.object_
                 additionalProperties = errors.additionalProperties.toMutableMap()
             }
 
             fun data(data: List<BatchError>) = data(JsonField.of(data))
 
-            fun data(data: JsonField<List<BatchError>>) = apply { this.data = data }
+            fun data(data: JsonField<List<BatchError>>) = apply {
+                this.data = data.map { it.toMutableList() }
+            }
+
+            fun addData(data: BatchError) = apply {
+                this.data =
+                    (this.data ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(data)
+                    }
+            }
 
             /** The object type, which is always `list`. */
             fun object_(object_: String) = object_(JsonField.of(object_))
@@ -694,7 +725,7 @@ private constructor(
 
             fun build(): Errors =
                 Errors(
-                    data.map { it.toImmutable() },
+                    (data ?: JsonMissing.of()).map { it.toImmutable() },
                     object_,
                     additionalProperties.toImmutable(),
                 )

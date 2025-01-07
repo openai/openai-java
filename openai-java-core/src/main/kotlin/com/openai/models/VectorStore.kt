@@ -65,6 +65,13 @@ private constructor(
     fun lastActiveAt(): Optional<Long> =
         Optional.ofNullable(lastActiveAt.getNullable("last_active_at"))
 
+    /**
+     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
+     * additional information about the object in a structured format. Keys can be a maximum of 64
+     * characters long and values can be a maximum of 512 characters long.
+     */
+    @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+
     /** The name of the vector store. */
     fun name(): String = name.getRequired("name")
 
@@ -88,43 +95,42 @@ private constructor(
     fun expiresAt(): Optional<Long> = Optional.ofNullable(expiresAt.getNullable("expires_at"))
 
     /** The identifier, which can be referenced in API endpoints. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** The Unix timestamp (in seconds) for when the vector store was created. */
-    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
+    @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
-    @JsonProperty("file_counts") @ExcludeMissing fun _fileCounts() = fileCounts
+    @JsonProperty("file_counts")
+    @ExcludeMissing
+    fun _fileCounts(): JsonField<FileCounts> = fileCounts
 
     /** The Unix timestamp (in seconds) for when the vector store was last active. */
-    @JsonProperty("last_active_at") @ExcludeMissing fun _lastActiveAt() = lastActiveAt
-
-    /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format. Keys can be a maximum of 64
-     * characters long and values can be a maximum of 512 characters long.
-     */
-    @JsonProperty("metadata") @ExcludeMissing fun _metadata() = metadata
+    @JsonProperty("last_active_at")
+    @ExcludeMissing
+    fun _lastActiveAt(): JsonField<Long> = lastActiveAt
 
     /** The name of the vector store. */
-    @JsonProperty("name") @ExcludeMissing fun _name() = name
+    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
     /** The object type, which is always `vector_store`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /**
      * The status of the vector store, which can be either `expired`, `in_progress`, or `completed`.
      * A status of `completed` indicates that the vector store is ready for use.
      */
-    @JsonProperty("status") @ExcludeMissing fun _status() = status
+    @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
     /** The total number of bytes used by the files in the vector store. */
-    @JsonProperty("usage_bytes") @ExcludeMissing fun _usageBytes() = usageBytes
+    @JsonProperty("usage_bytes") @ExcludeMissing fun _usageBytes(): JsonField<Long> = usageBytes
 
     /** The expiration policy for a vector store. */
-    @JsonProperty("expires_after") @ExcludeMissing fun _expiresAfter() = expiresAfter
+    @JsonProperty("expires_after")
+    @ExcludeMissing
+    fun _expiresAfter(): JsonField<ExpiresAfter> = expiresAfter
 
     /** The Unix timestamp (in seconds) for when the vector store will expire. */
-    @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt() = expiresAt
+    @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt(): JsonField<Long> = expiresAt
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -157,15 +163,15 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var fileCounts: JsonField<FileCounts> = JsonMissing.of()
-        private var lastActiveAt: JsonField<Long> = JsonMissing.of()
-        private var metadata: JsonValue = JsonMissing.of()
-        private var name: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
-        private var status: JsonField<Status> = JsonMissing.of()
-        private var usageBytes: JsonField<Long> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var createdAt: JsonField<Long>? = null
+        private var fileCounts: JsonField<FileCounts>? = null
+        private var lastActiveAt: JsonField<Long>? = null
+        private var metadata: JsonValue? = null
+        private var name: JsonField<String>? = null
+        private var object_: JsonField<Object>? = null
+        private var status: JsonField<Status>? = null
+        private var usageBytes: JsonField<Long>? = null
         private var expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of()
         private var expiresAt: JsonField<Long> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -203,7 +209,15 @@ private constructor(
         fun fileCounts(fileCounts: JsonField<FileCounts>) = apply { this.fileCounts = fileCounts }
 
         /** The Unix timestamp (in seconds) for when the vector store was last active. */
-        fun lastActiveAt(lastActiveAt: Long) = lastActiveAt(JsonField.of(lastActiveAt))
+        fun lastActiveAt(lastActiveAt: Long?) = lastActiveAt(JsonField.ofNullable(lastActiveAt))
+
+        /** The Unix timestamp (in seconds) for when the vector store was last active. */
+        fun lastActiveAt(lastActiveAt: Long) = lastActiveAt(lastActiveAt as Long?)
+
+        /** The Unix timestamp (in seconds) for when the vector store was last active. */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun lastActiveAt(lastActiveAt: Optional<Long>) =
+            lastActiveAt(lastActiveAt.orElse(null) as Long?)
 
         /** The Unix timestamp (in seconds) for when the vector store was last active. */
         fun lastActiveAt(lastActiveAt: JsonField<Long>) = apply { this.lastActiveAt = lastActiveAt }
@@ -254,7 +268,14 @@ private constructor(
         }
 
         /** The Unix timestamp (in seconds) for when the vector store will expire. */
-        fun expiresAt(expiresAt: Long) = expiresAt(JsonField.of(expiresAt))
+        fun expiresAt(expiresAt: Long?) = expiresAt(JsonField.ofNullable(expiresAt))
+
+        /** The Unix timestamp (in seconds) for when the vector store will expire. */
+        fun expiresAt(expiresAt: Long) = expiresAt(expiresAt as Long?)
+
+        /** The Unix timestamp (in seconds) for when the vector store will expire. */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun expiresAt(expiresAt: Optional<Long>) = expiresAt(expiresAt.orElse(null) as Long?)
 
         /** The Unix timestamp (in seconds) for when the vector store will expire. */
         fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
@@ -280,15 +301,15 @@ private constructor(
 
         fun build(): VectorStore =
             VectorStore(
-                id,
-                createdAt,
-                fileCounts,
-                lastActiveAt,
-                metadata,
-                name,
-                object_,
-                status,
-                usageBytes,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
+                checkNotNull(fileCounts) { "`fileCounts` is required but was not set" },
+                checkNotNull(lastActiveAt) { "`lastActiveAt` is required but was not set" },
+                checkNotNull(metadata) { "`metadata` is required but was not set" },
+                checkNotNull(name) { "`name` is required but was not set" },
+                checkNotNull(object_) { "`object_` is required but was not set" },
+                checkNotNull(status) { "`status` is required but was not set" },
+                checkNotNull(usageBytes) { "`usageBytes` is required but was not set" },
                 expiresAfter,
                 expiresAt,
                 additionalProperties.toImmutable(),
@@ -334,19 +355,19 @@ private constructor(
         fun total(): Long = total.getRequired("total")
 
         /** The number of files that were cancelled. */
-        @JsonProperty("cancelled") @ExcludeMissing fun _cancelled() = cancelled
+        @JsonProperty("cancelled") @ExcludeMissing fun _cancelled(): JsonField<Long> = cancelled
 
         /** The number of files that have been successfully processed. */
-        @JsonProperty("completed") @ExcludeMissing fun _completed() = completed
+        @JsonProperty("completed") @ExcludeMissing fun _completed(): JsonField<Long> = completed
 
         /** The number of files that have failed to process. */
-        @JsonProperty("failed") @ExcludeMissing fun _failed() = failed
+        @JsonProperty("failed") @ExcludeMissing fun _failed(): JsonField<Long> = failed
 
         /** The number of files that are currently being processed. */
-        @JsonProperty("in_progress") @ExcludeMissing fun _inProgress() = inProgress
+        @JsonProperty("in_progress") @ExcludeMissing fun _inProgress(): JsonField<Long> = inProgress
 
         /** The total number of files. */
-        @JsonProperty("total") @ExcludeMissing fun _total() = total
+        @JsonProperty("total") @ExcludeMissing fun _total(): JsonField<Long> = total
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -374,11 +395,11 @@ private constructor(
 
         class Builder {
 
-            private var cancelled: JsonField<Long> = JsonMissing.of()
-            private var completed: JsonField<Long> = JsonMissing.of()
-            private var failed: JsonField<Long> = JsonMissing.of()
-            private var inProgress: JsonField<Long> = JsonMissing.of()
-            private var total: JsonField<Long> = JsonMissing.of()
+            private var cancelled: JsonField<Long>? = null
+            private var completed: JsonField<Long>? = null
+            private var failed: JsonField<Long>? = null
+            private var inProgress: JsonField<Long>? = null
+            private var total: JsonField<Long>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -442,11 +463,11 @@ private constructor(
 
             fun build(): FileCounts =
                 FileCounts(
-                    cancelled,
-                    completed,
-                    failed,
-                    inProgress,
-                    total,
+                    checkNotNull(cancelled) { "`cancelled` is required but was not set" },
+                    checkNotNull(completed) { "`completed` is required but was not set" },
+                    checkNotNull(failed) { "`failed` is required but was not set" },
+                    checkNotNull(inProgress) { "`inProgress` is required but was not set" },
+                    checkNotNull(total) { "`total` is required but was not set" },
                     additionalProperties.toImmutable(),
                 )
         }
@@ -609,10 +630,10 @@ private constructor(
          * Anchor timestamp after which the expiration policy applies. Supported anchors:
          * `last_active_at`.
          */
-        @JsonProperty("anchor") @ExcludeMissing fun _anchor() = anchor
+        @JsonProperty("anchor") @ExcludeMissing fun _anchor(): JsonField<Anchor> = anchor
 
         /** The number of days after the anchor time that the vector store will expire. */
-        @JsonProperty("days") @ExcludeMissing fun _days() = days
+        @JsonProperty("days") @ExcludeMissing fun _days(): JsonField<Long> = days
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -637,8 +658,8 @@ private constructor(
 
         class Builder {
 
-            private var anchor: JsonField<Anchor> = JsonMissing.of()
-            private var days: JsonField<Long> = JsonMissing.of()
+            private var anchor: JsonField<Anchor>? = null
+            private var days: JsonField<Long>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -687,8 +708,8 @@ private constructor(
 
             fun build(): ExpiresAfter =
                 ExpiresAfter(
-                    anchor,
-                    days,
+                    checkNotNull(anchor) { "`anchor` is required but was not set" },
+                    checkNotNull(days) { "`days` is required but was not set" },
                     additionalProperties.toImmutable(),
                 )
         }

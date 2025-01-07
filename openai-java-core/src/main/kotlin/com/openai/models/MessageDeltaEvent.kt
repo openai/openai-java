@@ -42,13 +42,13 @@ private constructor(
     fun object_(): Object = object_.getRequired("object")
 
     /** The identifier of the message, which can be referenced in API endpoints. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** The delta containing the fields that have changed on the Message. */
-    @JsonProperty("delta") @ExcludeMissing fun _delta() = delta
+    @JsonProperty("delta") @ExcludeMissing fun _delta(): JsonField<MessageDelta> = delta
 
     /** The object type, which is always `thread.message.delta`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -74,9 +74,9 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var delta: JsonField<MessageDelta> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var delta: JsonField<MessageDelta>? = null
+        private var object_: JsonField<Object>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -126,9 +126,9 @@ private constructor(
 
         fun build(): MessageDeltaEvent =
             MessageDeltaEvent(
-                id,
-                delta,
-                object_,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(delta) { "`delta` is required but was not set" },
+                checkNotNull(object_) { "`object_` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }

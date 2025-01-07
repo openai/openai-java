@@ -54,29 +54,29 @@ private constructor(
     /** The object type, which is always "fine_tuning.job.event". */
     fun object_(): Object = object_.getRequired("object")
 
+    /** The data associated with the event. */
+    @JsonProperty("data") @ExcludeMissing fun _data(): JsonValue = data
+
     /** The type of event. */
     fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
 
     /** The object identifier. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** The Unix timestamp (in seconds) for when the fine-tuning job was created. */
-    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
+    @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
     /** The log level of the event. */
-    @JsonProperty("level") @ExcludeMissing fun _level() = level
+    @JsonProperty("level") @ExcludeMissing fun _level(): JsonField<Level> = level
 
     /** The message of the event. */
-    @JsonProperty("message") @ExcludeMissing fun _message() = message
+    @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
     /** The object type, which is always "fine_tuning.job.event". */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
-
-    /** The data associated with the event. */
-    @JsonProperty("data") @ExcludeMissing fun _data() = data
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /** The type of event. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -105,11 +105,11 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var level: JsonField<Level> = JsonMissing.of()
-        private var message: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var createdAt: JsonField<Long>? = null
+        private var level: JsonField<Level>? = null
+        private var message: JsonField<String>? = null
+        private var object_: JsonField<Object>? = null
         private var data: JsonValue = JsonMissing.of()
         private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -186,11 +186,11 @@ private constructor(
 
         fun build(): FineTuningJobEvent =
             FineTuningJobEvent(
-                id,
-                createdAt,
-                level,
-                message,
-                object_,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
+                checkNotNull(level) { "`level` is required but was not set" },
+                checkNotNull(message) { "`message` is required but was not set" },
+                checkNotNull(object_) { "`object_` is required but was not set" },
                 data,
                 type,
                 additionalProperties.toImmutable(),

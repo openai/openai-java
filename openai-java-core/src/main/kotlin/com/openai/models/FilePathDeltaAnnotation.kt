@@ -57,19 +57,19 @@ private constructor(
     fun text(): Optional<String> = Optional.ofNullable(text.getNullable("text"))
 
     /** The index of the annotation in the text content part. */
-    @JsonProperty("index") @ExcludeMissing fun _index() = index
+    @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
     /** Always `file_path`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
-    @JsonProperty("end_index") @ExcludeMissing fun _endIndex() = endIndex
+    @JsonProperty("end_index") @ExcludeMissing fun _endIndex(): JsonField<Long> = endIndex
 
-    @JsonProperty("file_path") @ExcludeMissing fun _filePath() = filePath
+    @JsonProperty("file_path") @ExcludeMissing fun _filePath(): JsonField<FilePath> = filePath
 
-    @JsonProperty("start_index") @ExcludeMissing fun _startIndex() = startIndex
+    @JsonProperty("start_index") @ExcludeMissing fun _startIndex(): JsonField<Long> = startIndex
 
     /** The text in the message content that needs to be replaced. */
-    @JsonProperty("text") @ExcludeMissing fun _text() = text
+    @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -98,8 +98,8 @@ private constructor(
 
     class Builder {
 
-        private var index: JsonField<Long> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var index: JsonField<Long>? = null
+        private var type: JsonField<Type>? = null
         private var endIndex: JsonField<Long> = JsonMissing.of()
         private var filePath: JsonField<FilePath> = JsonMissing.of()
         private var startIndex: JsonField<Long> = JsonMissing.of()
@@ -168,8 +168,8 @@ private constructor(
 
         fun build(): FilePathDeltaAnnotation =
             FilePathDeltaAnnotation(
-                index,
-                type,
+                checkNotNull(index) { "`index` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 endIndex,
                 filePath,
                 startIndex,
@@ -244,7 +244,7 @@ private constructor(
         fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
 
         /** The ID of the file that was generated. */
-        @JsonProperty("file_id") @ExcludeMissing fun _fileId() = fileId
+        @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
         @JsonAnyGetter
         @ExcludeMissing

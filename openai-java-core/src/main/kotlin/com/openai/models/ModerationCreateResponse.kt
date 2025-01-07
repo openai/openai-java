@@ -38,13 +38,13 @@ private constructor(
     fun results(): List<Moderation> = results.getRequired("results")
 
     /** The unique identifier for the moderation request. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** The model used to generate the moderation results. */
-    @JsonProperty("model") @ExcludeMissing fun _model() = model
+    @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
 
     /** A list of moderation objects. */
-    @JsonProperty("results") @ExcludeMissing fun _results() = results
+    @JsonProperty("results") @ExcludeMissing fun _results(): JsonField<List<Moderation>> = results
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -70,16 +70,16 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var model: JsonField<String> = JsonMissing.of()
-        private var results: JsonField<List<Moderation>> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var model: JsonField<String>? = null
+        private var results: JsonField<MutableList<Moderation>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(moderationCreateResponse: ModerationCreateResponse) = apply {
             id = moderationCreateResponse.id
             model = moderationCreateResponse.model
-            results = moderationCreateResponse.results
+            results = moderationCreateResponse.results.map { it.toMutableList() }
             additionalProperties = moderationCreateResponse.additionalProperties.toMutableMap()
         }
 
@@ -99,7 +99,23 @@ private constructor(
         fun results(results: List<Moderation>) = results(JsonField.of(results))
 
         /** A list of moderation objects. */
-        fun results(results: JsonField<List<Moderation>>) = apply { this.results = results }
+        fun results(results: JsonField<List<Moderation>>) = apply {
+            this.results = results.map { it.toMutableList() }
+        }
+
+        /** A list of moderation objects. */
+        fun addResult(result: Moderation) = apply {
+            results =
+                (results ?: JsonField.of(mutableListOf())).apply {
+                    asKnown()
+                        .orElseThrow {
+                            IllegalStateException(
+                                "Field was set to non-list type: ${javaClass.simpleName}"
+                            )
+                        }
+                        .add(result)
+                }
+        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -122,9 +138,10 @@ private constructor(
 
         fun build(): ModerationCreateResponse =
             ModerationCreateResponse(
-                id,
-                model,
-                results.map { it.toImmutable() },
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(model) { "`model` is required but was not set" },
+                checkNotNull(results) { "`results` is required but was not set" }
+                    .map { it.toImmutable() },
                 additionalProperties.toImmutable(),
             )
     }

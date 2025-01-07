@@ -71,27 +71,29 @@ private constructor(
     fun stepNumber(): Long = stepNumber.getRequired("step_number")
 
     /** The checkpoint identifier, which can be referenced in the API endpoints. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** The Unix timestamp (in seconds) for when the checkpoint was created. */
-    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
+    @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
     /** The name of the fine-tuned checkpoint model that is created. */
     @JsonProperty("fine_tuned_model_checkpoint")
     @ExcludeMissing
-    fun _fineTunedModelCheckpoint() = fineTunedModelCheckpoint
+    fun _fineTunedModelCheckpoint(): JsonField<String> = fineTunedModelCheckpoint
 
     /** The name of the fine-tuning job that this checkpoint was created from. */
-    @JsonProperty("fine_tuning_job_id") @ExcludeMissing fun _fineTuningJobId() = fineTuningJobId
+    @JsonProperty("fine_tuning_job_id")
+    @ExcludeMissing
+    fun _fineTuningJobId(): JsonField<String> = fineTuningJobId
 
     /** Metrics at the step number during the fine-tuning job. */
-    @JsonProperty("metrics") @ExcludeMissing fun _metrics() = metrics
+    @JsonProperty("metrics") @ExcludeMissing fun _metrics(): JsonField<Metrics> = metrics
 
     /** The object type, which is always "fine_tuning.job.checkpoint". */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /** The step number that the checkpoint was created at. */
-    @JsonProperty("step_number") @ExcludeMissing fun _stepNumber() = stepNumber
+    @JsonProperty("step_number") @ExcludeMissing fun _stepNumber(): JsonField<Long> = stepNumber
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -121,13 +123,13 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var fineTunedModelCheckpoint: JsonField<String> = JsonMissing.of()
-        private var fineTuningJobId: JsonField<String> = JsonMissing.of()
-        private var metrics: JsonField<Metrics> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
-        private var stepNumber: JsonField<Long> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var createdAt: JsonField<Long>? = null
+        private var fineTunedModelCheckpoint: JsonField<String>? = null
+        private var fineTuningJobId: JsonField<String>? = null
+        private var metrics: JsonField<Metrics>? = null
+        private var object_: JsonField<Object>? = null
+        private var stepNumber: JsonField<Long>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -211,13 +213,15 @@ private constructor(
 
         fun build(): FineTuningJobCheckpoint =
             FineTuningJobCheckpoint(
-                id,
-                createdAt,
-                fineTunedModelCheckpoint,
-                fineTuningJobId,
-                metrics,
-                object_,
-                stepNumber,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
+                checkNotNull(fineTunedModelCheckpoint) {
+                    "`fineTunedModelCheckpoint` is required but was not set"
+                },
+                checkNotNull(fineTuningJobId) { "`fineTuningJobId` is required but was not set" },
+                checkNotNull(metrics) { "`metrics` is required but was not set" },
+                checkNotNull(object_) { "`object_` is required but was not set" },
+                checkNotNull(stepNumber) { "`stepNumber` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }
@@ -272,25 +276,27 @@ private constructor(
         fun validMeanTokenAccuracy(): Optional<Double> =
             Optional.ofNullable(validMeanTokenAccuracy.getNullable("valid_mean_token_accuracy"))
 
-        @JsonProperty("full_valid_loss") @ExcludeMissing fun _fullValidLoss() = fullValidLoss
+        @JsonProperty("full_valid_loss")
+        @ExcludeMissing
+        fun _fullValidLoss(): JsonField<Double> = fullValidLoss
 
         @JsonProperty("full_valid_mean_token_accuracy")
         @ExcludeMissing
-        fun _fullValidMeanTokenAccuracy() = fullValidMeanTokenAccuracy
+        fun _fullValidMeanTokenAccuracy(): JsonField<Double> = fullValidMeanTokenAccuracy
 
-        @JsonProperty("step") @ExcludeMissing fun _step() = step
+        @JsonProperty("step") @ExcludeMissing fun _step(): JsonField<Double> = step
 
-        @JsonProperty("train_loss") @ExcludeMissing fun _trainLoss() = trainLoss
+        @JsonProperty("train_loss") @ExcludeMissing fun _trainLoss(): JsonField<Double> = trainLoss
 
         @JsonProperty("train_mean_token_accuracy")
         @ExcludeMissing
-        fun _trainMeanTokenAccuracy() = trainMeanTokenAccuracy
+        fun _trainMeanTokenAccuracy(): JsonField<Double> = trainMeanTokenAccuracy
 
-        @JsonProperty("valid_loss") @ExcludeMissing fun _validLoss() = validLoss
+        @JsonProperty("valid_loss") @ExcludeMissing fun _validLoss(): JsonField<Double> = validLoss
 
         @JsonProperty("valid_mean_token_accuracy")
         @ExcludeMissing
-        fun _validMeanTokenAccuracy() = validMeanTokenAccuracy
+        fun _validMeanTokenAccuracy(): JsonField<Double> = validMeanTokenAccuracy
 
         @JsonAnyGetter
         @ExcludeMissing

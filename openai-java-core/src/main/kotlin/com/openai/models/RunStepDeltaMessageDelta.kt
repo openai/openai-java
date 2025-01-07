@@ -37,9 +37,11 @@ private constructor(
         Optional.ofNullable(messageCreation.getNullable("message_creation"))
 
     /** Always `message_creation`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
-    @JsonProperty("message_creation") @ExcludeMissing fun _messageCreation() = messageCreation
+    @JsonProperty("message_creation")
+    @ExcludeMissing
+    fun _messageCreation(): JsonField<MessageCreation> = messageCreation
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -64,7 +66,7 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var type: JsonField<Type>? = null
         private var messageCreation: JsonField<MessageCreation> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -109,7 +111,7 @@ private constructor(
 
         fun build(): RunStepDeltaMessageDelta =
             RunStepDeltaMessageDelta(
-                type,
+                checkNotNull(type) { "`type` is required but was not set" },
                 messageCreation,
                 additionalProperties.toImmutable(),
             )
@@ -181,7 +183,7 @@ private constructor(
         fun messageId(): Optional<String> = Optional.ofNullable(messageId.getNullable("message_id"))
 
         /** The ID of the message that was created by this run step. */
-        @JsonProperty("message_id") @ExcludeMissing fun _messageId() = messageId
+        @JsonProperty("message_id") @ExcludeMissing fun _messageId(): JsonField<String> = messageId
 
         @JsonAnyGetter
         @ExcludeMissing

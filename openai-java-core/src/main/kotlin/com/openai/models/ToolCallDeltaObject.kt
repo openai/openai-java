@@ -41,13 +41,15 @@ private constructor(
         Optional.ofNullable(toolCalls.getNullable("tool_calls"))
 
     /** Always `tool_calls`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     /**
      * An array of tool calls the run step was involved in. These can be associated with one of
      * three types of tools: `code_interpreter`, `file_search`, or `function`.
      */
-    @JsonProperty("tool_calls") @ExcludeMissing fun _toolCalls() = toolCalls
+    @JsonProperty("tool_calls")
+    @ExcludeMissing
+    fun _toolCalls(): JsonField<List<ToolCallDelta>> = toolCalls
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -72,14 +74,14 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type> = JsonMissing.of()
-        private var toolCalls: JsonField<List<ToolCallDelta>> = JsonMissing.of()
+        private var type: JsonField<Type>? = null
+        private var toolCalls: JsonField<MutableList<ToolCallDelta>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(toolCallDeltaObject: ToolCallDeltaObject) = apply {
             type = toolCallDeltaObject.type
-            toolCalls = toolCallDeltaObject.toolCalls
+            toolCalls = toolCallDeltaObject.toolCalls.map { it.toMutableList() }
             additionalProperties = toolCallDeltaObject.additionalProperties.toMutableMap()
         }
 
@@ -100,7 +102,24 @@ private constructor(
          * three types of tools: `code_interpreter`, `file_search`, or `function`.
          */
         fun toolCalls(toolCalls: JsonField<List<ToolCallDelta>>) = apply {
-            this.toolCalls = toolCalls
+            this.toolCalls = toolCalls.map { it.toMutableList() }
+        }
+
+        /**
+         * An array of tool calls the run step was involved in. These can be associated with one of
+         * three types of tools: `code_interpreter`, `file_search`, or `function`.
+         */
+        fun addToolCall(toolCall: ToolCallDelta) = apply {
+            toolCalls =
+                (toolCalls ?: JsonField.of(mutableListOf())).apply {
+                    asKnown()
+                        .orElseThrow {
+                            IllegalStateException(
+                                "Field was set to non-list type: ${javaClass.simpleName}"
+                            )
+                        }
+                        .add(toolCall)
+                }
         }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -124,8 +143,8 @@ private constructor(
 
         fun build(): ToolCallDeltaObject =
             ToolCallDeltaObject(
-                type,
-                toolCalls.map { it.toImmutable() },
+                checkNotNull(type) { "`type` is required but was not set" },
+                (toolCalls ?: JsonMissing.of()).map { it.toImmutable() },
                 additionalProperties.toImmutable(),
             )
     }

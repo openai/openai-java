@@ -48,7 +48,7 @@ private constructor(
      */
     @JsonProperty("chunk_overlap_tokens")
     @ExcludeMissing
-    fun _chunkOverlapTokens() = chunkOverlapTokens
+    fun _chunkOverlapTokens(): JsonField<Long> = chunkOverlapTokens
 
     /**
      * The maximum number of tokens in each chunk. The default value is `800`. The minimum value is
@@ -56,7 +56,7 @@ private constructor(
      */
     @JsonProperty("max_chunk_size_tokens")
     @ExcludeMissing
-    fun _maxChunkSizeTokens() = maxChunkSizeTokens
+    fun _maxChunkSizeTokens(): JsonField<Long> = maxChunkSizeTokens
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -81,8 +81,8 @@ private constructor(
 
     class Builder {
 
-        private var chunkOverlapTokens: JsonField<Long> = JsonMissing.of()
-        private var maxChunkSizeTokens: JsonField<Long> = JsonMissing.of()
+        private var chunkOverlapTokens: JsonField<Long>? = null
+        private var maxChunkSizeTokens: JsonField<Long>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -145,8 +145,12 @@ private constructor(
 
         fun build(): StaticFileChunkingStrategy =
             StaticFileChunkingStrategy(
-                chunkOverlapTokens,
-                maxChunkSizeTokens,
+                checkNotNull(chunkOverlapTokens) {
+                    "`chunkOverlapTokens` is required but was not set"
+                },
+                checkNotNull(maxChunkSizeTokens) {
+                    "`maxChunkSizeTokens` is required but was not set"
+                },
                 additionalProperties.toImmutable(),
             )
     }

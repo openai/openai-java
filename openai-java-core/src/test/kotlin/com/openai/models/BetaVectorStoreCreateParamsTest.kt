@@ -69,7 +69,7 @@ class BetaVectorStoreCreateParamsTest {
                     .build()
             )
         assertThat(body.fileIds()).contains(listOf("string"))
-        assertThat(body.metadata()).contains(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.name()).contains("name")
     }
 

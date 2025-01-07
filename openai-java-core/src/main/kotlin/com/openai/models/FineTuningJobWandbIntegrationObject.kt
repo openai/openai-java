@@ -40,7 +40,7 @@ private constructor(
     fun wandb(): FineTuningJobWandbIntegration = wandb.getRequired("wandb")
 
     /** The type of the integration being enabled for the fine-tuning job */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     /**
      * The settings for your integration with Weights and Biases. This payload specifies the project
@@ -48,7 +48,9 @@ private constructor(
      * add tags to your run, and set a default entity (team, username, etc) to be associated with
      * your run.
      */
-    @JsonProperty("wandb") @ExcludeMissing fun _wandb() = wandb
+    @JsonProperty("wandb")
+    @ExcludeMissing
+    fun _wandb(): JsonField<FineTuningJobWandbIntegration> = wandb
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -73,8 +75,8 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type> = JsonMissing.of()
-        private var wandb: JsonField<FineTuningJobWandbIntegration> = JsonMissing.of()
+        private var type: JsonField<Type>? = null
+        private var wandb: JsonField<FineTuningJobWandbIntegration>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -130,8 +132,8 @@ private constructor(
 
         fun build(): FineTuningJobWandbIntegrationObject =
             FineTuningJobWandbIntegrationObject(
-                type,
-                wandb,
+                checkNotNull(type) { "`type` is required but was not set" },
+                checkNotNull(wandb) { "`wandb` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }

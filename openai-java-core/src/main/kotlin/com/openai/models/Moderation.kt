@@ -50,18 +50,23 @@ private constructor(
     fun flagged(): Boolean = flagged.getRequired("flagged")
 
     /** A list of the categories, and whether they are flagged or not. */
-    @JsonProperty("categories") @ExcludeMissing fun _categories() = categories
+    @JsonProperty("categories")
+    @ExcludeMissing
+    fun _categories(): JsonField<Categories> = categories
 
     /** A list of the categories along with the input type(s) that the score applies to. */
     @JsonProperty("category_applied_input_types")
     @ExcludeMissing
-    fun _categoryAppliedInputTypes() = categoryAppliedInputTypes
+    fun _categoryAppliedInputTypes(): JsonField<CategoryAppliedInputTypes> =
+        categoryAppliedInputTypes
 
     /** A list of the categories along with their scores as predicted by model. */
-    @JsonProperty("category_scores") @ExcludeMissing fun _categoryScores() = categoryScores
+    @JsonProperty("category_scores")
+    @ExcludeMissing
+    fun _categoryScores(): JsonField<CategoryScores> = categoryScores
 
     /** Whether any of the below categories are flagged. */
-    @JsonProperty("flagged") @ExcludeMissing fun _flagged() = flagged
+    @JsonProperty("flagged") @ExcludeMissing fun _flagged(): JsonField<Boolean> = flagged
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -88,11 +93,10 @@ private constructor(
 
     class Builder {
 
-        private var categories: JsonField<Categories> = JsonMissing.of()
-        private var categoryAppliedInputTypes: JsonField<CategoryAppliedInputTypes> =
-            JsonMissing.of()
-        private var categoryScores: JsonField<CategoryScores> = JsonMissing.of()
-        private var flagged: JsonField<Boolean> = JsonMissing.of()
+        private var categories: JsonField<Categories>? = null
+        private var categoryAppliedInputTypes: JsonField<CategoryAppliedInputTypes>? = null
+        private var categoryScores: JsonField<CategoryScores>? = null
+        private var flagged: JsonField<Boolean>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -155,10 +159,12 @@ private constructor(
 
         fun build(): Moderation =
             Moderation(
-                categories,
-                categoryAppliedInputTypes,
-                categoryScores,
-                flagged,
+                checkNotNull(categories) { "`categories` is required but was not set" },
+                checkNotNull(categoryAppliedInputTypes) {
+                    "`categoryAppliedInputTypes` is required but was not set"
+                },
+                checkNotNull(categoryScores) { "`categoryScores` is required but was not set" },
+                checkNotNull(flagged) { "`flagged` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }
@@ -281,46 +287,52 @@ private constructor(
         fun violenceGraphic(): Boolean = violenceGraphic.getRequired("violence/graphic")
 
         /** Content that expresses, incites, or promotes harassing language towards any target. */
-        @JsonProperty("harassment") @ExcludeMissing fun _harassment() = harassment
+        @JsonProperty("harassment")
+        @ExcludeMissing
+        fun _harassment(): JsonField<Boolean> = harassment
 
         /** Harassment content that also includes violence or serious harm towards any target. */
         @JsonProperty("harassment/threatening")
         @ExcludeMissing
-        fun _harassmentThreatening() = harassmentThreatening
+        fun _harassmentThreatening(): JsonField<Boolean> = harassmentThreatening
 
         /**
          * Content that expresses, incites, or promotes hate based on race, gender, ethnicity,
          * religion, nationality, sexual orientation, disability status, or caste. Hateful content
          * aimed at non-protected groups (e.g., chess players) is harassment.
          */
-        @JsonProperty("hate") @ExcludeMissing fun _hate() = hate
+        @JsonProperty("hate") @ExcludeMissing fun _hate(): JsonField<Boolean> = hate
 
         /**
          * Hateful content that also includes violence or serious harm towards the targeted group
          * based on race, gender, ethnicity, religion, nationality, sexual orientation, disability
          * status, or caste.
          */
-        @JsonProperty("hate/threatening") @ExcludeMissing fun _hateThreatening() = hateThreatening
+        @JsonProperty("hate/threatening")
+        @ExcludeMissing
+        fun _hateThreatening(): JsonField<Boolean> = hateThreatening
 
         /**
          * Content that includes instructions or advice that facilitate the planning or execution of
          * wrongdoing, or that gives advice or instruction on how to commit illicit acts. For
          * example, "how to shoplift" would fit this category.
          */
-        @JsonProperty("illicit") @ExcludeMissing fun _illicit() = illicit
+        @JsonProperty("illicit") @ExcludeMissing fun _illicit(): JsonField<Boolean> = illicit
 
         /**
          * Content that includes instructions or advice that facilitate the planning or execution of
          * wrongdoing that also includes violence, or that gives advice or instruction on the
          * procurement of any weapon.
          */
-        @JsonProperty("illicit/violent") @ExcludeMissing fun _illicitViolent() = illicitViolent
+        @JsonProperty("illicit/violent")
+        @ExcludeMissing
+        fun _illicitViolent(): JsonField<Boolean> = illicitViolent
 
         /**
          * Content that promotes, encourages, or depicts acts of self-harm, such as suicide,
          * cutting, and eating disorders.
          */
-        @JsonProperty("self-harm") @ExcludeMissing fun _selfHarm() = selfHarm
+        @JsonProperty("self-harm") @ExcludeMissing fun _selfHarm(): JsonField<Boolean> = selfHarm
 
         /**
          * Content that encourages performing acts of self-harm, such as suicide, cutting, and
@@ -328,28 +340,34 @@ private constructor(
          */
         @JsonProperty("self-harm/instructions")
         @ExcludeMissing
-        fun _selfHarmInstructions() = selfHarmInstructions
+        fun _selfHarmInstructions(): JsonField<Boolean> = selfHarmInstructions
 
         /**
          * Content where the speaker expresses that they are engaging or intend to engage in acts of
          * self-harm, such as suicide, cutting, and eating disorders.
          */
-        @JsonProperty("self-harm/intent") @ExcludeMissing fun _selfHarmIntent() = selfHarmIntent
+        @JsonProperty("self-harm/intent")
+        @ExcludeMissing
+        fun _selfHarmIntent(): JsonField<Boolean> = selfHarmIntent
 
         /**
          * Content meant to arouse sexual excitement, such as the description of sexual activity, or
          * that promotes sexual services (excluding sex education and wellness).
          */
-        @JsonProperty("sexual") @ExcludeMissing fun _sexual() = sexual
+        @JsonProperty("sexual") @ExcludeMissing fun _sexual(): JsonField<Boolean> = sexual
 
         /** Sexual content that includes an individual who is under 18 years old. */
-        @JsonProperty("sexual/minors") @ExcludeMissing fun _sexualMinors() = sexualMinors
+        @JsonProperty("sexual/minors")
+        @ExcludeMissing
+        fun _sexualMinors(): JsonField<Boolean> = sexualMinors
 
         /** Content that depicts death, violence, or physical injury. */
-        @JsonProperty("violence") @ExcludeMissing fun _violence() = violence
+        @JsonProperty("violence") @ExcludeMissing fun _violence(): JsonField<Boolean> = violence
 
         /** Content that depicts death, violence, or physical injury in graphic detail. */
-        @JsonProperty("violence/graphic") @ExcludeMissing fun _violenceGraphic() = violenceGraphic
+        @JsonProperty("violence/graphic")
+        @ExcludeMissing
+        fun _violenceGraphic(): JsonField<Boolean> = violenceGraphic
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -385,19 +403,19 @@ private constructor(
 
         class Builder {
 
-            private var harassment: JsonField<Boolean> = JsonMissing.of()
-            private var harassmentThreatening: JsonField<Boolean> = JsonMissing.of()
-            private var hate: JsonField<Boolean> = JsonMissing.of()
-            private var hateThreatening: JsonField<Boolean> = JsonMissing.of()
-            private var illicit: JsonField<Boolean> = JsonMissing.of()
-            private var illicitViolent: JsonField<Boolean> = JsonMissing.of()
-            private var selfHarm: JsonField<Boolean> = JsonMissing.of()
-            private var selfHarmInstructions: JsonField<Boolean> = JsonMissing.of()
-            private var selfHarmIntent: JsonField<Boolean> = JsonMissing.of()
-            private var sexual: JsonField<Boolean> = JsonMissing.of()
-            private var sexualMinors: JsonField<Boolean> = JsonMissing.of()
-            private var violence: JsonField<Boolean> = JsonMissing.of()
-            private var violenceGraphic: JsonField<Boolean> = JsonMissing.of()
+            private var harassment: JsonField<Boolean>? = null
+            private var harassmentThreatening: JsonField<Boolean>? = null
+            private var hate: JsonField<Boolean>? = null
+            private var hateThreatening: JsonField<Boolean>? = null
+            private var illicit: JsonField<Boolean>? = null
+            private var illicitViolent: JsonField<Boolean>? = null
+            private var selfHarm: JsonField<Boolean>? = null
+            private var selfHarmInstructions: JsonField<Boolean>? = null
+            private var selfHarmIntent: JsonField<Boolean>? = null
+            private var sexual: JsonField<Boolean>? = null
+            private var sexualMinors: JsonField<Boolean>? = null
+            private var violence: JsonField<Boolean>? = null
+            private var violenceGraphic: JsonField<Boolean>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -601,19 +619,27 @@ private constructor(
 
             fun build(): Categories =
                 Categories(
-                    harassment,
-                    harassmentThreatening,
-                    hate,
-                    hateThreatening,
-                    illicit,
-                    illicitViolent,
-                    selfHarm,
-                    selfHarmInstructions,
-                    selfHarmIntent,
-                    sexual,
-                    sexualMinors,
-                    violence,
-                    violenceGraphic,
+                    checkNotNull(harassment) { "`harassment` is required but was not set" },
+                    checkNotNull(harassmentThreatening) {
+                        "`harassmentThreatening` is required but was not set"
+                    },
+                    checkNotNull(hate) { "`hate` is required but was not set" },
+                    checkNotNull(hateThreatening) {
+                        "`hateThreatening` is required but was not set"
+                    },
+                    checkNotNull(illicit) { "`illicit` is required but was not set" },
+                    checkNotNull(illicitViolent) { "`illicitViolent` is required but was not set" },
+                    checkNotNull(selfHarm) { "`selfHarm` is required but was not set" },
+                    checkNotNull(selfHarmInstructions) {
+                        "`selfHarmInstructions` is required but was not set"
+                    },
+                    checkNotNull(selfHarmIntent) { "`selfHarmIntent` is required but was not set" },
+                    checkNotNull(sexual) { "`sexual` is required but was not set" },
+                    checkNotNull(sexualMinors) { "`sexualMinors` is required but was not set" },
+                    checkNotNull(violence) { "`violence` is required but was not set" },
+                    checkNotNull(violenceGraphic) {
+                        "`violenceGraphic` is required but was not set"
+                    },
                     additionalProperties.toImmutable(),
                 )
         }
@@ -729,47 +755,63 @@ private constructor(
             violenceGraphic.getRequired("violence/graphic")
 
         /** The applied input type(s) for the category 'harassment'. */
-        @JsonProperty("harassment") @ExcludeMissing fun _harassment() = harassment
+        @JsonProperty("harassment")
+        @ExcludeMissing
+        fun _harassment(): JsonField<List<Harassment>> = harassment
 
         /** The applied input type(s) for the category 'harassment/threatening'. */
         @JsonProperty("harassment/threatening")
         @ExcludeMissing
-        fun _harassmentThreatening() = harassmentThreatening
+        fun _harassmentThreatening(): JsonField<List<HarassmentThreatening>> = harassmentThreatening
 
         /** The applied input type(s) for the category 'hate'. */
-        @JsonProperty("hate") @ExcludeMissing fun _hate() = hate
+        @JsonProperty("hate") @ExcludeMissing fun _hate(): JsonField<List<Hate>> = hate
 
         /** The applied input type(s) for the category 'hate/threatening'. */
-        @JsonProperty("hate/threatening") @ExcludeMissing fun _hateThreatening() = hateThreatening
+        @JsonProperty("hate/threatening")
+        @ExcludeMissing
+        fun _hateThreatening(): JsonField<List<HateThreatening>> = hateThreatening
 
         /** The applied input type(s) for the category 'illicit'. */
-        @JsonProperty("illicit") @ExcludeMissing fun _illicit() = illicit
+        @JsonProperty("illicit") @ExcludeMissing fun _illicit(): JsonField<List<Illicit>> = illicit
 
         /** The applied input type(s) for the category 'illicit/violent'. */
-        @JsonProperty("illicit/violent") @ExcludeMissing fun _illicitViolent() = illicitViolent
+        @JsonProperty("illicit/violent")
+        @ExcludeMissing
+        fun _illicitViolent(): JsonField<List<IllicitViolent>> = illicitViolent
 
         /** The applied input type(s) for the category 'self-harm'. */
-        @JsonProperty("self-harm") @ExcludeMissing fun _selfHarm() = selfHarm
+        @JsonProperty("self-harm")
+        @ExcludeMissing
+        fun _selfHarm(): JsonField<List<SelfHarm>> = selfHarm
 
         /** The applied input type(s) for the category 'self-harm/instructions'. */
         @JsonProperty("self-harm/instructions")
         @ExcludeMissing
-        fun _selfHarmInstructions() = selfHarmInstructions
+        fun _selfHarmInstructions(): JsonField<List<SelfHarmInstruction>> = selfHarmInstructions
 
         /** The applied input type(s) for the category 'self-harm/intent'. */
-        @JsonProperty("self-harm/intent") @ExcludeMissing fun _selfHarmIntent() = selfHarmIntent
+        @JsonProperty("self-harm/intent")
+        @ExcludeMissing
+        fun _selfHarmIntent(): JsonField<List<SelfHarmIntent>> = selfHarmIntent
 
         /** The applied input type(s) for the category 'sexual'. */
-        @JsonProperty("sexual") @ExcludeMissing fun _sexual() = sexual
+        @JsonProperty("sexual") @ExcludeMissing fun _sexual(): JsonField<List<Sexual>> = sexual
 
         /** The applied input type(s) for the category 'sexual/minors'. */
-        @JsonProperty("sexual/minors") @ExcludeMissing fun _sexualMinors() = sexualMinors
+        @JsonProperty("sexual/minors")
+        @ExcludeMissing
+        fun _sexualMinors(): JsonField<List<SexualMinor>> = sexualMinors
 
         /** The applied input type(s) for the category 'violence'. */
-        @JsonProperty("violence") @ExcludeMissing fun _violence() = violence
+        @JsonProperty("violence")
+        @ExcludeMissing
+        fun _violence(): JsonField<List<Violence>> = violence
 
         /** The applied input type(s) for the category 'violence/graphic'. */
-        @JsonProperty("violence/graphic") @ExcludeMissing fun _violenceGraphic() = violenceGraphic
+        @JsonProperty("violence/graphic")
+        @ExcludeMissing
+        fun _violenceGraphic(): JsonField<List<ViolenceGraphic>> = violenceGraphic
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -805,38 +847,40 @@ private constructor(
 
         class Builder {
 
-            private var harassment: JsonField<List<Harassment>> = JsonMissing.of()
-            private var harassmentThreatening: JsonField<List<HarassmentThreatening>> =
-                JsonMissing.of()
-            private var hate: JsonField<List<Hate>> = JsonMissing.of()
-            private var hateThreatening: JsonField<List<HateThreatening>> = JsonMissing.of()
-            private var illicit: JsonField<List<Illicit>> = JsonMissing.of()
-            private var illicitViolent: JsonField<List<IllicitViolent>> = JsonMissing.of()
-            private var selfHarm: JsonField<List<SelfHarm>> = JsonMissing.of()
-            private var selfHarmInstructions: JsonField<List<SelfHarmInstruction>> =
-                JsonMissing.of()
-            private var selfHarmIntent: JsonField<List<SelfHarmIntent>> = JsonMissing.of()
-            private var sexual: JsonField<List<Sexual>> = JsonMissing.of()
-            private var sexualMinors: JsonField<List<SexualMinor>> = JsonMissing.of()
-            private var violence: JsonField<List<Violence>> = JsonMissing.of()
-            private var violenceGraphic: JsonField<List<ViolenceGraphic>> = JsonMissing.of()
+            private var harassment: JsonField<MutableList<Harassment>>? = null
+            private var harassmentThreatening: JsonField<MutableList<HarassmentThreatening>>? = null
+            private var hate: JsonField<MutableList<Hate>>? = null
+            private var hateThreatening: JsonField<MutableList<HateThreatening>>? = null
+            private var illicit: JsonField<MutableList<Illicit>>? = null
+            private var illicitViolent: JsonField<MutableList<IllicitViolent>>? = null
+            private var selfHarm: JsonField<MutableList<SelfHarm>>? = null
+            private var selfHarmInstructions: JsonField<MutableList<SelfHarmInstruction>>? = null
+            private var selfHarmIntent: JsonField<MutableList<SelfHarmIntent>>? = null
+            private var sexual: JsonField<MutableList<Sexual>>? = null
+            private var sexualMinors: JsonField<MutableList<SexualMinor>>? = null
+            private var violence: JsonField<MutableList<Violence>>? = null
+            private var violenceGraphic: JsonField<MutableList<ViolenceGraphic>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(categoryAppliedInputTypes: CategoryAppliedInputTypes) = apply {
-                harassment = categoryAppliedInputTypes.harassment
-                harassmentThreatening = categoryAppliedInputTypes.harassmentThreatening
-                hate = categoryAppliedInputTypes.hate
-                hateThreatening = categoryAppliedInputTypes.hateThreatening
-                illicit = categoryAppliedInputTypes.illicit
-                illicitViolent = categoryAppliedInputTypes.illicitViolent
-                selfHarm = categoryAppliedInputTypes.selfHarm
-                selfHarmInstructions = categoryAppliedInputTypes.selfHarmInstructions
-                selfHarmIntent = categoryAppliedInputTypes.selfHarmIntent
-                sexual = categoryAppliedInputTypes.sexual
-                sexualMinors = categoryAppliedInputTypes.sexualMinors
-                violence = categoryAppliedInputTypes.violence
-                violenceGraphic = categoryAppliedInputTypes.violenceGraphic
+                harassment = categoryAppliedInputTypes.harassment.map { it.toMutableList() }
+                harassmentThreatening =
+                    categoryAppliedInputTypes.harassmentThreatening.map { it.toMutableList() }
+                hate = categoryAppliedInputTypes.hate.map { it.toMutableList() }
+                hateThreatening =
+                    categoryAppliedInputTypes.hateThreatening.map { it.toMutableList() }
+                illicit = categoryAppliedInputTypes.illicit.map { it.toMutableList() }
+                illicitViolent = categoryAppliedInputTypes.illicitViolent.map { it.toMutableList() }
+                selfHarm = categoryAppliedInputTypes.selfHarm.map { it.toMutableList() }
+                selfHarmInstructions =
+                    categoryAppliedInputTypes.selfHarmInstructions.map { it.toMutableList() }
+                selfHarmIntent = categoryAppliedInputTypes.selfHarmIntent.map { it.toMutableList() }
+                sexual = categoryAppliedInputTypes.sexual.map { it.toMutableList() }
+                sexualMinors = categoryAppliedInputTypes.sexualMinors.map { it.toMutableList() }
+                violence = categoryAppliedInputTypes.violence.map { it.toMutableList() }
+                violenceGraphic =
+                    categoryAppliedInputTypes.violenceGraphic.map { it.toMutableList() }
                 additionalProperties = categoryAppliedInputTypes.additionalProperties.toMutableMap()
             }
 
@@ -845,7 +889,21 @@ private constructor(
 
             /** The applied input type(s) for the category 'harassment'. */
             fun harassment(harassment: JsonField<List<Harassment>>) = apply {
-                this.harassment = harassment
+                this.harassment = harassment.map { it.toMutableList() }
+            }
+
+            /** The applied input type(s) for the category 'harassment'. */
+            fun addHarassment(harassment: Harassment) = apply {
+                this.harassment =
+                    (this.harassment ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(harassment)
+                    }
             }
 
             /** The applied input type(s) for the category 'harassment/threatening'. */
@@ -855,13 +913,45 @@ private constructor(
             /** The applied input type(s) for the category 'harassment/threatening'. */
             fun harassmentThreatening(
                 harassmentThreatening: JsonField<List<HarassmentThreatening>>
-            ) = apply { this.harassmentThreatening = harassmentThreatening }
+            ) = apply {
+                this.harassmentThreatening = harassmentThreatening.map { it.toMutableList() }
+            }
+
+            /** The applied input type(s) for the category 'harassment/threatening'. */
+            fun addHarassmentThreatening(harassmentThreatening: HarassmentThreatening) = apply {
+                this.harassmentThreatening =
+                    (this.harassmentThreatening ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(harassmentThreatening)
+                    }
+            }
 
             /** The applied input type(s) for the category 'hate'. */
             fun hate(hate: List<Hate>) = hate(JsonField.of(hate))
 
             /** The applied input type(s) for the category 'hate'. */
-            fun hate(hate: JsonField<List<Hate>>) = apply { this.hate = hate }
+            fun hate(hate: JsonField<List<Hate>>) = apply {
+                this.hate = hate.map { it.toMutableList() }
+            }
+
+            /** The applied input type(s) for the category 'hate'. */
+            fun addHate(hate: Hate) = apply {
+                this.hate =
+                    (this.hate ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(hate)
+                    }
+            }
 
             /** The applied input type(s) for the category 'hate/threatening'. */
             fun hateThreatening(hateThreatening: List<HateThreatening>) =
@@ -869,14 +959,44 @@ private constructor(
 
             /** The applied input type(s) for the category 'hate/threatening'. */
             fun hateThreatening(hateThreatening: JsonField<List<HateThreatening>>) = apply {
-                this.hateThreatening = hateThreatening
+                this.hateThreatening = hateThreatening.map { it.toMutableList() }
+            }
+
+            /** The applied input type(s) for the category 'hate/threatening'. */
+            fun addHateThreatening(hateThreatening: HateThreatening) = apply {
+                this.hateThreatening =
+                    (this.hateThreatening ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(hateThreatening)
+                    }
             }
 
             /** The applied input type(s) for the category 'illicit'. */
             fun illicit(illicit: List<Illicit>) = illicit(JsonField.of(illicit))
 
             /** The applied input type(s) for the category 'illicit'. */
-            fun illicit(illicit: JsonField<List<Illicit>>) = apply { this.illicit = illicit }
+            fun illicit(illicit: JsonField<List<Illicit>>) = apply {
+                this.illicit = illicit.map { it.toMutableList() }
+            }
+
+            /** The applied input type(s) for the category 'illicit'. */
+            fun addIllicit(illicit: Illicit) = apply {
+                this.illicit =
+                    (this.illicit ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(illicit)
+                    }
+            }
 
             /** The applied input type(s) for the category 'illicit/violent'. */
             fun illicitViolent(illicitViolent: List<IllicitViolent>) =
@@ -884,14 +1004,44 @@ private constructor(
 
             /** The applied input type(s) for the category 'illicit/violent'. */
             fun illicitViolent(illicitViolent: JsonField<List<IllicitViolent>>) = apply {
-                this.illicitViolent = illicitViolent
+                this.illicitViolent = illicitViolent.map { it.toMutableList() }
+            }
+
+            /** The applied input type(s) for the category 'illicit/violent'. */
+            fun addIllicitViolent(illicitViolent: IllicitViolent) = apply {
+                this.illicitViolent =
+                    (this.illicitViolent ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(illicitViolent)
+                    }
             }
 
             /** The applied input type(s) for the category 'self-harm'. */
             fun selfHarm(selfHarm: List<SelfHarm>) = selfHarm(JsonField.of(selfHarm))
 
             /** The applied input type(s) for the category 'self-harm'. */
-            fun selfHarm(selfHarm: JsonField<List<SelfHarm>>) = apply { this.selfHarm = selfHarm }
+            fun selfHarm(selfHarm: JsonField<List<SelfHarm>>) = apply {
+                this.selfHarm = selfHarm.map { it.toMutableList() }
+            }
+
+            /** The applied input type(s) for the category 'self-harm'. */
+            fun addSelfHarm(selfHarm: SelfHarm) = apply {
+                this.selfHarm =
+                    (this.selfHarm ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(selfHarm)
+                    }
+            }
 
             /** The applied input type(s) for the category 'self-harm/instructions'. */
             fun selfHarmInstructions(selfHarmInstructions: List<SelfHarmInstruction>) =
@@ -900,8 +1050,22 @@ private constructor(
             /** The applied input type(s) for the category 'self-harm/instructions'. */
             fun selfHarmInstructions(selfHarmInstructions: JsonField<List<SelfHarmInstruction>>) =
                 apply {
-                    this.selfHarmInstructions = selfHarmInstructions
+                    this.selfHarmInstructions = selfHarmInstructions.map { it.toMutableList() }
                 }
+
+            /** The applied input type(s) for the category 'self-harm/instructions'. */
+            fun addSelfHarmInstruction(selfHarmInstruction: SelfHarmInstruction) = apply {
+                selfHarmInstructions =
+                    (selfHarmInstructions ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(selfHarmInstruction)
+                    }
+            }
 
             /** The applied input type(s) for the category 'self-harm/intent'. */
             fun selfHarmIntent(selfHarmIntent: List<SelfHarmIntent>) =
@@ -909,14 +1073,44 @@ private constructor(
 
             /** The applied input type(s) for the category 'self-harm/intent'. */
             fun selfHarmIntent(selfHarmIntent: JsonField<List<SelfHarmIntent>>) = apply {
-                this.selfHarmIntent = selfHarmIntent
+                this.selfHarmIntent = selfHarmIntent.map { it.toMutableList() }
+            }
+
+            /** The applied input type(s) for the category 'self-harm/intent'. */
+            fun addSelfHarmIntent(selfHarmIntent: SelfHarmIntent) = apply {
+                this.selfHarmIntent =
+                    (this.selfHarmIntent ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(selfHarmIntent)
+                    }
             }
 
             /** The applied input type(s) for the category 'sexual'. */
             fun sexual(sexual: List<Sexual>) = sexual(JsonField.of(sexual))
 
             /** The applied input type(s) for the category 'sexual'. */
-            fun sexual(sexual: JsonField<List<Sexual>>) = apply { this.sexual = sexual }
+            fun sexual(sexual: JsonField<List<Sexual>>) = apply {
+                this.sexual = sexual.map { it.toMutableList() }
+            }
+
+            /** The applied input type(s) for the category 'sexual'. */
+            fun addSexual(sexual: Sexual) = apply {
+                this.sexual =
+                    (this.sexual ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(sexual)
+                    }
+            }
 
             /** The applied input type(s) for the category 'sexual/minors'. */
             fun sexualMinors(sexualMinors: List<SexualMinor>) =
@@ -924,14 +1118,44 @@ private constructor(
 
             /** The applied input type(s) for the category 'sexual/minors'. */
             fun sexualMinors(sexualMinors: JsonField<List<SexualMinor>>) = apply {
-                this.sexualMinors = sexualMinors
+                this.sexualMinors = sexualMinors.map { it.toMutableList() }
+            }
+
+            /** The applied input type(s) for the category 'sexual/minors'. */
+            fun addSexualMinor(sexualMinor: SexualMinor) = apply {
+                sexualMinors =
+                    (sexualMinors ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(sexualMinor)
+                    }
             }
 
             /** The applied input type(s) for the category 'violence'. */
             fun violence(violence: List<Violence>) = violence(JsonField.of(violence))
 
             /** The applied input type(s) for the category 'violence'. */
-            fun violence(violence: JsonField<List<Violence>>) = apply { this.violence = violence }
+            fun violence(violence: JsonField<List<Violence>>) = apply {
+                this.violence = violence.map { it.toMutableList() }
+            }
+
+            /** The applied input type(s) for the category 'violence'. */
+            fun addViolence(violence: Violence) = apply {
+                this.violence =
+                    (this.violence ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(violence)
+                    }
+            }
 
             /** The applied input type(s) for the category 'violence/graphic'. */
             fun violenceGraphic(violenceGraphic: List<ViolenceGraphic>) =
@@ -939,7 +1163,21 @@ private constructor(
 
             /** The applied input type(s) for the category 'violence/graphic'. */
             fun violenceGraphic(violenceGraphic: JsonField<List<ViolenceGraphic>>) = apply {
-                this.violenceGraphic = violenceGraphic
+                this.violenceGraphic = violenceGraphic.map { it.toMutableList() }
+            }
+
+            /** The applied input type(s) for the category 'violence/graphic'. */
+            fun addViolenceGraphic(violenceGraphic: ViolenceGraphic) = apply {
+                this.violenceGraphic =
+                    (this.violenceGraphic ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(violenceGraphic)
+                    }
             }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -963,19 +1201,40 @@ private constructor(
 
             fun build(): CategoryAppliedInputTypes =
                 CategoryAppliedInputTypes(
-                    harassment.map { it.toImmutable() },
-                    harassmentThreatening.map { it.toImmutable() },
-                    hate.map { it.toImmutable() },
-                    hateThreatening.map { it.toImmutable() },
-                    illicit.map { it.toImmutable() },
-                    illicitViolent.map { it.toImmutable() },
-                    selfHarm.map { it.toImmutable() },
-                    selfHarmInstructions.map { it.toImmutable() },
-                    selfHarmIntent.map { it.toImmutable() },
-                    sexual.map { it.toImmutable() },
-                    sexualMinors.map { it.toImmutable() },
-                    violence.map { it.toImmutable() },
-                    violenceGraphic.map { it.toImmutable() },
+                    checkNotNull(harassment) { "`harassment` is required but was not set" }
+                        .map { it.toImmutable() },
+                    checkNotNull(harassmentThreatening) {
+                            "`harassmentThreatening` is required but was not set"
+                        }
+                        .map { it.toImmutable() },
+                    checkNotNull(hate) { "`hate` is required but was not set" }
+                        .map { it.toImmutable() },
+                    checkNotNull(hateThreatening) {
+                            "`hateThreatening` is required but was not set"
+                        }
+                        .map { it.toImmutable() },
+                    checkNotNull(illicit) { "`illicit` is required but was not set" }
+                        .map { it.toImmutable() },
+                    checkNotNull(illicitViolent) { "`illicitViolent` is required but was not set" }
+                        .map { it.toImmutable() },
+                    checkNotNull(selfHarm) { "`selfHarm` is required but was not set" }
+                        .map { it.toImmutable() },
+                    checkNotNull(selfHarmInstructions) {
+                            "`selfHarmInstructions` is required but was not set"
+                        }
+                        .map { it.toImmutable() },
+                    checkNotNull(selfHarmIntent) { "`selfHarmIntent` is required but was not set" }
+                        .map { it.toImmutable() },
+                    checkNotNull(sexual) { "`sexual` is required but was not set" }
+                        .map { it.toImmutable() },
+                    checkNotNull(sexualMinors) { "`sexualMinors` is required but was not set" }
+                        .map { it.toImmutable() },
+                    checkNotNull(violence) { "`violence` is required but was not set" }
+                        .map { it.toImmutable() },
+                    checkNotNull(violenceGraphic) {
+                            "`violenceGraphic` is required but was not set"
+                        }
+                        .map { it.toImmutable() },
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1788,47 +2047,59 @@ private constructor(
         fun violenceGraphic(): Double = violenceGraphic.getRequired("violence/graphic")
 
         /** The score for the category 'harassment'. */
-        @JsonProperty("harassment") @ExcludeMissing fun _harassment() = harassment
+        @JsonProperty("harassment")
+        @ExcludeMissing
+        fun _harassment(): JsonField<Double> = harassment
 
         /** The score for the category 'harassment/threatening'. */
         @JsonProperty("harassment/threatening")
         @ExcludeMissing
-        fun _harassmentThreatening() = harassmentThreatening
+        fun _harassmentThreatening(): JsonField<Double> = harassmentThreatening
 
         /** The score for the category 'hate'. */
-        @JsonProperty("hate") @ExcludeMissing fun _hate() = hate
+        @JsonProperty("hate") @ExcludeMissing fun _hate(): JsonField<Double> = hate
 
         /** The score for the category 'hate/threatening'. */
-        @JsonProperty("hate/threatening") @ExcludeMissing fun _hateThreatening() = hateThreatening
+        @JsonProperty("hate/threatening")
+        @ExcludeMissing
+        fun _hateThreatening(): JsonField<Double> = hateThreatening
 
         /** The score for the category 'illicit'. */
-        @JsonProperty("illicit") @ExcludeMissing fun _illicit() = illicit
+        @JsonProperty("illicit") @ExcludeMissing fun _illicit(): JsonField<Double> = illicit
 
         /** The score for the category 'illicit/violent'. */
-        @JsonProperty("illicit/violent") @ExcludeMissing fun _illicitViolent() = illicitViolent
+        @JsonProperty("illicit/violent")
+        @ExcludeMissing
+        fun _illicitViolent(): JsonField<Double> = illicitViolent
 
         /** The score for the category 'self-harm'. */
-        @JsonProperty("self-harm") @ExcludeMissing fun _selfHarm() = selfHarm
+        @JsonProperty("self-harm") @ExcludeMissing fun _selfHarm(): JsonField<Double> = selfHarm
 
         /** The score for the category 'self-harm/instructions'. */
         @JsonProperty("self-harm/instructions")
         @ExcludeMissing
-        fun _selfHarmInstructions() = selfHarmInstructions
+        fun _selfHarmInstructions(): JsonField<Double> = selfHarmInstructions
 
         /** The score for the category 'self-harm/intent'. */
-        @JsonProperty("self-harm/intent") @ExcludeMissing fun _selfHarmIntent() = selfHarmIntent
+        @JsonProperty("self-harm/intent")
+        @ExcludeMissing
+        fun _selfHarmIntent(): JsonField<Double> = selfHarmIntent
 
         /** The score for the category 'sexual'. */
-        @JsonProperty("sexual") @ExcludeMissing fun _sexual() = sexual
+        @JsonProperty("sexual") @ExcludeMissing fun _sexual(): JsonField<Double> = sexual
 
         /** The score for the category 'sexual/minors'. */
-        @JsonProperty("sexual/minors") @ExcludeMissing fun _sexualMinors() = sexualMinors
+        @JsonProperty("sexual/minors")
+        @ExcludeMissing
+        fun _sexualMinors(): JsonField<Double> = sexualMinors
 
         /** The score for the category 'violence'. */
-        @JsonProperty("violence") @ExcludeMissing fun _violence() = violence
+        @JsonProperty("violence") @ExcludeMissing fun _violence(): JsonField<Double> = violence
 
         /** The score for the category 'violence/graphic'. */
-        @JsonProperty("violence/graphic") @ExcludeMissing fun _violenceGraphic() = violenceGraphic
+        @JsonProperty("violence/graphic")
+        @ExcludeMissing
+        fun _violenceGraphic(): JsonField<Double> = violenceGraphic
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1864,19 +2135,19 @@ private constructor(
 
         class Builder {
 
-            private var harassment: JsonField<Double> = JsonMissing.of()
-            private var harassmentThreatening: JsonField<Double> = JsonMissing.of()
-            private var hate: JsonField<Double> = JsonMissing.of()
-            private var hateThreatening: JsonField<Double> = JsonMissing.of()
-            private var illicit: JsonField<Double> = JsonMissing.of()
-            private var illicitViolent: JsonField<Double> = JsonMissing.of()
-            private var selfHarm: JsonField<Double> = JsonMissing.of()
-            private var selfHarmInstructions: JsonField<Double> = JsonMissing.of()
-            private var selfHarmIntent: JsonField<Double> = JsonMissing.of()
-            private var sexual: JsonField<Double> = JsonMissing.of()
-            private var sexualMinors: JsonField<Double> = JsonMissing.of()
-            private var violence: JsonField<Double> = JsonMissing.of()
-            private var violenceGraphic: JsonField<Double> = JsonMissing.of()
+            private var harassment: JsonField<Double>? = null
+            private var harassmentThreatening: JsonField<Double>? = null
+            private var hate: JsonField<Double>? = null
+            private var hateThreatening: JsonField<Double>? = null
+            private var illicit: JsonField<Double>? = null
+            private var illicitViolent: JsonField<Double>? = null
+            private var selfHarm: JsonField<Double>? = null
+            private var selfHarmInstructions: JsonField<Double>? = null
+            private var selfHarmIntent: JsonField<Double>? = null
+            private var sexual: JsonField<Double>? = null
+            private var sexualMinors: JsonField<Double>? = null
+            private var violence: JsonField<Double>? = null
+            private var violenceGraphic: JsonField<Double>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -2016,19 +2287,27 @@ private constructor(
 
             fun build(): CategoryScores =
                 CategoryScores(
-                    harassment,
-                    harassmentThreatening,
-                    hate,
-                    hateThreatening,
-                    illicit,
-                    illicitViolent,
-                    selfHarm,
-                    selfHarmInstructions,
-                    selfHarmIntent,
-                    sexual,
-                    sexualMinors,
-                    violence,
-                    violenceGraphic,
+                    checkNotNull(harassment) { "`harassment` is required but was not set" },
+                    checkNotNull(harassmentThreatening) {
+                        "`harassmentThreatening` is required but was not set"
+                    },
+                    checkNotNull(hate) { "`hate` is required but was not set" },
+                    checkNotNull(hateThreatening) {
+                        "`hateThreatening` is required but was not set"
+                    },
+                    checkNotNull(illicit) { "`illicit` is required but was not set" },
+                    checkNotNull(illicitViolent) { "`illicitViolent` is required but was not set" },
+                    checkNotNull(selfHarm) { "`selfHarm` is required but was not set" },
+                    checkNotNull(selfHarmInstructions) {
+                        "`selfHarmInstructions` is required but was not set"
+                    },
+                    checkNotNull(selfHarmIntent) { "`selfHarmIntent` is required but was not set" },
+                    checkNotNull(sexual) { "`sexual` is required but was not set" },
+                    checkNotNull(sexualMinors) { "`sexualMinors` is required but was not set" },
+                    checkNotNull(violence) { "`violence` is required but was not set" },
+                    checkNotNull(violenceGraphic) {
+                        "`violenceGraphic` is required but was not set"
+                    },
                     additionalProperties.toImmutable(),
                 )
         }

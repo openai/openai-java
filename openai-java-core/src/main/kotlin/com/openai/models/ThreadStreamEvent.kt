@@ -49,12 +49,12 @@ private constructor(
      * Represents a thread that contains
      * [messages](https://platform.openai.com/docs/api-reference/messages).
      */
-    @JsonProperty("data") @ExcludeMissing fun _data() = data
+    @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Thread> = data
 
-    @JsonProperty("event") @ExcludeMissing fun _event() = event
+    @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<Event> = event
 
     /** Whether to enable input audio transcription. */
-    @JsonProperty("enabled") @ExcludeMissing fun _enabled() = enabled
+    @JsonProperty("enabled") @ExcludeMissing fun _enabled(): JsonField<Boolean> = enabled
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -80,8 +80,8 @@ private constructor(
 
     class Builder {
 
-        private var data: JsonField<Thread> = JsonMissing.of()
-        private var event: JsonField<Event> = JsonMissing.of()
+        private var data: JsonField<Thread>? = null
+        private var event: JsonField<Event>? = null
         private var enabled: JsonField<Boolean> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -136,8 +136,8 @@ private constructor(
 
         fun build(): ThreadStreamEvent =
             ThreadStreamEvent(
-                data,
-                event,
+                checkNotNull(data) { "`data` is required but was not set" },
+                checkNotNull(event) { "`event` is required but was not set" },
                 enabled,
                 additionalProperties.toImmutable(),
             )

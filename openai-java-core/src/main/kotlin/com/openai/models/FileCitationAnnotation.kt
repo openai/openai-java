@@ -52,17 +52,19 @@ private constructor(
     /** Always `file_citation`. */
     fun type(): Type = type.getRequired("type")
 
-    @JsonProperty("end_index") @ExcludeMissing fun _endIndex() = endIndex
+    @JsonProperty("end_index") @ExcludeMissing fun _endIndex(): JsonField<Long> = endIndex
 
-    @JsonProperty("file_citation") @ExcludeMissing fun _fileCitation() = fileCitation
+    @JsonProperty("file_citation")
+    @ExcludeMissing
+    fun _fileCitation(): JsonField<FileCitation> = fileCitation
 
-    @JsonProperty("start_index") @ExcludeMissing fun _startIndex() = startIndex
+    @JsonProperty("start_index") @ExcludeMissing fun _startIndex(): JsonField<Long> = startIndex
 
     /** The text in the message content that needs to be replaced. */
-    @JsonProperty("text") @ExcludeMissing fun _text() = text
+    @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
     /** Always `file_citation`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -90,11 +92,11 @@ private constructor(
 
     class Builder {
 
-        private var endIndex: JsonField<Long> = JsonMissing.of()
-        private var fileCitation: JsonField<FileCitation> = JsonMissing.of()
-        private var startIndex: JsonField<Long> = JsonMissing.of()
-        private var text: JsonField<String> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var endIndex: JsonField<Long>? = null
+        private var fileCitation: JsonField<FileCitation>? = null
+        private var startIndex: JsonField<Long>? = null
+        private var text: JsonField<String>? = null
+        private var type: JsonField<Type>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -154,11 +156,11 @@ private constructor(
 
         fun build(): FileCitationAnnotation =
             FileCitationAnnotation(
-                endIndex,
-                fileCitation,
-                startIndex,
-                text,
-                type,
+                checkNotNull(endIndex) { "`endIndex` is required but was not set" },
+                checkNotNull(fileCitation) { "`fileCitation` is required but was not set" },
+                checkNotNull(startIndex) { "`startIndex` is required but was not set" },
+                checkNotNull(text) { "`text` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }
@@ -178,7 +180,7 @@ private constructor(
         fun fileId(): String = fileId.getRequired("file_id")
 
         /** The ID of the specific File the citation is from. */
-        @JsonProperty("file_id") @ExcludeMissing fun _fileId() = fileId
+        @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -202,7 +204,7 @@ private constructor(
 
         class Builder {
 
-            private var fileId: JsonField<String> = JsonMissing.of()
+            private var fileId: JsonField<String>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -236,7 +238,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): FileCitation = FileCitation(fileId, additionalProperties.toImmutable())
+            fun build(): FileCitation =
+                FileCitation(
+                    checkNotNull(fileId) { "`fileId` is required but was not set" },
+                    additionalProperties.toImmutable()
+                )
         }
 
         override fun equals(other: Any?): Boolean {

@@ -31,10 +31,12 @@ private constructor(
     /** The data that makes up the text. */
     fun value(): String = value.getRequired("value")
 
-    @JsonProperty("annotations") @ExcludeMissing fun _annotations() = annotations
+    @JsonProperty("annotations")
+    @ExcludeMissing
+    fun _annotations(): JsonField<List<Annotation>> = annotations
 
     /** The data that makes up the text. */
-    @JsonProperty("value") @ExcludeMissing fun _value() = value
+    @JsonProperty("value") @ExcludeMissing fun _value(): JsonField<String> = value
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -59,13 +61,13 @@ private constructor(
 
     class Builder {
 
-        private var annotations: JsonField<List<Annotation>> = JsonMissing.of()
-        private var value: JsonField<String> = JsonMissing.of()
+        private var annotations: JsonField<MutableList<Annotation>>? = null
+        private var value: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(text: Text) = apply {
-            annotations = text.annotations
+            annotations = text.annotations.map { it.toMutableList() }
             value = text.value
             additionalProperties = text.additionalProperties.toMutableMap()
         }
@@ -73,7 +75,20 @@ private constructor(
         fun annotations(annotations: List<Annotation>) = annotations(JsonField.of(annotations))
 
         fun annotations(annotations: JsonField<List<Annotation>>) = apply {
-            this.annotations = annotations
+            this.annotations = annotations.map { it.toMutableList() }
+        }
+
+        fun addAnnotation(annotation: Annotation) = apply {
+            annotations =
+                (annotations ?: JsonField.of(mutableListOf())).apply {
+                    asKnown()
+                        .orElseThrow {
+                            IllegalStateException(
+                                "Field was set to non-list type: ${javaClass.simpleName}"
+                            )
+                        }
+                        .add(annotation)
+                }
         }
 
         /** The data that makes up the text. */
@@ -103,8 +118,9 @@ private constructor(
 
         fun build(): Text =
             Text(
-                annotations.map { it.toImmutable() },
-                value,
+                checkNotNull(annotations) { "`annotations` is required but was not set" }
+                    .map { it.toImmutable() },
+                checkNotNull(value) { "`value` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }

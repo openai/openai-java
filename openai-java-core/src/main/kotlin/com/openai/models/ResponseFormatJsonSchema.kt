@@ -34,10 +34,12 @@ private constructor(
     /** The type of response format being defined: `json_schema` */
     fun type(): Type = type.getRequired("type")
 
-    @JsonProperty("json_schema") @ExcludeMissing fun _jsonSchema() = jsonSchema
+    @JsonProperty("json_schema")
+    @ExcludeMissing
+    fun _jsonSchema(): JsonField<JsonSchema> = jsonSchema
 
     /** The type of response format being defined: `json_schema` */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -62,8 +64,8 @@ private constructor(
 
     class Builder {
 
-        private var jsonSchema: JsonField<JsonSchema> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var jsonSchema: JsonField<JsonSchema>? = null
+        private var type: JsonField<Type>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -104,8 +106,8 @@ private constructor(
 
         fun build(): ResponseFormatJsonSchema =
             ResponseFormatJsonSchema(
-                jsonSchema,
-                type,
+                checkNotNull(jsonSchema) { "`jsonSchema` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }
@@ -158,16 +160,18 @@ private constructor(
          * The name of the response format. Must be a-z, A-Z, 0-9, or contain underscores and
          * dashes, with a maximum length of 64.
          */
-        @JsonProperty("name") @ExcludeMissing fun _name() = name
+        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         /**
          * A description of what the response format is for, used by the model to determine how to
          * respond in the format.
          */
-        @JsonProperty("description") @ExcludeMissing fun _description() = description
+        @JsonProperty("description")
+        @ExcludeMissing
+        fun _description(): JsonField<String> = description
 
         /** The schema for the response format, described as a JSON Schema object. */
-        @JsonProperty("schema") @ExcludeMissing fun _schema() = schema
+        @JsonProperty("schema") @ExcludeMissing fun _schema(): JsonField<Schema> = schema
 
         /**
          * Whether to enable strict schema adherence when generating the output. If set to true, the
@@ -175,7 +179,7 @@ private constructor(
          * JSON Schema is supported when `strict` is `true`. To learn more, read the
          * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
          */
-        @JsonProperty("strict") @ExcludeMissing fun _strict() = strict
+        @JsonProperty("strict") @ExcludeMissing fun _strict(): JsonField<Boolean> = strict
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -202,7 +206,7 @@ private constructor(
 
         class Builder {
 
-            private var name: JsonField<String> = JsonMissing.of()
+            private var name: JsonField<String>? = null
             private var description: JsonField<String> = JsonMissing.of()
             private var schema: JsonField<Schema> = JsonMissing.of()
             private var strict: JsonField<Boolean> = JsonMissing.of()
@@ -255,7 +259,24 @@ private constructor(
              * subset of JSON Schema is supported when `strict` is `true`. To learn more, read the
              * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
              */
-            fun strict(strict: Boolean) = strict(JsonField.of(strict))
+            fun strict(strict: Boolean?) = strict(JsonField.ofNullable(strict))
+
+            /**
+             * Whether to enable strict schema adherence when generating the output. If set to true,
+             * the model will always follow the exact schema defined in the `schema` field. Only a
+             * subset of JSON Schema is supported when `strict` is `true`. To learn more, read the
+             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             */
+            fun strict(strict: Boolean) = strict(strict as Boolean?)
+
+            /**
+             * Whether to enable strict schema adherence when generating the output. If set to true,
+             * the model will always follow the exact schema defined in the `schema` field. Only a
+             * subset of JSON Schema is supported when `strict` is `true`. To learn more, read the
+             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun strict(strict: Optional<Boolean>) = strict(strict.orElse(null) as Boolean?)
 
             /**
              * Whether to enable strict schema adherence when generating the output. If set to true,
@@ -286,7 +307,7 @@ private constructor(
 
             fun build(): JsonSchema =
                 JsonSchema(
-                    name,
+                    checkNotNull(name) { "`name` is required but was not set" },
                     description,
                     schema,
                     strict,

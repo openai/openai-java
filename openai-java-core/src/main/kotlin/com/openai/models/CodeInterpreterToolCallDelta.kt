@@ -60,19 +60,21 @@ private constructor(
         Optional.ofNullable(codeInterpreter.getNullable("code_interpreter"))
 
     /** The index of the tool call in the tool calls array. */
-    @JsonProperty("index") @ExcludeMissing fun _index() = index
+    @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
     /**
      * The type of tool call. This is always going to be `code_interpreter` for this type of tool
      * call.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     /** The ID of the tool call. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** The Code Interpreter tool call definition. */
-    @JsonProperty("code_interpreter") @ExcludeMissing fun _codeInterpreter() = codeInterpreter
+    @JsonProperty("code_interpreter")
+    @ExcludeMissing
+    fun _codeInterpreter(): JsonField<CodeInterpreter> = codeInterpreter
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -99,8 +101,8 @@ private constructor(
 
     class Builder {
 
-        private var index: JsonField<Long> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var index: JsonField<Long>? = null
+        private var type: JsonField<Type>? = null
         private var id: JsonField<String> = JsonMissing.of()
         private var codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -168,8 +170,8 @@ private constructor(
 
         fun build(): CodeInterpreterToolCallDelta =
             CodeInterpreterToolCallDelta(
-                index,
-                type,
+                checkNotNull(index) { "`index` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 id,
                 codeInterpreter,
                 additionalProperties.toImmutable(),
@@ -253,14 +255,14 @@ private constructor(
         fun outputs(): Optional<List<Output>> = Optional.ofNullable(outputs.getNullable("outputs"))
 
         /** The input to the Code Interpreter tool call. */
-        @JsonProperty("input") @ExcludeMissing fun _input() = input
+        @JsonProperty("input") @ExcludeMissing fun _input(): JsonField<String> = input
 
         /**
          * The outputs from the Code Interpreter tool call. Code Interpreter can output one or more
          * items, including text (`logs`) or images (`image`). Each of these are represented by a
          * different object type.
          */
-        @JsonProperty("outputs") @ExcludeMissing fun _outputs() = outputs
+        @JsonProperty("outputs") @ExcludeMissing fun _outputs(): JsonField<List<Output>> = outputs
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -286,13 +288,13 @@ private constructor(
         class Builder {
 
             private var input: JsonField<String> = JsonMissing.of()
-            private var outputs: JsonField<List<Output>> = JsonMissing.of()
+            private var outputs: JsonField<MutableList<Output>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(codeInterpreter: CodeInterpreter) = apply {
                 input = codeInterpreter.input
-                outputs = codeInterpreter.outputs
+                outputs = codeInterpreter.outputs.map { it.toMutableList() }
                 additionalProperties = codeInterpreter.additionalProperties.toMutableMap()
             }
 
@@ -314,7 +316,27 @@ private constructor(
              * more items, including text (`logs`) or images (`image`). Each of these are
              * represented by a different object type.
              */
-            fun outputs(outputs: JsonField<List<Output>>) = apply { this.outputs = outputs }
+            fun outputs(outputs: JsonField<List<Output>>) = apply {
+                this.outputs = outputs.map { it.toMutableList() }
+            }
+
+            /**
+             * The outputs from the Code Interpreter tool call. Code Interpreter can output one or
+             * more items, including text (`logs`) or images (`image`). Each of these are
+             * represented by a different object type.
+             */
+            fun addOutput(output: Output) = apply {
+                outputs =
+                    (outputs ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(output)
+                    }
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -338,7 +360,7 @@ private constructor(
             fun build(): CodeInterpreter =
                 CodeInterpreter(
                     input,
-                    outputs.map { it.toImmutable() },
+                    (outputs ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toImmutable(),
                 )
         }
