@@ -31,6 +31,9 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
+    /** For now, this is always going to be an empty object. */
+    @JsonProperty("file_search") @ExcludeMissing fun _fileSearch(): JsonValue = fileSearch
+
     /** The index of the tool call in the tool calls array. */
     fun index(): Long = index.getRequired("index")
 
@@ -42,19 +45,16 @@ private constructor(
     /** The ID of the tool call object. */
     fun id(): Optional<String> = Optional.ofNullable(id.getNullable("id"))
 
-    /** For now, this is always going to be an empty object. */
-    @JsonProperty("file_search") @ExcludeMissing fun _fileSearch() = fileSearch
-
     /** The index of the tool call in the tool calls array. */
-    @JsonProperty("index") @ExcludeMissing fun _index() = index
+    @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
     /**
      * The type of tool call. This is always going to be `file_search` for this type of tool call.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     /** The ID of the tool call object. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -80,9 +80,9 @@ private constructor(
 
     class Builder {
 
-        private var fileSearch: JsonValue = JsonMissing.of()
-        private var index: JsonField<Long> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var fileSearch: JsonValue? = null
+        private var index: JsonField<Long>? = null
+        private var type: JsonField<Type>? = null
         private var id: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -143,9 +143,9 @@ private constructor(
 
         fun build(): FileSearchToolCallDelta =
             FileSearchToolCallDelta(
-                fileSearch,
-                index,
-                type,
+                checkNotNull(fileSearch) { "`fileSearch` is required but was not set" },
+                checkNotNull(index) { "`index` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 id,
                 additionalProperties.toImmutable(),
             )

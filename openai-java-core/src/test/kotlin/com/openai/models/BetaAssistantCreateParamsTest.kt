@@ -134,7 +134,7 @@ class BetaAssistantCreateParamsTest {
         assertThat(body.model()).isEqualTo(ChatModel.GPT_4O)
         assertThat(body.description()).contains("description")
         assertThat(body.instructions()).contains("instructions")
-        assertThat(body.metadata()).contains(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.name()).contains("name")
         assertThat(body.responseFormat())
             .contains(

@@ -42,16 +42,16 @@ private constructor(
     fun param(): Optional<String> = Optional.ofNullable(param.getNullable("param"))
 
     /** An error code identifying the error type. */
-    @JsonProperty("code") @ExcludeMissing fun _code() = code
+    @JsonProperty("code") @ExcludeMissing fun _code(): JsonField<String> = code
 
     /** The line number of the input file where the error occurred, if applicable. */
-    @JsonProperty("line") @ExcludeMissing fun _line() = line
+    @JsonProperty("line") @ExcludeMissing fun _line(): JsonField<Long> = line
 
     /** A human-readable message providing more details about the error. */
-    @JsonProperty("message") @ExcludeMissing fun _message() = message
+    @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
     /** The name of the parameter that caused the error, if applicable. */
-    @JsonProperty("param") @ExcludeMissing fun _param() = param
+    @JsonProperty("param") @ExcludeMissing fun _param(): JsonField<String> = param
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -100,7 +100,14 @@ private constructor(
         fun code(code: JsonField<String>) = apply { this.code = code }
 
         /** The line number of the input file where the error occurred, if applicable. */
-        fun line(line: Long) = line(JsonField.of(line))
+        fun line(line: Long?) = line(JsonField.ofNullable(line))
+
+        /** The line number of the input file where the error occurred, if applicable. */
+        fun line(line: Long) = line(line as Long?)
+
+        /** The line number of the input file where the error occurred, if applicable. */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun line(line: Optional<Long>) = line(line.orElse(null) as Long?)
 
         /** The line number of the input file where the error occurred, if applicable. */
         fun line(line: JsonField<Long>) = apply { this.line = line }
@@ -112,7 +119,10 @@ private constructor(
         fun message(message: JsonField<String>) = apply { this.message = message }
 
         /** The name of the parameter that caused the error, if applicable. */
-        fun param(param: String) = param(JsonField.of(param))
+        fun param(param: String?) = param(JsonField.ofNullable(param))
+
+        /** The name of the parameter that caused the error, if applicable. */
+        fun param(param: Optional<String>) = param(param.orElse(null))
 
         /** The name of the parameter that caused the error, if applicable. */
         fun param(param: JsonField<String>) = apply { this.param = param }

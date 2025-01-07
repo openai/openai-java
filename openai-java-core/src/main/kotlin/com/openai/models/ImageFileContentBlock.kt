@@ -37,10 +37,10 @@ private constructor(
     /** Always `image_file`. */
     fun type(): Type = type.getRequired("type")
 
-    @JsonProperty("image_file") @ExcludeMissing fun _imageFile() = imageFile
+    @JsonProperty("image_file") @ExcludeMissing fun _imageFile(): JsonField<ImageFile> = imageFile
 
     /** Always `image_file`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -65,8 +65,8 @@ private constructor(
 
     class Builder {
 
-        private var imageFile: JsonField<ImageFile> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var imageFile: JsonField<ImageFile>? = null
+        private var type: JsonField<Type>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -107,8 +107,8 @@ private constructor(
 
         fun build(): ImageFileContentBlock =
             ImageFileContentBlock(
-                imageFile,
-                type,
+                checkNotNull(imageFile) { "`imageFile` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }

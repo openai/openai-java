@@ -40,13 +40,13 @@ private constructor(
     fun role(): Role = role.getRequired("role")
 
     /** The contents of the function message. */
-    @JsonProperty("content") @ExcludeMissing fun _content() = content
+    @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<String> = content
 
     /** The name of the function to call. */
-    @JsonProperty("name") @ExcludeMissing fun _name() = name
+    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
     /** The role of the messages author, in this case `function`. */
-    @JsonProperty("role") @ExcludeMissing fun _role() = role
+    @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -72,9 +72,9 @@ private constructor(
 
     class Builder {
 
-        private var content: JsonField<String> = JsonMissing.of()
-        private var name: JsonField<String> = JsonMissing.of()
-        private var role: JsonField<Role> = JsonMissing.of()
+        private var content: JsonField<String>? = null
+        private var name: JsonField<String>? = null
+        private var role: JsonField<Role>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -88,7 +88,10 @@ private constructor(
             }
 
         /** The contents of the function message. */
-        fun content(content: String) = content(JsonField.of(content))
+        fun content(content: String?) = content(JsonField.ofNullable(content))
+
+        /** The contents of the function message. */
+        fun content(content: Optional<String>) = content(content.orElse(null))
 
         /** The contents of the function message. */
         fun content(content: JsonField<String>) = apply { this.content = content }
@@ -126,9 +129,9 @@ private constructor(
 
         fun build(): ChatCompletionFunctionMessageParam =
             ChatCompletionFunctionMessageParam(
-                content,
-                name,
-                role,
+                checkNotNull(content) { "`content` is required but was not set" },
+                checkNotNull(name) { "`name` is required but was not set" },
+                checkNotNull(role) { "`role` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }

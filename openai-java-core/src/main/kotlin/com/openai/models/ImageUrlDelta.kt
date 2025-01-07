@@ -42,10 +42,10 @@ private constructor(
      * Specifies the detail level of the image. `low` uses fewer tokens, you can opt in to high
      * resolution using `high`.
      */
-    @JsonProperty("detail") @ExcludeMissing fun _detail() = detail
+    @JsonProperty("detail") @ExcludeMissing fun _detail(): JsonField<Detail> = detail
 
     /** The URL of the image, must be a supported image types: jpeg, jpg, png, gif, webp. */
-    @JsonProperty("url") @ExcludeMissing fun _url() = url
+    @JsonProperty("url") @ExcludeMissing fun _url(): JsonField<String> = url
 
     @JsonAnyGetter
     @ExcludeMissing

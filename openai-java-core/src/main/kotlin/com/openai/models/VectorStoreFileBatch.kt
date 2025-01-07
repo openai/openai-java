@@ -66,28 +66,32 @@ private constructor(
     fun vectorStoreId(): String = vectorStoreId.getRequired("vector_store_id")
 
     /** The identifier, which can be referenced in API endpoints. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** The Unix timestamp (in seconds) for when the vector store files batch was created. */
-    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
+    @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
-    @JsonProperty("file_counts") @ExcludeMissing fun _fileCounts() = fileCounts
+    @JsonProperty("file_counts")
+    @ExcludeMissing
+    fun _fileCounts(): JsonField<FileCounts> = fileCounts
 
     /** The object type, which is always `vector_store.file_batch`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /**
      * The status of the vector store files batch, which can be either `in_progress`, `completed`,
      * `cancelled` or `failed`.
      */
-    @JsonProperty("status") @ExcludeMissing fun _status() = status
+    @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
     /**
      * The ID of the
      * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that the
      * [File](https://platform.openai.com/docs/api-reference/files) is attached to.
      */
-    @JsonProperty("vector_store_id") @ExcludeMissing fun _vectorStoreId() = vectorStoreId
+    @JsonProperty("vector_store_id")
+    @ExcludeMissing
+    fun _vectorStoreId(): JsonField<String> = vectorStoreId
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -116,12 +120,12 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var fileCounts: JsonField<FileCounts> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
-        private var status: JsonField<Status> = JsonMissing.of()
-        private var vectorStoreId: JsonField<String> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var createdAt: JsonField<Long>? = null
+        private var fileCounts: JsonField<FileCounts>? = null
+        private var object_: JsonField<Object>? = null
+        private var status: JsonField<Status>? = null
+        private var vectorStoreId: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -206,12 +210,12 @@ private constructor(
 
         fun build(): VectorStoreFileBatch =
             VectorStoreFileBatch(
-                id,
-                createdAt,
-                fileCounts,
-                object_,
-                status,
-                vectorStoreId,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
+                checkNotNull(fileCounts) { "`fileCounts` is required but was not set" },
+                checkNotNull(object_) { "`object_` is required but was not set" },
+                checkNotNull(status) { "`status` is required but was not set" },
+                checkNotNull(vectorStoreId) { "`vectorStoreId` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }
@@ -255,19 +259,19 @@ private constructor(
         fun total(): Long = total.getRequired("total")
 
         /** The number of files that where cancelled. */
-        @JsonProperty("cancelled") @ExcludeMissing fun _cancelled() = cancelled
+        @JsonProperty("cancelled") @ExcludeMissing fun _cancelled(): JsonField<Long> = cancelled
 
         /** The number of files that have been processed. */
-        @JsonProperty("completed") @ExcludeMissing fun _completed() = completed
+        @JsonProperty("completed") @ExcludeMissing fun _completed(): JsonField<Long> = completed
 
         /** The number of files that have failed to process. */
-        @JsonProperty("failed") @ExcludeMissing fun _failed() = failed
+        @JsonProperty("failed") @ExcludeMissing fun _failed(): JsonField<Long> = failed
 
         /** The number of files that are currently being processed. */
-        @JsonProperty("in_progress") @ExcludeMissing fun _inProgress() = inProgress
+        @JsonProperty("in_progress") @ExcludeMissing fun _inProgress(): JsonField<Long> = inProgress
 
         /** The total number of files. */
-        @JsonProperty("total") @ExcludeMissing fun _total() = total
+        @JsonProperty("total") @ExcludeMissing fun _total(): JsonField<Long> = total
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -295,11 +299,11 @@ private constructor(
 
         class Builder {
 
-            private var cancelled: JsonField<Long> = JsonMissing.of()
-            private var completed: JsonField<Long> = JsonMissing.of()
-            private var failed: JsonField<Long> = JsonMissing.of()
-            private var inProgress: JsonField<Long> = JsonMissing.of()
-            private var total: JsonField<Long> = JsonMissing.of()
+            private var cancelled: JsonField<Long>? = null
+            private var completed: JsonField<Long>? = null
+            private var failed: JsonField<Long>? = null
+            private var inProgress: JsonField<Long>? = null
+            private var total: JsonField<Long>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -363,11 +367,11 @@ private constructor(
 
             fun build(): FileCounts =
                 FileCounts(
-                    cancelled,
-                    completed,
-                    failed,
-                    inProgress,
-                    total,
+                    checkNotNull(cancelled) { "`cancelled` is required but was not set" },
+                    checkNotNull(completed) { "`completed` is required but was not set" },
+                    checkNotNull(failed) { "`failed` is required but was not set" },
+                    checkNotNull(inProgress) { "`inProgress` is required but was not set" },
+                    checkNotNull(total) { "`total` is required but was not set" },
                     additionalProperties.toImmutable(),
                 )
         }

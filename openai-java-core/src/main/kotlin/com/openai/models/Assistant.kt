@@ -72,6 +72,13 @@ private constructor(
         Optional.ofNullable(instructions.getNullable("instructions"))
 
     /**
+     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
+     * additional information about the object in a structured format. Keys can be a maximum of 64
+     * characters long and values can be a maximum of 512 characters long.
+     */
+    @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+
+    /**
      * ID of the model to use. You can use the
      * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all of
      * your available models, or see our [Model overview](https://platform.openai.com/docs/models)
@@ -139,25 +146,20 @@ private constructor(
     fun topP(): Optional<Double> = Optional.ofNullable(topP.getNullable("top_p"))
 
     /** The identifier, which can be referenced in API endpoints. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** The Unix timestamp (in seconds) for when the assistant was created. */
-    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
+    @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
     /** The description of the assistant. The maximum length is 512 characters. */
-    @JsonProperty("description") @ExcludeMissing fun _description() = description
+    @JsonProperty("description") @ExcludeMissing fun _description(): JsonField<String> = description
 
     /**
      * The system instructions that the assistant uses. The maximum length is 256,000 characters.
      */
-    @JsonProperty("instructions") @ExcludeMissing fun _instructions() = instructions
-
-    /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format. Keys can be a maximum of 64
-     * characters long and values can be a maximum of 512 characters long.
-     */
-    @JsonProperty("metadata") @ExcludeMissing fun _metadata() = metadata
+    @JsonProperty("instructions")
+    @ExcludeMissing
+    fun _instructions(): JsonField<String> = instructions
 
     /**
      * ID of the model to use. You can use the
@@ -165,19 +167,19 @@ private constructor(
      * your available models, or see our [Model overview](https://platform.openai.com/docs/models)
      * for descriptions of them.
      */
-    @JsonProperty("model") @ExcludeMissing fun _model() = model
+    @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
 
     /** The name of the assistant. The maximum length is 256 characters. */
-    @JsonProperty("name") @ExcludeMissing fun _name() = name
+    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
     /** The object type, which is always `assistant`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /**
      * A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant.
      * Tools can be of types `code_interpreter`, `file_search`, or `function`.
      */
-    @JsonProperty("tools") @ExcludeMissing fun _tools() = tools
+    @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<AssistantTool>> = tools
 
     /**
      * Specifies the format that the model must output. Compatible with
@@ -199,20 +201,24 @@ private constructor(
      * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
      * `max_tokens` or the conversation exceeded the max context length.
      */
-    @JsonProperty("response_format") @ExcludeMissing fun _responseFormat() = responseFormat
+    @JsonProperty("response_format")
+    @ExcludeMissing
+    fun _responseFormat(): JsonField<AssistantResponseFormatOption> = responseFormat
 
     /**
      * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
      * output more random, while lower values like 0.2 will make it more focused and deterministic.
      */
-    @JsonProperty("temperature") @ExcludeMissing fun _temperature() = temperature
+    @JsonProperty("temperature") @ExcludeMissing fun _temperature(): JsonField<Double> = temperature
 
     /**
      * A set of resources that are used by the assistant's tools. The resources are specific to the
      * type of tool. For example, the `code_interpreter` tool requires a list of file IDs, while the
      * `file_search` tool requires a list of vector store IDs.
      */
-    @JsonProperty("tool_resources") @ExcludeMissing fun _toolResources() = toolResources
+    @JsonProperty("tool_resources")
+    @ExcludeMissing
+    fun _toolResources(): JsonField<ToolResources> = toolResources
 
     /**
      * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -221,7 +227,7 @@ private constructor(
      *
      * We generally recommend altering this or temperature but not both.
      */
-    @JsonProperty("top_p") @ExcludeMissing fun _topP() = topP
+    @JsonProperty("top_p") @ExcludeMissing fun _topP(): JsonField<Double> = topP
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -256,15 +262,15 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var description: JsonField<String> = JsonMissing.of()
-        private var instructions: JsonField<String> = JsonMissing.of()
-        private var metadata: JsonValue = JsonMissing.of()
-        private var model: JsonField<String> = JsonMissing.of()
-        private var name: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
-        private var tools: JsonField<List<AssistantTool>> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var createdAt: JsonField<Long>? = null
+        private var description: JsonField<String>? = null
+        private var instructions: JsonField<String>? = null
+        private var metadata: JsonValue? = null
+        private var model: JsonField<String>? = null
+        private var name: JsonField<String>? = null
+        private var object_: JsonField<Object>? = null
+        private var tools: JsonField<MutableList<AssistantTool>>? = null
         private var responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of()
         private var temperature: JsonField<Double> = JsonMissing.of()
         private var toolResources: JsonField<ToolResources> = JsonMissing.of()
@@ -281,7 +287,7 @@ private constructor(
             model = assistant.model
             name = assistant.name
             object_ = assistant.object_
-            tools = assistant.tools
+            tools = assistant.tools.map { it.toMutableList() }
             responseFormat = assistant.responseFormat
             temperature = assistant.temperature
             toolResources = assistant.toolResources
@@ -302,7 +308,10 @@ private constructor(
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /** The description of the assistant. The maximum length is 512 characters. */
-        fun description(description: String) = description(JsonField.of(description))
+        fun description(description: String?) = description(JsonField.ofNullable(description))
+
+        /** The description of the assistant. The maximum length is 512 characters. */
+        fun description(description: Optional<String>) = description(description.orElse(null))
 
         /** The description of the assistant. The maximum length is 512 characters. */
         fun description(description: JsonField<String>) = apply { this.description = description }
@@ -311,7 +320,13 @@ private constructor(
          * The system instructions that the assistant uses. The maximum length is 256,000
          * characters.
          */
-        fun instructions(instructions: String) = instructions(JsonField.of(instructions))
+        fun instructions(instructions: String?) = instructions(JsonField.ofNullable(instructions))
+
+        /**
+         * The system instructions that the assistant uses. The maximum length is 256,000
+         * characters.
+         */
+        fun instructions(instructions: Optional<String>) = instructions(instructions.orElse(null))
 
         /**
          * The system instructions that the assistant uses. The maximum length is 256,000
@@ -345,7 +360,10 @@ private constructor(
         fun model(model: JsonField<String>) = apply { this.model = model }
 
         /** The name of the assistant. The maximum length is 256 characters. */
-        fun name(name: String) = name(JsonField.of(name))
+        fun name(name: String?) = name(JsonField.ofNullable(name))
+
+        /** The name of the assistant. The maximum length is 256 characters. */
+        fun name(name: Optional<String>) = name(name.orElse(null))
 
         /** The name of the assistant. The maximum length is 256 characters. */
         fun name(name: JsonField<String>) = apply { this.name = name }
@@ -366,7 +384,26 @@ private constructor(
          * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
          * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
          */
-        fun tools(tools: JsonField<List<AssistantTool>>) = apply { this.tools = tools }
+        fun tools(tools: JsonField<List<AssistantTool>>) = apply {
+            this.tools = tools.map { it.toMutableList() }
+        }
+
+        /**
+         * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
+         * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+         */
+        fun addTool(tool: AssistantTool) = apply {
+            tools =
+                (tools ?: JsonField.of(mutableListOf())).apply {
+                    asKnown()
+                        .orElseThrow {
+                            IllegalStateException(
+                                "Field was set to non-list type: ${javaClass.simpleName}"
+                            )
+                        }
+                        .add(tool)
+                }
+        }
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -388,8 +425,31 @@ private constructor(
          * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
          * `max_tokens` or the conversation exceeded the max context length.
          */
-        fun responseFormat(responseFormat: AssistantResponseFormatOption) =
-            responseFormat(JsonField.of(responseFormat))
+        fun responseFormat(responseFormat: AssistantResponseFormatOption?) =
+            responseFormat(JsonField.ofNullable(responseFormat))
+
+        /**
+         * Specifies the format that the model must output. Compatible with
+         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
+         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
+         * Turbo models since `gpt-3.5-turbo-1106`.
+         *
+         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
+         * which ensures the model will match your supplied JSON schema. Learn more in the
+         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         *
+         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
+         * model generates is valid JSON.
+         *
+         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
+         * yourself via a system or user message. Without this, the model may generate an unending
+         * stream of whitespace until the generation reaches the token limit, resulting in a
+         * long-running and seemingly "stuck" request. Also note that the message content may be
+         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
+         * `max_tokens` or the conversation exceeded the max context length.
+         */
+        fun responseFormat(responseFormat: Optional<AssistantResponseFormatOption>) =
+            responseFormat(responseFormat.orElse(null))
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -415,12 +475,45 @@ private constructor(
             this.responseFormat = responseFormat
         }
 
+        /** `auto` is the default value */
+        fun responseFormat(behavior: AssistantResponseFormatOption.Behavior) =
+            responseFormat(AssistantResponseFormatOption.ofBehavior(behavior))
+
+        fun responseFormat(responseFormatText: ResponseFormatText) =
+            responseFormat(AssistantResponseFormatOption.ofResponseFormatText(responseFormatText))
+
+        fun responseFormat(responseFormatJsonObject: ResponseFormatJsonObject) =
+            responseFormat(
+                AssistantResponseFormatOption.ofResponseFormatJsonObject(responseFormatJsonObject)
+            )
+
+        fun responseFormat(responseFormatJsonSchema: ResponseFormatJsonSchema) =
+            responseFormat(
+                AssistantResponseFormatOption.ofResponseFormatJsonSchema(responseFormatJsonSchema)
+            )
+
         /**
          * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
          * output more random, while lower values like 0.2 will make it more focused and
          * deterministic.
          */
-        fun temperature(temperature: Double) = temperature(JsonField.of(temperature))
+        fun temperature(temperature: Double?) = temperature(JsonField.ofNullable(temperature))
+
+        /**
+         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+         * output more random, while lower values like 0.2 will make it more focused and
+         * deterministic.
+         */
+        fun temperature(temperature: Double) = temperature(temperature as Double?)
+
+        /**
+         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+         * output more random, while lower values like 0.2 will make it more focused and
+         * deterministic.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun temperature(temperature: Optional<Double>) =
+            temperature(temperature.orElse(null) as Double?)
 
         /**
          * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
@@ -434,7 +527,16 @@ private constructor(
          * the type of tool. For example, the `code_interpreter` tool requires a list of file IDs,
          * while the `file_search` tool requires a list of vector store IDs.
          */
-        fun toolResources(toolResources: ToolResources) = toolResources(JsonField.of(toolResources))
+        fun toolResources(toolResources: ToolResources?) =
+            toolResources(JsonField.ofNullable(toolResources))
+
+        /**
+         * A set of resources that are used by the assistant's tools. The resources are specific to
+         * the type of tool. For example, the `code_interpreter` tool requires a list of file IDs,
+         * while the `file_search` tool requires a list of vector store IDs.
+         */
+        fun toolResources(toolResources: Optional<ToolResources>) =
+            toolResources(toolResources.orElse(null))
 
         /**
          * A set of resources that are used by the assistant's tools. The resources are specific to
@@ -452,7 +554,26 @@ private constructor(
          *
          * We generally recommend altering this or temperature but not both.
          */
-        fun topP(topP: Double) = topP(JsonField.of(topP))
+        fun topP(topP: Double?) = topP(JsonField.ofNullable(topP))
+
+        /**
+         * An alternative to sampling with temperature, called nucleus sampling, where the model
+         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
+         * tokens comprising the top 10% probability mass are considered.
+         *
+         * We generally recommend altering this or temperature but not both.
+         */
+        fun topP(topP: Double) = topP(topP as Double?)
+
+        /**
+         * An alternative to sampling with temperature, called nucleus sampling, where the model
+         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
+         * tokens comprising the top 10% probability mass are considered.
+         *
+         * We generally recommend altering this or temperature but not both.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -484,15 +605,16 @@ private constructor(
 
         fun build(): Assistant =
             Assistant(
-                id,
-                createdAt,
-                description,
-                instructions,
-                metadata,
-                model,
-                name,
-                object_,
-                tools.map { it.toImmutable() },
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
+                checkNotNull(description) { "`description` is required but was not set" },
+                checkNotNull(instructions) { "`instructions` is required but was not set" },
+                checkNotNull(metadata) { "`metadata` is required but was not set" },
+                checkNotNull(model) { "`model` is required but was not set" },
+                checkNotNull(name) { "`name` is required but was not set" },
+                checkNotNull(object_) { "`object_` is required but was not set" },
+                checkNotNull(tools) { "`tools` is required but was not set" }
+                    .map { it.toImmutable() },
                 responseFormat,
                 temperature,
                 toolResources,
@@ -577,9 +699,13 @@ private constructor(
         fun fileSearch(): Optional<FileSearch> =
             Optional.ofNullable(fileSearch.getNullable("file_search"))
 
-        @JsonProperty("code_interpreter") @ExcludeMissing fun _codeInterpreter() = codeInterpreter
+        @JsonProperty("code_interpreter")
+        @ExcludeMissing
+        fun _codeInterpreter(): JsonField<CodeInterpreter> = codeInterpreter
 
-        @JsonProperty("file_search") @ExcludeMissing fun _fileSearch() = fileSearch
+        @JsonProperty("file_search")
+        @ExcludeMissing
+        fun _fileSearch(): JsonField<FileSearch> = fileSearch
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -679,7 +805,9 @@ private constructor(
              * available to the `code_interpreter`` tool. There can be a maximum of 20 files
              * associated with the tool.
              */
-            @JsonProperty("file_ids") @ExcludeMissing fun _fileIds() = fileIds
+            @JsonProperty("file_ids")
+            @ExcludeMissing
+            fun _fileIds(): JsonField<List<String>> = fileIds
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -703,12 +831,12 @@ private constructor(
 
             class Builder {
 
-                private var fileIds: JsonField<List<String>> = JsonMissing.of()
+                private var fileIds: JsonField<MutableList<String>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(codeInterpreter: CodeInterpreter) = apply {
-                    fileIds = codeInterpreter.fileIds
+                    fileIds = codeInterpreter.fileIds.map { it.toMutableList() }
                     additionalProperties = codeInterpreter.additionalProperties.toMutableMap()
                 }
 
@@ -724,7 +852,27 @@ private constructor(
                  * available to the `code_interpreter`` tool. There can be a maximum of 20 files
                  * associated with the tool.
                  */
-                fun fileIds(fileIds: JsonField<List<String>>) = apply { this.fileIds = fileIds }
+                fun fileIds(fileIds: JsonField<List<String>>) = apply {
+                    this.fileIds = fileIds.map { it.toMutableList() }
+                }
+
+                /**
+                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
+                 * available to the `code_interpreter`` tool. There can be a maximum of 20 files
+                 * associated with the tool.
+                 */
+                fun addFileId(fileId: String) = apply {
+                    fileIds =
+                        (fileIds ?: JsonField.of(mutableListOf())).apply {
+                            asKnown()
+                                .orElseThrow {
+                                    IllegalStateException(
+                                        "Field was set to non-list type: ${javaClass.simpleName}"
+                                    )
+                                }
+                                .add(fileId)
+                        }
+                }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -750,7 +898,7 @@ private constructor(
 
                 fun build(): CodeInterpreter =
                     CodeInterpreter(
-                        fileIds.map { it.toImmutable() },
+                        (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
                         additionalProperties.toImmutable()
                     )
             }
@@ -799,7 +947,9 @@ private constructor(
              * attached to this assistant. There can be a maximum of 1 vector store attached to the
              * assistant.
              */
-            @JsonProperty("vector_store_ids") @ExcludeMissing fun _vectorStoreIds() = vectorStoreIds
+            @JsonProperty("vector_store_ids")
+            @ExcludeMissing
+            fun _vectorStoreIds(): JsonField<List<String>> = vectorStoreIds
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -823,12 +973,12 @@ private constructor(
 
             class Builder {
 
-                private var vectorStoreIds: JsonField<List<String>> = JsonMissing.of()
+                private var vectorStoreIds: JsonField<MutableList<String>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(fileSearch: FileSearch) = apply {
-                    vectorStoreIds = fileSearch.vectorStoreIds
+                    vectorStoreIds = fileSearch.vectorStoreIds.map { it.toMutableList() }
                     additionalProperties = fileSearch.additionalProperties.toMutableMap()
                 }
 
@@ -848,7 +998,26 @@ private constructor(
                  * the assistant.
                  */
                 fun vectorStoreIds(vectorStoreIds: JsonField<List<String>>) = apply {
-                    this.vectorStoreIds = vectorStoreIds
+                    this.vectorStoreIds = vectorStoreIds.map { it.toMutableList() }
+                }
+
+                /**
+                 * The ID of the
+                 * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+                 * attached to this assistant. There can be a maximum of 1 vector store attached to
+                 * the assistant.
+                 */
+                fun addVectorStoreId(vectorStoreId: String) = apply {
+                    vectorStoreIds =
+                        (vectorStoreIds ?: JsonField.of(mutableListOf())).apply {
+                            asKnown()
+                                .orElseThrow {
+                                    IllegalStateException(
+                                        "Field was set to non-list type: ${javaClass.simpleName}"
+                                    )
+                                }
+                                .add(vectorStoreId)
+                        }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -875,7 +1044,7 @@ private constructor(
 
                 fun build(): FileSearch =
                     FileSearch(
-                        vectorStoreIds.map { it.toImmutable() },
+                        (vectorStoreIds ?: JsonMissing.of()).map { it.toImmutable() },
                         additionalProperties.toImmutable()
                     )
             }

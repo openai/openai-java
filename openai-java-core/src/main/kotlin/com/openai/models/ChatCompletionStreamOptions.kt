@@ -42,7 +42,9 @@ private constructor(
      * `choices` field will always be an empty array. All other chunks will also include a `usage`
      * field, but with a null value.
      */
-    @JsonProperty("include_usage") @ExcludeMissing fun _includeUsage() = includeUsage
+    @JsonProperty("include_usage")
+    @ExcludeMissing
+    fun _includeUsage(): JsonField<Boolean> = includeUsage
 
     @JsonAnyGetter
     @ExcludeMissing

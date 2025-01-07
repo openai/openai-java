@@ -58,13 +58,13 @@ private constructor(
      * The content that should be matched when generating a model response. If generated tokens
      * would match this content, the entire model response can be returned much more quickly.
      */
-    @JsonProperty("content") @ExcludeMissing fun _content() = content
+    @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<Content> = content
 
     /**
      * The type of the predicted content you want to provide. This type is currently always
      * `content`.
      */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -89,8 +89,8 @@ private constructor(
 
     class Builder {
 
-        private var content: JsonField<Content> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var content: JsonField<Content>? = null
+        private var type: JsonField<Type>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -113,6 +113,20 @@ private constructor(
          * would match this content, the entire model response can be returned much more quickly.
          */
         fun content(content: JsonField<Content>) = apply { this.content = content }
+
+        /**
+         * The content used for a Predicted Output. This is often the text of a file you are
+         * regenerating with minor changes.
+         */
+        fun content(textContent: String) = content(Content.ofTextContent(textContent))
+
+        /**
+         * An array of content parts with a defined type. Supported options differ based on the
+         * [model](https://platform.openai.com/docs/models) being used to generate the response. Can
+         * contain text inputs.
+         */
+        fun contentOfArrayOfContentParts(arrayOfContentParts: List<ChatCompletionContentPartText>) =
+            content(Content.ofArrayOfContentParts(arrayOfContentParts))
 
         /**
          * The type of the predicted content you want to provide. This type is currently always
@@ -147,8 +161,8 @@ private constructor(
 
         fun build(): ChatCompletionPredictionContent =
             ChatCompletionPredictionContent(
-                content,
-                type,
+                checkNotNull(content) { "`content` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }

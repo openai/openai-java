@@ -34,10 +34,12 @@ private constructor(
     /** Always `message_creation`. */
     fun type(): Type = type.getRequired("type")
 
-    @JsonProperty("message_creation") @ExcludeMissing fun _messageCreation() = messageCreation
+    @JsonProperty("message_creation")
+    @ExcludeMissing
+    fun _messageCreation(): JsonField<MessageCreation> = messageCreation
 
     /** Always `message_creation`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -62,8 +64,8 @@ private constructor(
 
     class Builder {
 
-        private var messageCreation: JsonField<MessageCreation> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var messageCreation: JsonField<MessageCreation>? = null
+        private var type: JsonField<Type>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -107,8 +109,8 @@ private constructor(
 
         fun build(): MessageCreationStepDetails =
             MessageCreationStepDetails(
-                messageCreation,
-                type,
+                checkNotNull(messageCreation) { "`messageCreation` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }
@@ -128,7 +130,7 @@ private constructor(
         fun messageId(): String = messageId.getRequired("message_id")
 
         /** The ID of the message that was created by this run step. */
-        @JsonProperty("message_id") @ExcludeMissing fun _messageId() = messageId
+        @JsonProperty("message_id") @ExcludeMissing fun _messageId(): JsonField<String> = messageId
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -152,7 +154,7 @@ private constructor(
 
         class Builder {
 
-            private var messageId: JsonField<String> = JsonMissing.of()
+            private var messageId: JsonField<String>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -187,7 +189,10 @@ private constructor(
             }
 
             fun build(): MessageCreation =
-                MessageCreation(messageId, additionalProperties.toImmutable())
+                MessageCreation(
+                    checkNotNull(messageId) { "`messageId` is required but was not set" },
+                    additionalProperties.toImmutable()
+                )
         }
 
         override fun equals(other: Any?): Boolean {

@@ -39,13 +39,13 @@ private constructor(
     fun logs(): Optional<String> = Optional.ofNullable(logs.getNullable("logs"))
 
     /** The index of the output in the outputs array. */
-    @JsonProperty("index") @ExcludeMissing fun _index() = index
+    @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
     /** Always `logs`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     /** The text output from the Code Interpreter tool call. */
-    @JsonProperty("logs") @ExcludeMissing fun _logs() = logs
+    @JsonProperty("logs") @ExcludeMissing fun _logs(): JsonField<String> = logs
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -71,8 +71,8 @@ private constructor(
 
     class Builder {
 
-        private var index: JsonField<Long> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var index: JsonField<Long>? = null
+        private var type: JsonField<Type>? = null
         private var logs: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -123,8 +123,8 @@ private constructor(
 
         fun build(): CodeInterpreterLogs =
             CodeInterpreterLogs(
-                index,
-                type,
+                checkNotNull(index) { "`index` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 logs,
                 additionalProperties.toImmutable(),
             )

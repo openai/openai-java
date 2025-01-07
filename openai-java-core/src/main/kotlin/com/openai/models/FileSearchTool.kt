@@ -37,10 +37,12 @@ private constructor(
         Optional.ofNullable(fileSearch.getNullable("file_search"))
 
     /** The type of tool being defined: `file_search` */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     /** Overrides for the file search tool. */
-    @JsonProperty("file_search") @ExcludeMissing fun _fileSearch() = fileSearch
+    @JsonProperty("file_search")
+    @ExcludeMissing
+    fun _fileSearch(): JsonField<FileSearch> = fileSearch
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -65,7 +67,7 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var type: JsonField<Type>? = null
         private var fileSearch: JsonField<FileSearch> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -109,7 +111,7 @@ private constructor(
 
         fun build(): FileSearchTool =
             FileSearchTool(
-                type,
+                checkNotNull(type) { "`type` is required but was not set" },
                 fileSearch,
                 additionalProperties.toImmutable(),
             )
@@ -213,7 +215,9 @@ private constructor(
          * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
          * for more information.
          */
-        @JsonProperty("max_num_results") @ExcludeMissing fun _maxNumResults() = maxNumResults
+        @JsonProperty("max_num_results")
+        @ExcludeMissing
+        fun _maxNumResults(): JsonField<Long> = maxNumResults
 
         /**
          * The ranking options for the file search. If not specified, the file search tool will use
@@ -223,7 +227,9 @@ private constructor(
          * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
          * for more information.
          */
-        @JsonProperty("ranking_options") @ExcludeMissing fun _rankingOptions() = rankingOptions
+        @JsonProperty("ranking_options")
+        @ExcludeMissing
+        fun _rankingOptions(): JsonField<RankingOptions> = rankingOptions
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -372,12 +378,14 @@ private constructor(
              * The score threshold for the file search. All values must be a floating point number
              * between 0 and 1.
              */
-            @JsonProperty("score_threshold") @ExcludeMissing fun _scoreThreshold() = scoreThreshold
+            @JsonProperty("score_threshold")
+            @ExcludeMissing
+            fun _scoreThreshold(): JsonField<Double> = scoreThreshold
 
             /**
              * The ranker to use for the file search. If not specified will use the `auto` ranker.
              */
-            @JsonProperty("ranker") @ExcludeMissing fun _ranker() = ranker
+            @JsonProperty("ranker") @ExcludeMissing fun _ranker(): JsonField<Ranker> = ranker
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -402,7 +410,7 @@ private constructor(
 
             class Builder {
 
-                private var scoreThreshold: JsonField<Double> = JsonMissing.of()
+                private var scoreThreshold: JsonField<Double>? = null
                 private var ranker: JsonField<Ranker> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -464,7 +472,9 @@ private constructor(
 
                 fun build(): RankingOptions =
                     RankingOptions(
-                        scoreThreshold,
+                        checkNotNull(scoreThreshold) {
+                            "`scoreThreshold` is required but was not set"
+                        },
                         ranker,
                         additionalProperties.toImmutable(),
                     )

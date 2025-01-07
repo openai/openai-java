@@ -175,88 +175,106 @@ private constructor(
     fun method(): Optional<Method> = Optional.ofNullable(method.getNullable("method"))
 
     /** The object identifier, which can be referenced in the API endpoints. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /** The Unix timestamp (in seconds) for when the fine-tuning job was created. */
-    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
+    @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
     /**
      * For fine-tuning jobs that have `failed`, this will contain more information on the cause of
      * the failure.
      */
-    @JsonProperty("error") @ExcludeMissing fun _error() = error
+    @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<Error> = error
 
     /**
      * The name of the fine-tuned model that is being created. The value will be null if the
      * fine-tuning job is still running.
      */
-    @JsonProperty("fine_tuned_model") @ExcludeMissing fun _fineTunedModel() = fineTunedModel
+    @JsonProperty("fine_tuned_model")
+    @ExcludeMissing
+    fun _fineTunedModel(): JsonField<String> = fineTunedModel
 
     /**
      * The Unix timestamp (in seconds) for when the fine-tuning job was finished. The value will be
      * null if the fine-tuning job is still running.
      */
-    @JsonProperty("finished_at") @ExcludeMissing fun _finishedAt() = finishedAt
+    @JsonProperty("finished_at") @ExcludeMissing fun _finishedAt(): JsonField<Long> = finishedAt
 
     /**
      * The hyperparameters used for the fine-tuning job. This value will only be returned when
      * running `supervised` jobs.
      */
-    @JsonProperty("hyperparameters") @ExcludeMissing fun _hyperparameters() = hyperparameters
+    @JsonProperty("hyperparameters")
+    @ExcludeMissing
+    fun _hyperparameters(): JsonField<Hyperparameters> = hyperparameters
 
     /** The base model that is being fine-tuned. */
-    @JsonProperty("model") @ExcludeMissing fun _model() = model
+    @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
 
     /** The object type, which is always "fine_tuning.job". */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /** The organization that owns the fine-tuning job. */
-    @JsonProperty("organization_id") @ExcludeMissing fun _organizationId() = organizationId
+    @JsonProperty("organization_id")
+    @ExcludeMissing
+    fun _organizationId(): JsonField<String> = organizationId
 
     /**
      * The compiled results file ID(s) for the fine-tuning job. You can retrieve the results with
      * the [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
      */
-    @JsonProperty("result_files") @ExcludeMissing fun _resultFiles() = resultFiles
+    @JsonProperty("result_files")
+    @ExcludeMissing
+    fun _resultFiles(): JsonField<List<String>> = resultFiles
 
     /** The seed used for the fine-tuning job. */
-    @JsonProperty("seed") @ExcludeMissing fun _seed() = seed
+    @JsonProperty("seed") @ExcludeMissing fun _seed(): JsonField<Long> = seed
 
     /**
      * The current status of the fine-tuning job, which can be either `validating_files`, `queued`,
      * `running`, `succeeded`, `failed`, or `cancelled`.
      */
-    @JsonProperty("status") @ExcludeMissing fun _status() = status
+    @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
     /**
      * The total number of billable tokens processed by this fine-tuning job. The value will be null
      * if the fine-tuning job is still running.
      */
-    @JsonProperty("trained_tokens") @ExcludeMissing fun _trainedTokens() = trainedTokens
+    @JsonProperty("trained_tokens")
+    @ExcludeMissing
+    fun _trainedTokens(): JsonField<Long> = trainedTokens
 
     /**
      * The file ID used for training. You can retrieve the training data with the
      * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
      */
-    @JsonProperty("training_file") @ExcludeMissing fun _trainingFile() = trainingFile
+    @JsonProperty("training_file")
+    @ExcludeMissing
+    fun _trainingFile(): JsonField<String> = trainingFile
 
     /**
      * The file ID used for validation. You can retrieve the validation results with the
      * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
      */
-    @JsonProperty("validation_file") @ExcludeMissing fun _validationFile() = validationFile
+    @JsonProperty("validation_file")
+    @ExcludeMissing
+    fun _validationFile(): JsonField<String> = validationFile
 
     /**
      * The Unix timestamp (in seconds) for when the fine-tuning job is estimated to finish. The
      * value will be null if the fine-tuning job is not running.
      */
-    @JsonProperty("estimated_finish") @ExcludeMissing fun _estimatedFinish() = estimatedFinish
+    @JsonProperty("estimated_finish")
+    @ExcludeMissing
+    fun _estimatedFinish(): JsonField<Long> = estimatedFinish
 
     /** A list of integrations to enable for this fine-tuning job. */
-    @JsonProperty("integrations") @ExcludeMissing fun _integrations() = integrations
+    @JsonProperty("integrations")
+    @ExcludeMissing
+    fun _integrations(): JsonField<List<FineTuningJobWandbIntegrationObject>> = integrations
 
     /** The method used for fine-tuning. */
-    @JsonProperty("method") @ExcludeMissing fun _method() = method
+    @JsonProperty("method") @ExcludeMissing fun _method(): JsonField<Method> = method
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -297,24 +315,24 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var error: JsonField<Error> = JsonMissing.of()
-        private var fineTunedModel: JsonField<String> = JsonMissing.of()
-        private var finishedAt: JsonField<Long> = JsonMissing.of()
-        private var hyperparameters: JsonField<Hyperparameters> = JsonMissing.of()
-        private var model: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
-        private var organizationId: JsonField<String> = JsonMissing.of()
-        private var resultFiles: JsonField<List<String>> = JsonMissing.of()
-        private var seed: JsonField<Long> = JsonMissing.of()
-        private var status: JsonField<Status> = JsonMissing.of()
-        private var trainedTokens: JsonField<Long> = JsonMissing.of()
-        private var trainingFile: JsonField<String> = JsonMissing.of()
-        private var validationFile: JsonField<String> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var createdAt: JsonField<Long>? = null
+        private var error: JsonField<Error>? = null
+        private var fineTunedModel: JsonField<String>? = null
+        private var finishedAt: JsonField<Long>? = null
+        private var hyperparameters: JsonField<Hyperparameters>? = null
+        private var model: JsonField<String>? = null
+        private var object_: JsonField<Object>? = null
+        private var organizationId: JsonField<String>? = null
+        private var resultFiles: JsonField<MutableList<String>>? = null
+        private var seed: JsonField<Long>? = null
+        private var status: JsonField<Status>? = null
+        private var trainedTokens: JsonField<Long>? = null
+        private var trainingFile: JsonField<String>? = null
+        private var validationFile: JsonField<String>? = null
         private var estimatedFinish: JsonField<Long> = JsonMissing.of()
-        private var integrations: JsonField<List<FineTuningJobWandbIntegrationObject>> =
-            JsonMissing.of()
+        private var integrations: JsonField<MutableList<FineTuningJobWandbIntegrationObject>>? =
+            null
         private var method: JsonField<Method> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -329,14 +347,14 @@ private constructor(
             model = fineTuningJob.model
             object_ = fineTuningJob.object_
             organizationId = fineTuningJob.organizationId
-            resultFiles = fineTuningJob.resultFiles
+            resultFiles = fineTuningJob.resultFiles.map { it.toMutableList() }
             seed = fineTuningJob.seed
             status = fineTuningJob.status
             trainedTokens = fineTuningJob.trainedTokens
             trainingFile = fineTuningJob.trainingFile
             validationFile = fineTuningJob.validationFile
             estimatedFinish = fineTuningJob.estimatedFinish
-            integrations = fineTuningJob.integrations
+            integrations = fineTuningJob.integrations.map { it.toMutableList() }
             method = fineTuningJob.method
             additionalProperties = fineTuningJob.additionalProperties.toMutableMap()
         }
@@ -357,7 +375,13 @@ private constructor(
          * For fine-tuning jobs that have `failed`, this will contain more information on the cause
          * of the failure.
          */
-        fun error(error: Error) = error(JsonField.of(error))
+        fun error(error: Error?) = error(JsonField.ofNullable(error))
+
+        /**
+         * For fine-tuning jobs that have `failed`, this will contain more information on the cause
+         * of the failure.
+         */
+        fun error(error: Optional<Error>) = error(error.orElse(null))
 
         /**
          * For fine-tuning jobs that have `failed`, this will contain more information on the cause
@@ -369,7 +393,15 @@ private constructor(
          * The name of the fine-tuned model that is being created. The value will be null if the
          * fine-tuning job is still running.
          */
-        fun fineTunedModel(fineTunedModel: String) = fineTunedModel(JsonField.of(fineTunedModel))
+        fun fineTunedModel(fineTunedModel: String?) =
+            fineTunedModel(JsonField.ofNullable(fineTunedModel))
+
+        /**
+         * The name of the fine-tuned model that is being created. The value will be null if the
+         * fine-tuning job is still running.
+         */
+        fun fineTunedModel(fineTunedModel: Optional<String>) =
+            fineTunedModel(fineTunedModel.orElse(null))
 
         /**
          * The name of the fine-tuned model that is being created. The value will be null if the
@@ -383,7 +415,20 @@ private constructor(
          * The Unix timestamp (in seconds) for when the fine-tuning job was finished. The value will
          * be null if the fine-tuning job is still running.
          */
-        fun finishedAt(finishedAt: Long) = finishedAt(JsonField.of(finishedAt))
+        fun finishedAt(finishedAt: Long?) = finishedAt(JsonField.ofNullable(finishedAt))
+
+        /**
+         * The Unix timestamp (in seconds) for when the fine-tuning job was finished. The value will
+         * be null if the fine-tuning job is still running.
+         */
+        fun finishedAt(finishedAt: Long) = finishedAt(finishedAt as Long?)
+
+        /**
+         * The Unix timestamp (in seconds) for when the fine-tuning job was finished. The value will
+         * be null if the fine-tuning job is still running.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun finishedAt(finishedAt: Optional<Long>) = finishedAt(finishedAt.orElse(null) as Long?)
 
         /**
          * The Unix timestamp (in seconds) for when the fine-tuning job was finished. The value will
@@ -439,7 +484,25 @@ private constructor(
          * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
          */
         fun resultFiles(resultFiles: JsonField<List<String>>) = apply {
-            this.resultFiles = resultFiles
+            this.resultFiles = resultFiles.map { it.toMutableList() }
+        }
+
+        /**
+         * The compiled results file ID(s) for the fine-tuning job. You can retrieve the results
+         * with the
+         * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+         */
+        fun addResultFile(resultFile: String) = apply {
+            resultFiles =
+                (resultFiles ?: JsonField.of(mutableListOf())).apply {
+                    asKnown()
+                        .orElseThrow {
+                            IllegalStateException(
+                                "Field was set to non-list type: ${javaClass.simpleName}"
+                            )
+                        }
+                        .add(resultFile)
+                }
         }
 
         /** The seed used for the fine-tuning job. */
@@ -464,7 +527,21 @@ private constructor(
          * The total number of billable tokens processed by this fine-tuning job. The value will be
          * null if the fine-tuning job is still running.
          */
-        fun trainedTokens(trainedTokens: Long) = trainedTokens(JsonField.of(trainedTokens))
+        fun trainedTokens(trainedTokens: Long?) = trainedTokens(JsonField.ofNullable(trainedTokens))
+
+        /**
+         * The total number of billable tokens processed by this fine-tuning job. The value will be
+         * null if the fine-tuning job is still running.
+         */
+        fun trainedTokens(trainedTokens: Long) = trainedTokens(trainedTokens as Long?)
+
+        /**
+         * The total number of billable tokens processed by this fine-tuning job. The value will be
+         * null if the fine-tuning job is still running.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun trainedTokens(trainedTokens: Optional<Long>) =
+            trainedTokens(trainedTokens.orElse(null) as Long?)
 
         /**
          * The total number of billable tokens processed by this fine-tuning job. The value will be
@@ -492,7 +569,15 @@ private constructor(
          * The file ID used for validation. You can retrieve the validation results with the
          * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
          */
-        fun validationFile(validationFile: String) = validationFile(JsonField.of(validationFile))
+        fun validationFile(validationFile: String?) =
+            validationFile(JsonField.ofNullable(validationFile))
+
+        /**
+         * The file ID used for validation. You can retrieve the validation results with the
+         * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+         */
+        fun validationFile(validationFile: Optional<String>) =
+            validationFile(validationFile.orElse(null))
 
         /**
          * The file ID used for validation. You can retrieve the validation results with the
@@ -506,7 +591,22 @@ private constructor(
          * The Unix timestamp (in seconds) for when the fine-tuning job is estimated to finish. The
          * value will be null if the fine-tuning job is not running.
          */
-        fun estimatedFinish(estimatedFinish: Long) = estimatedFinish(JsonField.of(estimatedFinish))
+        fun estimatedFinish(estimatedFinish: Long?) =
+            estimatedFinish(JsonField.ofNullable(estimatedFinish))
+
+        /**
+         * The Unix timestamp (in seconds) for when the fine-tuning job is estimated to finish. The
+         * value will be null if the fine-tuning job is not running.
+         */
+        fun estimatedFinish(estimatedFinish: Long) = estimatedFinish(estimatedFinish as Long?)
+
+        /**
+         * The Unix timestamp (in seconds) for when the fine-tuning job is estimated to finish. The
+         * value will be null if the fine-tuning job is not running.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun estimatedFinish(estimatedFinish: Optional<Long>) =
+            estimatedFinish(estimatedFinish.orElse(null) as Long?)
 
         /**
          * The Unix timestamp (in seconds) for when the fine-tuning job is estimated to finish. The
@@ -517,14 +617,32 @@ private constructor(
         }
 
         /** A list of integrations to enable for this fine-tuning job. */
-        fun integrations(integrations: List<FineTuningJobWandbIntegrationObject>) =
-            integrations(JsonField.of(integrations))
+        fun integrations(integrations: List<FineTuningJobWandbIntegrationObject>?) =
+            integrations(JsonField.ofNullable(integrations))
+
+        /** A list of integrations to enable for this fine-tuning job. */
+        fun integrations(integrations: Optional<List<FineTuningJobWandbIntegrationObject>>) =
+            integrations(integrations.orElse(null))
 
         /** A list of integrations to enable for this fine-tuning job. */
         fun integrations(integrations: JsonField<List<FineTuningJobWandbIntegrationObject>>) =
             apply {
-                this.integrations = integrations
+                this.integrations = integrations.map { it.toMutableList() }
             }
+
+        /** A list of integrations to enable for this fine-tuning job. */
+        fun addIntegration(integration: FineTuningJobWandbIntegrationObject) = apply {
+            integrations =
+                (integrations ?: JsonField.of(mutableListOf())).apply {
+                    asKnown()
+                        .orElseThrow {
+                            IllegalStateException(
+                                "Field was set to non-list type: ${javaClass.simpleName}"
+                            )
+                        }
+                        .add(integration)
+                }
+        }
 
         /** The method used for fine-tuning. */
         fun method(method: Method) = method(JsonField.of(method))
@@ -553,23 +671,24 @@ private constructor(
 
         fun build(): FineTuningJob =
             FineTuningJob(
-                id,
-                createdAt,
-                error,
-                fineTunedModel,
-                finishedAt,
-                hyperparameters,
-                model,
-                object_,
-                organizationId,
-                resultFiles.map { it.toImmutable() },
-                seed,
-                status,
-                trainedTokens,
-                trainingFile,
-                validationFile,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
+                checkNotNull(error) { "`error` is required but was not set" },
+                checkNotNull(fineTunedModel) { "`fineTunedModel` is required but was not set" },
+                checkNotNull(finishedAt) { "`finishedAt` is required but was not set" },
+                checkNotNull(hyperparameters) { "`hyperparameters` is required but was not set" },
+                checkNotNull(model) { "`model` is required but was not set" },
+                checkNotNull(object_) { "`object_` is required but was not set" },
+                checkNotNull(organizationId) { "`organizationId` is required but was not set" },
+                checkNotNull(resultFiles) { "`resultFiles` is required but was not set" }
+                    .map { it.toImmutable() },
+                checkNotNull(seed) { "`seed` is required but was not set" },
+                checkNotNull(status) { "`status` is required but was not set" },
+                checkNotNull(trainedTokens) { "`trainedTokens` is required but was not set" },
+                checkNotNull(trainingFile) { "`trainingFile` is required but was not set" },
+                checkNotNull(validationFile) { "`validationFile` is required but was not set" },
                 estimatedFinish,
-                integrations.map { it.toImmutable() },
+                (integrations ?: JsonMissing.of()).map { it.toImmutable() },
                 method,
                 additionalProperties.toImmutable(),
             )
@@ -609,16 +728,16 @@ private constructor(
         fun param(): Optional<String> = Optional.ofNullable(param.getNullable("param"))
 
         /** A machine-readable error code. */
-        @JsonProperty("code") @ExcludeMissing fun _code() = code
+        @JsonProperty("code") @ExcludeMissing fun _code(): JsonField<String> = code
 
         /** A human-readable error message. */
-        @JsonProperty("message") @ExcludeMissing fun _message() = message
+        @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
         /**
          * The parameter that was invalid, usually `training_file` or `validation_file`. This field
          * will be null if the failure was not parameter-specific.
          */
-        @JsonProperty("param") @ExcludeMissing fun _param() = param
+        @JsonProperty("param") @ExcludeMissing fun _param(): JsonField<String> = param
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -644,9 +763,9 @@ private constructor(
 
         class Builder {
 
-            private var code: JsonField<String> = JsonMissing.of()
-            private var message: JsonField<String> = JsonMissing.of()
-            private var param: JsonField<String> = JsonMissing.of()
+            private var code: JsonField<String>? = null
+            private var message: JsonField<String>? = null
+            private var param: JsonField<String>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -673,7 +792,13 @@ private constructor(
              * The parameter that was invalid, usually `training_file` or `validation_file`. This
              * field will be null if the failure was not parameter-specific.
              */
-            fun param(param: String) = param(JsonField.of(param))
+            fun param(param: String?) = param(JsonField.ofNullable(param))
+
+            /**
+             * The parameter that was invalid, usually `training_file` or `validation_file`. This
+             * field will be null if the failure was not parameter-specific.
+             */
+            fun param(param: Optional<String>) = param(param.orElse(null))
 
             /**
              * The parameter that was invalid, usually `training_file` or `validation_file`. This
@@ -702,9 +827,9 @@ private constructor(
 
             fun build(): Error =
                 Error(
-                    code,
-                    message,
-                    param,
+                    checkNotNull(code) { "`code` is required but was not set" },
+                    checkNotNull(message) { "`message` is required but was not set" },
+                    checkNotNull(param) { "`param` is required but was not set" },
                     additionalProperties.toImmutable(),
                 )
         }
@@ -772,7 +897,9 @@ private constructor(
          * Number of examples in each batch. A larger batch size means that model parameters are
          * updated less frequently, but with lower variance.
          */
-        @JsonProperty("batch_size") @ExcludeMissing fun _batchSize() = batchSize
+        @JsonProperty("batch_size")
+        @ExcludeMissing
+        fun _batchSize(): JsonField<BatchSize> = batchSize
 
         /**
          * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
@@ -780,13 +907,13 @@ private constructor(
          */
         @JsonProperty("learning_rate_multiplier")
         @ExcludeMissing
-        fun _learningRateMultiplier() = learningRateMultiplier
+        fun _learningRateMultiplier(): JsonField<LearningRateMultiplier> = learningRateMultiplier
 
         /**
          * The number of epochs to train the model for. An epoch refers to one full cycle through
          * the training dataset.
          */
-        @JsonProperty("n_epochs") @ExcludeMissing fun _nEpochs() = nEpochs
+        @JsonProperty("n_epochs") @ExcludeMissing fun _nEpochs(): JsonField<NEpochs> = nEpochs
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -837,6 +964,10 @@ private constructor(
              */
             fun batchSize(batchSize: JsonField<BatchSize>) = apply { this.batchSize = batchSize }
 
+            fun batchSize(auto: BatchSize.Auto) = batchSize(BatchSize.ofAuto(auto))
+
+            fun batchSize(manual: Long) = batchSize(BatchSize.ofManual(manual))
+
             /**
              * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
              * overfitting.
@@ -853,6 +984,12 @@ private constructor(
                     this.learningRateMultiplier = learningRateMultiplier
                 }
 
+            fun learningRateMultiplier(auto: LearningRateMultiplier.Auto) =
+                learningRateMultiplier(LearningRateMultiplier.ofAuto(auto))
+
+            fun learningRateMultiplier(number: Double) =
+                learningRateMultiplier(LearningRateMultiplier.ofNumber(number))
+
             /**
              * The number of epochs to train the model for. An epoch refers to one full cycle
              * through the training dataset.
@@ -864,6 +1001,10 @@ private constructor(
              * through the training dataset.
              */
             fun nEpochs(nEpochs: JsonField<NEpochs>) = apply { this.nEpochs = nEpochs }
+
+            fun nEpochs(behavior: NEpochs.Behavior) = nEpochs(NEpochs.ofBehavior(behavior))
+
+            fun nEpochs(integer: Long) = nEpochs(NEpochs.ofInteger(integer))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1568,13 +1709,15 @@ private constructor(
         fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
 
         /** Configuration for the DPO fine-tuning method. */
-        @JsonProperty("dpo") @ExcludeMissing fun _dpo() = dpo
+        @JsonProperty("dpo") @ExcludeMissing fun _dpo(): JsonField<Dpo> = dpo
 
         /** Configuration for the supervised fine-tuning method. */
-        @JsonProperty("supervised") @ExcludeMissing fun _supervised() = supervised
+        @JsonProperty("supervised")
+        @ExcludeMissing
+        fun _supervised(): JsonField<Supervised> = supervised
 
         /** The type of method. Is either `supervised` or `dpo`. */
-        @JsonProperty("type") @ExcludeMissing fun _type() = type
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1680,7 +1823,7 @@ private constructor(
             /** The hyperparameters used for the fine-tuning job. */
             @JsonProperty("hyperparameters")
             @ExcludeMissing
-            fun _hyperparameters() = hyperparameters
+            fun _hyperparameters(): JsonField<Hyperparameters> = hyperparameters
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -1802,13 +1945,15 @@ private constructor(
                  * Number of examples in each batch. A larger batch size means that model parameters
                  * are updated less frequently, but with lower variance.
                  */
-                @JsonProperty("batch_size") @ExcludeMissing fun _batchSize() = batchSize
+                @JsonProperty("batch_size")
+                @ExcludeMissing
+                fun _batchSize(): JsonField<BatchSize> = batchSize
 
                 /**
                  * The beta value for the DPO method. A higher beta value will increase the weight
                  * of the penalty between the policy and reference model.
                  */
-                @JsonProperty("beta") @ExcludeMissing fun _beta() = beta
+                @JsonProperty("beta") @ExcludeMissing fun _beta(): JsonField<Beta> = beta
 
                 /**
                  * Scaling factor for the learning rate. A smaller learning rate may be useful to
@@ -1816,13 +1961,16 @@ private constructor(
                  */
                 @JsonProperty("learning_rate_multiplier")
                 @ExcludeMissing
-                fun _learningRateMultiplier() = learningRateMultiplier
+                fun _learningRateMultiplier(): JsonField<LearningRateMultiplier> =
+                    learningRateMultiplier
 
                 /**
                  * The number of epochs to train the model for. An epoch refers to one full cycle
                  * through the training dataset.
                  */
-                @JsonProperty("n_epochs") @ExcludeMissing fun _nEpochs() = nEpochs
+                @JsonProperty("n_epochs")
+                @ExcludeMissing
+                fun _nEpochs(): JsonField<NEpochs> = nEpochs
 
                 @JsonAnyGetter
                 @ExcludeMissing
@@ -1879,6 +2027,10 @@ private constructor(
                         this.batchSize = batchSize
                     }
 
+                    fun batchSize(auto: BatchSize.Auto) = batchSize(BatchSize.ofAuto(auto))
+
+                    fun batchSize(manual: Long) = batchSize(BatchSize.ofManual(manual))
+
                     /**
                      * The beta value for the DPO method. A higher beta value will increase the
                      * weight of the penalty between the policy and reference model.
@@ -1890,6 +2042,10 @@ private constructor(
                      * weight of the penalty between the policy and reference model.
                      */
                     fun beta(beta: JsonField<Beta>) = apply { this.beta = beta }
+
+                    fun beta(auto: Beta.Auto) = beta(Beta.ofAuto(auto))
+
+                    fun beta(manual: Double) = beta(Beta.ofManual(manual))
 
                     /**
                      * Scaling factor for the learning rate. A smaller learning rate may be useful
@@ -1906,6 +2062,12 @@ private constructor(
                         learningRateMultiplier: JsonField<LearningRateMultiplier>
                     ) = apply { this.learningRateMultiplier = learningRateMultiplier }
 
+                    fun learningRateMultiplier(auto: LearningRateMultiplier.Auto) =
+                        learningRateMultiplier(LearningRateMultiplier.ofAuto(auto))
+
+                    fun learningRateMultiplier(manual: Double) =
+                        learningRateMultiplier(LearningRateMultiplier.ofManual(manual))
+
                     /**
                      * The number of epochs to train the model for. An epoch refers to one full
                      * cycle through the training dataset.
@@ -1917,6 +2079,10 @@ private constructor(
                      * cycle through the training dataset.
                      */
                     fun nEpochs(nEpochs: JsonField<NEpochs>) = apply { this.nEpochs = nEpochs }
+
+                    fun nEpochs(auto: NEpochs.Auto) = nEpochs(NEpochs.ofAuto(auto))
+
+                    fun nEpochs(manual: Long) = nEpochs(NEpochs.ofManual(manual))
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
@@ -2683,7 +2849,7 @@ private constructor(
             /** The hyperparameters used for the fine-tuning job. */
             @JsonProperty("hyperparameters")
             @ExcludeMissing
-            fun _hyperparameters() = hyperparameters
+            fun _hyperparameters(): JsonField<Hyperparameters> = hyperparameters
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -2797,7 +2963,9 @@ private constructor(
                  * Number of examples in each batch. A larger batch size means that model parameters
                  * are updated less frequently, but with lower variance.
                  */
-                @JsonProperty("batch_size") @ExcludeMissing fun _batchSize() = batchSize
+                @JsonProperty("batch_size")
+                @ExcludeMissing
+                fun _batchSize(): JsonField<BatchSize> = batchSize
 
                 /**
                  * Scaling factor for the learning rate. A smaller learning rate may be useful to
@@ -2805,13 +2973,16 @@ private constructor(
                  */
                 @JsonProperty("learning_rate_multiplier")
                 @ExcludeMissing
-                fun _learningRateMultiplier() = learningRateMultiplier
+                fun _learningRateMultiplier(): JsonField<LearningRateMultiplier> =
+                    learningRateMultiplier
 
                 /**
                  * The number of epochs to train the model for. An epoch refers to one full cycle
                  * through the training dataset.
                  */
-                @JsonProperty("n_epochs") @ExcludeMissing fun _nEpochs() = nEpochs
+                @JsonProperty("n_epochs")
+                @ExcludeMissing
+                fun _nEpochs(): JsonField<NEpochs> = nEpochs
 
                 @JsonAnyGetter
                 @ExcludeMissing
@@ -2865,6 +3036,10 @@ private constructor(
                         this.batchSize = batchSize
                     }
 
+                    fun batchSize(auto: BatchSize.Auto) = batchSize(BatchSize.ofAuto(auto))
+
+                    fun batchSize(manual: Long) = batchSize(BatchSize.ofManual(manual))
+
                     /**
                      * Scaling factor for the learning rate. A smaller learning rate may be useful
                      * to avoid overfitting.
@@ -2880,6 +3055,12 @@ private constructor(
                         learningRateMultiplier: JsonField<LearningRateMultiplier>
                     ) = apply { this.learningRateMultiplier = learningRateMultiplier }
 
+                    fun learningRateMultiplier(auto: LearningRateMultiplier.Auto) =
+                        learningRateMultiplier(LearningRateMultiplier.ofAuto(auto))
+
+                    fun learningRateMultiplier(manual: Double) =
+                        learningRateMultiplier(LearningRateMultiplier.ofManual(manual))
+
                     /**
                      * The number of epochs to train the model for. An epoch refers to one full
                      * cycle through the training dataset.
@@ -2891,6 +3072,10 @@ private constructor(
                      * cycle through the training dataset.
                      */
                     fun nEpochs(nEpochs: JsonField<NEpochs>) = apply { this.nEpochs = nEpochs }
+
+                    fun nEpochs(auto: NEpochs.Auto) = nEpochs(NEpochs.ofAuto(auto))
+
+                    fun nEpochs(manual: Long) = nEpochs(NEpochs.ofManual(manual))
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()

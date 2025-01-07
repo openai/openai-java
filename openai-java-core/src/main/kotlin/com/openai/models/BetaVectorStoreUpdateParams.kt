@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
+import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.http.Headers
@@ -38,16 +39,22 @@ constructor(
      * additional information about the object in a structured format. Keys can be a maximum of 64
      * characters long and values can be a maximum of 512 characters long.
      */
-    fun metadata(): Optional<JsonValue> = body.metadata()
+    fun _metadata(): JsonValue = body._metadata()
 
     /** The name of the vector store. */
     fun name(): Optional<String> = body.name()
 
+    /** The expiration policy for a vector store. */
+    fun _expiresAfter(): JsonField<ExpiresAfter> = body._expiresAfter()
+
+    /** The name of the vector store. */
+    fun _name(): JsonField<String> = body._name()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     @JvmSynthetic internal fun getBody(): BetaVectorStoreUpdateBody = body
 
@@ -66,31 +73,54 @@ constructor(
     class BetaVectorStoreUpdateBody
     @JsonCreator
     internal constructor(
-        @JsonProperty("expires_after") private val expiresAfter: ExpiresAfter?,
-        @JsonProperty("metadata") private val metadata: JsonValue?,
-        @JsonProperty("name") private val name: String?,
+        @JsonProperty("expires_after")
+        @ExcludeMissing
+        private val expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of(),
+        @JsonProperty("metadata")
+        @ExcludeMissing
+        private val metadata: JsonValue = JsonMissing.of(),
+        @JsonProperty("name")
+        @ExcludeMissing
+        private val name: JsonField<String> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** The expiration policy for a vector store. */
-        @JsonProperty("expires_after")
-        fun expiresAfter(): Optional<ExpiresAfter> = Optional.ofNullable(expiresAfter)
+        fun expiresAfter(): Optional<ExpiresAfter> =
+            Optional.ofNullable(expiresAfter.getNullable("expires_after"))
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
          * storing additional information about the object in a structured format. Keys can be a
          * maximum of 64 characters long and values can be a maximum of 512 characters long.
          */
-        @JsonProperty("metadata")
-        fun metadata(): Optional<JsonValue> = Optional.ofNullable(metadata)
+        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
 
         /** The name of the vector store. */
-        @JsonProperty("name") fun name(): Optional<String> = Optional.ofNullable(name)
+        fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
+
+        /** The expiration policy for a vector store. */
+        @JsonProperty("expires_after")
+        @ExcludeMissing
+        fun _expiresAfter(): JsonField<ExpiresAfter> = expiresAfter
+
+        /** The name of the vector store. */
+        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): BetaVectorStoreUpdateBody = apply {
+            if (!validated) {
+                expiresAfter().map { it.validate() }
+                name()
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -101,9 +131,9 @@ constructor(
 
         class Builder {
 
-            private var expiresAfter: ExpiresAfter? = null
-            private var metadata: JsonValue? = null
-            private var name: String? = null
+            private var expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of()
+            private var metadata: JsonValue = JsonMissing.of()
+            private var name: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -115,33 +145,33 @@ constructor(
             }
 
             /** The expiration policy for a vector store. */
-            fun expiresAfter(expiresAfter: ExpiresAfter?) = apply {
-                this.expiresAfter = expiresAfter
-            }
+            fun expiresAfter(expiresAfter: ExpiresAfter?) =
+                expiresAfter(JsonField.ofNullable(expiresAfter))
 
             /** The expiration policy for a vector store. */
             fun expiresAfter(expiresAfter: Optional<ExpiresAfter>) =
                 expiresAfter(expiresAfter.orElse(null))
 
-            /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format. Keys can be a
-             * maximum of 64 characters long and values can be a maximum of 512 characters long.
-             */
-            fun metadata(metadata: JsonValue?) = apply { this.metadata = metadata }
+            /** The expiration policy for a vector store. */
+            fun expiresAfter(expiresAfter: JsonField<ExpiresAfter>) = apply {
+                this.expiresAfter = expiresAfter
+            }
 
             /**
              * Set of 16 key-value pairs that can be attached to an object. This can be useful for
              * storing additional information about the object in a structured format. Keys can be a
              * maximum of 64 characters long and values can be a maximum of 512 characters long.
              */
-            fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
+            fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
             /** The name of the vector store. */
-            fun name(name: String?) = apply { this.name = name }
+            fun name(name: String?) = name(JsonField.ofNullable(name))
 
             /** The name of the vector store. */
             fun name(name: Optional<String>) = name(name.orElse(null))
+
+            /** The name of the vector store. */
+            fun name(name: JsonField<String>) = apply { this.name = name }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -221,25 +251,45 @@ constructor(
         fun expiresAfter(expiresAfter: Optional<ExpiresAfter>) =
             expiresAfter(expiresAfter.orElse(null))
 
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format. Keys can be a
-         * maximum of 64 characters long and values can be a maximum of 512 characters long.
-         */
-        fun metadata(metadata: JsonValue?) = apply { body.metadata(metadata) }
+        /** The expiration policy for a vector store. */
+        fun expiresAfter(expiresAfter: JsonField<ExpiresAfter>) = apply {
+            body.expiresAfter(expiresAfter)
+        }
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
          * storing additional information about the object in a structured format. Keys can be a
          * maximum of 64 characters long and values can be a maximum of 512 characters long.
          */
-        fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
+        fun metadata(metadata: JsonValue) = apply { body.metadata(metadata) }
 
         /** The name of the vector store. */
         fun name(name: String?) = apply { body.name(name) }
 
         /** The name of the vector store. */
         fun name(name: Optional<String>) = name(name.orElse(null))
+
+        /** The name of the vector store. */
+        fun name(name: JsonField<String>) = apply { body.name(name) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -339,25 +389,6 @@ constructor(
             additionalQueryParams.removeAll(keys)
         }
 
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            body.additionalProperties(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            body.putAdditionalProperty(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                body.putAllAdditionalProperties(additionalBodyProperties)
-            }
-
-        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
-
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            body.removeAllAdditionalProperties(keys)
-        }
-
         fun build(): BetaVectorStoreUpdateParams =
             BetaVectorStoreUpdateParams(
                 checkNotNull(vectorStoreId) { "`vectorStoreId` is required but was not set" },
@@ -372,8 +403,10 @@ constructor(
     class ExpiresAfter
     @JsonCreator
     private constructor(
-        @JsonProperty("anchor") private val anchor: Anchor,
-        @JsonProperty("days") private val days: Long,
+        @JsonProperty("anchor")
+        @ExcludeMissing
+        private val anchor: JsonField<Anchor> = JsonMissing.of(),
+        @JsonProperty("days") @ExcludeMissing private val days: JsonField<Long> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -382,14 +415,33 @@ constructor(
          * Anchor timestamp after which the expiration policy applies. Supported anchors:
          * `last_active_at`.
          */
-        @JsonProperty("anchor") fun anchor(): Anchor = anchor
+        fun anchor(): Anchor = anchor.getRequired("anchor")
 
         /** The number of days after the anchor time that the vector store will expire. */
-        @JsonProperty("days") fun days(): Long = days
+        fun days(): Long = days.getRequired("days")
+
+        /**
+         * Anchor timestamp after which the expiration policy applies. Supported anchors:
+         * `last_active_at`.
+         */
+        @JsonProperty("anchor") @ExcludeMissing fun _anchor(): JsonField<Anchor> = anchor
+
+        /** The number of days after the anchor time that the vector store will expire. */
+        @JsonProperty("days") @ExcludeMissing fun _days(): JsonField<Long> = days
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): ExpiresAfter = apply {
+            if (!validated) {
+                anchor()
+                days()
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -400,8 +452,8 @@ constructor(
 
         class Builder {
 
-            private var anchor: Anchor? = null
-            private var days: Long? = null
+            private var anchor: JsonField<Anchor>? = null
+            private var days: JsonField<Long>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -415,10 +467,19 @@ constructor(
              * Anchor timestamp after which the expiration policy applies. Supported anchors:
              * `last_active_at`.
              */
-            fun anchor(anchor: Anchor) = apply { this.anchor = anchor }
+            fun anchor(anchor: Anchor) = anchor(JsonField.of(anchor))
+
+            /**
+             * Anchor timestamp after which the expiration policy applies. Supported anchors:
+             * `last_active_at`.
+             */
+            fun anchor(anchor: JsonField<Anchor>) = apply { this.anchor = anchor }
 
             /** The number of days after the anchor time that the vector store will expire. */
-            fun days(days: Long) = apply { this.days = days }
+            fun days(days: Long) = days(JsonField.of(days))
+
+            /** The number of days after the anchor time that the vector store will expire. */
+            fun days(days: JsonField<Long>) = apply { this.days = days }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()

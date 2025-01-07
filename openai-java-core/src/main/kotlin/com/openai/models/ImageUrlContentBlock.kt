@@ -34,10 +34,10 @@ private constructor(
     /** The type of the content part. */
     fun type(): Type = type.getRequired("type")
 
-    @JsonProperty("image_url") @ExcludeMissing fun _imageUrl() = imageUrl
+    @JsonProperty("image_url") @ExcludeMissing fun _imageUrl(): JsonField<ImageUrl> = imageUrl
 
     /** The type of the content part. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -62,8 +62,8 @@ private constructor(
 
     class Builder {
 
-        private var imageUrl: JsonField<ImageUrl> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var imageUrl: JsonField<ImageUrl>? = null
+        private var type: JsonField<Type>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -104,8 +104,8 @@ private constructor(
 
         fun build(): ImageUrlContentBlock =
             ImageUrlContentBlock(
-                imageUrl,
-                type,
+                checkNotNull(imageUrl) { "`imageUrl` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }

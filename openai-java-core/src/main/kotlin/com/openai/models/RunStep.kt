@@ -105,6 +105,13 @@ private constructor(
     /** The last error associated with this run step. Will be `null` if there are no errors. */
     fun lastError(): Optional<LastError> = Optional.ofNullable(lastError.getNullable("last_error"))
 
+    /**
+     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
+     * additional information about the object in a structured format. Keys can be a maximum of 64
+     * characters long and values can be a maximum of 512 characters long.
+     */
+    @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+
     /** The object type, which is always `thread.run.step`. */
     fun object_(): Object = object_.getRequired("object")
 
@@ -138,73 +145,70 @@ private constructor(
     fun usage(): Optional<Usage> = Optional.ofNullable(usage.getNullable("usage"))
 
     /** The identifier of the run step, which can be referenced in API endpoints. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /**
      * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants)
      * associated with the run step.
      */
-    @JsonProperty("assistant_id") @ExcludeMissing fun _assistantId() = assistantId
+    @JsonProperty("assistant_id")
+    @ExcludeMissing
+    fun _assistantId(): JsonField<String> = assistantId
 
     /** The Unix timestamp (in seconds) for when the run step was cancelled. */
-    @JsonProperty("cancelled_at") @ExcludeMissing fun _cancelledAt() = cancelledAt
+    @JsonProperty("cancelled_at") @ExcludeMissing fun _cancelledAt(): JsonField<Long> = cancelledAt
 
     /** The Unix timestamp (in seconds) for when the run step completed. */
-    @JsonProperty("completed_at") @ExcludeMissing fun _completedAt() = completedAt
+    @JsonProperty("completed_at") @ExcludeMissing fun _completedAt(): JsonField<Long> = completedAt
 
     /** The Unix timestamp (in seconds) for when the run step was created. */
-    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
+    @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
     /**
      * The Unix timestamp (in seconds) for when the run step expired. A step is considered expired
      * if the parent run is expired.
      */
-    @JsonProperty("expired_at") @ExcludeMissing fun _expiredAt() = expiredAt
+    @JsonProperty("expired_at") @ExcludeMissing fun _expiredAt(): JsonField<Long> = expiredAt
 
     /** The Unix timestamp (in seconds) for when the run step failed. */
-    @JsonProperty("failed_at") @ExcludeMissing fun _failedAt() = failedAt
+    @JsonProperty("failed_at") @ExcludeMissing fun _failedAt(): JsonField<Long> = failedAt
 
     /** The last error associated with this run step. Will be `null` if there are no errors. */
-    @JsonProperty("last_error") @ExcludeMissing fun _lastError() = lastError
-
-    /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format. Keys can be a maximum of 64
-     * characters long and values can be a maximum of 512 characters long.
-     */
-    @JsonProperty("metadata") @ExcludeMissing fun _metadata() = metadata
+    @JsonProperty("last_error") @ExcludeMissing fun _lastError(): JsonField<LastError> = lastError
 
     /** The object type, which is always `thread.run.step`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /**
      * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) that this run step
      * is a part of.
      */
-    @JsonProperty("run_id") @ExcludeMissing fun _runId() = runId
+    @JsonProperty("run_id") @ExcludeMissing fun _runId(): JsonField<String> = runId
 
     /**
      * The status of the run step, which can be either `in_progress`, `cancelled`, `failed`,
      * `completed`, or `expired`.
      */
-    @JsonProperty("status") @ExcludeMissing fun _status() = status
+    @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
     /** The details of the run step. */
-    @JsonProperty("step_details") @ExcludeMissing fun _stepDetails() = stepDetails
+    @JsonProperty("step_details")
+    @ExcludeMissing
+    fun _stepDetails(): JsonField<StepDetails> = stepDetails
 
     /**
      * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was run.
      */
-    @JsonProperty("thread_id") @ExcludeMissing fun _threadId() = threadId
+    @JsonProperty("thread_id") @ExcludeMissing fun _threadId(): JsonField<String> = threadId
 
     /** The type of run step, which can be either `message_creation` or `tool_calls`. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     /**
      * Usage statistics related to the run step. This value will be `null` while the run step's
      * status is `in_progress`.
      */
-    @JsonProperty("usage") @ExcludeMissing fun _usage() = usage
+    @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<Usage> = usage
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -242,22 +246,22 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var assistantId: JsonField<String> = JsonMissing.of()
-        private var cancelledAt: JsonField<Long> = JsonMissing.of()
-        private var completedAt: JsonField<Long> = JsonMissing.of()
-        private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var expiredAt: JsonField<Long> = JsonMissing.of()
-        private var failedAt: JsonField<Long> = JsonMissing.of()
-        private var lastError: JsonField<LastError> = JsonMissing.of()
-        private var metadata: JsonValue = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
-        private var runId: JsonField<String> = JsonMissing.of()
-        private var status: JsonField<Status> = JsonMissing.of()
-        private var stepDetails: JsonField<StepDetails> = JsonMissing.of()
-        private var threadId: JsonField<String> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
-        private var usage: JsonField<Usage> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var assistantId: JsonField<String>? = null
+        private var cancelledAt: JsonField<Long>? = null
+        private var completedAt: JsonField<Long>? = null
+        private var createdAt: JsonField<Long>? = null
+        private var expiredAt: JsonField<Long>? = null
+        private var failedAt: JsonField<Long>? = null
+        private var lastError: JsonField<LastError>? = null
+        private var metadata: JsonValue? = null
+        private var object_: JsonField<Object>? = null
+        private var runId: JsonField<String>? = null
+        private var status: JsonField<Status>? = null
+        private var stepDetails: JsonField<StepDetails>? = null
+        private var threadId: JsonField<String>? = null
+        private var type: JsonField<Type>? = null
+        private var usage: JsonField<Usage>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -300,13 +304,29 @@ private constructor(
         fun assistantId(assistantId: JsonField<String>) = apply { this.assistantId = assistantId }
 
         /** The Unix timestamp (in seconds) for when the run step was cancelled. */
-        fun cancelledAt(cancelledAt: Long) = cancelledAt(JsonField.of(cancelledAt))
+        fun cancelledAt(cancelledAt: Long?) = cancelledAt(JsonField.ofNullable(cancelledAt))
+
+        /** The Unix timestamp (in seconds) for when the run step was cancelled. */
+        fun cancelledAt(cancelledAt: Long) = cancelledAt(cancelledAt as Long?)
+
+        /** The Unix timestamp (in seconds) for when the run step was cancelled. */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun cancelledAt(cancelledAt: Optional<Long>) =
+            cancelledAt(cancelledAt.orElse(null) as Long?)
 
         /** The Unix timestamp (in seconds) for when the run step was cancelled. */
         fun cancelledAt(cancelledAt: JsonField<Long>) = apply { this.cancelledAt = cancelledAt }
 
         /** The Unix timestamp (in seconds) for when the run step completed. */
-        fun completedAt(completedAt: Long) = completedAt(JsonField.of(completedAt))
+        fun completedAt(completedAt: Long?) = completedAt(JsonField.ofNullable(completedAt))
+
+        /** The Unix timestamp (in seconds) for when the run step completed. */
+        fun completedAt(completedAt: Long) = completedAt(completedAt as Long?)
+
+        /** The Unix timestamp (in seconds) for when the run step completed. */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun completedAt(completedAt: Optional<Long>) =
+            completedAt(completedAt.orElse(null) as Long?)
 
         /** The Unix timestamp (in seconds) for when the run step completed. */
         fun completedAt(completedAt: JsonField<Long>) = apply { this.completedAt = completedAt }
@@ -321,7 +341,20 @@ private constructor(
          * The Unix timestamp (in seconds) for when the run step expired. A step is considered
          * expired if the parent run is expired.
          */
-        fun expiredAt(expiredAt: Long) = expiredAt(JsonField.of(expiredAt))
+        fun expiredAt(expiredAt: Long?) = expiredAt(JsonField.ofNullable(expiredAt))
+
+        /**
+         * The Unix timestamp (in seconds) for when the run step expired. A step is considered
+         * expired if the parent run is expired.
+         */
+        fun expiredAt(expiredAt: Long) = expiredAt(expiredAt as Long?)
+
+        /**
+         * The Unix timestamp (in seconds) for when the run step expired. A step is considered
+         * expired if the parent run is expired.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun expiredAt(expiredAt: Optional<Long>) = expiredAt(expiredAt.orElse(null) as Long?)
 
         /**
          * The Unix timestamp (in seconds) for when the run step expired. A step is considered
@@ -330,13 +363,23 @@ private constructor(
         fun expiredAt(expiredAt: JsonField<Long>) = apply { this.expiredAt = expiredAt }
 
         /** The Unix timestamp (in seconds) for when the run step failed. */
-        fun failedAt(failedAt: Long) = failedAt(JsonField.of(failedAt))
+        fun failedAt(failedAt: Long?) = failedAt(JsonField.ofNullable(failedAt))
+
+        /** The Unix timestamp (in seconds) for when the run step failed. */
+        fun failedAt(failedAt: Long) = failedAt(failedAt as Long?)
+
+        /** The Unix timestamp (in seconds) for when the run step failed. */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun failedAt(failedAt: Optional<Long>) = failedAt(failedAt.orElse(null) as Long?)
 
         /** The Unix timestamp (in seconds) for when the run step failed. */
         fun failedAt(failedAt: JsonField<Long>) = apply { this.failedAt = failedAt }
 
         /** The last error associated with this run step. Will be `null` if there are no errors. */
-        fun lastError(lastError: LastError) = lastError(JsonField.of(lastError))
+        fun lastError(lastError: LastError?) = lastError(JsonField.ofNullable(lastError))
+
+        /** The last error associated with this run step. Will be `null` if there are no errors. */
+        fun lastError(lastError: Optional<LastError>) = lastError(lastError.orElse(null))
 
         /** The last error associated with this run step. Will be `null` if there are no errors. */
         fun lastError(lastError: JsonField<LastError>) = apply { this.lastError = lastError }
@@ -386,6 +429,14 @@ private constructor(
             this.stepDetails = stepDetails
         }
 
+        /** Details of the message creation by the run step. */
+        fun stepDetails(messageCreationStepDetails: MessageCreationStepDetails) =
+            stepDetails(StepDetails.ofMessageCreationStepDetails(messageCreationStepDetails))
+
+        /** Details of the tool call. */
+        fun stepDetails(toolCallsStepDetails: ToolCallsStepDetails) =
+            stepDetails(StepDetails.ofToolCallsStepDetails(toolCallsStepDetails))
+
         /**
          * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was
          * run.
@@ -408,7 +459,13 @@ private constructor(
          * Usage statistics related to the run step. This value will be `null` while the run step's
          * status is `in_progress`.
          */
-        fun usage(usage: Usage) = usage(JsonField.of(usage))
+        fun usage(usage: Usage?) = usage(JsonField.ofNullable(usage))
+
+        /**
+         * Usage statistics related to the run step. This value will be `null` while the run step's
+         * status is `in_progress`.
+         */
+        fun usage(usage: Optional<Usage>) = usage(usage.orElse(null))
 
         /**
          * Usage statistics related to the run step. This value will be `null` while the run step's
@@ -437,22 +494,22 @@ private constructor(
 
         fun build(): RunStep =
             RunStep(
-                id,
-                assistantId,
-                cancelledAt,
-                completedAt,
-                createdAt,
-                expiredAt,
-                failedAt,
-                lastError,
-                metadata,
-                object_,
-                runId,
-                status,
-                stepDetails,
-                threadId,
-                type,
-                usage,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(assistantId) { "`assistantId` is required but was not set" },
+                checkNotNull(cancelledAt) { "`cancelledAt` is required but was not set" },
+                checkNotNull(completedAt) { "`completedAt` is required but was not set" },
+                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
+                checkNotNull(expiredAt) { "`expiredAt` is required but was not set" },
+                checkNotNull(failedAt) { "`failedAt` is required but was not set" },
+                checkNotNull(lastError) { "`lastError` is required but was not set" },
+                checkNotNull(metadata) { "`metadata` is required but was not set" },
+                checkNotNull(object_) { "`object_` is required but was not set" },
+                checkNotNull(runId) { "`runId` is required but was not set" },
+                checkNotNull(status) { "`status` is required but was not set" },
+                checkNotNull(stepDetails) { "`stepDetails` is required but was not set" },
+                checkNotNull(threadId) { "`threadId` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
+                checkNotNull(usage) { "`usage` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }
@@ -477,10 +534,10 @@ private constructor(
         fun message(): String = message.getRequired("message")
 
         /** One of `server_error` or `rate_limit_exceeded`. */
-        @JsonProperty("code") @ExcludeMissing fun _code() = code
+        @JsonProperty("code") @ExcludeMissing fun _code(): JsonField<Code> = code
 
         /** A human-readable description of the error. */
-        @JsonProperty("message") @ExcludeMissing fun _message() = message
+        @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -505,8 +562,8 @@ private constructor(
 
         class Builder {
 
-            private var code: JsonField<Code> = JsonMissing.of()
-            private var message: JsonField<String> = JsonMissing.of()
+            private var code: JsonField<Code>? = null
+            private var message: JsonField<String>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -549,8 +606,8 @@ private constructor(
 
             fun build(): LastError =
                 LastError(
-                    code,
-                    message,
+                    checkNotNull(code) { "`code` is required but was not set" },
+                    checkNotNull(message) { "`message` is required but was not set" },
                     additionalProperties.toImmutable(),
                 )
         }
@@ -994,13 +1051,17 @@ private constructor(
         /** Number of completion tokens used over the course of the run step. */
         @JsonProperty("completion_tokens")
         @ExcludeMissing
-        fun _completionTokens() = completionTokens
+        fun _completionTokens(): JsonField<Long> = completionTokens
 
         /** Number of prompt tokens used over the course of the run step. */
-        @JsonProperty("prompt_tokens") @ExcludeMissing fun _promptTokens() = promptTokens
+        @JsonProperty("prompt_tokens")
+        @ExcludeMissing
+        fun _promptTokens(): JsonField<Long> = promptTokens
 
         /** Total number of tokens used (prompt + completion). */
-        @JsonProperty("total_tokens") @ExcludeMissing fun _totalTokens() = totalTokens
+        @JsonProperty("total_tokens")
+        @ExcludeMissing
+        fun _totalTokens(): JsonField<Long> = totalTokens
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1026,9 +1087,9 @@ private constructor(
 
         class Builder {
 
-            private var completionTokens: JsonField<Long> = JsonMissing.of()
-            private var promptTokens: JsonField<Long> = JsonMissing.of()
-            private var totalTokens: JsonField<Long> = JsonMissing.of()
+            private var completionTokens: JsonField<Long>? = null
+            private var promptTokens: JsonField<Long>? = null
+            private var totalTokens: JsonField<Long>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1083,9 +1144,11 @@ private constructor(
 
             fun build(): Usage =
                 Usage(
-                    completionTokens,
-                    promptTokens,
-                    totalTokens,
+                    checkNotNull(completionTokens) {
+                        "`completionTokens` is required but was not set"
+                    },
+                    checkNotNull(promptTokens) { "`promptTokens` is required but was not set" },
+                    checkNotNull(totalTokens) { "`totalTokens` is required but was not set" },
                     additionalProperties.toImmutable(),
                 )
         }

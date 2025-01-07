@@ -47,14 +47,14 @@ private constructor(
     /**
      * Specifies the output audio format. Must be one of `wav`, `mp3`, `flac`, `opus`, or `pcm16`.
      */
-    @JsonProperty("format") @ExcludeMissing fun _format() = format
+    @JsonProperty("format") @ExcludeMissing fun _format(): JsonField<Format> = format
 
     /**
      * The voice the model uses to respond. Supported voices are `ash`, `ballad`, `coral`, `sage`,
      * and `verse` (also supported but not recommended are `alloy`, `echo`, and `shimmer`; these
      * voices are less expressive).
      */
-    @JsonProperty("voice") @ExcludeMissing fun _voice() = voice
+    @JsonProperty("voice") @ExcludeMissing fun _voice(): JsonField<Voice> = voice
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -79,8 +79,8 @@ private constructor(
 
     class Builder {
 
-        private var format: JsonField<Format> = JsonMissing.of()
-        private var voice: JsonField<Voice> = JsonMissing.of()
+        private var format: JsonField<Format>? = null
+        private var voice: JsonField<Voice>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -137,8 +137,8 @@ private constructor(
 
         fun build(): ChatCompletionAudioParam =
             ChatCompletionAudioParam(
-                format,
-                voice,
+                checkNotNull(format) { "`format` is required but was not set" },
+                checkNotNull(voice) { "`voice` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }

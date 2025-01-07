@@ -104,6 +104,13 @@ private constructor(
     fun incompleteDetails(): Optional<IncompleteDetails> =
         Optional.ofNullable(incompleteDetails.getNullable("incomplete_details"))
 
+    /**
+     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
+     * additional information about the object in a structured format. Keys can be a maximum of 64
+     * characters long and values can be a maximum of 512 characters long.
+     */
+    @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+
     /** The object type, which is always `thread.message`. */
     fun object_(): Object = object_.getRequired("object")
 
@@ -129,63 +136,66 @@ private constructor(
     fun threadId(): String = threadId.getRequired("thread_id")
 
     /** The identifier, which can be referenced in API endpoints. */
-    @JsonProperty("id") @ExcludeMissing fun _id() = id
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /**
      * If applicable, the ID of the
      * [assistant](https://platform.openai.com/docs/api-reference/assistants) that authored this
      * message.
      */
-    @JsonProperty("assistant_id") @ExcludeMissing fun _assistantId() = assistantId
+    @JsonProperty("assistant_id")
+    @ExcludeMissing
+    fun _assistantId(): JsonField<String> = assistantId
 
     /** A list of files attached to the message, and the tools they were added to. */
-    @JsonProperty("attachments") @ExcludeMissing fun _attachments() = attachments
+    @JsonProperty("attachments")
+    @ExcludeMissing
+    fun _attachments(): JsonField<List<Attachment>> = attachments
 
     /** The Unix timestamp (in seconds) for when the message was completed. */
-    @JsonProperty("completed_at") @ExcludeMissing fun _completedAt() = completedAt
+    @JsonProperty("completed_at") @ExcludeMissing fun _completedAt(): JsonField<Long> = completedAt
 
     /** The content of the message in array of text and/or images. */
-    @JsonProperty("content") @ExcludeMissing fun _content() = content
+    @JsonProperty("content")
+    @ExcludeMissing
+    fun _content(): JsonField<List<MessageContent>> = content
 
     /** The Unix timestamp (in seconds) for when the message was created. */
-    @JsonProperty("created_at") @ExcludeMissing fun _createdAt() = createdAt
+    @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
     /** The Unix timestamp (in seconds) for when the message was marked as incomplete. */
-    @JsonProperty("incomplete_at") @ExcludeMissing fun _incompleteAt() = incompleteAt
+    @JsonProperty("incomplete_at")
+    @ExcludeMissing
+    fun _incompleteAt(): JsonField<Long> = incompleteAt
 
     /** On an incomplete message, details about why the message is incomplete. */
-    @JsonProperty("incomplete_details") @ExcludeMissing fun _incompleteDetails() = incompleteDetails
-
-    /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format. Keys can be a maximum of 64
-     * characters long and values can be a maximum of 512 characters long.
-     */
-    @JsonProperty("metadata") @ExcludeMissing fun _metadata() = metadata
+    @JsonProperty("incomplete_details")
+    @ExcludeMissing
+    fun _incompleteDetails(): JsonField<IncompleteDetails> = incompleteDetails
 
     /** The object type, which is always `thread.message`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /** The entity that produced the message. One of `user` or `assistant`. */
-    @JsonProperty("role") @ExcludeMissing fun _role() = role
+    @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
 
     /**
      * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) associated with the
      * creation of this message. Value is `null` when messages are created manually using the create
      * message or create thread endpoints.
      */
-    @JsonProperty("run_id") @ExcludeMissing fun _runId() = runId
+    @JsonProperty("run_id") @ExcludeMissing fun _runId(): JsonField<String> = runId
 
     /**
      * The status of the message, which can be either `in_progress`, `incomplete`, or `completed`.
      */
-    @JsonProperty("status") @ExcludeMissing fun _status() = status
+    @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
     /**
      * The [thread](https://platform.openai.com/docs/api-reference/threads) ID that this message
      * belongs to.
      */
-    @JsonProperty("thread_id") @ExcludeMissing fun _threadId() = threadId
+    @JsonProperty("thread_id") @ExcludeMissing fun _threadId(): JsonField<String> = threadId
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -221,29 +231,29 @@ private constructor(
 
     class Builder {
 
-        private var id: JsonField<String> = JsonMissing.of()
-        private var assistantId: JsonField<String> = JsonMissing.of()
-        private var attachments: JsonField<List<Attachment>> = JsonMissing.of()
-        private var completedAt: JsonField<Long> = JsonMissing.of()
-        private var content: JsonField<List<MessageContent>> = JsonMissing.of()
-        private var createdAt: JsonField<Long> = JsonMissing.of()
-        private var incompleteAt: JsonField<Long> = JsonMissing.of()
-        private var incompleteDetails: JsonField<IncompleteDetails> = JsonMissing.of()
-        private var metadata: JsonValue = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
-        private var role: JsonField<Role> = JsonMissing.of()
-        private var runId: JsonField<String> = JsonMissing.of()
-        private var status: JsonField<Status> = JsonMissing.of()
-        private var threadId: JsonField<String> = JsonMissing.of()
+        private var id: JsonField<String>? = null
+        private var assistantId: JsonField<String>? = null
+        private var attachments: JsonField<MutableList<Attachment>>? = null
+        private var completedAt: JsonField<Long>? = null
+        private var content: JsonField<MutableList<MessageContent>>? = null
+        private var createdAt: JsonField<Long>? = null
+        private var incompleteAt: JsonField<Long>? = null
+        private var incompleteDetails: JsonField<IncompleteDetails>? = null
+        private var metadata: JsonValue? = null
+        private var object_: JsonField<Object>? = null
+        private var role: JsonField<Role>? = null
+        private var runId: JsonField<String>? = null
+        private var status: JsonField<Status>? = null
+        private var threadId: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(message: Message) = apply {
             id = message.id
             assistantId = message.assistantId
-            attachments = message.attachments
+            attachments = message.attachments.map { it.toMutableList() }
             completedAt = message.completedAt
-            content = message.content
+            content = message.content.map { it.toMutableList() }
             createdAt = message.createdAt
             incompleteAt = message.incompleteAt
             incompleteDetails = message.incompleteDetails
@@ -267,7 +277,14 @@ private constructor(
          * [assistant](https://platform.openai.com/docs/api-reference/assistants) that authored this
          * message.
          */
-        fun assistantId(assistantId: String) = assistantId(JsonField.of(assistantId))
+        fun assistantId(assistantId: String?) = assistantId(JsonField.ofNullable(assistantId))
+
+        /**
+         * If applicable, the ID of the
+         * [assistant](https://platform.openai.com/docs/api-reference/assistants) that authored this
+         * message.
+         */
+        fun assistantId(assistantId: Optional<String>) = assistantId(assistantId.orElse(null))
 
         /**
          * If applicable, the ID of the
@@ -277,15 +294,42 @@ private constructor(
         fun assistantId(assistantId: JsonField<String>) = apply { this.assistantId = assistantId }
 
         /** A list of files attached to the message, and the tools they were added to. */
-        fun attachments(attachments: List<Attachment>) = attachments(JsonField.of(attachments))
+        fun attachments(attachments: List<Attachment>?) =
+            attachments(JsonField.ofNullable(attachments))
+
+        /** A list of files attached to the message, and the tools they were added to. */
+        fun attachments(attachments: Optional<List<Attachment>>) =
+            attachments(attachments.orElse(null))
 
         /** A list of files attached to the message, and the tools they were added to. */
         fun attachments(attachments: JsonField<List<Attachment>>) = apply {
-            this.attachments = attachments
+            this.attachments = attachments.map { it.toMutableList() }
+        }
+
+        /** A list of files attached to the message, and the tools they were added to. */
+        fun addAttachment(attachment: Attachment) = apply {
+            attachments =
+                (attachments ?: JsonField.of(mutableListOf())).apply {
+                    asKnown()
+                        .orElseThrow {
+                            IllegalStateException(
+                                "Field was set to non-list type: ${javaClass.simpleName}"
+                            )
+                        }
+                        .add(attachment)
+                }
         }
 
         /** The Unix timestamp (in seconds) for when the message was completed. */
-        fun completedAt(completedAt: Long) = completedAt(JsonField.of(completedAt))
+        fun completedAt(completedAt: Long?) = completedAt(JsonField.ofNullable(completedAt))
+
+        /** The Unix timestamp (in seconds) for when the message was completed. */
+        fun completedAt(completedAt: Long) = completedAt(completedAt as Long?)
+
+        /** The Unix timestamp (in seconds) for when the message was completed. */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun completedAt(completedAt: Optional<Long>) =
+            completedAt(completedAt.orElse(null) as Long?)
 
         /** The Unix timestamp (in seconds) for when the message was completed. */
         fun completedAt(completedAt: JsonField<Long>) = apply { this.completedAt = completedAt }
@@ -294,7 +338,23 @@ private constructor(
         fun content(content: List<MessageContent>) = content(JsonField.of(content))
 
         /** The content of the message in array of text and/or images. */
-        fun content(content: JsonField<List<MessageContent>>) = apply { this.content = content }
+        fun content(content: JsonField<List<MessageContent>>) = apply {
+            this.content = content.map { it.toMutableList() }
+        }
+
+        /** The content of the message in array of text and/or images. */
+        fun addContent(content: MessageContent) = apply {
+            this.content =
+                (this.content ?: JsonField.of(mutableListOf())).apply {
+                    asKnown()
+                        .orElseThrow {
+                            IllegalStateException(
+                                "Field was set to non-list type: ${javaClass.simpleName}"
+                            )
+                        }
+                        .add(content)
+                }
+        }
 
         /** The Unix timestamp (in seconds) for when the message was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
@@ -303,14 +363,26 @@ private constructor(
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /** The Unix timestamp (in seconds) for when the message was marked as incomplete. */
-        fun incompleteAt(incompleteAt: Long) = incompleteAt(JsonField.of(incompleteAt))
+        fun incompleteAt(incompleteAt: Long?) = incompleteAt(JsonField.ofNullable(incompleteAt))
+
+        /** The Unix timestamp (in seconds) for when the message was marked as incomplete. */
+        fun incompleteAt(incompleteAt: Long) = incompleteAt(incompleteAt as Long?)
+
+        /** The Unix timestamp (in seconds) for when the message was marked as incomplete. */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun incompleteAt(incompleteAt: Optional<Long>) =
+            incompleteAt(incompleteAt.orElse(null) as Long?)
 
         /** The Unix timestamp (in seconds) for when the message was marked as incomplete. */
         fun incompleteAt(incompleteAt: JsonField<Long>) = apply { this.incompleteAt = incompleteAt }
 
         /** On an incomplete message, details about why the message is incomplete. */
-        fun incompleteDetails(incompleteDetails: IncompleteDetails) =
-            incompleteDetails(JsonField.of(incompleteDetails))
+        fun incompleteDetails(incompleteDetails: IncompleteDetails?) =
+            incompleteDetails(JsonField.ofNullable(incompleteDetails))
+
+        /** On an incomplete message, details about why the message is incomplete. */
+        fun incompleteDetails(incompleteDetails: Optional<IncompleteDetails>) =
+            incompleteDetails(incompleteDetails.orElse(null))
 
         /** On an incomplete message, details about why the message is incomplete. */
         fun incompleteDetails(incompleteDetails: JsonField<IncompleteDetails>) = apply {
@@ -341,7 +413,14 @@ private constructor(
          * the creation of this message. Value is `null` when messages are created manually using
          * the create message or create thread endpoints.
          */
-        fun runId(runId: String) = runId(JsonField.of(runId))
+        fun runId(runId: String?) = runId(JsonField.ofNullable(runId))
+
+        /**
+         * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) associated with
+         * the creation of this message. Value is `null` when messages are created manually using
+         * the create message or create thread endpoints.
+         */
+        fun runId(runId: Optional<String>) = runId(runId.orElse(null))
 
         /**
          * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) associated with
@@ -395,20 +474,24 @@ private constructor(
 
         fun build(): Message =
             Message(
-                id,
-                assistantId,
-                attachments.map { it.toImmutable() },
-                completedAt,
-                content.map { it.toImmutable() },
-                createdAt,
-                incompleteAt,
-                incompleteDetails,
-                metadata,
-                object_,
-                role,
-                runId,
-                status,
-                threadId,
+                checkNotNull(id) { "`id` is required but was not set" },
+                checkNotNull(assistantId) { "`assistantId` is required but was not set" },
+                checkNotNull(attachments) { "`attachments` is required but was not set" }
+                    .map { it.toImmutable() },
+                checkNotNull(completedAt) { "`completedAt` is required but was not set" },
+                checkNotNull(content) { "`content` is required but was not set" }
+                    .map { it.toImmutable() },
+                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
+                checkNotNull(incompleteAt) { "`incompleteAt` is required but was not set" },
+                checkNotNull(incompleteDetails) {
+                    "`incompleteDetails` is required but was not set"
+                },
+                checkNotNull(metadata) { "`metadata` is required but was not set" },
+                checkNotNull(object_) { "`object_` is required but was not set" },
+                checkNotNull(role) { "`role` is required but was not set" },
+                checkNotNull(runId) { "`runId` is required but was not set" },
+                checkNotNull(status) { "`status` is required but was not set" },
+                checkNotNull(threadId) { "`threadId` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }
@@ -434,10 +517,10 @@ private constructor(
         fun tools(): Optional<List<Tool>> = Optional.ofNullable(tools.getNullable("tools"))
 
         /** The ID of the file to attach to the message. */
-        @JsonProperty("file_id") @ExcludeMissing fun _fileId() = fileId
+        @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
         /** The tools to add this file to. */
-        @JsonProperty("tools") @ExcludeMissing fun _tools() = tools
+        @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<Tool>> = tools
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -463,13 +546,13 @@ private constructor(
         class Builder {
 
             private var fileId: JsonField<String> = JsonMissing.of()
-            private var tools: JsonField<List<Tool>> = JsonMissing.of()
+            private var tools: JsonField<MutableList<Tool>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(attachment: Attachment) = apply {
                 fileId = attachment.fileId
-                tools = attachment.tools
+                tools = attachment.tools.map { it.toMutableList() }
                 additionalProperties = attachment.additionalProperties.toMutableMap()
             }
 
@@ -483,7 +566,23 @@ private constructor(
             fun tools(tools: List<Tool>) = tools(JsonField.of(tools))
 
             /** The tools to add this file to. */
-            fun tools(tools: JsonField<List<Tool>>) = apply { this.tools = tools }
+            fun tools(tools: JsonField<List<Tool>>) = apply {
+                this.tools = tools.map { it.toMutableList() }
+            }
+
+            /** The tools to add this file to. */
+            fun addTool(tool: Tool) = apply {
+                tools =
+                    (tools ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(tool)
+                    }
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -507,7 +606,7 @@ private constructor(
             fun build(): Attachment =
                 Attachment(
                     fileId,
-                    tools.map { it.toImmutable() },
+                    (tools ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toImmutable(),
                 )
         }
@@ -662,7 +761,7 @@ private constructor(
                 fun type(): Type = type.getRequired("type")
 
                 /** The type of tool being defined: `file_search` */
-                @JsonProperty("type") @ExcludeMissing fun _type() = type
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                 @JsonAnyGetter
                 @ExcludeMissing
@@ -686,7 +785,7 @@ private constructor(
 
                 class Builder {
 
-                    private var type: JsonField<Type> = JsonMissing.of()
+                    private var type: JsonField<Type>? = null
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
@@ -727,7 +826,10 @@ private constructor(
                     }
 
                     fun build(): AssistantToolsFileSearchTypeOnly =
-                        AssistantToolsFileSearchTypeOnly(type, additionalProperties.toImmutable())
+                        AssistantToolsFileSearchTypeOnly(
+                            checkNotNull(type) { "`type` is required but was not set" },
+                            additionalProperties.toImmutable()
+                        )
                 }
 
                 class Type
@@ -835,7 +937,7 @@ private constructor(
         fun reason(): Reason = reason.getRequired("reason")
 
         /** The reason the message is incomplete. */
-        @JsonProperty("reason") @ExcludeMissing fun _reason() = reason
+        @JsonProperty("reason") @ExcludeMissing fun _reason(): JsonField<Reason> = reason
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -859,7 +961,7 @@ private constructor(
 
         class Builder {
 
-            private var reason: JsonField<Reason> = JsonMissing.of()
+            private var reason: JsonField<Reason>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -894,7 +996,10 @@ private constructor(
             }
 
             fun build(): IncompleteDetails =
-                IncompleteDetails(reason, additionalProperties.toImmutable())
+                IncompleteDetails(
+                    checkNotNull(reason) { "`reason` is required but was not set" },
+                    additionalProperties.toImmutable()
+                )
         }
 
         class Reason

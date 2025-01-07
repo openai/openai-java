@@ -295,7 +295,7 @@ class BetaThreadRunCreateParamsTest {
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.maxCompletionTokens()).contains(256L)
         assertThat(body.maxPromptTokens()).contains(256L)
-        assertThat(body.metadata()).contains(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.model()).contains(ChatModel.GPT_4O)
         assertThat(body.parallelToolCalls()).contains(true)
         assertThat(body.responseFormat())

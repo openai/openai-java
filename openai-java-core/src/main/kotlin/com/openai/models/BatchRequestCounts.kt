@@ -38,13 +38,13 @@ private constructor(
     fun total(): Long = total.getRequired("total")
 
     /** Number of requests that have been completed successfully. */
-    @JsonProperty("completed") @ExcludeMissing fun _completed() = completed
+    @JsonProperty("completed") @ExcludeMissing fun _completed(): JsonField<Long> = completed
 
     /** Number of requests that have failed. */
-    @JsonProperty("failed") @ExcludeMissing fun _failed() = failed
+    @JsonProperty("failed") @ExcludeMissing fun _failed(): JsonField<Long> = failed
 
     /** Total number of requests in the batch. */
-    @JsonProperty("total") @ExcludeMissing fun _total() = total
+    @JsonProperty("total") @ExcludeMissing fun _total(): JsonField<Long> = total
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -70,9 +70,9 @@ private constructor(
 
     class Builder {
 
-        private var completed: JsonField<Long> = JsonMissing.of()
-        private var failed: JsonField<Long> = JsonMissing.of()
-        private var total: JsonField<Long> = JsonMissing.of()
+        private var completed: JsonField<Long>? = null
+        private var failed: JsonField<Long>? = null
+        private var total: JsonField<Long>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -122,9 +122,9 @@ private constructor(
 
         fun build(): BatchRequestCounts =
             BatchRequestCounts(
-                completed,
-                failed,
-                total,
+                checkNotNull(completed) { "`completed` is required but was not set" },
+                checkNotNull(failed) { "`failed` is required but was not set" },
+                checkNotNull(total) { "`total` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }

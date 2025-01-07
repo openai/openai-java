@@ -48,13 +48,13 @@ private constructor(
      * The embedding vector, which is a list of floats. The length of vector depends on the model as
      * listed in the [embedding guide](https://platform.openai.com/docs/guides/embeddings).
      */
-    @JsonProperty("embedding") @ExcludeMissing fun _embedding() = embedding
+    @JsonProperty("embedding") @ExcludeMissing fun _embedding(): JsonField<List<Double>> = embedding
 
     /** The index of the embedding in the list of embeddings. */
-    @JsonProperty("index") @ExcludeMissing fun _index() = index
+    @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
     /** The object type, which is always "embedding". */
-    @JsonProperty("object") @ExcludeMissing fun _object_() = object_
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -80,14 +80,14 @@ private constructor(
 
     class Builder {
 
-        private var embedding: JsonField<List<Double>> = JsonMissing.of()
-        private var index: JsonField<Long> = JsonMissing.of()
-        private var object_: JsonField<Object> = JsonMissing.of()
+        private var embedding: JsonField<MutableList<Double>>? = null
+        private var index: JsonField<Long>? = null
+        private var object_: JsonField<Object>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(embedding: Embedding) = apply {
-            this.embedding = embedding.embedding
+            this.embedding = embedding.embedding.map { it.toMutableList() }
             index = embedding.index
             object_ = embedding.object_
             additionalProperties = embedding.additionalProperties.toMutableMap()
@@ -105,7 +105,27 @@ private constructor(
          * model as listed in the
          * [embedding guide](https://platform.openai.com/docs/guides/embeddings).
          */
-        fun embedding(embedding: JsonField<List<Double>>) = apply { this.embedding = embedding }
+        fun embedding(embedding: JsonField<List<Double>>) = apply {
+            this.embedding = embedding.map { it.toMutableList() }
+        }
+
+        /**
+         * The embedding vector, which is a list of floats. The length of vector depends on the
+         * model as listed in the
+         * [embedding guide](https://platform.openai.com/docs/guides/embeddings).
+         */
+        fun addEmbedding(embedding: Double) = apply {
+            this.embedding =
+                (this.embedding ?: JsonField.of(mutableListOf())).apply {
+                    asKnown()
+                        .orElseThrow {
+                            IllegalStateException(
+                                "Field was set to non-list type: ${javaClass.simpleName}"
+                            )
+                        }
+                        .add(embedding)
+                }
+        }
 
         /** The index of the embedding in the list of embeddings. */
         fun index(index: Long) = index(JsonField.of(index))
@@ -140,9 +160,10 @@ private constructor(
 
         fun build(): Embedding =
             Embedding(
-                embedding.map { it.toImmutable() },
-                index,
-                object_,
+                checkNotNull(embedding) { "`embedding` is required but was not set" }
+                    .map { it.toImmutable() },
+                checkNotNull(index) { "`index` is required but was not set" },
+                checkNotNull(object_) { "`object_` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }

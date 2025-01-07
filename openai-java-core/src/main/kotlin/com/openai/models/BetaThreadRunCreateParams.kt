@@ -18,6 +18,7 @@ import com.openai.core.BaseSerializer
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
+import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.getOrThrow
@@ -96,7 +97,7 @@ constructor(
      * additional information about the object in a structured format. Keys can be a maximum of 64
      * characters long and values can be a maximum of 512 characters long.
      */
-    fun metadata(): Optional<JsonValue> = body.metadata()
+    fun _metadata(): JsonValue = body._metadata()
 
     /**
      * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used to
@@ -171,11 +172,122 @@ constructor(
      */
     fun truncationStrategy(): Optional<TruncationStrategy> = body.truncationStrategy()
 
+    /**
+     * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) to use
+     * to execute this run.
+     */
+    fun _assistantId(): JsonField<String> = body._assistantId()
+
+    /**
+     * Appends additional instructions at the end of the instructions for the run. This is useful
+     * for modifying the behavior on a per-run basis without overriding other instructions.
+     */
+    fun _additionalInstructions(): JsonField<String> = body._additionalInstructions()
+
+    /** Adds additional messages to the thread before creating the run. */
+    fun _additionalMessages(): JsonField<List<AdditionalMessage>> = body._additionalMessages()
+
+    /**
+     * Overrides the
+     * [instructions](https://platform.openai.com/docs/api-reference/assistants/createAssistant) of
+     * the assistant. This is useful for modifying the behavior on a per-run basis.
+     */
+    fun _instructions(): JsonField<String> = body._instructions()
+
+    /**
+     * The maximum number of completion tokens that may be used over the course of the run. The run
+     * will make a best effort to use only the number of completion tokens specified, across
+     * multiple turns of the run. If the run exceeds the number of completion tokens specified, the
+     * run will end with status `incomplete`. See `incomplete_details` for more info.
+     */
+    fun _maxCompletionTokens(): JsonField<Long> = body._maxCompletionTokens()
+
+    /**
+     * The maximum number of prompt tokens that may be used over the course of the run. The run will
+     * make a best effort to use only the number of prompt tokens specified, across multiple turns
+     * of the run. If the run exceeds the number of prompt tokens specified, the run will end with
+     * status `incomplete`. See `incomplete_details` for more info.
+     */
+    fun _maxPromptTokens(): JsonField<Long> = body._maxPromptTokens()
+
+    /**
+     * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used to
+     * execute this run. If a value is provided here, it will override the model associated with the
+     * assistant. If not, the model associated with the assistant will be used.
+     */
+    fun _model(): JsonField<ChatModel> = body._model()
+
+    /**
+     * Whether to enable
+     * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+     * during tool use.
+     */
+    fun _parallelToolCalls(): JsonField<Boolean> = body._parallelToolCalls()
+
+    /**
+     * Specifies the format that the model must output. Compatible with
+     * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
+     * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5 Turbo
+     * models since `gpt-3.5-turbo-1106`.
+     *
+     * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs which
+     * ensures the model will match your supplied JSON schema. Learn more in the
+     * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+     *
+     * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the model
+     * generates is valid JSON.
+     *
+     * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
+     * yourself via a system or user message. Without this, the model may generate an unending
+     * stream of whitespace until the generation reaches the token limit, resulting in a
+     * long-running and seemingly "stuck" request. Also note that the message content may be
+     * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
+     * `max_tokens` or the conversation exceeded the max context length.
+     */
+    fun _responseFormat(): JsonField<AssistantResponseFormatOption> = body._responseFormat()
+
+    /**
+     * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+     * output more random, while lower values like 0.2 will make it more focused and deterministic.
+     */
+    fun _temperature(): JsonField<Double> = body._temperature()
+
+    /**
+     * Controls which (if any) tool is called by the model. `none` means the model will not call any
+     * tools and instead generates a message. `auto` is the default value and means the model can
+     * pick between generating a message or calling one or more tools. `required` means the model
+     * must call one or more tools before responding to the user. Specifying a particular tool like
+     * `{"type": "file_search"}` or `{"type": "function", "function": {"name": "my_function"}}`
+     * forces the model to call that tool.
+     */
+    fun _toolChoice(): JsonField<AssistantToolChoiceOption> = body._toolChoice()
+
+    /**
+     * Override the tools the assistant can use for this run. This is useful for modifying the
+     * behavior on a per-run basis.
+     */
+    fun _tools(): JsonField<List<AssistantTool>> = body._tools()
+
+    /**
+     * An alternative to sampling with temperature, called nucleus sampling, where the model
+     * considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens
+     * comprising the top 10% probability mass are considered.
+     *
+     * We generally recommend altering this or temperature but not both.
+     */
+    fun _topP(): JsonField<Double> = body._topP()
+
+    /**
+     * Controls for how a thread will be truncated prior to the run. Use this to control the intial
+     * context window of the run.
+     */
+    fun _truncationStrategy(): JsonField<TruncationStrategy> = body._truncationStrategy()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     @JvmSynthetic internal fun getBody(): BetaThreadRunCreateBody = body
 
@@ -200,22 +312,51 @@ constructor(
     class BetaThreadRunCreateBody
     @JsonCreator
     internal constructor(
-        @JsonProperty("assistant_id") private val assistantId: String,
-        @JsonProperty("additional_instructions") private val additionalInstructions: String?,
+        @JsonProperty("assistant_id")
+        @ExcludeMissing
+        private val assistantId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("additional_instructions")
+        @ExcludeMissing
+        private val additionalInstructions: JsonField<String> = JsonMissing.of(),
         @JsonProperty("additional_messages")
-        private val additionalMessages: List<AdditionalMessage>?,
-        @JsonProperty("instructions") private val instructions: String?,
-        @JsonProperty("max_completion_tokens") private val maxCompletionTokens: Long?,
-        @JsonProperty("max_prompt_tokens") private val maxPromptTokens: Long?,
-        @JsonProperty("metadata") private val metadata: JsonValue?,
-        @JsonProperty("model") private val model: ChatModel?,
-        @JsonProperty("parallel_tool_calls") private val parallelToolCalls: Boolean?,
-        @JsonProperty("response_format") private val responseFormat: AssistantResponseFormatOption?,
-        @JsonProperty("temperature") private val temperature: Double?,
-        @JsonProperty("tool_choice") private val toolChoice: AssistantToolChoiceOption?,
-        @JsonProperty("tools") private val tools: List<AssistantTool>?,
-        @JsonProperty("top_p") private val topP: Double?,
-        @JsonProperty("truncation_strategy") private val truncationStrategy: TruncationStrategy?,
+        @ExcludeMissing
+        private val additionalMessages: JsonField<List<AdditionalMessage>> = JsonMissing.of(),
+        @JsonProperty("instructions")
+        @ExcludeMissing
+        private val instructions: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("max_completion_tokens")
+        @ExcludeMissing
+        private val maxCompletionTokens: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("max_prompt_tokens")
+        @ExcludeMissing
+        private val maxPromptTokens: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("metadata")
+        @ExcludeMissing
+        private val metadata: JsonValue = JsonMissing.of(),
+        @JsonProperty("model")
+        @ExcludeMissing
+        private val model: JsonField<ChatModel> = JsonMissing.of(),
+        @JsonProperty("parallel_tool_calls")
+        @ExcludeMissing
+        private val parallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("response_format")
+        @ExcludeMissing
+        private val responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of(),
+        @JsonProperty("temperature")
+        @ExcludeMissing
+        private val temperature: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("tool_choice")
+        @ExcludeMissing
+        private val toolChoice: JsonField<AssistantToolChoiceOption> = JsonMissing.of(),
+        @JsonProperty("tools")
+        @ExcludeMissing
+        private val tools: JsonField<List<AssistantTool>> = JsonMissing.of(),
+        @JsonProperty("top_p")
+        @ExcludeMissing
+        private val topP: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("truncation_strategy")
+        @ExcludeMissing
+        private val truncationStrategy: JsonField<TruncationStrategy> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -224,7 +365,139 @@ constructor(
          * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) to
          * use to execute this run.
          */
-        @JsonProperty("assistant_id") fun assistantId(): String = assistantId
+        fun assistantId(): String = assistantId.getRequired("assistant_id")
+
+        /**
+         * Appends additional instructions at the end of the instructions for the run. This is
+         * useful for modifying the behavior on a per-run basis without overriding other
+         * instructions.
+         */
+        fun additionalInstructions(): Optional<String> =
+            Optional.ofNullable(additionalInstructions.getNullable("additional_instructions"))
+
+        /** Adds additional messages to the thread before creating the run. */
+        fun additionalMessages(): Optional<List<AdditionalMessage>> =
+            Optional.ofNullable(additionalMessages.getNullable("additional_messages"))
+
+        /**
+         * Overrides the
+         * [instructions](https://platform.openai.com/docs/api-reference/assistants/createAssistant)
+         * of the assistant. This is useful for modifying the behavior on a per-run basis.
+         */
+        fun instructions(): Optional<String> =
+            Optional.ofNullable(instructions.getNullable("instructions"))
+
+        /**
+         * The maximum number of completion tokens that may be used over the course of the run. The
+         * run will make a best effort to use only the number of completion tokens specified, across
+         * multiple turns of the run. If the run exceeds the number of completion tokens specified,
+         * the run will end with status `incomplete`. See `incomplete_details` for more info.
+         */
+        fun maxCompletionTokens(): Optional<Long> =
+            Optional.ofNullable(maxCompletionTokens.getNullable("max_completion_tokens"))
+
+        /**
+         * The maximum number of prompt tokens that may be used over the course of the run. The run
+         * will make a best effort to use only the number of prompt tokens specified, across
+         * multiple turns of the run. If the run exceeds the number of prompt tokens specified, the
+         * run will end with status `incomplete`. See `incomplete_details` for more info.
+         */
+        fun maxPromptTokens(): Optional<Long> =
+            Optional.ofNullable(maxPromptTokens.getNullable("max_prompt_tokens"))
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format. Keys can be a
+         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         */
+        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+
+        /**
+         * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used
+         * to execute this run. If a value is provided here, it will override the model associated
+         * with the assistant. If not, the model associated with the assistant will be used.
+         */
+        fun model(): Optional<ChatModel> = Optional.ofNullable(model.getNullable("model"))
+
+        /**
+         * Whether to enable
+         * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+         * during tool use.
+         */
+        fun parallelToolCalls(): Optional<Boolean> =
+            Optional.ofNullable(parallelToolCalls.getNullable("parallel_tool_calls"))
+
+        /**
+         * Specifies the format that the model must output. Compatible with
+         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
+         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
+         * Turbo models since `gpt-3.5-turbo-1106`.
+         *
+         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
+         * which ensures the model will match your supplied JSON schema. Learn more in the
+         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         *
+         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
+         * model generates is valid JSON.
+         *
+         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
+         * yourself via a system or user message. Without this, the model may generate an unending
+         * stream of whitespace until the generation reaches the token limit, resulting in a
+         * long-running and seemingly "stuck" request. Also note that the message content may be
+         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
+         * `max_tokens` or the conversation exceeded the max context length.
+         */
+        fun responseFormat(): Optional<AssistantResponseFormatOption> =
+            Optional.ofNullable(responseFormat.getNullable("response_format"))
+
+        /**
+         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+         * output more random, while lower values like 0.2 will make it more focused and
+         * deterministic.
+         */
+        fun temperature(): Optional<Double> =
+            Optional.ofNullable(temperature.getNullable("temperature"))
+
+        /**
+         * Controls which (if any) tool is called by the model. `none` means the model will not call
+         * any tools and instead generates a message. `auto` is the default value and means the
+         * model can pick between generating a message or calling one or more tools. `required`
+         * means the model must call one or more tools before responding to the user. Specifying a
+         * particular tool like `{"type": "file_search"}` or `{"type": "function", "function":
+         * {"name": "my_function"}}` forces the model to call that tool.
+         */
+        fun toolChoice(): Optional<AssistantToolChoiceOption> =
+            Optional.ofNullable(toolChoice.getNullable("tool_choice"))
+
+        /**
+         * Override the tools the assistant can use for this run. This is useful for modifying the
+         * behavior on a per-run basis.
+         */
+        fun tools(): Optional<List<AssistantTool>> = Optional.ofNullable(tools.getNullable("tools"))
+
+        /**
+         * An alternative to sampling with temperature, called nucleus sampling, where the model
+         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
+         * tokens comprising the top 10% probability mass are considered.
+         *
+         * We generally recommend altering this or temperature but not both.
+         */
+        fun topP(): Optional<Double> = Optional.ofNullable(topP.getNullable("top_p"))
+
+        /**
+         * Controls for how a thread will be truncated prior to the run. Use this to control the
+         * intial context window of the run.
+         */
+        fun truncationStrategy(): Optional<TruncationStrategy> =
+            Optional.ofNullable(truncationStrategy.getNullable("truncation_strategy"))
+
+        /**
+         * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) to
+         * use to execute this run.
+         */
+        @JsonProperty("assistant_id")
+        @ExcludeMissing
+        fun _assistantId(): JsonField<String> = assistantId
 
         /**
          * Appends additional instructions at the end of the instructions for the run. This is
@@ -232,12 +505,13 @@ constructor(
          * instructions.
          */
         @JsonProperty("additional_instructions")
-        fun additionalInstructions(): Optional<String> = Optional.ofNullable(additionalInstructions)
+        @ExcludeMissing
+        fun _additionalInstructions(): JsonField<String> = additionalInstructions
 
         /** Adds additional messages to the thread before creating the run. */
         @JsonProperty("additional_messages")
-        fun additionalMessages(): Optional<List<AdditionalMessage>> =
-            Optional.ofNullable(additionalMessages)
+        @ExcludeMissing
+        fun _additionalMessages(): JsonField<List<AdditionalMessage>> = additionalMessages
 
         /**
          * Overrides the
@@ -245,7 +519,8 @@ constructor(
          * of the assistant. This is useful for modifying the behavior on a per-run basis.
          */
         @JsonProperty("instructions")
-        fun instructions(): Optional<String> = Optional.ofNullable(instructions)
+        @ExcludeMissing
+        fun _instructions(): JsonField<String> = instructions
 
         /**
          * The maximum number of completion tokens that may be used over the course of the run. The
@@ -254,7 +529,8 @@ constructor(
          * the run will end with status `incomplete`. See `incomplete_details` for more info.
          */
         @JsonProperty("max_completion_tokens")
-        fun maxCompletionTokens(): Optional<Long> = Optional.ofNullable(maxCompletionTokens)
+        @ExcludeMissing
+        fun _maxCompletionTokens(): JsonField<Long> = maxCompletionTokens
 
         /**
          * The maximum number of prompt tokens that may be used over the course of the run. The run
@@ -263,22 +539,15 @@ constructor(
          * run will end with status `incomplete`. See `incomplete_details` for more info.
          */
         @JsonProperty("max_prompt_tokens")
-        fun maxPromptTokens(): Optional<Long> = Optional.ofNullable(maxPromptTokens)
-
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format. Keys can be a
-         * maximum of 64 characters long and values can be a maximum of 512 characters long.
-         */
-        @JsonProperty("metadata")
-        fun metadata(): Optional<JsonValue> = Optional.ofNullable(metadata)
+        @ExcludeMissing
+        fun _maxPromptTokens(): JsonField<Long> = maxPromptTokens
 
         /**
          * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used
          * to execute this run. If a value is provided here, it will override the model associated
          * with the assistant. If not, the model associated with the assistant will be used.
          */
-        @JsonProperty("model") fun model(): Optional<ChatModel> = Optional.ofNullable(model)
+        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<ChatModel> = model
 
         /**
          * Whether to enable
@@ -286,7 +555,8 @@ constructor(
          * during tool use.
          */
         @JsonProperty("parallel_tool_calls")
-        fun parallelToolCalls(): Optional<Boolean> = Optional.ofNullable(parallelToolCalls)
+        @ExcludeMissing
+        fun _parallelToolCalls(): JsonField<Boolean> = parallelToolCalls
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -309,8 +579,8 @@ constructor(
          * `max_tokens` or the conversation exceeded the max context length.
          */
         @JsonProperty("response_format")
-        fun responseFormat(): Optional<AssistantResponseFormatOption> =
-            Optional.ofNullable(responseFormat)
+        @ExcludeMissing
+        fun _responseFormat(): JsonField<AssistantResponseFormatOption> = responseFormat
 
         /**
          * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
@@ -318,7 +588,8 @@ constructor(
          * deterministic.
          */
         @JsonProperty("temperature")
-        fun temperature(): Optional<Double> = Optional.ofNullable(temperature)
+        @ExcludeMissing
+        fun _temperature(): JsonField<Double> = temperature
 
         /**
          * Controls which (if any) tool is called by the model. `none` means the model will not call
@@ -329,14 +600,14 @@ constructor(
          * {"name": "my_function"}}` forces the model to call that tool.
          */
         @JsonProperty("tool_choice")
-        fun toolChoice(): Optional<AssistantToolChoiceOption> = Optional.ofNullable(toolChoice)
+        @ExcludeMissing
+        fun _toolChoice(): JsonField<AssistantToolChoiceOption> = toolChoice
 
         /**
          * Override the tools the assistant can use for this run. This is useful for modifying the
          * behavior on a per-run basis.
          */
-        @JsonProperty("tools")
-        fun tools(): Optional<List<AssistantTool>> = Optional.ofNullable(tools)
+        @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<AssistantTool>> = tools
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -345,19 +616,41 @@ constructor(
          *
          * We generally recommend altering this or temperature but not both.
          */
-        @JsonProperty("top_p") fun topP(): Optional<Double> = Optional.ofNullable(topP)
+        @JsonProperty("top_p") @ExcludeMissing fun _topP(): JsonField<Double> = topP
 
         /**
          * Controls for how a thread will be truncated prior to the run. Use this to control the
          * intial context window of the run.
          */
         @JsonProperty("truncation_strategy")
-        fun truncationStrategy(): Optional<TruncationStrategy> =
-            Optional.ofNullable(truncationStrategy)
+        @ExcludeMissing
+        fun _truncationStrategy(): JsonField<TruncationStrategy> = truncationStrategy
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): BetaThreadRunCreateBody = apply {
+            if (!validated) {
+                assistantId()
+                additionalInstructions()
+                additionalMessages().map { it.forEach { it.validate() } }
+                instructions()
+                maxCompletionTokens()
+                maxPromptTokens()
+                model()
+                parallelToolCalls()
+                responseFormat()
+                temperature()
+                toolChoice()
+                tools()
+                topP()
+                truncationStrategy().map { it.validate() }
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -368,28 +661,29 @@ constructor(
 
         class Builder {
 
-            private var assistantId: String? = null
-            private var additionalInstructions: String? = null
-            private var additionalMessages: MutableList<AdditionalMessage>? = null
-            private var instructions: String? = null
-            private var maxCompletionTokens: Long? = null
-            private var maxPromptTokens: Long? = null
-            private var metadata: JsonValue? = null
-            private var model: ChatModel? = null
-            private var parallelToolCalls: Boolean? = null
-            private var responseFormat: AssistantResponseFormatOption? = null
-            private var temperature: Double? = null
-            private var toolChoice: AssistantToolChoiceOption? = null
-            private var tools: MutableList<AssistantTool>? = null
-            private var topP: Double? = null
-            private var truncationStrategy: TruncationStrategy? = null
+            private var assistantId: JsonField<String>? = null
+            private var additionalInstructions: JsonField<String> = JsonMissing.of()
+            private var additionalMessages: JsonField<MutableList<AdditionalMessage>>? = null
+            private var instructions: JsonField<String> = JsonMissing.of()
+            private var maxCompletionTokens: JsonField<Long> = JsonMissing.of()
+            private var maxPromptTokens: JsonField<Long> = JsonMissing.of()
+            private var metadata: JsonValue = JsonMissing.of()
+            private var model: JsonField<ChatModel> = JsonMissing.of()
+            private var parallelToolCalls: JsonField<Boolean> = JsonMissing.of()
+            private var responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of()
+            private var temperature: JsonField<Double> = JsonMissing.of()
+            private var toolChoice: JsonField<AssistantToolChoiceOption> = JsonMissing.of()
+            private var tools: JsonField<MutableList<AssistantTool>>? = null
+            private var topP: JsonField<Double> = JsonMissing.of()
+            private var truncationStrategy: JsonField<TruncationStrategy> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(betaThreadRunCreateBody: BetaThreadRunCreateBody) = apply {
                 assistantId = betaThreadRunCreateBody.assistantId
                 additionalInstructions = betaThreadRunCreateBody.additionalInstructions
-                additionalMessages = betaThreadRunCreateBody.additionalMessages?.toMutableList()
+                additionalMessages =
+                    betaThreadRunCreateBody.additionalMessages.map { it.toMutableList() }
                 instructions = betaThreadRunCreateBody.instructions
                 maxCompletionTokens = betaThreadRunCreateBody.maxCompletionTokens
                 maxPromptTokens = betaThreadRunCreateBody.maxPromptTokens
@@ -399,7 +693,7 @@ constructor(
                 responseFormat = betaThreadRunCreateBody.responseFormat
                 temperature = betaThreadRunCreateBody.temperature
                 toolChoice = betaThreadRunCreateBody.toolChoice
-                tools = betaThreadRunCreateBody.tools?.toMutableList()
+                tools = betaThreadRunCreateBody.tools.map { it.toMutableList() }
                 topP = betaThreadRunCreateBody.topP
                 truncationStrategy = betaThreadRunCreateBody.truncationStrategy
                 additionalProperties = betaThreadRunCreateBody.additionalProperties.toMutableMap()
@@ -409,16 +703,23 @@ constructor(
              * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants)
              * to use to execute this run.
              */
-            fun assistantId(assistantId: String) = apply { this.assistantId = assistantId }
+            fun assistantId(assistantId: String) = assistantId(JsonField.of(assistantId))
+
+            /**
+             * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants)
+             * to use to execute this run.
+             */
+            fun assistantId(assistantId: JsonField<String>) = apply {
+                this.assistantId = assistantId
+            }
 
             /**
              * Appends additional instructions at the end of the instructions for the run. This is
              * useful for modifying the behavior on a per-run basis without overriding other
              * instructions.
              */
-            fun additionalInstructions(additionalInstructions: String?) = apply {
-                this.additionalInstructions = additionalInstructions
-            }
+            fun additionalInstructions(additionalInstructions: String?) =
+                additionalInstructions(JsonField.ofNullable(additionalInstructions))
 
             /**
              * Appends additional instructions at the end of the instructions for the run. This is
@@ -428,19 +729,40 @@ constructor(
             fun additionalInstructions(additionalInstructions: Optional<String>) =
                 additionalInstructions(additionalInstructions.orElse(null))
 
-            /** Adds additional messages to the thread before creating the run. */
-            fun additionalMessages(additionalMessages: List<AdditionalMessage>?) = apply {
-                this.additionalMessages = additionalMessages?.toMutableList()
+            /**
+             * Appends additional instructions at the end of the instructions for the run. This is
+             * useful for modifying the behavior on a per-run basis without overriding other
+             * instructions.
+             */
+            fun additionalInstructions(additionalInstructions: JsonField<String>) = apply {
+                this.additionalInstructions = additionalInstructions
             }
+
+            /** Adds additional messages to the thread before creating the run. */
+            fun additionalMessages(additionalMessages: List<AdditionalMessage>?) =
+                additionalMessages(JsonField.ofNullable(additionalMessages))
 
             /** Adds additional messages to the thread before creating the run. */
             fun additionalMessages(additionalMessages: Optional<List<AdditionalMessage>>) =
                 additionalMessages(additionalMessages.orElse(null))
 
             /** Adds additional messages to the thread before creating the run. */
+            fun additionalMessages(additionalMessages: JsonField<List<AdditionalMessage>>) = apply {
+                this.additionalMessages = additionalMessages.map { it.toMutableList() }
+            }
+
+            /** Adds additional messages to the thread before creating the run. */
             fun addAdditionalMessage(additionalMessage: AdditionalMessage) = apply {
                 additionalMessages =
-                    (additionalMessages ?: mutableListOf()).apply { add(additionalMessage) }
+                    (additionalMessages ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(additionalMessage)
+                    }
             }
 
             /**
@@ -448,7 +770,8 @@ constructor(
              * [instructions](https://platform.openai.com/docs/api-reference/assistants/createAssistant)
              * of the assistant. This is useful for modifying the behavior on a per-run basis.
              */
-            fun instructions(instructions: String?) = apply { this.instructions = instructions }
+            fun instructions(instructions: String?) =
+                instructions(JsonField.ofNullable(instructions))
 
             /**
              * Overrides the
@@ -459,15 +782,23 @@ constructor(
                 instructions(instructions.orElse(null))
 
             /**
+             * Overrides the
+             * [instructions](https://platform.openai.com/docs/api-reference/assistants/createAssistant)
+             * of the assistant. This is useful for modifying the behavior on a per-run basis.
+             */
+            fun instructions(instructions: JsonField<String>) = apply {
+                this.instructions = instructions
+            }
+
+            /**
              * The maximum number of completion tokens that may be used over the course of the run.
              * The run will make a best effort to use only the number of completion tokens
              * specified, across multiple turns of the run. If the run exceeds the number of
              * completion tokens specified, the run will end with status `incomplete`. See
              * `incomplete_details` for more info.
              */
-            fun maxCompletionTokens(maxCompletionTokens: Long?) = apply {
-                this.maxCompletionTokens = maxCompletionTokens
-            }
+            fun maxCompletionTokens(maxCompletionTokens: Long?) =
+                maxCompletionTokens(JsonField.ofNullable(maxCompletionTokens))
 
             /**
              * The maximum number of completion tokens that may be used over the course of the run.
@@ -491,14 +822,24 @@ constructor(
                 maxCompletionTokens(maxCompletionTokens.orElse(null) as Long?)
 
             /**
+             * The maximum number of completion tokens that may be used over the course of the run.
+             * The run will make a best effort to use only the number of completion tokens
+             * specified, across multiple turns of the run. If the run exceeds the number of
+             * completion tokens specified, the run will end with status `incomplete`. See
+             * `incomplete_details` for more info.
+             */
+            fun maxCompletionTokens(maxCompletionTokens: JsonField<Long>) = apply {
+                this.maxCompletionTokens = maxCompletionTokens
+            }
+
+            /**
              * The maximum number of prompt tokens that may be used over the course of the run. The
              * run will make a best effort to use only the number of prompt tokens specified, across
              * multiple turns of the run. If the run exceeds the number of prompt tokens specified,
              * the run will end with status `incomplete`. See `incomplete_details` for more info.
              */
-            fun maxPromptTokens(maxPromptTokens: Long?) = apply {
-                this.maxPromptTokens = maxPromptTokens
-            }
+            fun maxPromptTokens(maxPromptTokens: Long?) =
+                maxPromptTokens(JsonField.ofNullable(maxPromptTokens))
 
             /**
              * The maximum number of prompt tokens that may be used over the course of the run. The
@@ -519,18 +860,21 @@ constructor(
                 maxPromptTokens(maxPromptTokens.orElse(null) as Long?)
 
             /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format. Keys can be a
-             * maximum of 64 characters long and values can be a maximum of 512 characters long.
+             * The maximum number of prompt tokens that may be used over the course of the run. The
+             * run will make a best effort to use only the number of prompt tokens specified, across
+             * multiple turns of the run. If the run exceeds the number of prompt tokens specified,
+             * the run will end with status `incomplete`. See `incomplete_details` for more info.
              */
-            fun metadata(metadata: JsonValue?) = apply { this.metadata = metadata }
+            fun maxPromptTokens(maxPromptTokens: JsonField<Long>) = apply {
+                this.maxPromptTokens = maxPromptTokens
+            }
 
             /**
              * Set of 16 key-value pairs that can be attached to an object. This can be useful for
              * storing additional information about the object in a structured format. Keys can be a
              * maximum of 64 characters long and values can be a maximum of 512 characters long.
              */
-            fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
+            fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
             /**
              * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be
@@ -538,7 +882,7 @@ constructor(
              * associated with the assistant. If not, the model associated with the assistant will
              * be used.
              */
-            fun model(model: ChatModel?) = apply { this.model = model }
+            fun model(model: ChatModel?) = model(JsonField.ofNullable(model))
 
             /**
              * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be
@@ -554,16 +898,15 @@ constructor(
              * associated with the assistant. If not, the model associated with the assistant will
              * be used.
              */
-            fun model(value: String) = apply { model = ChatModel.of(value) }
+            fun model(model: JsonField<ChatModel>) = apply { this.model = model }
 
             /**
-             * Whether to enable
-             * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
-             * during tool use.
+             * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be
+             * used to execute this run. If a value is provided here, it will override the model
+             * associated with the assistant. If not, the model associated with the assistant will
+             * be used.
              */
-            fun parallelToolCalls(parallelToolCalls: Boolean?) = apply {
-                this.parallelToolCalls = parallelToolCalls
-            }
+            fun model(value: String) = apply { model(ChatModel.of(value)) }
 
             /**
              * Whether to enable
@@ -571,16 +914,16 @@ constructor(
              * during tool use.
              */
             fun parallelToolCalls(parallelToolCalls: Boolean) =
-                parallelToolCalls(parallelToolCalls as Boolean?)
+                parallelToolCalls(JsonField.of(parallelToolCalls))
 
             /**
              * Whether to enable
              * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
              * during tool use.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun parallelToolCalls(parallelToolCalls: Optional<Boolean>) =
-                parallelToolCalls(parallelToolCalls.orElse(null) as Boolean?)
+            fun parallelToolCalls(parallelToolCalls: JsonField<Boolean>) = apply {
+                this.parallelToolCalls = parallelToolCalls
+            }
 
             /**
              * Specifies the format that the model must output. Compatible with
@@ -603,9 +946,8 @@ constructor(
              * may be partially cut off if `finish_reason="length"`, which indicates the generation
              * exceeded `max_tokens` or the conversation exceeded the max context length.
              */
-            fun responseFormat(responseFormat: AssistantResponseFormatOption?) = apply {
-                this.responseFormat = responseFormat
-            }
+            fun responseFormat(responseFormat: AssistantResponseFormatOption?) =
+                responseFormat(JsonField.ofNullable(responseFormat))
 
             /**
              * Specifies the format that the model must output. Compatible with
@@ -631,36 +973,60 @@ constructor(
             fun responseFormat(responseFormat: Optional<AssistantResponseFormatOption>) =
                 responseFormat(responseFormat.orElse(null))
 
+            /**
+             * Specifies the format that the model must output. Compatible with
+             * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
+             * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all
+             * GPT-3.5 Turbo models since `gpt-3.5-turbo-1106`.
+             *
+             * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
+             * Outputs which ensures the model will match your supplied JSON schema. Learn more in
+             * the
+             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             *
+             * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
+             * the model generates is valid JSON.
+             *
+             * **Important:** when using JSON mode, you **must** also instruct the model to produce
+             * JSON yourself via a system or user message. Without this, the model may generate an
+             * unending stream of whitespace until the generation reaches the token limit, resulting
+             * in a long-running and seemingly "stuck" request. Also note that the message content
+             * may be partially cut off if `finish_reason="length"`, which indicates the generation
+             * exceeded `max_tokens` or the conversation exceeded the max context length.
+             */
+            fun responseFormat(responseFormat: JsonField<AssistantResponseFormatOption>) = apply {
+                this.responseFormat = responseFormat
+            }
+
             /** `auto` is the default value */
-            fun responseFormat(behavior: AssistantResponseFormatOption.Behavior) = apply {
-                this.responseFormat = AssistantResponseFormatOption.ofBehavior(behavior)
-            }
+            fun responseFormat(behavior: AssistantResponseFormatOption.Behavior) =
+                responseFormat(AssistantResponseFormatOption.ofBehavior(behavior))
 
-            fun responseFormat(responseFormatText: ResponseFormatText) = apply {
-                this.responseFormat =
+            fun responseFormat(responseFormatText: ResponseFormatText) =
+                responseFormat(
                     AssistantResponseFormatOption.ofResponseFormatText(responseFormatText)
-            }
+                )
 
-            fun responseFormat(responseFormatJsonObject: ResponseFormatJsonObject) = apply {
-                this.responseFormat =
+            fun responseFormat(responseFormatJsonObject: ResponseFormatJsonObject) =
+                responseFormat(
                     AssistantResponseFormatOption.ofResponseFormatJsonObject(
                         responseFormatJsonObject
                     )
-            }
+                )
 
-            fun responseFormat(responseFormatJsonSchema: ResponseFormatJsonSchema) = apply {
-                this.responseFormat =
+            fun responseFormat(responseFormatJsonSchema: ResponseFormatJsonSchema) =
+                responseFormat(
                     AssistantResponseFormatOption.ofResponseFormatJsonSchema(
                         responseFormatJsonSchema
                     )
-            }
+                )
 
             /**
              * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
              * the output more random, while lower values like 0.2 will make it more focused and
              * deterministic.
              */
-            fun temperature(temperature: Double?) = apply { this.temperature = temperature }
+            fun temperature(temperature: Double?) = temperature(JsonField.ofNullable(temperature))
 
             /**
              * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
@@ -679,6 +1045,15 @@ constructor(
                 temperature(temperature.orElse(null) as Double?)
 
             /**
+             * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
+             * the output more random, while lower values like 0.2 will make it more focused and
+             * deterministic.
+             */
+            fun temperature(temperature: JsonField<Double>) = apply {
+                this.temperature = temperature
+            }
+
+            /**
              * Controls which (if any) tool is called by the model. `none` means the model will not
              * call any tools and instead generates a message. `auto` is the default value and means
              * the model can pick between generating a message or calling one or more tools.
@@ -686,9 +1061,8 @@ constructor(
              * Specifying a particular tool like `{"type": "file_search"}` or `{"type": "function",
              * "function": {"name": "my_function"}}` forces the model to call that tool.
              */
-            fun toolChoice(toolChoice: AssistantToolChoiceOption?) = apply {
-                this.toolChoice = toolChoice
-            }
+            fun toolChoice(toolChoice: AssistantToolChoiceOption?) =
+                toolChoice(JsonField.ofNullable(toolChoice))
 
             /**
              * Controls which (if any) tool is called by the model. `none` means the model will not
@@ -702,29 +1076,38 @@ constructor(
                 toolChoice(toolChoice.orElse(null))
 
             /**
+             * Controls which (if any) tool is called by the model. `none` means the model will not
+             * call any tools and instead generates a message. `auto` is the default value and means
+             * the model can pick between generating a message or calling one or more tools.
+             * `required` means the model must call one or more tools before responding to the user.
+             * Specifying a particular tool like `{"type": "file_search"}` or `{"type": "function",
+             * "function": {"name": "my_function"}}` forces the model to call that tool.
+             */
+            fun toolChoice(toolChoice: JsonField<AssistantToolChoiceOption>) = apply {
+                this.toolChoice = toolChoice
+            }
+
+            /**
              * `none` means the model will not call any tools and instead generates a message.
              * `auto` means the model can pick between generating a message or calling one or more
              * tools. `required` means the model must call one or more tools before responding to
              * the user.
              */
-            fun toolChoice(behavior: AssistantToolChoiceOption.Behavior) = apply {
-                this.toolChoice = AssistantToolChoiceOption.ofBehavior(behavior)
-            }
+            fun toolChoice(behavior: AssistantToolChoiceOption.Behavior) =
+                toolChoice(AssistantToolChoiceOption.ofBehavior(behavior))
 
             /**
              * Specifies a tool the model should use. Use to force the model to call a specific
              * tool.
              */
-            fun toolChoice(assistantToolChoice: AssistantToolChoice) = apply {
-                this.toolChoice =
-                    AssistantToolChoiceOption.ofAssistantToolChoice(assistantToolChoice)
-            }
+            fun toolChoice(assistantToolChoice: AssistantToolChoice) =
+                toolChoice(AssistantToolChoiceOption.ofAssistantToolChoice(assistantToolChoice))
 
             /**
              * Override the tools the assistant can use for this run. This is useful for modifying
              * the behavior on a per-run basis.
              */
-            fun tools(tools: List<AssistantTool>?) = apply { this.tools = tools?.toMutableList() }
+            fun tools(tools: List<AssistantTool>?) = tools(JsonField.ofNullable(tools))
 
             /**
              * Override the tools the assistant can use for this run. This is useful for modifying
@@ -736,8 +1119,25 @@ constructor(
              * Override the tools the assistant can use for this run. This is useful for modifying
              * the behavior on a per-run basis.
              */
+            fun tools(tools: JsonField<List<AssistantTool>>) = apply {
+                this.tools = tools.map { it.toMutableList() }
+            }
+
+            /**
+             * Override the tools the assistant can use for this run. This is useful for modifying
+             * the behavior on a per-run basis.
+             */
             fun addTool(tool: AssistantTool) = apply {
-                tools = (tools ?: mutableListOf()).apply { add(tool) }
+                tools =
+                    (tools ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(tool)
+                    }
             }
 
             /**
@@ -747,7 +1147,7 @@ constructor(
              *
              * We generally recommend altering this or temperature but not both.
              */
-            fun topP(topP: Double?) = apply { this.topP = topP }
+            fun topP(topP: Double?) = topP(JsonField.ofNullable(topP))
 
             /**
              * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -769,12 +1169,20 @@ constructor(
             fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
 
             /**
+             * An alternative to sampling with temperature, called nucleus sampling, where the model
+             * considers the results of the tokens with top_p probability mass. So 0.1 means only
+             * the tokens comprising the top 10% probability mass are considered.
+             *
+             * We generally recommend altering this or temperature but not both.
+             */
+            fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
+
+            /**
              * Controls for how a thread will be truncated prior to the run. Use this to control the
              * intial context window of the run.
              */
-            fun truncationStrategy(truncationStrategy: TruncationStrategy?) = apply {
-                this.truncationStrategy = truncationStrategy
-            }
+            fun truncationStrategy(truncationStrategy: TruncationStrategy?) =
+                truncationStrategy(JsonField.ofNullable(truncationStrategy))
 
             /**
              * Controls for how a thread will be truncated prior to the run. Use this to control the
@@ -782,6 +1190,14 @@ constructor(
              */
             fun truncationStrategy(truncationStrategy: Optional<TruncationStrategy>) =
                 truncationStrategy(truncationStrategy.orElse(null))
+
+            /**
+             * Controls for how a thread will be truncated prior to the run. Use this to control the
+             * intial context window of the run.
+             */
+            fun truncationStrategy(truncationStrategy: JsonField<TruncationStrategy>) = apply {
+                this.truncationStrategy = truncationStrategy
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -806,7 +1222,7 @@ constructor(
                 BetaThreadRunCreateBody(
                     checkNotNull(assistantId) { "`assistantId` is required but was not set" },
                     additionalInstructions,
-                    additionalMessages?.toImmutable(),
+                    (additionalMessages ?: JsonMissing.of()).map { it.toImmutable() },
                     instructions,
                     maxCompletionTokens,
                     maxPromptTokens,
@@ -816,7 +1232,7 @@ constructor(
                     responseFormat,
                     temperature,
                     toolChoice,
-                    tools?.toImmutable(),
+                    (tools ?: JsonMissing.of()).map { it.toImmutable() },
                     topP,
                     truncationStrategy,
                     additionalProperties.toImmutable(),
@@ -912,6 +1328,12 @@ constructor(
         fun assistantId(assistantId: String) = apply { body.assistantId(assistantId) }
 
         /**
+         * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) to
+         * use to execute this run.
+         */
+        fun assistantId(assistantId: JsonField<String>) = apply { body.assistantId(assistantId) }
+
+        /**
          * Appends additional instructions at the end of the instructions for the run. This is
          * useful for modifying the behavior on a per-run basis without overriding other
          * instructions.
@@ -928,6 +1350,15 @@ constructor(
         fun additionalInstructions(additionalInstructions: Optional<String>) =
             additionalInstructions(additionalInstructions.orElse(null))
 
+        /**
+         * Appends additional instructions at the end of the instructions for the run. This is
+         * useful for modifying the behavior on a per-run basis without overriding other
+         * instructions.
+         */
+        fun additionalInstructions(additionalInstructions: JsonField<String>) = apply {
+            body.additionalInstructions(additionalInstructions)
+        }
+
         /** Adds additional messages to the thread before creating the run. */
         fun additionalMessages(additionalMessages: List<AdditionalMessage>?) = apply {
             body.additionalMessages(additionalMessages)
@@ -936,6 +1367,11 @@ constructor(
         /** Adds additional messages to the thread before creating the run. */
         fun additionalMessages(additionalMessages: Optional<List<AdditionalMessage>>) =
             additionalMessages(additionalMessages.orElse(null))
+
+        /** Adds additional messages to the thread before creating the run. */
+        fun additionalMessages(additionalMessages: JsonField<List<AdditionalMessage>>) = apply {
+            body.additionalMessages(additionalMessages)
+        }
 
         /** Adds additional messages to the thread before creating the run. */
         fun addAdditionalMessage(additionalMessage: AdditionalMessage) = apply {
@@ -955,6 +1391,15 @@ constructor(
          * of the assistant. This is useful for modifying the behavior on a per-run basis.
          */
         fun instructions(instructions: Optional<String>) = instructions(instructions.orElse(null))
+
+        /**
+         * Overrides the
+         * [instructions](https://platform.openai.com/docs/api-reference/assistants/createAssistant)
+         * of the assistant. This is useful for modifying the behavior on a per-run basis.
+         */
+        fun instructions(instructions: JsonField<String>) = apply {
+            body.instructions(instructions)
+        }
 
         /**
          * The maximum number of completion tokens that may be used over the course of the run. The
@@ -986,6 +1431,16 @@ constructor(
             maxCompletionTokens(maxCompletionTokens.orElse(null) as Long?)
 
         /**
+         * The maximum number of completion tokens that may be used over the course of the run. The
+         * run will make a best effort to use only the number of completion tokens specified, across
+         * multiple turns of the run. If the run exceeds the number of completion tokens specified,
+         * the run will end with status `incomplete`. See `incomplete_details` for more info.
+         */
+        fun maxCompletionTokens(maxCompletionTokens: JsonField<Long>) = apply {
+            body.maxCompletionTokens(maxCompletionTokens)
+        }
+
+        /**
          * The maximum number of prompt tokens that may be used over the course of the run. The run
          * will make a best effort to use only the number of prompt tokens specified, across
          * multiple turns of the run. If the run exceeds the number of prompt tokens specified, the
@@ -1014,18 +1469,21 @@ constructor(
             maxPromptTokens(maxPromptTokens.orElse(null) as Long?)
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format. Keys can be a
-         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         * The maximum number of prompt tokens that may be used over the course of the run. The run
+         * will make a best effort to use only the number of prompt tokens specified, across
+         * multiple turns of the run. If the run exceeds the number of prompt tokens specified, the
+         * run will end with status `incomplete`. See `incomplete_details` for more info.
          */
-        fun metadata(metadata: JsonValue?) = apply { body.metadata(metadata) }
+        fun maxPromptTokens(maxPromptTokens: JsonField<Long>) = apply {
+            body.maxPromptTokens(maxPromptTokens)
+        }
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
          * storing additional information about the object in a structured format. Keys can be a
          * maximum of 64 characters long and values can be a maximum of 512 characters long.
          */
-        fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
+        fun metadata(metadata: JsonValue) = apply { body.metadata(metadata) }
 
         /**
          * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used
@@ -1046,6 +1504,13 @@ constructor(
          * to execute this run. If a value is provided here, it will override the model associated
          * with the assistant. If not, the model associated with the assistant will be used.
          */
+        fun model(model: JsonField<ChatModel>) = apply { body.model(model) }
+
+        /**
+         * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used
+         * to execute this run. If a value is provided here, it will override the model associated
+         * with the assistant. If not, the model associated with the assistant will be used.
+         */
         fun model(value: String) = apply { body.model(value) }
 
         /**
@@ -1053,7 +1518,7 @@ constructor(
          * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
          * during tool use.
          */
-        fun parallelToolCalls(parallelToolCalls: Boolean?) = apply {
+        fun parallelToolCalls(parallelToolCalls: Boolean) = apply {
             body.parallelToolCalls(parallelToolCalls)
         }
 
@@ -1062,17 +1527,9 @@ constructor(
          * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
          * during tool use.
          */
-        fun parallelToolCalls(parallelToolCalls: Boolean) =
-            parallelToolCalls(parallelToolCalls as Boolean?)
-
-        /**
-         * Whether to enable
-         * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
-         * during tool use.
-         */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun parallelToolCalls(parallelToolCalls: Optional<Boolean>) =
-            parallelToolCalls(parallelToolCalls.orElse(null) as Boolean?)
+        fun parallelToolCalls(parallelToolCalls: JsonField<Boolean>) = apply {
+            body.parallelToolCalls(parallelToolCalls)
+        }
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -1121,6 +1578,30 @@ constructor(
         fun responseFormat(responseFormat: Optional<AssistantResponseFormatOption>) =
             responseFormat(responseFormat.orElse(null))
 
+        /**
+         * Specifies the format that the model must output. Compatible with
+         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
+         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
+         * Turbo models since `gpt-3.5-turbo-1106`.
+         *
+         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
+         * which ensures the model will match your supplied JSON schema. Learn more in the
+         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         *
+         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
+         * model generates is valid JSON.
+         *
+         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
+         * yourself via a system or user message. Without this, the model may generate an unending
+         * stream of whitespace until the generation reaches the token limit, resulting in a
+         * long-running and seemingly "stuck" request. Also note that the message content may be
+         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
+         * `max_tokens` or the conversation exceeded the max context length.
+         */
+        fun responseFormat(responseFormat: JsonField<AssistantResponseFormatOption>) = apply {
+            body.responseFormat(responseFormat)
+        }
+
         /** `auto` is the default value */
         fun responseFormat(behavior: AssistantResponseFormatOption.Behavior) = apply {
             body.responseFormat(behavior)
@@ -1162,6 +1643,13 @@ constructor(
             temperature(temperature.orElse(null) as Double?)
 
         /**
+         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+         * output more random, while lower values like 0.2 will make it more focused and
+         * deterministic.
+         */
+        fun temperature(temperature: JsonField<Double>) = apply { body.temperature(temperature) }
+
+        /**
          * Controls which (if any) tool is called by the model. `none` means the model will not call
          * any tools and instead generates a message. `auto` is the default value and means the
          * model can pick between generating a message or calling one or more tools. `required`
@@ -1183,6 +1671,18 @@ constructor(
          */
         fun toolChoice(toolChoice: Optional<AssistantToolChoiceOption>) =
             toolChoice(toolChoice.orElse(null))
+
+        /**
+         * Controls which (if any) tool is called by the model. `none` means the model will not call
+         * any tools and instead generates a message. `auto` is the default value and means the
+         * model can pick between generating a message or calling one or more tools. `required`
+         * means the model must call one or more tools before responding to the user. Specifying a
+         * particular tool like `{"type": "file_search"}` or `{"type": "function", "function":
+         * {"name": "my_function"}}` forces the model to call that tool.
+         */
+        fun toolChoice(toolChoice: JsonField<AssistantToolChoiceOption>) = apply {
+            body.toolChoice(toolChoice)
+        }
 
         /**
          * `none` means the model will not call any tools and instead generates a message. `auto`
@@ -1211,6 +1711,12 @@ constructor(
          * behavior on a per-run basis.
          */
         fun tools(tools: Optional<List<AssistantTool>>) = tools(tools.orElse(null))
+
+        /**
+         * Override the tools the assistant can use for this run. This is useful for modifying the
+         * behavior on a per-run basis.
+         */
+        fun tools(tools: JsonField<List<AssistantTool>>) = apply { body.tools(tools) }
 
         /**
          * Override the tools the assistant can use for this run. This is useful for modifying the
@@ -1247,6 +1753,15 @@ constructor(
         fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
 
         /**
+         * An alternative to sampling with temperature, called nucleus sampling, where the model
+         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
+         * tokens comprising the top 10% probability mass are considered.
+         *
+         * We generally recommend altering this or temperature but not both.
+         */
+        fun topP(topP: JsonField<Double>) = apply { body.topP(topP) }
+
+        /**
          * Controls for how a thread will be truncated prior to the run. Use this to control the
          * intial context window of the run.
          */
@@ -1260,6 +1775,33 @@ constructor(
          */
         fun truncationStrategy(truncationStrategy: Optional<TruncationStrategy>) =
             truncationStrategy(truncationStrategy.orElse(null))
+
+        /**
+         * Controls for how a thread will be truncated prior to the run. Use this to control the
+         * intial context window of the run.
+         */
+        fun truncationStrategy(truncationStrategy: JsonField<TruncationStrategy>) = apply {
+            body.truncationStrategy(truncationStrategy)
+        }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -1359,25 +1901,6 @@ constructor(
             additionalQueryParams.removeAll(keys)
         }
 
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            body.additionalProperties(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            body.putAdditionalProperty(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                body.putAllAdditionalProperties(additionalBodyProperties)
-            }
-
-        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
-
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            body.removeAllAdditionalProperties(keys)
-        }
-
         fun build(): BetaThreadRunCreateParams =
             BetaThreadRunCreateParams(
                 checkNotNull(threadId) { "`threadId` is required but was not set" },
@@ -1392,16 +1915,22 @@ constructor(
     class AdditionalMessage
     @JsonCreator
     private constructor(
-        @JsonProperty("content") private val content: Content,
-        @JsonProperty("role") private val role: Role,
-        @JsonProperty("attachments") private val attachments: List<Attachment>?,
-        @JsonProperty("metadata") private val metadata: JsonValue?,
+        @JsonProperty("content")
+        @ExcludeMissing
+        private val content: JsonField<Content> = JsonMissing.of(),
+        @JsonProperty("role") @ExcludeMissing private val role: JsonField<Role> = JsonMissing.of(),
+        @JsonProperty("attachments")
+        @ExcludeMissing
+        private val attachments: JsonField<List<Attachment>> = JsonMissing.of(),
+        @JsonProperty("metadata")
+        @ExcludeMissing
+        private val metadata: JsonValue = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         /** The text contents of the message. */
-        @JsonProperty("content") fun content(): Content = content
+        fun content(): Content = content.getRequired("content")
 
         /**
          * The role of the entity that is creating the message. Allowed values include:
@@ -1410,23 +1939,50 @@ constructor(
          * - `assistant`: Indicates the message is generated by the assistant. Use this value to
          *   insert messages from the assistant into the conversation.
          */
-        @JsonProperty("role") fun role(): Role = role
+        fun role(): Role = role.getRequired("role")
 
         /** A list of files attached to the message, and the tools they should be added to. */
-        @JsonProperty("attachments")
-        fun attachments(): Optional<List<Attachment>> = Optional.ofNullable(attachments)
+        fun attachments(): Optional<List<Attachment>> =
+            Optional.ofNullable(attachments.getNullable("attachments"))
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
          * storing additional information about the object in a structured format. Keys can be a
          * maximum of 64 characters long and values can be a maximum of 512 characters long.
          */
-        @JsonProperty("metadata")
-        fun metadata(): Optional<JsonValue> = Optional.ofNullable(metadata)
+        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+
+        /** The text contents of the message. */
+        @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<Content> = content
+
+        /**
+         * The role of the entity that is creating the message. Allowed values include:
+         * - `user`: Indicates the message is sent by an actual user and should be used in most
+         *   cases to represent user-generated messages.
+         * - `assistant`: Indicates the message is generated by the assistant. Use this value to
+         *   insert messages from the assistant into the conversation.
+         */
+        @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
+
+        /** A list of files attached to the message, and the tools they should be added to. */
+        @JsonProperty("attachments")
+        @ExcludeMissing
+        fun _attachments(): JsonField<List<Attachment>> = attachments
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): AdditionalMessage = apply {
+            if (!validated) {
+                content()
+                role()
+                attachments().map { it.forEach { it.validate() } }
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -1437,28 +1993,29 @@ constructor(
 
         class Builder {
 
-            private var content: Content? = null
-            private var role: Role? = null
-            private var attachments: MutableList<Attachment>? = null
-            private var metadata: JsonValue? = null
+            private var content: JsonField<Content>? = null
+            private var role: JsonField<Role>? = null
+            private var attachments: JsonField<MutableList<Attachment>>? = null
+            private var metadata: JsonValue = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(additionalMessage: AdditionalMessage) = apply {
                 content = additionalMessage.content
                 role = additionalMessage.role
-                attachments = additionalMessage.attachments?.toMutableList()
+                attachments = additionalMessage.attachments.map { it.toMutableList() }
                 metadata = additionalMessage.metadata
                 additionalProperties = additionalMessage.additionalProperties.toMutableMap()
             }
 
             /** The text contents of the message. */
-            fun content(content: Content) = apply { this.content = content }
+            fun content(content: Content) = content(JsonField.of(content))
 
             /** The text contents of the message. */
-            fun content(textContent: String) = apply {
-                this.content = Content.ofTextContent(textContent)
-            }
+            fun content(content: JsonField<Content>) = apply { this.content = content }
+
+            /** The text contents of the message. */
+            fun content(textContent: String) = content(Content.ofTextContent(textContent))
 
             /**
              * An array of content parts with a defined type, each can be of type `text` or images
@@ -1466,9 +2023,7 @@ constructor(
              * [Vision-compatible models](https://platform.openai.com/docs/models).
              */
             fun contentOfArrayOfContentParts(arrayOfContentParts: List<MessageContentPartParam>) =
-                apply {
-                    this.content = Content.ofArrayOfContentParts(arrayOfContentParts)
-                }
+                content(Content.ofArrayOfContentParts(arrayOfContentParts))
 
             /**
              * The role of the entity that is creating the message. Allowed values include:
@@ -1477,20 +2032,42 @@ constructor(
              * - `assistant`: Indicates the message is generated by the assistant. Use this value to
              *   insert messages from the assistant into the conversation.
              */
-            fun role(role: Role) = apply { this.role = role }
+            fun role(role: Role) = role(JsonField.of(role))
+
+            /**
+             * The role of the entity that is creating the message. Allowed values include:
+             * - `user`: Indicates the message is sent by an actual user and should be used in most
+             *   cases to represent user-generated messages.
+             * - `assistant`: Indicates the message is generated by the assistant. Use this value to
+             *   insert messages from the assistant into the conversation.
+             */
+            fun role(role: JsonField<Role>) = apply { this.role = role }
 
             /** A list of files attached to the message, and the tools they should be added to. */
-            fun attachments(attachments: List<Attachment>?) = apply {
-                this.attachments = attachments?.toMutableList()
-            }
+            fun attachments(attachments: List<Attachment>?) =
+                attachments(JsonField.ofNullable(attachments))
 
             /** A list of files attached to the message, and the tools they should be added to. */
             fun attachments(attachments: Optional<List<Attachment>>) =
                 attachments(attachments.orElse(null))
 
             /** A list of files attached to the message, and the tools they should be added to. */
+            fun attachments(attachments: JsonField<List<Attachment>>) = apply {
+                this.attachments = attachments.map { it.toMutableList() }
+            }
+
+            /** A list of files attached to the message, and the tools they should be added to. */
             fun addAttachment(attachment: Attachment) = apply {
-                attachments = (attachments ?: mutableListOf()).apply { add(attachment) }
+                attachments =
+                    (attachments ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(attachment)
+                    }
             }
 
             /**
@@ -1498,14 +2075,7 @@ constructor(
              * storing additional information about the object in a structured format. Keys can be a
              * maximum of 64 characters long and values can be a maximum of 512 characters long.
              */
-            fun metadata(metadata: JsonValue?) = apply { this.metadata = metadata }
-
-            /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format. Keys can be a
-             * maximum of 64 characters long and values can be a maximum of 512 characters long.
-             */
-            fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
+            fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1530,7 +2100,7 @@ constructor(
                 AdditionalMessage(
                     checkNotNull(content) { "`content` is required but was not set" },
                     checkNotNull(role) { "`role` is required but was not set" },
-                    attachments?.toImmutable(),
+                    (attachments ?: JsonMissing.of()).map { it.toImmutable() },
                     metadata,
                     additionalProperties.toImmutable(),
                 )
@@ -1545,6 +2115,8 @@ constructor(
             private val arrayOfContentParts: List<MessageContentPartParam>? = null,
             private val _json: JsonValue? = null,
         ) {
+
+            private var validated: Boolean = false
 
             /** The text contents of the message. */
             fun textContent(): Optional<String> = Optional.ofNullable(textContent)
@@ -1578,6 +2150,15 @@ constructor(
                     arrayOfContentParts != null ->
                         visitor.visitArrayOfContentParts(arrayOfContentParts)
                     else -> visitor.unknown(_json)
+                }
+            }
+
+            fun validate(): Content = apply {
+                if (!validated) {
+                    if (textContent == null && arrayOfContentParts == null) {
+                        throw OpenAIInvalidDataException("Unknown Content: $_json")
+                    }
+                    validated = true
                 }
             }
 
@@ -1722,21 +2303,41 @@ constructor(
         class Attachment
         @JsonCreator
         private constructor(
-            @JsonProperty("file_id") private val fileId: String?,
-            @JsonProperty("tools") private val tools: List<Tool>?,
+            @JsonProperty("file_id")
+            @ExcludeMissing
+            private val fileId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("tools")
+            @ExcludeMissing
+            private val tools: JsonField<List<Tool>> = JsonMissing.of(),
             @JsonAnySetter
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
             /** The ID of the file to attach to the message. */
-            @JsonProperty("file_id") fun fileId(): Optional<String> = Optional.ofNullable(fileId)
+            fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
 
             /** The tools to add this file to. */
-            @JsonProperty("tools") fun tools(): Optional<List<Tool>> = Optional.ofNullable(tools)
+            fun tools(): Optional<List<Tool>> = Optional.ofNullable(tools.getNullable("tools"))
+
+            /** The ID of the file to attach to the message. */
+            @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
+
+            /** The tools to add this file to. */
+            @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<Tool>> = tools
 
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            private var validated: Boolean = false
+
+            fun validate(): Attachment = apply {
+                if (!validated) {
+                    fileId()
+                    tools()
+                    validated = true
+                }
+            }
 
             fun toBuilder() = Builder().from(this)
 
@@ -1747,32 +2348,43 @@ constructor(
 
             class Builder {
 
-                private var fileId: String? = null
-                private var tools: MutableList<Tool>? = null
+                private var fileId: JsonField<String> = JsonMissing.of()
+                private var tools: JsonField<MutableList<Tool>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(attachment: Attachment) = apply {
                     fileId = attachment.fileId
-                    tools = attachment.tools?.toMutableList()
+                    tools = attachment.tools.map { it.toMutableList() }
                     additionalProperties = attachment.additionalProperties.toMutableMap()
                 }
 
                 /** The ID of the file to attach to the message. */
-                fun fileId(fileId: String?) = apply { this.fileId = fileId }
+                fun fileId(fileId: String) = fileId(JsonField.of(fileId))
 
                 /** The ID of the file to attach to the message. */
-                fun fileId(fileId: Optional<String>) = fileId(fileId.orElse(null))
+                fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
 
                 /** The tools to add this file to. */
-                fun tools(tools: List<Tool>?) = apply { this.tools = tools?.toMutableList() }
+                fun tools(tools: List<Tool>) = tools(JsonField.of(tools))
 
                 /** The tools to add this file to. */
-                fun tools(tools: Optional<List<Tool>>) = tools(tools.orElse(null))
+                fun tools(tools: JsonField<List<Tool>>) = apply {
+                    this.tools = tools.map { it.toMutableList() }
+                }
 
                 /** The tools to add this file to. */
                 fun addTool(tool: Tool) = apply {
-                    tools = (tools ?: mutableListOf()).apply { add(tool) }
+                    tools =
+                        (tools ?: JsonField.of(mutableListOf())).apply {
+                            asKnown()
+                                .orElseThrow {
+                                    IllegalStateException(
+                                        "Field was set to non-list type: ${javaClass.simpleName}"
+                                    )
+                                }
+                                .add(tool)
+                        }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1800,7 +2412,7 @@ constructor(
                 fun build(): Attachment =
                     Attachment(
                         fileId,
-                        tools?.toImmutable(),
+                        (tools ?: JsonMissing.of()).map { it.toImmutable() },
                         additionalProperties.toImmutable(),
                     )
             }
@@ -1813,6 +2425,8 @@ constructor(
                 private val fileSearch: FileSearch? = null,
                 private val _json: JsonValue? = null,
             ) {
+
+                private var validated: Boolean = false
 
                 fun codeInterpreterTool(): Optional<CodeInterpreterTool> =
                     Optional.ofNullable(codeInterpreterTool)
@@ -1836,6 +2450,17 @@ constructor(
                             visitor.visitCodeInterpreterTool(codeInterpreterTool)
                         fileSearch != null -> visitor.visitFileSearch(fileSearch)
                         else -> visitor.unknown(_json)
+                    }
+                }
+
+                fun validate(): Tool = apply {
+                    if (!validated) {
+                        if (codeInterpreterTool == null && fileSearch == null) {
+                            throw OpenAIInvalidDataException("Unknown Tool: $_json")
+                        }
+                        codeInterpreterTool?.validate()
+                        fileSearch?.validate()
+                        validated = true
                     }
                 }
 
@@ -1887,14 +2512,18 @@ constructor(
 
                         when (type) {
                             "code_interpreter" -> {
-                                tryDeserialize(node, jacksonTypeRef<CodeInterpreterTool>())?.let {
-                                    return Tool(codeInterpreterTool = it, _json = json)
-                                }
+                                tryDeserialize(node, jacksonTypeRef<CodeInterpreterTool>()) {
+                                        it.validate()
+                                    }
+                                    ?.let {
+                                        return Tool(codeInterpreterTool = it, _json = json)
+                                    }
                             }
                             "file_search" -> {
-                                tryDeserialize(node, jacksonTypeRef<FileSearch>())?.let {
-                                    return Tool(fileSearch = it, _json = json)
-                                }
+                                tryDeserialize(node, jacksonTypeRef<FileSearch>()) { it.validate() }
+                                    ?.let {
+                                        return Tool(fileSearch = it, _json = json)
+                                    }
                             }
                         }
 
@@ -1923,17 +2552,31 @@ constructor(
                 class FileSearch
                 @JsonCreator
                 private constructor(
-                    @JsonProperty("type") private val type: Type,
+                    @JsonProperty("type")
+                    @ExcludeMissing
+                    private val type: JsonField<Type> = JsonMissing.of(),
                     @JsonAnySetter
                     private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
                 ) {
 
                     /** The type of tool being defined: `file_search` */
-                    @JsonProperty("type") fun type(): Type = type
+                    fun type(): Type = type.getRequired("type")
+
+                    /** The type of tool being defined: `file_search` */
+                    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                     @JsonAnyGetter
                     @ExcludeMissing
                     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                    private var validated: Boolean = false
+
+                    fun validate(): FileSearch = apply {
+                        if (!validated) {
+                            type()
+                            validated = true
+                        }
+                    }
 
                     fun toBuilder() = Builder().from(this)
 
@@ -1944,7 +2587,7 @@ constructor(
 
                     class Builder {
 
-                        private var type: Type? = null
+                        private var type: JsonField<Type>? = null
                         private var additionalProperties: MutableMap<String, JsonValue> =
                             mutableMapOf()
 
@@ -1955,7 +2598,10 @@ constructor(
                         }
 
                         /** The type of tool being defined: `file_search` */
-                        fun type(type: Type) = apply { this.type = type }
+                        fun type(type: Type) = type(JsonField.of(type))
+
+                        /** The type of tool being defined: `file_search` */
+                        fun type(type: JsonField<Type>) = apply { this.type = type }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                             apply {
@@ -2101,8 +2747,10 @@ constructor(
     class TruncationStrategy
     @JsonCreator
     private constructor(
-        @JsonProperty("type") private val type: Type,
-        @JsonProperty("last_messages") private val lastMessages: Long?,
+        @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+        @JsonProperty("last_messages")
+        @ExcludeMissing
+        private val lastMessages: JsonField<Long> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -2113,18 +2761,44 @@ constructor(
          * thread. When set to `auto`, messages in the middle of the thread will be dropped to fit
          * the context length of the model, `max_prompt_tokens`.
          */
-        @JsonProperty("type") fun type(): Type = type
+        fun type(): Type = type.getRequired("type")
+
+        /**
+         * The number of most recent messages from the thread when constructing the context for the
+         * run.
+         */
+        fun lastMessages(): Optional<Long> =
+            Optional.ofNullable(lastMessages.getNullable("last_messages"))
+
+        /**
+         * The truncation strategy to use for the thread. The default is `auto`. If set to
+         * `last_messages`, the thread will be truncated to the n most recent messages in the
+         * thread. When set to `auto`, messages in the middle of the thread will be dropped to fit
+         * the context length of the model, `max_prompt_tokens`.
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
         /**
          * The number of most recent messages from the thread when constructing the context for the
          * run.
          */
         @JsonProperty("last_messages")
-        fun lastMessages(): Optional<Long> = Optional.ofNullable(lastMessages)
+        @ExcludeMissing
+        fun _lastMessages(): JsonField<Long> = lastMessages
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): TruncationStrategy = apply {
+            if (!validated) {
+                type()
+                lastMessages()
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -2135,8 +2809,8 @@ constructor(
 
         class Builder {
 
-            private var type: Type? = null
-            private var lastMessages: Long? = null
+            private var type: JsonField<Type>? = null
+            private var lastMessages: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -2152,13 +2826,21 @@ constructor(
              * thread. When set to `auto`, messages in the middle of the thread will be dropped to
              * fit the context length of the model, `max_prompt_tokens`.
              */
-            fun type(type: Type) = apply { this.type = type }
+            fun type(type: Type) = type(JsonField.of(type))
+
+            /**
+             * The truncation strategy to use for the thread. The default is `auto`. If set to
+             * `last_messages`, the thread will be truncated to the n most recent messages in the
+             * thread. When set to `auto`, messages in the middle of the thread will be dropped to
+             * fit the context length of the model, `max_prompt_tokens`.
+             */
+            fun type(type: JsonField<Type>) = apply { this.type = type }
 
             /**
              * The number of most recent messages from the thread when constructing the context for
              * the run.
              */
-            fun lastMessages(lastMessages: Long?) = apply { this.lastMessages = lastMessages }
+            fun lastMessages(lastMessages: Long?) = lastMessages(JsonField.ofNullable(lastMessages))
 
             /**
              * The number of most recent messages from the thread when constructing the context for
@@ -2173,6 +2855,14 @@ constructor(
             @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
             fun lastMessages(lastMessages: Optional<Long>) =
                 lastMessages(lastMessages.orElse(null) as Long?)
+
+            /**
+             * The number of most recent messages from the thread when constructing the context for
+             * the run.
+             */
+            fun lastMessages(lastMessages: JsonField<Long>) = apply {
+                this.lastMessages = lastMessages
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()

@@ -69,13 +69,13 @@ private constructor(
      * The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and
      * dashes, with a maximum length of 64.
      */
-    @JsonProperty("name") @ExcludeMissing fun _name() = name
+    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
     /**
      * A description of what the function does, used by the model to choose when and how to call the
      * function.
      */
-    @JsonProperty("description") @ExcludeMissing fun _description() = description
+    @JsonProperty("description") @ExcludeMissing fun _description(): JsonField<String> = description
 
     /**
      * The parameters the functions accepts, described as a JSON Schema object. See the
@@ -85,7 +85,9 @@ private constructor(
      *
      * Omitting `parameters` defines a function with an empty parameter list.
      */
-    @JsonProperty("parameters") @ExcludeMissing fun _parameters() = parameters
+    @JsonProperty("parameters")
+    @ExcludeMissing
+    fun _parameters(): JsonField<FunctionParameters> = parameters
 
     /**
      * Whether to enable strict schema adherence when generating the function call. If set to true,
@@ -93,7 +95,7 @@ private constructor(
      * JSON Schema is supported when `strict` is `true`. Learn more about Structured Outputs in the
      * [function calling guide](docs/guides/function-calling).
      */
-    @JsonProperty("strict") @ExcludeMissing fun _strict() = strict
+    @JsonProperty("strict") @ExcludeMissing fun _strict(): JsonField<Boolean> = strict
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -120,7 +122,7 @@ private constructor(
 
     class Builder {
 
-        private var name: JsonField<String> = JsonMissing.of()
+        private var name: JsonField<String>? = null
         private var description: JsonField<String> = JsonMissing.of()
         private var parameters: JsonField<FunctionParameters> = JsonMissing.of()
         private var strict: JsonField<Boolean> = JsonMissing.of()
@@ -187,7 +189,24 @@ private constructor(
          * subset of JSON Schema is supported when `strict` is `true`. Learn more about Structured
          * Outputs in the [function calling guide](docs/guides/function-calling).
          */
-        fun strict(strict: Boolean) = strict(JsonField.of(strict))
+        fun strict(strict: Boolean?) = strict(JsonField.ofNullable(strict))
+
+        /**
+         * Whether to enable strict schema adherence when generating the function call. If set to
+         * true, the model will follow the exact schema defined in the `parameters` field. Only a
+         * subset of JSON Schema is supported when `strict` is `true`. Learn more about Structured
+         * Outputs in the [function calling guide](docs/guides/function-calling).
+         */
+        fun strict(strict: Boolean) = strict(strict as Boolean?)
+
+        /**
+         * Whether to enable strict schema adherence when generating the function call. If set to
+         * true, the model will follow the exact schema defined in the `parameters` field. Only a
+         * subset of JSON Schema is supported when `strict` is `true`. Learn more about Structured
+         * Outputs in the [function calling guide](docs/guides/function-calling).
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun strict(strict: Optional<Boolean>) = strict(strict.orElse(null) as Boolean?)
 
         /**
          * Whether to enable strict schema adherence when generating the function call. If set to
@@ -218,7 +237,7 @@ private constructor(
 
         fun build(): FunctionDefinition =
             FunctionDefinition(
-                name,
+                checkNotNull(name) { "`name` is required but was not set" },
                 description,
                 parameters,
                 strict,

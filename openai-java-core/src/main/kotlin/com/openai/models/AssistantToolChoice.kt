@@ -37,9 +37,11 @@ private constructor(
         Optional.ofNullable(function.getNullable("function"))
 
     /** The type of the tool. If type is `function`, the function name must be set */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
-    @JsonProperty("function") @ExcludeMissing fun _function() = function
+    @JsonProperty("function")
+    @ExcludeMissing
+    fun _function(): JsonField<AssistantToolChoiceFunction> = function
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -64,7 +66,7 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var type: JsonField<Type>? = null
         private var function: JsonField<AssistantToolChoiceFunction> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -108,7 +110,7 @@ private constructor(
 
         fun build(): AssistantToolChoice =
             AssistantToolChoice(
-                type,
+                checkNotNull(type) { "`type` is required but was not set" },
                 function,
                 additionalProperties.toImmutable(),
             )

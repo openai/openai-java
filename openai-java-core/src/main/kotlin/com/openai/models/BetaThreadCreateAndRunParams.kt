@@ -18,6 +18,7 @@ import com.openai.core.BaseSerializer
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
+import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.getOrThrow
@@ -71,7 +72,7 @@ constructor(
      * additional information about the object in a structured format. Keys can be a maximum of 64
      * characters long and values can be a maximum of 512 characters long.
      */
-    fun metadata(): Optional<JsonValue> = body.metadata()
+    fun _metadata(): JsonValue = body._metadata()
 
     /**
      * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used to
@@ -156,11 +157,122 @@ constructor(
      */
     fun truncationStrategy(): Optional<TruncationStrategy> = body.truncationStrategy()
 
+    /**
+     * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) to use
+     * to execute this run.
+     */
+    fun _assistantId(): JsonField<String> = body._assistantId()
+
+    /**
+     * Override the default system message of the assistant. This is useful for modifying the
+     * behavior on a per-run basis.
+     */
+    fun _instructions(): JsonField<String> = body._instructions()
+
+    /**
+     * The maximum number of completion tokens that may be used over the course of the run. The run
+     * will make a best effort to use only the number of completion tokens specified, across
+     * multiple turns of the run. If the run exceeds the number of completion tokens specified, the
+     * run will end with status `incomplete`. See `incomplete_details` for more info.
+     */
+    fun _maxCompletionTokens(): JsonField<Long> = body._maxCompletionTokens()
+
+    /**
+     * The maximum number of prompt tokens that may be used over the course of the run. The run will
+     * make a best effort to use only the number of prompt tokens specified, across multiple turns
+     * of the run. If the run exceeds the number of prompt tokens specified, the run will end with
+     * status `incomplete`. See `incomplete_details` for more info.
+     */
+    fun _maxPromptTokens(): JsonField<Long> = body._maxPromptTokens()
+
+    /**
+     * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used to
+     * execute this run. If a value is provided here, it will override the model associated with the
+     * assistant. If not, the model associated with the assistant will be used.
+     */
+    fun _model(): JsonField<ChatModel> = body._model()
+
+    /**
+     * Whether to enable
+     * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+     * during tool use.
+     */
+    fun _parallelToolCalls(): JsonField<Boolean> = body._parallelToolCalls()
+
+    /**
+     * Specifies the format that the model must output. Compatible with
+     * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
+     * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5 Turbo
+     * models since `gpt-3.5-turbo-1106`.
+     *
+     * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs which
+     * ensures the model will match your supplied JSON schema. Learn more in the
+     * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+     *
+     * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the model
+     * generates is valid JSON.
+     *
+     * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
+     * yourself via a system or user message. Without this, the model may generate an unending
+     * stream of whitespace until the generation reaches the token limit, resulting in a
+     * long-running and seemingly "stuck" request. Also note that the message content may be
+     * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
+     * `max_tokens` or the conversation exceeded the max context length.
+     */
+    fun _responseFormat(): JsonField<AssistantResponseFormatOption> = body._responseFormat()
+
+    /**
+     * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+     * output more random, while lower values like 0.2 will make it more focused and deterministic.
+     */
+    fun _temperature(): JsonField<Double> = body._temperature()
+
+    /** If no thread is provided, an empty thread will be created. */
+    fun _thread(): JsonField<Thread> = body._thread()
+
+    /**
+     * Controls which (if any) tool is called by the model. `none` means the model will not call any
+     * tools and instead generates a message. `auto` is the default value and means the model can
+     * pick between generating a message or calling one or more tools. `required` means the model
+     * must call one or more tools before responding to the user. Specifying a particular tool like
+     * `{"type": "file_search"}` or `{"type": "function", "function": {"name": "my_function"}}`
+     * forces the model to call that tool.
+     */
+    fun _toolChoice(): JsonField<AssistantToolChoiceOption> = body._toolChoice()
+
+    /**
+     * A set of resources that are used by the assistant's tools. The resources are specific to the
+     * type of tool. For example, the `code_interpreter` tool requires a list of file IDs, while the
+     * `file_search` tool requires a list of vector store IDs.
+     */
+    fun _toolResources(): JsonField<ToolResources> = body._toolResources()
+
+    /**
+     * Override the tools the assistant can use for this run. This is useful for modifying the
+     * behavior on a per-run basis.
+     */
+    fun _tools(): JsonField<List<Tool>> = body._tools()
+
+    /**
+     * An alternative to sampling with temperature, called nucleus sampling, where the model
+     * considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens
+     * comprising the top 10% probability mass are considered.
+     *
+     * We generally recommend altering this or temperature but not both.
+     */
+    fun _topP(): JsonField<Double> = body._topP()
+
+    /**
+     * Controls for how a thread will be truncated prior to the run. Use this to control the intial
+     * context window of the run.
+     */
+    fun _truncationStrategy(): JsonField<TruncationStrategy> = body._truncationStrategy()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
-
-    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     @JvmSynthetic internal fun getBody(): BetaThreadCreateAndRunBody = body
 
@@ -172,21 +284,51 @@ constructor(
     class BetaThreadCreateAndRunBody
     @JsonCreator
     internal constructor(
-        @JsonProperty("assistant_id") private val assistantId: String,
-        @JsonProperty("instructions") private val instructions: String?,
-        @JsonProperty("max_completion_tokens") private val maxCompletionTokens: Long?,
-        @JsonProperty("max_prompt_tokens") private val maxPromptTokens: Long?,
-        @JsonProperty("metadata") private val metadata: JsonValue?,
-        @JsonProperty("model") private val model: ChatModel?,
-        @JsonProperty("parallel_tool_calls") private val parallelToolCalls: Boolean?,
-        @JsonProperty("response_format") private val responseFormat: AssistantResponseFormatOption?,
-        @JsonProperty("temperature") private val temperature: Double?,
-        @JsonProperty("thread") private val thread: Thread?,
-        @JsonProperty("tool_choice") private val toolChoice: AssistantToolChoiceOption?,
-        @JsonProperty("tool_resources") private val toolResources: ToolResources?,
-        @JsonProperty("tools") private val tools: List<Tool>?,
-        @JsonProperty("top_p") private val topP: Double?,
-        @JsonProperty("truncation_strategy") private val truncationStrategy: TruncationStrategy?,
+        @JsonProperty("assistant_id")
+        @ExcludeMissing
+        private val assistantId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("instructions")
+        @ExcludeMissing
+        private val instructions: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("max_completion_tokens")
+        @ExcludeMissing
+        private val maxCompletionTokens: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("max_prompt_tokens")
+        @ExcludeMissing
+        private val maxPromptTokens: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("metadata")
+        @ExcludeMissing
+        private val metadata: JsonValue = JsonMissing.of(),
+        @JsonProperty("model")
+        @ExcludeMissing
+        private val model: JsonField<ChatModel> = JsonMissing.of(),
+        @JsonProperty("parallel_tool_calls")
+        @ExcludeMissing
+        private val parallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("response_format")
+        @ExcludeMissing
+        private val responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of(),
+        @JsonProperty("temperature")
+        @ExcludeMissing
+        private val temperature: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("thread")
+        @ExcludeMissing
+        private val thread: JsonField<Thread> = JsonMissing.of(),
+        @JsonProperty("tool_choice")
+        @ExcludeMissing
+        private val toolChoice: JsonField<AssistantToolChoiceOption> = JsonMissing.of(),
+        @JsonProperty("tool_resources")
+        @ExcludeMissing
+        private val toolResources: JsonField<ToolResources> = JsonMissing.of(),
+        @JsonProperty("tools")
+        @ExcludeMissing
+        private val tools: JsonField<List<Tool>> = JsonMissing.of(),
+        @JsonProperty("top_p")
+        @ExcludeMissing
+        private val topP: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("truncation_strategy")
+        @ExcludeMissing
+        private val truncationStrategy: JsonField<TruncationStrategy> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -195,14 +337,145 @@ constructor(
          * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) to
          * use to execute this run.
          */
-        @JsonProperty("assistant_id") fun assistantId(): String = assistantId
+        fun assistantId(): String = assistantId.getRequired("assistant_id")
+
+        /**
+         * Override the default system message of the assistant. This is useful for modifying the
+         * behavior on a per-run basis.
+         */
+        fun instructions(): Optional<String> =
+            Optional.ofNullable(instructions.getNullable("instructions"))
+
+        /**
+         * The maximum number of completion tokens that may be used over the course of the run. The
+         * run will make a best effort to use only the number of completion tokens specified, across
+         * multiple turns of the run. If the run exceeds the number of completion tokens specified,
+         * the run will end with status `incomplete`. See `incomplete_details` for more info.
+         */
+        fun maxCompletionTokens(): Optional<Long> =
+            Optional.ofNullable(maxCompletionTokens.getNullable("max_completion_tokens"))
+
+        /**
+         * The maximum number of prompt tokens that may be used over the course of the run. The run
+         * will make a best effort to use only the number of prompt tokens specified, across
+         * multiple turns of the run. If the run exceeds the number of prompt tokens specified, the
+         * run will end with status `incomplete`. See `incomplete_details` for more info.
+         */
+        fun maxPromptTokens(): Optional<Long> =
+            Optional.ofNullable(maxPromptTokens.getNullable("max_prompt_tokens"))
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format. Keys can be a
+         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         */
+        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+
+        /**
+         * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used
+         * to execute this run. If a value is provided here, it will override the model associated
+         * with the assistant. If not, the model associated with the assistant will be used.
+         */
+        fun model(): Optional<ChatModel> = Optional.ofNullable(model.getNullable("model"))
+
+        /**
+         * Whether to enable
+         * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+         * during tool use.
+         */
+        fun parallelToolCalls(): Optional<Boolean> =
+            Optional.ofNullable(parallelToolCalls.getNullable("parallel_tool_calls"))
+
+        /**
+         * Specifies the format that the model must output. Compatible with
+         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
+         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
+         * Turbo models since `gpt-3.5-turbo-1106`.
+         *
+         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
+         * which ensures the model will match your supplied JSON schema. Learn more in the
+         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         *
+         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
+         * model generates is valid JSON.
+         *
+         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
+         * yourself via a system or user message. Without this, the model may generate an unending
+         * stream of whitespace until the generation reaches the token limit, resulting in a
+         * long-running and seemingly "stuck" request. Also note that the message content may be
+         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
+         * `max_tokens` or the conversation exceeded the max context length.
+         */
+        fun responseFormat(): Optional<AssistantResponseFormatOption> =
+            Optional.ofNullable(responseFormat.getNullable("response_format"))
+
+        /**
+         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+         * output more random, while lower values like 0.2 will make it more focused and
+         * deterministic.
+         */
+        fun temperature(): Optional<Double> =
+            Optional.ofNullable(temperature.getNullable("temperature"))
+
+        /** If no thread is provided, an empty thread will be created. */
+        fun thread(): Optional<Thread> = Optional.ofNullable(thread.getNullable("thread"))
+
+        /**
+         * Controls which (if any) tool is called by the model. `none` means the model will not call
+         * any tools and instead generates a message. `auto` is the default value and means the
+         * model can pick between generating a message or calling one or more tools. `required`
+         * means the model must call one or more tools before responding to the user. Specifying a
+         * particular tool like `{"type": "file_search"}` or `{"type": "function", "function":
+         * {"name": "my_function"}}` forces the model to call that tool.
+         */
+        fun toolChoice(): Optional<AssistantToolChoiceOption> =
+            Optional.ofNullable(toolChoice.getNullable("tool_choice"))
+
+        /**
+         * A set of resources that are used by the assistant's tools. The resources are specific to
+         * the type of tool. For example, the `code_interpreter` tool requires a list of file IDs,
+         * while the `file_search` tool requires a list of vector store IDs.
+         */
+        fun toolResources(): Optional<ToolResources> =
+            Optional.ofNullable(toolResources.getNullable("tool_resources"))
+
+        /**
+         * Override the tools the assistant can use for this run. This is useful for modifying the
+         * behavior on a per-run basis.
+         */
+        fun tools(): Optional<List<Tool>> = Optional.ofNullable(tools.getNullable("tools"))
+
+        /**
+         * An alternative to sampling with temperature, called nucleus sampling, where the model
+         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
+         * tokens comprising the top 10% probability mass are considered.
+         *
+         * We generally recommend altering this or temperature but not both.
+         */
+        fun topP(): Optional<Double> = Optional.ofNullable(topP.getNullable("top_p"))
+
+        /**
+         * Controls for how a thread will be truncated prior to the run. Use this to control the
+         * intial context window of the run.
+         */
+        fun truncationStrategy(): Optional<TruncationStrategy> =
+            Optional.ofNullable(truncationStrategy.getNullable("truncation_strategy"))
+
+        /**
+         * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) to
+         * use to execute this run.
+         */
+        @JsonProperty("assistant_id")
+        @ExcludeMissing
+        fun _assistantId(): JsonField<String> = assistantId
 
         /**
          * Override the default system message of the assistant. This is useful for modifying the
          * behavior on a per-run basis.
          */
         @JsonProperty("instructions")
-        fun instructions(): Optional<String> = Optional.ofNullable(instructions)
+        @ExcludeMissing
+        fun _instructions(): JsonField<String> = instructions
 
         /**
          * The maximum number of completion tokens that may be used over the course of the run. The
@@ -211,7 +484,8 @@ constructor(
          * the run will end with status `incomplete`. See `incomplete_details` for more info.
          */
         @JsonProperty("max_completion_tokens")
-        fun maxCompletionTokens(): Optional<Long> = Optional.ofNullable(maxCompletionTokens)
+        @ExcludeMissing
+        fun _maxCompletionTokens(): JsonField<Long> = maxCompletionTokens
 
         /**
          * The maximum number of prompt tokens that may be used over the course of the run. The run
@@ -220,22 +494,15 @@ constructor(
          * run will end with status `incomplete`. See `incomplete_details` for more info.
          */
         @JsonProperty("max_prompt_tokens")
-        fun maxPromptTokens(): Optional<Long> = Optional.ofNullable(maxPromptTokens)
-
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format. Keys can be a
-         * maximum of 64 characters long and values can be a maximum of 512 characters long.
-         */
-        @JsonProperty("metadata")
-        fun metadata(): Optional<JsonValue> = Optional.ofNullable(metadata)
+        @ExcludeMissing
+        fun _maxPromptTokens(): JsonField<Long> = maxPromptTokens
 
         /**
          * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used
          * to execute this run. If a value is provided here, it will override the model associated
          * with the assistant. If not, the model associated with the assistant will be used.
          */
-        @JsonProperty("model") fun model(): Optional<ChatModel> = Optional.ofNullable(model)
+        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<ChatModel> = model
 
         /**
          * Whether to enable
@@ -243,7 +510,8 @@ constructor(
          * during tool use.
          */
         @JsonProperty("parallel_tool_calls")
-        fun parallelToolCalls(): Optional<Boolean> = Optional.ofNullable(parallelToolCalls)
+        @ExcludeMissing
+        fun _parallelToolCalls(): JsonField<Boolean> = parallelToolCalls
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -266,8 +534,8 @@ constructor(
          * `max_tokens` or the conversation exceeded the max context length.
          */
         @JsonProperty("response_format")
-        fun responseFormat(): Optional<AssistantResponseFormatOption> =
-            Optional.ofNullable(responseFormat)
+        @ExcludeMissing
+        fun _responseFormat(): JsonField<AssistantResponseFormatOption> = responseFormat
 
         /**
          * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
@@ -275,10 +543,11 @@ constructor(
          * deterministic.
          */
         @JsonProperty("temperature")
-        fun temperature(): Optional<Double> = Optional.ofNullable(temperature)
+        @ExcludeMissing
+        fun _temperature(): JsonField<Double> = temperature
 
         /** If no thread is provided, an empty thread will be created. */
-        @JsonProperty("thread") fun thread(): Optional<Thread> = Optional.ofNullable(thread)
+        @JsonProperty("thread") @ExcludeMissing fun _thread(): JsonField<Thread> = thread
 
         /**
          * Controls which (if any) tool is called by the model. `none` means the model will not call
@@ -289,7 +558,8 @@ constructor(
          * {"name": "my_function"}}` forces the model to call that tool.
          */
         @JsonProperty("tool_choice")
-        fun toolChoice(): Optional<AssistantToolChoiceOption> = Optional.ofNullable(toolChoice)
+        @ExcludeMissing
+        fun _toolChoice(): JsonField<AssistantToolChoiceOption> = toolChoice
 
         /**
          * A set of resources that are used by the assistant's tools. The resources are specific to
@@ -297,13 +567,14 @@ constructor(
          * while the `file_search` tool requires a list of vector store IDs.
          */
         @JsonProperty("tool_resources")
-        fun toolResources(): Optional<ToolResources> = Optional.ofNullable(toolResources)
+        @ExcludeMissing
+        fun _toolResources(): JsonField<ToolResources> = toolResources
 
         /**
          * Override the tools the assistant can use for this run. This is useful for modifying the
          * behavior on a per-run basis.
          */
-        @JsonProperty("tools") fun tools(): Optional<List<Tool>> = Optional.ofNullable(tools)
+        @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<Tool>> = tools
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -312,19 +583,41 @@ constructor(
          *
          * We generally recommend altering this or temperature but not both.
          */
-        @JsonProperty("top_p") fun topP(): Optional<Double> = Optional.ofNullable(topP)
+        @JsonProperty("top_p") @ExcludeMissing fun _topP(): JsonField<Double> = topP
 
         /**
          * Controls for how a thread will be truncated prior to the run. Use this to control the
          * intial context window of the run.
          */
         @JsonProperty("truncation_strategy")
-        fun truncationStrategy(): Optional<TruncationStrategy> =
-            Optional.ofNullable(truncationStrategy)
+        @ExcludeMissing
+        fun _truncationStrategy(): JsonField<TruncationStrategy> = truncationStrategy
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): BetaThreadCreateAndRunBody = apply {
+            if (!validated) {
+                assistantId()
+                instructions()
+                maxCompletionTokens()
+                maxPromptTokens()
+                model()
+                parallelToolCalls()
+                responseFormat()
+                temperature()
+                thread().map { it.validate() }
+                toolChoice()
+                toolResources().map { it.validate() }
+                tools()
+                topP()
+                truncationStrategy().map { it.validate() }
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -335,21 +628,21 @@ constructor(
 
         class Builder {
 
-            private var assistantId: String? = null
-            private var instructions: String? = null
-            private var maxCompletionTokens: Long? = null
-            private var maxPromptTokens: Long? = null
-            private var metadata: JsonValue? = null
-            private var model: ChatModel? = null
-            private var parallelToolCalls: Boolean? = null
-            private var responseFormat: AssistantResponseFormatOption? = null
-            private var temperature: Double? = null
-            private var thread: Thread? = null
-            private var toolChoice: AssistantToolChoiceOption? = null
-            private var toolResources: ToolResources? = null
-            private var tools: MutableList<Tool>? = null
-            private var topP: Double? = null
-            private var truncationStrategy: TruncationStrategy? = null
+            private var assistantId: JsonField<String>? = null
+            private var instructions: JsonField<String> = JsonMissing.of()
+            private var maxCompletionTokens: JsonField<Long> = JsonMissing.of()
+            private var maxPromptTokens: JsonField<Long> = JsonMissing.of()
+            private var metadata: JsonValue = JsonMissing.of()
+            private var model: JsonField<ChatModel> = JsonMissing.of()
+            private var parallelToolCalls: JsonField<Boolean> = JsonMissing.of()
+            private var responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of()
+            private var temperature: JsonField<Double> = JsonMissing.of()
+            private var thread: JsonField<Thread> = JsonMissing.of()
+            private var toolChoice: JsonField<AssistantToolChoiceOption> = JsonMissing.of()
+            private var toolResources: JsonField<ToolResources> = JsonMissing.of()
+            private var tools: JsonField<MutableList<Tool>>? = null
+            private var topP: JsonField<Double> = JsonMissing.of()
+            private var truncationStrategy: JsonField<TruncationStrategy> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -366,7 +659,7 @@ constructor(
                 thread = betaThreadCreateAndRunBody.thread
                 toolChoice = betaThreadCreateAndRunBody.toolChoice
                 toolResources = betaThreadCreateAndRunBody.toolResources
-                tools = betaThreadCreateAndRunBody.tools?.toMutableList()
+                tools = betaThreadCreateAndRunBody.tools.map { it.toMutableList() }
                 topP = betaThreadCreateAndRunBody.topP
                 truncationStrategy = betaThreadCreateAndRunBody.truncationStrategy
                 additionalProperties =
@@ -377,13 +670,22 @@ constructor(
              * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants)
              * to use to execute this run.
              */
-            fun assistantId(assistantId: String) = apply { this.assistantId = assistantId }
+            fun assistantId(assistantId: String) = assistantId(JsonField.of(assistantId))
+
+            /**
+             * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants)
+             * to use to execute this run.
+             */
+            fun assistantId(assistantId: JsonField<String>) = apply {
+                this.assistantId = assistantId
+            }
 
             /**
              * Override the default system message of the assistant. This is useful for modifying
              * the behavior on a per-run basis.
              */
-            fun instructions(instructions: String?) = apply { this.instructions = instructions }
+            fun instructions(instructions: String?) =
+                instructions(JsonField.ofNullable(instructions))
 
             /**
              * Override the default system message of the assistant. This is useful for modifying
@@ -393,15 +695,22 @@ constructor(
                 instructions(instructions.orElse(null))
 
             /**
+             * Override the default system message of the assistant. This is useful for modifying
+             * the behavior on a per-run basis.
+             */
+            fun instructions(instructions: JsonField<String>) = apply {
+                this.instructions = instructions
+            }
+
+            /**
              * The maximum number of completion tokens that may be used over the course of the run.
              * The run will make a best effort to use only the number of completion tokens
              * specified, across multiple turns of the run. If the run exceeds the number of
              * completion tokens specified, the run will end with status `incomplete`. See
              * `incomplete_details` for more info.
              */
-            fun maxCompletionTokens(maxCompletionTokens: Long?) = apply {
-                this.maxCompletionTokens = maxCompletionTokens
-            }
+            fun maxCompletionTokens(maxCompletionTokens: Long?) =
+                maxCompletionTokens(JsonField.ofNullable(maxCompletionTokens))
 
             /**
              * The maximum number of completion tokens that may be used over the course of the run.
@@ -425,14 +734,24 @@ constructor(
                 maxCompletionTokens(maxCompletionTokens.orElse(null) as Long?)
 
             /**
+             * The maximum number of completion tokens that may be used over the course of the run.
+             * The run will make a best effort to use only the number of completion tokens
+             * specified, across multiple turns of the run. If the run exceeds the number of
+             * completion tokens specified, the run will end with status `incomplete`. See
+             * `incomplete_details` for more info.
+             */
+            fun maxCompletionTokens(maxCompletionTokens: JsonField<Long>) = apply {
+                this.maxCompletionTokens = maxCompletionTokens
+            }
+
+            /**
              * The maximum number of prompt tokens that may be used over the course of the run. The
              * run will make a best effort to use only the number of prompt tokens specified, across
              * multiple turns of the run. If the run exceeds the number of prompt tokens specified,
              * the run will end with status `incomplete`. See `incomplete_details` for more info.
              */
-            fun maxPromptTokens(maxPromptTokens: Long?) = apply {
-                this.maxPromptTokens = maxPromptTokens
-            }
+            fun maxPromptTokens(maxPromptTokens: Long?) =
+                maxPromptTokens(JsonField.ofNullable(maxPromptTokens))
 
             /**
              * The maximum number of prompt tokens that may be used over the course of the run. The
@@ -453,18 +772,21 @@ constructor(
                 maxPromptTokens(maxPromptTokens.orElse(null) as Long?)
 
             /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format. Keys can be a
-             * maximum of 64 characters long and values can be a maximum of 512 characters long.
+             * The maximum number of prompt tokens that may be used over the course of the run. The
+             * run will make a best effort to use only the number of prompt tokens specified, across
+             * multiple turns of the run. If the run exceeds the number of prompt tokens specified,
+             * the run will end with status `incomplete`. See `incomplete_details` for more info.
              */
-            fun metadata(metadata: JsonValue?) = apply { this.metadata = metadata }
+            fun maxPromptTokens(maxPromptTokens: JsonField<Long>) = apply {
+                this.maxPromptTokens = maxPromptTokens
+            }
 
             /**
              * Set of 16 key-value pairs that can be attached to an object. This can be useful for
              * storing additional information about the object in a structured format. Keys can be a
              * maximum of 64 characters long and values can be a maximum of 512 characters long.
              */
-            fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
+            fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
             /**
              * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be
@@ -472,7 +794,7 @@ constructor(
              * associated with the assistant. If not, the model associated with the assistant will
              * be used.
              */
-            fun model(model: ChatModel?) = apply { this.model = model }
+            fun model(model: ChatModel?) = model(JsonField.ofNullable(model))
 
             /**
              * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be
@@ -488,16 +810,15 @@ constructor(
              * associated with the assistant. If not, the model associated with the assistant will
              * be used.
              */
-            fun model(value: String) = apply { model = ChatModel.of(value) }
+            fun model(model: JsonField<ChatModel>) = apply { this.model = model }
 
             /**
-             * Whether to enable
-             * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
-             * during tool use.
+             * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be
+             * used to execute this run. If a value is provided here, it will override the model
+             * associated with the assistant. If not, the model associated with the assistant will
+             * be used.
              */
-            fun parallelToolCalls(parallelToolCalls: Boolean?) = apply {
-                this.parallelToolCalls = parallelToolCalls
-            }
+            fun model(value: String) = apply { model(ChatModel.of(value)) }
 
             /**
              * Whether to enable
@@ -505,16 +826,16 @@ constructor(
              * during tool use.
              */
             fun parallelToolCalls(parallelToolCalls: Boolean) =
-                parallelToolCalls(parallelToolCalls as Boolean?)
+                parallelToolCalls(JsonField.of(parallelToolCalls))
 
             /**
              * Whether to enable
              * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
              * during tool use.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun parallelToolCalls(parallelToolCalls: Optional<Boolean>) =
-                parallelToolCalls(parallelToolCalls.orElse(null) as Boolean?)
+            fun parallelToolCalls(parallelToolCalls: JsonField<Boolean>) = apply {
+                this.parallelToolCalls = parallelToolCalls
+            }
 
             /**
              * Specifies the format that the model must output. Compatible with
@@ -537,9 +858,8 @@ constructor(
              * may be partially cut off if `finish_reason="length"`, which indicates the generation
              * exceeded `max_tokens` or the conversation exceeded the max context length.
              */
-            fun responseFormat(responseFormat: AssistantResponseFormatOption?) = apply {
-                this.responseFormat = responseFormat
-            }
+            fun responseFormat(responseFormat: AssistantResponseFormatOption?) =
+                responseFormat(JsonField.ofNullable(responseFormat))
 
             /**
              * Specifies the format that the model must output. Compatible with
@@ -565,36 +885,60 @@ constructor(
             fun responseFormat(responseFormat: Optional<AssistantResponseFormatOption>) =
                 responseFormat(responseFormat.orElse(null))
 
+            /**
+             * Specifies the format that the model must output. Compatible with
+             * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
+             * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all
+             * GPT-3.5 Turbo models since `gpt-3.5-turbo-1106`.
+             *
+             * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
+             * Outputs which ensures the model will match your supplied JSON schema. Learn more in
+             * the
+             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             *
+             * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
+             * the model generates is valid JSON.
+             *
+             * **Important:** when using JSON mode, you **must** also instruct the model to produce
+             * JSON yourself via a system or user message. Without this, the model may generate an
+             * unending stream of whitespace until the generation reaches the token limit, resulting
+             * in a long-running and seemingly "stuck" request. Also note that the message content
+             * may be partially cut off if `finish_reason="length"`, which indicates the generation
+             * exceeded `max_tokens` or the conversation exceeded the max context length.
+             */
+            fun responseFormat(responseFormat: JsonField<AssistantResponseFormatOption>) = apply {
+                this.responseFormat = responseFormat
+            }
+
             /** `auto` is the default value */
-            fun responseFormat(behavior: AssistantResponseFormatOption.Behavior) = apply {
-                this.responseFormat = AssistantResponseFormatOption.ofBehavior(behavior)
-            }
+            fun responseFormat(behavior: AssistantResponseFormatOption.Behavior) =
+                responseFormat(AssistantResponseFormatOption.ofBehavior(behavior))
 
-            fun responseFormat(responseFormatText: ResponseFormatText) = apply {
-                this.responseFormat =
+            fun responseFormat(responseFormatText: ResponseFormatText) =
+                responseFormat(
                     AssistantResponseFormatOption.ofResponseFormatText(responseFormatText)
-            }
+                )
 
-            fun responseFormat(responseFormatJsonObject: ResponseFormatJsonObject) = apply {
-                this.responseFormat =
+            fun responseFormat(responseFormatJsonObject: ResponseFormatJsonObject) =
+                responseFormat(
                     AssistantResponseFormatOption.ofResponseFormatJsonObject(
                         responseFormatJsonObject
                     )
-            }
+                )
 
-            fun responseFormat(responseFormatJsonSchema: ResponseFormatJsonSchema) = apply {
-                this.responseFormat =
+            fun responseFormat(responseFormatJsonSchema: ResponseFormatJsonSchema) =
+                responseFormat(
                     AssistantResponseFormatOption.ofResponseFormatJsonSchema(
                         responseFormatJsonSchema
                     )
-            }
+                )
 
             /**
              * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
              * the output more random, while lower values like 0.2 will make it more focused and
              * deterministic.
              */
-            fun temperature(temperature: Double?) = apply { this.temperature = temperature }
+            fun temperature(temperature: Double?) = temperature(JsonField.ofNullable(temperature))
 
             /**
              * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
@@ -612,11 +956,20 @@ constructor(
             fun temperature(temperature: Optional<Double>) =
                 temperature(temperature.orElse(null) as Double?)
 
-            /** If no thread is provided, an empty thread will be created. */
-            fun thread(thread: Thread?) = apply { this.thread = thread }
+            /**
+             * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
+             * the output more random, while lower values like 0.2 will make it more focused and
+             * deterministic.
+             */
+            fun temperature(temperature: JsonField<Double>) = apply {
+                this.temperature = temperature
+            }
 
             /** If no thread is provided, an empty thread will be created. */
-            fun thread(thread: Optional<Thread>) = thread(thread.orElse(null))
+            fun thread(thread: Thread) = thread(JsonField.of(thread))
+
+            /** If no thread is provided, an empty thread will be created. */
+            fun thread(thread: JsonField<Thread>) = apply { this.thread = thread }
 
             /**
              * Controls which (if any) tool is called by the model. `none` means the model will not
@@ -626,9 +979,8 @@ constructor(
              * Specifying a particular tool like `{"type": "file_search"}` or `{"type": "function",
              * "function": {"name": "my_function"}}` forces the model to call that tool.
              */
-            fun toolChoice(toolChoice: AssistantToolChoiceOption?) = apply {
-                this.toolChoice = toolChoice
-            }
+            fun toolChoice(toolChoice: AssistantToolChoiceOption?) =
+                toolChoice(JsonField.ofNullable(toolChoice))
 
             /**
              * Controls which (if any) tool is called by the model. `none` means the model will not
@@ -642,32 +994,40 @@ constructor(
                 toolChoice(toolChoice.orElse(null))
 
             /**
+             * Controls which (if any) tool is called by the model. `none` means the model will not
+             * call any tools and instead generates a message. `auto` is the default value and means
+             * the model can pick between generating a message or calling one or more tools.
+             * `required` means the model must call one or more tools before responding to the user.
+             * Specifying a particular tool like `{"type": "file_search"}` or `{"type": "function",
+             * "function": {"name": "my_function"}}` forces the model to call that tool.
+             */
+            fun toolChoice(toolChoice: JsonField<AssistantToolChoiceOption>) = apply {
+                this.toolChoice = toolChoice
+            }
+
+            /**
              * `none` means the model will not call any tools and instead generates a message.
              * `auto` means the model can pick between generating a message or calling one or more
              * tools. `required` means the model must call one or more tools before responding to
              * the user.
              */
-            fun toolChoice(behavior: AssistantToolChoiceOption.Behavior) = apply {
-                this.toolChoice = AssistantToolChoiceOption.ofBehavior(behavior)
-            }
+            fun toolChoice(behavior: AssistantToolChoiceOption.Behavior) =
+                toolChoice(AssistantToolChoiceOption.ofBehavior(behavior))
 
             /**
              * Specifies a tool the model should use. Use to force the model to call a specific
              * tool.
              */
-            fun toolChoice(assistantToolChoice: AssistantToolChoice) = apply {
-                this.toolChoice =
-                    AssistantToolChoiceOption.ofAssistantToolChoice(assistantToolChoice)
-            }
+            fun toolChoice(assistantToolChoice: AssistantToolChoice) =
+                toolChoice(AssistantToolChoiceOption.ofAssistantToolChoice(assistantToolChoice))
 
             /**
              * A set of resources that are used by the assistant's tools. The resources are specific
              * to the type of tool. For example, the `code_interpreter` tool requires a list of file
              * IDs, while the `file_search` tool requires a list of vector store IDs.
              */
-            fun toolResources(toolResources: ToolResources?) = apply {
-                this.toolResources = toolResources
-            }
+            fun toolResources(toolResources: ToolResources?) =
+                toolResources(JsonField.ofNullable(toolResources))
 
             /**
              * A set of resources that are used by the assistant's tools. The resources are specific
@@ -678,10 +1038,19 @@ constructor(
                 toolResources(toolResources.orElse(null))
 
             /**
+             * A set of resources that are used by the assistant's tools. The resources are specific
+             * to the type of tool. For example, the `code_interpreter` tool requires a list of file
+             * IDs, while the `file_search` tool requires a list of vector store IDs.
+             */
+            fun toolResources(toolResources: JsonField<ToolResources>) = apply {
+                this.toolResources = toolResources
+            }
+
+            /**
              * Override the tools the assistant can use for this run. This is useful for modifying
              * the behavior on a per-run basis.
              */
-            fun tools(tools: List<Tool>?) = apply { this.tools = tools?.toMutableList() }
+            fun tools(tools: List<Tool>?) = tools(JsonField.ofNullable(tools))
 
             /**
              * Override the tools the assistant can use for this run. This is useful for modifying
@@ -693,8 +1062,25 @@ constructor(
              * Override the tools the assistant can use for this run. This is useful for modifying
              * the behavior on a per-run basis.
              */
+            fun tools(tools: JsonField<List<Tool>>) = apply {
+                this.tools = tools.map { it.toMutableList() }
+            }
+
+            /**
+             * Override the tools the assistant can use for this run. This is useful for modifying
+             * the behavior on a per-run basis.
+             */
             fun addTool(tool: Tool) = apply {
-                tools = (tools ?: mutableListOf()).apply { add(tool) }
+                tools =
+                    (tools ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(tool)
+                    }
             }
 
             /**
@@ -704,7 +1090,7 @@ constructor(
              *
              * We generally recommend altering this or temperature but not both.
              */
-            fun topP(topP: Double?) = apply { this.topP = topP }
+            fun topP(topP: Double?) = topP(JsonField.ofNullable(topP))
 
             /**
              * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -726,12 +1112,20 @@ constructor(
             fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
 
             /**
+             * An alternative to sampling with temperature, called nucleus sampling, where the model
+             * considers the results of the tokens with top_p probability mass. So 0.1 means only
+             * the tokens comprising the top 10% probability mass are considered.
+             *
+             * We generally recommend altering this or temperature but not both.
+             */
+            fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
+
+            /**
              * Controls for how a thread will be truncated prior to the run. Use this to control the
              * intial context window of the run.
              */
-            fun truncationStrategy(truncationStrategy: TruncationStrategy?) = apply {
-                this.truncationStrategy = truncationStrategy
-            }
+            fun truncationStrategy(truncationStrategy: TruncationStrategy?) =
+                truncationStrategy(JsonField.ofNullable(truncationStrategy))
 
             /**
              * Controls for how a thread will be truncated prior to the run. Use this to control the
@@ -739,6 +1133,14 @@ constructor(
              */
             fun truncationStrategy(truncationStrategy: Optional<TruncationStrategy>) =
                 truncationStrategy(truncationStrategy.orElse(null))
+
+            /**
+             * Controls for how a thread will be truncated prior to the run. Use this to control the
+             * intial context window of the run.
+             */
+            fun truncationStrategy(truncationStrategy: JsonField<TruncationStrategy>) = apply {
+                this.truncationStrategy = truncationStrategy
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -773,7 +1175,7 @@ constructor(
                     thread,
                     toolChoice,
                     toolResources,
-                    tools?.toImmutable(),
+                    (tools ?: JsonMissing.of()).map { it.toImmutable() },
                     topP,
                     truncationStrategy,
                     additionalProperties.toImmutable(),
@@ -826,6 +1228,12 @@ constructor(
         fun assistantId(assistantId: String) = apply { body.assistantId(assistantId) }
 
         /**
+         * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) to
+         * use to execute this run.
+         */
+        fun assistantId(assistantId: JsonField<String>) = apply { body.assistantId(assistantId) }
+
+        /**
          * Override the default system message of the assistant. This is useful for modifying the
          * behavior on a per-run basis.
          */
@@ -836,6 +1244,14 @@ constructor(
          * behavior on a per-run basis.
          */
         fun instructions(instructions: Optional<String>) = instructions(instructions.orElse(null))
+
+        /**
+         * Override the default system message of the assistant. This is useful for modifying the
+         * behavior on a per-run basis.
+         */
+        fun instructions(instructions: JsonField<String>) = apply {
+            body.instructions(instructions)
+        }
 
         /**
          * The maximum number of completion tokens that may be used over the course of the run. The
@@ -867,6 +1283,16 @@ constructor(
             maxCompletionTokens(maxCompletionTokens.orElse(null) as Long?)
 
         /**
+         * The maximum number of completion tokens that may be used over the course of the run. The
+         * run will make a best effort to use only the number of completion tokens specified, across
+         * multiple turns of the run. If the run exceeds the number of completion tokens specified,
+         * the run will end with status `incomplete`. See `incomplete_details` for more info.
+         */
+        fun maxCompletionTokens(maxCompletionTokens: JsonField<Long>) = apply {
+            body.maxCompletionTokens(maxCompletionTokens)
+        }
+
+        /**
          * The maximum number of prompt tokens that may be used over the course of the run. The run
          * will make a best effort to use only the number of prompt tokens specified, across
          * multiple turns of the run. If the run exceeds the number of prompt tokens specified, the
@@ -895,18 +1321,21 @@ constructor(
             maxPromptTokens(maxPromptTokens.orElse(null) as Long?)
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format. Keys can be a
-         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         * The maximum number of prompt tokens that may be used over the course of the run. The run
+         * will make a best effort to use only the number of prompt tokens specified, across
+         * multiple turns of the run. If the run exceeds the number of prompt tokens specified, the
+         * run will end with status `incomplete`. See `incomplete_details` for more info.
          */
-        fun metadata(metadata: JsonValue?) = apply { body.metadata(metadata) }
+        fun maxPromptTokens(maxPromptTokens: JsonField<Long>) = apply {
+            body.maxPromptTokens(maxPromptTokens)
+        }
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
          * storing additional information about the object in a structured format. Keys can be a
          * maximum of 64 characters long and values can be a maximum of 512 characters long.
          */
-        fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
+        fun metadata(metadata: JsonValue) = apply { body.metadata(metadata) }
 
         /**
          * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used
@@ -927,6 +1356,13 @@ constructor(
          * to execute this run. If a value is provided here, it will override the model associated
          * with the assistant. If not, the model associated with the assistant will be used.
          */
+        fun model(model: JsonField<ChatModel>) = apply { body.model(model) }
+
+        /**
+         * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used
+         * to execute this run. If a value is provided here, it will override the model associated
+         * with the assistant. If not, the model associated with the assistant will be used.
+         */
         fun model(value: String) = apply { body.model(value) }
 
         /**
@@ -934,7 +1370,7 @@ constructor(
          * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
          * during tool use.
          */
-        fun parallelToolCalls(parallelToolCalls: Boolean?) = apply {
+        fun parallelToolCalls(parallelToolCalls: Boolean) = apply {
             body.parallelToolCalls(parallelToolCalls)
         }
 
@@ -943,17 +1379,9 @@ constructor(
          * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
          * during tool use.
          */
-        fun parallelToolCalls(parallelToolCalls: Boolean) =
-            parallelToolCalls(parallelToolCalls as Boolean?)
-
-        /**
-         * Whether to enable
-         * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
-         * during tool use.
-         */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun parallelToolCalls(parallelToolCalls: Optional<Boolean>) =
-            parallelToolCalls(parallelToolCalls.orElse(null) as Boolean?)
+        fun parallelToolCalls(parallelToolCalls: JsonField<Boolean>) = apply {
+            body.parallelToolCalls(parallelToolCalls)
+        }
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -1002,6 +1430,30 @@ constructor(
         fun responseFormat(responseFormat: Optional<AssistantResponseFormatOption>) =
             responseFormat(responseFormat.orElse(null))
 
+        /**
+         * Specifies the format that the model must output. Compatible with
+         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
+         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
+         * Turbo models since `gpt-3.5-turbo-1106`.
+         *
+         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
+         * which ensures the model will match your supplied JSON schema. Learn more in the
+         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         *
+         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
+         * model generates is valid JSON.
+         *
+         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
+         * yourself via a system or user message. Without this, the model may generate an unending
+         * stream of whitespace until the generation reaches the token limit, resulting in a
+         * long-running and seemingly "stuck" request. Also note that the message content may be
+         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
+         * `max_tokens` or the conversation exceeded the max context length.
+         */
+        fun responseFormat(responseFormat: JsonField<AssistantResponseFormatOption>) = apply {
+            body.responseFormat(responseFormat)
+        }
+
         /** `auto` is the default value */
         fun responseFormat(behavior: AssistantResponseFormatOption.Behavior) = apply {
             body.responseFormat(behavior)
@@ -1042,11 +1494,18 @@ constructor(
         fun temperature(temperature: Optional<Double>) =
             temperature(temperature.orElse(null) as Double?)
 
-        /** If no thread is provided, an empty thread will be created. */
-        fun thread(thread: Thread?) = apply { body.thread(thread) }
+        /**
+         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+         * output more random, while lower values like 0.2 will make it more focused and
+         * deterministic.
+         */
+        fun temperature(temperature: JsonField<Double>) = apply { body.temperature(temperature) }
 
         /** If no thread is provided, an empty thread will be created. */
-        fun thread(thread: Optional<Thread>) = thread(thread.orElse(null))
+        fun thread(thread: Thread) = apply { body.thread(thread) }
+
+        /** If no thread is provided, an empty thread will be created. */
+        fun thread(thread: JsonField<Thread>) = apply { body.thread(thread) }
 
         /**
          * Controls which (if any) tool is called by the model. `none` means the model will not call
@@ -1070,6 +1529,18 @@ constructor(
          */
         fun toolChoice(toolChoice: Optional<AssistantToolChoiceOption>) =
             toolChoice(toolChoice.orElse(null))
+
+        /**
+         * Controls which (if any) tool is called by the model. `none` means the model will not call
+         * any tools and instead generates a message. `auto` is the default value and means the
+         * model can pick between generating a message or calling one or more tools. `required`
+         * means the model must call one or more tools before responding to the user. Specifying a
+         * particular tool like `{"type": "file_search"}` or `{"type": "function", "function":
+         * {"name": "my_function"}}` forces the model to call that tool.
+         */
+        fun toolChoice(toolChoice: JsonField<AssistantToolChoiceOption>) = apply {
+            body.toolChoice(toolChoice)
+        }
 
         /**
          * `none` means the model will not call any tools and instead generates a message. `auto`
@@ -1105,6 +1576,15 @@ constructor(
             toolResources(toolResources.orElse(null))
 
         /**
+         * A set of resources that are used by the assistant's tools. The resources are specific to
+         * the type of tool. For example, the `code_interpreter` tool requires a list of file IDs,
+         * while the `file_search` tool requires a list of vector store IDs.
+         */
+        fun toolResources(toolResources: JsonField<ToolResources>) = apply {
+            body.toolResources(toolResources)
+        }
+
+        /**
          * Override the tools the assistant can use for this run. This is useful for modifying the
          * behavior on a per-run basis.
          */
@@ -1115,6 +1595,12 @@ constructor(
          * behavior on a per-run basis.
          */
         fun tools(tools: Optional<List<Tool>>) = tools(tools.orElse(null))
+
+        /**
+         * Override the tools the assistant can use for this run. This is useful for modifying the
+         * behavior on a per-run basis.
+         */
+        fun tools(tools: JsonField<List<Tool>>) = apply { body.tools(tools) }
 
         /**
          * Override the tools the assistant can use for this run. This is useful for modifying the
@@ -1151,6 +1637,15 @@ constructor(
         fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
 
         /**
+         * An alternative to sampling with temperature, called nucleus sampling, where the model
+         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
+         * tokens comprising the top 10% probability mass are considered.
+         *
+         * We generally recommend altering this or temperature but not both.
+         */
+        fun topP(topP: JsonField<Double>) = apply { body.topP(topP) }
+
+        /**
          * Controls for how a thread will be truncated prior to the run. Use this to control the
          * intial context window of the run.
          */
@@ -1164,6 +1659,33 @@ constructor(
          */
         fun truncationStrategy(truncationStrategy: Optional<TruncationStrategy>) =
             truncationStrategy(truncationStrategy.orElse(null))
+
+        /**
+         * Controls for how a thread will be truncated prior to the run. Use this to control the
+         * intial context window of the run.
+         */
+        fun truncationStrategy(truncationStrategy: JsonField<TruncationStrategy>) = apply {
+            body.truncationStrategy(truncationStrategy)
+        }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -1263,25 +1785,6 @@ constructor(
             additionalQueryParams.removeAll(keys)
         }
 
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            body.additionalProperties(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            body.putAdditionalProperty(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                body.putAllAdditionalProperties(additionalBodyProperties)
-            }
-
-        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
-
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            body.removeAllAdditionalProperties(keys)
-        }
-
         fun build(): BetaThreadCreateAndRunParams =
             BetaThreadCreateAndRunParams(
                 body.build(),
@@ -1295,9 +1798,15 @@ constructor(
     class Thread
     @JsonCreator
     private constructor(
-        @JsonProperty("messages") private val messages: List<Message>?,
-        @JsonProperty("metadata") private val metadata: JsonValue?,
-        @JsonProperty("tool_resources") private val toolResources: ToolResources?,
+        @JsonProperty("messages")
+        @ExcludeMissing
+        private val messages: JsonField<List<Message>> = JsonMissing.of(),
+        @JsonProperty("metadata")
+        @ExcludeMissing
+        private val metadata: JsonValue = JsonMissing.of(),
+        @JsonProperty("tool_resources")
+        @ExcludeMissing
+        private val toolResources: JsonField<ToolResources> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -1306,16 +1815,32 @@ constructor(
          * A list of [messages](https://platform.openai.com/docs/api-reference/messages) to start
          * the thread with.
          */
-        @JsonProperty("messages")
-        fun messages(): Optional<List<Message>> = Optional.ofNullable(messages)
+        fun messages(): Optional<List<Message>> =
+            Optional.ofNullable(messages.getNullable("messages"))
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
          * storing additional information about the object in a structured format. Keys can be a
          * maximum of 64 characters long and values can be a maximum of 512 characters long.
          */
-        @JsonProperty("metadata")
-        fun metadata(): Optional<JsonValue> = Optional.ofNullable(metadata)
+        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+
+        /**
+         * A set of resources that are made available to the assistant's tools in this thread. The
+         * resources are specific to the type of tool. For example, the `code_interpreter` tool
+         * requires a list of file IDs, while the `file_search` tool requires a list of vector store
+         * IDs.
+         */
+        fun toolResources(): Optional<ToolResources> =
+            Optional.ofNullable(toolResources.getNullable("tool_resources"))
+
+        /**
+         * A list of [messages](https://platform.openai.com/docs/api-reference/messages) to start
+         * the thread with.
+         */
+        @JsonProperty("messages")
+        @ExcludeMissing
+        fun _messages(): JsonField<List<Message>> = messages
 
         /**
          * A set of resources that are made available to the assistant's tools in this thread. The
@@ -1324,11 +1849,22 @@ constructor(
          * IDs.
          */
         @JsonProperty("tool_resources")
-        fun toolResources(): Optional<ToolResources> = Optional.ofNullable(toolResources)
+        @ExcludeMissing
+        fun _toolResources(): JsonField<ToolResources> = toolResources
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): Thread = apply {
+            if (!validated) {
+                messages().map { it.forEach { it.validate() } }
+                toolResources().map { it.validate() }
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -1339,14 +1875,14 @@ constructor(
 
         class Builder {
 
-            private var messages: MutableList<Message>? = null
-            private var metadata: JsonValue? = null
-            private var toolResources: ToolResources? = null
+            private var messages: JsonField<MutableList<Message>>? = null
+            private var metadata: JsonValue = JsonMissing.of()
+            private var toolResources: JsonField<ToolResources> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(thread: Thread) = apply {
-                messages = thread.messages?.toMutableList()
+                messages = thread.messages.map { it.toMutableList() }
                 metadata = thread.metadata
                 toolResources = thread.toolResources
                 additionalProperties = thread.additionalProperties.toMutableMap()
@@ -1356,22 +1892,31 @@ constructor(
              * A list of [messages](https://platform.openai.com/docs/api-reference/messages) to
              * start the thread with.
              */
-            fun messages(messages: List<Message>?) = apply {
-                this.messages = messages?.toMutableList()
-            }
+            fun messages(messages: List<Message>) = messages(JsonField.of(messages))
 
             /**
              * A list of [messages](https://platform.openai.com/docs/api-reference/messages) to
              * start the thread with.
              */
-            fun messages(messages: Optional<List<Message>>) = messages(messages.orElse(null))
+            fun messages(messages: JsonField<List<Message>>) = apply {
+                this.messages = messages.map { it.toMutableList() }
+            }
 
             /**
              * A list of [messages](https://platform.openai.com/docs/api-reference/messages) to
              * start the thread with.
              */
             fun addMessage(message: Message) = apply {
-                messages = (messages ?: mutableListOf()).apply { add(message) }
+                messages =
+                    (messages ?: JsonField.of(mutableListOf())).apply {
+                        asKnown()
+                            .orElseThrow {
+                                IllegalStateException(
+                                    "Field was set to non-list type: ${javaClass.simpleName}"
+                                )
+                            }
+                            .add(message)
+                    }
             }
 
             /**
@@ -1379,14 +1924,7 @@ constructor(
              * storing additional information about the object in a structured format. Keys can be a
              * maximum of 64 characters long and values can be a maximum of 512 characters long.
              */
-            fun metadata(metadata: JsonValue?) = apply { this.metadata = metadata }
-
-            /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format. Keys can be a
-             * maximum of 64 characters long and values can be a maximum of 512 characters long.
-             */
-            fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
+            fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
             /**
              * A set of resources that are made available to the assistant's tools in this thread.
@@ -1394,9 +1932,8 @@ constructor(
              * tool requires a list of file IDs, while the `file_search` tool requires a list of
              * vector store IDs.
              */
-            fun toolResources(toolResources: ToolResources?) = apply {
-                this.toolResources = toolResources
-            }
+            fun toolResources(toolResources: ToolResources?) =
+                toolResources(JsonField.ofNullable(toolResources))
 
             /**
              * A set of resources that are made available to the assistant's tools in this thread.
@@ -1406,6 +1943,16 @@ constructor(
              */
             fun toolResources(toolResources: Optional<ToolResources>) =
                 toolResources(toolResources.orElse(null))
+
+            /**
+             * A set of resources that are made available to the assistant's tools in this thread.
+             * The resources are specific to the type of tool. For example, the `code_interpreter`
+             * tool requires a list of file IDs, while the `file_search` tool requires a list of
+             * vector store IDs.
+             */
+            fun toolResources(toolResources: JsonField<ToolResources>) = apply {
+                this.toolResources = toolResources
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1428,7 +1975,7 @@ constructor(
 
             fun build(): Thread =
                 Thread(
-                    messages?.toImmutable(),
+                    (messages ?: JsonMissing.of()).map { it.toImmutable() },
                     metadata,
                     toolResources,
                     additionalProperties.toImmutable(),
@@ -1439,16 +1986,24 @@ constructor(
         class Message
         @JsonCreator
         private constructor(
-            @JsonProperty("content") private val content: Content,
-            @JsonProperty("role") private val role: Role,
-            @JsonProperty("attachments") private val attachments: List<Attachment>?,
-            @JsonProperty("metadata") private val metadata: JsonValue?,
+            @JsonProperty("content")
+            @ExcludeMissing
+            private val content: JsonField<Content> = JsonMissing.of(),
+            @JsonProperty("role")
+            @ExcludeMissing
+            private val role: JsonField<Role> = JsonMissing.of(),
+            @JsonProperty("attachments")
+            @ExcludeMissing
+            private val attachments: JsonField<List<Attachment>> = JsonMissing.of(),
+            @JsonProperty("metadata")
+            @ExcludeMissing
+            private val metadata: JsonValue = JsonMissing.of(),
             @JsonAnySetter
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
             /** The text contents of the message. */
-            @JsonProperty("content") fun content(): Content = content
+            fun content(): Content = content.getRequired("content")
 
             /**
              * The role of the entity that is creating the message. Allowed values include:
@@ -1457,23 +2012,50 @@ constructor(
              * - `assistant`: Indicates the message is generated by the assistant. Use this value to
              *   insert messages from the assistant into the conversation.
              */
-            @JsonProperty("role") fun role(): Role = role
+            fun role(): Role = role.getRequired("role")
 
             /** A list of files attached to the message, and the tools they should be added to. */
-            @JsonProperty("attachments")
-            fun attachments(): Optional<List<Attachment>> = Optional.ofNullable(attachments)
+            fun attachments(): Optional<List<Attachment>> =
+                Optional.ofNullable(attachments.getNullable("attachments"))
 
             /**
              * Set of 16 key-value pairs that can be attached to an object. This can be useful for
              * storing additional information about the object in a structured format. Keys can be a
              * maximum of 64 characters long and values can be a maximum of 512 characters long.
              */
-            @JsonProperty("metadata")
-            fun metadata(): Optional<JsonValue> = Optional.ofNullable(metadata)
+            @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+
+            /** The text contents of the message. */
+            @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<Content> = content
+
+            /**
+             * The role of the entity that is creating the message. Allowed values include:
+             * - `user`: Indicates the message is sent by an actual user and should be used in most
+             *   cases to represent user-generated messages.
+             * - `assistant`: Indicates the message is generated by the assistant. Use this value to
+             *   insert messages from the assistant into the conversation.
+             */
+            @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
+
+            /** A list of files attached to the message, and the tools they should be added to. */
+            @JsonProperty("attachments")
+            @ExcludeMissing
+            fun _attachments(): JsonField<List<Attachment>> = attachments
 
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            private var validated: Boolean = false
+
+            fun validate(): Message = apply {
+                if (!validated) {
+                    content()
+                    role()
+                    attachments().map { it.forEach { it.validate() } }
+                    validated = true
+                }
+            }
 
             fun toBuilder() = Builder().from(this)
 
@@ -1484,28 +2066,29 @@ constructor(
 
             class Builder {
 
-                private var content: Content? = null
-                private var role: Role? = null
-                private var attachments: MutableList<Attachment>? = null
-                private var metadata: JsonValue? = null
+                private var content: JsonField<Content>? = null
+                private var role: JsonField<Role>? = null
+                private var attachments: JsonField<MutableList<Attachment>>? = null
+                private var metadata: JsonValue = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(message: Message) = apply {
                     content = message.content
                     role = message.role
-                    attachments = message.attachments?.toMutableList()
+                    attachments = message.attachments.map { it.toMutableList() }
                     metadata = message.metadata
                     additionalProperties = message.additionalProperties.toMutableMap()
                 }
 
                 /** The text contents of the message. */
-                fun content(content: Content) = apply { this.content = content }
+                fun content(content: Content) = content(JsonField.of(content))
 
                 /** The text contents of the message. */
-                fun content(textContent: String) = apply {
-                    this.content = Content.ofTextContent(textContent)
-                }
+                fun content(content: JsonField<Content>) = apply { this.content = content }
+
+                /** The text contents of the message. */
+                fun content(textContent: String) = content(Content.ofTextContent(textContent))
 
                 /**
                  * An array of content parts with a defined type, each can be of type `text` or
@@ -1514,7 +2097,7 @@ constructor(
                  */
                 fun contentOfArrayOfContentParts(
                     arrayOfContentParts: List<MessageContentPartParam>
-                ) = apply { this.content = Content.ofArrayOfContentParts(arrayOfContentParts) }
+                ) = content(Content.ofArrayOfContentParts(arrayOfContentParts))
 
                 /**
                  * The role of the entity that is creating the message. Allowed values include:
@@ -1523,14 +2106,22 @@ constructor(
                  * - `assistant`: Indicates the message is generated by the assistant. Use this
                  *   value to insert messages from the assistant into the conversation.
                  */
-                fun role(role: Role) = apply { this.role = role }
+                fun role(role: Role) = role(JsonField.of(role))
+
+                /**
+                 * The role of the entity that is creating the message. Allowed values include:
+                 * - `user`: Indicates the message is sent by an actual user and should be used in
+                 *   most cases to represent user-generated messages.
+                 * - `assistant`: Indicates the message is generated by the assistant. Use this
+                 *   value to insert messages from the assistant into the conversation.
+                 */
+                fun role(role: JsonField<Role>) = apply { this.role = role }
 
                 /**
                  * A list of files attached to the message, and the tools they should be added to.
                  */
-                fun attachments(attachments: List<Attachment>?) = apply {
-                    this.attachments = attachments?.toMutableList()
-                }
+                fun attachments(attachments: List<Attachment>?) =
+                    attachments(JsonField.ofNullable(attachments))
 
                 /**
                  * A list of files attached to the message, and the tools they should be added to.
@@ -1541,8 +2132,24 @@ constructor(
                 /**
                  * A list of files attached to the message, and the tools they should be added to.
                  */
+                fun attachments(attachments: JsonField<List<Attachment>>) = apply {
+                    this.attachments = attachments.map { it.toMutableList() }
+                }
+
+                /**
+                 * A list of files attached to the message, and the tools they should be added to.
+                 */
                 fun addAttachment(attachment: Attachment) = apply {
-                    attachments = (attachments ?: mutableListOf()).apply { add(attachment) }
+                    attachments =
+                        (attachments ?: JsonField.of(mutableListOf())).apply {
+                            asKnown()
+                                .orElseThrow {
+                                    IllegalStateException(
+                                        "Field was set to non-list type: ${javaClass.simpleName}"
+                                    )
+                                }
+                                .add(attachment)
+                        }
                 }
 
                 /**
@@ -1551,15 +2158,7 @@ constructor(
                  * can be a maximum of 64 characters long and values can be a maximum of 512
                  * characters long.
                  */
-                fun metadata(metadata: JsonValue?) = apply { this.metadata = metadata }
-
-                /**
-                 * Set of 16 key-value pairs that can be attached to an object. This can be useful
-                 * for storing additional information about the object in a structured format. Keys
-                 * can be a maximum of 64 characters long and values can be a maximum of 512
-                 * characters long.
-                 */
-                fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
+                fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -1587,7 +2186,7 @@ constructor(
                     Message(
                         checkNotNull(content) { "`content` is required but was not set" },
                         checkNotNull(role) { "`role` is required but was not set" },
-                        attachments?.toImmutable(),
+                        (attachments ?: JsonMissing.of()).map { it.toImmutable() },
                         metadata,
                         additionalProperties.toImmutable(),
                     )
@@ -1602,6 +2201,8 @@ constructor(
                 private val arrayOfContentParts: List<MessageContentPartParam>? = null,
                 private val _json: JsonValue? = null,
             ) {
+
+                private var validated: Boolean = false
 
                 /** The text contents of the message. */
                 fun textContent(): Optional<String> = Optional.ofNullable(textContent)
@@ -1635,6 +2236,15 @@ constructor(
                         arrayOfContentParts != null ->
                             visitor.visitArrayOfContentParts(arrayOfContentParts)
                         else -> visitor.unknown(_json)
+                    }
+                }
+
+                fun validate(): Content = apply {
+                    if (!validated) {
+                        if (textContent == null && arrayOfContentParts == null) {
+                            throw OpenAIInvalidDataException("Unknown Content: $_json")
+                        }
+                        validated = true
                     }
                 }
 
@@ -1782,23 +2392,41 @@ constructor(
             class Attachment
             @JsonCreator
             private constructor(
-                @JsonProperty("file_id") private val fileId: String?,
-                @JsonProperty("tools") private val tools: List<Tool>?,
+                @JsonProperty("file_id")
+                @ExcludeMissing
+                private val fileId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("tools")
+                @ExcludeMissing
+                private val tools: JsonField<List<Tool>> = JsonMissing.of(),
                 @JsonAnySetter
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
 
                 /** The ID of the file to attach to the message. */
-                @JsonProperty("file_id")
-                fun fileId(): Optional<String> = Optional.ofNullable(fileId)
+                fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
 
                 /** The tools to add this file to. */
-                @JsonProperty("tools")
-                fun tools(): Optional<List<Tool>> = Optional.ofNullable(tools)
+                fun tools(): Optional<List<Tool>> = Optional.ofNullable(tools.getNullable("tools"))
+
+                /** The ID of the file to attach to the message. */
+                @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
+
+                /** The tools to add this file to. */
+                @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<Tool>> = tools
 
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                private var validated: Boolean = false
+
+                fun validate(): Attachment = apply {
+                    if (!validated) {
+                        fileId()
+                        tools()
+                        validated = true
+                    }
+                }
 
                 fun toBuilder() = Builder().from(this)
 
@@ -1809,32 +2437,43 @@ constructor(
 
                 class Builder {
 
-                    private var fileId: String? = null
-                    private var tools: MutableList<Tool>? = null
+                    private var fileId: JsonField<String> = JsonMissing.of()
+                    private var tools: JsonField<MutableList<Tool>>? = null
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
                     internal fun from(attachment: Attachment) = apply {
                         fileId = attachment.fileId
-                        tools = attachment.tools?.toMutableList()
+                        tools = attachment.tools.map { it.toMutableList() }
                         additionalProperties = attachment.additionalProperties.toMutableMap()
                     }
 
                     /** The ID of the file to attach to the message. */
-                    fun fileId(fileId: String?) = apply { this.fileId = fileId }
+                    fun fileId(fileId: String) = fileId(JsonField.of(fileId))
 
                     /** The ID of the file to attach to the message. */
-                    fun fileId(fileId: Optional<String>) = fileId(fileId.orElse(null))
+                    fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
 
                     /** The tools to add this file to. */
-                    fun tools(tools: List<Tool>?) = apply { this.tools = tools?.toMutableList() }
+                    fun tools(tools: List<Tool>) = tools(JsonField.of(tools))
 
                     /** The tools to add this file to. */
-                    fun tools(tools: Optional<List<Tool>>) = tools(tools.orElse(null))
+                    fun tools(tools: JsonField<List<Tool>>) = apply {
+                        this.tools = tools.map { it.toMutableList() }
+                    }
 
                     /** The tools to add this file to. */
                     fun addTool(tool: Tool) = apply {
-                        tools = (tools ?: mutableListOf()).apply { add(tool) }
+                        tools =
+                            (tools ?: JsonField.of(mutableListOf())).apply {
+                                asKnown()
+                                    .orElseThrow {
+                                        IllegalStateException(
+                                            "Field was set to non-list type: ${javaClass.simpleName}"
+                                        )
+                                    }
+                                    .add(tool)
+                            }
                     }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1862,7 +2501,7 @@ constructor(
                     fun build(): Attachment =
                         Attachment(
                             fileId,
-                            tools?.toImmutable(),
+                            (tools ?: JsonMissing.of()).map { it.toImmutable() },
                             additionalProperties.toImmutable(),
                         )
                 }
@@ -1875,6 +2514,8 @@ constructor(
                     private val fileSearch: FileSearch? = null,
                     private val _json: JsonValue? = null,
                 ) {
+
+                    private var validated: Boolean = false
 
                     fun codeInterpreterTool(): Optional<CodeInterpreterTool> =
                         Optional.ofNullable(codeInterpreterTool)
@@ -1898,6 +2539,17 @@ constructor(
                                 visitor.visitCodeInterpreterTool(codeInterpreterTool)
                             fileSearch != null -> visitor.visitFileSearch(fileSearch)
                             else -> visitor.unknown(_json)
+                        }
+                    }
+
+                    fun validate(): Tool = apply {
+                        if (!validated) {
+                            if (codeInterpreterTool == null && fileSearch == null) {
+                                throw OpenAIInvalidDataException("Unknown Tool: $_json")
+                            }
+                            codeInterpreterTool?.validate()
+                            fileSearch?.validate()
+                            validated = true
                         }
                     }
 
@@ -1950,15 +2602,20 @@ constructor(
 
                             when (type) {
                                 "code_interpreter" -> {
-                                    tryDeserialize(node, jacksonTypeRef<CodeInterpreterTool>())
+                                    tryDeserialize(node, jacksonTypeRef<CodeInterpreterTool>()) {
+                                            it.validate()
+                                        }
                                         ?.let {
                                             return Tool(codeInterpreterTool = it, _json = json)
                                         }
                                 }
                                 "file_search" -> {
-                                    tryDeserialize(node, jacksonTypeRef<FileSearch>())?.let {
-                                        return Tool(fileSearch = it, _json = json)
-                                    }
+                                    tryDeserialize(node, jacksonTypeRef<FileSearch>()) {
+                                            it.validate()
+                                        }
+                                        ?.let {
+                                            return Tool(fileSearch = it, _json = json)
+                                        }
                                 }
                             }
 
@@ -1987,18 +2644,32 @@ constructor(
                     class FileSearch
                     @JsonCreator
                     private constructor(
-                        @JsonProperty("type") private val type: Type,
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        private val type: JsonField<Type> = JsonMissing.of(),
                         @JsonAnySetter
                         private val additionalProperties: Map<String, JsonValue> =
                             immutableEmptyMap(),
                     ) {
 
                         /** The type of tool being defined: `file_search` */
-                        @JsonProperty("type") fun type(): Type = type
+                        fun type(): Type = type.getRequired("type")
+
+                        /** The type of tool being defined: `file_search` */
+                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                         @JsonAnyGetter
                         @ExcludeMissing
                         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                        private var validated: Boolean = false
+
+                        fun validate(): FileSearch = apply {
+                            if (!validated) {
+                                type()
+                                validated = true
+                            }
+                        }
 
                         fun toBuilder() = Builder().from(this)
 
@@ -2009,7 +2680,7 @@ constructor(
 
                         class Builder {
 
-                            private var type: Type? = null
+                            private var type: JsonField<Type>? = null
                             private var additionalProperties: MutableMap<String, JsonValue> =
                                 mutableMapOf()
 
@@ -2021,7 +2692,10 @@ constructor(
                             }
 
                             /** The type of tool being defined: `file_search` */
-                            fun type(type: Type) = apply { this.type = type }
+                            fun type(type: Type) = type(JsonField.of(type))
+
+                            /** The type of tool being defined: `file_search` */
+                            fun type(type: JsonField<Type>) = apply { this.type = type }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                                 apply {
@@ -2169,21 +2843,43 @@ constructor(
         class ToolResources
         @JsonCreator
         private constructor(
-            @JsonProperty("code_interpreter") private val codeInterpreter: CodeInterpreter?,
-            @JsonProperty("file_search") private val fileSearch: FileSearch?,
+            @JsonProperty("code_interpreter")
+            @ExcludeMissing
+            private val codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of(),
+            @JsonProperty("file_search")
+            @ExcludeMissing
+            private val fileSearch: JsonField<FileSearch> = JsonMissing.of(),
             @JsonAnySetter
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
+            fun codeInterpreter(): Optional<CodeInterpreter> =
+                Optional.ofNullable(codeInterpreter.getNullable("code_interpreter"))
+
+            fun fileSearch(): Optional<FileSearch> =
+                Optional.ofNullable(fileSearch.getNullable("file_search"))
+
             @JsonProperty("code_interpreter")
-            fun codeInterpreter(): Optional<CodeInterpreter> = Optional.ofNullable(codeInterpreter)
+            @ExcludeMissing
+            fun _codeInterpreter(): JsonField<CodeInterpreter> = codeInterpreter
 
             @JsonProperty("file_search")
-            fun fileSearch(): Optional<FileSearch> = Optional.ofNullable(fileSearch)
+            @ExcludeMissing
+            fun _fileSearch(): JsonField<FileSearch> = fileSearch
 
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            private var validated: Boolean = false
+
+            fun validate(): ToolResources = apply {
+                if (!validated) {
+                    codeInterpreter().map { it.validate() }
+                    fileSearch().map { it.validate() }
+                    validated = true
+                }
+            }
 
             fun toBuilder() = Builder().from(this)
 
@@ -2194,8 +2890,8 @@ constructor(
 
             class Builder {
 
-                private var codeInterpreter: CodeInterpreter? = null
-                private var fileSearch: FileSearch? = null
+                private var codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of()
+                private var fileSearch: JsonField<FileSearch> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -2205,17 +2901,18 @@ constructor(
                     additionalProperties = toolResources.additionalProperties.toMutableMap()
                 }
 
-                fun codeInterpreter(codeInterpreter: CodeInterpreter?) = apply {
+                fun codeInterpreter(codeInterpreter: CodeInterpreter) =
+                    codeInterpreter(JsonField.of(codeInterpreter))
+
+                fun codeInterpreter(codeInterpreter: JsonField<CodeInterpreter>) = apply {
                     this.codeInterpreter = codeInterpreter
                 }
 
-                fun codeInterpreter(codeInterpreter: Optional<CodeInterpreter>) =
-                    codeInterpreter(codeInterpreter.orElse(null))
+                fun fileSearch(fileSearch: FileSearch) = fileSearch(JsonField.of(fileSearch))
 
-                fun fileSearch(fileSearch: FileSearch?) = apply { this.fileSearch = fileSearch }
-
-                fun fileSearch(fileSearch: Optional<FileSearch>) =
-                    fileSearch(fileSearch.orElse(null))
+                fun fileSearch(fileSearch: JsonField<FileSearch>) = apply {
+                    this.fileSearch = fileSearch
+                }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -2251,7 +2948,9 @@ constructor(
             class CodeInterpreter
             @JsonCreator
             private constructor(
-                @JsonProperty("file_ids") private val fileIds: List<String>?,
+                @JsonProperty("file_ids")
+                @ExcludeMissing
+                private val fileIds: JsonField<List<String>> = JsonMissing.of(),
                 @JsonAnySetter
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
@@ -2261,12 +2960,30 @@ constructor(
                  * available to the `code_interpreter` tool. There can be a maximum of 20 files
                  * associated with the tool.
                  */
+                fun fileIds(): Optional<List<String>> =
+                    Optional.ofNullable(fileIds.getNullable("file_ids"))
+
+                /**
+                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
+                 * available to the `code_interpreter` tool. There can be a maximum of 20 files
+                 * associated with the tool.
+                 */
                 @JsonProperty("file_ids")
-                fun fileIds(): Optional<List<String>> = Optional.ofNullable(fileIds)
+                @ExcludeMissing
+                fun _fileIds(): JsonField<List<String>> = fileIds
 
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                private var validated: Boolean = false
+
+                fun validate(): CodeInterpreter = apply {
+                    if (!validated) {
+                        fileIds()
+                        validated = true
+                    }
+                }
 
                 fun toBuilder() = Builder().from(this)
 
@@ -2277,12 +2994,12 @@ constructor(
 
                 class Builder {
 
-                    private var fileIds: MutableList<String>? = null
+                    private var fileIds: JsonField<MutableList<String>>? = null
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
                     internal fun from(codeInterpreter: CodeInterpreter) = apply {
-                        fileIds = codeInterpreter.fileIds?.toMutableList()
+                        fileIds = codeInterpreter.fileIds.map { it.toMutableList() }
                         additionalProperties = codeInterpreter.additionalProperties.toMutableMap()
                     }
 
@@ -2291,8 +3008,15 @@ constructor(
                      * made available to the `code_interpreter` tool. There can be a maximum of 20
                      * files associated with the tool.
                      */
-                    fun fileIds(fileIds: List<String>?) = apply {
-                        this.fileIds = fileIds?.toMutableList()
+                    fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
+
+                    /**
+                     * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs
+                     * made available to the `code_interpreter` tool. There can be a maximum of 20
+                     * files associated with the tool.
+                     */
+                    fun fileIds(fileIds: JsonField<List<String>>) = apply {
+                        this.fileIds = fileIds.map { it.toMutableList() }
                     }
 
                     /**
@@ -2300,15 +3024,17 @@ constructor(
                      * made available to the `code_interpreter` tool. There can be a maximum of 20
                      * files associated with the tool.
                      */
-                    fun fileIds(fileIds: Optional<List<String>>) = fileIds(fileIds.orElse(null))
-
-                    /**
-                     * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs
-                     * made available to the `code_interpreter` tool. There can be a maximum of 20
-                     * files associated with the tool.
-                     */
                     fun addFileId(fileId: String) = apply {
-                        fileIds = (fileIds ?: mutableListOf()).apply { add(fileId) }
+                        fileIds =
+                            (fileIds ?: JsonField.of(mutableListOf())).apply {
+                                asKnown()
+                                    .orElseThrow {
+                                        IllegalStateException(
+                                            "Field was set to non-list type: ${javaClass.simpleName}"
+                                        )
+                                    }
+                                    .add(fileId)
+                            }
                     }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -2334,7 +3060,10 @@ constructor(
                     }
 
                     fun build(): CodeInterpreter =
-                        CodeInterpreter(fileIds?.toImmutable(), additionalProperties.toImmutable())
+                        CodeInterpreter(
+                            (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
+                            additionalProperties.toImmutable()
+                        )
                 }
 
                 override fun equals(other: Any?): Boolean {
@@ -2359,8 +3088,12 @@ constructor(
             class FileSearch
             @JsonCreator
             private constructor(
-                @JsonProperty("vector_store_ids") private val vectorStoreIds: List<String>?,
-                @JsonProperty("vector_stores") private val vectorStores: List<VectorStore>?,
+                @JsonProperty("vector_store_ids")
+                @ExcludeMissing
+                private val vectorStoreIds: JsonField<List<String>> = JsonMissing.of(),
+                @JsonProperty("vector_stores")
+                @ExcludeMissing
+                private val vectorStores: JsonField<List<VectorStore>> = JsonMissing.of(),
                 @JsonAnySetter
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
@@ -2371,8 +3104,27 @@ constructor(
                  * attached to this thread. There can be a maximum of 1 vector store attached to the
                  * thread.
                  */
+                fun vectorStoreIds(): Optional<List<String>> =
+                    Optional.ofNullable(vectorStoreIds.getNullable("vector_store_ids"))
+
+                /**
+                 * A helper to create a
+                 * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+                 * with file_ids and attach it to this thread. There can be a maximum of 1 vector
+                 * store attached to the thread.
+                 */
+                fun vectorStores(): Optional<List<VectorStore>> =
+                    Optional.ofNullable(vectorStores.getNullable("vector_stores"))
+
+                /**
+                 * The
+                 * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+                 * attached to this thread. There can be a maximum of 1 vector store attached to the
+                 * thread.
+                 */
                 @JsonProperty("vector_store_ids")
-                fun vectorStoreIds(): Optional<List<String>> = Optional.ofNullable(vectorStoreIds)
+                @ExcludeMissing
+                fun _vectorStoreIds(): JsonField<List<String>> = vectorStoreIds
 
                 /**
                  * A helper to create a
@@ -2381,11 +3133,22 @@ constructor(
                  * store attached to the thread.
                  */
                 @JsonProperty("vector_stores")
-                fun vectorStores(): Optional<List<VectorStore>> = Optional.ofNullable(vectorStores)
+                @ExcludeMissing
+                fun _vectorStores(): JsonField<List<VectorStore>> = vectorStores
 
                 @JsonAnyGetter
                 @ExcludeMissing
                 fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                private var validated: Boolean = false
+
+                fun validate(): FileSearch = apply {
+                    if (!validated) {
+                        vectorStoreIds()
+                        vectorStores().map { it.forEach { it.validate() } }
+                        validated = true
+                    }
+                }
 
                 fun toBuilder() = Builder().from(this)
 
@@ -2396,14 +3159,14 @@ constructor(
 
                 class Builder {
 
-                    private var vectorStoreIds: MutableList<String>? = null
-                    private var vectorStores: MutableList<VectorStore>? = null
+                    private var vectorStoreIds: JsonField<MutableList<String>>? = null
+                    private var vectorStores: JsonField<MutableList<VectorStore>>? = null
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
                     internal fun from(fileSearch: FileSearch) = apply {
-                        vectorStoreIds = fileSearch.vectorStoreIds?.toMutableList()
-                        vectorStores = fileSearch.vectorStores?.toMutableList()
+                        vectorStoreIds = fileSearch.vectorStoreIds.map { it.toMutableList() }
+                        vectorStores = fileSearch.vectorStores.map { it.toMutableList() }
                         additionalProperties = fileSearch.additionalProperties.toMutableMap()
                     }
 
@@ -2413,9 +3176,8 @@ constructor(
                      * attached to this thread. There can be a maximum of 1 vector store attached to
                      * the thread.
                      */
-                    fun vectorStoreIds(vectorStoreIds: List<String>?) = apply {
-                        this.vectorStoreIds = vectorStoreIds?.toMutableList()
-                    }
+                    fun vectorStoreIds(vectorStoreIds: List<String>) =
+                        vectorStoreIds(JsonField.of(vectorStoreIds))
 
                     /**
                      * The
@@ -2423,8 +3185,9 @@ constructor(
                      * attached to this thread. There can be a maximum of 1 vector store attached to
                      * the thread.
                      */
-                    fun vectorStoreIds(vectorStoreIds: Optional<List<String>>) =
-                        vectorStoreIds(vectorStoreIds.orElse(null))
+                    fun vectorStoreIds(vectorStoreIds: JsonField<List<String>>) = apply {
+                        this.vectorStoreIds = vectorStoreIds.map { it.toMutableList() }
+                    }
 
                     /**
                      * The
@@ -2434,7 +3197,15 @@ constructor(
                      */
                     fun addVectorStoreId(vectorStoreId: String) = apply {
                         vectorStoreIds =
-                            (vectorStoreIds ?: mutableListOf()).apply { add(vectorStoreId) }
+                            (vectorStoreIds ?: JsonField.of(mutableListOf())).apply {
+                                asKnown()
+                                    .orElseThrow {
+                                        IllegalStateException(
+                                            "Field was set to non-list type: ${javaClass.simpleName}"
+                                        )
+                                    }
+                                    .add(vectorStoreId)
+                            }
                     }
 
                     /**
@@ -2443,9 +3214,8 @@ constructor(
                      * with file_ids and attach it to this thread. There can be a maximum of 1
                      * vector store attached to the thread.
                      */
-                    fun vectorStores(vectorStores: List<VectorStore>?) = apply {
-                        this.vectorStores = vectorStores?.toMutableList()
-                    }
+                    fun vectorStores(vectorStores: List<VectorStore>) =
+                        vectorStores(JsonField.of(vectorStores))
 
                     /**
                      * A helper to create a
@@ -2453,8 +3223,9 @@ constructor(
                      * with file_ids and attach it to this thread. There can be a maximum of 1
                      * vector store attached to the thread.
                      */
-                    fun vectorStores(vectorStores: Optional<List<VectorStore>>) =
-                        vectorStores(vectorStores.orElse(null))
+                    fun vectorStores(vectorStores: JsonField<List<VectorStore>>) = apply {
+                        this.vectorStores = vectorStores.map { it.toMutableList() }
+                    }
 
                     /**
                      * A helper to create a
@@ -2463,7 +3234,16 @@ constructor(
                      * vector store attached to the thread.
                      */
                     fun addVectorStore(vectorStore: VectorStore) = apply {
-                        vectorStores = (vectorStores ?: mutableListOf()).apply { add(vectorStore) }
+                        vectorStores =
+                            (vectorStores ?: JsonField.of(mutableListOf())).apply {
+                                asKnown()
+                                    .orElseThrow {
+                                        IllegalStateException(
+                                            "Field was set to non-list type: ${javaClass.simpleName}"
+                                        )
+                                    }
+                                    .add(vectorStore)
+                            }
                     }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -2490,8 +3270,8 @@ constructor(
 
                     fun build(): FileSearch =
                         FileSearch(
-                            vectorStoreIds?.toImmutable(),
-                            vectorStores?.toImmutable(),
+                            (vectorStoreIds ?: JsonMissing.of()).map { it.toImmutable() },
+                            (vectorStores ?: JsonMissing.of()).map { it.toImmutable() },
                             additionalProperties.toImmutable(),
                         )
                 }
@@ -2501,9 +3281,15 @@ constructor(
                 @JsonCreator
                 private constructor(
                     @JsonProperty("chunking_strategy")
-                    private val chunkingStrategy: FileChunkingStrategyParam?,
-                    @JsonProperty("file_ids") private val fileIds: List<String>?,
-                    @JsonProperty("metadata") private val metadata: JsonValue?,
+                    @ExcludeMissing
+                    private val chunkingStrategy: JsonField<FileChunkingStrategyParam> =
+                        JsonMissing.of(),
+                    @JsonProperty("file_ids")
+                    @ExcludeMissing
+                    private val fileIds: JsonField<List<String>> = JsonMissing.of(),
+                    @JsonProperty("metadata")
+                    @ExcludeMissing
+                    private val metadata: JsonValue = JsonMissing.of(),
                     @JsonAnySetter
                     private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
                 ) {
@@ -2512,17 +3298,16 @@ constructor(
                      * The chunking strategy used to chunk the file(s). If not set, will use the
                      * `auto` strategy. Only applicable if `file_ids` is non-empty.
                      */
-                    @JsonProperty("chunking_strategy")
                     fun chunkingStrategy(): Optional<FileChunkingStrategyParam> =
-                        Optional.ofNullable(chunkingStrategy)
+                        Optional.ofNullable(chunkingStrategy.getNullable("chunking_strategy"))
 
                     /**
                      * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to
                      * add to the vector store. There can be a maximum of 10000 files in a vector
                      * store.
                      */
-                    @JsonProperty("file_ids")
-                    fun fileIds(): Optional<List<String>> = Optional.ofNullable(fileIds)
+                    fun fileIds(): Optional<List<String>> =
+                        Optional.ofNullable(fileIds.getNullable("file_ids"))
 
                     /**
                      * Set of 16 key-value pairs that can be attached to a vector store. This can be
@@ -2530,12 +3315,38 @@ constructor(
                      * structured format. Keys can be a maximum of 64 characters long and values can
                      * be a maximum of 512 characters long.
                      */
-                    @JsonProperty("metadata")
-                    fun metadata(): Optional<JsonValue> = Optional.ofNullable(metadata)
+                    @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+
+                    /**
+                     * The chunking strategy used to chunk the file(s). If not set, will use the
+                     * `auto` strategy. Only applicable if `file_ids` is non-empty.
+                     */
+                    @JsonProperty("chunking_strategy")
+                    @ExcludeMissing
+                    fun _chunkingStrategy(): JsonField<FileChunkingStrategyParam> = chunkingStrategy
+
+                    /**
+                     * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to
+                     * add to the vector store. There can be a maximum of 10000 files in a vector
+                     * store.
+                     */
+                    @JsonProperty("file_ids")
+                    @ExcludeMissing
+                    fun _fileIds(): JsonField<List<String>> = fileIds
 
                     @JsonAnyGetter
                     @ExcludeMissing
                     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                    private var validated: Boolean = false
+
+                    fun validate(): VectorStore = apply {
+                        if (!validated) {
+                            chunkingStrategy()
+                            fileIds()
+                            validated = true
+                        }
+                    }
 
                     fun toBuilder() = Builder().from(this)
 
@@ -2546,16 +3357,17 @@ constructor(
 
                     class Builder {
 
-                        private var chunkingStrategy: FileChunkingStrategyParam? = null
-                        private var fileIds: MutableList<String>? = null
-                        private var metadata: JsonValue? = null
+                        private var chunkingStrategy: JsonField<FileChunkingStrategyParam> =
+                            JsonMissing.of()
+                        private var fileIds: JsonField<MutableList<String>>? = null
+                        private var metadata: JsonValue = JsonMissing.of()
                         private var additionalProperties: MutableMap<String, JsonValue> =
                             mutableMapOf()
 
                         @JvmSynthetic
                         internal fun from(vectorStore: VectorStore) = apply {
                             chunkingStrategy = vectorStore.chunkingStrategy
-                            fileIds = vectorStore.fileIds?.toMutableList()
+                            fileIds = vectorStore.fileIds.map { it.toMutableList() }
                             metadata = vectorStore.metadata
                             additionalProperties = vectorStore.additionalProperties.toMutableMap()
                         }
@@ -2564,17 +3376,16 @@ constructor(
                          * The chunking strategy used to chunk the file(s). If not set, will use the
                          * `auto` strategy. Only applicable if `file_ids` is non-empty.
                          */
-                        fun chunkingStrategy(chunkingStrategy: FileChunkingStrategyParam?) = apply {
-                            this.chunkingStrategy = chunkingStrategy
-                        }
+                        fun chunkingStrategy(chunkingStrategy: FileChunkingStrategyParam) =
+                            chunkingStrategy(JsonField.of(chunkingStrategy))
 
                         /**
                          * The chunking strategy used to chunk the file(s). If not set, will use the
                          * `auto` strategy. Only applicable if `file_ids` is non-empty.
                          */
                         fun chunkingStrategy(
-                            chunkingStrategy: Optional<FileChunkingStrategyParam>
-                        ) = chunkingStrategy(chunkingStrategy.orElse(null))
+                            chunkingStrategy: JsonField<FileChunkingStrategyParam>
+                        ) = apply { this.chunkingStrategy = chunkingStrategy }
 
                         /**
                          * The default strategy. This strategy currently uses a
@@ -2582,37 +3393,37 @@ constructor(
                          */
                         fun chunkingStrategy(
                             autoFileChunkingStrategyParam: AutoFileChunkingStrategyParam
-                        ) = apply {
-                            this.chunkingStrategy =
+                        ) =
+                            chunkingStrategy(
                                 FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
                                     autoFileChunkingStrategyParam
                                 )
-                        }
+                            )
 
                         fun chunkingStrategy(
                             staticFileChunkingStrategyParam: StaticFileChunkingStrategyParam
-                        ) = apply {
-                            this.chunkingStrategy =
+                        ) =
+                            chunkingStrategy(
                                 FileChunkingStrategyParam.ofStaticFileChunkingStrategyParam(
                                     staticFileChunkingStrategyParam
                                 )
-                        }
+                            )
 
                         /**
                          * A list of [file](https://platform.openai.com/docs/api-reference/files)
                          * IDs to add to the vector store. There can be a maximum of 10000 files in
                          * a vector store.
                          */
-                        fun fileIds(fileIds: List<String>?) = apply {
-                            this.fileIds = fileIds?.toMutableList()
-                        }
+                        fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
 
                         /**
                          * A list of [file](https://platform.openai.com/docs/api-reference/files)
                          * IDs to add to the vector store. There can be a maximum of 10000 files in
                          * a vector store.
                          */
-                        fun fileIds(fileIds: Optional<List<String>>) = fileIds(fileIds.orElse(null))
+                        fun fileIds(fileIds: JsonField<List<String>>) = apply {
+                            this.fileIds = fileIds.map { it.toMutableList() }
+                        }
 
                         /**
                          * A list of [file](https://platform.openai.com/docs/api-reference/files)
@@ -2620,7 +3431,16 @@ constructor(
                          * a vector store.
                          */
                         fun addFileId(fileId: String) = apply {
-                            fileIds = (fileIds ?: mutableListOf()).apply { add(fileId) }
+                            fileIds =
+                                (fileIds ?: JsonField.of(mutableListOf())).apply {
+                                    asKnown()
+                                        .orElseThrow {
+                                            IllegalStateException(
+                                                "Field was set to non-list type: ${javaClass.simpleName}"
+                                            )
+                                        }
+                                        .add(fileId)
+                                }
                         }
 
                         /**
@@ -2629,16 +3449,7 @@ constructor(
                          * in a structured format. Keys can be a maximum of 64 characters long and
                          * values can be a maximum of 512 characters long.
                          */
-                        fun metadata(metadata: JsonValue?) = apply { this.metadata = metadata }
-
-                        /**
-                         * Set of 16 key-value pairs that can be attached to a vector store. This
-                         * can be useful for storing additional information about the vector store
-                         * in a structured format. Keys can be a maximum of 64 characters long and
-                         * values can be a maximum of 512 characters long.
-                         */
-                        fun metadata(metadata: Optional<JsonValue>) =
-                            metadata(metadata.orElse(null))
+                        fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
                             apply {
@@ -2665,7 +3476,7 @@ constructor(
                         fun build(): VectorStore =
                             VectorStore(
                                 chunkingStrategy,
-                                fileIds?.toImmutable(),
+                                (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
                                 metadata,
                                 additionalProperties.toImmutable(),
                             )
@@ -2752,21 +3563,43 @@ constructor(
     class ToolResources
     @JsonCreator
     private constructor(
-        @JsonProperty("code_interpreter") private val codeInterpreter: CodeInterpreter?,
-        @JsonProperty("file_search") private val fileSearch: FileSearch?,
+        @JsonProperty("code_interpreter")
+        @ExcludeMissing
+        private val codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of(),
+        @JsonProperty("file_search")
+        @ExcludeMissing
+        private val fileSearch: JsonField<FileSearch> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
+        fun codeInterpreter(): Optional<CodeInterpreter> =
+            Optional.ofNullable(codeInterpreter.getNullable("code_interpreter"))
+
+        fun fileSearch(): Optional<FileSearch> =
+            Optional.ofNullable(fileSearch.getNullable("file_search"))
+
         @JsonProperty("code_interpreter")
-        fun codeInterpreter(): Optional<CodeInterpreter> = Optional.ofNullable(codeInterpreter)
+        @ExcludeMissing
+        fun _codeInterpreter(): JsonField<CodeInterpreter> = codeInterpreter
 
         @JsonProperty("file_search")
-        fun fileSearch(): Optional<FileSearch> = Optional.ofNullable(fileSearch)
+        @ExcludeMissing
+        fun _fileSearch(): JsonField<FileSearch> = fileSearch
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): ToolResources = apply {
+            if (!validated) {
+                codeInterpreter().map { it.validate() }
+                fileSearch().map { it.validate() }
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -2777,8 +3610,8 @@ constructor(
 
         class Builder {
 
-            private var codeInterpreter: CodeInterpreter? = null
-            private var fileSearch: FileSearch? = null
+            private var codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of()
+            private var fileSearch: JsonField<FileSearch> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -2788,16 +3621,18 @@ constructor(
                 additionalProperties = toolResources.additionalProperties.toMutableMap()
             }
 
-            fun codeInterpreter(codeInterpreter: CodeInterpreter?) = apply {
+            fun codeInterpreter(codeInterpreter: CodeInterpreter) =
+                codeInterpreter(JsonField.of(codeInterpreter))
+
+            fun codeInterpreter(codeInterpreter: JsonField<CodeInterpreter>) = apply {
                 this.codeInterpreter = codeInterpreter
             }
 
-            fun codeInterpreter(codeInterpreter: Optional<CodeInterpreter>) =
-                codeInterpreter(codeInterpreter.orElse(null))
+            fun fileSearch(fileSearch: FileSearch) = fileSearch(JsonField.of(fileSearch))
 
-            fun fileSearch(fileSearch: FileSearch?) = apply { this.fileSearch = fileSearch }
-
-            fun fileSearch(fileSearch: Optional<FileSearch>) = fileSearch(fileSearch.orElse(null))
+            fun fileSearch(fileSearch: JsonField<FileSearch>) = apply {
+                this.fileSearch = fileSearch
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -2830,7 +3665,9 @@ constructor(
         class CodeInterpreter
         @JsonCreator
         private constructor(
-            @JsonProperty("file_ids") private val fileIds: List<String>?,
+            @JsonProperty("file_ids")
+            @ExcludeMissing
+            private val fileIds: JsonField<List<String>> = JsonMissing.of(),
             @JsonAnySetter
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
@@ -2840,12 +3677,30 @@ constructor(
              * available to the `code_interpreter` tool. There can be a maximum of 20 files
              * associated with the tool.
              */
+            fun fileIds(): Optional<List<String>> =
+                Optional.ofNullable(fileIds.getNullable("file_ids"))
+
+            /**
+             * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
+             * available to the `code_interpreter` tool. There can be a maximum of 20 files
+             * associated with the tool.
+             */
             @JsonProperty("file_ids")
-            fun fileIds(): Optional<List<String>> = Optional.ofNullable(fileIds)
+            @ExcludeMissing
+            fun _fileIds(): JsonField<List<String>> = fileIds
 
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            private var validated: Boolean = false
+
+            fun validate(): CodeInterpreter = apply {
+                if (!validated) {
+                    fileIds()
+                    validated = true
+                }
+            }
 
             fun toBuilder() = Builder().from(this)
 
@@ -2856,12 +3711,12 @@ constructor(
 
             class Builder {
 
-                private var fileIds: MutableList<String>? = null
+                private var fileIds: JsonField<MutableList<String>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(codeInterpreter: CodeInterpreter) = apply {
-                    fileIds = codeInterpreter.fileIds?.toMutableList()
+                    fileIds = codeInterpreter.fileIds.map { it.toMutableList() }
                     additionalProperties = codeInterpreter.additionalProperties.toMutableMap()
                 }
 
@@ -2870,8 +3725,15 @@ constructor(
                  * available to the `code_interpreter` tool. There can be a maximum of 20 files
                  * associated with the tool.
                  */
-                fun fileIds(fileIds: List<String>?) = apply {
-                    this.fileIds = fileIds?.toMutableList()
+                fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
+
+                /**
+                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
+                 * available to the `code_interpreter` tool. There can be a maximum of 20 files
+                 * associated with the tool.
+                 */
+                fun fileIds(fileIds: JsonField<List<String>>) = apply {
+                    this.fileIds = fileIds.map { it.toMutableList() }
                 }
 
                 /**
@@ -2879,15 +3741,17 @@ constructor(
                  * available to the `code_interpreter` tool. There can be a maximum of 20 files
                  * associated with the tool.
                  */
-                fun fileIds(fileIds: Optional<List<String>>) = fileIds(fileIds.orElse(null))
-
-                /**
-                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
-                 * available to the `code_interpreter` tool. There can be a maximum of 20 files
-                 * associated with the tool.
-                 */
                 fun addFileId(fileId: String) = apply {
-                    fileIds = (fileIds ?: mutableListOf()).apply { add(fileId) }
+                    fileIds =
+                        (fileIds ?: JsonField.of(mutableListOf())).apply {
+                            asKnown()
+                                .orElseThrow {
+                                    IllegalStateException(
+                                        "Field was set to non-list type: ${javaClass.simpleName}"
+                                    )
+                                }
+                                .add(fileId)
+                        }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -2913,7 +3777,10 @@ constructor(
                 }
 
                 fun build(): CodeInterpreter =
-                    CodeInterpreter(fileIds?.toImmutable(), additionalProperties.toImmutable())
+                    CodeInterpreter(
+                        (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
+                        additionalProperties.toImmutable()
+                    )
             }
 
             override fun equals(other: Any?): Boolean {
@@ -2938,7 +3805,9 @@ constructor(
         class FileSearch
         @JsonCreator
         private constructor(
-            @JsonProperty("vector_store_ids") private val vectorStoreIds: List<String>?,
+            @JsonProperty("vector_store_ids")
+            @ExcludeMissing
+            private val vectorStoreIds: JsonField<List<String>> = JsonMissing.of(),
             @JsonAnySetter
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
@@ -2949,12 +3818,31 @@ constructor(
              * attached to this assistant. There can be a maximum of 1 vector store attached to the
              * assistant.
              */
+            fun vectorStoreIds(): Optional<List<String>> =
+                Optional.ofNullable(vectorStoreIds.getNullable("vector_store_ids"))
+
+            /**
+             * The ID of the
+             * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+             * attached to this assistant. There can be a maximum of 1 vector store attached to the
+             * assistant.
+             */
             @JsonProperty("vector_store_ids")
-            fun vectorStoreIds(): Optional<List<String>> = Optional.ofNullable(vectorStoreIds)
+            @ExcludeMissing
+            fun _vectorStoreIds(): JsonField<List<String>> = vectorStoreIds
 
             @JsonAnyGetter
             @ExcludeMissing
             fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            private var validated: Boolean = false
+
+            fun validate(): FileSearch = apply {
+                if (!validated) {
+                    vectorStoreIds()
+                    validated = true
+                }
+            }
 
             fun toBuilder() = Builder().from(this)
 
@@ -2965,12 +3853,12 @@ constructor(
 
             class Builder {
 
-                private var vectorStoreIds: MutableList<String>? = null
+                private var vectorStoreIds: JsonField<MutableList<String>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(fileSearch: FileSearch) = apply {
-                    vectorStoreIds = fileSearch.vectorStoreIds?.toMutableList()
+                    vectorStoreIds = fileSearch.vectorStoreIds.map { it.toMutableList() }
                     additionalProperties = fileSearch.additionalProperties.toMutableMap()
                 }
 
@@ -2980,9 +3868,8 @@ constructor(
                  * attached to this assistant. There can be a maximum of 1 vector store attached to
                  * the assistant.
                  */
-                fun vectorStoreIds(vectorStoreIds: List<String>?) = apply {
-                    this.vectorStoreIds = vectorStoreIds?.toMutableList()
-                }
+                fun vectorStoreIds(vectorStoreIds: List<String>) =
+                    vectorStoreIds(JsonField.of(vectorStoreIds))
 
                 /**
                  * The ID of the
@@ -2990,8 +3877,9 @@ constructor(
                  * attached to this assistant. There can be a maximum of 1 vector store attached to
                  * the assistant.
                  */
-                fun vectorStoreIds(vectorStoreIds: Optional<List<String>>) =
-                    vectorStoreIds(vectorStoreIds.orElse(null))
+                fun vectorStoreIds(vectorStoreIds: JsonField<List<String>>) = apply {
+                    this.vectorStoreIds = vectorStoreIds.map { it.toMutableList() }
+                }
 
                 /**
                  * The ID of the
@@ -3001,7 +3889,15 @@ constructor(
                  */
                 fun addVectorStoreId(vectorStoreId: String) = apply {
                     vectorStoreIds =
-                        (vectorStoreIds ?: mutableListOf()).apply { add(vectorStoreId) }
+                        (vectorStoreIds ?: JsonField.of(mutableListOf())).apply {
+                            asKnown()
+                                .orElseThrow {
+                                    IllegalStateException(
+                                        "Field was set to non-list type: ${javaClass.simpleName}"
+                                    )
+                                }
+                                .add(vectorStoreId)
+                        }
                 }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -3027,7 +3923,10 @@ constructor(
                 }
 
                 fun build(): FileSearch =
-                    FileSearch(vectorStoreIds?.toImmutable(), additionalProperties.toImmutable())
+                    FileSearch(
+                        (vectorStoreIds ?: JsonMissing.of()).map { it.toImmutable() },
+                        additionalProperties.toImmutable()
+                    )
             }
 
             override fun equals(other: Any?): Boolean {
@@ -3076,6 +3975,8 @@ constructor(
         private val _json: JsonValue? = null,
     ) {
 
+        private var validated: Boolean = false
+
         fun codeInterpreterTool(): Optional<CodeInterpreterTool> =
             Optional.ofNullable(codeInterpreterTool)
 
@@ -3104,6 +4005,18 @@ constructor(
                 fileSearchTool != null -> visitor.visitFileSearchTool(fileSearchTool)
                 functionTool != null -> visitor.visitFunctionTool(functionTool)
                 else -> visitor.unknown(_json)
+            }
+        }
+
+        fun validate(): Tool = apply {
+            if (!validated) {
+                if (codeInterpreterTool == null && fileSearchTool == null && functionTool == null) {
+                    throw OpenAIInvalidDataException("Unknown Tool: $_json")
+                }
+                codeInterpreterTool?.validate()
+                fileSearchTool?.validate()
+                functionTool?.validate()
+                validated = true
             }
         }
 
@@ -3158,15 +4071,18 @@ constructor(
             override fun ObjectCodec.deserialize(node: JsonNode): Tool {
                 val json = JsonValue.fromJsonNode(node)
 
-                tryDeserialize(node, jacksonTypeRef<CodeInterpreterTool>())?.let {
-                    return Tool(codeInterpreterTool = it, _json = json)
-                }
-                tryDeserialize(node, jacksonTypeRef<FileSearchTool>())?.let {
-                    return Tool(fileSearchTool = it, _json = json)
-                }
-                tryDeserialize(node, jacksonTypeRef<FunctionTool>())?.let {
-                    return Tool(functionTool = it, _json = json)
-                }
+                tryDeserialize(node, jacksonTypeRef<CodeInterpreterTool>()) { it.validate() }
+                    ?.let {
+                        return Tool(codeInterpreterTool = it, _json = json)
+                    }
+                tryDeserialize(node, jacksonTypeRef<FileSearchTool>()) { it.validate() }
+                    ?.let {
+                        return Tool(fileSearchTool = it, _json = json)
+                    }
+                tryDeserialize(node, jacksonTypeRef<FunctionTool>()) { it.validate() }
+                    ?.let {
+                        return Tool(functionTool = it, _json = json)
+                    }
 
                 return Tool(_json = json)
             }
@@ -3199,8 +4115,10 @@ constructor(
     class TruncationStrategy
     @JsonCreator
     private constructor(
-        @JsonProperty("type") private val type: Type,
-        @JsonProperty("last_messages") private val lastMessages: Long?,
+        @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+        @JsonProperty("last_messages")
+        @ExcludeMissing
+        private val lastMessages: JsonField<Long> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -3211,18 +4129,44 @@ constructor(
          * thread. When set to `auto`, messages in the middle of the thread will be dropped to fit
          * the context length of the model, `max_prompt_tokens`.
          */
-        @JsonProperty("type") fun type(): Type = type
+        fun type(): Type = type.getRequired("type")
+
+        /**
+         * The number of most recent messages from the thread when constructing the context for the
+         * run.
+         */
+        fun lastMessages(): Optional<Long> =
+            Optional.ofNullable(lastMessages.getNullable("last_messages"))
+
+        /**
+         * The truncation strategy to use for the thread. The default is `auto`. If set to
+         * `last_messages`, the thread will be truncated to the n most recent messages in the
+         * thread. When set to `auto`, messages in the middle of the thread will be dropped to fit
+         * the context length of the model, `max_prompt_tokens`.
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
         /**
          * The number of most recent messages from the thread when constructing the context for the
          * run.
          */
         @JsonProperty("last_messages")
-        fun lastMessages(): Optional<Long> = Optional.ofNullable(lastMessages)
+        @ExcludeMissing
+        fun _lastMessages(): JsonField<Long> = lastMessages
 
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): TruncationStrategy = apply {
+            if (!validated) {
+                type()
+                lastMessages()
+                validated = true
+            }
+        }
 
         fun toBuilder() = Builder().from(this)
 
@@ -3233,8 +4177,8 @@ constructor(
 
         class Builder {
 
-            private var type: Type? = null
-            private var lastMessages: Long? = null
+            private var type: JsonField<Type>? = null
+            private var lastMessages: JsonField<Long> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -3250,13 +4194,21 @@ constructor(
              * thread. When set to `auto`, messages in the middle of the thread will be dropped to
              * fit the context length of the model, `max_prompt_tokens`.
              */
-            fun type(type: Type) = apply { this.type = type }
+            fun type(type: Type) = type(JsonField.of(type))
+
+            /**
+             * The truncation strategy to use for the thread. The default is `auto`. If set to
+             * `last_messages`, the thread will be truncated to the n most recent messages in the
+             * thread. When set to `auto`, messages in the middle of the thread will be dropped to
+             * fit the context length of the model, `max_prompt_tokens`.
+             */
+            fun type(type: JsonField<Type>) = apply { this.type = type }
 
             /**
              * The number of most recent messages from the thread when constructing the context for
              * the run.
              */
-            fun lastMessages(lastMessages: Long?) = apply { this.lastMessages = lastMessages }
+            fun lastMessages(lastMessages: Long?) = lastMessages(JsonField.ofNullable(lastMessages))
 
             /**
              * The number of most recent messages from the thread when constructing the context for
@@ -3271,6 +4223,14 @@ constructor(
             @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
             fun lastMessages(lastMessages: Optional<Long>) =
                 lastMessages(lastMessages.orElse(null) as Long?)
+
+            /**
+             * The number of most recent messages from the thread when constructing the context for
+             * the run.
+             */
+            fun lastMessages(lastMessages: JsonField<Long>) = apply {
+                this.lastMessages = lastMessages
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()

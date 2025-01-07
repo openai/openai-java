@@ -94,9 +94,12 @@ class CompletionCreateParamsTest {
         val params =
             CompletionCreateParams.builder()
                 .model(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
+                .prompt(CompletionCreateParams.Prompt.ofString("This is a test."))
                 .build()
         val body = params.getBody()
         assertThat(body).isNotNull
         assertThat(body.model()).isEqualTo(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
+        assertThat(body.prompt())
+            .contains(CompletionCreateParams.Prompt.ofString("This is a test."))
     }
 }

@@ -34,10 +34,10 @@ private constructor(
     /** The type of the tool. Currently, only `function` is supported. */
     fun type(): Type = type.getRequired("type")
 
-    @JsonProperty("function") @ExcludeMissing fun _function() = function
+    @JsonProperty("function") @ExcludeMissing fun _function(): JsonField<Function> = function
 
     /** The type of the tool. Currently, only `function` is supported. */
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -62,8 +62,8 @@ private constructor(
 
     class Builder {
 
-        private var function: JsonField<Function> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
+        private var function: JsonField<Function>? = null
+        private var type: JsonField<Type>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -104,8 +104,8 @@ private constructor(
 
         fun build(): ChatCompletionNamedToolChoice =
             ChatCompletionNamedToolChoice(
-                function,
-                type,
+                checkNotNull(function) { "`function` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }
@@ -125,7 +125,7 @@ private constructor(
         fun name(): String = name.getRequired("name")
 
         /** The name of the function to call. */
-        @JsonProperty("name") @ExcludeMissing fun _name() = name
+        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -149,7 +149,7 @@ private constructor(
 
         class Builder {
 
-            private var name: JsonField<String> = JsonMissing.of()
+            private var name: JsonField<String>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -183,7 +183,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): Function = Function(name, additionalProperties.toImmutable())
+            fun build(): Function =
+                Function(
+                    checkNotNull(name) { "`name` is required but was not set" },
+                    additionalProperties.toImmutable()
+                )
         }
 
         override fun equals(other: Any?): Boolean {

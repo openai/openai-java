@@ -37,13 +37,13 @@ private constructor(
 
     fun type(): String = type.getRequired("type")
 
-    @JsonProperty("code") @ExcludeMissing fun _code() = code
+    @JsonProperty("code") @ExcludeMissing fun _code(): JsonField<String> = code
 
-    @JsonProperty("message") @ExcludeMissing fun _message() = message
+    @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
-    @JsonProperty("param") @ExcludeMissing fun _param() = param
+    @JsonProperty("param") @ExcludeMissing fun _param(): JsonField<String> = param
 
-    @JsonProperty("type") @ExcludeMissing fun _type() = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<String> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -70,10 +70,10 @@ private constructor(
 
     class Builder {
 
-        private var code: JsonField<String> = JsonMissing.of()
-        private var message: JsonField<String> = JsonMissing.of()
-        private var param: JsonField<String> = JsonMissing.of()
-        private var type: JsonField<String> = JsonMissing.of()
+        private var code: JsonField<String>? = null
+        private var message: JsonField<String>? = null
+        private var param: JsonField<String>? = null
+        private var type: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -85,7 +85,9 @@ private constructor(
             additionalProperties = errorObject.additionalProperties.toMutableMap()
         }
 
-        fun code(code: String) = code(JsonField.of(code))
+        fun code(code: String?) = code(JsonField.ofNullable(code))
+
+        fun code(code: Optional<String>) = code(code.orElse(null))
 
         fun code(code: JsonField<String>) = apply { this.code = code }
 
@@ -93,7 +95,9 @@ private constructor(
 
         fun message(message: JsonField<String>) = apply { this.message = message }
 
-        fun param(param: String) = param(JsonField.of(param))
+        fun param(param: String?) = param(JsonField.ofNullable(param))
+
+        fun param(param: Optional<String>) = param(param.orElse(null))
 
         fun param(param: JsonField<String>) = apply { this.param = param }
 
@@ -122,10 +126,10 @@ private constructor(
 
         fun build(): ErrorObject =
             ErrorObject(
-                code,
-                message,
-                param,
-                type,
+                checkNotNull(code) { "`code` is required but was not set" },
+                checkNotNull(message) { "`message` is required but was not set" },
+                checkNotNull(param) { "`param` is required but was not set" },
+                checkNotNull(type) { "`type` is required but was not set" },
                 additionalProperties.toImmutable(),
             )
     }

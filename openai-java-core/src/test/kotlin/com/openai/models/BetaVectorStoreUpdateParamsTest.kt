@@ -46,7 +46,7 @@ class BetaVectorStoreUpdateParamsTest {
                     .days(1L)
                     .build()
             )
-        assertThat(body.metadata()).contains(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.name()).contains("name")
     }
 
