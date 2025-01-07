@@ -16,6 +16,7 @@ import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
+/** Modifies an assistant. */
 class BetaAssistantUpdateParams
 constructor(
     private val assistantId: String,

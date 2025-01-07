@@ -7,6 +7,11 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import java.util.Objects
 
+/**
+ * Get info about a fine-tuning job.
+ *
+ * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/fine-tuning)
+ */
 class FineTuningJobRetrieveParams
 constructor(
     private val fineTuningJobId: String,

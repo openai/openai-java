@@ -16,6 +16,7 @@ import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
+/** Modifies a run. */
 class BetaThreadRunUpdateParams
 constructor(
     private val threadId: String,

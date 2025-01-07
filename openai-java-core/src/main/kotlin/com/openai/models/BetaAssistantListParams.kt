@@ -12,6 +12,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
+/** Returns a list of assistants. */
 class BetaAssistantListParams
 constructor(
     private val after: String?,

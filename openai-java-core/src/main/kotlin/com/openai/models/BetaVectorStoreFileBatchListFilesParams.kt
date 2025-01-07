@@ -12,6 +12,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
+/** Returns a list of vector store files in a batch. */
 class BetaVectorStoreFileBatchListFilesParams
 constructor(
     private val vectorStoreId: String,

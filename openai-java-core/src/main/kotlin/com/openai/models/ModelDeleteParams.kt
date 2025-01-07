@@ -10,6 +10,9 @@ import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
 
+/**
+ * Delete a fine-tuned model. You must have the Owner role in your organization to delete a model.
+ */
 class ModelDeleteParams
 constructor(
     private val model: String,

@@ -30,6 +30,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
+/** Create a message. */
 class BetaThreadMessageCreateParams
 constructor(
     private val threadId: String,

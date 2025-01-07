@@ -7,6 +7,7 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import java.util.Objects
 
+/** Retrieves a thread. */
 class BetaThreadRetrieveParams
 constructor(
     private val threadId: String,

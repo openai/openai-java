@@ -19,6 +19,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
+/** Creates and executes a batch from an uploaded file of requests */
 class BatchCreateParams
 constructor(
     private val body: BatchCreateBody,

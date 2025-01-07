@@ -29,6 +29,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
+/** Creates a completion for the provided prompt and parameters. */
 class CompletionCreateParams
 constructor(
     private val body: CompletionCreateBody,

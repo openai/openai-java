@@ -7,6 +7,10 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import java.util.Objects
 
+/**
+ * Retrieves a model instance, providing basic information about the model such as the owner and
+ * permissioning.
+ */
 class ModelRetrieveParams
 constructor(
     private val model: String,
