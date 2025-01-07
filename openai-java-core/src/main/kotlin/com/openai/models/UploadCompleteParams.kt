@@ -109,7 +109,13 @@ constructor(
              * The optional md5 checksum for the file contents to verify if the bytes uploaded
              * matches what you expect.
              */
-            fun md5(md5: String) = apply { this.md5 = md5 }
+            fun md5(md5: String?) = apply { this.md5 = md5 }
+
+            /**
+             * The optional md5 checksum for the file contents to verify if the bytes uploaded
+             * matches what you expect.
+             */
+            fun md5(md5: Optional<String>) = md5(md5.orElse(null))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -191,7 +197,13 @@ constructor(
          * The optional md5 checksum for the file contents to verify if the bytes uploaded matches
          * what you expect.
          */
-        fun md5(md5: String) = apply { body.md5(md5) }
+        fun md5(md5: String?) = apply { body.md5(md5) }
+
+        /**
+         * The optional md5 checksum for the file contents to verify if the bytes uploaded matches
+         * what you expect.
+         */
+        fun md5(md5: Optional<String>) = md5(md5.orElse(null))
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()

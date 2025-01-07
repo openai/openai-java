@@ -115,7 +115,14 @@ constructor(
              * storing additional information about the object in a structured format. Keys can be a
              * maximum of 64 characters long and values can be a maximum of 512 characters long.
              */
-            fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
+            fun metadata(metadata: JsonValue?) = apply { this.metadata = metadata }
+
+            /**
+             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+             * storing additional information about the object in a structured format. Keys can be a
+             * maximum of 64 characters long and values can be a maximum of 512 characters long.
+             */
+            fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
 
             /**
              * A set of resources that are made available to the assistant's tools in this thread.
@@ -123,9 +130,18 @@ constructor(
              * tool requires a list of file IDs, while the `file_search` tool requires a list of
              * vector store IDs.
              */
-            fun toolResources(toolResources: ToolResources) = apply {
+            fun toolResources(toolResources: ToolResources?) = apply {
                 this.toolResources = toolResources
             }
+
+            /**
+             * A set of resources that are made available to the assistant's tools in this thread.
+             * The resources are specific to the type of tool. For example, the `code_interpreter`
+             * tool requires a list of file IDs, while the `file_search` tool requires a list of
+             * vector store IDs.
+             */
+            fun toolResources(toolResources: Optional<ToolResources>) =
+                toolResources(toolResources.orElse(null))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -202,7 +218,14 @@ constructor(
          * storing additional information about the object in a structured format. Keys can be a
          * maximum of 64 characters long and values can be a maximum of 512 characters long.
          */
-        fun metadata(metadata: JsonValue) = apply { body.metadata(metadata) }
+        fun metadata(metadata: JsonValue?) = apply { body.metadata(metadata) }
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format. Keys can be a
+         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         */
+        fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
 
         /**
          * A set of resources that are made available to the assistant's tools in this thread. The
@@ -210,9 +233,18 @@ constructor(
          * requires a list of file IDs, while the `file_search` tool requires a list of vector store
          * IDs.
          */
-        fun toolResources(toolResources: ToolResources) = apply {
+        fun toolResources(toolResources: ToolResources?) = apply {
             body.toolResources(toolResources)
         }
+
+        /**
+         * A set of resources that are made available to the assistant's tools in this thread. The
+         * resources are specific to the type of tool. For example, the `code_interpreter` tool
+         * requires a list of file IDs, while the `file_search` tool requires a list of vector store
+         * IDs.
+         */
+        fun toolResources(toolResources: Optional<ToolResources>) =
+            toolResources(toolResources.orElse(null))
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -385,11 +417,16 @@ constructor(
                 additionalProperties = toolResources.additionalProperties.toMutableMap()
             }
 
-            fun codeInterpreter(codeInterpreter: CodeInterpreter) = apply {
+            fun codeInterpreter(codeInterpreter: CodeInterpreter?) = apply {
                 this.codeInterpreter = codeInterpreter
             }
 
-            fun fileSearch(fileSearch: FileSearch) = apply { this.fileSearch = fileSearch }
+            fun codeInterpreter(codeInterpreter: Optional<CodeInterpreter>) =
+                codeInterpreter(codeInterpreter.orElse(null))
+
+            fun fileSearch(fileSearch: FileSearch?) = apply { this.fileSearch = fileSearch }
+
+            fun fileSearch(fileSearch: Optional<FileSearch>) = fileSearch(fileSearch.orElse(null))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -462,9 +499,16 @@ constructor(
                  * available to the `code_interpreter` tool. There can be a maximum of 20 files
                  * associated with the tool.
                  */
-                fun fileIds(fileIds: List<String>) = apply {
-                    this.fileIds = fileIds.toMutableList()
+                fun fileIds(fileIds: List<String>?) = apply {
+                    this.fileIds = fileIds?.toMutableList()
                 }
+
+                /**
+                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
+                 * available to the `code_interpreter` tool. There can be a maximum of 20 files
+                 * associated with the tool.
+                 */
+                fun fileIds(fileIds: Optional<List<String>>) = fileIds(fileIds.orElse(null))
 
                 /**
                  * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
@@ -565,9 +609,18 @@ constructor(
                  * attached to this thread. There can be a maximum of 1 vector store attached to the
                  * thread.
                  */
-                fun vectorStoreIds(vectorStoreIds: List<String>) = apply {
-                    this.vectorStoreIds = vectorStoreIds.toMutableList()
+                fun vectorStoreIds(vectorStoreIds: List<String>?) = apply {
+                    this.vectorStoreIds = vectorStoreIds?.toMutableList()
                 }
+
+                /**
+                 * The
+                 * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
+                 * attached to this thread. There can be a maximum of 1 vector store attached to the
+                 * thread.
+                 */
+                fun vectorStoreIds(vectorStoreIds: Optional<List<String>>) =
+                    vectorStoreIds(vectorStoreIds.orElse(null))
 
                 /**
                  * The

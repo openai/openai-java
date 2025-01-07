@@ -278,14 +278,25 @@ constructor(
              * The hyperparameters used for the fine-tuning job. This value is now deprecated in
              * favor of `method`, and should be passed in under the `method` parameter.
              */
-            fun hyperparameters(hyperparameters: Hyperparameters) = apply {
+            fun hyperparameters(hyperparameters: Hyperparameters?) = apply {
                 this.hyperparameters = hyperparameters
             }
 
+            /**
+             * The hyperparameters used for the fine-tuning job. This value is now deprecated in
+             * favor of `method`, and should be passed in under the `method` parameter.
+             */
+            fun hyperparameters(hyperparameters: Optional<Hyperparameters>) =
+                hyperparameters(hyperparameters.orElse(null))
+
             /** A list of integrations to enable for your fine-tuning job. */
-            fun integrations(integrations: List<Integration>) = apply {
-                this.integrations = integrations.toMutableList()
+            fun integrations(integrations: List<Integration>?) = apply {
+                this.integrations = integrations?.toMutableList()
             }
+
+            /** A list of integrations to enable for your fine-tuning job. */
+            fun integrations(integrations: Optional<List<Integration>>) =
+                integrations(integrations.orElse(null))
 
             /** A list of integrations to enable for your fine-tuning job. */
             fun addIntegration(integration: Integration) = apply {
@@ -293,14 +304,32 @@ constructor(
             }
 
             /** The method used for fine-tuning. */
-            fun method(method: Method) = apply { this.method = method }
+            fun method(method: Method?) = apply { this.method = method }
+
+            /** The method used for fine-tuning. */
+            fun method(method: Optional<Method>) = method(method.orElse(null))
 
             /**
              * The seed controls the reproducibility of the job. Passing in the same seed and job
              * parameters should produce the same results, but may differ in rare cases. If a seed
              * is not specified, one will be generated for you.
              */
-            fun seed(seed: Long) = apply { this.seed = seed }
+            fun seed(seed: Long?) = apply { this.seed = seed }
+
+            /**
+             * The seed controls the reproducibility of the job. Passing in the same seed and job
+             * parameters should produce the same results, but may differ in rare cases. If a seed
+             * is not specified, one will be generated for you.
+             */
+            fun seed(seed: Long) = seed(seed as Long?)
+
+            /**
+             * The seed controls the reproducibility of the job. Passing in the same seed and job
+             * parameters should produce the same results, but may differ in rare cases. If a seed
+             * is not specified, one will be generated for you.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun seed(seed: Optional<Long>) = seed(seed.orElse(null) as Long?)
 
             /**
              * A string of up to 64 characters that will be added to your fine-tuned model name.
@@ -308,7 +337,15 @@ constructor(
              * For example, a `suffix` of "custom-model-name" would produce a model name like
              * `ft:gpt-4o-mini:openai:custom-model-name:7p4lURel`.
              */
-            fun suffix(suffix: String) = apply { this.suffix = suffix }
+            fun suffix(suffix: String?) = apply { this.suffix = suffix }
+
+            /**
+             * A string of up to 64 characters that will be added to your fine-tuned model name.
+             *
+             * For example, a `suffix` of "custom-model-name" would produce a model name like
+             * `ft:gpt-4o-mini:openai:custom-model-name:7p4lURel`.
+             */
+            fun suffix(suffix: Optional<String>) = suffix(suffix.orElse(null))
 
             /**
              * The ID of an uploaded file that contains validation data.
@@ -323,9 +360,25 @@ constructor(
              * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for
              * more details.
              */
-            fun validationFile(validationFile: String) = apply {
+            fun validationFile(validationFile: String?) = apply {
                 this.validationFile = validationFile
             }
+
+            /**
+             * The ID of an uploaded file that contains validation data.
+             *
+             * If you provide this file, the data is used to generate validation metrics
+             * periodically during fine-tuning. These metrics can be viewed in the fine-tuning
+             * results file. The same data should not be present in both train and validation files.
+             *
+             * Your dataset must be formatted as a JSONL file. You must upload your file with the
+             * purpose `fine-tune`.
+             *
+             * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for
+             * more details.
+             */
+            fun validationFile(validationFile: Optional<String>) =
+                validationFile(validationFile.orElse(null))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -436,27 +489,56 @@ constructor(
          * The hyperparameters used for the fine-tuning job. This value is now deprecated in favor
          * of `method`, and should be passed in under the `method` parameter.
          */
-        fun hyperparameters(hyperparameters: Hyperparameters) = apply {
+        fun hyperparameters(hyperparameters: Hyperparameters?) = apply {
             body.hyperparameters(hyperparameters)
         }
 
+        /**
+         * The hyperparameters used for the fine-tuning job. This value is now deprecated in favor
+         * of `method`, and should be passed in under the `method` parameter.
+         */
+        fun hyperparameters(hyperparameters: Optional<Hyperparameters>) =
+            hyperparameters(hyperparameters.orElse(null))
+
         /** A list of integrations to enable for your fine-tuning job. */
-        fun integrations(integrations: List<Integration>) = apply {
+        fun integrations(integrations: List<Integration>?) = apply {
             body.integrations(integrations)
         }
+
+        /** A list of integrations to enable for your fine-tuning job. */
+        fun integrations(integrations: Optional<List<Integration>>) =
+            integrations(integrations.orElse(null))
 
         /** A list of integrations to enable for your fine-tuning job. */
         fun addIntegration(integration: Integration) = apply { body.addIntegration(integration) }
 
         /** The method used for fine-tuning. */
-        fun method(method: Method) = apply { body.method(method) }
+        fun method(method: Method?) = apply { body.method(method) }
+
+        /** The method used for fine-tuning. */
+        fun method(method: Optional<Method>) = method(method.orElse(null))
 
         /**
          * The seed controls the reproducibility of the job. Passing in the same seed and job
          * parameters should produce the same results, but may differ in rare cases. If a seed is
          * not specified, one will be generated for you.
          */
-        fun seed(seed: Long) = apply { body.seed(seed) }
+        fun seed(seed: Long?) = apply { body.seed(seed) }
+
+        /**
+         * The seed controls the reproducibility of the job. Passing in the same seed and job
+         * parameters should produce the same results, but may differ in rare cases. If a seed is
+         * not specified, one will be generated for you.
+         */
+        fun seed(seed: Long) = seed(seed as Long?)
+
+        /**
+         * The seed controls the reproducibility of the job. Passing in the same seed and job
+         * parameters should produce the same results, but may differ in rare cases. If a seed is
+         * not specified, one will be generated for you.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun seed(seed: Optional<Long>) = seed(seed.orElse(null) as Long?)
 
         /**
          * A string of up to 64 characters that will be added to your fine-tuned model name.
@@ -464,7 +546,15 @@ constructor(
          * For example, a `suffix` of "custom-model-name" would produce a model name like
          * `ft:gpt-4o-mini:openai:custom-model-name:7p4lURel`.
          */
-        fun suffix(suffix: String) = apply { body.suffix(suffix) }
+        fun suffix(suffix: String?) = apply { body.suffix(suffix) }
+
+        /**
+         * A string of up to 64 characters that will be added to your fine-tuned model name.
+         *
+         * For example, a `suffix` of "custom-model-name" would produce a model name like
+         * `ft:gpt-4o-mini:openai:custom-model-name:7p4lURel`.
+         */
+        fun suffix(suffix: Optional<String>) = suffix(suffix.orElse(null))
 
         /**
          * The ID of an uploaded file that contains validation data.
@@ -479,7 +569,23 @@ constructor(
          * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for more
          * details.
          */
-        fun validationFile(validationFile: String) = apply { body.validationFile(validationFile) }
+        fun validationFile(validationFile: String?) = apply { body.validationFile(validationFile) }
+
+        /**
+         * The ID of an uploaded file that contains validation data.
+         *
+         * If you provide this file, the data is used to generate validation metrics periodically
+         * during fine-tuning. These metrics can be viewed in the fine-tuning results file. The same
+         * data should not be present in both train and validation files.
+         *
+         * Your dataset must be formatted as a JSONL file. You must upload your file with the
+         * purpose `fine-tune`.
+         *
+         * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for more
+         * details.
+         */
+        fun validationFile(validationFile: Optional<String>) =
+            validationFile(validationFile.orElse(null))
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -742,7 +848,13 @@ constructor(
              * Number of examples in each batch. A larger batch size means that model parameters are
              * updated less frequently, but with lower variance.
              */
-            fun batchSize(batchSize: BatchSize) = apply { this.batchSize = batchSize }
+            fun batchSize(batchSize: BatchSize?) = apply { this.batchSize = batchSize }
+
+            /**
+             * Number of examples in each batch. A larger batch size means that model parameters are
+             * updated less frequently, but with lower variance.
+             */
+            fun batchSize(batchSize: Optional<BatchSize>) = batchSize(batchSize.orElse(null))
 
             fun batchSize(behavior: BatchSize.Behavior) = apply {
                 this.batchSize = BatchSize.ofBehavior(behavior)
@@ -754,9 +866,16 @@ constructor(
              * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
              * overfitting.
              */
-            fun learningRateMultiplier(learningRateMultiplier: LearningRateMultiplier) = apply {
+            fun learningRateMultiplier(learningRateMultiplier: LearningRateMultiplier?) = apply {
                 this.learningRateMultiplier = learningRateMultiplier
             }
+
+            /**
+             * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
+             * overfitting.
+             */
+            fun learningRateMultiplier(learningRateMultiplier: Optional<LearningRateMultiplier>) =
+                learningRateMultiplier(learningRateMultiplier.orElse(null))
 
             fun learningRateMultiplier(behavior: LearningRateMultiplier.Behavior) = apply {
                 this.learningRateMultiplier = LearningRateMultiplier.ofBehavior(behavior)
@@ -770,7 +889,13 @@ constructor(
              * The number of epochs to train the model for. An epoch refers to one full cycle
              * through the training dataset.
              */
-            fun nEpochs(nEpochs: NEpochs) = apply { this.nEpochs = nEpochs }
+            fun nEpochs(nEpochs: NEpochs?) = apply { this.nEpochs = nEpochs }
+
+            /**
+             * The number of epochs to train the model for. An epoch refers to one full cycle
+             * through the training dataset.
+             */
+            fun nEpochs(nEpochs: Optional<NEpochs>) = nEpochs(nEpochs.orElse(null))
 
             fun nEpochs(behavior: NEpochs.Behavior) = apply {
                 this.nEpochs = NEpochs.ofBehavior(behavior)
@@ -1508,20 +1633,40 @@ constructor(
                  * WandB user that you would like associated with the run. If not set, the default
                  * entity for the registered WandB API key is used.
                  */
-                fun entity(entity: String) = apply { this.entity = entity }
+                fun entity(entity: String?) = apply { this.entity = entity }
+
+                /**
+                 * The entity to use for the run. This allows you to set the team or username of the
+                 * WandB user that you would like associated with the run. If not set, the default
+                 * entity for the registered WandB API key is used.
+                 */
+                fun entity(entity: Optional<String>) = entity(entity.orElse(null))
 
                 /**
                  * A display name to set for the run. If not set, we will use the Job ID as the
                  * name.
                  */
-                fun name(name: String) = apply { this.name = name }
+                fun name(name: String?) = apply { this.name = name }
+
+                /**
+                 * A display name to set for the run. If not set, we will use the Job ID as the
+                 * name.
+                 */
+                fun name(name: Optional<String>) = name(name.orElse(null))
 
                 /**
                  * A list of tags to be attached to the newly created run. These tags are passed
                  * through directly to WandB. Some default tags are generated by OpenAI:
                  * "openai/finetune", "openai/{base-model}", "openai/{ftjob-abcdef}".
                  */
-                fun tags(tags: List<String>) = apply { this.tags = tags.toMutableList() }
+                fun tags(tags: List<String>?) = apply { this.tags = tags?.toMutableList() }
+
+                /**
+                 * A list of tags to be attached to the newly created run. These tags are passed
+                 * through directly to WandB. Some default tags are generated by OpenAI:
+                 * "openai/finetune", "openai/{base-model}", "openai/{ftjob-abcdef}".
+                 */
+                fun tags(tags: Optional<List<String>>) = tags(tags.orElse(null))
 
                 /**
                  * A list of tags to be attached to the newly created run. These tags are passed
@@ -1649,13 +1794,22 @@ constructor(
             }
 
             /** Configuration for the DPO fine-tuning method. */
-            fun dpo(dpo: Dpo) = apply { this.dpo = dpo }
+            fun dpo(dpo: Dpo?) = apply { this.dpo = dpo }
+
+            /** Configuration for the DPO fine-tuning method. */
+            fun dpo(dpo: Optional<Dpo>) = dpo(dpo.orElse(null))
 
             /** Configuration for the supervised fine-tuning method. */
-            fun supervised(supervised: Supervised) = apply { this.supervised = supervised }
+            fun supervised(supervised: Supervised?) = apply { this.supervised = supervised }
+
+            /** Configuration for the supervised fine-tuning method. */
+            fun supervised(supervised: Optional<Supervised>) = supervised(supervised.orElse(null))
 
             /** The type of method. Is either `supervised` or `dpo`. */
-            fun type(type: Type) = apply { this.type = type }
+            fun type(type: Type?) = apply { this.type = type }
+
+            /** The type of method. Is either `supervised` or `dpo`. */
+            fun type(type: Optional<Type>) = type(type.orElse(null))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1722,9 +1876,13 @@ constructor(
                 }
 
                 /** The hyperparameters used for the fine-tuning job. */
-                fun hyperparameters(hyperparameters: Hyperparameters) = apply {
+                fun hyperparameters(hyperparameters: Hyperparameters?) = apply {
                     this.hyperparameters = hyperparameters
                 }
+
+                /** The hyperparameters used for the fine-tuning job. */
+                fun hyperparameters(hyperparameters: Optional<Hyperparameters>) =
+                    hyperparameters(hyperparameters.orElse(null))
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -1825,7 +1983,14 @@ constructor(
                      * Number of examples in each batch. A larger batch size means that model
                      * parameters are updated less frequently, but with lower variance.
                      */
-                    fun batchSize(batchSize: BatchSize) = apply { this.batchSize = batchSize }
+                    fun batchSize(batchSize: BatchSize?) = apply { this.batchSize = batchSize }
+
+                    /**
+                     * Number of examples in each batch. A larger batch size means that model
+                     * parameters are updated less frequently, but with lower variance.
+                     */
+                    fun batchSize(batchSize: Optional<BatchSize>) =
+                        batchSize(batchSize.orElse(null))
 
                     fun batchSize(auto: BatchSize.Auto) = apply {
                         this.batchSize = BatchSize.ofAuto(auto)
@@ -1839,7 +2004,13 @@ constructor(
                      * The beta value for the DPO method. A higher beta value will increase the
                      * weight of the penalty between the policy and reference model.
                      */
-                    fun beta(beta: Beta) = apply { this.beta = beta }
+                    fun beta(beta: Beta?) = apply { this.beta = beta }
+
+                    /**
+                     * The beta value for the DPO method. A higher beta value will increase the
+                     * weight of the penalty between the policy and reference model.
+                     */
+                    fun beta(beta: Optional<Beta>) = beta(beta.orElse(null))
 
                     fun beta(auto: Beta.Auto) = apply { this.beta = Beta.ofAuto(auto) }
 
@@ -1849,10 +2020,18 @@ constructor(
                      * Scaling factor for the learning rate. A smaller learning rate may be useful
                      * to avoid overfitting.
                      */
-                    fun learningRateMultiplier(learningRateMultiplier: LearningRateMultiplier) =
+                    fun learningRateMultiplier(learningRateMultiplier: LearningRateMultiplier?) =
                         apply {
                             this.learningRateMultiplier = learningRateMultiplier
                         }
+
+                    /**
+                     * Scaling factor for the learning rate. A smaller learning rate may be useful
+                     * to avoid overfitting.
+                     */
+                    fun learningRateMultiplier(
+                        learningRateMultiplier: Optional<LearningRateMultiplier>
+                    ) = learningRateMultiplier(learningRateMultiplier.orElse(null))
 
                     fun learningRateMultiplier(auto: LearningRateMultiplier.Auto) = apply {
                         this.learningRateMultiplier = LearningRateMultiplier.ofAuto(auto)
@@ -1866,7 +2045,13 @@ constructor(
                      * The number of epochs to train the model for. An epoch refers to one full
                      * cycle through the training dataset.
                      */
-                    fun nEpochs(nEpochs: NEpochs) = apply { this.nEpochs = nEpochs }
+                    fun nEpochs(nEpochs: NEpochs?) = apply { this.nEpochs = nEpochs }
+
+                    /**
+                     * The number of epochs to train the model for. An epoch refers to one full
+                     * cycle through the training dataset.
+                     */
+                    fun nEpochs(nEpochs: Optional<NEpochs>) = nEpochs(nEpochs.orElse(null))
 
                     fun nEpochs(auto: NEpochs.Auto) = apply { this.nEpochs = NEpochs.ofAuto(auto) }
 
@@ -2609,9 +2794,13 @@ constructor(
                 }
 
                 /** The hyperparameters used for the fine-tuning job. */
-                fun hyperparameters(hyperparameters: Hyperparameters) = apply {
+                fun hyperparameters(hyperparameters: Hyperparameters?) = apply {
                     this.hyperparameters = hyperparameters
                 }
+
+                /** The hyperparameters used for the fine-tuning job. */
+                fun hyperparameters(hyperparameters: Optional<Hyperparameters>) =
+                    hyperparameters(hyperparameters.orElse(null))
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -2704,7 +2893,14 @@ constructor(
                      * Number of examples in each batch. A larger batch size means that model
                      * parameters are updated less frequently, but with lower variance.
                      */
-                    fun batchSize(batchSize: BatchSize) = apply { this.batchSize = batchSize }
+                    fun batchSize(batchSize: BatchSize?) = apply { this.batchSize = batchSize }
+
+                    /**
+                     * Number of examples in each batch. A larger batch size means that model
+                     * parameters are updated less frequently, but with lower variance.
+                     */
+                    fun batchSize(batchSize: Optional<BatchSize>) =
+                        batchSize(batchSize.orElse(null))
 
                     fun batchSize(auto: BatchSize.Auto) = apply {
                         this.batchSize = BatchSize.ofAuto(auto)
@@ -2718,10 +2914,18 @@ constructor(
                      * Scaling factor for the learning rate. A smaller learning rate may be useful
                      * to avoid overfitting.
                      */
-                    fun learningRateMultiplier(learningRateMultiplier: LearningRateMultiplier) =
+                    fun learningRateMultiplier(learningRateMultiplier: LearningRateMultiplier?) =
                         apply {
                             this.learningRateMultiplier = learningRateMultiplier
                         }
+
+                    /**
+                     * Scaling factor for the learning rate. A smaller learning rate may be useful
+                     * to avoid overfitting.
+                     */
+                    fun learningRateMultiplier(
+                        learningRateMultiplier: Optional<LearningRateMultiplier>
+                    ) = learningRateMultiplier(learningRateMultiplier.orElse(null))
 
                     fun learningRateMultiplier(auto: LearningRateMultiplier.Auto) = apply {
                         this.learningRateMultiplier = LearningRateMultiplier.ofAuto(auto)
@@ -2735,7 +2939,13 @@ constructor(
                      * The number of epochs to train the model for. An epoch refers to one full
                      * cycle through the training dataset.
                      */
-                    fun nEpochs(nEpochs: NEpochs) = apply { this.nEpochs = nEpochs }
+                    fun nEpochs(nEpochs: NEpochs?) = apply { this.nEpochs = nEpochs }
+
+                    /**
+                     * The number of epochs to train the model for. An epoch refers to one full
+                     * cycle through the training dataset.
+                     */
+                    fun nEpochs(nEpochs: Optional<NEpochs>) = nEpochs(nEpochs.orElse(null))
 
                     fun nEpochs(auto: NEpochs.Auto) = apply { this.nEpochs = NEpochs.ofAuto(auto) }
 

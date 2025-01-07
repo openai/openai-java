@@ -195,7 +195,10 @@ constructor(
             fun prompt(prompt: String) = apply { this.prompt = prompt }
 
             /** The model to use for image generation. */
-            fun model(model: ImageModel) = apply { this.model = model }
+            fun model(model: ImageModel?) = apply { this.model = model }
+
+            /** The model to use for image generation. */
+            fun model(model: Optional<ImageModel>) = model(model.orElse(null))
 
             /** The model to use for image generation. */
             fun model(value: String) = apply { model = ImageModel.of(value) }
@@ -204,29 +207,63 @@ constructor(
              * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
              * `n=1` is supported.
              */
-            fun n(n: Long) = apply { this.n = n }
+            fun n(n: Long?) = apply { this.n = n }
+
+            /**
+             * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
+             * `n=1` is supported.
+             */
+            fun n(n: Long) = n(n as Long?)
+
+            /**
+             * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
+             * `n=1` is supported.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun n(n: Optional<Long>) = n(n.orElse(null) as Long?)
 
             /**
              * The quality of the image that will be generated. `hd` creates images with finer
              * details and greater consistency across the image. This param is only supported for
              * `dall-e-3`.
              */
-            fun quality(quality: Quality) = apply { this.quality = quality }
+            fun quality(quality: Quality?) = apply { this.quality = quality }
+
+            /**
+             * The quality of the image that will be generated. `hd` creates images with finer
+             * details and greater consistency across the image. This param is only supported for
+             * `dall-e-3`.
+             */
+            fun quality(quality: Optional<Quality>) = quality(quality.orElse(null))
 
             /**
              * The format in which the generated images are returned. Must be one of `url` or
              * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
              */
-            fun responseFormat(responseFormat: ResponseFormat) = apply {
+            fun responseFormat(responseFormat: ResponseFormat?) = apply {
                 this.responseFormat = responseFormat
             }
+
+            /**
+             * The format in which the generated images are returned. Must be one of `url` or
+             * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
+             */
+            fun responseFormat(responseFormat: Optional<ResponseFormat>) =
+                responseFormat(responseFormat.orElse(null))
 
             /**
              * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`
              * for `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for
              * `dall-e-3` models.
              */
-            fun size(size: Size) = apply { this.size = size }
+            fun size(size: Size?) = apply { this.size = size }
+
+            /**
+             * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`
+             * for `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for
+             * `dall-e-3` models.
+             */
+            fun size(size: Optional<Size>) = size(size.orElse(null))
 
             /**
              * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes
@@ -234,14 +271,29 @@ constructor(
              * the model to produce more natural, less hyper-real looking images. This param is only
              * supported for `dall-e-3`.
              */
-            fun style(style: Style) = apply { this.style = style }
+            fun style(style: Style?) = apply { this.style = style }
+
+            /**
+             * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes
+             * the model to lean towards generating hyper-real and dramatic images. Natural causes
+             * the model to produce more natural, less hyper-real looking images. This param is only
+             * supported for `dall-e-3`.
+             */
+            fun style(style: Optional<Style>) = style(style.orElse(null))
 
             /**
              * A unique identifier representing your end-user, which can help OpenAI to monitor and
              * detect abuse.
              * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
              */
-            fun user(user: String) = apply { this.user = user }
+            fun user(user: String?) = apply { this.user = user }
+
+            /**
+             * A unique identifier representing your end-user, which can help OpenAI to monitor and
+             * detect abuse.
+             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+             */
+            fun user(user: Optional<String>) = user(user.orElse(null))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -322,7 +374,10 @@ constructor(
         fun prompt(prompt: String) = apply { body.prompt(prompt) }
 
         /** The model to use for image generation. */
-        fun model(model: ImageModel) = apply { body.model(model) }
+        fun model(model: ImageModel?) = apply { body.model(model) }
+
+        /** The model to use for image generation. */
+        fun model(model: Optional<ImageModel>) = model(model.orElse(null))
 
         /** The model to use for image generation. */
         fun model(value: String) = apply { body.model(value) }
@@ -331,28 +386,61 @@ constructor(
          * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
          * supported.
          */
-        fun n(n: Long) = apply { body.n(n) }
+        fun n(n: Long?) = apply { body.n(n) }
+
+        /**
+         * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
+         * supported.
+         */
+        fun n(n: Long) = n(n as Long?)
+
+        /**
+         * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
+         * supported.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun n(n: Optional<Long>) = n(n.orElse(null) as Long?)
 
         /**
          * The quality of the image that will be generated. `hd` creates images with finer details
          * and greater consistency across the image. This param is only supported for `dall-e-3`.
          */
-        fun quality(quality: Quality) = apply { body.quality(quality) }
+        fun quality(quality: Quality?) = apply { body.quality(quality) }
+
+        /**
+         * The quality of the image that will be generated. `hd` creates images with finer details
+         * and greater consistency across the image. This param is only supported for `dall-e-3`.
+         */
+        fun quality(quality: Optional<Quality>) = quality(quality.orElse(null))
 
         /**
          * The format in which the generated images are returned. Must be one of `url` or
          * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
          */
-        fun responseFormat(responseFormat: ResponseFormat) = apply {
+        fun responseFormat(responseFormat: ResponseFormat?) = apply {
             body.responseFormat(responseFormat)
         }
+
+        /**
+         * The format in which the generated images are returned. Must be one of `url` or
+         * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
+         */
+        fun responseFormat(responseFormat: Optional<ResponseFormat>) =
+            responseFormat(responseFormat.orElse(null))
 
         /**
          * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024` for
          * `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for `dall-e-3`
          * models.
          */
-        fun size(size: Size) = apply { body.size(size) }
+        fun size(size: Size?) = apply { body.size(size) }
+
+        /**
+         * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024` for
+         * `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for `dall-e-3`
+         * models.
+         */
+        fun size(size: Optional<Size>) = size(size.orElse(null))
 
         /**
          * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes the
@@ -360,14 +448,29 @@ constructor(
          * to produce more natural, less hyper-real looking images. This param is only supported for
          * `dall-e-3`.
          */
-        fun style(style: Style) = apply { body.style(style) }
+        fun style(style: Style?) = apply { body.style(style) }
+
+        /**
+         * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes the
+         * model to lean towards generating hyper-real and dramatic images. Natural causes the model
+         * to produce more natural, less hyper-real looking images. This param is only supported for
+         * `dall-e-3`.
+         */
+        fun style(style: Optional<Style>) = style(style.orElse(null))
 
         /**
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
          * detect abuse.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
          */
-        fun user(user: String) = apply { body.user(user) }
+        fun user(user: String?) = apply { body.user(user) }
+
+        /**
+         * A unique identifier representing your end-user, which can help OpenAI to monitor and
+         * detect abuse.
+         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         */
+        fun user(user: Optional<String>) = user(user.orElse(null))
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()

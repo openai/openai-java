@@ -216,22 +216,50 @@ constructor(
              * The number of dimensions the resulting output embeddings should have. Only supported
              * in `text-embedding-3` and later models.
              */
-            fun dimensions(dimensions: Long) = apply { this.dimensions = dimensions }
+            fun dimensions(dimensions: Long?) = apply { this.dimensions = dimensions }
+
+            /**
+             * The number of dimensions the resulting output embeddings should have. Only supported
+             * in `text-embedding-3` and later models.
+             */
+            fun dimensions(dimensions: Long) = dimensions(dimensions as Long?)
+
+            /**
+             * The number of dimensions the resulting output embeddings should have. Only supported
+             * in `text-embedding-3` and later models.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun dimensions(dimensions: Optional<Long>) =
+                dimensions(dimensions.orElse(null) as Long?)
 
             /**
              * The format to return the embeddings in. Can be either `float` or
              * [`base64`](https://pypi.org/project/pybase64/).
              */
-            fun encodingFormat(encodingFormat: EncodingFormat) = apply {
+            fun encodingFormat(encodingFormat: EncodingFormat?) = apply {
                 this.encodingFormat = encodingFormat
             }
+
+            /**
+             * The format to return the embeddings in. Can be either `float` or
+             * [`base64`](https://pypi.org/project/pybase64/).
+             */
+            fun encodingFormat(encodingFormat: Optional<EncodingFormat>) =
+                encodingFormat(encodingFormat.orElse(null))
 
             /**
              * A unique identifier representing your end-user, which can help OpenAI to monitor and
              * detect abuse.
              * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
              */
-            fun user(user: String) = apply { this.user = user }
+            fun user(user: String?) = apply { this.user = user }
+
+            /**
+             * A unique identifier representing your end-user, which can help OpenAI to monitor and
+             * detect abuse.
+             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+             */
+            fun user(user: Optional<String>) = user(user.orElse(null))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -350,22 +378,49 @@ constructor(
          * The number of dimensions the resulting output embeddings should have. Only supported in
          * `text-embedding-3` and later models.
          */
-        fun dimensions(dimensions: Long) = apply { body.dimensions(dimensions) }
+        fun dimensions(dimensions: Long?) = apply { body.dimensions(dimensions) }
+
+        /**
+         * The number of dimensions the resulting output embeddings should have. Only supported in
+         * `text-embedding-3` and later models.
+         */
+        fun dimensions(dimensions: Long) = dimensions(dimensions as Long?)
+
+        /**
+         * The number of dimensions the resulting output embeddings should have. Only supported in
+         * `text-embedding-3` and later models.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun dimensions(dimensions: Optional<Long>) = dimensions(dimensions.orElse(null) as Long?)
 
         /**
          * The format to return the embeddings in. Can be either `float` or
          * [`base64`](https://pypi.org/project/pybase64/).
          */
-        fun encodingFormat(encodingFormat: EncodingFormat) = apply {
+        fun encodingFormat(encodingFormat: EncodingFormat?) = apply {
             body.encodingFormat(encodingFormat)
         }
+
+        /**
+         * The format to return the embeddings in. Can be either `float` or
+         * [`base64`](https://pypi.org/project/pybase64/).
+         */
+        fun encodingFormat(encodingFormat: Optional<EncodingFormat>) =
+            encodingFormat(encodingFormat.orElse(null))
 
         /**
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
          * detect abuse.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
          */
-        fun user(user: String) = apply { body.user(user) }
+        fun user(user: String?) = apply { body.user(user) }
+
+        /**
+         * A unique identifier representing your end-user, which can help OpenAI to monitor and
+         * detect abuse.
+         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         */
+        fun user(user: Optional<String>) = user(user.orElse(null))
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()

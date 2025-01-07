@@ -13,6 +13,7 @@ import com.openai.credential.Credential
 import java.net.Proxy
 import java.time.Clock
 import java.time.Duration
+import java.util.Optional
 
 class OpenAIOkHttpClientAsync private constructor() {
 
@@ -138,9 +139,13 @@ class OpenAIOkHttpClientAsync private constructor() {
             clientOptions.azureServiceVersion(azureServiceVersion)
         }
 
-        fun organization(organization: String) = apply { clientOptions.organization(organization) }
+        fun organization(organization: String?) = apply { clientOptions.organization(organization) }
 
-        fun project(project: String) = apply { clientOptions.project(project) }
+        fun organization(organization: Optional<String>) = organization(organization.orElse(null))
+
+        fun project(project: String?) = apply { clientOptions.project(project) }
+
+        fun project(project: Optional<String>) = project(project.orElse(null))
 
         fun fromEnv() = apply { clientOptions.fromEnv() }
 

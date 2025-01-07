@@ -130,7 +130,14 @@ constructor(
              * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
              * about available models [here](https://platform.openai.com/docs/models#moderation).
              */
-            fun model(model: ModerationModel) = apply { this.model = model }
+            fun model(model: ModerationModel?) = apply { this.model = model }
+
+            /**
+             * The content moderation model you would like to use. Learn more in
+             * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
+             * about available models [here](https://platform.openai.com/docs/models#moderation).
+             */
+            fun model(model: Optional<ModerationModel>) = model(model.orElse(null))
 
             /**
              * The content moderation model you would like to use. Learn more in
@@ -227,7 +234,14 @@ constructor(
          * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
          * about available models [here](https://platform.openai.com/docs/models#moderation).
          */
-        fun model(model: ModerationModel) = apply { body.model(model) }
+        fun model(model: ModerationModel?) = apply { body.model(model) }
+
+        /**
+         * The content moderation model you would like to use. Learn more in
+         * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
+         * about available models [here](https://platform.openai.com/docs/models#moderation).
+         */
+        fun model(model: Optional<ModerationModel>) = model(model.orElse(null))
 
         /**
          * The content moderation model you would like to use. Learn more in

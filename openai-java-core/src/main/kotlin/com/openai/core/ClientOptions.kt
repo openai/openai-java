@@ -14,6 +14,7 @@ import com.openai.core.http.RetryingHttpClient
 import com.openai.credential.BearerTokenCredential
 import com.openai.credential.Credential
 import java.time.Clock
+import java.util.Optional
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory
@@ -187,9 +188,13 @@ private constructor(
             this.azureServiceVersion = azureServiceVersion
         }
 
-        fun organization(organization: String) = apply { this.organization = organization }
+        fun organization(organization: String?) = apply { this.organization = organization }
 
-        fun project(project: String) = apply { this.project = project }
+        fun organization(organization: Optional<String>) = organization(organization.orElse(null))
+
+        fun project(project: String?) = apply { this.project = project }
+
+        fun project(project: Optional<String>) = project(project.orElse(null))
 
         fun fromEnv() = apply {
             val openAIKey = System.getenv("OPENAI_API_KEY")

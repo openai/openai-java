@@ -114,19 +114,33 @@ constructor(
             }
 
             /** The expiration policy for a vector store. */
-            fun expiresAfter(expiresAfter: ExpiresAfter) = apply {
+            fun expiresAfter(expiresAfter: ExpiresAfter?) = apply {
                 this.expiresAfter = expiresAfter
             }
+
+            /** The expiration policy for a vector store. */
+            fun expiresAfter(expiresAfter: Optional<ExpiresAfter>) =
+                expiresAfter(expiresAfter.orElse(null))
 
             /**
              * Set of 16 key-value pairs that can be attached to an object. This can be useful for
              * storing additional information about the object in a structured format. Keys can be a
              * maximum of 64 characters long and values can be a maximum of 512 characters long.
              */
-            fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
+            fun metadata(metadata: JsonValue?) = apply { this.metadata = metadata }
+
+            /**
+             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+             * storing additional information about the object in a structured format. Keys can be a
+             * maximum of 64 characters long and values can be a maximum of 512 characters long.
+             */
+            fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
 
             /** The name of the vector store. */
-            fun name(name: String) = apply { this.name = name }
+            fun name(name: String?) = apply { this.name = name }
+
+            /** The name of the vector store. */
+            fun name(name: Optional<String>) = name(name.orElse(null))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -200,17 +214,31 @@ constructor(
         fun vectorStoreId(vectorStoreId: String) = apply { this.vectorStoreId = vectorStoreId }
 
         /** The expiration policy for a vector store. */
-        fun expiresAfter(expiresAfter: ExpiresAfter) = apply { body.expiresAfter(expiresAfter) }
+        fun expiresAfter(expiresAfter: ExpiresAfter?) = apply { body.expiresAfter(expiresAfter) }
+
+        /** The expiration policy for a vector store. */
+        fun expiresAfter(expiresAfter: Optional<ExpiresAfter>) =
+            expiresAfter(expiresAfter.orElse(null))
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
          * storing additional information about the object in a structured format. Keys can be a
          * maximum of 64 characters long and values can be a maximum of 512 characters long.
          */
-        fun metadata(metadata: JsonValue) = apply { body.metadata(metadata) }
+        fun metadata(metadata: JsonValue?) = apply { body.metadata(metadata) }
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format. Keys can be a
+         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         */
+        fun metadata(metadata: Optional<JsonValue>) = metadata(metadata.orElse(null))
 
         /** The name of the vector store. */
-        fun name(name: String) = apply { body.name(name) }
+        fun name(name: String?) = apply { body.name(name) }
+
+        /** The name of the vector store. */
+        fun name(name: Optional<String>) = name(name.orElse(null))
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()

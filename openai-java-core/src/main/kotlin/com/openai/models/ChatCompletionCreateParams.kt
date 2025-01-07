@@ -723,15 +723,57 @@ constructor(
              * Parameters for audio output. Required when audio output is requested with
              * `modalities: ["audio"]`. [Learn more](https://platform.openai.com/docs/guides/audio).
              */
-            fun audio(audio: ChatCompletionAudioParam) = apply { this.audio = audio }
+            fun audio(audio: ChatCompletionAudioParam?) = apply { this.audio = audio }
+
+            /**
+             * Parameters for audio output. Required when audio output is requested with
+             * `modalities: ["audio"]`. [Learn more](https://platform.openai.com/docs/guides/audio).
+             */
+            fun audio(audio: Optional<ChatCompletionAudioParam>) = audio(audio.orElse(null))
 
             /**
              * Number between -2.0 and 2.0. Positive values penalize new tokens based on their
              * existing frequency in the text so far, decreasing the model's likelihood to repeat
              * the same line verbatim.
              */
-            fun frequencyPenalty(frequencyPenalty: Double) = apply {
+            fun frequencyPenalty(frequencyPenalty: Double?) = apply {
                 this.frequencyPenalty = frequencyPenalty
+            }
+
+            /**
+             * Number between -2.0 and 2.0. Positive values penalize new tokens based on their
+             * existing frequency in the text so far, decreasing the model's likelihood to repeat
+             * the same line verbatim.
+             */
+            fun frequencyPenalty(frequencyPenalty: Double) =
+                frequencyPenalty(frequencyPenalty as Double?)
+
+            /**
+             * Number between -2.0 and 2.0. Positive values penalize new tokens based on their
+             * existing frequency in the text so far, decreasing the model's likelihood to repeat
+             * the same line verbatim.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun frequencyPenalty(frequencyPenalty: Optional<Double>) =
+                frequencyPenalty(frequencyPenalty.orElse(null) as Double?)
+
+            /**
+             * Deprecated in favor of `tool_choice`.
+             *
+             * Controls which (if any) function is called by the model.
+             *
+             * `none` means the model will not call a function and instead generates a message.
+             *
+             * `auto` means the model can pick between generating a message or calling a function.
+             *
+             * Specifying a particular function via `{"name": "my_function"}` forces the model to
+             * call that function.
+             *
+             * `none` is the default when no functions are present. `auto` is the default if
+             * functions are present.
+             */
+            fun functionCall(functionCall: FunctionCall?) = apply {
+                this.functionCall = functionCall
             }
 
             /**
@@ -749,9 +791,8 @@ constructor(
              * `none` is the default when no functions are present. `auto` is the default if
              * functions are present.
              */
-            fun functionCall(functionCall: FunctionCall) = apply {
-                this.functionCall = functionCall
-            }
+            fun functionCall(functionCall: Optional<FunctionCall>) =
+                functionCall(functionCall.orElse(null))
 
             /**
              * `none` means the model will not call a function and instead generates a message.
@@ -774,9 +815,16 @@ constructor(
              *
              * A list of functions the model may generate JSON inputs for.
              */
-            fun functions(functions: List<Function>) = apply {
-                this.functions = functions.toMutableList()
+            fun functions(functions: List<Function>?) = apply {
+                this.functions = functions?.toMutableList()
             }
+
+            /**
+             * Deprecated in favor of `tools`.
+             *
+             * A list of functions the model may generate JSON inputs for.
+             */
+            fun functions(functions: Optional<List<Function>>) = functions(functions.orElse(null))
 
             /**
              * Deprecated in favor of `tools`.
@@ -797,22 +845,64 @@ constructor(
              * selection; values like -100 or 100 should result in a ban or exclusive selection of
              * the relevant token.
              */
-            fun logitBias(logitBias: LogitBias) = apply { this.logitBias = logitBias }
+            fun logitBias(logitBias: LogitBias?) = apply { this.logitBias = logitBias }
+
+            /**
+             * Modify the likelihood of specified tokens appearing in the completion.
+             *
+             * Accepts a JSON object that maps tokens (specified by their token ID in the tokenizer)
+             * to an associated bias value from -100 to 100. Mathematically, the bias is added to
+             * the logits generated by the model prior to sampling. The exact effect will vary per
+             * model, but values between -1 and 1 should decrease or increase likelihood of
+             * selection; values like -100 or 100 should result in a ban or exclusive selection of
+             * the relevant token.
+             */
+            fun logitBias(logitBias: Optional<LogitBias>) = logitBias(logitBias.orElse(null))
 
             /**
              * Whether to return log probabilities of the output tokens or not. If true, returns the
              * log probabilities of each output token returned in the `content` of `message`.
              */
-            fun logprobs(logprobs: Boolean) = apply { this.logprobs = logprobs }
+            fun logprobs(logprobs: Boolean?) = apply { this.logprobs = logprobs }
+
+            /**
+             * Whether to return log probabilities of the output tokens or not. If true, returns the
+             * log probabilities of each output token returned in the `content` of `message`.
+             */
+            fun logprobs(logprobs: Boolean) = logprobs(logprobs as Boolean?)
+
+            /**
+             * Whether to return log probabilities of the output tokens or not. If true, returns the
+             * log probabilities of each output token returned in the `content` of `message`.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun logprobs(logprobs: Optional<Boolean>) = logprobs(logprobs.orElse(null) as Boolean?)
 
             /**
              * An upper bound for the number of tokens that can be generated for a completion,
              * including visible output tokens and
              * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
              */
-            fun maxCompletionTokens(maxCompletionTokens: Long) = apply {
+            fun maxCompletionTokens(maxCompletionTokens: Long?) = apply {
                 this.maxCompletionTokens = maxCompletionTokens
             }
+
+            /**
+             * An upper bound for the number of tokens that can be generated for a completion,
+             * including visible output tokens and
+             * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+             */
+            fun maxCompletionTokens(maxCompletionTokens: Long) =
+                maxCompletionTokens(maxCompletionTokens as Long?)
+
+            /**
+             * An upper bound for the number of tokens that can be generated for a completion,
+             * including visible output tokens and
+             * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun maxCompletionTokens(maxCompletionTokens: Optional<Long>) =
+                maxCompletionTokens(maxCompletionTokens.orElse(null) as Long?)
 
             /**
              * The maximum number of [tokens](/tokenizer) that can be generated in the chat
@@ -823,13 +913,42 @@ constructor(
              * compatible with
              * [o1 series models](https://platform.openai.com/docs/guides/reasoning).
              */
-            fun maxTokens(maxTokens: Long) = apply { this.maxTokens = maxTokens }
+            fun maxTokens(maxTokens: Long?) = apply { this.maxTokens = maxTokens }
+
+            /**
+             * The maximum number of [tokens](/tokenizer) that can be generated in the chat
+             * completion. This value can be used to control
+             * [costs](https://openai.com/api/pricing/) for text generated via API.
+             *
+             * This value is now deprecated in favor of `max_completion_tokens`, and is not
+             * compatible with
+             * [o1 series models](https://platform.openai.com/docs/guides/reasoning).
+             */
+            fun maxTokens(maxTokens: Long) = maxTokens(maxTokens as Long?)
+
+            /**
+             * The maximum number of [tokens](/tokenizer) that can be generated in the chat
+             * completion. This value can be used to control
+             * [costs](https://openai.com/api/pricing/) for text generated via API.
+             *
+             * This value is now deprecated in favor of `max_completion_tokens`, and is not
+             * compatible with
+             * [o1 series models](https://platform.openai.com/docs/guides/reasoning).
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun maxTokens(maxTokens: Optional<Long>) = maxTokens(maxTokens.orElse(null) as Long?)
 
             /**
              * Developer-defined tags and values used for filtering completions in the
              * [dashboard](https://platform.openai.com/chat-completions).
              */
-            fun metadata(metadata: Metadata) = apply { this.metadata = metadata }
+            fun metadata(metadata: Metadata?) = apply { this.metadata = metadata }
+
+            /**
+             * Developer-defined tags and values used for filtering completions in the
+             * [dashboard](https://platform.openai.com/chat-completions).
+             */
+            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
 
             /**
              * Output types that you would like the model to generate for this request. Most models
@@ -843,9 +962,24 @@ constructor(
              *
              * `["text", "audio"]`
              */
-            fun modalities(modalities: List<ChatCompletionModality>) = apply {
-                this.modalities = modalities.toMutableList()
+            fun modalities(modalities: List<ChatCompletionModality>?) = apply {
+                this.modalities = modalities?.toMutableList()
             }
+
+            /**
+             * Output types that you would like the model to generate for this request. Most models
+             * are capable of generating text, which is the default:
+             *
+             * `["text"]`
+             *
+             * The `gpt-4o-audio-preview` model can also be used to
+             * [generate audio](https://platform.openai.com/docs/guides/audio). To request that this
+             * model generate both text and audio responses, you can use:
+             *
+             * `["text", "audio"]`
+             */
+            fun modalities(modalities: Optional<List<ChatCompletionModality>>) =
+                modalities(modalities.orElse(null))
 
             /**
              * Output types that you would like the model to generate for this request. Most models
@@ -868,23 +1002,71 @@ constructor(
              * will be charged based on the number of generated tokens across all of the choices.
              * Keep `n` as `1` to minimize costs.
              */
-            fun n(n: Long) = apply { this.n = n }
+            fun n(n: Long?) = apply { this.n = n }
+
+            /**
+             * How many chat completion choices to generate for each input message. Note that you
+             * will be charged based on the number of generated tokens across all of the choices.
+             * Keep `n` as `1` to minimize costs.
+             */
+            fun n(n: Long) = n(n as Long?)
+
+            /**
+             * How many chat completion choices to generate for each input message. Note that you
+             * will be charged based on the number of generated tokens across all of the choices.
+             * Keep `n` as `1` to minimize costs.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun n(n: Optional<Long>) = n(n.orElse(null) as Long?)
 
             /**
              * Whether to enable
              * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
              * during tool use.
              */
-            fun parallelToolCalls(parallelToolCalls: Boolean) = apply {
+            fun parallelToolCalls(parallelToolCalls: Boolean?) = apply {
                 this.parallelToolCalls = parallelToolCalls
+            }
+
+            /**
+             * Whether to enable
+             * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+             * during tool use.
+             */
+            fun parallelToolCalls(parallelToolCalls: Boolean) =
+                parallelToolCalls(parallelToolCalls as Boolean?)
+
+            /**
+             * Whether to enable
+             * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+             * during tool use.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun parallelToolCalls(parallelToolCalls: Optional<Boolean>) =
+                parallelToolCalls(parallelToolCalls.orElse(null) as Boolean?)
+
+            /**
+             * Static predicted output content, such as the content of a text file that is being
+             * regenerated.
+             */
+            fun prediction(prediction: ChatCompletionPredictionContent?) = apply {
+                this.prediction = prediction
             }
 
             /**
              * Static predicted output content, such as the content of a text file that is being
              * regenerated.
              */
-            fun prediction(prediction: ChatCompletionPredictionContent) = apply {
-                this.prediction = prediction
+            fun prediction(prediction: Optional<ChatCompletionPredictionContent>) =
+                prediction(prediction.orElse(null))
+
+            /**
+             * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether
+             * they appear in the text so far, increasing the model's likelihood to talk about new
+             * topics.
+             */
+            fun presencePenalty(presencePenalty: Double?) = apply {
+                this.presencePenalty = presencePenalty
             }
 
             /**
@@ -892,8 +1074,28 @@ constructor(
              * they appear in the text so far, increasing the model's likelihood to talk about new
              * topics.
              */
-            fun presencePenalty(presencePenalty: Double) = apply {
-                this.presencePenalty = presencePenalty
+            fun presencePenalty(presencePenalty: Double) =
+                presencePenalty(presencePenalty as Double?)
+
+            /**
+             * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether
+             * they appear in the text so far, increasing the model's likelihood to talk about new
+             * topics.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun presencePenalty(presencePenalty: Optional<Double>) =
+                presencePenalty(presencePenalty.orElse(null) as Double?)
+
+            /**
+             * **o1 models only**
+             *
+             * Constrains effort on reasoning for
+             * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+             * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
+             * result in faster responses and fewer tokens used on reasoning in a response.
+             */
+            fun reasoningEffort(reasoningEffort: ChatCompletionReasoningEffort?) = apply {
+                this.reasoningEffort = reasoningEffort
             }
 
             /**
@@ -904,8 +1106,29 @@ constructor(
              * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
              * result in faster responses and fewer tokens used on reasoning in a response.
              */
-            fun reasoningEffort(reasoningEffort: ChatCompletionReasoningEffort) = apply {
-                this.reasoningEffort = reasoningEffort
+            fun reasoningEffort(reasoningEffort: Optional<ChatCompletionReasoningEffort>) =
+                reasoningEffort(reasoningEffort.orElse(null))
+
+            /**
+             * An object specifying the format that the model must output.
+             *
+             * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
+             * Outputs which ensures the model will match your supplied JSON schema. Learn more in
+             * the
+             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             *
+             * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
+             * the model generates is valid JSON.
+             *
+             * **Important:** when using JSON mode, you **must** also instruct the model to produce
+             * JSON yourself via a system or user message. Without this, the model may generate an
+             * unending stream of whitespace until the generation reaches the token limit, resulting
+             * in a long-running and seemingly "stuck" request. Also note that the message content
+             * may be partially cut off if `finish_reason="length"`, which indicates the generation
+             * exceeded `max_tokens` or the conversation exceeded the max context length.
+             */
+            fun responseFormat(responseFormat: ResponseFormat?) = apply {
+                this.responseFormat = responseFormat
             }
 
             /**
@@ -926,9 +1149,8 @@ constructor(
              * may be partially cut off if `finish_reason="length"`, which indicates the generation
              * exceeded `max_tokens` or the conversation exceeded the max context length.
              */
-            fun responseFormat(responseFormat: ResponseFormat) = apply {
-                this.responseFormat = responseFormat
-            }
+            fun responseFormat(responseFormat: Optional<ResponseFormat>) =
+                responseFormat(responseFormat.orElse(null))
 
             fun responseFormat(responseFormatText: ResponseFormatText) = apply {
                 this.responseFormat = ResponseFormat.ofResponseFormatText(responseFormatText)
@@ -950,7 +1172,24 @@ constructor(
              * should return the same result. Determinism is not guaranteed, and you should refer to
              * the `system_fingerprint` response parameter to monitor changes in the backend.
              */
-            fun seed(seed: Long) = apply { this.seed = seed }
+            fun seed(seed: Long?) = apply { this.seed = seed }
+
+            /**
+             * This feature is in Beta. If specified, our system will make a best effort to sample
+             * deterministically, such that repeated requests with the same `seed` and parameters
+             * should return the same result. Determinism is not guaranteed, and you should refer to
+             * the `system_fingerprint` response parameter to monitor changes in the backend.
+             */
+            fun seed(seed: Long) = seed(seed as Long?)
+
+            /**
+             * This feature is in Beta. If specified, our system will make a best effort to sample
+             * deterministically, such that repeated requests with the same `seed` and parameters
+             * should return the same result. Determinism is not guaranteed, and you should refer to
+             * the `system_fingerprint` response parameter to monitor changes in the backend.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun seed(seed: Optional<Long>) = seed(seed.orElse(null) as Long?)
 
             /**
              * Specifies the latency tier to use for processing the request. This parameter is
@@ -967,10 +1206,31 @@ constructor(
              * When this parameter is set, the response body will include the `service_tier`
              * utilized.
              */
-            fun serviceTier(serviceTier: ServiceTier) = apply { this.serviceTier = serviceTier }
+            fun serviceTier(serviceTier: ServiceTier?) = apply { this.serviceTier = serviceTier }
+
+            /**
+             * Specifies the latency tier to use for processing the request. This parameter is
+             * relevant for customers subscribed to the scale tier service:
+             * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize
+             *   scale tier credits until they are exhausted.
+             * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
+             *   processed using the default service tier with a lower uptime SLA and no latency
+             *   guarentee.
+             * - If set to 'default', the request will be processed using the default service tier
+             *   with a lower uptime SLA and no latency guarentee.
+             * - When not set, the default behavior is 'auto'.
+             *
+             * When this parameter is set, the response body will include the `service_tier`
+             * utilized.
+             */
+            fun serviceTier(serviceTier: Optional<ServiceTier>) =
+                serviceTier(serviceTier.orElse(null))
 
             /** Up to 4 sequences where the API will stop generating further tokens. */
-            fun stop(stop: Stop) = apply { this.stop = stop }
+            fun stop(stop: Stop?) = apply { this.stop = stop }
+
+            /** Up to 4 sequences where the API will stop generating further tokens. */
+            fun stop(stop: Optional<Stop>) = stop(stop.orElse(null))
 
             fun stop(string: String) = apply { this.stop = Stop.ofString(string) }
 
@@ -981,19 +1241,54 @@ constructor(
              * [model distillation](https://platform.openai.com/docs/guides/distillation) or
              * [evals](https://platform.openai.com/docs/guides/evals) products.
              */
-            fun store(store: Boolean) = apply { this.store = store }
+            fun store(store: Boolean?) = apply { this.store = store }
+
+            /**
+             * Whether or not to store the output of this chat completion request for use in our
+             * [model distillation](https://platform.openai.com/docs/guides/distillation) or
+             * [evals](https://platform.openai.com/docs/guides/evals) products.
+             */
+            fun store(store: Boolean) = store(store as Boolean?)
+
+            /**
+             * Whether or not to store the output of this chat completion request for use in our
+             * [model distillation](https://platform.openai.com/docs/guides/distillation) or
+             * [evals](https://platform.openai.com/docs/guides/evals) products.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun store(store: Optional<Boolean>) = store(store.orElse(null) as Boolean?)
 
             /** Options for streaming response. Only set this when you set `stream: true`. */
-            fun streamOptions(streamOptions: ChatCompletionStreamOptions) = apply {
+            fun streamOptions(streamOptions: ChatCompletionStreamOptions?) = apply {
                 this.streamOptions = streamOptions
             }
+
+            /** Options for streaming response. Only set this when you set `stream: true`. */
+            fun streamOptions(streamOptions: Optional<ChatCompletionStreamOptions>) =
+                streamOptions(streamOptions.orElse(null))
 
             /**
              * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
              * the output more random, while lower values like 0.2 will make it more focused and
              * deterministic. We generally recommend altering this or `top_p` but not both.
              */
-            fun temperature(temperature: Double) = apply { this.temperature = temperature }
+            fun temperature(temperature: Double?) = apply { this.temperature = temperature }
+
+            /**
+             * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
+             * the output more random, while lower values like 0.2 will make it more focused and
+             * deterministic. We generally recommend altering this or `top_p` but not both.
+             */
+            fun temperature(temperature: Double) = temperature(temperature as Double?)
+
+            /**
+             * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
+             * the output more random, while lower values like 0.2 will make it more focused and
+             * deterministic. We generally recommend altering this or `top_p` but not both.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun temperature(temperature: Optional<Double>) =
+                temperature(temperature.orElse(null) as Double?)
 
             /**
              * Controls which (if any) tool is called by the model. `none` means the model will not
@@ -1005,9 +1300,22 @@ constructor(
              * `none` is the default when no tools are present. `auto` is the default if tools are
              * present.
              */
-            fun toolChoice(toolChoice: ChatCompletionToolChoiceOption) = apply {
+            fun toolChoice(toolChoice: ChatCompletionToolChoiceOption?) = apply {
                 this.toolChoice = toolChoice
             }
+
+            /**
+             * Controls which (if any) tool is called by the model. `none` means the model will not
+             * call any tool and instead generates a message. `auto` means the model can pick
+             * between generating a message or calling one or more tools. `required` means the model
+             * must call one or more tools. Specifying a particular tool via `{"type": "function",
+             * "function": {"name": "my_function"}}` forces the model to call that tool.
+             *
+             * `none` is the default when no tools are present. `auto` is the default if tools are
+             * present.
+             */
+            fun toolChoice(toolChoice: Optional<ChatCompletionToolChoiceOption>) =
+                toolChoice(toolChoice.orElse(null))
 
             /**
              * `none` means the model will not call any tool and instead generates a message. `auto`
@@ -1034,9 +1342,16 @@ constructor(
              * tool. Use this to provide a list of functions the model may generate JSON inputs for.
              * A max of 128 functions are supported.
              */
-            fun tools(tools: List<ChatCompletionTool>) = apply {
-                this.tools = tools.toMutableList()
+            fun tools(tools: List<ChatCompletionTool>?) = apply {
+                this.tools = tools?.toMutableList()
             }
+
+            /**
+             * A list of tools the model may call. Currently, only functions are supported as a
+             * tool. Use this to provide a list of functions the model may generate JSON inputs for.
+             * A max of 128 functions are supported.
+             */
+            fun tools(tools: Optional<List<ChatCompletionTool>>) = tools(tools.orElse(null))
 
             /**
              * A list of tools the model may call. Currently, only functions are supported as a
@@ -1052,7 +1367,23 @@ constructor(
              * each token position, each with an associated log probability. `logprobs` must be set
              * to `true` if this parameter is used.
              */
-            fun topLogprobs(topLogprobs: Long) = apply { this.topLogprobs = topLogprobs }
+            fun topLogprobs(topLogprobs: Long?) = apply { this.topLogprobs = topLogprobs }
+
+            /**
+             * An integer between 0 and 20 specifying the number of most likely tokens to return at
+             * each token position, each with an associated log probability. `logprobs` must be set
+             * to `true` if this parameter is used.
+             */
+            fun topLogprobs(topLogprobs: Long) = topLogprobs(topLogprobs as Long?)
+
+            /**
+             * An integer between 0 and 20 specifying the number of most likely tokens to return at
+             * each token position, each with an associated log probability. `logprobs` must be set
+             * to `true` if this parameter is used.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun topLogprobs(topLogprobs: Optional<Long>) =
+                topLogprobs(topLogprobs.orElse(null) as Long?)
 
             /**
              * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -1061,14 +1392,40 @@ constructor(
              *
              * We generally recommend altering this or `temperature` but not both.
              */
-            fun topP(topP: Double) = apply { this.topP = topP }
+            fun topP(topP: Double?) = apply { this.topP = topP }
+
+            /**
+             * An alternative to sampling with temperature, called nucleus sampling, where the model
+             * considers the results of the tokens with top_p probability mass. So 0.1 means only
+             * the tokens comprising the top 10% probability mass are considered.
+             *
+             * We generally recommend altering this or `temperature` but not both.
+             */
+            fun topP(topP: Double) = topP(topP as Double?)
+
+            /**
+             * An alternative to sampling with temperature, called nucleus sampling, where the model
+             * considers the results of the tokens with top_p probability mass. So 0.1 means only
+             * the tokens comprising the top 10% probability mass are considered.
+             *
+             * We generally recommend altering this or `temperature` but not both.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
 
             /**
              * A unique identifier representing your end-user, which can help OpenAI to monitor and
              * detect abuse.
              * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
              */
-            fun user(user: String) = apply { this.user = user }
+            fun user(user: String?) = apply { this.user = user }
+
+            /**
+             * A unique identifier representing your end-user, which can help OpenAI to monitor and
+             * detect abuse.
+             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+             */
+            fun user(user: Optional<String>) = user(user.orElse(null))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1202,16 +1559,39 @@ constructor(
          * Parameters for audio output. Required when audio output is requested with `modalities:
          * ["audio"]`. [Learn more](https://platform.openai.com/docs/guides/audio).
          */
-        fun audio(audio: ChatCompletionAudioParam) = apply { body.audio(audio) }
+        fun audio(audio: ChatCompletionAudioParam?) = apply { body.audio(audio) }
+
+        /**
+         * Parameters for audio output. Required when audio output is requested with `modalities:
+         * ["audio"]`. [Learn more](https://platform.openai.com/docs/guides/audio).
+         */
+        fun audio(audio: Optional<ChatCompletionAudioParam>) = audio(audio.orElse(null))
 
         /**
          * Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing
          * frequency in the text so far, decreasing the model's likelihood to repeat the same line
          * verbatim.
          */
-        fun frequencyPenalty(frequencyPenalty: Double) = apply {
+        fun frequencyPenalty(frequencyPenalty: Double?) = apply {
             body.frequencyPenalty(frequencyPenalty)
         }
+
+        /**
+         * Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing
+         * frequency in the text so far, decreasing the model's likelihood to repeat the same line
+         * verbatim.
+         */
+        fun frequencyPenalty(frequencyPenalty: Double) =
+            frequencyPenalty(frequencyPenalty as Double?)
+
+        /**
+         * Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing
+         * frequency in the text so far, decreasing the model's likelihood to repeat the same line
+         * verbatim.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun frequencyPenalty(frequencyPenalty: Optional<Double>) =
+            frequencyPenalty(frequencyPenalty.orElse(null) as Double?)
 
         /**
          * Deprecated in favor of `tool_choice`.
@@ -1228,7 +1608,25 @@ constructor(
          * `none` is the default when no functions are present. `auto` is the default if functions
          * are present.
          */
-        fun functionCall(functionCall: FunctionCall) = apply { body.functionCall(functionCall) }
+        fun functionCall(functionCall: FunctionCall?) = apply { body.functionCall(functionCall) }
+
+        /**
+         * Deprecated in favor of `tool_choice`.
+         *
+         * Controls which (if any) function is called by the model.
+         *
+         * `none` means the model will not call a function and instead generates a message.
+         *
+         * `auto` means the model can pick between generating a message or calling a function.
+         *
+         * Specifying a particular function via `{"name": "my_function"}` forces the model to call
+         * that function.
+         *
+         * `none` is the default when no functions are present. `auto` is the default if functions
+         * are present.
+         */
+        fun functionCall(functionCall: Optional<FunctionCall>) =
+            functionCall(functionCall.orElse(null))
 
         /**
          * `none` means the model will not call a function and instead generates a message. `auto`
@@ -1249,7 +1647,14 @@ constructor(
          *
          * A list of functions the model may generate JSON inputs for.
          */
-        fun functions(functions: List<Function>) = apply { body.functions(functions) }
+        fun functions(functions: List<Function>?) = apply { body.functions(functions) }
+
+        /**
+         * Deprecated in favor of `tools`.
+         *
+         * A list of functions the model may generate JSON inputs for.
+         */
+        fun functions(functions: Optional<List<Function>>) = functions(functions.orElse(null))
 
         /**
          * Deprecated in favor of `tools`.
@@ -1267,22 +1672,63 @@ constructor(
          * but values between -1 and 1 should decrease or increase likelihood of selection; values
          * like -100 or 100 should result in a ban or exclusive selection of the relevant token.
          */
-        fun logitBias(logitBias: LogitBias) = apply { body.logitBias(logitBias) }
+        fun logitBias(logitBias: LogitBias?) = apply { body.logitBias(logitBias) }
+
+        /**
+         * Modify the likelihood of specified tokens appearing in the completion.
+         *
+         * Accepts a JSON object that maps tokens (specified by their token ID in the tokenizer) to
+         * an associated bias value from -100 to 100. Mathematically, the bias is added to the
+         * logits generated by the model prior to sampling. The exact effect will vary per model,
+         * but values between -1 and 1 should decrease or increase likelihood of selection; values
+         * like -100 or 100 should result in a ban or exclusive selection of the relevant token.
+         */
+        fun logitBias(logitBias: Optional<LogitBias>) = logitBias(logitBias.orElse(null))
 
         /**
          * Whether to return log probabilities of the output tokens or not. If true, returns the log
          * probabilities of each output token returned in the `content` of `message`.
          */
-        fun logprobs(logprobs: Boolean) = apply { body.logprobs(logprobs) }
+        fun logprobs(logprobs: Boolean?) = apply { body.logprobs(logprobs) }
+
+        /**
+         * Whether to return log probabilities of the output tokens or not. If true, returns the log
+         * probabilities of each output token returned in the `content` of `message`.
+         */
+        fun logprobs(logprobs: Boolean) = logprobs(logprobs as Boolean?)
+
+        /**
+         * Whether to return log probabilities of the output tokens or not. If true, returns the log
+         * probabilities of each output token returned in the `content` of `message`.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun logprobs(logprobs: Optional<Boolean>) = logprobs(logprobs.orElse(null) as Boolean?)
 
         /**
          * An upper bound for the number of tokens that can be generated for a completion, including
          * visible output tokens and
          * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
          */
-        fun maxCompletionTokens(maxCompletionTokens: Long) = apply {
+        fun maxCompletionTokens(maxCompletionTokens: Long?) = apply {
             body.maxCompletionTokens(maxCompletionTokens)
         }
+
+        /**
+         * An upper bound for the number of tokens that can be generated for a completion, including
+         * visible output tokens and
+         * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+         */
+        fun maxCompletionTokens(maxCompletionTokens: Long) =
+            maxCompletionTokens(maxCompletionTokens as Long?)
+
+        /**
+         * An upper bound for the number of tokens that can be generated for a completion, including
+         * visible output tokens and
+         * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun maxCompletionTokens(maxCompletionTokens: Optional<Long>) =
+            maxCompletionTokens(maxCompletionTokens.orElse(null) as Long?)
 
         /**
          * The maximum number of [tokens](/tokenizer) that can be generated in the chat completion.
@@ -1292,13 +1738,40 @@ constructor(
          * This value is now deprecated in favor of `max_completion_tokens`, and is not compatible
          * with [o1 series models](https://platform.openai.com/docs/guides/reasoning).
          */
-        fun maxTokens(maxTokens: Long) = apply { body.maxTokens(maxTokens) }
+        fun maxTokens(maxTokens: Long?) = apply { body.maxTokens(maxTokens) }
+
+        /**
+         * The maximum number of [tokens](/tokenizer) that can be generated in the chat completion.
+         * This value can be used to control [costs](https://openai.com/api/pricing/) for text
+         * generated via API.
+         *
+         * This value is now deprecated in favor of `max_completion_tokens`, and is not compatible
+         * with [o1 series models](https://platform.openai.com/docs/guides/reasoning).
+         */
+        fun maxTokens(maxTokens: Long) = maxTokens(maxTokens as Long?)
+
+        /**
+         * The maximum number of [tokens](/tokenizer) that can be generated in the chat completion.
+         * This value can be used to control [costs](https://openai.com/api/pricing/) for text
+         * generated via API.
+         *
+         * This value is now deprecated in favor of `max_completion_tokens`, and is not compatible
+         * with [o1 series models](https://platform.openai.com/docs/guides/reasoning).
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun maxTokens(maxTokens: Optional<Long>) = maxTokens(maxTokens.orElse(null) as Long?)
 
         /**
          * Developer-defined tags and values used for filtering completions in the
          * [dashboard](https://platform.openai.com/chat-completions).
          */
-        fun metadata(metadata: Metadata) = apply { body.metadata(metadata) }
+        fun metadata(metadata: Metadata?) = apply { body.metadata(metadata) }
+
+        /**
+         * Developer-defined tags and values used for filtering completions in the
+         * [dashboard](https://platform.openai.com/chat-completions).
+         */
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
 
         /**
          * Output types that you would like the model to generate for this request. Most models are
@@ -1312,9 +1785,24 @@ constructor(
          *
          * `["text", "audio"]`
          */
-        fun modalities(modalities: List<ChatCompletionModality>) = apply {
+        fun modalities(modalities: List<ChatCompletionModality>?) = apply {
             body.modalities(modalities)
         }
+
+        /**
+         * Output types that you would like the model to generate for this request. Most models are
+         * capable of generating text, which is the default:
+         *
+         * `["text"]`
+         *
+         * The `gpt-4o-audio-preview` model can also be used to
+         * [generate audio](https://platform.openai.com/docs/guides/audio). To request that this
+         * model generate both text and audio responses, you can use:
+         *
+         * `["text", "audio"]`
+         */
+        fun modalities(modalities: Optional<List<ChatCompletionModality>>) =
+            modalities(modalities.orElse(null))
 
         /**
          * Output types that you would like the model to generate for this request. Most models are
@@ -1335,31 +1823,96 @@ constructor(
          * be charged based on the number of generated tokens across all of the choices. Keep `n` as
          * `1` to minimize costs.
          */
-        fun n(n: Long) = apply { body.n(n) }
+        fun n(n: Long?) = apply { body.n(n) }
+
+        /**
+         * How many chat completion choices to generate for each input message. Note that you will
+         * be charged based on the number of generated tokens across all of the choices. Keep `n` as
+         * `1` to minimize costs.
+         */
+        fun n(n: Long) = n(n as Long?)
+
+        /**
+         * How many chat completion choices to generate for each input message. Note that you will
+         * be charged based on the number of generated tokens across all of the choices. Keep `n` as
+         * `1` to minimize costs.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun n(n: Optional<Long>) = n(n.orElse(null) as Long?)
 
         /**
          * Whether to enable
          * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
          * during tool use.
          */
-        fun parallelToolCalls(parallelToolCalls: Boolean) = apply {
+        fun parallelToolCalls(parallelToolCalls: Boolean?) = apply {
             body.parallelToolCalls(parallelToolCalls)
+        }
+
+        /**
+         * Whether to enable
+         * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+         * during tool use.
+         */
+        fun parallelToolCalls(parallelToolCalls: Boolean) =
+            parallelToolCalls(parallelToolCalls as Boolean?)
+
+        /**
+         * Whether to enable
+         * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+         * during tool use.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun parallelToolCalls(parallelToolCalls: Optional<Boolean>) =
+            parallelToolCalls(parallelToolCalls.orElse(null) as Boolean?)
+
+        /**
+         * Static predicted output content, such as the content of a text file that is being
+         * regenerated.
+         */
+        fun prediction(prediction: ChatCompletionPredictionContent?) = apply {
+            body.prediction(prediction)
         }
 
         /**
          * Static predicted output content, such as the content of a text file that is being
          * regenerated.
          */
-        fun prediction(prediction: ChatCompletionPredictionContent) = apply {
-            body.prediction(prediction)
+        fun prediction(prediction: Optional<ChatCompletionPredictionContent>) =
+            prediction(prediction.orElse(null))
+
+        /**
+         * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they
+         * appear in the text so far, increasing the model's likelihood to talk about new topics.
+         */
+        fun presencePenalty(presencePenalty: Double?) = apply {
+            body.presencePenalty(presencePenalty)
         }
 
         /**
          * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they
          * appear in the text so far, increasing the model's likelihood to talk about new topics.
          */
-        fun presencePenalty(presencePenalty: Double) = apply {
-            body.presencePenalty(presencePenalty)
+        fun presencePenalty(presencePenalty: Double) = presencePenalty(presencePenalty as Double?)
+
+        /**
+         * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they
+         * appear in the text so far, increasing the model's likelihood to talk about new topics.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun presencePenalty(presencePenalty: Optional<Double>) =
+            presencePenalty(presencePenalty.orElse(null) as Double?)
+
+        /**
+         * **o1 models only**
+         *
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
+         * faster responses and fewer tokens used on reasoning in a response.
+         */
+        fun reasoningEffort(reasoningEffort: ChatCompletionReasoningEffort?) = apply {
+            body.reasoningEffort(reasoningEffort)
         }
 
         /**
@@ -1370,8 +1923,28 @@ constructor(
          * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
          * faster responses and fewer tokens used on reasoning in a response.
          */
-        fun reasoningEffort(reasoningEffort: ChatCompletionReasoningEffort) = apply {
-            body.reasoningEffort(reasoningEffort)
+        fun reasoningEffort(reasoningEffort: Optional<ChatCompletionReasoningEffort>) =
+            reasoningEffort(reasoningEffort.orElse(null))
+
+        /**
+         * An object specifying the format that the model must output.
+         *
+         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
+         * which ensures the model will match your supplied JSON schema. Learn more in the
+         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         *
+         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
+         * model generates is valid JSON.
+         *
+         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
+         * yourself via a system or user message. Without this, the model may generate an unending
+         * stream of whitespace until the generation reaches the token limit, resulting in a
+         * long-running and seemingly "stuck" request. Also note that the message content may be
+         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
+         * `max_tokens` or the conversation exceeded the max context length.
+         */
+        fun responseFormat(responseFormat: ResponseFormat?) = apply {
+            body.responseFormat(responseFormat)
         }
 
         /**
@@ -1391,9 +1964,8 @@ constructor(
          * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
          * `max_tokens` or the conversation exceeded the max context length.
          */
-        fun responseFormat(responseFormat: ResponseFormat) = apply {
-            body.responseFormat(responseFormat)
-        }
+        fun responseFormat(responseFormat: Optional<ResponseFormat>) =
+            responseFormat(responseFormat.orElse(null))
 
         fun responseFormat(responseFormatText: ResponseFormatText) = apply {
             body.responseFormat(responseFormatText)
@@ -1413,7 +1985,24 @@ constructor(
          * return the same result. Determinism is not guaranteed, and you should refer to the
          * `system_fingerprint` response parameter to monitor changes in the backend.
          */
-        fun seed(seed: Long) = apply { body.seed(seed) }
+        fun seed(seed: Long?) = apply { body.seed(seed) }
+
+        /**
+         * This feature is in Beta. If specified, our system will make a best effort to sample
+         * deterministically, such that repeated requests with the same `seed` and parameters should
+         * return the same result. Determinism is not guaranteed, and you should refer to the
+         * `system_fingerprint` response parameter to monitor changes in the backend.
+         */
+        fun seed(seed: Long) = seed(seed as Long?)
+
+        /**
+         * This feature is in Beta. If specified, our system will make a best effort to sample
+         * deterministically, such that repeated requests with the same `seed` and parameters should
+         * return the same result. Determinism is not guaranteed, and you should refer to the
+         * `system_fingerprint` response parameter to monitor changes in the backend.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun seed(seed: Optional<Long>) = seed(seed.orElse(null) as Long?)
 
         /**
          * Specifies the latency tier to use for processing the request. This parameter is relevant
@@ -1429,10 +2018,29 @@ constructor(
          *
          * When this parameter is set, the response body will include the `service_tier` utilized.
          */
-        fun serviceTier(serviceTier: ServiceTier) = apply { body.serviceTier(serviceTier) }
+        fun serviceTier(serviceTier: ServiceTier?) = apply { body.serviceTier(serviceTier) }
+
+        /**
+         * Specifies the latency tier to use for processing the request. This parameter is relevant
+         * for customers subscribed to the scale tier service:
+         * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale
+         *   tier credits until they are exhausted.
+         * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
+         *   processed using the default service tier with a lower uptime SLA and no latency
+         *   guarentee.
+         * - If set to 'default', the request will be processed using the default service tier with
+         *   a lower uptime SLA and no latency guarentee.
+         * - When not set, the default behavior is 'auto'.
+         *
+         * When this parameter is set, the response body will include the `service_tier` utilized.
+         */
+        fun serviceTier(serviceTier: Optional<ServiceTier>) = serviceTier(serviceTier.orElse(null))
 
         /** Up to 4 sequences where the API will stop generating further tokens. */
-        fun stop(stop: Stop) = apply { body.stop(stop) }
+        fun stop(stop: Stop?) = apply { body.stop(stop) }
+
+        /** Up to 4 sequences where the API will stop generating further tokens. */
+        fun stop(stop: Optional<Stop>) = stop(stop.orElse(null))
 
         fun stop(string: String) = apply { body.stop(string) }
 
@@ -1443,19 +2051,54 @@ constructor(
          * [model distillation](https://platform.openai.com/docs/guides/distillation) or
          * [evals](https://platform.openai.com/docs/guides/evals) products.
          */
-        fun store(store: Boolean) = apply { body.store(store) }
+        fun store(store: Boolean?) = apply { body.store(store) }
+
+        /**
+         * Whether or not to store the output of this chat completion request for use in our
+         * [model distillation](https://platform.openai.com/docs/guides/distillation) or
+         * [evals](https://platform.openai.com/docs/guides/evals) products.
+         */
+        fun store(store: Boolean) = store(store as Boolean?)
+
+        /**
+         * Whether or not to store the output of this chat completion request for use in our
+         * [model distillation](https://platform.openai.com/docs/guides/distillation) or
+         * [evals](https://platform.openai.com/docs/guides/evals) products.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun store(store: Optional<Boolean>) = store(store.orElse(null) as Boolean?)
 
         /** Options for streaming response. Only set this when you set `stream: true`. */
-        fun streamOptions(streamOptions: ChatCompletionStreamOptions) = apply {
+        fun streamOptions(streamOptions: ChatCompletionStreamOptions?) = apply {
             body.streamOptions(streamOptions)
         }
+
+        /** Options for streaming response. Only set this when you set `stream: true`. */
+        fun streamOptions(streamOptions: Optional<ChatCompletionStreamOptions>) =
+            streamOptions(streamOptions.orElse(null))
 
         /**
          * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
          * output more random, while lower values like 0.2 will make it more focused and
          * deterministic. We generally recommend altering this or `top_p` but not both.
          */
-        fun temperature(temperature: Double) = apply { body.temperature(temperature) }
+        fun temperature(temperature: Double?) = apply { body.temperature(temperature) }
+
+        /**
+         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+         * output more random, while lower values like 0.2 will make it more focused and
+         * deterministic. We generally recommend altering this or `top_p` but not both.
+         */
+        fun temperature(temperature: Double) = temperature(temperature as Double?)
+
+        /**
+         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+         * output more random, while lower values like 0.2 will make it more focused and
+         * deterministic. We generally recommend altering this or `top_p` but not both.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun temperature(temperature: Optional<Double>) =
+            temperature(temperature.orElse(null) as Double?)
 
         /**
          * Controls which (if any) tool is called by the model. `none` means the model will not call
@@ -1467,9 +2110,22 @@ constructor(
          * `none` is the default when no tools are present. `auto` is the default if tools are
          * present.
          */
-        fun toolChoice(toolChoice: ChatCompletionToolChoiceOption) = apply {
+        fun toolChoice(toolChoice: ChatCompletionToolChoiceOption?) = apply {
             body.toolChoice(toolChoice)
         }
+
+        /**
+         * Controls which (if any) tool is called by the model. `none` means the model will not call
+         * any tool and instead generates a message. `auto` means the model can pick between
+         * generating a message or calling one or more tools. `required` means the model must call
+         * one or more tools. Specifying a particular tool via `{"type": "function", "function":
+         * {"name": "my_function"}}` forces the model to call that tool.
+         *
+         * `none` is the default when no tools are present. `auto` is the default if tools are
+         * present.
+         */
+        fun toolChoice(toolChoice: Optional<ChatCompletionToolChoiceOption>) =
+            toolChoice(toolChoice.orElse(null))
 
         /**
          * `none` means the model will not call any tool and instead generates a message. `auto`
@@ -1493,7 +2149,14 @@ constructor(
          * Use this to provide a list of functions the model may generate JSON inputs for. A max of
          * 128 functions are supported.
          */
-        fun tools(tools: List<ChatCompletionTool>) = apply { body.tools(tools) }
+        fun tools(tools: List<ChatCompletionTool>?) = apply { body.tools(tools) }
+
+        /**
+         * A list of tools the model may call. Currently, only functions are supported as a tool.
+         * Use this to provide a list of functions the model may generate JSON inputs for. A max of
+         * 128 functions are supported.
+         */
+        fun tools(tools: Optional<List<ChatCompletionTool>>) = tools(tools.orElse(null))
 
         /**
          * A list of tools the model may call. Currently, only functions are supported as a tool.
@@ -1507,7 +2170,23 @@ constructor(
          * token position, each with an associated log probability. `logprobs` must be set to `true`
          * if this parameter is used.
          */
-        fun topLogprobs(topLogprobs: Long) = apply { body.topLogprobs(topLogprobs) }
+        fun topLogprobs(topLogprobs: Long?) = apply { body.topLogprobs(topLogprobs) }
+
+        /**
+         * An integer between 0 and 20 specifying the number of most likely tokens to return at each
+         * token position, each with an associated log probability. `logprobs` must be set to `true`
+         * if this parameter is used.
+         */
+        fun topLogprobs(topLogprobs: Long) = topLogprobs(topLogprobs as Long?)
+
+        /**
+         * An integer between 0 and 20 specifying the number of most likely tokens to return at each
+         * token position, each with an associated log probability. `logprobs` must be set to `true`
+         * if this parameter is used.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun topLogprobs(topLogprobs: Optional<Long>) =
+            topLogprobs(topLogprobs.orElse(null) as Long?)
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -1516,14 +2195,40 @@ constructor(
          *
          * We generally recommend altering this or `temperature` but not both.
          */
-        fun topP(topP: Double) = apply { body.topP(topP) }
+        fun topP(topP: Double?) = apply { body.topP(topP) }
+
+        /**
+         * An alternative to sampling with temperature, called nucleus sampling, where the model
+         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
+         * tokens comprising the top 10% probability mass are considered.
+         *
+         * We generally recommend altering this or `temperature` but not both.
+         */
+        fun topP(topP: Double) = topP(topP as Double?)
+
+        /**
+         * An alternative to sampling with temperature, called nucleus sampling, where the model
+         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
+         * tokens comprising the top 10% probability mass are considered.
+         *
+         * We generally recommend altering this or `temperature` but not both.
+         */
+        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+        fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
 
         /**
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
          * detect abuse.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
          */
-        fun user(user: String) = apply { body.user(user) }
+        fun user(user: String?) = apply { body.user(user) }
+
+        /**
+         * A unique identifier representing your end-user, which can help OpenAI to monitor and
+         * detect abuse.
+         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         */
+        fun user(user: Optional<String>) = user(user.orElse(null))
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -1920,7 +2625,13 @@ constructor(
              * A description of what the function does, used by the model to choose when and how to
              * call the function.
              */
-            fun description(description: String) = apply { this.description = description }
+            fun description(description: String?) = apply { this.description = description }
+
+            /**
+             * A description of what the function does, used by the model to choose when and how to
+             * call the function.
+             */
+            fun description(description: Optional<String>) = description(description.orElse(null))
 
             /**
              * The parameters the functions accepts, described as a JSON Schema object. See the
@@ -1930,7 +2641,18 @@ constructor(
              *
              * Omitting `parameters` defines a function with an empty parameter list.
              */
-            fun parameters(parameters: FunctionParameters) = apply { this.parameters = parameters }
+            fun parameters(parameters: FunctionParameters?) = apply { this.parameters = parameters }
+
+            /**
+             * The parameters the functions accepts, described as a JSON Schema object. See the
+             * [guide](https://platform.openai.com/docs/guides/function-calling) for examples, and
+             * the [JSON Schema reference](https://json-schema.org/understanding-json-schema/) for
+             * documentation about the format.
+             *
+             * Omitting `parameters` defines a function with an empty parameter list.
+             */
+            fun parameters(parameters: Optional<FunctionParameters>) =
+                parameters(parameters.orElse(null))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
