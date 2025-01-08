@@ -122,6 +122,27 @@ private constructor(
                 }
         }
 
+        /**
+         * An array of tool calls the run step was involved in. These can be associated with one of
+         * three types of tools: `code_interpreter`, `file_search`, or `function`.
+         */
+        fun addToolCall(codeInterpreterToolCallDelta: CodeInterpreterToolCallDelta) =
+            addToolCall(ToolCallDelta.ofCodeInterpreterToolCallDelta(codeInterpreterToolCallDelta))
+
+        /**
+         * An array of tool calls the run step was involved in. These can be associated with one of
+         * three types of tools: `code_interpreter`, `file_search`, or `function`.
+         */
+        fun addToolCall(fileSearchToolCallDelta: FileSearchToolCallDelta) =
+            addToolCall(ToolCallDelta.ofFileSearchToolCallDelta(fileSearchToolCallDelta))
+
+        /**
+         * An array of tool calls the run step was involved in. These can be associated with one of
+         * three types of tools: `code_interpreter`, `file_search`, or `function`.
+         */
+        fun addToolCall(functionToolCallDelta: FunctionToolCallDelta) =
+            addToolCall(ToolCallDelta.ofFunctionToolCallDelta(functionToolCallDelta))
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
