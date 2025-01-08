@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.11.0 (2025-01-08)
+
+Full Changelog: [v0.10.0...v0.11.0](https://github.com/openai/openai-java/compare/v0.10.0...v0.11.0)
+
+### Features
+
+* **client:** add more builder convenience methods for lists ([#96](https://github.com/openai/openai-java/issues/96)) ([9ee703b](https://github.com/openai/openai-java/commit/9ee703b13e8c467a71e7787d420a131bc1910e4f))
+
+
+### Documentation
+
+* **readme:** fix misplaced period ([#94](https://github.com/openai/openai-java/issues/94)) ([c6242ba](https://github.com/openai/openai-java/commit/c6242bad2b917fb419d9a69ad65cebbda9b56b51))
+
 ## 0.10.0 (2025-01-08)
 
 Full Changelog: [v0.9.1...v0.10.0](https://github.com/openai/openai-java/compare/v0.9.1...v0.10.0)
