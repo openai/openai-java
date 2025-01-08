@@ -91,6 +91,12 @@ private constructor(
                 }
         }
 
+        fun addAnnotation(fileCitationAnnotation: FileCitationAnnotation) =
+            addAnnotation(Annotation.ofFileCitationAnnotation(fileCitationAnnotation))
+
+        fun addAnnotation(filePathAnnotation: FilePathAnnotation) =
+            addAnnotation(Annotation.ofFilePathAnnotation(filePathAnnotation))
+
         /** The data that makes up the text. */
         fun value(value: String) = value(JsonField.of(value))
 

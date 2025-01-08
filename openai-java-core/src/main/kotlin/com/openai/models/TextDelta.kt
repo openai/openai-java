@@ -93,6 +93,14 @@ private constructor(
                 }
         }
 
+        fun addAnnotation(fileCitationDeltaAnnotation: FileCitationDeltaAnnotation) =
+            addAnnotation(
+                AnnotationDelta.ofFileCitationDeltaAnnotation(fileCitationDeltaAnnotation)
+            )
+
+        fun addAnnotation(filePathDeltaAnnotation: FilePathDeltaAnnotation) =
+            addAnnotation(AnnotationDelta.ofFilePathDeltaAnnotation(filePathDeltaAnnotation))
+
         /** The data that makes up the text. */
         fun value(value: String) = value(JsonField.of(value))
 

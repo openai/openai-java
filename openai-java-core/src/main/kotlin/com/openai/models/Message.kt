@@ -356,6 +356,22 @@ private constructor(
                 }
         }
 
+        /** The content of the message in array of text and/or images. */
+        fun addContent(imageFileContentBlock: ImageFileContentBlock) =
+            addContent(MessageContent.ofImageFileContentBlock(imageFileContentBlock))
+
+        /** The content of the message in array of text and/or images. */
+        fun addContent(imageUrlContentBlock: ImageUrlContentBlock) =
+            addContent(MessageContent.ofImageUrlContentBlock(imageUrlContentBlock))
+
+        /** The content of the message in array of text and/or images. */
+        fun addContent(textContentBlock: TextContentBlock) =
+            addContent(MessageContent.ofTextContentBlock(textContentBlock))
+
+        /** The content of the message in array of text and/or images. */
+        fun addContent(refusalContentBlock: RefusalContentBlock) =
+            addContent(MessageContent.ofRefusalContentBlock(refusalContentBlock))
+
         /** The Unix timestamp (in seconds) for when the message was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
@@ -583,6 +599,14 @@ private constructor(
                             .add(tool)
                     }
             }
+
+            /** The tools to add this file to. */
+            fun addTool(codeInterpreterTool: CodeInterpreterTool) =
+                addTool(Tool.ofCodeInterpreterTool(codeInterpreterTool))
+
+            /** The tools to add this file to. */
+            fun addTool(assistantToolsFileSearchTypeOnly: Tool.AssistantToolsFileSearchTypeOnly) =
+                addTool(Tool.ofAssistantToolsFileSearchTypeOnly(assistantToolsFileSearchTypeOnly))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()

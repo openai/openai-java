@@ -1141,6 +1141,27 @@ constructor(
             }
 
             /**
+             * Override the tools the assistant can use for this run. This is useful for modifying
+             * the behavior on a per-run basis.
+             */
+            fun addTool(codeInterpreterTool: CodeInterpreterTool) =
+                addTool(AssistantTool.ofCodeInterpreterTool(codeInterpreterTool))
+
+            /**
+             * Override the tools the assistant can use for this run. This is useful for modifying
+             * the behavior on a per-run basis.
+             */
+            fun addTool(fileSearchTool: FileSearchTool) =
+                addTool(AssistantTool.ofFileSearchTool(fileSearchTool))
+
+            /**
+             * Override the tools the assistant can use for this run. This is useful for modifying
+             * the behavior on a per-run basis.
+             */
+            fun addTool(functionTool: FunctionTool) =
+                addTool(AssistantTool.ofFunctionTool(functionTool))
+
+            /**
              * An alternative to sampling with temperature, called nucleus sampling, where the model
              * considers the results of the tokens with top_p probability mass. So 0.1 means only
              * the tokens comprising the top 10% probability mass are considered.
@@ -1723,6 +1744,26 @@ constructor(
          * behavior on a per-run basis.
          */
         fun addTool(tool: AssistantTool) = apply { body.addTool(tool) }
+
+        /**
+         * Override the tools the assistant can use for this run. This is useful for modifying the
+         * behavior on a per-run basis.
+         */
+        fun addTool(codeInterpreterTool: CodeInterpreterTool) = apply {
+            body.addTool(codeInterpreterTool)
+        }
+
+        /**
+         * Override the tools the assistant can use for this run. This is useful for modifying the
+         * behavior on a per-run basis.
+         */
+        fun addTool(fileSearchTool: FileSearchTool) = apply { body.addTool(fileSearchTool) }
+
+        /**
+         * Override the tools the assistant can use for this run. This is useful for modifying the
+         * behavior on a per-run basis.
+         */
+        fun addTool(functionTool: FunctionTool) = apply { body.addTool(functionTool) }
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -2386,6 +2427,13 @@ constructor(
                                 .add(tool)
                         }
                 }
+
+                /** The tools to add this file to. */
+                fun addTool(codeInterpreterTool: CodeInterpreterTool) =
+                    addTool(Tool.ofCodeInterpreterTool(codeInterpreterTool))
+
+                /** The tools to add this file to. */
+                fun addTool(fileSearch: Tool.FileSearch) = addTool(Tool.ofFileSearch(fileSearch))
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()

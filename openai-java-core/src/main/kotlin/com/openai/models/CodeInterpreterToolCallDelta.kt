@@ -338,6 +338,22 @@ private constructor(
                     }
             }
 
+            /**
+             * The outputs from the Code Interpreter tool call. Code Interpreter can output one or
+             * more items, including text (`logs`) or images (`image`). Each of these are
+             * represented by a different object type.
+             */
+            fun addOutput(codeInterpreterLogs: CodeInterpreterLogs) =
+                addOutput(Output.ofCodeInterpreterLogs(codeInterpreterLogs))
+
+            /**
+             * The outputs from the Code Interpreter tool call. Code Interpreter can output one or
+             * more items, including text (`logs`) or images (`image`). Each of these are
+             * represented by a different object type.
+             */
+            fun addOutput(codeInterpreterOutputImage: CodeInterpreterOutputImage) =
+                addOutput(Output.ofCodeInterpreterOutputImage(codeInterpreterOutputImage))
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)

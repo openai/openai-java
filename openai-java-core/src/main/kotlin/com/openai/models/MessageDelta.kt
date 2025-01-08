@@ -101,6 +101,22 @@ private constructor(
                 }
         }
 
+        /** The content of the message in array of text and/or images. */
+        fun addContent(imageFileDeltaBlock: ImageFileDeltaBlock) =
+            addContent(MessageContentDelta.ofImageFileDeltaBlock(imageFileDeltaBlock))
+
+        /** The content of the message in array of text and/or images. */
+        fun addContent(textDeltaBlock: TextDeltaBlock) =
+            addContent(MessageContentDelta.ofTextDeltaBlock(textDeltaBlock))
+
+        /** The content of the message in array of text and/or images. */
+        fun addContent(refusalDeltaBlock: RefusalDeltaBlock) =
+            addContent(MessageContentDelta.ofRefusalDeltaBlock(refusalDeltaBlock))
+
+        /** The content of the message in array of text and/or images. */
+        fun addContent(imageUrlDeltaBlock: ImageUrlDeltaBlock) =
+            addContent(MessageContentDelta.ofImageUrlDeltaBlock(imageUrlDeltaBlock))
+
         /** The entity that produced the message. One of `user` or `assistant`. */
         fun role(role: Role) = role(JsonField.of(role))
 

@@ -1357,6 +1357,100 @@ constructor(
             }
 
             /**
+             * A list of messages comprising the conversation so far. Depending on the
+             * [model](https://platform.openai.com/docs/models) you use, different message types
+             * (modalities) are supported, like
+             * [text](https://platform.openai.com/docs/guides/text-generation),
+             * [images](https://platform.openai.com/docs/guides/vision), and
+             * [audio](https://platform.openai.com/docs/guides/audio).
+             */
+            fun addMessage(
+                chatCompletionDeveloperMessageParam: ChatCompletionDeveloperMessageParam
+            ) =
+                addMessage(
+                    ChatCompletionMessageParam.ofChatCompletionDeveloperMessageParam(
+                        chatCompletionDeveloperMessageParam
+                    )
+                )
+
+            /**
+             * A list of messages comprising the conversation so far. Depending on the
+             * [model](https://platform.openai.com/docs/models) you use, different message types
+             * (modalities) are supported, like
+             * [text](https://platform.openai.com/docs/guides/text-generation),
+             * [images](https://platform.openai.com/docs/guides/vision), and
+             * [audio](https://platform.openai.com/docs/guides/audio).
+             */
+            fun addMessage(chatCompletionSystemMessageParam: ChatCompletionSystemMessageParam) =
+                addMessage(
+                    ChatCompletionMessageParam.ofChatCompletionSystemMessageParam(
+                        chatCompletionSystemMessageParam
+                    )
+                )
+
+            /**
+             * A list of messages comprising the conversation so far. Depending on the
+             * [model](https://platform.openai.com/docs/models) you use, different message types
+             * (modalities) are supported, like
+             * [text](https://platform.openai.com/docs/guides/text-generation),
+             * [images](https://platform.openai.com/docs/guides/vision), and
+             * [audio](https://platform.openai.com/docs/guides/audio).
+             */
+            fun addMessage(chatCompletionUserMessageParam: ChatCompletionUserMessageParam) =
+                addMessage(
+                    ChatCompletionMessageParam.ofChatCompletionUserMessageParam(
+                        chatCompletionUserMessageParam
+                    )
+                )
+
+            /**
+             * A list of messages comprising the conversation so far. Depending on the
+             * [model](https://platform.openai.com/docs/models) you use, different message types
+             * (modalities) are supported, like
+             * [text](https://platform.openai.com/docs/guides/text-generation),
+             * [images](https://platform.openai.com/docs/guides/vision), and
+             * [audio](https://platform.openai.com/docs/guides/audio).
+             */
+            fun addMessage(
+                chatCompletionAssistantMessageParam: ChatCompletionAssistantMessageParam
+            ) =
+                addMessage(
+                    ChatCompletionMessageParam.ofChatCompletionAssistantMessageParam(
+                        chatCompletionAssistantMessageParam
+                    )
+                )
+
+            /**
+             * A list of messages comprising the conversation so far. Depending on the
+             * [model](https://platform.openai.com/docs/models) you use, different message types
+             * (modalities) are supported, like
+             * [text](https://platform.openai.com/docs/guides/text-generation),
+             * [images](https://platform.openai.com/docs/guides/vision), and
+             * [audio](https://platform.openai.com/docs/guides/audio).
+             */
+            fun addMessage(chatCompletionToolMessageParam: ChatCompletionToolMessageParam) =
+                addMessage(
+                    ChatCompletionMessageParam.ofChatCompletionToolMessageParam(
+                        chatCompletionToolMessageParam
+                    )
+                )
+
+            /**
+             * A list of messages comprising the conversation so far. Depending on the
+             * [model](https://platform.openai.com/docs/models) you use, different message types
+             * (modalities) are supported, like
+             * [text](https://platform.openai.com/docs/guides/text-generation),
+             * [images](https://platform.openai.com/docs/guides/vision), and
+             * [audio](https://platform.openai.com/docs/guides/audio).
+             */
+            fun addMessage(chatCompletionFunctionMessageParam: ChatCompletionFunctionMessageParam) =
+                addMessage(
+                    ChatCompletionMessageParam.ofChatCompletionFunctionMessageParam(
+                        chatCompletionFunctionMessageParam
+                    )
+                )
+
+            /**
              * ID of the model to use. See the
              * [model endpoint compatibility](https://platform.openai.com/docs/models#model-endpoint-compatibility)
              * table for details on which models work with the Chat API.
@@ -2377,6 +2471,81 @@ constructor(
          * [audio](https://platform.openai.com/docs/guides/audio).
          */
         fun addMessage(message: ChatCompletionMessageParam) = apply { body.addMessage(message) }
+
+        /**
+         * A list of messages comprising the conversation so far. Depending on the
+         * [model](https://platform.openai.com/docs/models) you use, different message types
+         * (modalities) are supported, like
+         * [text](https://platform.openai.com/docs/guides/text-generation),
+         * [images](https://platform.openai.com/docs/guides/vision), and
+         * [audio](https://platform.openai.com/docs/guides/audio).
+         */
+        fun addMessage(chatCompletionDeveloperMessageParam: ChatCompletionDeveloperMessageParam) =
+            apply {
+                body.addMessage(chatCompletionDeveloperMessageParam)
+            }
+
+        /**
+         * A list of messages comprising the conversation so far. Depending on the
+         * [model](https://platform.openai.com/docs/models) you use, different message types
+         * (modalities) are supported, like
+         * [text](https://platform.openai.com/docs/guides/text-generation),
+         * [images](https://platform.openai.com/docs/guides/vision), and
+         * [audio](https://platform.openai.com/docs/guides/audio).
+         */
+        fun addMessage(chatCompletionSystemMessageParam: ChatCompletionSystemMessageParam) = apply {
+            body.addMessage(chatCompletionSystemMessageParam)
+        }
+
+        /**
+         * A list of messages comprising the conversation so far. Depending on the
+         * [model](https://platform.openai.com/docs/models) you use, different message types
+         * (modalities) are supported, like
+         * [text](https://platform.openai.com/docs/guides/text-generation),
+         * [images](https://platform.openai.com/docs/guides/vision), and
+         * [audio](https://platform.openai.com/docs/guides/audio).
+         */
+        fun addMessage(chatCompletionUserMessageParam: ChatCompletionUserMessageParam) = apply {
+            body.addMessage(chatCompletionUserMessageParam)
+        }
+
+        /**
+         * A list of messages comprising the conversation so far. Depending on the
+         * [model](https://platform.openai.com/docs/models) you use, different message types
+         * (modalities) are supported, like
+         * [text](https://platform.openai.com/docs/guides/text-generation),
+         * [images](https://platform.openai.com/docs/guides/vision), and
+         * [audio](https://platform.openai.com/docs/guides/audio).
+         */
+        fun addMessage(chatCompletionAssistantMessageParam: ChatCompletionAssistantMessageParam) =
+            apply {
+                body.addMessage(chatCompletionAssistantMessageParam)
+            }
+
+        /**
+         * A list of messages comprising the conversation so far. Depending on the
+         * [model](https://platform.openai.com/docs/models) you use, different message types
+         * (modalities) are supported, like
+         * [text](https://platform.openai.com/docs/guides/text-generation),
+         * [images](https://platform.openai.com/docs/guides/vision), and
+         * [audio](https://platform.openai.com/docs/guides/audio).
+         */
+        fun addMessage(chatCompletionToolMessageParam: ChatCompletionToolMessageParam) = apply {
+            body.addMessage(chatCompletionToolMessageParam)
+        }
+
+        /**
+         * A list of messages comprising the conversation so far. Depending on the
+         * [model](https://platform.openai.com/docs/models) you use, different message types
+         * (modalities) are supported, like
+         * [text](https://platform.openai.com/docs/guides/text-generation),
+         * [images](https://platform.openai.com/docs/guides/vision), and
+         * [audio](https://platform.openai.com/docs/guides/audio).
+         */
+        fun addMessage(chatCompletionFunctionMessageParam: ChatCompletionFunctionMessageParam) =
+            apply {
+                body.addMessage(chatCompletionFunctionMessageParam)
+            }
 
         /**
          * ID of the model to use. See the
