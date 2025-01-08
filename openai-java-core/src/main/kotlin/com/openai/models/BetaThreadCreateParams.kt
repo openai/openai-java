@@ -966,6 +966,13 @@ constructor(
                         }
                 }
 
+                /** The tools to add this file to. */
+                fun addTool(codeInterpreterTool: CodeInterpreterTool) =
+                    addTool(Tool.ofCodeInterpreterTool(codeInterpreterTool))
+
+                /** The tools to add this file to. */
+                fun addTool(fileSearch: Tool.FileSearch) = addTool(Tool.ofFileSearch(fileSearch))
+
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
                     putAllAdditionalProperties(additionalProperties)

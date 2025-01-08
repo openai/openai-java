@@ -962,6 +962,27 @@ private constructor(
         }
 
         /**
+         * The list of tools that the
+         * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
+         */
+        fun addTool(codeInterpreterTool: CodeInterpreterTool) =
+            addTool(AssistantTool.ofCodeInterpreterTool(codeInterpreterTool))
+
+        /**
+         * The list of tools that the
+         * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
+         */
+        fun addTool(fileSearchTool: FileSearchTool) =
+            addTool(AssistantTool.ofFileSearchTool(fileSearchTool))
+
+        /**
+         * The list of tools that the
+         * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
+         */
+        fun addTool(functionTool: FunctionTool) =
+            addTool(AssistantTool.ofFunctionTool(functionTool))
+
+        /**
          * Controls for how a thread will be truncated prior to the run. Use this to control the
          * intial context window of the run.
          */

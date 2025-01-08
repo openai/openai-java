@@ -114,6 +114,27 @@ private constructor(
                 }
         }
 
+        /**
+         * An array of tool calls the run step was involved in. These can be associated with one of
+         * three types of tools: `code_interpreter`, `file_search`, or `function`.
+         */
+        fun addToolCall(codeInterpreterToolCall: CodeInterpreterToolCall) =
+            addToolCall(ToolCall.ofCodeInterpreterToolCall(codeInterpreterToolCall))
+
+        /**
+         * An array of tool calls the run step was involved in. These can be associated with one of
+         * three types of tools: `code_interpreter`, `file_search`, or `function`.
+         */
+        fun addToolCall(fileSearchToolCall: FileSearchToolCall) =
+            addToolCall(ToolCall.ofFileSearchToolCall(fileSearchToolCall))
+
+        /**
+         * An array of tool calls the run step was involved in. These can be associated with one of
+         * three types of tools: `code_interpreter`, `file_search`, or `function`.
+         */
+        fun addToolCall(functionToolCall: FunctionToolCall) =
+            addToolCall(ToolCall.ofFunctionToolCall(functionToolCall))
+
         /** Always `tool_calls`. */
         fun type(type: Type) = type(JsonField.of(type))
 

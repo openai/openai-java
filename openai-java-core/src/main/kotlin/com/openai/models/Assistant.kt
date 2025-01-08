@@ -406,6 +406,27 @@ private constructor(
         }
 
         /**
+         * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
+         * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+         */
+        fun addTool(codeInterpreterTool: CodeInterpreterTool) =
+            addTool(AssistantTool.ofCodeInterpreterTool(codeInterpreterTool))
+
+        /**
+         * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
+         * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+         */
+        fun addTool(fileSearchTool: FileSearchTool) =
+            addTool(AssistantTool.ofFileSearchTool(fileSearchTool))
+
+        /**
+         * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
+         * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+         */
+        fun addTool(functionTool: FunctionTool) =
+            addTool(AssistantTool.ofFunctionTool(functionTool))
+
+        /**
          * Specifies the format that the model must output. Compatible with
          * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
          * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
