@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.10.0 (2025-01-08)
+
+Full Changelog: [v0.9.1...v0.10.0](https://github.com/openai/openai-java/compare/v0.9.1...v0.10.0)
+
+### Features
+
+* **client:** add various convenience setters to models ([#91](https://github.com/openai/openai-java/issues/91)) ([9b3eb17](https://github.com/openai/openai-java/commit/9b3eb17270075587ac9c2701b0e41a7debf17bec))
+* **client:** allow passing null or optional for nullable fields ([#84](https://github.com/openai/openai-java/issues/84)) ([8a8f2f9](https://github.com/openai/openai-java/commit/8a8f2f9ac5f6555c372a81acc196b3ab04fd9555))
+* **client:** allow setting arbitrary JSON for top-level body params ([9b3eb17](https://github.com/openai/openai-java/commit/9b3eb17270075587ac9c2701b0e41a7debf17bec))
+* **client:** expose getters for `JsonField` of body params ([9b3eb17](https://github.com/openai/openai-java/commit/9b3eb17270075587ac9c2701b0e41a7debf17bec))
+
+
+### Bug Fixes
+
+* **client:** consistently throw on omitting required fields ([9b3eb17](https://github.com/openai/openai-java/commit/9b3eb17270075587ac9c2701b0e41a7debf17bec))
+* **client:** convert `JsonField` containing list type to mutable in builder ([9b3eb17](https://github.com/openai/openai-java/commit/9b3eb17270075587ac9c2701b0e41a7debf17bec))
+
+
+### Documentation
+
+* add params class javadocs ([#90](https://github.com/openai/openai-java/issues/90)) ([9a33c1c](https://github.com/openai/openai-java/commit/9a33c1cf22e30e1878d739acfab4258321c6a9f8))
+
+
+### Styles
+
+* **internal:** explicitly add some method return types ([9b3eb17](https://github.com/openai/openai-java/commit/9b3eb17270075587ac9c2701b0e41a7debf17bec))
+* **internal:** move headers and query params setters below others ([9b3eb17](https://github.com/openai/openai-java/commit/9b3eb17270075587ac9c2701b0e41a7debf17bec))
+* **internal:** simplify existing convenience setters on params ([9b3eb17](https://github.com/openai/openai-java/commit/9b3eb17270075587ac9c2701b0e41a7debf17bec))
+
 ## 0.9.1 (2025-01-06)
 
 Full Changelog: [v0.9.0...v0.9.1](https://github.com/openai/openai-java/compare/v0.9.0...v0.9.1)
