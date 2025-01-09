@@ -53,23 +53,27 @@ private constructor(
      */
     fun threadMessageCreated(): Optional<ThreadMessageCreated> =
         Optional.ofNullable(threadMessageCreated)
+
     /**
      * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) moves
      * to an `in_progress` state.
      */
     fun threadMessageInProgress(): Optional<ThreadMessageInProgress> =
         Optional.ofNullable(threadMessageInProgress)
+
     /**
      * Occurs when parts of a
      * [Message](https://platform.openai.com/docs/api-reference/messages/object) are being streamed.
      */
     fun threadMessageDelta(): Optional<ThreadMessageDelta> = Optional.ofNullable(threadMessageDelta)
+
     /**
      * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) is
      * completed.
      */
     fun threadMessageCompleted(): Optional<ThreadMessageCompleted> =
         Optional.ofNullable(threadMessageCompleted)
+
     /**
      * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) ends
      * before it is completed.
@@ -93,24 +97,28 @@ private constructor(
      */
     fun asThreadMessageCreated(): ThreadMessageCreated =
         threadMessageCreated.getOrThrow("threadMessageCreated")
+
     /**
      * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) moves
      * to an `in_progress` state.
      */
     fun asThreadMessageInProgress(): ThreadMessageInProgress =
         threadMessageInProgress.getOrThrow("threadMessageInProgress")
+
     /**
      * Occurs when parts of a
      * [Message](https://platform.openai.com/docs/api-reference/messages/object) are being streamed.
      */
     fun asThreadMessageDelta(): ThreadMessageDelta =
         threadMessageDelta.getOrThrow("threadMessageDelta")
+
     /**
      * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) is
      * completed.
      */
     fun asThreadMessageCompleted(): ThreadMessageCompleted =
         threadMessageCompleted.getOrThrow("threadMessageCompleted")
+
     /**
      * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) ends
      * before it is completed.

@@ -690,10 +690,13 @@ constructor(
 
         /** The string that will be turned into an embedding. */
         fun string(): Optional<String> = Optional.ofNullable(string)
+
         /** The array of strings that will be turned into an embedding. */
         fun arrayOfStrings(): Optional<List<String>> = Optional.ofNullable(arrayOfStrings)
+
         /** The array of integers that will be turned into an embedding. */
         fun arrayOfTokens(): Optional<List<Long>> = Optional.ofNullable(arrayOfTokens)
+
         /** The array of arrays containing integers that will be turned into an embedding. */
         fun arrayOfTokenArrays(): Optional<List<List<Long>>> =
             Optional.ofNullable(arrayOfTokenArrays)
@@ -708,10 +711,13 @@ constructor(
 
         /** The string that will be turned into an embedding. */
         fun asString(): String = string.getOrThrow("string")
+
         /** The array of strings that will be turned into an embedding. */
         fun asArrayOfStrings(): List<String> = arrayOfStrings.getOrThrow("arrayOfStrings")
+
         /** The array of integers that will be turned into an embedding. */
         fun asArrayOfTokens(): List<Long> = arrayOfTokens.getOrThrow("arrayOfTokens")
+
         /** The array of arrays containing integers that will be turned into an embedding. */
         fun asArrayOfTokenArrays(): List<List<Long>> =
             arrayOfTokenArrays.getOrThrow("arrayOfTokenArrays")

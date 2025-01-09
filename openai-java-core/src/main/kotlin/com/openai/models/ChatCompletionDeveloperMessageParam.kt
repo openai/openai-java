@@ -184,6 +184,7 @@ private constructor(
 
         /** The contents of the developer message. */
         fun textContent(): Optional<String> = Optional.ofNullable(textContent)
+
         /**
          * An array of content parts with a defined type. For developer messages, only type `text`
          * is supported.
@@ -197,6 +198,7 @@ private constructor(
 
         /** The contents of the developer message. */
         fun asTextContent(): String = textContent.getOrThrow("textContent")
+
         /**
          * An array of content parts with a defined type. For developer messages, only type `text`
          * is supported.

@@ -495,6 +495,7 @@ private constructor(
 
         /** The contents of the assistant message. */
         fun textContent(): Optional<String> = Optional.ofNullable(textContent)
+
         /**
          * An array of content parts with a defined type. Can be one or more of type `text`, or
          * exactly one of type `refusal`.
@@ -509,6 +510,7 @@ private constructor(
 
         /** The contents of the assistant message. */
         fun asTextContent(): String = textContent.getOrThrow("textContent")
+
         /**
          * An array of content parts with a defined type. Can be one or more of type `text`, or
          * exactly one of type `refusal`.

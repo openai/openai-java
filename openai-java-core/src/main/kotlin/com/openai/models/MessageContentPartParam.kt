@@ -40,9 +40,11 @@ private constructor(
      */
     fun imageFileContentBlock(): Optional<ImageFileContentBlock> =
         Optional.ofNullable(imageFileContentBlock)
+
     /** References an image URL in the content of a message. */
     fun imageUrlContentBlock(): Optional<ImageUrlContentBlock> =
         Optional.ofNullable(imageUrlContentBlock)
+
     /** The text content that is part of a message. */
     fun textContentBlockParam(): Optional<TextContentBlockParam> =
         Optional.ofNullable(textContentBlockParam)
@@ -59,9 +61,11 @@ private constructor(
      */
     fun asImageFileContentBlock(): ImageFileContentBlock =
         imageFileContentBlock.getOrThrow("imageFileContentBlock")
+
     /** References an image URL in the content of a message. */
     fun asImageUrlContentBlock(): ImageUrlContentBlock =
         imageUrlContentBlock.getOrThrow("imageUrlContentBlock")
+
     /** The text content that is part of a message. */
     fun asTextContentBlockParam(): TextContentBlockParam =
         textContentBlockParam.getOrThrow("textContentBlockParam")

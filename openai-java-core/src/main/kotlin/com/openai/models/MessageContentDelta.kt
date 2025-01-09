@@ -41,10 +41,13 @@ private constructor(
      */
     fun imageFileDeltaBlock(): Optional<ImageFileDeltaBlock> =
         Optional.ofNullable(imageFileDeltaBlock)
+
     /** The text content that is part of a message. */
     fun textDeltaBlock(): Optional<TextDeltaBlock> = Optional.ofNullable(textDeltaBlock)
+
     /** The refusal content that is part of a message. */
     fun refusalDeltaBlock(): Optional<RefusalDeltaBlock> = Optional.ofNullable(refusalDeltaBlock)
+
     /** References an image URL in the content of a message. */
     fun imageUrlDeltaBlock(): Optional<ImageUrlDeltaBlock> = Optional.ofNullable(imageUrlDeltaBlock)
 
@@ -62,10 +65,13 @@ private constructor(
      */
     fun asImageFileDeltaBlock(): ImageFileDeltaBlock =
         imageFileDeltaBlock.getOrThrow("imageFileDeltaBlock")
+
     /** The text content that is part of a message. */
     fun asTextDeltaBlock(): TextDeltaBlock = textDeltaBlock.getOrThrow("textDeltaBlock")
+
     /** The refusal content that is part of a message. */
     fun asRefusalDeltaBlock(): RefusalDeltaBlock = refusalDeltaBlock.getOrThrow("refusalDeltaBlock")
+
     /** References an image URL in the content of a message. */
     fun asImageUrlDeltaBlock(): ImageUrlDeltaBlock =
         imageUrlDeltaBlock.getOrThrow("imageUrlDeltaBlock")
