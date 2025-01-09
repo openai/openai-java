@@ -93,11 +93,20 @@ private constructor(
                 }
         }
 
+        /**
+         * A citation within the message that points to a specific quote from a specific File
+         * associated with the assistant or the message. Generated when the assistant uses the
+         * "file_search" tool to search files.
+         */
         fun addAnnotation(fileCitationDeltaAnnotation: FileCitationDeltaAnnotation) =
             addAnnotation(
                 AnnotationDelta.ofFileCitationDeltaAnnotation(fileCitationDeltaAnnotation)
             )
 
+        /**
+         * A URL for the file that's generated when the assistant used the `code_interpreter` tool
+         * to generate a file.
+         */
         fun addAnnotation(filePathDeltaAnnotation: FilePathDeltaAnnotation) =
             addAnnotation(AnnotationDelta.ofFilePathDeltaAnnotation(filePathDeltaAnnotation))
 

@@ -835,14 +835,46 @@ constructor(
              */
             fun prompt(prompt: JsonField<Prompt>) = apply { this.prompt = prompt }
 
+            /**
+             * The prompt(s) to generate completions for, encoded as a string, array of strings,
+             * array of tokens, or array of token arrays.
+             *
+             * Note that <|endoftext|> is the document separator that the model sees during
+             * training, so if a prompt is not specified the model will generate as if from the
+             * beginning of a new document.
+             */
             fun prompt(string: String) = prompt(Prompt.ofString(string))
 
+            /**
+             * The prompt(s) to generate completions for, encoded as a string, array of strings,
+             * array of tokens, or array of token arrays.
+             *
+             * Note that <|endoftext|> is the document separator that the model sees during
+             * training, so if a prompt is not specified the model will generate as if from the
+             * beginning of a new document.
+             */
             fun promptOfArrayOfStrings(arrayOfStrings: List<String>) =
                 prompt(Prompt.ofArrayOfStrings(arrayOfStrings))
 
+            /**
+             * The prompt(s) to generate completions for, encoded as a string, array of strings,
+             * array of tokens, or array of token arrays.
+             *
+             * Note that <|endoftext|> is the document separator that the model sees during
+             * training, so if a prompt is not specified the model will generate as if from the
+             * beginning of a new document.
+             */
             fun promptOfArrayOfTokens(arrayOfTokens: List<Long>) =
                 prompt(Prompt.ofArrayOfTokens(arrayOfTokens))
 
+            /**
+             * The prompt(s) to generate completions for, encoded as a string, array of strings,
+             * array of tokens, or array of token arrays.
+             *
+             * Note that <|endoftext|> is the document separator that the model sees during
+             * training, so if a prompt is not specified the model will generate as if from the
+             * beginning of a new document.
+             */
             fun promptOfArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>) =
                 prompt(Prompt.ofArrayOfTokenArrays(arrayOfTokenArrays))
 
@@ -1230,8 +1262,16 @@ constructor(
              */
             fun stop(stop: JsonField<Stop>) = apply { this.stop = stop }
 
+            /**
+             * Up to 4 sequences where the API will stop generating further tokens. The returned
+             * text will not contain the stop sequence.
+             */
             fun stop(string: String) = stop(Stop.ofString(string))
 
+            /**
+             * Up to 4 sequences where the API will stop generating further tokens. The returned
+             * text will not contain the stop sequence.
+             */
             fun stopOfStrings(strings: List<String>) = stop(Stop.ofStrings(strings))
 
             /** Options for streaming response. Only set this when you set `stream: true`. */
@@ -1494,16 +1534,48 @@ constructor(
          */
         fun prompt(prompt: JsonField<Prompt>) = apply { body.prompt(prompt) }
 
+        /**
+         * The prompt(s) to generate completions for, encoded as a string, array of strings, array
+         * of tokens, or array of token arrays.
+         *
+         * Note that <|endoftext|> is the document separator that the model sees during training, so
+         * if a prompt is not specified the model will generate as if from the beginning of a new
+         * document.
+         */
         fun prompt(string: String) = apply { body.prompt(string) }
 
+        /**
+         * The prompt(s) to generate completions for, encoded as a string, array of strings, array
+         * of tokens, or array of token arrays.
+         *
+         * Note that <|endoftext|> is the document separator that the model sees during training, so
+         * if a prompt is not specified the model will generate as if from the beginning of a new
+         * document.
+         */
         fun promptOfArrayOfStrings(arrayOfStrings: List<String>) = apply {
             body.promptOfArrayOfStrings(arrayOfStrings)
         }
 
+        /**
+         * The prompt(s) to generate completions for, encoded as a string, array of strings, array
+         * of tokens, or array of token arrays.
+         *
+         * Note that <|endoftext|> is the document separator that the model sees during training, so
+         * if a prompt is not specified the model will generate as if from the beginning of a new
+         * document.
+         */
         fun promptOfArrayOfTokens(arrayOfTokens: List<Long>) = apply {
             body.promptOfArrayOfTokens(arrayOfTokens)
         }
 
+        /**
+         * The prompt(s) to generate completions for, encoded as a string, array of strings, array
+         * of tokens, or array of token arrays.
+         *
+         * Note that <|endoftext|> is the document separator that the model sees during training, so
+         * if a prompt is not specified the model will generate as if from the beginning of a new
+         * document.
+         */
         fun promptOfArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>) = apply {
             body.promptOfArrayOfTokenArrays(arrayOfTokenArrays)
         }
@@ -1885,8 +1957,16 @@ constructor(
          */
         fun stop(stop: JsonField<Stop>) = apply { body.stop(stop) }
 
+        /**
+         * Up to 4 sequences where the API will stop generating further tokens. The returned text
+         * will not contain the stop sequence.
+         */
         fun stop(string: String) = apply { body.stop(string) }
 
+        /**
+         * Up to 4 sequences where the API will stop generating further tokens. The returned text
+         * will not contain the stop sequence.
+         */
         fun stopOfStrings(strings: List<String>) = apply { body.stopOfStrings(strings) }
 
         /** Options for streaming response. Only set this when you set `stream: true`. */

@@ -114,10 +114,7 @@ private constructor(
                 }
         }
 
-        /**
-         * An array of tool calls the run step was involved in. These can be associated with one of
-         * three types of tools: `code_interpreter`, `file_search`, or `function`.
-         */
+        /** Details of the Code Interpreter tool call the run step was involved in. */
         fun addToolCall(codeInterpreterToolCall: CodeInterpreterToolCall) =
             addToolCall(ToolCall.ofCodeInterpreterToolCall(codeInterpreterToolCall))
 

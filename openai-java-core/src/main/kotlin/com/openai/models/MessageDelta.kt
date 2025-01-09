@@ -101,19 +101,22 @@ private constructor(
                 }
         }
 
-        /** The content of the message in array of text and/or images. */
+        /**
+         * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
+         * content of a message.
+         */
         fun addContent(imageFileDeltaBlock: ImageFileDeltaBlock) =
             addContent(MessageContentDelta.ofImageFileDeltaBlock(imageFileDeltaBlock))
 
-        /** The content of the message in array of text and/or images. */
+        /** The text content that is part of a message. */
         fun addContent(textDeltaBlock: TextDeltaBlock) =
             addContent(MessageContentDelta.ofTextDeltaBlock(textDeltaBlock))
 
-        /** The content of the message in array of text and/or images. */
+        /** The refusal content that is part of a message. */
         fun addContent(refusalDeltaBlock: RefusalDeltaBlock) =
             addContent(MessageContentDelta.ofRefusalDeltaBlock(refusalDeltaBlock))
 
-        /** The content of the message in array of text and/or images. */
+        /** References an image URL in the content of a message. */
         fun addContent(imageUrlDeltaBlock: ImageUrlDeltaBlock) =
             addContent(MessageContentDelta.ofImageUrlDeltaBlock(imageUrlDeltaBlock))
 

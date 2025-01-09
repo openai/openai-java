@@ -191,6 +191,10 @@ constructor(
                     )
                 )
 
+            /**
+             * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
+             * strategy. Only applicable if `file_ids` is non-empty.
+             */
             fun chunkingStrategy(staticFileChunkingStrategyParam: StaticFileChunkingStrategyParam) =
                 chunkingStrategy(
                     FileChunkingStrategyParam.ofStaticFileChunkingStrategyParam(
@@ -307,6 +311,10 @@ constructor(
             body.chunkingStrategy(autoFileChunkingStrategyParam)
         }
 
+        /**
+         * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
+         * strategy. Only applicable if `file_ids` is non-empty.
+         */
         fun chunkingStrategy(staticFileChunkingStrategyParam: StaticFileChunkingStrategyParam) =
             apply {
                 body.chunkingStrategy(staticFileChunkingStrategyParam)
