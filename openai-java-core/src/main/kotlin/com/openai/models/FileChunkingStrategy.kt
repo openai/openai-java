@@ -28,8 +28,6 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
-    private var validated: Boolean = false
-
     fun staticFileChunkingStrategyObject(): Optional<StaticFileChunkingStrategyObject> =
         Optional.ofNullable(staticFileChunkingStrategyObject)
 
@@ -66,17 +64,29 @@ private constructor(
         }
     }
 
+    private var validated: Boolean = false
+
     fun validate(): FileChunkingStrategy = apply {
-        if (!validated) {
-            if (
-                staticFileChunkingStrategyObject == null && otherFileChunkingStrategyObject == null
-            ) {
-                throw OpenAIInvalidDataException("Unknown FileChunkingStrategy: $_json")
-            }
-            staticFileChunkingStrategyObject?.validate()
-            otherFileChunkingStrategyObject?.validate()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        accept(
+            object : Visitor<Unit> {
+                override fun visitStaticFileChunkingStrategyObject(
+                    staticFileChunkingStrategyObject: StaticFileChunkingStrategyObject
+                ) {
+                    staticFileChunkingStrategyObject.validate()
+                }
+
+                override fun visitOtherFileChunkingStrategyObject(
+                    otherFileChunkingStrategyObject: OtherFileChunkingStrategyObject
+                ) {
+                    otherFileChunkingStrategyObject.validate()
+                }
+            }
+        )
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

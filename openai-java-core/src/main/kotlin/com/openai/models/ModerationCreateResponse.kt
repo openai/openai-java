@@ -53,12 +53,14 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ModerationCreateResponse = apply {
-        if (!validated) {
-            id()
-            model()
-            results().forEach { it.validate() }
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        model()
+        results().forEach { it.validate() }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

@@ -227,28 +227,30 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): Batch = apply {
-        if (!validated) {
-            id()
-            completionWindow()
-            createdAt()
-            endpoint()
-            inputFileId()
-            object_()
-            status()
-            cancelledAt()
-            cancellingAt()
-            completedAt()
-            errorFileId()
-            errors().map { it.validate() }
-            expiredAt()
-            expiresAt()
-            failedAt()
-            finalizingAt()
-            inProgressAt()
-            outputFileId()
-            requestCounts().map { it.validate() }
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        completionWindow()
+        createdAt()
+        endpoint()
+        inputFileId()
+        object_()
+        status()
+        cancelledAt()
+        cancellingAt()
+        completedAt()
+        errorFileId()
+        errors().ifPresent { it.validate() }
+        expiredAt()
+        expiresAt()
+        failedAt()
+        finalizingAt()
+        inProgressAt()
+        outputFileId()
+        requestCounts().ifPresent { it.validate() }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -652,11 +654,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): Errors = apply {
-            if (!validated) {
-                data().map { it.forEach { it.validate() } }
-                object_()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            data().ifPresent { it.forEach { it.validate() } }
+            object_()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

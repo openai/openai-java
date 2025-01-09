@@ -85,13 +85,15 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): FineTuningJobWandbIntegration = apply {
-        if (!validated) {
-            project()
-            entity()
-            name()
-            tags()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        project()
+        entity()
+        name()
+        tags()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

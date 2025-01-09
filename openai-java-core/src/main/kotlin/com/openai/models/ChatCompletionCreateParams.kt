@@ -1204,38 +1204,40 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): ChatCompletionCreateBody = apply {
-            if (!validated) {
-                messages()
-                model()
-                audio().map { it.validate() }
-                frequencyPenalty()
-                functionCall()
-                functions().map { it.forEach { it.validate() } }
-                logitBias().map { it.validate() }
-                logprobs()
-                maxCompletionTokens()
-                maxTokens()
-                metadata().map { it.validate() }
-                modalities()
-                n()
-                parallelToolCalls()
-                prediction().map { it.validate() }
-                presencePenalty()
-                reasoningEffort()
-                responseFormat()
-                seed()
-                serviceTier()
-                stop()
-                store()
-                streamOptions().map { it.validate() }
-                temperature()
-                toolChoice()
-                tools().map { it.forEach { it.validate() } }
-                topLogprobs()
-                topP()
-                user()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            messages().forEach { it.validate() }
+            model()
+            audio().ifPresent { it.validate() }
+            frequencyPenalty()
+            functionCall().ifPresent { it.validate() }
+            functions().ifPresent { it.forEach { it.validate() } }
+            logitBias().ifPresent { it.validate() }
+            logprobs()
+            maxCompletionTokens()
+            maxTokens()
+            metadata().ifPresent { it.validate() }
+            modalities()
+            n()
+            parallelToolCalls()
+            prediction().ifPresent { it.validate() }
+            presencePenalty()
+            reasoningEffort()
+            responseFormat().ifPresent { it.validate() }
+            seed()
+            serviceTier()
+            stop().ifPresent { it.validate() }
+            store()
+            streamOptions().ifPresent { it.validate() }
+            temperature()
+            toolChoice().ifPresent { it.validate() }
+            tools().ifPresent { it.forEach { it.validate() } }
+            topLogprobs()
+            topP()
+            user()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -3615,8 +3617,6 @@ constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        private var validated: Boolean = false
-
         /**
          * `none` means the model will not call a function and instead generates a message. `auto`
          * means the model can pick between generating a message or calling a function.
@@ -3657,14 +3657,25 @@ constructor(
             }
         }
 
+        private var validated: Boolean = false
+
         fun validate(): FunctionCall = apply {
-            if (!validated) {
-                if (behavior == null && functionCallOption == null) {
-                    throw OpenAIInvalidDataException("Unknown FunctionCall: $_json")
-                }
-                functionCallOption?.validate()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitBehavior(behavior: Behavior) {}
+
+                    override fun visitFunctionCallOption(
+                        functionCallOption: ChatCompletionFunctionCallOption
+                    ) {
+                        functionCallOption.validate()
+                    }
+                }
+            )
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -3881,12 +3892,14 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): Function = apply {
-            if (!validated) {
-                name()
-                description()
-                parameters().map { it.validate() }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            name()
+            description()
+            parameters().ifPresent { it.validate() }
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -4029,9 +4042,11 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): LogitBias = apply {
-            if (!validated) {
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -4108,9 +4123,11 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): Metadata = apply {
-            if (!validated) {
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -4195,8 +4212,6 @@ constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        private var validated: Boolean = false
-
         fun responseFormatText(): Optional<ResponseFormatText> =
             Optional.ofNullable(responseFormatText)
 
@@ -4234,20 +4249,33 @@ constructor(
             }
         }
 
+        private var validated: Boolean = false
+
         fun validate(): ResponseFormat = apply {
-            if (!validated) {
-                if (
-                    responseFormatText == null &&
-                        responseFormatJsonObject == null &&
-                        responseFormatJsonSchema == null
-                ) {
-                    throw OpenAIInvalidDataException("Unknown ResponseFormat: $_json")
-                }
-                responseFormatText?.validate()
-                responseFormatJsonObject?.validate()
-                responseFormatJsonSchema?.validate()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitResponseFormatText(responseFormatText: ResponseFormatText) {
+                        responseFormatText.validate()
+                    }
+
+                    override fun visitResponseFormatJsonObject(
+                        responseFormatJsonObject: ResponseFormatJsonObject
+                    ) {
+                        responseFormatJsonObject.validate()
+                    }
+
+                    override fun visitResponseFormatJsonSchema(
+                        responseFormatJsonSchema: ResponseFormatJsonSchema
+                    ) {
+                        responseFormatJsonSchema.validate()
+                    }
+                }
+            )
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -4410,8 +4438,6 @@ constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        private var validated: Boolean = false
-
         fun string(): Optional<String> = Optional.ofNullable(string)
 
         fun strings(): Optional<List<String>> = Optional.ofNullable(strings)
@@ -4434,13 +4460,21 @@ constructor(
             }
         }
 
+        private var validated: Boolean = false
+
         fun validate(): Stop = apply {
-            if (!validated) {
-                if (string == null && strings == null) {
-                    throw OpenAIInvalidDataException("Unknown Stop: $_json")
-                }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitString(string: String) {}
+
+                    override fun visitStrings(strings: List<String>) {}
+                }
+            )
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

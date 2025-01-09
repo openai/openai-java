@@ -103,15 +103,17 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ChatCompletionMessage = apply {
-        if (!validated) {
-            content()
-            refusal()
-            role()
-            audio().map { it.validate() }
-            functionCall().map { it.validate() }
-            toolCalls().map { it.forEach { it.validate() } }
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        content()
+        refusal()
+        role()
+        audio().ifPresent { it.validate() }
+        functionCall().ifPresent { it.validate() }
+        toolCalls().ifPresent { it.forEach { it.validate() } }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -350,11 +352,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): FunctionCall = apply {
-            if (!validated) {
-                arguments()
-                name()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            arguments()
+            name()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

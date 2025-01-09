@@ -54,12 +54,14 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ImageUrlDeltaBlock = apply {
-        if (!validated) {
-            index()
-            type()
-            imageUrl().map { it.validate() }
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        index()
+        type()
+        imageUrl().ifPresent { it.validate() }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

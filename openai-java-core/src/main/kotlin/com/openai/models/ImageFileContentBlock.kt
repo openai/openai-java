@@ -49,11 +49,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ImageFileContentBlock = apply {
-        if (!validated) {
-            imageFile().validate()
-            type()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        imageFile().validate()
+        type()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

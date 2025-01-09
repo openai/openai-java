@@ -46,11 +46,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): RefusalContentBlock = apply {
-        if (!validated) {
-            refusal()
-            type()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        refusal()
+        type()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

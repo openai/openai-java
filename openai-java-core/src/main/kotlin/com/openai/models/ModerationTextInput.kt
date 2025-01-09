@@ -46,11 +46,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ModerationTextInput = apply {
-        if (!validated) {
-            text()
-            type()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        text()
+        type()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

@@ -55,12 +55,14 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ChatCompletionFunctionMessageParam = apply {
-        if (!validated) {
-            content()
-            name()
-            role()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        content()
+        name()
+        role()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

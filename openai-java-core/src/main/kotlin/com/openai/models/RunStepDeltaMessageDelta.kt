@@ -50,11 +50,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): RunStepDeltaMessageDelta = apply {
-        if (!validated) {
-            type()
-            messageCreation().map { it.validate() }
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        type()
+        messageCreation().ifPresent { it.validate() }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -192,10 +194,12 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): MessageCreation = apply {
-            if (!validated) {
-                messageId()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            messageId()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

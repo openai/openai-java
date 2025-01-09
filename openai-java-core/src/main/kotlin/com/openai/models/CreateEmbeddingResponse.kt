@@ -63,13 +63,15 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): CreateEmbeddingResponse = apply {
-        if (!validated) {
-            data().forEach { it.validate() }
-            model()
-            object_()
-            usage().validate()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        data().forEach { it.validate() }
+        model()
+        object_()
+        usage().validate()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -255,11 +257,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): Usage = apply {
-            if (!validated) {
-                promptTokens()
-                totalTokens()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            promptTokens()
+            totalTokens()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

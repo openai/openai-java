@@ -47,8 +47,6 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
-    private var validated: Boolean = false
-
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is created.
@@ -186,28 +184,51 @@ private constructor(
         }
     }
 
+    private var validated: Boolean = false
+
     fun validate(): RunStepStreamEvent = apply {
-        if (!validated) {
-            if (
-                threadRunStepCreated == null &&
-                    threadRunStepInProgress == null &&
-                    threadRunStepDelta == null &&
-                    threadRunStepCompleted == null &&
-                    threadRunStepFailed == null &&
-                    threadRunStepCancelled == null &&
-                    threadRunStepExpired == null
-            ) {
-                throw OpenAIInvalidDataException("Unknown RunStepStreamEvent: $_json")
-            }
-            threadRunStepCreated?.validate()
-            threadRunStepInProgress?.validate()
-            threadRunStepDelta?.validate()
-            threadRunStepCompleted?.validate()
-            threadRunStepFailed?.validate()
-            threadRunStepCancelled?.validate()
-            threadRunStepExpired?.validate()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        accept(
+            object : Visitor<Unit> {
+                override fun visitThreadRunStepCreated(threadRunStepCreated: ThreadRunStepCreated) {
+                    threadRunStepCreated.validate()
+                }
+
+                override fun visitThreadRunStepInProgress(
+                    threadRunStepInProgress: ThreadRunStepInProgress
+                ) {
+                    threadRunStepInProgress.validate()
+                }
+
+                override fun visitThreadRunStepDelta(threadRunStepDelta: ThreadRunStepDelta) {
+                    threadRunStepDelta.validate()
+                }
+
+                override fun visitThreadRunStepCompleted(
+                    threadRunStepCompleted: ThreadRunStepCompleted
+                ) {
+                    threadRunStepCompleted.validate()
+                }
+
+                override fun visitThreadRunStepFailed(threadRunStepFailed: ThreadRunStepFailed) {
+                    threadRunStepFailed.validate()
+                }
+
+                override fun visitThreadRunStepCancelled(
+                    threadRunStepCancelled: ThreadRunStepCancelled
+                ) {
+                    threadRunStepCancelled.validate()
+                }
+
+                override fun visitThreadRunStepExpired(threadRunStepExpired: ThreadRunStepExpired) {
+                    threadRunStepExpired.validate()
+                }
+            }
+        )
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {
@@ -444,11 +465,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): ThreadRunStepCreated = apply {
-            if (!validated) {
-                data().validate()
-                event()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            data().validate()
+            event()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -613,11 +636,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): ThreadRunStepInProgress = apply {
-            if (!validated) {
-                data().validate()
-                event()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            data().validate()
+            event()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -782,11 +807,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): ThreadRunStepDelta = apply {
-            if (!validated) {
-                data().validate()
-                event()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            data().validate()
+            event()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -955,11 +982,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): ThreadRunStepCompleted = apply {
-            if (!validated) {
-                data().validate()
-                event()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            data().validate()
+            event()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -1123,11 +1152,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): ThreadRunStepFailed = apply {
-            if (!validated) {
-                data().validate()
-                event()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            data().validate()
+            event()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -1292,11 +1323,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): ThreadRunStepCancelled = apply {
-            if (!validated) {
-                data().validate()
-                event()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            data().validate()
+            event()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -1460,11 +1493,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): ThreadRunStepExpired = apply {
-            if (!validated) {
-                data().validate()
-                event()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            data().validate()
+            event()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

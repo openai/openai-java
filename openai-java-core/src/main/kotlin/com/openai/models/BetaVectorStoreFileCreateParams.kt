@@ -124,11 +124,13 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): BetaVectorStoreFileCreateBody = apply {
-            if (!validated) {
-                fileId()
-                chunkingStrategy()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            fileId()
+            chunkingStrategy().ifPresent { it.validate() }
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

@@ -54,12 +54,14 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): CodeInterpreterLogs = apply {
-        if (!validated) {
-            index()
-            type()
-            logs()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        index()
+        type()
+        logs()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

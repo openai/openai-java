@@ -122,17 +122,19 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): FileObject = apply {
-        if (!validated) {
-            id()
-            bytes()
-            createdAt()
-            filename()
-            object_()
-            purpose()
-            status()
-            statusDetails()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        bytes()
+        createdAt()
+        filename()
+        object_()
+        purpose()
+        status()
+        statusDetails()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

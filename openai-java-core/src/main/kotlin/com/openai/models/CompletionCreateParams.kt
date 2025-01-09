@@ -709,26 +709,28 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): CompletionCreateBody = apply {
-            if (!validated) {
-                model()
-                prompt()
-                bestOf()
-                echo()
-                frequencyPenalty()
-                logitBias().map { it.validate() }
-                logprobs()
-                maxTokens()
-                n()
-                presencePenalty()
-                seed()
-                stop()
-                streamOptions().map { it.validate() }
-                suffix()
-                temperature()
-                topP()
-                user()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            model()
+            prompt().ifPresent { it.validate() }
+            bestOf()
+            echo()
+            frequencyPenalty()
+            logitBias().ifPresent { it.validate() }
+            logprobs()
+            maxTokens()
+            n()
+            presencePenalty()
+            seed()
+            stop().ifPresent { it.validate() }
+            streamOptions().ifPresent { it.validate() }
+            suffix()
+            temperature()
+            topP()
+            user()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -2299,8 +2301,6 @@ constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        private var validated: Boolean = false
-
         fun string(): Optional<String> = Optional.ofNullable(string)
 
         fun arrayOfStrings(): Optional<List<String>> = Optional.ofNullable(arrayOfStrings)
@@ -2339,18 +2339,25 @@ constructor(
             }
         }
 
+        private var validated: Boolean = false
+
         fun validate(): Prompt = apply {
-            if (!validated) {
-                if (
-                    string == null &&
-                        arrayOfStrings == null &&
-                        arrayOfTokens == null &&
-                        arrayOfTokenArrays == null
-                ) {
-                    throw OpenAIInvalidDataException("Unknown Prompt: $_json")
-                }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitString(string: String) {}
+
+                    override fun visitArrayOfStrings(arrayOfStrings: List<String>) {}
+
+                    override fun visitArrayOfTokens(arrayOfTokens: List<Long>) {}
+
+                    override fun visitArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>) {}
+                }
+            )
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -2474,9 +2481,11 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): LogitBias = apply {
-            if (!validated) {
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -2547,8 +2556,6 @@ constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        private var validated: Boolean = false
-
         fun string(): Optional<String> = Optional.ofNullable(string)
 
         fun strings(): Optional<List<String>> = Optional.ofNullable(strings)
@@ -2571,13 +2578,21 @@ constructor(
             }
         }
 
+        private var validated: Boolean = false
+
         fun validate(): Stop = apply {
-            if (!validated) {
-                if (string == null && strings == null) {
-                    throw OpenAIInvalidDataException("Unknown Stop: $_json")
-                }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitString(string: String) {}
+
+                    override fun visitStrings(strings: List<String>) {}
+                }
+            )
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

@@ -88,10 +88,12 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): BetaThreadRunSubmitToolOutputsBody = apply {
-            if (!validated) {
-                toolOutputs().forEach { it.validate() }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            toolOutputs().forEach { it.validate() }
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -396,11 +398,13 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): ToolOutput = apply {
-            if (!validated) {
-                output()
-                toolCallId()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            output()
+            toolCallId()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

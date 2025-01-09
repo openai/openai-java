@@ -146,17 +146,19 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ChatCompletionChunk = apply {
-        if (!validated) {
-            id()
-            choices().forEach { it.validate() }
-            created()
-            model()
-            object_()
-            serviceTier()
-            systemFingerprint()
-            usage().map { it.validate() }
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        choices().forEach { it.validate() }
+        created()
+        model()
+        object_()
+        serviceTier()
+        systemFingerprint()
+        usage().ifPresent { it.validate() }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -413,13 +415,15 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): Choice = apply {
-            if (!validated) {
-                delta().validate()
-                finishReason()
-                index()
-                logprobs().map { it.validate() }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            delta().validate()
+            finishReason()
+            index()
+            logprobs().ifPresent { it.validate() }
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -598,14 +602,16 @@ private constructor(
             private var validated: Boolean = false
 
             fun validate(): Delta = apply {
-                if (!validated) {
-                    content()
-                    functionCall().map { it.validate() }
-                    refusal()
-                    role()
-                    toolCalls().map { it.forEach { it.validate() } }
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                content()
+                functionCall().ifPresent { it.validate() }
+                refusal()
+                role()
+                toolCalls().ifPresent { it.forEach { it.validate() } }
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)
@@ -775,11 +781,13 @@ private constructor(
                 private var validated: Boolean = false
 
                 fun validate(): FunctionCall = apply {
-                    if (!validated) {
-                        arguments()
-                        name()
-                        validated = true
+                    if (validated) {
+                        return@apply
                     }
+
+                    arguments()
+                    name()
+                    validated = true
                 }
 
                 fun toBuilder() = Builder().from(this)
@@ -993,13 +1001,15 @@ private constructor(
                 private var validated: Boolean = false
 
                 fun validate(): ToolCall = apply {
-                    if (!validated) {
-                        index()
-                        id()
-                        function().map { it.validate() }
-                        type()
-                        validated = true
+                    if (validated) {
+                        return@apply
                     }
+
+                    index()
+                    id()
+                    function().ifPresent { it.validate() }
+                    type()
+                    validated = true
                 }
 
                 fun toBuilder() = Builder().from(this)
@@ -1124,11 +1134,13 @@ private constructor(
                     private var validated: Boolean = false
 
                     fun validate(): Function = apply {
-                        if (!validated) {
-                            arguments()
-                            name()
-                            validated = true
+                        if (validated) {
+                            return@apply
                         }
+
+                        arguments()
+                        name()
+                        validated = true
                     }
 
                     fun toBuilder() = Builder().from(this)
@@ -1427,11 +1439,13 @@ private constructor(
             private var validated: Boolean = false
 
             fun validate(): Logprobs = apply {
-                if (!validated) {
-                    content().map { it.forEach { it.validate() } }
-                    refusal().map { it.forEach { it.validate() } }
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                content().ifPresent { it.forEach { it.validate() } }
+                refusal().ifPresent { it.forEach { it.validate() } }
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)

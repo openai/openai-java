@@ -116,10 +116,12 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): BetaThreadUpdateBody = apply {
-            if (!validated) {
-                toolResources().map { it.validate() }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            toolResources().ifPresent { it.validate() }
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -449,11 +451,13 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): ToolResources = apply {
-            if (!validated) {
-                codeInterpreter().map { it.validate() }
-                fileSearch().map { it.validate() }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            codeInterpreter().ifPresent { it.validate() }
+            fileSearch().ifPresent { it.validate() }
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -551,10 +555,12 @@ constructor(
             private var validated: Boolean = false
 
             fun validate(): CodeInterpreter = apply {
-                if (!validated) {
-                    fileIds()
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                fileIds()
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)
@@ -693,10 +699,12 @@ constructor(
             private var validated: Boolean = false
 
             fun validate(): FileSearch = apply {
-                if (!validated) {
-                    vectorStoreIds()
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                vectorStoreIds()
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)

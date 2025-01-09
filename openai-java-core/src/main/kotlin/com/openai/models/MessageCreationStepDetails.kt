@@ -48,11 +48,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): MessageCreationStepDetails = apply {
-        if (!validated) {
-            messageCreation().validate()
-            type()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        messageCreation().validate()
+        type()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -139,10 +141,12 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): MessageCreation = apply {
-            if (!validated) {
-                messageId()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            messageId()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

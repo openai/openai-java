@@ -72,12 +72,14 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ChatCompletionUserMessageParam = apply {
-        if (!validated) {
-            content()
-            role()
-            name()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        content().validate()
+        role()
+        name()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -176,8 +178,6 @@ private constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        private var validated: Boolean = false
-
         /** The text contents of the message. */
         fun textContent(): Optional<String> = Optional.ofNullable(textContent)
 
@@ -214,13 +214,25 @@ private constructor(
             }
         }
 
+        private var validated: Boolean = false
+
         fun validate(): Content = apply {
-            if (!validated) {
-                if (textContent == null && arrayOfContentParts == null) {
-                    throw OpenAIInvalidDataException("Unknown Content: $_json")
-                }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitTextContent(textContent: String) {}
+
+                    override fun visitArrayOfContentParts(
+                        arrayOfContentParts: List<ChatCompletionContentPart>
+                    ) {
+                        arrayOfContentParts.forEach { it.validate() }
+                    }
+                }
+            )
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -275,9 +287,12 @@ private constructor(
                 tryDeserialize(node, jacksonTypeRef<String>())?.let {
                     return Content(textContent = it, _json = json)
                 }
-                tryDeserialize(node, jacksonTypeRef<List<ChatCompletionContentPart>>())?.let {
-                    return Content(arrayOfContentParts = it, _json = json)
-                }
+                tryDeserialize(node, jacksonTypeRef<List<ChatCompletionContentPart>>()) {
+                        it.forEach { it.validate() }
+                    }
+                    ?.let {
+                        return Content(arrayOfContentParts = it, _json = json)
+                    }
 
                 return Content(_json = json)
             }

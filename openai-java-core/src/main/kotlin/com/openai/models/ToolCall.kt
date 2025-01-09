@@ -29,8 +29,6 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
-    private var validated: Boolean = false
-
     /** Details of the Code Interpreter tool call the run step was involved in. */
     fun codeInterpreterToolCall(): Optional<CodeInterpreterToolCall> =
         Optional.ofNullable(codeInterpreterToolCall)
@@ -66,20 +64,31 @@ private constructor(
         }
     }
 
+    private var validated: Boolean = false
+
     fun validate(): ToolCall = apply {
-        if (!validated) {
-            if (
-                codeInterpreterToolCall == null &&
-                    fileSearchToolCall == null &&
-                    functionToolCall == null
-            ) {
-                throw OpenAIInvalidDataException("Unknown ToolCall: $_json")
-            }
-            codeInterpreterToolCall?.validate()
-            fileSearchToolCall?.validate()
-            functionToolCall?.validate()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        accept(
+            object : Visitor<Unit> {
+                override fun visitCodeInterpreterToolCall(
+                    codeInterpreterToolCall: CodeInterpreterToolCall
+                ) {
+                    codeInterpreterToolCall.validate()
+                }
+
+                override fun visitFileSearchToolCall(fileSearchToolCall: FileSearchToolCall) {
+                    fileSearchToolCall.validate()
+                }
+
+                override fun visitFunctionToolCall(functionToolCall: FunctionToolCall) {
+                    functionToolCall.validate()
+                }
+            }
+        )
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

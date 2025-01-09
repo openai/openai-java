@@ -125,11 +125,13 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): ModerationCreateBody = apply {
-            if (!validated) {
-                input()
-                model()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            input().validate()
+            model()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -445,8 +447,6 @@ constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        private var validated: Boolean = false
-
         /** A string of text to classify for moderation. */
         fun string(): Optional<String> = Optional.ofNullable(string)
 
@@ -485,13 +485,27 @@ constructor(
             }
         }
 
+        private var validated: Boolean = false
+
         fun validate(): Input = apply {
-            if (!validated) {
-                if (string == null && strings == null && moderationMultiModalArray == null) {
-                    throw OpenAIInvalidDataException("Unknown Input: $_json")
-                }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitString(string: String) {}
+
+                    override fun visitStrings(strings: List<String>) {}
+
+                    override fun visitModerationMultiModalArray(
+                        moderationMultiModalArray: List<ModerationMultiModalInput>
+                    ) {
+                        moderationMultiModalArray.forEach { it.validate() }
+                    }
+                }
+            )
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -555,9 +569,12 @@ constructor(
                 tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
                     return Input(strings = it, _json = json)
                 }
-                tryDeserialize(node, jacksonTypeRef<List<ModerationMultiModalInput>>())?.let {
-                    return Input(moderationMultiModalArray = it, _json = json)
-                }
+                tryDeserialize(node, jacksonTypeRef<List<ModerationMultiModalInput>>()) {
+                        it.forEach { it.validate() }
+                    }
+                    ?.let {
+                        return Input(moderationMultiModalArray = it, _json = json)
+                    }
 
                 return Input(_json = json)
             }

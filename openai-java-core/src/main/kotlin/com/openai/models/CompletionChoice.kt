@@ -70,13 +70,15 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): CompletionChoice = apply {
-        if (!validated) {
-            finishReason()
-            index()
-            logprobs().map { it.validate() }
-            text()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        finishReason()
+        index()
+        logprobs().ifPresent { it.validate() }
+        text()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -279,13 +281,15 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): Logprobs = apply {
-            if (!validated) {
-                textOffset()
-                tokenLogprobs()
-                tokens()
-                topLogprobs().map { it.forEach { it.validate() } }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            textOffset()
+            tokenLogprobs()
+            tokens()
+            topLogprobs().ifPresent { it.forEach { it.validate() } }
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -433,9 +437,11 @@ private constructor(
             private var validated: Boolean = false
 
             fun validate(): TopLogprob = apply {
-                if (!validated) {
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)

@@ -56,11 +56,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ToolCallsStepDetails = apply {
-        if (!validated) {
-            toolCalls()
-            type()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        toolCalls().forEach { it.validate() }
+        type()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

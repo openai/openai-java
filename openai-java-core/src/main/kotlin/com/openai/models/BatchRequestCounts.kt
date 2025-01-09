@@ -53,12 +53,14 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): BatchRequestCounts = apply {
-        if (!validated) {
-            completed()
-            failed()
-            total()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        completed()
+        failed()
+        total()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

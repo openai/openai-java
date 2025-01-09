@@ -64,11 +64,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ImageFile = apply {
-        if (!validated) {
-            fileId()
-            detail()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        fileId()
+        detail()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

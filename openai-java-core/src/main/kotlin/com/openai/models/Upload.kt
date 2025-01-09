@@ -118,18 +118,20 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): Upload = apply {
-        if (!validated) {
-            id()
-            bytes()
-            createdAt()
-            expiresAt()
-            filename()
-            object_()
-            purpose()
-            status()
-            file().map { it.validate() }
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        bytes()
+        createdAt()
+        expiresAt()
+        filename()
+        object_()
+        purpose()
+        status()
+        file().ifPresent { it.validate() }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

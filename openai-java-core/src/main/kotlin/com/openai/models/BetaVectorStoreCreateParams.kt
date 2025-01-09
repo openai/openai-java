@@ -162,13 +162,15 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): BetaVectorStoreCreateBody = apply {
-            if (!validated) {
-                chunkingStrategy()
-                expiresAfter().map { it.validate() }
-                fileIds()
-                name()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            chunkingStrategy().ifPresent { it.validate() }
+            expiresAfter().ifPresent { it.validate() }
+            fileIds()
+            name()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -590,11 +592,13 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): ExpiresAfter = apply {
-            if (!validated) {
-                anchor()
-                days()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            anchor()
+            days()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

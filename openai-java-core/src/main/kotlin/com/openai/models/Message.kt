@@ -204,22 +204,24 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): Message = apply {
-        if (!validated) {
-            id()
-            assistantId()
-            attachments().map { it.forEach { it.validate() } }
-            completedAt()
-            content()
-            createdAt()
-            incompleteAt()
-            incompleteDetails().map { it.validate() }
-            object_()
-            role()
-            runId()
-            status()
-            threadId()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        assistantId()
+        attachments().ifPresent { it.forEach { it.validate() } }
+        completedAt()
+        content().forEach { it.validate() }
+        createdAt()
+        incompleteAt()
+        incompleteDetails().ifPresent { it.validate() }
+        object_()
+        role()
+        runId()
+        status()
+        threadId()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -548,11 +550,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): Attachment = apply {
-            if (!validated) {
-                fileId()
-                tools()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            fileId()
+            tools().ifPresent { it.forEach { it.validate() } }
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -647,8 +651,6 @@ private constructor(
             private val _json: JsonValue? = null,
         ) {
 
-            private var validated: Boolean = false
-
             fun codeInterpreterTool(): Optional<CodeInterpreterTool> =
                 Optional.ofNullable(codeInterpreterTool)
 
@@ -680,15 +682,29 @@ private constructor(
                 }
             }
 
+            private var validated: Boolean = false
+
             fun validate(): Tool = apply {
-                if (!validated) {
-                    if (codeInterpreterTool == null && assistantToolsFileSearchTypeOnly == null) {
-                        throw OpenAIInvalidDataException("Unknown Tool: $_json")
-                    }
-                    codeInterpreterTool?.validate()
-                    assistantToolsFileSearchTypeOnly?.validate()
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                accept(
+                    object : Visitor<Unit> {
+                        override fun visitCodeInterpreterTool(
+                            codeInterpreterTool: CodeInterpreterTool
+                        ) {
+                            codeInterpreterTool.validate()
+                        }
+
+                        override fun visitAssistantToolsFileSearchTypeOnly(
+                            assistantToolsFileSearchTypeOnly: AssistantToolsFileSearchTypeOnly
+                        ) {
+                            assistantToolsFileSearchTypeOnly.validate()
+                        }
+                    }
+                )
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -797,10 +813,12 @@ private constructor(
                 private var validated: Boolean = false
 
                 fun validate(): AssistantToolsFileSearchTypeOnly = apply {
-                    if (!validated) {
-                        type()
-                        validated = true
+                    if (validated) {
+                        return@apply
                     }
+
+                    type()
+                    validated = true
                 }
 
                 fun toBuilder() = Builder().from(this)
@@ -973,10 +991,12 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): IncompleteDetails = apply {
-            if (!validated) {
-                reason()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            reason()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

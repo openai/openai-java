@@ -78,15 +78,17 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): FilePathDeltaAnnotation = apply {
-        if (!validated) {
-            index()
-            type()
-            endIndex()
-            filePath().map { it.validate() }
-            startIndex()
-            text()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        index()
+        type()
+        endIndex()
+        filePath().ifPresent { it.validate() }
+        startIndex()
+        text()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -253,10 +255,12 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): FilePath = apply {
-            if (!validated) {
-                fileId()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            fileId()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

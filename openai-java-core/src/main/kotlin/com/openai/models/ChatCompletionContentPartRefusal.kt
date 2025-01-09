@@ -47,11 +47,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ChatCompletionContentPartRefusal = apply {
-        if (!validated) {
-            refusal()
-            type()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        refusal()
+        type()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

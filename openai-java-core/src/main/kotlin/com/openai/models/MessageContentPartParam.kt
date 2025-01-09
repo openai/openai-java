@@ -32,8 +32,6 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
-    private var validated: Boolean = false
-
     /**
      * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
      * content of a message.
@@ -83,20 +81,33 @@ private constructor(
         }
     }
 
+    private var validated: Boolean = false
+
     fun validate(): MessageContentPartParam = apply {
-        if (!validated) {
-            if (
-                imageFileContentBlock == null &&
-                    imageUrlContentBlock == null &&
-                    textContentBlockParam == null
-            ) {
-                throw OpenAIInvalidDataException("Unknown MessageContentPartParam: $_json")
-            }
-            imageFileContentBlock?.validate()
-            imageUrlContentBlock?.validate()
-            textContentBlockParam?.validate()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        accept(
+            object : Visitor<Unit> {
+                override fun visitImageFileContentBlock(
+                    imageFileContentBlock: ImageFileContentBlock
+                ) {
+                    imageFileContentBlock.validate()
+                }
+
+                override fun visitImageUrlContentBlock(imageUrlContentBlock: ImageUrlContentBlock) {
+                    imageUrlContentBlock.validate()
+                }
+
+                override fun visitTextContentBlockParam(
+                    textContentBlockParam: TextContentBlockParam
+                ) {
+                    textContentBlockParam.validate()
+                }
+            }
+        )
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

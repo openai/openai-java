@@ -47,11 +47,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ChatCompletionTool = apply {
-        if (!validated) {
-            function().validate()
-            type()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        function().validate()
+        type()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

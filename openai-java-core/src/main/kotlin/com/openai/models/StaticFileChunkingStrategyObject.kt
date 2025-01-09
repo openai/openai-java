@@ -47,11 +47,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): StaticFileChunkingStrategyObject = apply {
-        if (!validated) {
-            static_().validate()
-            type()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        static_().validate()
+        type()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
