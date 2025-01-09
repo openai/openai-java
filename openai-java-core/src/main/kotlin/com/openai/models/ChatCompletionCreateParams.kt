@@ -1357,12 +1357,9 @@ constructor(
             }
 
             /**
-             * A list of messages comprising the conversation so far. Depending on the
-             * [model](https://platform.openai.com/docs/models) you use, different message types
-             * (modalities) are supported, like
-             * [text](https://platform.openai.com/docs/guides/text-generation),
-             * [images](https://platform.openai.com/docs/guides/vision), and
-             * [audio](https://platform.openai.com/docs/guides/audio).
+             * Developer-provided instructions that the model should follow, regardless of messages
+             * sent by the user. With o1 models and newer, `developer` messages replace the previous
+             * `system` messages.
              */
             fun addMessage(
                 chatCompletionDeveloperMessageParam: ChatCompletionDeveloperMessageParam
@@ -1374,12 +1371,9 @@ constructor(
                 )
 
             /**
-             * A list of messages comprising the conversation so far. Depending on the
-             * [model](https://platform.openai.com/docs/models) you use, different message types
-             * (modalities) are supported, like
-             * [text](https://platform.openai.com/docs/guides/text-generation),
-             * [images](https://platform.openai.com/docs/guides/vision), and
-             * [audio](https://platform.openai.com/docs/guides/audio).
+             * Developer-provided instructions that the model should follow, regardless of messages
+             * sent by the user. With o1 models and newer, use `developer` messages for this purpose
+             * instead.
              */
             fun addMessage(chatCompletionSystemMessageParam: ChatCompletionSystemMessageParam) =
                 addMessage(
@@ -1389,12 +1383,7 @@ constructor(
                 )
 
             /**
-             * A list of messages comprising the conversation so far. Depending on the
-             * [model](https://platform.openai.com/docs/models) you use, different message types
-             * (modalities) are supported, like
-             * [text](https://platform.openai.com/docs/guides/text-generation),
-             * [images](https://platform.openai.com/docs/guides/vision), and
-             * [audio](https://platform.openai.com/docs/guides/audio).
+             * Messages sent by an end user, containing prompts or additional context information.
              */
             fun addMessage(chatCompletionUserMessageParam: ChatCompletionUserMessageParam) =
                 addMessage(
@@ -1403,14 +1392,7 @@ constructor(
                     )
                 )
 
-            /**
-             * A list of messages comprising the conversation so far. Depending on the
-             * [model](https://platform.openai.com/docs/models) you use, different message types
-             * (modalities) are supported, like
-             * [text](https://platform.openai.com/docs/guides/text-generation),
-             * [images](https://platform.openai.com/docs/guides/vision), and
-             * [audio](https://platform.openai.com/docs/guides/audio).
-             */
+            /** Messages sent by the model in response to user messages. */
             fun addMessage(
                 chatCompletionAssistantMessageParam: ChatCompletionAssistantMessageParam
             ) =
@@ -2004,12 +1986,66 @@ constructor(
                 this.responseFormat = responseFormat
             }
 
+            /**
+             * An object specifying the format that the model must output.
+             *
+             * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
+             * Outputs which ensures the model will match your supplied JSON schema. Learn more in
+             * the
+             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             *
+             * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
+             * the model generates is valid JSON.
+             *
+             * **Important:** when using JSON mode, you **must** also instruct the model to produce
+             * JSON yourself via a system or user message. Without this, the model may generate an
+             * unending stream of whitespace until the generation reaches the token limit, resulting
+             * in a long-running and seemingly "stuck" request. Also note that the message content
+             * may be partially cut off if `finish_reason="length"`, which indicates the generation
+             * exceeded `max_tokens` or the conversation exceeded the max context length.
+             */
             fun responseFormat(responseFormatText: ResponseFormatText) =
                 responseFormat(ResponseFormat.ofResponseFormatText(responseFormatText))
 
+            /**
+             * An object specifying the format that the model must output.
+             *
+             * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
+             * Outputs which ensures the model will match your supplied JSON schema. Learn more in
+             * the
+             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             *
+             * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
+             * the model generates is valid JSON.
+             *
+             * **Important:** when using JSON mode, you **must** also instruct the model to produce
+             * JSON yourself via a system or user message. Without this, the model may generate an
+             * unending stream of whitespace until the generation reaches the token limit, resulting
+             * in a long-running and seemingly "stuck" request. Also note that the message content
+             * may be partially cut off if `finish_reason="length"`, which indicates the generation
+             * exceeded `max_tokens` or the conversation exceeded the max context length.
+             */
             fun responseFormat(responseFormatJsonObject: ResponseFormatJsonObject) =
                 responseFormat(ResponseFormat.ofResponseFormatJsonObject(responseFormatJsonObject))
 
+            /**
+             * An object specifying the format that the model must output.
+             *
+             * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
+             * Outputs which ensures the model will match your supplied JSON schema. Learn more in
+             * the
+             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             *
+             * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
+             * the model generates is valid JSON.
+             *
+             * **Important:** when using JSON mode, you **must** also instruct the model to produce
+             * JSON yourself via a system or user message. Without this, the model may generate an
+             * unending stream of whitespace until the generation reaches the token limit, resulting
+             * in a long-running and seemingly "stuck" request. Also note that the message content
+             * may be partially cut off if `finish_reason="length"`, which indicates the generation
+             * exceeded `max_tokens` or the conversation exceeded the max context length.
+             */
             fun responseFormat(responseFormatJsonSchema: ResponseFormatJsonSchema) =
                 responseFormat(ResponseFormat.ofResponseFormatJsonSchema(responseFormatJsonSchema))
 
@@ -2107,8 +2143,10 @@ constructor(
             /** Up to 4 sequences where the API will stop generating further tokens. */
             fun stop(stop: JsonField<Stop>) = apply { this.stop = stop }
 
+            /** Up to 4 sequences where the API will stop generating further tokens. */
             fun stop(string: String) = stop(Stop.ofString(string))
 
+            /** Up to 4 sequences where the API will stop generating further tokens. */
             fun stopOfStrings(strings: List<String>) = stop(Stop.ofStrings(strings))
 
             /**
@@ -2473,12 +2511,9 @@ constructor(
         fun addMessage(message: ChatCompletionMessageParam) = apply { body.addMessage(message) }
 
         /**
-         * A list of messages comprising the conversation so far. Depending on the
-         * [model](https://platform.openai.com/docs/models) you use, different message types
-         * (modalities) are supported, like
-         * [text](https://platform.openai.com/docs/guides/text-generation),
-         * [images](https://platform.openai.com/docs/guides/vision), and
-         * [audio](https://platform.openai.com/docs/guides/audio).
+         * Developer-provided instructions that the model should follow, regardless of messages sent
+         * by the user. With o1 models and newer, `developer` messages replace the previous `system`
+         * messages.
          */
         fun addMessage(chatCompletionDeveloperMessageParam: ChatCompletionDeveloperMessageParam) =
             apply {
@@ -2486,37 +2521,19 @@ constructor(
             }
 
         /**
-         * A list of messages comprising the conversation so far. Depending on the
-         * [model](https://platform.openai.com/docs/models) you use, different message types
-         * (modalities) are supported, like
-         * [text](https://platform.openai.com/docs/guides/text-generation),
-         * [images](https://platform.openai.com/docs/guides/vision), and
-         * [audio](https://platform.openai.com/docs/guides/audio).
+         * Developer-provided instructions that the model should follow, regardless of messages sent
+         * by the user. With o1 models and newer, use `developer` messages for this purpose instead.
          */
         fun addMessage(chatCompletionSystemMessageParam: ChatCompletionSystemMessageParam) = apply {
             body.addMessage(chatCompletionSystemMessageParam)
         }
 
-        /**
-         * A list of messages comprising the conversation so far. Depending on the
-         * [model](https://platform.openai.com/docs/models) you use, different message types
-         * (modalities) are supported, like
-         * [text](https://platform.openai.com/docs/guides/text-generation),
-         * [images](https://platform.openai.com/docs/guides/vision), and
-         * [audio](https://platform.openai.com/docs/guides/audio).
-         */
+        /** Messages sent by an end user, containing prompts or additional context information. */
         fun addMessage(chatCompletionUserMessageParam: ChatCompletionUserMessageParam) = apply {
             body.addMessage(chatCompletionUserMessageParam)
         }
 
-        /**
-         * A list of messages comprising the conversation so far. Depending on the
-         * [model](https://platform.openai.com/docs/models) you use, different message types
-         * (modalities) are supported, like
-         * [text](https://platform.openai.com/docs/guides/text-generation),
-         * [images](https://platform.openai.com/docs/guides/vision), and
-         * [audio](https://platform.openai.com/docs/guides/audio).
-         */
+        /** Messages sent by the model in response to user messages. */
         fun addMessage(chatCompletionAssistantMessageParam: ChatCompletionAssistantMessageParam) =
             apply {
                 body.addMessage(chatCompletionAssistantMessageParam)
@@ -3071,14 +3088,65 @@ constructor(
             body.responseFormat(responseFormat)
         }
 
+        /**
+         * An object specifying the format that the model must output.
+         *
+         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
+         * which ensures the model will match your supplied JSON schema. Learn more in the
+         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         *
+         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
+         * model generates is valid JSON.
+         *
+         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
+         * yourself via a system or user message. Without this, the model may generate an unending
+         * stream of whitespace until the generation reaches the token limit, resulting in a
+         * long-running and seemingly "stuck" request. Also note that the message content may be
+         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
+         * `max_tokens` or the conversation exceeded the max context length.
+         */
         fun responseFormat(responseFormatText: ResponseFormatText) = apply {
             body.responseFormat(responseFormatText)
         }
 
+        /**
+         * An object specifying the format that the model must output.
+         *
+         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
+         * which ensures the model will match your supplied JSON schema. Learn more in the
+         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         *
+         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
+         * model generates is valid JSON.
+         *
+         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
+         * yourself via a system or user message. Without this, the model may generate an unending
+         * stream of whitespace until the generation reaches the token limit, resulting in a
+         * long-running and seemingly "stuck" request. Also note that the message content may be
+         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
+         * `max_tokens` or the conversation exceeded the max context length.
+         */
         fun responseFormat(responseFormatJsonObject: ResponseFormatJsonObject) = apply {
             body.responseFormat(responseFormatJsonObject)
         }
 
+        /**
+         * An object specifying the format that the model must output.
+         *
+         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
+         * which ensures the model will match your supplied JSON schema. Learn more in the
+         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         *
+         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
+         * model generates is valid JSON.
+         *
+         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
+         * yourself via a system or user message. Without this, the model may generate an unending
+         * stream of whitespace until the generation reaches the token limit, resulting in a
+         * long-running and seemingly "stuck" request. Also note that the message content may be
+         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
+         * `max_tokens` or the conversation exceeded the max context length.
+         */
         fun responseFormat(responseFormatJsonSchema: ResponseFormatJsonSchema) = apply {
             body.responseFormat(responseFormatJsonSchema)
         }
@@ -3172,8 +3240,10 @@ constructor(
         /** Up to 4 sequences where the API will stop generating further tokens. */
         fun stop(stop: JsonField<Stop>) = apply { body.stop(stop) }
 
+        /** Up to 4 sequences where the API will stop generating further tokens. */
         fun stop(string: String) = apply { body.stop(string) }
 
+        /** Up to 4 sequences where the API will stop generating further tokens. */
         fun stopOfStrings(strings: List<String>) = apply { body.stopOfStrings(strings) }
 
         /**

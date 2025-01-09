@@ -266,6 +266,7 @@ private constructor(
             this.chunkingStrategy = chunkingStrategy
         }
 
+        /** The strategy used to chunk the file. */
         fun chunkingStrategy(staticFileChunkingStrategyObject: StaticFileChunkingStrategyObject) =
             chunkingStrategy(
                 FileChunkingStrategy.ofStaticFileChunkingStrategyObject(

@@ -1218,8 +1218,16 @@ constructor(
              */
             fun batchSize(batchSize: JsonField<BatchSize>) = apply { this.batchSize = batchSize }
 
+            /**
+             * Number of examples in each batch. A larger batch size means that model parameters are
+             * updated less frequently, but with lower variance.
+             */
             fun batchSize(behavior: BatchSize.Behavior) = batchSize(BatchSize.ofBehavior(behavior))
 
+            /**
+             * Number of examples in each batch. A larger batch size means that model parameters are
+             * updated less frequently, but with lower variance.
+             */
             fun batchSize(integer: Long) = batchSize(BatchSize.ofInteger(integer))
 
             /**
@@ -1238,9 +1246,17 @@ constructor(
                     this.learningRateMultiplier = learningRateMultiplier
                 }
 
+            /**
+             * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
+             * overfitting.
+             */
             fun learningRateMultiplier(behavior: LearningRateMultiplier.Behavior) =
                 learningRateMultiplier(LearningRateMultiplier.ofBehavior(behavior))
 
+            /**
+             * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
+             * overfitting.
+             */
             fun learningRateMultiplier(number: Double) =
                 learningRateMultiplier(LearningRateMultiplier.ofNumber(number))
 
@@ -1256,8 +1272,16 @@ constructor(
              */
             fun nEpochs(nEpochs: JsonField<NEpochs>) = apply { this.nEpochs = nEpochs }
 
+            /**
+             * The number of epochs to train the model for. An epoch refers to one full cycle
+             * through the training dataset.
+             */
             fun nEpochs(behavior: NEpochs.Behavior) = nEpochs(NEpochs.ofBehavior(behavior))
 
+            /**
+             * The number of epochs to train the model for. An epoch refers to one full cycle
+             * through the training dataset.
+             */
             fun nEpochs(integer: Long) = nEpochs(NEpochs.ofInteger(integer))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -2587,8 +2611,16 @@ constructor(
                         this.batchSize = batchSize
                     }
 
+                    /**
+                     * Number of examples in each batch. A larger batch size means that model
+                     * parameters are updated less frequently, but with lower variance.
+                     */
                     fun batchSize(auto: BatchSize.Auto) = batchSize(BatchSize.ofAuto(auto))
 
+                    /**
+                     * Number of examples in each batch. A larger batch size means that model
+                     * parameters are updated less frequently, but with lower variance.
+                     */
                     fun batchSize(manual: Long) = batchSize(BatchSize.ofManual(manual))
 
                     /**
@@ -2603,8 +2635,16 @@ constructor(
                      */
                     fun beta(beta: JsonField<Beta>) = apply { this.beta = beta }
 
+                    /**
+                     * The beta value for the DPO method. A higher beta value will increase the
+                     * weight of the penalty between the policy and reference model.
+                     */
                     fun beta(auto: Beta.Auto) = beta(Beta.ofAuto(auto))
 
+                    /**
+                     * The beta value for the DPO method. A higher beta value will increase the
+                     * weight of the penalty between the policy and reference model.
+                     */
                     fun beta(manual: Double) = beta(Beta.ofManual(manual))
 
                     /**
@@ -2622,9 +2662,17 @@ constructor(
                         learningRateMultiplier: JsonField<LearningRateMultiplier>
                     ) = apply { this.learningRateMultiplier = learningRateMultiplier }
 
+                    /**
+                     * Scaling factor for the learning rate. A smaller learning rate may be useful
+                     * to avoid overfitting.
+                     */
                     fun learningRateMultiplier(auto: LearningRateMultiplier.Auto) =
                         learningRateMultiplier(LearningRateMultiplier.ofAuto(auto))
 
+                    /**
+                     * Scaling factor for the learning rate. A smaller learning rate may be useful
+                     * to avoid overfitting.
+                     */
                     fun learningRateMultiplier(manual: Double) =
                         learningRateMultiplier(LearningRateMultiplier.ofManual(manual))
 
@@ -2640,8 +2688,16 @@ constructor(
                      */
                     fun nEpochs(nEpochs: JsonField<NEpochs>) = apply { this.nEpochs = nEpochs }
 
+                    /**
+                     * The number of epochs to train the model for. An epoch refers to one full
+                     * cycle through the training dataset.
+                     */
                     fun nEpochs(auto: NEpochs.Auto) = nEpochs(NEpochs.ofAuto(auto))
 
+                    /**
+                     * The number of epochs to train the model for. An epoch refers to one full
+                     * cycle through the training dataset.
+                     */
                     fun nEpochs(manual: Long) = nEpochs(NEpochs.ofManual(manual))
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -3596,8 +3652,16 @@ constructor(
                         this.batchSize = batchSize
                     }
 
+                    /**
+                     * Number of examples in each batch. A larger batch size means that model
+                     * parameters are updated less frequently, but with lower variance.
+                     */
                     fun batchSize(auto: BatchSize.Auto) = batchSize(BatchSize.ofAuto(auto))
 
+                    /**
+                     * Number of examples in each batch. A larger batch size means that model
+                     * parameters are updated less frequently, but with lower variance.
+                     */
                     fun batchSize(manual: Long) = batchSize(BatchSize.ofManual(manual))
 
                     /**
@@ -3615,9 +3679,17 @@ constructor(
                         learningRateMultiplier: JsonField<LearningRateMultiplier>
                     ) = apply { this.learningRateMultiplier = learningRateMultiplier }
 
+                    /**
+                     * Scaling factor for the learning rate. A smaller learning rate may be useful
+                     * to avoid overfitting.
+                     */
                     fun learningRateMultiplier(auto: LearningRateMultiplier.Auto) =
                         learningRateMultiplier(LearningRateMultiplier.ofAuto(auto))
 
+                    /**
+                     * Scaling factor for the learning rate. A smaller learning rate may be useful
+                     * to avoid overfitting.
+                     */
                     fun learningRateMultiplier(manual: Double) =
                         learningRateMultiplier(LearningRateMultiplier.ofManual(manual))
 
@@ -3633,8 +3705,16 @@ constructor(
                      */
                     fun nEpochs(nEpochs: JsonField<NEpochs>) = apply { this.nEpochs = nEpochs }
 
+                    /**
+                     * The number of epochs to train the model for. An epoch refers to one full
+                     * cycle through the training dataset.
+                     */
                     fun nEpochs(auto: NEpochs.Auto) = nEpochs(NEpochs.ofAuto(auto))
 
+                    /**
+                     * The number of epochs to train the model for. An epoch refers to one full
+                     * cycle through the training dataset.
+                     */
                     fun nEpochs(manual: Long) = nEpochs(NEpochs.ofManual(manual))
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
