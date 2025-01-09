@@ -65,11 +65,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): StaticFileChunkingStrategy = apply {
-        if (!validated) {
-            chunkOverlapTokens()
-            maxChunkSizeTokens()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        chunkOverlapTokens()
+        maxChunkSizeTokens()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

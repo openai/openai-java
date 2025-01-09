@@ -48,11 +48,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ModerationImageUrlInput = apply {
-        if (!validated) {
-            imageUrl().validate()
-            type()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        imageUrl().validate()
+        type()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -137,10 +139,12 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): ImageUrl = apply {
-            if (!validated) {
-                url()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            url()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

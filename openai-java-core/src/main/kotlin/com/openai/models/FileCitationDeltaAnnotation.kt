@@ -82,15 +82,17 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): FileCitationDeltaAnnotation = apply {
-        if (!validated) {
-            index()
-            type()
-            endIndex()
-            fileCitation().map { it.validate() }
-            startIndex()
-            text()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        index()
+        type()
+        endIndex()
+        fileCitation().ifPresent { it.validate() }
+        startIndex()
+        text()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -268,11 +270,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): FileCitation = apply {
-            if (!validated) {
-                fileId()
-                quote()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            fileId()
+            quote()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

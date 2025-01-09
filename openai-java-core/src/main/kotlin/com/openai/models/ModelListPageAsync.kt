@@ -83,8 +83,6 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        private var validated: Boolean = false
-
         fun data(): List<Model> = data.getNullable("data") ?: listOf()
 
         fun object_(): String = object_.getRequired("object")
@@ -99,12 +97,16 @@ private constructor(
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+        private var validated: Boolean = false
+
         fun validate(): Response = apply {
-            if (!validated) {
-                data().map { it.validate() }
-                object_()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            data().map { it.validate() }
+            object_()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

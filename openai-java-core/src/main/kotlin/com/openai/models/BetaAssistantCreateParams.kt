@@ -392,18 +392,20 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): BetaAssistantCreateBody = apply {
-            if (!validated) {
-                model()
-                description()
-                instructions()
-                name()
-                responseFormat()
-                temperature()
-                toolResources().map { it.validate() }
-                tools()
-                topP()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            model()
+            description()
+            instructions()
+            name()
+            responseFormat().ifPresent { it.validate() }
+            temperature()
+            toolResources().ifPresent { it.validate() }
+            tools().ifPresent { it.forEach { it.validate() } }
+            topP()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -1407,11 +1409,13 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): ToolResources = apply {
-            if (!validated) {
-                codeInterpreter().map { it.validate() }
-                fileSearch().map { it.validate() }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            codeInterpreter().ifPresent { it.validate() }
+            fileSearch().ifPresent { it.validate() }
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -1509,10 +1513,12 @@ constructor(
             private var validated: Boolean = false
 
             fun validate(): CodeInterpreter = apply {
-                if (!validated) {
-                    fileIds()
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                fileIds()
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)
@@ -1673,11 +1679,13 @@ constructor(
             private var validated: Boolean = false
 
             fun validate(): FileSearch = apply {
-                if (!validated) {
-                    vectorStoreIds()
-                    vectorStores().map { it.forEach { it.validate() } }
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                vectorStoreIds()
+                vectorStores().ifPresent { it.forEach { it.validate() } }
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)
@@ -1869,11 +1877,13 @@ constructor(
                 private var validated: Boolean = false
 
                 fun validate(): VectorStore = apply {
-                    if (!validated) {
-                        chunkingStrategy()
-                        fileIds()
-                        validated = true
+                    if (validated) {
+                        return@apply
                     }
+
+                    chunkingStrategy().ifPresent { it.validate() }
+                    fileIds()
+                    validated = true
                 }
 
                 fun toBuilder() = Builder().from(this)

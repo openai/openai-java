@@ -131,16 +131,18 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ChatCompletionAssistantMessageParam = apply {
-        if (!validated) {
-            role()
-            audio().map { it.validate() }
-            content()
-            functionCall().map { it.validate() }
-            name()
-            refusal()
-            toolCalls().map { it.forEach { it.validate() } }
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        role()
+        audio().ifPresent { it.validate() }
+        content().ifPresent { it.validate() }
+        functionCall().ifPresent { it.validate() }
+        name()
+        refusal()
+        toolCalls().ifPresent { it.forEach { it.validate() } }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -404,10 +406,12 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): Audio = apply {
-            if (!validated) {
-                id()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            id()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -491,8 +495,6 @@ private constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        private var validated: Boolean = false
-
         /** The contents of the assistant message. */
         fun textContent(): Optional<String> = Optional.ofNullable(textContent)
 
@@ -528,13 +530,25 @@ private constructor(
             }
         }
 
+        private var validated: Boolean = false
+
         fun validate(): Content = apply {
-            if (!validated) {
-                if (textContent == null && arrayOfContentParts == null) {
-                    throw OpenAIInvalidDataException("Unknown Content: $_json")
-                }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitTextContent(textContent: String) {}
+
+                    override fun visitArrayOfContentParts(
+                        arrayOfContentParts: List<ChatCompletionRequestAssistantMessageContentPart>
+                    ) {
+                        arrayOfContentParts.forEach { it.validate() }
+                    }
+                }
+            )
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -594,7 +608,9 @@ private constructor(
                 tryDeserialize(
                         node,
                         jacksonTypeRef<List<ChatCompletionRequestAssistantMessageContentPart>>()
-                    )
+                    ) {
+                        it.forEach { it.validate() }
+                    }
                     ?.let {
                         return Content(arrayOfContentParts = it, _json = json)
                     }
@@ -631,8 +647,6 @@ private constructor(
             private val chatCompletionContentPartRefusal: ChatCompletionContentPartRefusal? = null,
             private val _json: JsonValue? = null,
         ) {
-
-            private var validated: Boolean = false
 
             /**
              * Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation).
@@ -671,20 +685,29 @@ private constructor(
                 }
             }
 
+            private var validated: Boolean = false
+
             fun validate(): ChatCompletionRequestAssistantMessageContentPart = apply {
-                if (!validated) {
-                    if (
-                        chatCompletionContentPartText == null &&
-                            chatCompletionContentPartRefusal == null
-                    ) {
-                        throw OpenAIInvalidDataException(
-                            "Unknown ChatCompletionRequestAssistantMessageContentPart: $_json"
-                        )
-                    }
-                    chatCompletionContentPartText?.validate()
-                    chatCompletionContentPartRefusal?.validate()
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                accept(
+                    object : Visitor<Unit> {
+                        override fun visitChatCompletionContentPartText(
+                            chatCompletionContentPartText: ChatCompletionContentPartText
+                        ) {
+                            chatCompletionContentPartText.validate()
+                        }
+
+                        override fun visitChatCompletionContentPartRefusal(
+                            chatCompletionContentPartRefusal: ChatCompletionContentPartRefusal
+                        ) {
+                            chatCompletionContentPartRefusal.validate()
+                        }
+                    }
+                )
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -867,11 +890,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): FunctionCall = apply {
-            if (!validated) {
-                arguments()
-                name()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            arguments()
+            name()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

@@ -50,12 +50,14 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): AssistantDeleted = apply {
-        if (!validated) {
-            id()
-            deleted()
-            object_()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        deleted()
+        object_()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

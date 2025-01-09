@@ -60,13 +60,15 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): BatchError = apply {
-        if (!validated) {
-            code()
-            line()
-            message()
-            param()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        code()
+        line()
+        message()
+        param()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

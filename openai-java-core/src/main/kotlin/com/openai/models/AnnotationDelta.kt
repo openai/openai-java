@@ -32,8 +32,6 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
-    private var validated: Boolean = false
-
     /**
      * A citation within the message that points to a specific quote from a specific File associated
      * with the assistant or the message. Generated when the assistant uses the "file_search" tool
@@ -80,15 +78,29 @@ private constructor(
         }
     }
 
+    private var validated: Boolean = false
+
     fun validate(): AnnotationDelta = apply {
-        if (!validated) {
-            if (fileCitationDeltaAnnotation == null && filePathDeltaAnnotation == null) {
-                throw OpenAIInvalidDataException("Unknown AnnotationDelta: $_json")
-            }
-            fileCitationDeltaAnnotation?.validate()
-            filePathDeltaAnnotation?.validate()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        accept(
+            object : Visitor<Unit> {
+                override fun visitFileCitationDeltaAnnotation(
+                    fileCitationDeltaAnnotation: FileCitationDeltaAnnotation
+                ) {
+                    fileCitationDeltaAnnotation.validate()
+                }
+
+                override fun visitFilePathDeltaAnnotation(
+                    filePathDeltaAnnotation: FilePathDeltaAnnotation
+                ) {
+                    filePathDeltaAnnotation.validate()
+                }
+            }
+        )
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

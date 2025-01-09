@@ -33,8 +33,6 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
-    private var validated: Boolean = false
-
     /**
      * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
      * content of a message.
@@ -88,22 +86,33 @@ private constructor(
         }
     }
 
+    private var validated: Boolean = false
+
     fun validate(): MessageContentDelta = apply {
-        if (!validated) {
-            if (
-                imageFileDeltaBlock == null &&
-                    textDeltaBlock == null &&
-                    refusalDeltaBlock == null &&
-                    imageUrlDeltaBlock == null
-            ) {
-                throw OpenAIInvalidDataException("Unknown MessageContentDelta: $_json")
-            }
-            imageFileDeltaBlock?.validate()
-            textDeltaBlock?.validate()
-            refusalDeltaBlock?.validate()
-            imageUrlDeltaBlock?.validate()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        accept(
+            object : Visitor<Unit> {
+                override fun visitImageFileDeltaBlock(imageFileDeltaBlock: ImageFileDeltaBlock) {
+                    imageFileDeltaBlock.validate()
+                }
+
+                override fun visitTextDeltaBlock(textDeltaBlock: TextDeltaBlock) {
+                    textDeltaBlock.validate()
+                }
+
+                override fun visitRefusalDeltaBlock(refusalDeltaBlock: RefusalDeltaBlock) {
+                    refusalDeltaBlock.validate()
+                }
+
+                override fun visitImageUrlDeltaBlock(imageUrlDeltaBlock: ImageUrlDeltaBlock) {
+                    imageUrlDeltaBlock.validate()
+                }
+            }
+        )
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

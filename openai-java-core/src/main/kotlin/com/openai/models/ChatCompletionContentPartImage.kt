@@ -47,11 +47,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ChatCompletionContentPartImage = apply {
-        if (!validated) {
-            imageUrl().validate()
-            type()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        imageUrl().validate()
+        type()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -149,11 +151,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): ImageUrl = apply {
-            if (!validated) {
-                url()
-                detail()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            url()
+            detail()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

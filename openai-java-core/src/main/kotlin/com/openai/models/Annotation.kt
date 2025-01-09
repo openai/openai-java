@@ -32,8 +32,6 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
-    private var validated: Boolean = false
-
     /**
      * A citation within the message that points to a specific quote from a specific File associated
      * with the assistant or the message. Generated when the assistant uses the "file_search" tool
@@ -78,15 +76,27 @@ private constructor(
         }
     }
 
+    private var validated: Boolean = false
+
     fun validate(): Annotation = apply {
-        if (!validated) {
-            if (fileCitationAnnotation == null && filePathAnnotation == null) {
-                throw OpenAIInvalidDataException("Unknown Annotation: $_json")
-            }
-            fileCitationAnnotation?.validate()
-            filePathAnnotation?.validate()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        accept(
+            object : Visitor<Unit> {
+                override fun visitFileCitationAnnotation(
+                    fileCitationAnnotation: FileCitationAnnotation
+                ) {
+                    fileCitationAnnotation.validate()
+                }
+
+                override fun visitFilePathAnnotation(filePathAnnotation: FilePathAnnotation) {
+                    filePathAnnotation.validate()
+                }
+            }
+        )
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

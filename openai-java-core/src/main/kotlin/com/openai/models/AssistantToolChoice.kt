@@ -50,11 +50,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): AssistantToolChoice = apply {
-        if (!validated) {
-            type()
-            function().map { it.validate() }
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        type()
+        function().ifPresent { it.validate() }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

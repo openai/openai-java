@@ -61,12 +61,14 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): FileSearchToolCall = apply {
-        if (!validated) {
-            id()
-            fileSearch().validate()
-            type()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        fileSearch().validate()
+        type()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -180,11 +182,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): FileSearch = apply {
-            if (!validated) {
-                rankingOptions().map { it.validate() }
-                results().map { it.forEach { it.validate() } }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            rankingOptions().ifPresent { it.validate() }
+            results().ifPresent { it.forEach { it.validate() } }
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -307,11 +311,13 @@ private constructor(
             private var validated: Boolean = false
 
             fun validate(): RankingOptions = apply {
-                if (!validated) {
-                    ranker()
-                    scoreThreshold()
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                ranker()
+                scoreThreshold()
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)
@@ -521,13 +527,15 @@ private constructor(
             private var validated: Boolean = false
 
             fun validate(): Result = apply {
-                if (!validated) {
-                    fileId()
-                    fileName()
-                    score()
-                    content().map { it.forEach { it.validate() } }
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                fileId()
+                fileName()
+                score()
+                content().ifPresent { it.forEach { it.validate() } }
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)
@@ -674,11 +682,13 @@ private constructor(
                 private var validated: Boolean = false
 
                 fun validate(): Content = apply {
-                    if (!validated) {
-                        text()
-                        type()
-                        validated = true
+                    if (validated) {
+                        return@apply
                     }
+
+                    text()
+                    type()
+                    validated = true
                 }
 
                 fun toBuilder() = Builder().from(this)

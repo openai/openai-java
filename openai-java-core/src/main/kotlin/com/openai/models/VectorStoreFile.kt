@@ -134,17 +134,19 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): VectorStoreFile = apply {
-        if (!validated) {
-            id()
-            createdAt()
-            lastError().map { it.validate() }
-            object_()
-            status()
-            usageBytes()
-            vectorStoreId()
-            chunkingStrategy()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        createdAt()
+        lastError().ifPresent { it.validate() }
+        object_()
+        status()
+        usageBytes()
+        vectorStoreId()
+        chunkingStrategy().ifPresent { it.validate() }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -352,11 +354,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): LastError = apply {
-            if (!validated) {
-                code()
-                message()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            code()
+            message()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

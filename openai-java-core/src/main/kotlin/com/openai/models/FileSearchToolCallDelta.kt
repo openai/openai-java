@@ -63,12 +63,14 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): FileSearchToolCallDelta = apply {
-        if (!validated) {
-            index()
-            type()
-            id()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        index()
+        type()
+        id()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

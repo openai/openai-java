@@ -38,8 +38,6 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
-    private var validated: Boolean = false
-
     /**
      * `none` means the model will not call any tool and instead generates a message. `auto` means
      * the model can pick between generating a message or calling one or more tools. `required`
@@ -81,14 +79,25 @@ private constructor(
         }
     }
 
+    private var validated: Boolean = false
+
     fun validate(): ChatCompletionToolChoiceOption = apply {
-        if (!validated) {
-            if (behavior == null && chatCompletionNamedToolChoice == null) {
-                throw OpenAIInvalidDataException("Unknown ChatCompletionToolChoiceOption: $_json")
-            }
-            chatCompletionNamedToolChoice?.validate()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        accept(
+            object : Visitor<Unit> {
+                override fun visitBehavior(behavior: Behavior) {}
+
+                override fun visitChatCompletionNamedToolChoice(
+                    chatCompletionNamedToolChoice: ChatCompletionNamedToolChoice
+                ) {
+                    chatCompletionNamedToolChoice.validate()
+                }
+            }
+        )
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

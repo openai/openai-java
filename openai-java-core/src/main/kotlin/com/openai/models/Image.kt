@@ -59,12 +59,14 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): Image = apply {
-        if (!validated) {
-            b64Json()
-            revisedPrompt()
-            url()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        b64Json()
+        revisedPrompt()
+        url()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

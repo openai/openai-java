@@ -54,12 +54,14 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): RefusalDeltaBlock = apply {
-        if (!validated) {
-            index()
-            type()
-            refusal()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        index()
+        type()
+        refusal()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

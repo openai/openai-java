@@ -57,12 +57,14 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): MessageDeltaEvent = apply {
-        if (!validated) {
-            id()
-            delta().validate()
-            object_()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        delta().validate()
+        object_()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

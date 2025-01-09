@@ -75,12 +75,14 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): CodeInterpreterToolCall = apply {
-        if (!validated) {
-            id()
-            codeInterpreter().validate()
-            type()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        codeInterpreter().validate()
+        type()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -202,11 +204,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): CodeInterpreter = apply {
-            if (!validated) {
-                input()
-                outputs()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            input()
+            outputs().forEach { it.validate() }
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -317,8 +321,6 @@ private constructor(
             private val _json: JsonValue? = null,
         ) {
 
-            private var validated: Boolean = false
-
             /** Text output from the Code Interpreter tool call as part of a run step. */
             fun logs(): Optional<LogsOutput> = Optional.ofNullable(logs)
 
@@ -343,15 +345,25 @@ private constructor(
                 }
             }
 
+            private var validated: Boolean = false
+
             fun validate(): Output = apply {
-                if (!validated) {
-                    if (logs == null && image == null) {
-                        throw OpenAIInvalidDataException("Unknown Output: $_json")
-                    }
-                    logs?.validate()
-                    image?.validate()
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                accept(
+                    object : Visitor<Unit> {
+                        override fun visitLogs(logs: LogsOutput) {
+                            logs.validate()
+                        }
+
+                        override fun visitImage(image: ImageOutput) {
+                            image.validate()
+                        }
+                    }
+                )
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -466,11 +478,13 @@ private constructor(
                 private var validated: Boolean = false
 
                 fun validate(): LogsOutput = apply {
-                    if (!validated) {
-                        logs()
-                        type()
-                        validated = true
+                    if (validated) {
+                        return@apply
                     }
+
+                    logs()
+                    type()
+                    validated = true
                 }
 
                 fun toBuilder() = Builder().from(this)
@@ -636,11 +650,13 @@ private constructor(
                 private var validated: Boolean = false
 
                 fun validate(): ImageOutput = apply {
-                    if (!validated) {
-                        image().validate()
-                        type()
-                        validated = true
+                    if (validated) {
+                        return@apply
                     }
+
+                    image().validate()
+                    type()
+                    validated = true
                 }
 
                 fun toBuilder() = Builder().from(this)
@@ -735,10 +751,12 @@ private constructor(
                     private var validated: Boolean = false
 
                     fun validate(): Image = apply {
-                        if (!validated) {
-                            fileId()
-                            validated = true
+                        if (validated) {
+                            return@apply
                         }
+
+                        fileId()
+                        validated = true
                     }
 
                     fun toBuilder() = Builder().from(this)

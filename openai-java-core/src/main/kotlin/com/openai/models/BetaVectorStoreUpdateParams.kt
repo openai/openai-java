@@ -115,11 +115,13 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): BetaVectorStoreUpdateBody = apply {
-            if (!validated) {
-                expiresAfter().map { it.validate() }
-                name()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            expiresAfter().ifPresent { it.validate() }
+            name()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -436,11 +438,13 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): ExpiresAfter = apply {
-            if (!validated) {
-                anchor()
-                days()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            anchor()
+            days()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

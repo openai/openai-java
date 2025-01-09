@@ -168,13 +168,15 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): UploadCreateBody = apply {
-            if (!validated) {
-                bytes()
-                filename()
-                mimeType()
-                purpose()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            bytes()
+            filename()
+            mimeType()
+            purpose()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

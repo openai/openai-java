@@ -66,13 +66,15 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): Model = apply {
-        if (!validated) {
-            id()
-            created()
-            object_()
-            ownedBy()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        created()
+        object_()
+        ownedBy()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

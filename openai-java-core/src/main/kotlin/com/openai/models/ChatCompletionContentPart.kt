@@ -29,8 +29,6 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
-    private var validated: Boolean = false
-
     /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
     fun chatCompletionContentPartText(): Optional<ChatCompletionContentPartText> =
         Optional.ofNullable(chatCompletionContentPartText)
@@ -78,20 +76,35 @@ private constructor(
         }
     }
 
+    private var validated: Boolean = false
+
     fun validate(): ChatCompletionContentPart = apply {
-        if (!validated) {
-            if (
-                chatCompletionContentPartText == null &&
-                    chatCompletionContentPartImage == null &&
-                    chatCompletionContentPartInputAudio == null
-            ) {
-                throw OpenAIInvalidDataException("Unknown ChatCompletionContentPart: $_json")
-            }
-            chatCompletionContentPartText?.validate()
-            chatCompletionContentPartImage?.validate()
-            chatCompletionContentPartInputAudio?.validate()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        accept(
+            object : Visitor<Unit> {
+                override fun visitChatCompletionContentPartText(
+                    chatCompletionContentPartText: ChatCompletionContentPartText
+                ) {
+                    chatCompletionContentPartText.validate()
+                }
+
+                override fun visitChatCompletionContentPartImage(
+                    chatCompletionContentPartImage: ChatCompletionContentPartImage
+                ) {
+                    chatCompletionContentPartImage.validate()
+                }
+
+                override fun visitChatCompletionContentPartInputAudio(
+                    chatCompletionContentPartInputAudio: ChatCompletionContentPartInputAudio
+                ) {
+                    chatCompletionContentPartInputAudio.validate()
+                }
+            }
+        )
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

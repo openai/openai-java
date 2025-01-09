@@ -231,14 +231,16 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): EmbeddingCreateBody = apply {
-            if (!validated) {
-                input()
-                model()
-                dimensions()
-                encodingFormat()
-                user()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            input().validate()
+            model()
+            dimensions()
+            encodingFormat()
+            user()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -686,8 +688,6 @@ constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        private var validated: Boolean = false
-
         /** The string that will be turned into an embedding. */
         fun string(): Optional<String> = Optional.ofNullable(string)
 
@@ -734,18 +734,25 @@ constructor(
             }
         }
 
+        private var validated: Boolean = false
+
         fun validate(): Input = apply {
-            if (!validated) {
-                if (
-                    string == null &&
-                        arrayOfStrings == null &&
-                        arrayOfTokens == null &&
-                        arrayOfTokenArrays == null
-                ) {
-                    throw OpenAIInvalidDataException("Unknown Input: $_json")
-                }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitString(string: String) {}
+
+                    override fun visitArrayOfStrings(arrayOfStrings: List<String>) {}
+
+                    override fun visitArrayOfTokens(arrayOfTokens: List<Long>) {}
+
+                    override fun visitArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>) {}
+                }
+            )
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

@@ -55,10 +55,12 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): RunStepDelta = apply {
-        if (!validated) {
-            stepDetails()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        stepDetails().ifPresent { it.validate() }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -127,8 +129,6 @@ private constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        private var validated: Boolean = false
-
         /** Details of the message creation by the run step. */
         fun runStepDeltaMessageDelta(): Optional<RunStepDeltaMessageDelta> =
             Optional.ofNullable(runStepDeltaMessageDelta)
@@ -160,15 +160,29 @@ private constructor(
             }
         }
 
+        private var validated: Boolean = false
+
         fun validate(): StepDetails = apply {
-            if (!validated) {
-                if (runStepDeltaMessageDelta == null && toolCallDeltaObject == null) {
-                    throw OpenAIInvalidDataException("Unknown StepDetails: $_json")
-                }
-                runStepDeltaMessageDelta?.validate()
-                toolCallDeltaObject?.validate()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitRunStepDeltaMessageDelta(
+                        runStepDeltaMessageDelta: RunStepDeltaMessageDelta
+                    ) {
+                        runStepDeltaMessageDelta.validate()
+                    }
+
+                    override fun visitToolCallDeltaObject(
+                        toolCallDeltaObject: ToolCallDeltaObject
+                    ) {
+                        toolCallDeltaObject.validate()
+                    }
+                }
+            )
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

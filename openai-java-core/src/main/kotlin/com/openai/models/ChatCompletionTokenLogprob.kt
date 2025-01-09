@@ -88,13 +88,15 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ChatCompletionTokenLogprob = apply {
-        if (!validated) {
-            token()
-            bytes()
-            logprob()
-            topLogprobs().forEach { it.validate() }
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        token()
+        bytes()
+        logprob()
+        topLogprobs().forEach { it.validate() }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -304,12 +306,14 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): TopLogprob = apply {
-            if (!validated) {
-                token()
-                bytes()
-                logprob()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            token()
+            bytes()
+            logprob()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

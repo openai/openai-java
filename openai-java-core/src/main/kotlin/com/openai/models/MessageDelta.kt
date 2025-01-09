@@ -52,11 +52,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): MessageDelta = apply {
-        if (!validated) {
-            content()
-            role()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        content().ifPresent { it.forEach { it.validate() } }
+        role()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

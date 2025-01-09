@@ -48,11 +48,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ResponseFormatJsonSchema = apply {
-        if (!validated) {
-            jsonSchema().validate()
-            type()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        jsonSchema().validate()
+        type()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -188,13 +190,15 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): JsonSchema = apply {
-            if (!validated) {
-                name()
-                description()
-                schema().map { it.validate() }
-                strict()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            name()
+            description()
+            schema().ifPresent { it.validate() }
+            strict()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -331,9 +335,11 @@ private constructor(
             private var validated: Boolean = false
 
             fun validate(): Schema = apply {
-                if (!validated) {
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)

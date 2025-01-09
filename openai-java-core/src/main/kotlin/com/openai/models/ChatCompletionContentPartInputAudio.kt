@@ -48,11 +48,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ChatCompletionContentPartInputAudio = apply {
-        if (!validated) {
-            inputAudio().validate()
-            type()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        inputAudio().validate()
+        type()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -148,11 +150,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): InputAudio = apply {
-            if (!validated) {
-                data()
-                format()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            data()
+            format()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

@@ -85,15 +85,17 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): FineTuningJobEvent = apply {
-        if (!validated) {
-            id()
-            createdAt()
-            level()
-            message()
-            object_()
-            type()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        createdAt()
+        level()
+        message()
+        object_()
+        type()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

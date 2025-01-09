@@ -104,13 +104,15 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): FunctionDefinition = apply {
-        if (!validated) {
-            name()
-            description()
-            parameters().map { it.validate() }
-            strict()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        name()
+        description()
+        parameters().ifPresent { it.validate() }
+        strict()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
