@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.11.1 (2025-01-09)
+
+Full Changelog: [v0.11.0...v0.11.1](https://github.com/openai/openai-java/compare/v0.11.0...v0.11.1)
+
+### Chores
+
+* **internal:** add some missing newlines between methods ([#100](https://github.com/openai/openai-java/issues/100)) ([afc2998](https://github.com/openai/openai-java/commit/afc2998ac124a26fe3ec92207f5ff4c9614ff673))
+* **internal:** spec update ([#97](https://github.com/openai/openai-java/issues/97)) ([0cff792](https://github.com/openai/openai-java/commit/0cff79271c63be46f5502a138ce1ad67a146724f))
+
+
+### Documentation
+
+* update some builder method javadocs ([#99](https://github.com/openai/openai-java/issues/99)) ([192965a](https://github.com/openai/openai-java/commit/192965abf73b9868d808c407bfc9fb73a507def7))
+
 ## 0.11.0 (2025-01-08)
 
 Full Changelog: [v0.10.0...v0.11.0](https://github.com/openai/openai-java/compare/v0.10.0...v0.11.0)
