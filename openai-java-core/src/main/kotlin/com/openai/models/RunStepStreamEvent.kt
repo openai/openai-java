@@ -55,6 +55,7 @@ private constructor(
      */
     fun threadRunStepCreated(): Optional<ThreadRunStepCreated> =
         Optional.ofNullable(threadRunStepCreated)
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) moves to an
@@ -62,12 +63,14 @@ private constructor(
      */
     fun threadRunStepInProgress(): Optional<ThreadRunStepInProgress> =
         Optional.ofNullable(threadRunStepInProgress)
+
     /**
      * Occurs when parts of a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) are being
      * streamed.
      */
     fun threadRunStepDelta(): Optional<ThreadRunStepDelta> = Optional.ofNullable(threadRunStepDelta)
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
@@ -75,12 +78,14 @@ private constructor(
      */
     fun threadRunStepCompleted(): Optional<ThreadRunStepCompleted> =
         Optional.ofNullable(threadRunStepCompleted)
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) fails.
      */
     fun threadRunStepFailed(): Optional<ThreadRunStepFailed> =
         Optional.ofNullable(threadRunStepFailed)
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
@@ -88,6 +93,7 @@ private constructor(
      */
     fun threadRunStepCancelled(): Optional<ThreadRunStepCancelled> =
         Optional.ofNullable(threadRunStepCancelled)
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) expires.
@@ -115,6 +121,7 @@ private constructor(
      */
     fun asThreadRunStepCreated(): ThreadRunStepCreated =
         threadRunStepCreated.getOrThrow("threadRunStepCreated")
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) moves to an
@@ -122,6 +129,7 @@ private constructor(
      */
     fun asThreadRunStepInProgress(): ThreadRunStepInProgress =
         threadRunStepInProgress.getOrThrow("threadRunStepInProgress")
+
     /**
      * Occurs when parts of a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) are being
@@ -129,6 +137,7 @@ private constructor(
      */
     fun asThreadRunStepDelta(): ThreadRunStepDelta =
         threadRunStepDelta.getOrThrow("threadRunStepDelta")
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
@@ -136,12 +145,14 @@ private constructor(
      */
     fun asThreadRunStepCompleted(): ThreadRunStepCompleted =
         threadRunStepCompleted.getOrThrow("threadRunStepCompleted")
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) fails.
      */
     fun asThreadRunStepFailed(): ThreadRunStepFailed =
         threadRunStepFailed.getOrThrow("threadRunStepFailed")
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
@@ -149,6 +160,7 @@ private constructor(
      */
     fun asThreadRunStepCancelled(): ThreadRunStepCancelled =
         threadRunStepCancelled.getOrThrow("threadRunStepCancelled")
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) expires.

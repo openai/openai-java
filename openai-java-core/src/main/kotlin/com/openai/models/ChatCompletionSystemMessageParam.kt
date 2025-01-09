@@ -183,6 +183,7 @@ private constructor(
 
         /** The contents of the system message. */
         fun textContent(): Optional<String> = Optional.ofNullable(textContent)
+
         /**
          * An array of content parts with a defined type. For system messages, only type `text` is
          * supported.
@@ -196,6 +197,7 @@ private constructor(
 
         /** The contents of the system message. */
         fun asTextContent(): String = textContent.getOrThrow("textContent")
+
         /**
          * An array of content parts with a defined type. For system messages, only type `text` is
          * supported.

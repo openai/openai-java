@@ -3622,6 +3622,7 @@ constructor(
          * means the model can pick between generating a message or calling a function.
          */
         fun behavior(): Optional<Behavior> = Optional.ofNullable(behavior)
+
         /**
          * Specifying a particular function via `{"name": "my_function"}` forces the model to call
          * that function.
@@ -3638,6 +3639,7 @@ constructor(
          * means the model can pick between generating a message or calling a function.
          */
         fun asBehavior(): Behavior = behavior.getOrThrow("behavior")
+
         /**
          * Specifying a particular function via `{"name": "my_function"}` forces the model to call
          * that function.

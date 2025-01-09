@@ -132,6 +132,7 @@ private constructor(
         /** Details of the message creation by the run step. */
         fun runStepDeltaMessageDelta(): Optional<RunStepDeltaMessageDelta> =
             Optional.ofNullable(runStepDeltaMessageDelta)
+
         /** Details of the tool call. */
         fun toolCallDeltaObject(): Optional<ToolCallDeltaObject> =
             Optional.ofNullable(toolCallDeltaObject)
@@ -143,6 +144,7 @@ private constructor(
         /** Details of the message creation by the run step. */
         fun asRunStepDeltaMessageDelta(): RunStepDeltaMessageDelta =
             runStepDeltaMessageDelta.getOrThrow("runStepDeltaMessageDelta")
+
         /** Details of the tool call. */
         fun asToolCallDeltaObject(): ToolCallDeltaObject =
             toolCallDeltaObject.getOrThrow("toolCallDeltaObject")

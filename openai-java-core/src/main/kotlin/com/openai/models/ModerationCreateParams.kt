@@ -449,8 +449,10 @@ constructor(
 
         /** A string of text to classify for moderation. */
         fun string(): Optional<String> = Optional.ofNullable(string)
+
         /** An array of strings to classify for moderation. */
         fun strings(): Optional<List<String>> = Optional.ofNullable(strings)
+
         /** An array of multi-modal inputs to the moderation model. */
         fun moderationMultiModalArray(): Optional<List<ModerationMultiModalInput>> =
             Optional.ofNullable(moderationMultiModalArray)
@@ -463,8 +465,10 @@ constructor(
 
         /** A string of text to classify for moderation. */
         fun asString(): String = string.getOrThrow("string")
+
         /** An array of strings to classify for moderation. */
         fun asStrings(): List<String> = strings.getOrThrow("strings")
+
         /** An array of multi-modal inputs to the moderation model. */
         fun asModerationMultiModalArray(): List<ModerationMultiModalInput> =
             moderationMultiModalArray.getOrThrow("moderationMultiModalArray")

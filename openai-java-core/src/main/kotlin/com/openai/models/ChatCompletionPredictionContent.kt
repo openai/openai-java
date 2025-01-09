@@ -187,6 +187,7 @@ private constructor(
          * regenerating with minor changes.
          */
         fun textContent(): Optional<String> = Optional.ofNullable(textContent)
+
         /**
          * An array of content parts with a defined type. Supported options differ based on the
          * [model](https://platform.openai.com/docs/models) being used to generate the response. Can
@@ -204,6 +205,7 @@ private constructor(
          * regenerating with minor changes.
          */
         fun asTextContent(): String = textContent.getOrThrow("textContent")
+
         /**
          * An array of content parts with a defined type. Supported options differ based on the
          * [model](https://platform.openai.com/docs/models) being used to generate the response. Can

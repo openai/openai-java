@@ -87,58 +87,70 @@ private constructor(
      * created.
      */
     fun threadCreated(): Optional<ThreadCreated> = Optional.ofNullable(threadCreated)
+
     /**
      * Occurs when a new [run](https://platform.openai.com/docs/api-reference/runs/object) is
      * created.
      */
     fun threadRunCreated(): Optional<ThreadRunCreated> = Optional.ofNullable(threadRunCreated)
+
     /**
      * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) moves to a
      * `queued` status.
      */
     fun threadRunQueued(): Optional<ThreadRunQueued> = Optional.ofNullable(threadRunQueued)
+
     /**
      * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) moves to an
      * `in_progress` status.
      */
     fun threadRunInProgress(): Optional<ThreadRunInProgress> =
         Optional.ofNullable(threadRunInProgress)
+
     /**
      * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) moves to a
      * `requires_action` status.
      */
     fun threadRunRequiresAction(): Optional<ThreadRunRequiresAction> =
         Optional.ofNullable(threadRunRequiresAction)
+
     /**
      * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) is completed.
      */
     fun threadRunCompleted(): Optional<ThreadRunCompleted> = Optional.ofNullable(threadRunCompleted)
+
     /**
      * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) ends with
      * status `incomplete`.
      */
     fun threadRunIncomplete(): Optional<ThreadRunIncomplete> =
         Optional.ofNullable(threadRunIncomplete)
+
     /** Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) fails. */
     fun threadRunFailed(): Optional<ThreadRunFailed> = Optional.ofNullable(threadRunFailed)
+
     /**
      * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) moves to a
      * `cancelling` status.
      */
     fun threadRunCancelling(): Optional<ThreadRunCancelling> =
         Optional.ofNullable(threadRunCancelling)
+
     /**
      * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) is cancelled.
      */
     fun threadRunCancelled(): Optional<ThreadRunCancelled> = Optional.ofNullable(threadRunCancelled)
+
     /** Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) expires. */
     fun threadRunExpired(): Optional<ThreadRunExpired> = Optional.ofNullable(threadRunExpired)
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is created.
      */
     fun threadRunStepCreated(): Optional<ThreadRunStepCreated> =
         Optional.ofNullable(threadRunStepCreated)
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) moves to an
@@ -146,12 +158,14 @@ private constructor(
      */
     fun threadRunStepInProgress(): Optional<ThreadRunStepInProgress> =
         Optional.ofNullable(threadRunStepInProgress)
+
     /**
      * Occurs when parts of a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) are being
      * streamed.
      */
     fun threadRunStepDelta(): Optional<ThreadRunStepDelta> = Optional.ofNullable(threadRunStepDelta)
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
@@ -159,12 +173,14 @@ private constructor(
      */
     fun threadRunStepCompleted(): Optional<ThreadRunStepCompleted> =
         Optional.ofNullable(threadRunStepCompleted)
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) fails.
      */
     fun threadRunStepFailed(): Optional<ThreadRunStepFailed> =
         Optional.ofNullable(threadRunStepFailed)
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
@@ -172,41 +188,48 @@ private constructor(
      */
     fun threadRunStepCancelled(): Optional<ThreadRunStepCancelled> =
         Optional.ofNullable(threadRunStepCancelled)
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) expires.
      */
     fun threadRunStepExpired(): Optional<ThreadRunStepExpired> =
         Optional.ofNullable(threadRunStepExpired)
+
     /**
      * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) is
      * created.
      */
     fun threadMessageCreated(): Optional<ThreadMessageCreated> =
         Optional.ofNullable(threadMessageCreated)
+
     /**
      * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) moves
      * to an `in_progress` state.
      */
     fun threadMessageInProgress(): Optional<ThreadMessageInProgress> =
         Optional.ofNullable(threadMessageInProgress)
+
     /**
      * Occurs when parts of a
      * [Message](https://platform.openai.com/docs/api-reference/messages/object) are being streamed.
      */
     fun threadMessageDelta(): Optional<ThreadMessageDelta> = Optional.ofNullable(threadMessageDelta)
+
     /**
      * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) is
      * completed.
      */
     fun threadMessageCompleted(): Optional<ThreadMessageCompleted> =
         Optional.ofNullable(threadMessageCompleted)
+
     /**
      * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) ends
      * before it is completed.
      */
     fun threadMessageIncomplete(): Optional<ThreadMessageIncomplete> =
         Optional.ofNullable(threadMessageIncomplete)
+
     /**
      * Occurs when an [error](https://platform.openai.com/docs/guides/error-codes#api-errors)
      * occurs. This can happen due to an internal server error or a timeout.
@@ -266,60 +289,72 @@ private constructor(
      * created.
      */
     fun asThreadCreated(): ThreadCreated = threadCreated.getOrThrow("threadCreated")
+
     /**
      * Occurs when a new [run](https://platform.openai.com/docs/api-reference/runs/object) is
      * created.
      */
     fun asThreadRunCreated(): ThreadRunCreated = threadRunCreated.getOrThrow("threadRunCreated")
+
     /**
      * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) moves to a
      * `queued` status.
      */
     fun asThreadRunQueued(): ThreadRunQueued = threadRunQueued.getOrThrow("threadRunQueued")
+
     /**
      * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) moves to an
      * `in_progress` status.
      */
     fun asThreadRunInProgress(): ThreadRunInProgress =
         threadRunInProgress.getOrThrow("threadRunInProgress")
+
     /**
      * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) moves to a
      * `requires_action` status.
      */
     fun asThreadRunRequiresAction(): ThreadRunRequiresAction =
         threadRunRequiresAction.getOrThrow("threadRunRequiresAction")
+
     /**
      * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) is completed.
      */
     fun asThreadRunCompleted(): ThreadRunCompleted =
         threadRunCompleted.getOrThrow("threadRunCompleted")
+
     /**
      * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) ends with
      * status `incomplete`.
      */
     fun asThreadRunIncomplete(): ThreadRunIncomplete =
         threadRunIncomplete.getOrThrow("threadRunIncomplete")
+
     /** Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) fails. */
     fun asThreadRunFailed(): ThreadRunFailed = threadRunFailed.getOrThrow("threadRunFailed")
+
     /**
      * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) moves to a
      * `cancelling` status.
      */
     fun asThreadRunCancelling(): ThreadRunCancelling =
         threadRunCancelling.getOrThrow("threadRunCancelling")
+
     /**
      * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) is cancelled.
      */
     fun asThreadRunCancelled(): ThreadRunCancelled =
         threadRunCancelled.getOrThrow("threadRunCancelled")
+
     /** Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) expires. */
     fun asThreadRunExpired(): ThreadRunExpired = threadRunExpired.getOrThrow("threadRunExpired")
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is created.
      */
     fun asThreadRunStepCreated(): ThreadRunStepCreated =
         threadRunStepCreated.getOrThrow("threadRunStepCreated")
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) moves to an
@@ -327,6 +362,7 @@ private constructor(
      */
     fun asThreadRunStepInProgress(): ThreadRunStepInProgress =
         threadRunStepInProgress.getOrThrow("threadRunStepInProgress")
+
     /**
      * Occurs when parts of a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) are being
@@ -334,6 +370,7 @@ private constructor(
      */
     fun asThreadRunStepDelta(): ThreadRunStepDelta =
         threadRunStepDelta.getOrThrow("threadRunStepDelta")
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
@@ -341,12 +378,14 @@ private constructor(
      */
     fun asThreadRunStepCompleted(): ThreadRunStepCompleted =
         threadRunStepCompleted.getOrThrow("threadRunStepCompleted")
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) fails.
      */
     fun asThreadRunStepFailed(): ThreadRunStepFailed =
         threadRunStepFailed.getOrThrow("threadRunStepFailed")
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
@@ -354,42 +393,49 @@ private constructor(
      */
     fun asThreadRunStepCancelled(): ThreadRunStepCancelled =
         threadRunStepCancelled.getOrThrow("threadRunStepCancelled")
+
     /**
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) expires.
      */
     fun asThreadRunStepExpired(): ThreadRunStepExpired =
         threadRunStepExpired.getOrThrow("threadRunStepExpired")
+
     /**
      * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) is
      * created.
      */
     fun asThreadMessageCreated(): ThreadMessageCreated =
         threadMessageCreated.getOrThrow("threadMessageCreated")
+
     /**
      * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) moves
      * to an `in_progress` state.
      */
     fun asThreadMessageInProgress(): ThreadMessageInProgress =
         threadMessageInProgress.getOrThrow("threadMessageInProgress")
+
     /**
      * Occurs when parts of a
      * [Message](https://platform.openai.com/docs/api-reference/messages/object) are being streamed.
      */
     fun asThreadMessageDelta(): ThreadMessageDelta =
         threadMessageDelta.getOrThrow("threadMessageDelta")
+
     /**
      * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) is
      * completed.
      */
     fun asThreadMessageCompleted(): ThreadMessageCompleted =
         threadMessageCompleted.getOrThrow("threadMessageCompleted")
+
     /**
      * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) ends
      * before it is completed.
      */
     fun asThreadMessageIncomplete(): ThreadMessageIncomplete =
         threadMessageIncomplete.getOrThrow("threadMessageIncomplete")
+
     /**
      * Occurs when an [error](https://platform.openai.com/docs/guides/error-codes#api-errors)
      * occurs. This can happen due to an internal server error or a timeout.

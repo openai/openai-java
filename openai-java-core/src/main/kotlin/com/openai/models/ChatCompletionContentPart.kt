@@ -34,9 +34,11 @@ private constructor(
     /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
     fun chatCompletionContentPartText(): Optional<ChatCompletionContentPartText> =
         Optional.ofNullable(chatCompletionContentPartText)
+
     /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
     fun chatCompletionContentPartImage(): Optional<ChatCompletionContentPartImage> =
         Optional.ofNullable(chatCompletionContentPartImage)
+
     /** Learn about [audio inputs](https://platform.openai.com/docs/guides/audio). */
     fun chatCompletionContentPartInputAudio(): Optional<ChatCompletionContentPartInputAudio> =
         Optional.ofNullable(chatCompletionContentPartInputAudio)
@@ -51,9 +53,11 @@ private constructor(
     /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
     fun asChatCompletionContentPartText(): ChatCompletionContentPartText =
         chatCompletionContentPartText.getOrThrow("chatCompletionContentPartText")
+
     /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
     fun asChatCompletionContentPartImage(): ChatCompletionContentPartImage =
         chatCompletionContentPartImage.getOrThrow("chatCompletionContentPartImage")
+
     /** Learn about [audio inputs](https://platform.openai.com/docs/guides/audio). */
     fun asChatCompletionContentPartInputAudio(): ChatCompletionContentPartInputAudio =
         chatCompletionContentPartInputAudio.getOrThrow("chatCompletionContentPartInputAudio")
