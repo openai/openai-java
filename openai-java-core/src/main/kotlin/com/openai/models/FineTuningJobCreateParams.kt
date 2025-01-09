@@ -381,17 +381,19 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): FineTuningJobCreateBody = apply {
-            if (!validated) {
-                model()
-                trainingFile()
-                hyperparameters().map { it.validate() }
-                integrations().map { it.forEach { it.validate() } }
-                method().map { it.validate() }
-                seed()
-                suffix()
-                validationFile()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            model()
+            trainingFile()
+            hyperparameters().ifPresent { it.validate() }
+            integrations().ifPresent { it.forEach { it.validate() } }
+            method().ifPresent { it.validate() }
+            seed()
+            suffix()
+            validationFile()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -1176,12 +1178,14 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): Hyperparameters = apply {
-            if (!validated) {
-                batchSize()
-                learningRateMultiplier()
-                nEpochs()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            batchSize().ifPresent { it.validate() }
+            learningRateMultiplier().ifPresent { it.validate() }
+            nEpochs().ifPresent { it.validate() }
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -1325,8 +1329,6 @@ constructor(
             private val _json: JsonValue? = null,
         ) {
 
-            private var validated: Boolean = false
-
             fun behavior(): Optional<Behavior> = Optional.ofNullable(behavior)
 
             fun integer(): Optional<Long> = Optional.ofNullable(integer)
@@ -1349,13 +1351,21 @@ constructor(
                 }
             }
 
+            private var validated: Boolean = false
+
             fun validate(): BatchSize = apply {
-                if (!validated) {
-                    if (behavior == null && integer == null) {
-                        throw OpenAIInvalidDataException("Unknown BatchSize: $_json")
-                    }
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                accept(
+                    object : Visitor<Unit> {
+                        override fun visitBehavior(behavior: Behavior) {}
+
+                        override fun visitInteger(integer: Long) {}
+                    }
+                )
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -1491,8 +1501,6 @@ constructor(
             private val _json: JsonValue? = null,
         ) {
 
-            private var validated: Boolean = false
-
             fun behavior(): Optional<Behavior> = Optional.ofNullable(behavior)
 
             fun number(): Optional<Double> = Optional.ofNullable(number)
@@ -1515,13 +1523,21 @@ constructor(
                 }
             }
 
+            private var validated: Boolean = false
+
             fun validate(): LearningRateMultiplier = apply {
-                if (!validated) {
-                    if (behavior == null && number == null) {
-                        throw OpenAIInvalidDataException("Unknown LearningRateMultiplier: $_json")
-                    }
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                accept(
+                    object : Visitor<Unit> {
+                        override fun visitBehavior(behavior: Behavior) {}
+
+                        override fun visitNumber(number: Double) {}
+                    }
+                )
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -1660,8 +1676,6 @@ constructor(
             private val _json: JsonValue? = null,
         ) {
 
-            private var validated: Boolean = false
-
             fun behavior(): Optional<Behavior> = Optional.ofNullable(behavior)
 
             fun integer(): Optional<Long> = Optional.ofNullable(integer)
@@ -1684,13 +1698,21 @@ constructor(
                 }
             }
 
+            private var validated: Boolean = false
+
             fun validate(): NEpochs = apply {
-                if (!validated) {
-                    if (behavior == null && integer == null) {
-                        throw OpenAIInvalidDataException("Unknown NEpochs: $_json")
-                    }
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                accept(
+                    object : Visitor<Unit> {
+                        override fun visitBehavior(behavior: Behavior) {}
+
+                        override fun visitInteger(integer: Long) {}
+                    }
+                )
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -1878,11 +1900,13 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): Integration = apply {
-            if (!validated) {
-                type()
-                wandb().validate()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            type()
+            wandb().validate()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -2088,13 +2112,15 @@ constructor(
             private var validated: Boolean = false
 
             fun validate(): Wandb = apply {
-                if (!validated) {
-                    project()
-                    entity()
-                    name()
-                    tags()
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                project()
+                entity()
+                name()
+                tags()
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)
@@ -2310,12 +2336,14 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): Method = apply {
-            if (!validated) {
-                dpo().map { it.validate() }
-                supervised().map { it.validate() }
-                type()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            dpo().ifPresent { it.validate() }
+            supervised().ifPresent { it.validate() }
+            type()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -2416,10 +2444,12 @@ constructor(
             private var validated: Boolean = false
 
             fun validate(): Dpo = apply {
-                if (!validated) {
-                    hyperparameters().map { it.validate() }
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                hyperparameters().ifPresent { it.validate() }
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)
@@ -2563,13 +2593,15 @@ constructor(
                 private var validated: Boolean = false
 
                 fun validate(): Hyperparameters = apply {
-                    if (!validated) {
-                        batchSize()
-                        beta()
-                        learningRateMultiplier()
-                        nEpochs()
-                        validated = true
+                    if (validated) {
+                        return@apply
                     }
+
+                    batchSize().ifPresent { it.validate() }
+                    beta().ifPresent { it.validate() }
+                    learningRateMultiplier().ifPresent { it.validate() }
+                    nEpochs().ifPresent { it.validate() }
+                    validated = true
                 }
 
                 fun toBuilder() = Builder().from(this)
@@ -2745,8 +2777,6 @@ constructor(
                     private val _json: JsonValue? = null,
                 ) {
 
-                    private var validated: Boolean = false
-
                     fun auto(): Optional<Auto> = Optional.ofNullable(auto)
 
                     fun manual(): Optional<Long> = Optional.ofNullable(manual)
@@ -2769,13 +2799,21 @@ constructor(
                         }
                     }
 
+                    private var validated: Boolean = false
+
                     fun validate(): BatchSize = apply {
-                        if (!validated) {
-                            if (auto == null && manual == null) {
-                                throw OpenAIInvalidDataException("Unknown BatchSize: $_json")
-                            }
-                            validated = true
+                        if (validated) {
+                            return@apply
                         }
+
+                        accept(
+                            object : Visitor<Unit> {
+                                override fun visitAuto(auto: Auto) {}
+
+                                override fun visitManual(manual: Long) {}
+                            }
+                        )
+                        validated = true
                     }
 
                     override fun equals(other: Any?): Boolean {
@@ -2912,8 +2950,6 @@ constructor(
                     private val _json: JsonValue? = null,
                 ) {
 
-                    private var validated: Boolean = false
-
                     fun auto(): Optional<Auto> = Optional.ofNullable(auto)
 
                     fun manual(): Optional<Double> = Optional.ofNullable(manual)
@@ -2936,13 +2972,21 @@ constructor(
                         }
                     }
 
+                    private var validated: Boolean = false
+
                     fun validate(): Beta = apply {
-                        if (!validated) {
-                            if (auto == null && manual == null) {
-                                throw OpenAIInvalidDataException("Unknown Beta: $_json")
-                            }
-                            validated = true
+                        if (validated) {
+                            return@apply
                         }
+
+                        accept(
+                            object : Visitor<Unit> {
+                                override fun visitAuto(auto: Auto) {}
+
+                                override fun visitManual(manual: Double) {}
+                            }
+                        )
+                        validated = true
                     }
 
                     override fun equals(other: Any?): Boolean {
@@ -3079,8 +3123,6 @@ constructor(
                     private val _json: JsonValue? = null,
                 ) {
 
-                    private var validated: Boolean = false
-
                     fun auto(): Optional<Auto> = Optional.ofNullable(auto)
 
                     fun manual(): Optional<Double> = Optional.ofNullable(manual)
@@ -3103,15 +3145,21 @@ constructor(
                         }
                     }
 
+                    private var validated: Boolean = false
+
                     fun validate(): LearningRateMultiplier = apply {
-                        if (!validated) {
-                            if (auto == null && manual == null) {
-                                throw OpenAIInvalidDataException(
-                                    "Unknown LearningRateMultiplier: $_json"
-                                )
-                            }
-                            validated = true
+                        if (validated) {
+                            return@apply
                         }
+
+                        accept(
+                            object : Visitor<Unit> {
+                                override fun visitAuto(auto: Auto) {}
+
+                                override fun visitManual(manual: Double) {}
+                            }
+                        )
+                        validated = true
                     }
 
                     override fun equals(other: Any?): Boolean {
@@ -3256,8 +3304,6 @@ constructor(
                     private val _json: JsonValue? = null,
                 ) {
 
-                    private var validated: Boolean = false
-
                     fun auto(): Optional<Auto> = Optional.ofNullable(auto)
 
                     fun manual(): Optional<Long> = Optional.ofNullable(manual)
@@ -3280,13 +3326,21 @@ constructor(
                         }
                     }
 
+                    private var validated: Boolean = false
+
                     fun validate(): NEpochs = apply {
-                        if (!validated) {
-                            if (auto == null && manual == null) {
-                                throw OpenAIInvalidDataException("Unknown NEpochs: $_json")
-                            }
-                            validated = true
+                        if (validated) {
+                            return@apply
                         }
+
+                        accept(
+                            object : Visitor<Unit> {
+                                override fun visitAuto(auto: Auto) {}
+
+                                override fun visitManual(manual: Long) {}
+                            }
+                        )
+                        validated = true
                     }
 
                     override fun equals(other: Any?): Boolean {
@@ -3474,10 +3528,12 @@ constructor(
             private var validated: Boolean = false
 
             fun validate(): Supervised = apply {
-                if (!validated) {
-                    hyperparameters().map { it.validate() }
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                hyperparameters().ifPresent { it.validate() }
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)
@@ -3607,12 +3663,14 @@ constructor(
                 private var validated: Boolean = false
 
                 fun validate(): Hyperparameters = apply {
-                    if (!validated) {
-                        batchSize()
-                        learningRateMultiplier()
-                        nEpochs()
-                        validated = true
+                    if (validated) {
+                        return@apply
                     }
+
+                    batchSize().ifPresent { it.validate() }
+                    learningRateMultiplier().ifPresent { it.validate() }
+                    nEpochs().ifPresent { it.validate() }
+                    validated = true
                 }
 
                 fun toBuilder() = Builder().from(this)
@@ -3761,8 +3819,6 @@ constructor(
                     private val _json: JsonValue? = null,
                 ) {
 
-                    private var validated: Boolean = false
-
                     fun auto(): Optional<Auto> = Optional.ofNullable(auto)
 
                     fun manual(): Optional<Long> = Optional.ofNullable(manual)
@@ -3785,13 +3841,21 @@ constructor(
                         }
                     }
 
+                    private var validated: Boolean = false
+
                     fun validate(): BatchSize = apply {
-                        if (!validated) {
-                            if (auto == null && manual == null) {
-                                throw OpenAIInvalidDataException("Unknown BatchSize: $_json")
-                            }
-                            validated = true
+                        if (validated) {
+                            return@apply
                         }
+
+                        accept(
+                            object : Visitor<Unit> {
+                                override fun visitAuto(auto: Auto) {}
+
+                                override fun visitManual(manual: Long) {}
+                            }
+                        )
+                        validated = true
                     }
 
                     override fun equals(other: Any?): Boolean {
@@ -3928,8 +3992,6 @@ constructor(
                     private val _json: JsonValue? = null,
                 ) {
 
-                    private var validated: Boolean = false
-
                     fun auto(): Optional<Auto> = Optional.ofNullable(auto)
 
                     fun manual(): Optional<Double> = Optional.ofNullable(manual)
@@ -3952,15 +4014,21 @@ constructor(
                         }
                     }
 
+                    private var validated: Boolean = false
+
                     fun validate(): LearningRateMultiplier = apply {
-                        if (!validated) {
-                            if (auto == null && manual == null) {
-                                throw OpenAIInvalidDataException(
-                                    "Unknown LearningRateMultiplier: $_json"
-                                )
-                            }
-                            validated = true
+                        if (validated) {
+                            return@apply
                         }
+
+                        accept(
+                            object : Visitor<Unit> {
+                                override fun visitAuto(auto: Auto) {}
+
+                                override fun visitManual(manual: Double) {}
+                            }
+                        )
+                        validated = true
                     }
 
                     override fun equals(other: Any?): Boolean {
@@ -4105,8 +4173,6 @@ constructor(
                     private val _json: JsonValue? = null,
                 ) {
 
-                    private var validated: Boolean = false
-
                     fun auto(): Optional<Auto> = Optional.ofNullable(auto)
 
                     fun manual(): Optional<Long> = Optional.ofNullable(manual)
@@ -4129,13 +4195,21 @@ constructor(
                         }
                     }
 
+                    private var validated: Boolean = false
+
                     fun validate(): NEpochs = apply {
-                        if (!validated) {
-                            if (auto == null && manual == null) {
-                                throw OpenAIInvalidDataException("Unknown NEpochs: $_json")
-                            }
-                            validated = true
+                        if (validated) {
+                            return@apply
                         }
+
+                        accept(
+                            object : Visitor<Unit> {
+                                override fun visitAuto(auto: Auto) {}
+
+                                override fun visitManual(manual: Long) {}
+                            }
+                        )
+                        validated = true
                     }
 
                     override fun equals(other: Any?): Boolean {

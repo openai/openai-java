@@ -63,11 +63,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ChatCompletionAudioParam = apply {
-        if (!validated) {
-            format()
-            voice()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        format()
+        voice()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

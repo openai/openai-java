@@ -75,13 +75,15 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ChatCompletionAudio = apply {
-        if (!validated) {
-            id()
-            data()
-            expiresAt()
-            transcript()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        data()
+        expiresAt()
+        transcript()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

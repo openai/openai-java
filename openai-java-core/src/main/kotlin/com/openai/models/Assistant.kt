@@ -236,21 +236,23 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): Assistant = apply {
-        if (!validated) {
-            id()
-            createdAt()
-            description()
-            instructions()
-            model()
-            name()
-            object_()
-            tools()
-            responseFormat()
-            temperature()
-            toolResources().map { it.validate() }
-            topP()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        createdAt()
+        description()
+        instructions()
+        model()
+        name()
+        object_()
+        tools().forEach { it.validate() }
+        responseFormat().ifPresent { it.validate() }
+        temperature()
+        toolResources().ifPresent { it.validate() }
+        topP()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -795,11 +797,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): ToolResources = apply {
-            if (!validated) {
-                codeInterpreter().map { it.validate() }
-                fileSearch().map { it.validate() }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            codeInterpreter().ifPresent { it.validate() }
+            fileSearch().ifPresent { it.validate() }
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -897,10 +901,12 @@ private constructor(
             private var validated: Boolean = false
 
             fun validate(): CodeInterpreter = apply {
-                if (!validated) {
-                    fileIds()
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                fileIds()
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)
@@ -1039,10 +1045,12 @@ private constructor(
             private var validated: Boolean = false
 
             fun validate(): FileSearch = apply {
-                if (!validated) {
-                    vectorStoreIds()
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                vectorStoreIds()
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)

@@ -46,11 +46,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ImageUrlContentBlock = apply {
-        if (!validated) {
-            imageUrl().validate()
-            type()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        imageUrl().validate()
+        type()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

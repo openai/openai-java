@@ -217,24 +217,26 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): RunStep = apply {
-        if (!validated) {
-            id()
-            assistantId()
-            cancelledAt()
-            completedAt()
-            createdAt()
-            expiredAt()
-            failedAt()
-            lastError().map { it.validate() }
-            object_()
-            runId()
-            status()
-            stepDetails()
-            threadId()
-            type()
-            usage().map { it.validate() }
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        assistantId()
+        cancelledAt()
+        completedAt()
+        createdAt()
+        expiredAt()
+        failedAt()
+        lastError().ifPresent { it.validate() }
+        object_()
+        runId()
+        status()
+        stepDetails().validate()
+        threadId()
+        type()
+        usage().ifPresent { it.validate() }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -546,11 +548,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): LastError = apply {
-            if (!validated) {
-                code()
-                message()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            code()
+            message()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -823,8 +827,6 @@ private constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        private var validated: Boolean = false
-
         /** Details of the message creation by the run step. */
         fun messageCreationStepDetails(): Optional<MessageCreationStepDetails> =
             Optional.ofNullable(messageCreationStepDetails)
@@ -857,15 +859,29 @@ private constructor(
             }
         }
 
+        private var validated: Boolean = false
+
         fun validate(): StepDetails = apply {
-            if (!validated) {
-                if (messageCreationStepDetails == null && toolCallsStepDetails == null) {
-                    throw OpenAIInvalidDataException("Unknown StepDetails: $_json")
-                }
-                messageCreationStepDetails?.validate()
-                toolCallsStepDetails?.validate()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitMessageCreationStepDetails(
+                        messageCreationStepDetails: MessageCreationStepDetails
+                    ) {
+                        messageCreationStepDetails.validate()
+                    }
+
+                    override fun visitToolCallsStepDetails(
+                        toolCallsStepDetails: ToolCallsStepDetails
+                    ) {
+                        toolCallsStepDetails.validate()
+                    }
+                }
+            )
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -1072,12 +1088,14 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): Usage = apply {
-            if (!validated) {
-                completionTokens()
-                promptTokens()
-                totalTokens()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            completionTokens()
+            promptTokens()
+            totalTokens()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

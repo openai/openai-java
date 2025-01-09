@@ -53,10 +53,12 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ChatCompletionStreamOptions = apply {
-        if (!validated) {
-            includeUsage()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        includeUsage()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

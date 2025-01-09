@@ -272,17 +272,19 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): ImageGenerateBody = apply {
-            if (!validated) {
-                prompt()
-                model()
-                n()
-                quality()
-                responseFormat()
-                size()
-                style()
-                user()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            prompt()
+            model()
+            n()
+            quality()
+            responseFormat()
+            size()
+            style()
+            user()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

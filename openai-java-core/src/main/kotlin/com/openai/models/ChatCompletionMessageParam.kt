@@ -35,8 +35,6 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
-    private var validated: Boolean = false
-
     /**
      * Developer-provided instructions that the model should follow, regardless of messages sent by
      * the user. With o1 models and newer, `developer` messages replace the previous `system`
@@ -133,26 +131,53 @@ private constructor(
         }
     }
 
+    private var validated: Boolean = false
+
     fun validate(): ChatCompletionMessageParam = apply {
-        if (!validated) {
-            if (
-                chatCompletionDeveloperMessageParam == null &&
-                    chatCompletionSystemMessageParam == null &&
-                    chatCompletionUserMessageParam == null &&
-                    chatCompletionAssistantMessageParam == null &&
-                    chatCompletionToolMessageParam == null &&
-                    chatCompletionFunctionMessageParam == null
-            ) {
-                throw OpenAIInvalidDataException("Unknown ChatCompletionMessageParam: $_json")
-            }
-            chatCompletionDeveloperMessageParam?.validate()
-            chatCompletionSystemMessageParam?.validate()
-            chatCompletionUserMessageParam?.validate()
-            chatCompletionAssistantMessageParam?.validate()
-            chatCompletionToolMessageParam?.validate()
-            chatCompletionFunctionMessageParam?.validate()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        accept(
+            object : Visitor<Unit> {
+                override fun visitChatCompletionDeveloperMessageParam(
+                    chatCompletionDeveloperMessageParam: ChatCompletionDeveloperMessageParam
+                ) {
+                    chatCompletionDeveloperMessageParam.validate()
+                }
+
+                override fun visitChatCompletionSystemMessageParam(
+                    chatCompletionSystemMessageParam: ChatCompletionSystemMessageParam
+                ) {
+                    chatCompletionSystemMessageParam.validate()
+                }
+
+                override fun visitChatCompletionUserMessageParam(
+                    chatCompletionUserMessageParam: ChatCompletionUserMessageParam
+                ) {
+                    chatCompletionUserMessageParam.validate()
+                }
+
+                override fun visitChatCompletionAssistantMessageParam(
+                    chatCompletionAssistantMessageParam: ChatCompletionAssistantMessageParam
+                ) {
+                    chatCompletionAssistantMessageParam.validate()
+                }
+
+                override fun visitChatCompletionToolMessageParam(
+                    chatCompletionToolMessageParam: ChatCompletionToolMessageParam
+                ) {
+                    chatCompletionToolMessageParam.validate()
+                }
+
+                override fun visitChatCompletionFunctionMessageParam(
+                    chatCompletionFunctionMessageParam: ChatCompletionFunctionMessageParam
+                ) {
+                    chatCompletionFunctionMessageParam.validate()
+                }
+            }
+        )
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

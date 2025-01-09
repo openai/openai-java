@@ -73,14 +73,16 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): FileCitationAnnotation = apply {
-        if (!validated) {
-            endIndex()
-            fileCitation().validate()
-            startIndex()
-            text()
-            type()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        endIndex()
+        fileCitation().validate()
+        startIndex()
+        text()
+        type()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -189,10 +191,12 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): FileCitation = apply {
-            if (!validated) {
-                fileId()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            fileId()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

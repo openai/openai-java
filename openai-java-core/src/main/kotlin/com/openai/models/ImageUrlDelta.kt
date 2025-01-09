@@ -54,11 +54,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ImageUrlDelta = apply {
-        if (!validated) {
-            detail()
-            url()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        detail()
+        url()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

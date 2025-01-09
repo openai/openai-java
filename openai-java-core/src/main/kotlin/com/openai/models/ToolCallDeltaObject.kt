@@ -58,11 +58,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ToolCallDeltaObject = apply {
-        if (!validated) {
-            type()
-            toolCalls()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        type()
+        toolCalls().ifPresent { it.forEach { it.validate() } }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

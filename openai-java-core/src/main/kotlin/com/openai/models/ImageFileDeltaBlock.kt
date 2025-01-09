@@ -60,12 +60,14 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ImageFileDeltaBlock = apply {
-        if (!validated) {
-            index()
-            type()
-            imageFile().map { it.validate() }
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        index()
+        type()
+        imageFile().ifPresent { it.validate() }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

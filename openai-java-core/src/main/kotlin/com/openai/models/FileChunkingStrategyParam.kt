@@ -31,8 +31,6 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
-    private var validated: Boolean = false
-
     /**
      * The default strategy. This strategy currently uses a `max_chunk_size_tokens` of `800` and
      * `chunk_overlap_tokens` of `400`.
@@ -69,15 +67,29 @@ private constructor(
         }
     }
 
+    private var validated: Boolean = false
+
     fun validate(): FileChunkingStrategyParam = apply {
-        if (!validated) {
-            if (autoFileChunkingStrategyParam == null && staticFileChunkingStrategyParam == null) {
-                throw OpenAIInvalidDataException("Unknown FileChunkingStrategyParam: $_json")
-            }
-            autoFileChunkingStrategyParam?.validate()
-            staticFileChunkingStrategyParam?.validate()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        accept(
+            object : Visitor<Unit> {
+                override fun visitAutoFileChunkingStrategyParam(
+                    autoFileChunkingStrategyParam: AutoFileChunkingStrategyParam
+                ) {
+                    autoFileChunkingStrategyParam.validate()
+                }
+
+                override fun visitStaticFileChunkingStrategyParam(
+                    staticFileChunkingStrategyParam: StaticFileChunkingStrategyParam
+                ) {
+                    staticFileChunkingStrategyParam.validate()
+                }
+            }
+        )
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

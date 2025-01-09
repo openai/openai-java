@@ -149,11 +149,13 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): BetaThreadCreateBody = apply {
-            if (!validated) {
-                messages().map { it.forEach { it.validate() } }
-                toolResources().map { it.validate() }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            messages().ifPresent { it.forEach { it.validate() } }
+            toolResources().ifPresent { it.validate() }
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -555,12 +557,14 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): Message = apply {
-            if (!validated) {
-                content()
-                role()
-                attachments().map { it.forEach { it.validate() } }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            content().validate()
+            role()
+            attachments().ifPresent { it.forEach { it.validate() } }
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -695,8 +699,6 @@ constructor(
             private val _json: JsonValue? = null,
         ) {
 
-            private var validated: Boolean = false
-
             /** The text contents of the message. */
             fun textContent(): Optional<String> = Optional.ofNullable(textContent)
 
@@ -734,13 +736,25 @@ constructor(
                 }
             }
 
+            private var validated: Boolean = false
+
             fun validate(): Content = apply {
-                if (!validated) {
-                    if (textContent == null && arrayOfContentParts == null) {
-                        throw OpenAIInvalidDataException("Unknown Content: $_json")
-                    }
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                accept(
+                    object : Visitor<Unit> {
+                        override fun visitTextContent(textContent: String) {}
+
+                        override fun visitArrayOfContentParts(
+                            arrayOfContentParts: List<MessageContentPartParam>
+                        ) {
+                            arrayOfContentParts.forEach { it.validate() }
+                        }
+                    }
+                )
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -797,9 +811,12 @@ constructor(
                     tryDeserialize(node, jacksonTypeRef<String>())?.let {
                         return Content(textContent = it, _json = json)
                     }
-                    tryDeserialize(node, jacksonTypeRef<List<MessageContentPartParam>>())?.let {
-                        return Content(arrayOfContentParts = it, _json = json)
-                    }
+                    tryDeserialize(node, jacksonTypeRef<List<MessageContentPartParam>>()) {
+                            it.forEach { it.validate() }
+                        }
+                        ?.let {
+                            return Content(arrayOfContentParts = it, _json = json)
+                        }
 
                     return Content(_json = json)
                 }
@@ -913,11 +930,13 @@ constructor(
             private var validated: Boolean = false
 
             fun validate(): Attachment = apply {
-                if (!validated) {
-                    fileId()
-                    tools()
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                fileId()
+                tools().ifPresent { it.forEach { it.validate() } }
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)
@@ -1014,8 +1033,6 @@ constructor(
                 private val _json: JsonValue? = null,
             ) {
 
-                private var validated: Boolean = false
-
                 fun codeInterpreterTool(): Optional<CodeInterpreterTool> =
                     Optional.ofNullable(codeInterpreterTool)
 
@@ -1041,15 +1058,27 @@ constructor(
                     }
                 }
 
+                private var validated: Boolean = false
+
                 fun validate(): Tool = apply {
-                    if (!validated) {
-                        if (codeInterpreterTool == null && fileSearch == null) {
-                            throw OpenAIInvalidDataException("Unknown Tool: $_json")
-                        }
-                        codeInterpreterTool?.validate()
-                        fileSearch?.validate()
-                        validated = true
+                    if (validated) {
+                        return@apply
                     }
+
+                    accept(
+                        object : Visitor<Unit> {
+                            override fun visitCodeInterpreterTool(
+                                codeInterpreterTool: CodeInterpreterTool
+                            ) {
+                                codeInterpreterTool.validate()
+                            }
+
+                            override fun visitFileSearch(fileSearch: FileSearch) {
+                                fileSearch.validate()
+                            }
+                        }
+                    )
+                    validated = true
                 }
 
                 override fun equals(other: Any?): Boolean {
@@ -1160,10 +1189,12 @@ constructor(
                     private var validated: Boolean = false
 
                     fun validate(): FileSearch = apply {
-                        if (!validated) {
-                            type()
-                            validated = true
+                        if (validated) {
+                            return@apply
                         }
+
+                        type()
+                        validated = true
                     }
 
                     fun toBuilder() = Builder().from(this)
@@ -1367,11 +1398,13 @@ constructor(
         private var validated: Boolean = false
 
         fun validate(): ToolResources = apply {
-            if (!validated) {
-                codeInterpreter().map { it.validate() }
-                fileSearch().map { it.validate() }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            codeInterpreter().ifPresent { it.validate() }
+            fileSearch().ifPresent { it.validate() }
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -1469,10 +1502,12 @@ constructor(
             private var validated: Boolean = false
 
             fun validate(): CodeInterpreter = apply {
-                if (!validated) {
-                    fileIds()
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                fileIds()
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)
@@ -1633,11 +1668,13 @@ constructor(
             private var validated: Boolean = false
 
             fun validate(): FileSearch = apply {
-                if (!validated) {
-                    vectorStoreIds()
-                    vectorStores().map { it.forEach { it.validate() } }
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                vectorStoreIds()
+                vectorStores().ifPresent { it.forEach { it.validate() } }
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)
@@ -1829,11 +1866,13 @@ constructor(
                 private var validated: Boolean = false
 
                 fun validate(): VectorStore = apply {
-                    if (!validated) {
-                        chunkingStrategy()
-                        fileIds()
-                        validated = true
+                    if (validated) {
+                        return@apply
                     }
+
+                    chunkingStrategy().ifPresent { it.validate() }
+                    fileIds()
+                    validated = true
                 }
 
                 fun toBuilder() = Builder().from(this)

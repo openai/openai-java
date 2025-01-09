@@ -86,14 +86,16 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): CompletionUsage = apply {
-        if (!validated) {
-            completionTokens()
-            promptTokens()
-            totalTokens()
-            completionTokensDetails().map { it.validate() }
-            promptTokensDetails().map { it.validate() }
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        completionTokens()
+        promptTokens()
+        totalTokens()
+        completionTokensDetails().ifPresent { it.validate() }
+        promptTokensDetails().ifPresent { it.validate() }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -270,13 +272,15 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): CompletionTokensDetails = apply {
-            if (!validated) {
-                acceptedPredictionTokens()
-                audioTokens()
-                reasoningTokens()
-                rejectedPredictionTokens()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            acceptedPredictionTokens()
+            audioTokens()
+            reasoningTokens()
+            rejectedPredictionTokens()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -439,11 +443,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): PromptTokensDetails = apply {
-            if (!validated) {
-                audioTokens()
-                cachedTokens()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            audioTokens()
+            cachedTokens()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

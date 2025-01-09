@@ -62,13 +62,15 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): FunctionToolCallDelta = apply {
-        if (!validated) {
-            index()
-            type()
-            id()
-            function().map { it.validate() }
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        index()
+        type()
+        id()
+        function().ifPresent { it.validate() }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -252,12 +254,14 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): Function = apply {
-            if (!validated) {
-                arguments()
-                name()
-                output()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            arguments()
+            name()
+            output()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

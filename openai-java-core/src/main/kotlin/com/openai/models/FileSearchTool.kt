@@ -51,11 +51,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): FileSearchTool = apply {
-        if (!validated) {
-            type()
-            fileSearch().map { it.validate() }
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        type()
+        fileSearch().ifPresent { it.validate() }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -238,11 +240,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): FileSearch = apply {
-            if (!validated) {
-                maxNumResults()
-                rankingOptions().map { it.validate() }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            maxNumResults()
+            rankingOptions().ifPresent { it.validate() }
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -394,11 +398,13 @@ private constructor(
             private var validated: Boolean = false
 
             fun validate(): RankingOptions = apply {
-                if (!validated) {
-                    scoreThreshold()
-                    ranker()
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                scoreThreshold()
+                ranker()
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)

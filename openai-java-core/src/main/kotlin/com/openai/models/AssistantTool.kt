@@ -28,8 +28,6 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
-    private var validated: Boolean = false
-
     fun codeInterpreterTool(): Optional<CodeInterpreterTool> =
         Optional.ofNullable(codeInterpreterTool)
 
@@ -61,16 +59,29 @@ private constructor(
         }
     }
 
+    private var validated: Boolean = false
+
     fun validate(): AssistantTool = apply {
-        if (!validated) {
-            if (codeInterpreterTool == null && fileSearchTool == null && functionTool == null) {
-                throw OpenAIInvalidDataException("Unknown AssistantTool: $_json")
-            }
-            codeInterpreterTool?.validate()
-            fileSearchTool?.validate()
-            functionTool?.validate()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        accept(
+            object : Visitor<Unit> {
+                override fun visitCodeInterpreterTool(codeInterpreterTool: CodeInterpreterTool) {
+                    codeInterpreterTool.validate()
+                }
+
+                override fun visitFileSearchTool(fileSearchTool: FileSearchTool) {
+                    fileSearchTool.validate()
+                }
+
+                override fun visitFunctionTool(functionTool: FunctionTool) {
+                    functionTool.validate()
+                }
+            }
+        )
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

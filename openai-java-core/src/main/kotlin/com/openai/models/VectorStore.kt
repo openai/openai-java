@@ -139,19 +139,21 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): VectorStore = apply {
-        if (!validated) {
-            id()
-            createdAt()
-            fileCounts().validate()
-            lastActiveAt()
-            name()
-            object_()
-            status()
-            usageBytes()
-            expiresAfter().map { it.validate() }
-            expiresAt()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        createdAt()
+        fileCounts().validate()
+        lastActiveAt()
+        name()
+        object_()
+        status()
+        usageBytes()
+        expiresAfter().ifPresent { it.validate() }
+        expiresAt()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -376,14 +378,16 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): FileCounts = apply {
-            if (!validated) {
-                cancelled()
-                completed()
-                failed()
-                inProgress()
-                total()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            cancelled()
+            completed()
+            failed()
+            inProgress()
+            total()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -642,11 +646,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): ExpiresAfter = apply {
-            if (!validated) {
-                anchor()
-                days()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            anchor()
+            days()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

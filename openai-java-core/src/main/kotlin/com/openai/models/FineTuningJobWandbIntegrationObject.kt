@@ -59,11 +59,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): FineTuningJobWandbIntegrationObject = apply {
-        if (!validated) {
-            type()
-            wandb().validate()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        type()
+        wandb().validate()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

@@ -70,14 +70,16 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): FilePathAnnotation = apply {
-        if (!validated) {
-            endIndex()
-            filePath().validate()
-            startIndex()
-            text()
-            type()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        endIndex()
+        filePath().validate()
+        startIndex()
+        text()
+        type()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -184,10 +186,12 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): FilePath = apply {
-            if (!validated) {
-                fileId()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            fileId()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

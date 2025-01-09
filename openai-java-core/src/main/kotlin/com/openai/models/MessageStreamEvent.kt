@@ -45,8 +45,6 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
-    private var validated: Boolean = false
-
     /**
      * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object) is
      * created.
@@ -142,24 +140,43 @@ private constructor(
         }
     }
 
+    private var validated: Boolean = false
+
     fun validate(): MessageStreamEvent = apply {
-        if (!validated) {
-            if (
-                threadMessageCreated == null &&
-                    threadMessageInProgress == null &&
-                    threadMessageDelta == null &&
-                    threadMessageCompleted == null &&
-                    threadMessageIncomplete == null
-            ) {
-                throw OpenAIInvalidDataException("Unknown MessageStreamEvent: $_json")
-            }
-            threadMessageCreated?.validate()
-            threadMessageInProgress?.validate()
-            threadMessageDelta?.validate()
-            threadMessageCompleted?.validate()
-            threadMessageIncomplete?.validate()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        accept(
+            object : Visitor<Unit> {
+                override fun visitThreadMessageCreated(threadMessageCreated: ThreadMessageCreated) {
+                    threadMessageCreated.validate()
+                }
+
+                override fun visitThreadMessageInProgress(
+                    threadMessageInProgress: ThreadMessageInProgress
+                ) {
+                    threadMessageInProgress.validate()
+                }
+
+                override fun visitThreadMessageDelta(threadMessageDelta: ThreadMessageDelta) {
+                    threadMessageDelta.validate()
+                }
+
+                override fun visitThreadMessageCompleted(
+                    threadMessageCompleted: ThreadMessageCompleted
+                ) {
+                    threadMessageCompleted.validate()
+                }
+
+                override fun visitThreadMessageIncomplete(
+                    threadMessageIncomplete: ThreadMessageIncomplete
+                ) {
+                    threadMessageIncomplete.validate()
+                }
+            }
+        )
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {
@@ -360,11 +377,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): ThreadMessageCreated = apply {
-            if (!validated) {
-                data().validate()
-                event()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            data().validate()
+            event()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -540,11 +559,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): ThreadMessageInProgress = apply {
-            if (!validated) {
-                data().validate()
-                event()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            data().validate()
+            event()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -714,11 +735,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): ThreadMessageDelta = apply {
-            if (!validated) {
-                data().validate()
-                event()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            data().validate()
+            event()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -888,11 +911,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): ThreadMessageCompleted = apply {
-            if (!validated) {
-                data().validate()
-                event()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            data().validate()
+            event()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -1068,11 +1093,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): ThreadMessageIncomplete = apply {
-            if (!validated) {
-                data().validate()
-                event()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            data().validate()
+            event()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

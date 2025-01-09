@@ -51,8 +51,6 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
-    private var validated: Boolean = false
-
     /** `auto` is the default value */
     fun behavior(): Optional<Behavior> = Optional.ofNullable(behavior)
 
@@ -98,21 +96,35 @@ private constructor(
         }
     }
 
+    private var validated: Boolean = false
+
     fun validate(): AssistantResponseFormatOption = apply {
-        if (!validated) {
-            if (
-                behavior == null &&
-                    responseFormatText == null &&
-                    responseFormatJsonObject == null &&
-                    responseFormatJsonSchema == null
-            ) {
-                throw OpenAIInvalidDataException("Unknown AssistantResponseFormatOption: $_json")
-            }
-            responseFormatText?.validate()
-            responseFormatJsonObject?.validate()
-            responseFormatJsonSchema?.validate()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        accept(
+            object : Visitor<Unit> {
+                override fun visitBehavior(behavior: Behavior) {}
+
+                override fun visitResponseFormatText(responseFormatText: ResponseFormatText) {
+                    responseFormatText.validate()
+                }
+
+                override fun visitResponseFormatJsonObject(
+                    responseFormatJsonObject: ResponseFormatJsonObject
+                ) {
+                    responseFormatJsonObject.validate()
+                }
+
+                override fun visitResponseFormatJsonSchema(
+                    responseFormatJsonSchema: ResponseFormatJsonSchema
+                ) {
+                    responseFormatJsonSchema.validate()
+                }
+            }
+        )
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

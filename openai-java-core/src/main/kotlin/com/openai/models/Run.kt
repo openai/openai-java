@@ -420,35 +420,37 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): Run = apply {
-        if (!validated) {
-            id()
-            assistantId()
-            cancelledAt()
-            completedAt()
-            createdAt()
-            expiresAt()
-            failedAt()
-            incompleteDetails().map { it.validate() }
-            instructions()
-            lastError().map { it.validate() }
-            maxCompletionTokens()
-            maxPromptTokens()
-            model()
-            object_()
-            parallelToolCalls()
-            requiredAction().map { it.validate() }
-            responseFormat()
-            startedAt()
-            status()
-            threadId()
-            toolChoice()
-            tools()
-            truncationStrategy().map { it.validate() }
-            usage().map { it.validate() }
-            temperature()
-            topP()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        assistantId()
+        cancelledAt()
+        completedAt()
+        createdAt()
+        expiresAt()
+        failedAt()
+        incompleteDetails().ifPresent { it.validate() }
+        instructions()
+        lastError().ifPresent { it.validate() }
+        maxCompletionTokens()
+        maxPromptTokens()
+        model()
+        object_()
+        parallelToolCalls()
+        requiredAction().ifPresent { it.validate() }
+        responseFormat().ifPresent { it.validate() }
+        startedAt()
+        status()
+        threadId()
+        toolChoice().ifPresent { it.validate() }
+        tools().forEach { it.validate() }
+        truncationStrategy().ifPresent { it.validate() }
+        usage().ifPresent { it.validate() }
+        temperature()
+        topP()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -1201,10 +1203,12 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): IncompleteDetails = apply {
-            if (!validated) {
-                reason()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            reason()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -1367,11 +1371,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): LastError = apply {
-            if (!validated) {
-                code()
-                message()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            code()
+            message()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -1602,11 +1608,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): RequiredAction = apply {
-            if (!validated) {
-                submitToolOutputs().validate()
-                type()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            submitToolOutputs().validate()
+            type()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -1702,10 +1710,12 @@ private constructor(
             private var validated: Boolean = false
 
             fun validate(): SubmitToolOutputs = apply {
-                if (!validated) {
-                    toolCalls().forEach { it.validate() }
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                toolCalls().forEach { it.validate() }
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)
@@ -1921,11 +1931,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): TruncationStrategy = apply {
-            if (!validated) {
-                type()
-                lastMessages()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            type()
+            lastMessages()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -2146,12 +2158,14 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): Usage = apply {
-            if (!validated) {
-                completionTokens()
-                promptTokens()
-                totalTokens()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            completionTokens()
+            promptTokens()
+            totalTokens()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

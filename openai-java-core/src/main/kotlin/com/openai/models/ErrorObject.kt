@@ -52,13 +52,15 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ErrorObject = apply {
-        if (!validated) {
-            code()
-            message()
-            param()
-            type()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        code()
+        message()
+        param()
+        type()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

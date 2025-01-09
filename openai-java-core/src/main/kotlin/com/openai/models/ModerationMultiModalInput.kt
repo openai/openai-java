@@ -28,8 +28,6 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
-    private var validated: Boolean = false
-
     /** An object describing an image to classify. */
     fun moderationImageUrlInput(): Optional<ModerationImageUrlInput> =
         Optional.ofNullable(moderationImageUrlInput)
@@ -61,15 +59,27 @@ private constructor(
         }
     }
 
+    private var validated: Boolean = false
+
     fun validate(): ModerationMultiModalInput = apply {
-        if (!validated) {
-            if (moderationImageUrlInput == null && moderationTextInput == null) {
-                throw OpenAIInvalidDataException("Unknown ModerationMultiModalInput: $_json")
-            }
-            moderationImageUrlInput?.validate()
-            moderationTextInput?.validate()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        accept(
+            object : Visitor<Unit> {
+                override fun visitModerationImageUrlInput(
+                    moderationImageUrlInput: ModerationImageUrlInput
+                ) {
+                    moderationImageUrlInput.validate()
+                }
+
+                override fun visitModerationTextInput(moderationTextInput: ModerationTextInput) {
+                    moderationTextInput.validate()
+                }
+            }
+        )
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

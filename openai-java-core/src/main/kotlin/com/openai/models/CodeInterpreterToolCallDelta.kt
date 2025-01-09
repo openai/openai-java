@@ -83,13 +83,15 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): CodeInterpreterToolCallDelta = apply {
-        if (!validated) {
-            index()
-            type()
-            id()
-            codeInterpreter().map { it.validate() }
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        index()
+        type()
+        id()
+        codeInterpreter().ifPresent { it.validate() }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -271,11 +273,13 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): CodeInterpreter = apply {
-            if (!validated) {
-                input()
-                outputs()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            input()
+            outputs().ifPresent { it.forEach { it.validate() } }
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -387,8 +391,6 @@ private constructor(
             private val _json: JsonValue? = null,
         ) {
 
-            private var validated: Boolean = false
-
             /** Text output from the Code Interpreter tool call as part of a run step. */
             fun codeInterpreterLogs(): Optional<CodeInterpreterLogs> =
                 Optional.ofNullable(codeInterpreterLogs)
@@ -419,15 +421,29 @@ private constructor(
                 }
             }
 
+            private var validated: Boolean = false
+
             fun validate(): Output = apply {
-                if (!validated) {
-                    if (codeInterpreterLogs == null && codeInterpreterOutputImage == null) {
-                        throw OpenAIInvalidDataException("Unknown Output: $_json")
-                    }
-                    codeInterpreterLogs?.validate()
-                    codeInterpreterOutputImage?.validate()
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                accept(
+                    object : Visitor<Unit> {
+                        override fun visitCodeInterpreterLogs(
+                            codeInterpreterLogs: CodeInterpreterLogs
+                        ) {
+                            codeInterpreterLogs.validate()
+                        }
+
+                        override fun visitCodeInterpreterOutputImage(
+                            codeInterpreterOutputImage: CodeInterpreterOutputImage
+                        ) {
+                            codeInterpreterOutputImage.validate()
+                        }
+                    }
+                )
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {

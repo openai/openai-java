@@ -75,12 +75,14 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ChatCompletionDeveloperMessageParam = apply {
-        if (!validated) {
-            content()
-            role()
-            name()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        content().validate()
+        role()
+        name()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -180,8 +182,6 @@ private constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        private var validated: Boolean = false
-
         /** The contents of the developer message. */
         fun textContent(): Optional<String> = Optional.ofNullable(textContent)
 
@@ -216,14 +216,25 @@ private constructor(
             }
         }
 
+        private var validated: Boolean = false
+
         fun validate(): Content = apply {
-            if (!validated) {
-                if (textContent == null && arrayOfContentParts == null) {
-                    throw OpenAIInvalidDataException("Unknown Content: $_json")
-                }
-                arrayOfContentParts?.forEach { it.validate() }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitTextContent(textContent: String) {}
+
+                    override fun visitArrayOfContentParts(
+                        arrayOfContentParts: List<ChatCompletionContentPartText>
+                    ) {
+                        arrayOfContentParts.forEach { it.validate() }
+                    }
+                }
+            )
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

@@ -100,15 +100,17 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): VectorStoreFileBatch = apply {
-        if (!validated) {
-            id()
-            createdAt()
-            fileCounts().validate()
-            object_()
-            status()
-            vectorStoreId()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        createdAt()
+        fileCounts().validate()
+        object_()
+        status()
+        vectorStoreId()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -280,14 +282,16 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): FileCounts = apply {
-            if (!validated) {
-                cancelled()
-                completed()
-                failed()
-                inProgress()
-                total()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            cancelled()
+            completed()
+            failed()
+            inProgress()
+            total()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

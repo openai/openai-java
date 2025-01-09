@@ -75,13 +75,15 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): Moderation = apply {
-        if (!validated) {
-            categories().validate()
-            categoryAppliedInputTypes().validate()
-            categoryScores().validate()
-            flagged()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        categories().validate()
+        categoryAppliedInputTypes().validate()
+        categoryScores().validate()
+        flagged()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -376,22 +378,24 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): Categories = apply {
-            if (!validated) {
-                harassment()
-                harassmentThreatening()
-                hate()
-                hateThreatening()
-                illicit()
-                illicitViolent()
-                selfHarm()
-                selfHarmInstructions()
-                selfHarmIntent()
-                sexual()
-                sexualMinors()
-                violence()
-                violenceGraphic()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            harassment()
+            harassmentThreatening()
+            hate()
+            hateThreatening()
+            illicit()
+            illicitViolent()
+            selfHarm()
+            selfHarmInstructions()
+            selfHarmIntent()
+            sexual()
+            sexualMinors()
+            violence()
+            violenceGraphic()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -820,22 +824,24 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): CategoryAppliedInputTypes = apply {
-            if (!validated) {
-                harassment()
-                harassmentThreatening()
-                hate()
-                hateThreatening()
-                illicit()
-                illicitViolent()
-                selfHarm()
-                selfHarmInstructions()
-                selfHarmIntent()
-                sexual()
-                sexualMinors()
-                violence()
-                violenceGraphic()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            harassment()
+            harassmentThreatening()
+            hate()
+            hateThreatening()
+            illicit()
+            illicitViolent()
+            selfHarm()
+            selfHarmInstructions()
+            selfHarmIntent()
+            sexual()
+            sexualMinors()
+            violence()
+            violenceGraphic()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -2108,22 +2114,24 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): CategoryScores = apply {
-            if (!validated) {
-                harassment()
-                harassmentThreatening()
-                hate()
-                hateThreatening()
-                illicit()
-                illicitViolent()
-                selfHarm()
-                selfHarmInstructions()
-                selfHarmIntent()
-                sexual()
-                sexualMinors()
-                violence()
-                violenceGraphic()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            harassment()
+            harassmentThreatening()
+            hate()
+            hateThreatening()
+            illicit()
+            illicitViolent()
+            selfHarm()
+            selfHarmInstructions()
+            selfHarmIntent()
+            sexual()
+            sexualMinors()
+            violence()
+            violenceGraphic()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

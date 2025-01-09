@@ -51,12 +51,14 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): CodeInterpreterOutputImage = apply {
-        if (!validated) {
-            index()
-            type()
-            image().map { it.validate() }
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        index()
+        type()
+        image().ifPresent { it.validate() }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -200,10 +202,12 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): Image = apply {
-            if (!validated) {
-                fileId()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            fileId()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

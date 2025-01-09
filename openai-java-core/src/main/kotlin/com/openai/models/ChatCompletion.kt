@@ -123,17 +123,19 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ChatCompletion = apply {
-        if (!validated) {
-            id()
-            choices().forEach { it.validate() }
-            created()
-            model()
-            object_()
-            serviceTier()
-            systemFingerprint()
-            usage().map { it.validate() }
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        choices().forEach { it.validate() }
+        created()
+        model()
+        object_()
+        serviceTier()
+        systemFingerprint()
+        usage().ifPresent { it.validate() }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -360,13 +362,15 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): Choice = apply {
-            if (!validated) {
-                finishReason()
-                index()
-                logprobs().map { it.validate() }
-                message().validate()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            finishReason()
+            index()
+            logprobs().ifPresent { it.validate() }
+            message().validate()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)
@@ -580,11 +584,13 @@ private constructor(
             private var validated: Boolean = false
 
             fun validate(): Logprobs = apply {
-                if (!validated) {
-                    content().map { it.forEach { it.validate() } }
-                    refusal().map { it.forEach { it.validate() } }
-                    validated = true
+                if (validated) {
+                    return@apply
                 }
+
+                content().ifPresent { it.forEach { it.validate() } }
+                refusal().ifPresent { it.forEach { it.validate() } }
+                validated = true
             }
 
             fun toBuilder() = Builder().from(this)

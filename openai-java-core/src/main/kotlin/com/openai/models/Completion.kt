@@ -110,16 +110,18 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): Completion = apply {
-        if (!validated) {
-            id()
-            choices().forEach { it.validate() }
-            created()
-            model()
-            object_()
-            systemFingerprint()
-            usage().map { it.validate() }
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        choices().forEach { it.validate() }
+        created()
+        model()
+        object_()
+        systemFingerprint()
+        usage().ifPresent { it.validate() }
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

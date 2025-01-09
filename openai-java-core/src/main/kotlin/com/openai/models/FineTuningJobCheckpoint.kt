@@ -102,16 +102,18 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): FineTuningJobCheckpoint = apply {
-        if (!validated) {
-            id()
-            createdAt()
-            fineTunedModelCheckpoint()
-            fineTuningJobId()
-            metrics().validate()
-            object_()
-            stepNumber()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        createdAt()
+        fineTunedModelCheckpoint()
+        fineTuningJobId()
+        metrics().validate()
+        object_()
+        stepNumber()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -305,16 +307,18 @@ private constructor(
         private var validated: Boolean = false
 
         fun validate(): Metrics = apply {
-            if (!validated) {
-                fullValidLoss()
-                fullValidMeanTokenAccuracy()
-                step()
-                trainLoss()
-                trainMeanTokenAccuracy()
-                validLoss()
-                validMeanTokenAccuracy()
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            fullValidLoss()
+            fullValidMeanTokenAccuracy()
+            step()
+            trainLoss()
+            trainMeanTokenAccuracy()
+            validLoss()
+            validMeanTokenAccuracy()
+            validated = true
         }
 
         fun toBuilder() = Builder().from(this)

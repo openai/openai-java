@@ -66,13 +66,15 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): UploadPart = apply {
-        if (!validated) {
-            id()
-            createdAt()
-            object_()
-            uploadId()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        id()
+        createdAt()
+        object_()
+        uploadId()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)

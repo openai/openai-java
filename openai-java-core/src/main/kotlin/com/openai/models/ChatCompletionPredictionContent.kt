@@ -73,11 +73,13 @@ private constructor(
     private var validated: Boolean = false
 
     fun validate(): ChatCompletionPredictionContent = apply {
-        if (!validated) {
-            content()
-            type()
-            validated = true
+        if (validated) {
+            return@apply
         }
+
+        content().validate()
+        type()
+        validated = true
     }
 
     fun toBuilder() = Builder().from(this)
@@ -180,8 +182,6 @@ private constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        private var validated: Boolean = false
-
         /**
          * The content used for a Predicted Output. This is often the text of a file you are
          * regenerating with minor changes.
@@ -224,14 +224,25 @@ private constructor(
             }
         }
 
+        private var validated: Boolean = false
+
         fun validate(): Content = apply {
-            if (!validated) {
-                if (textContent == null && arrayOfContentParts == null) {
-                    throw OpenAIInvalidDataException("Unknown Content: $_json")
-                }
-                arrayOfContentParts?.forEach { it.validate() }
-                validated = true
+            if (validated) {
+                return@apply
             }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitTextContent(textContent: String) {}
+
+                    override fun visitArrayOfContentParts(
+                        arrayOfContentParts: List<ChatCompletionContentPartText>
+                    ) {
+                        arrayOfContentParts.forEach { it.validate() }
+                    }
+                }
+            )
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
