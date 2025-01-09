@@ -41,6 +41,7 @@ private constructor(
      */
     fun fileCitationDeltaAnnotation(): Optional<FileCitationDeltaAnnotation> =
         Optional.ofNullable(fileCitationDeltaAnnotation)
+
     /**
      * A URL for the file that's generated when the assistant used the `code_interpreter` tool to
      * generate a file.
@@ -59,6 +60,7 @@ private constructor(
      */
     fun asFileCitationDeltaAnnotation(): FileCitationDeltaAnnotation =
         fileCitationDeltaAnnotation.getOrThrow("fileCitationDeltaAnnotation")
+
     /**
      * A URL for the file that's generated when the assistant used the `code_interpreter` tool to
      * generate a file.

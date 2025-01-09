@@ -2369,6 +2369,7 @@ constructor(
 
                 /** The text contents of the message. */
                 fun textContent(): Optional<String> = Optional.ofNullable(textContent)
+
                 /**
                  * An array of content parts with a defined type, each can be of type `text` or
                  * images can be passed with `image_url` or `image_file`. Image types are only
@@ -2383,6 +2384,7 @@ constructor(
 
                 /** The text contents of the message. */
                 fun asTextContent(): String = textContent.getOrThrow("textContent")
+
                 /**
                  * An array of content parts with a defined type, each can be of type `text` or
                  * images can be passed with `image_url` or `image_file`. Image types are only

@@ -44,15 +44,18 @@ private constructor(
      */
     fun chatCompletionDeveloperMessageParam(): Optional<ChatCompletionDeveloperMessageParam> =
         Optional.ofNullable(chatCompletionDeveloperMessageParam)
+
     /**
      * Developer-provided instructions that the model should follow, regardless of messages sent by
      * the user. With o1 models and newer, use `developer` messages for this purpose instead.
      */
     fun chatCompletionSystemMessageParam(): Optional<ChatCompletionSystemMessageParam> =
         Optional.ofNullable(chatCompletionSystemMessageParam)
+
     /** Messages sent by an end user, containing prompts or additional context information. */
     fun chatCompletionUserMessageParam(): Optional<ChatCompletionUserMessageParam> =
         Optional.ofNullable(chatCompletionUserMessageParam)
+
     /** Messages sent by the model in response to user messages. */
     fun chatCompletionAssistantMessageParam(): Optional<ChatCompletionAssistantMessageParam> =
         Optional.ofNullable(chatCompletionAssistantMessageParam)
@@ -84,15 +87,18 @@ private constructor(
      */
     fun asChatCompletionDeveloperMessageParam(): ChatCompletionDeveloperMessageParam =
         chatCompletionDeveloperMessageParam.getOrThrow("chatCompletionDeveloperMessageParam")
+
     /**
      * Developer-provided instructions that the model should follow, regardless of messages sent by
      * the user. With o1 models and newer, use `developer` messages for this purpose instead.
      */
     fun asChatCompletionSystemMessageParam(): ChatCompletionSystemMessageParam =
         chatCompletionSystemMessageParam.getOrThrow("chatCompletionSystemMessageParam")
+
     /** Messages sent by an end user, containing prompts or additional context information. */
     fun asChatCompletionUserMessageParam(): ChatCompletionUserMessageParam =
         chatCompletionUserMessageParam.getOrThrow("chatCompletionUserMessageParam")
+
     /** Messages sent by the model in response to user messages. */
     fun asChatCompletionAssistantMessageParam(): ChatCompletionAssistantMessageParam =
         chatCompletionAssistantMessageParam.getOrThrow("chatCompletionAssistantMessageParam")

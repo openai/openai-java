@@ -168,6 +168,7 @@ private constructor(
 
         /** The contents of the tool message. */
         fun textContent(): Optional<String> = Optional.ofNullable(textContent)
+
         /**
          * An array of content parts with a defined type. For tool messages, only type `text` is
          * supported.
@@ -181,6 +182,7 @@ private constructor(
 
         /** The contents of the tool message. */
         fun asTextContent(): String = textContent.getOrThrow("textContent")
+
         /**
          * An array of content parts with a defined type. For tool messages, only type `text` is
          * supported.

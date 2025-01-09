@@ -45,6 +45,7 @@ private constructor(
      * means the model must call one or more tools before responding to the user.
      */
     fun behavior(): Optional<Behavior> = Optional.ofNullable(behavior)
+
     /** Specifies a tool the model should use. Use to force the model to call a specific tool. */
     fun assistantToolChoice(): Optional<AssistantToolChoice> =
         Optional.ofNullable(assistantToolChoice)
@@ -59,6 +60,7 @@ private constructor(
      * means the model must call one or more tools before responding to the user.
      */
     fun asBehavior(): Behavior = behavior.getOrThrow("behavior")
+
     /** Specifies a tool the model should use. Use to force the model to call a specific tool. */
     fun asAssistantToolChoice(): AssistantToolChoice =
         assistantToolChoice.getOrThrow("assistantToolChoice")

@@ -828,6 +828,7 @@ private constructor(
         /** Details of the message creation by the run step. */
         fun messageCreationStepDetails(): Optional<MessageCreationStepDetails> =
             Optional.ofNullable(messageCreationStepDetails)
+
         /** Details of the tool call. */
         fun toolCallsStepDetails(): Optional<ToolCallsStepDetails> =
             Optional.ofNullable(toolCallsStepDetails)
@@ -839,6 +840,7 @@ private constructor(
         /** Details of the message creation by the run step. */
         fun asMessageCreationStepDetails(): MessageCreationStepDetails =
             messageCreationStepDetails.getOrThrow("messageCreationStepDetails")
+
         /** Details of the tool call. */
         fun asToolCallsStepDetails(): ToolCallsStepDetails =
             toolCallsStepDetails.getOrThrow("toolCallsStepDetails")

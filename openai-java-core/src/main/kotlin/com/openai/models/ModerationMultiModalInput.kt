@@ -33,6 +33,7 @@ private constructor(
     /** An object describing an image to classify. */
     fun moderationImageUrlInput(): Optional<ModerationImageUrlInput> =
         Optional.ofNullable(moderationImageUrlInput)
+
     /** An object describing text to classify. */
     fun moderationTextInput(): Optional<ModerationTextInput> =
         Optional.ofNullable(moderationTextInput)
@@ -44,6 +45,7 @@ private constructor(
     /** An object describing an image to classify. */
     fun asModerationImageUrlInput(): ModerationImageUrlInput =
         moderationImageUrlInput.getOrThrow("moderationImageUrlInput")
+
     /** An object describing text to classify. */
     fun asModerationTextInput(): ModerationTextInput =
         moderationTextInput.getOrThrow("moderationTextInput")
