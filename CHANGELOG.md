@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.11.2 (2025-01-10)
+
+Full Changelog: [v0.11.1...v0.11.2](https://github.com/openai/openai-java/compare/v0.11.1...v0.11.2)
+
+### Bug Fixes
+
+* **client:** add some missing `validate()` calls ([#101](https://github.com/openai/openai-java/issues/101)) ([dec2d6b](https://github.com/openai/openai-java/commit/dec2d6b25cccc2547e576c8658116d2bba12f100))
+
+
+### Chores
+
+* **internal:** refactor `validate` methods ([dec2d6b](https://github.com/openai/openai-java/commit/dec2d6b25cccc2547e576c8658116d2bba12f100))
+
 ## 0.11.1 (2025-01-09)
 
 Full Changelog: [v0.11.0...v0.11.1](https://github.com/openai/openai-java/compare/v0.11.0...v0.11.1)
