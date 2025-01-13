@@ -1,6 +1,5 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import com.vanniktech.maven.publish.*
 
 plugins {
     id("openai.java")
