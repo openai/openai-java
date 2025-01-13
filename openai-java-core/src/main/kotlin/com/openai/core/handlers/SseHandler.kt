@@ -39,27 +39,21 @@ internal fun sseHandler(jsonMapper: JsonMapper): Handler<StreamResponse<SseMessa
                                     continue
                                 }
 
-                                if (message.event == null) {
-                                    val error =
-                                        message
-                                            .json<JsonValue>()
-                                            .asObject()
-                                            .getOrNull()
-                                            ?.get("error")
-                                    if (error != null) {
-                                        val errorMessage =
-                                            error.asString().getOrNull()
-                                                ?: error
-                                                    .asObject()
-                                                    .getOrNull()
-                                                    ?.get("message")
-                                                    ?.asString()
-                                                    ?.getOrNull()
-                                                ?: "An error occurred during streaming"
-                                        throw OpenAIException(errorMessage)
-                                    }
-                                    yield(message)
+                                val error =
+                                    message.json<JsonValue>().asObject().getOrNull()?.get("error")
+                                if (error != null) {
+                                    val errorMessage =
+                                        error.asString().getOrNull()
+                                            ?: error
+                                                .asObject()
+                                                .getOrNull()
+                                                ?.get("message")
+                                                ?.asString()
+                                                ?.getOrNull()
+                                            ?: "An error occurred during streaming"
+                                    throw OpenAIException(errorMessage)
                                 }
+                                yield(message)
                             }
                         }
                     }
