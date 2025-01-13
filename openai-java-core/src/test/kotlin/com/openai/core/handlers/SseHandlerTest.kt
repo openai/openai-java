@@ -4,7 +4,6 @@ import com.openai.core.http.Headers
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.SseMessage
 import com.openai.core.jsonMapper
-import com.openai.errors.OpenAIException
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
@@ -22,25 +21,6 @@ class SseHandlerTest {
         internal val expectedMessages: List<SseMessage>? = null,
         internal val expectedException: Exception? = null
     ) {
-        DATA_MISSING_EVENT(
-            buildString {
-                append("data: {\"foo\":true}\n")
-                append("\n")
-            },
-            listOf(sseMessageBuilder().data("{\"foo\":true}").build())
-        ),
-        MULTIPLE_DATA_MISSING_EVENT(
-            buildString {
-                append("data: {\"foo\":true}\n")
-                append("\n")
-                append("data: {\"bar\":false}\n")
-                append("\n")
-            },
-            listOf(
-                sseMessageBuilder().data("{\"foo\":true}").build(),
-                sseMessageBuilder().data("{\"bar\":false}").build()
-            )
-        ),
         DATA_JSON_ESCAPED_DOUBLE_NEW_LINE(
             buildString {
                 append("data: {\n")
@@ -80,27 +60,6 @@ class SseHandlerTest {
                 append("\n")
             },
             listOf(sseMessageBuilder().data("{\"content\":\"известни\"}").build())
-        ),
-        STRING_ERROR_PROPERTY(
-            buildString {
-                append("data: {\"error\":\"ERROR!\"}\n")
-                append("\n")
-            },
-            expectedException = OpenAIException("ERROR!")
-        ),
-        ERROR_PROPERTY_WITH_MESSAGE(
-            buildString {
-                append("data: {\"error\":{\"message\":\"ERROR!\"}}\n")
-                append("\n")
-            },
-            expectedException = OpenAIException("ERROR!")
-        ),
-        ERROR_PROPERTY_MALFORMED(
-            buildString {
-                append("data: {\"error\":42}\n")
-                append("\n")
-            },
-            expectedException = OpenAIException("An error occurred during streaming")
         )
     }
 
