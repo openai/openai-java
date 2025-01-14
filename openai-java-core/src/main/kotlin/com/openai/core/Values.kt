@@ -117,6 +117,8 @@ sealed class JsonField<out T : Any> {
             is JsonValue -> this
         }
 
+    @JvmSynthetic fun accept(consume: (T) -> Unit) = asKnown().ifPresent(consume)
+
     fun <R> accept(visitor: Visitor<T, R>): R =
         when (this) {
             is KnownValue -> visitor.visitKnown(value)
