@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
@@ -140,10 +141,9 @@ private constructor(
 
         fun build(): ModerationCreateResponse =
             ModerationCreateResponse(
-                checkNotNull(id) { "`id` is required but was not set" },
-                checkNotNull(model) { "`model` is required but was not set" },
-                checkNotNull(results) { "`results` is required but was not set" }
-                    .map { it.toImmutable() },
+                checkRequired("id", id),
+                checkRequired("model", model),
+                checkRequired("results", results).map { it.toImmutable() },
                 additionalProperties.toImmutable(),
             )
     }

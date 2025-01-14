@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -106,8 +107,8 @@ private constructor(
 
         fun build(): ChatCompletionNamedToolChoice =
             ChatCompletionNamedToolChoice(
-                checkNotNull(function) { "`function` is required but was not set" },
-                checkNotNull(type) { "`type` is required but was not set" },
+                checkRequired("function", function),
+                checkRequired("type", type),
                 additionalProperties.toImmutable(),
             )
     }
@@ -188,10 +189,7 @@ private constructor(
             }
 
             fun build(): Function =
-                Function(
-                    checkNotNull(name) { "`name` is required but was not set" },
-                    additionalProperties.toImmutable()
-                )
+                Function(checkRequired("name", name), additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {

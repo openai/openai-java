@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
@@ -496,22 +497,22 @@ private constructor(
 
         fun build(): RunStep =
             RunStep(
-                checkNotNull(id) { "`id` is required but was not set" },
-                checkNotNull(assistantId) { "`assistantId` is required but was not set" },
-                checkNotNull(cancelledAt) { "`cancelledAt` is required but was not set" },
-                checkNotNull(completedAt) { "`completedAt` is required but was not set" },
-                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
-                checkNotNull(expiredAt) { "`expiredAt` is required but was not set" },
-                checkNotNull(failedAt) { "`failedAt` is required but was not set" },
-                checkNotNull(lastError) { "`lastError` is required but was not set" },
-                checkNotNull(metadata) { "`metadata` is required but was not set" },
-                checkNotNull(object_) { "`object_` is required but was not set" },
-                checkNotNull(runId) { "`runId` is required but was not set" },
-                checkNotNull(status) { "`status` is required but was not set" },
-                checkNotNull(stepDetails) { "`stepDetails` is required but was not set" },
-                checkNotNull(threadId) { "`threadId` is required but was not set" },
-                checkNotNull(type) { "`type` is required but was not set" },
-                checkNotNull(usage) { "`usage` is required but was not set" },
+                checkRequired("id", id),
+                checkRequired("assistantId", assistantId),
+                checkRequired("cancelledAt", cancelledAt),
+                checkRequired("completedAt", completedAt),
+                checkRequired("createdAt", createdAt),
+                checkRequired("expiredAt", expiredAt),
+                checkRequired("failedAt", failedAt),
+                checkRequired("lastError", lastError),
+                checkRequired("metadata", metadata),
+                checkRequired("object_", object_),
+                checkRequired("runId", runId),
+                checkRequired("status", status),
+                checkRequired("stepDetails", stepDetails),
+                checkRequired("threadId", threadId),
+                checkRequired("type", type),
+                checkRequired("usage", usage),
                 additionalProperties.toImmutable(),
             )
     }
@@ -610,8 +611,8 @@ private constructor(
 
             fun build(): LastError =
                 LastError(
-                    checkNotNull(code) { "`code` is required but was not set" },
-                    checkNotNull(message) { "`message` is required but was not set" },
+                    checkRequired("code", code),
+                    checkRequired("message", message),
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1164,11 +1165,9 @@ private constructor(
 
             fun build(): Usage =
                 Usage(
-                    checkNotNull(completionTokens) {
-                        "`completionTokens` is required but was not set"
-                    },
-                    checkNotNull(promptTokens) { "`promptTokens` is required but was not set" },
-                    checkNotNull(totalTokens) { "`totalTokens` is required but was not set" },
+                    checkRequired("completionTokens", completionTokens),
+                    checkRequired("promptTokens", promptTokens),
+                    checkRequired("totalTokens", totalTokens),
                     additionalProperties.toImmutable(),
                 )
         }

@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -392,8 +393,8 @@ constructor(
 
             fun build(): EmbeddingCreateBody =
                 EmbeddingCreateBody(
-                    checkNotNull(input) { "`input` is required but was not set" },
-                    checkNotNull(model) { "`model` is required but was not set" },
+                    checkRequired("input", input),
+                    checkRequired("model", model),
                     dimensions,
                     encodingFormat,
                     user,

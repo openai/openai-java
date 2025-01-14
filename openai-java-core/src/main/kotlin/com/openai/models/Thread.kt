@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -200,11 +201,11 @@ private constructor(
 
         fun build(): Thread =
             Thread(
-                checkNotNull(id) { "`id` is required but was not set" },
-                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
-                checkNotNull(metadata) { "`metadata` is required but was not set" },
-                checkNotNull(object_) { "`object_` is required but was not set" },
-                checkNotNull(toolResources) { "`toolResources` is required but was not set" },
+                checkRequired("id", id),
+                checkRequired("createdAt", createdAt),
+                checkRequired("metadata", metadata),
+                checkRequired("object_", object_),
+                checkRequired("toolResources", toolResources),
                 additionalProperties.toImmutable(),
             )
     }

@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -1132,40 +1133,31 @@ private constructor(
 
         fun build(): Run =
             Run(
-                checkNotNull(id) { "`id` is required but was not set" },
-                checkNotNull(assistantId) { "`assistantId` is required but was not set" },
-                checkNotNull(cancelledAt) { "`cancelledAt` is required but was not set" },
-                checkNotNull(completedAt) { "`completedAt` is required but was not set" },
-                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
-                checkNotNull(expiresAt) { "`expiresAt` is required but was not set" },
-                checkNotNull(failedAt) { "`failedAt` is required but was not set" },
-                checkNotNull(incompleteDetails) {
-                    "`incompleteDetails` is required but was not set"
-                },
-                checkNotNull(instructions) { "`instructions` is required but was not set" },
-                checkNotNull(lastError) { "`lastError` is required but was not set" },
-                checkNotNull(maxCompletionTokens) {
-                    "`maxCompletionTokens` is required but was not set"
-                },
-                checkNotNull(maxPromptTokens) { "`maxPromptTokens` is required but was not set" },
-                checkNotNull(metadata) { "`metadata` is required but was not set" },
-                checkNotNull(model) { "`model` is required but was not set" },
-                checkNotNull(object_) { "`object_` is required but was not set" },
-                checkNotNull(parallelToolCalls) {
-                    "`parallelToolCalls` is required but was not set"
-                },
-                checkNotNull(requiredAction) { "`requiredAction` is required but was not set" },
-                checkNotNull(responseFormat) { "`responseFormat` is required but was not set" },
-                checkNotNull(startedAt) { "`startedAt` is required but was not set" },
-                checkNotNull(status) { "`status` is required but was not set" },
-                checkNotNull(threadId) { "`threadId` is required but was not set" },
-                checkNotNull(toolChoice) { "`toolChoice` is required but was not set" },
-                checkNotNull(tools) { "`tools` is required but was not set" }
-                    .map { it.toImmutable() },
-                checkNotNull(truncationStrategy) {
-                    "`truncationStrategy` is required but was not set"
-                },
-                checkNotNull(usage) { "`usage` is required but was not set" },
+                checkRequired("id", id),
+                checkRequired("assistantId", assistantId),
+                checkRequired("cancelledAt", cancelledAt),
+                checkRequired("completedAt", completedAt),
+                checkRequired("createdAt", createdAt),
+                checkRequired("expiresAt", expiresAt),
+                checkRequired("failedAt", failedAt),
+                checkRequired("incompleteDetails", incompleteDetails),
+                checkRequired("instructions", instructions),
+                checkRequired("lastError", lastError),
+                checkRequired("maxCompletionTokens", maxCompletionTokens),
+                checkRequired("maxPromptTokens", maxPromptTokens),
+                checkRequired("metadata", metadata),
+                checkRequired("model", model),
+                checkRequired("object_", object_),
+                checkRequired("parallelToolCalls", parallelToolCalls),
+                checkRequired("requiredAction", requiredAction),
+                checkRequired("responseFormat", responseFormat),
+                checkRequired("startedAt", startedAt),
+                checkRequired("status", status),
+                checkRequired("threadId", threadId),
+                checkRequired("toolChoice", toolChoice),
+                checkRequired("tools", tools).map { it.toImmutable() },
+                checkRequired("truncationStrategy", truncationStrategy),
+                checkRequired("usage", usage),
                 temperature,
                 topP,
                 additionalProperties.toImmutable(),
@@ -1433,8 +1425,8 @@ private constructor(
 
             fun build(): LastError =
                 LastError(
-                    checkNotNull(code) { "`code` is required but was not set" },
-                    checkNotNull(message) { "`message` is required but was not set" },
+                    checkRequired("code", code),
+                    checkRequired("message", message),
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1673,10 +1665,8 @@ private constructor(
 
             fun build(): RequiredAction =
                 RequiredAction(
-                    checkNotNull(submitToolOutputs) {
-                        "`submitToolOutputs` is required but was not set"
-                    },
-                    checkNotNull(type) { "`type` is required but was not set" },
+                    checkRequired("submitToolOutputs", submitToolOutputs),
+                    checkRequired("type", type),
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1784,8 +1774,7 @@ private constructor(
 
                 fun build(): SubmitToolOutputs =
                     SubmitToolOutputs(
-                        checkNotNull(toolCalls) { "`toolCalls` is required but was not set" }
-                            .map { it.toImmutable() },
+                        checkRequired("toolCalls", toolCalls).map { it.toImmutable() },
                         additionalProperties.toImmutable()
                     )
             }
@@ -2025,7 +2014,7 @@ private constructor(
 
             fun build(): TruncationStrategy =
                 TruncationStrategy(
-                    checkNotNull(type) { "`type` is required but was not set" },
+                    checkRequired("type", type),
                     lastMessages,
                     additionalProperties.toImmutable(),
                 )
@@ -2234,11 +2223,9 @@ private constructor(
 
             fun build(): Usage =
                 Usage(
-                    checkNotNull(completionTokens) {
-                        "`completionTokens` is required but was not set"
-                    },
-                    checkNotNull(promptTokens) { "`promptTokens` is required but was not set" },
-                    checkNotNull(totalTokens) { "`totalTokens` is required but was not set" },
+                    checkRequired("completionTokens", completionTokens),
+                    checkRequired("promptTokens", promptTokens),
+                    checkRequired("totalTokens", totalTokens),
                     additionalProperties.toImmutable(),
                 )
         }

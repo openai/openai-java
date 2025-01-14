@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.openai.core.Enum
 import com.openai.core.JsonField
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.errors.OpenAIInvalidDataException
@@ -283,7 +284,7 @@ constructor(
 
         fun build(): BetaThreadMessageListParams =
             BetaThreadMessageListParams(
-                checkNotNull(threadId) { "`threadId` is required but was not set" },
+                checkRequired("threadId", threadId),
                 after,
                 before,
                 limit,

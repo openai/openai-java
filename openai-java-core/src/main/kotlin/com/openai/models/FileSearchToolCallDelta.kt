@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -145,9 +146,9 @@ private constructor(
 
         fun build(): FileSearchToolCallDelta =
             FileSearchToolCallDelta(
-                checkNotNull(fileSearch) { "`fileSearch` is required but was not set" },
-                checkNotNull(index) { "`index` is required but was not set" },
-                checkNotNull(type) { "`type` is required but was not set" },
+                checkRequired("fileSearch", fileSearch),
+                checkRequired("index", index),
+                checkRequired("type", type),
                 id,
                 additionalProperties.toImmutable(),
             )

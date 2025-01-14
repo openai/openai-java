@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -1248,7 +1249,7 @@ constructor(
 
             fun build(): BetaThreadCreateAndRunBody =
                 BetaThreadCreateAndRunBody(
-                    checkNotNull(assistantId) { "`assistantId` is required but was not set" },
+                    checkRequired("assistantId", assistantId),
                     instructions,
                     maxCompletionTokens,
                     maxPromptTokens,
@@ -2353,8 +2354,8 @@ constructor(
 
                 fun build(): Message =
                     Message(
-                        checkNotNull(content) { "`content` is required but was not set" },
-                        checkNotNull(role) { "`role` is required but was not set" },
+                        checkRequired("content", content),
+                        checkRequired("role", role),
                         (attachments ?: JsonMissing.of()).map { it.toImmutable() },
                         metadata,
                         additionalProperties.toImmutable(),
@@ -2927,7 +2928,7 @@ constructor(
 
                             fun build(): FileSearch =
                                 FileSearch(
-                                    checkNotNull(type) { "`type` is required but was not set" },
+                                    checkRequired("type", type),
                                     additionalProperties.toImmutable()
                                 )
                         }
@@ -4492,7 +4493,7 @@ constructor(
 
             fun build(): TruncationStrategy =
                 TruncationStrategy(
-                    checkNotNull(type) { "`type` is required but was not set" },
+                    checkRequired("type", type),
                     lastMessages,
                     additionalProperties.toImmutable(),
                 )

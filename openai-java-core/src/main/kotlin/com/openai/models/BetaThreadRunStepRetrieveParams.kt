@@ -3,6 +3,7 @@
 package com.openai.models
 
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -232,9 +233,9 @@ constructor(
 
         fun build(): BetaThreadRunStepRetrieveParams =
             BetaThreadRunStepRetrieveParams(
-                checkNotNull(threadId) { "`threadId` is required but was not set" },
-                checkNotNull(runId) { "`runId` is required but was not set" },
-                checkNotNull(stepId) { "`stepId` is required but was not set" },
+                checkRequired("threadId", threadId),
+                checkRequired("runId", runId),
+                checkRequired("stepId", stepId),
                 include?.toImmutable(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),

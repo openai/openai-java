@@ -4,6 +4,7 @@ package com.openai.models
 
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -192,7 +193,7 @@ constructor(
 
         fun build(): FineTuningJobCancelParams =
             FineTuningJobCancelParams(
-                checkNotNull(fineTuningJobId) { "`fineTuningJobId` is required but was not set" },
+                checkRequired("fineTuningJobId", fineTuningJobId),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),

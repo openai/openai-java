@@ -4,6 +4,7 @@ package com.openai.models
 
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -204,8 +205,8 @@ constructor(
 
         fun build(): BetaVectorStoreFileBatchCancelParams =
             BetaVectorStoreFileBatchCancelParams(
-                checkNotNull(vectorStoreId) { "`vectorStoreId` is required but was not set" },
-                checkNotNull(batchId) { "`batchId` is required but was not set" },
+                checkRequired("vectorStoreId", vectorStoreId),
+                checkRequired("batchId", batchId),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),

@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.immutableEmptyMap
@@ -198,8 +199,7 @@ constructor(
 
             fun build(): UploadCompleteBody =
                 UploadCompleteBody(
-                    checkNotNull(partIds) { "`partIds` is required but was not set" }
-                        .map { it.toImmutable() },
+                    checkRequired("partIds", partIds).map { it.toImmutable() },
                     md5,
                     additionalProperties.toImmutable(),
                 )
@@ -388,7 +388,7 @@ constructor(
 
         fun build(): UploadCompleteParams =
             UploadCompleteParams(
-                checkNotNull(uploadId) { "`uploadId` is required but was not set" },
+                checkRequired("uploadId", uploadId),
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),

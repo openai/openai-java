@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
@@ -161,8 +162,8 @@ private constructor(
 
         fun build(): ChatCompletionUserMessageParam =
             ChatCompletionUserMessageParam(
-                checkNotNull(content) { "`content` is required but was not set" },
-                checkNotNull(role) { "`role` is required but was not set" },
+                checkRequired("content", content),
+                checkRequired("role", role),
                 name,
                 additionalProperties.toImmutable(),
             )

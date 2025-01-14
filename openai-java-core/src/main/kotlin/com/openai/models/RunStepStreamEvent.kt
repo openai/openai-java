@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
@@ -525,8 +526,8 @@ private constructor(
 
             fun build(): ThreadRunStepCreated =
                 ThreadRunStepCreated(
-                    checkNotNull(data) { "`data` is required but was not set" },
-                    checkNotNull(event) { "`event` is required but was not set" },
+                    checkRequired("data", data),
+                    checkRequired("event", event),
                     additionalProperties.toImmutable(),
                 )
         }
@@ -696,8 +697,8 @@ private constructor(
 
             fun build(): ThreadRunStepInProgress =
                 ThreadRunStepInProgress(
-                    checkNotNull(data) { "`data` is required but was not set" },
-                    checkNotNull(event) { "`event` is required but was not set" },
+                    checkRequired("data", data),
+                    checkRequired("event", event),
                     additionalProperties.toImmutable(),
                 )
         }
@@ -871,8 +872,8 @@ private constructor(
 
             fun build(): ThreadRunStepDelta =
                 ThreadRunStepDelta(
-                    checkNotNull(data) { "`data` is required but was not set" },
-                    checkNotNull(event) { "`event` is required but was not set" },
+                    checkRequired("data", data),
+                    checkRequired("event", event),
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1042,8 +1043,8 @@ private constructor(
 
             fun build(): ThreadRunStepCompleted =
                 ThreadRunStepCompleted(
-                    checkNotNull(data) { "`data` is required but was not set" },
-                    checkNotNull(event) { "`event` is required but was not set" },
+                    checkRequired("data", data),
+                    checkRequired("event", event),
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1212,8 +1213,8 @@ private constructor(
 
             fun build(): ThreadRunStepFailed =
                 ThreadRunStepFailed(
-                    checkNotNull(data) { "`data` is required but was not set" },
-                    checkNotNull(event) { "`event` is required but was not set" },
+                    checkRequired("data", data),
+                    checkRequired("event", event),
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1383,8 +1384,8 @@ private constructor(
 
             fun build(): ThreadRunStepCancelled =
                 ThreadRunStepCancelled(
-                    checkNotNull(data) { "`data` is required but was not set" },
-                    checkNotNull(event) { "`event` is required but was not set" },
+                    checkRequired("data", data),
+                    checkRequired("event", event),
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1553,8 +1554,8 @@ private constructor(
 
             fun build(): ThreadRunStepExpired =
                 ThreadRunStepExpired(
-                    checkNotNull(data) { "`data` is required but was not set" },
-                    checkNotNull(event) { "`event` is required but was not set" },
+                    checkRequired("data", data),
+                    checkRequired("event", event),
                     additionalProperties.toImmutable(),
                 )
         }

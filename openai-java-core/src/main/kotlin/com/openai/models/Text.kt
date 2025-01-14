@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
@@ -135,9 +136,8 @@ private constructor(
 
         fun build(): Text =
             Text(
-                checkNotNull(annotations) { "`annotations` is required but was not set" }
-                    .map { it.toImmutable() },
-                checkNotNull(value) { "`value` is required but was not set" },
+                checkRequired("annotations", annotations).map { it.toImmutable() },
+                checkRequired("value", value),
                 additionalProperties.toImmutable(),
             )
     }

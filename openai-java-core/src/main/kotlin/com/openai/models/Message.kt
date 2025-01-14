@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
@@ -495,24 +496,20 @@ private constructor(
 
         fun build(): Message =
             Message(
-                checkNotNull(id) { "`id` is required but was not set" },
-                checkNotNull(assistantId) { "`assistantId` is required but was not set" },
-                checkNotNull(attachments) { "`attachments` is required but was not set" }
-                    .map { it.toImmutable() },
-                checkNotNull(completedAt) { "`completedAt` is required but was not set" },
-                checkNotNull(content) { "`content` is required but was not set" }
-                    .map { it.toImmutable() },
-                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
-                checkNotNull(incompleteAt) { "`incompleteAt` is required but was not set" },
-                checkNotNull(incompleteDetails) {
-                    "`incompleteDetails` is required but was not set"
-                },
-                checkNotNull(metadata) { "`metadata` is required but was not set" },
-                checkNotNull(object_) { "`object_` is required but was not set" },
-                checkNotNull(role) { "`role` is required but was not set" },
-                checkNotNull(runId) { "`runId` is required but was not set" },
-                checkNotNull(status) { "`status` is required but was not set" },
-                checkNotNull(threadId) { "`threadId` is required but was not set" },
+                checkRequired("id", id),
+                checkRequired("assistantId", assistantId),
+                checkRequired("attachments", attachments).map { it.toImmutable() },
+                checkRequired("completedAt", completedAt),
+                checkRequired("content", content).map { it.toImmutable() },
+                checkRequired("createdAt", createdAt),
+                checkRequired("incompleteAt", incompleteAt),
+                checkRequired("incompleteDetails", incompleteDetails),
+                checkRequired("metadata", metadata),
+                checkRequired("object_", object_),
+                checkRequired("role", role),
+                checkRequired("runId", runId),
+                checkRequired("status", status),
+                checkRequired("threadId", threadId),
                 additionalProperties.toImmutable(),
             )
     }
@@ -872,7 +869,7 @@ private constructor(
 
                     fun build(): AssistantToolsFileSearchTypeOnly =
                         AssistantToolsFileSearchTypeOnly(
-                            checkNotNull(type) { "`type` is required but was not set" },
+                            checkRequired("type", type),
                             additionalProperties.toImmutable()
                         )
                 }
@@ -1044,7 +1041,7 @@ private constructor(
 
             fun build(): IncompleteDetails =
                 IncompleteDetails(
-                    checkNotNull(reason) { "`reason` is required but was not set" },
+                    checkRequired("reason", reason),
                     additionalProperties.toImmutable()
                 )
         }

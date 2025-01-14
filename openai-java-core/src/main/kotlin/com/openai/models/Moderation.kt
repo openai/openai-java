@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -161,12 +162,10 @@ private constructor(
 
         fun build(): Moderation =
             Moderation(
-                checkNotNull(categories) { "`categories` is required but was not set" },
-                checkNotNull(categoryAppliedInputTypes) {
-                    "`categoryAppliedInputTypes` is required but was not set"
-                },
-                checkNotNull(categoryScores) { "`categoryScores` is required but was not set" },
-                checkNotNull(flagged) { "`flagged` is required but was not set" },
+                checkRequired("categories", categories),
+                checkRequired("categoryAppliedInputTypes", categoryAppliedInputTypes),
+                checkRequired("categoryScores", categoryScores),
+                checkRequired("flagged", flagged),
                 additionalProperties.toImmutable(),
             )
     }
@@ -623,27 +622,19 @@ private constructor(
 
             fun build(): Categories =
                 Categories(
-                    checkNotNull(harassment) { "`harassment` is required but was not set" },
-                    checkNotNull(harassmentThreatening) {
-                        "`harassmentThreatening` is required but was not set"
-                    },
-                    checkNotNull(hate) { "`hate` is required but was not set" },
-                    checkNotNull(hateThreatening) {
-                        "`hateThreatening` is required but was not set"
-                    },
-                    checkNotNull(illicit) { "`illicit` is required but was not set" },
-                    checkNotNull(illicitViolent) { "`illicitViolent` is required but was not set" },
-                    checkNotNull(selfHarm) { "`selfHarm` is required but was not set" },
-                    checkNotNull(selfHarmInstructions) {
-                        "`selfHarmInstructions` is required but was not set"
-                    },
-                    checkNotNull(selfHarmIntent) { "`selfHarmIntent` is required but was not set" },
-                    checkNotNull(sexual) { "`sexual` is required but was not set" },
-                    checkNotNull(sexualMinors) { "`sexualMinors` is required but was not set" },
-                    checkNotNull(violence) { "`violence` is required but was not set" },
-                    checkNotNull(violenceGraphic) {
-                        "`violenceGraphic` is required but was not set"
-                    },
+                    checkRequired("harassment", harassment),
+                    checkRequired("harassmentThreatening", harassmentThreatening),
+                    checkRequired("hate", hate),
+                    checkRequired("hateThreatening", hateThreatening),
+                    checkRequired("illicit", illicit),
+                    checkRequired("illicitViolent", illicitViolent),
+                    checkRequired("selfHarm", selfHarm),
+                    checkRequired("selfHarmInstructions", selfHarmInstructions),
+                    checkRequired("selfHarmIntent", selfHarmIntent),
+                    checkRequired("sexual", sexual),
+                    checkRequired("sexualMinors", sexualMinors),
+                    checkRequired("violence", violence),
+                    checkRequired("violenceGraphic", violenceGraphic),
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1207,40 +1198,23 @@ private constructor(
 
             fun build(): CategoryAppliedInputTypes =
                 CategoryAppliedInputTypes(
-                    checkNotNull(harassment) { "`harassment` is required but was not set" }
-                        .map { it.toImmutable() },
-                    checkNotNull(harassmentThreatening) {
-                            "`harassmentThreatening` is required but was not set"
-                        }
-                        .map { it.toImmutable() },
-                    checkNotNull(hate) { "`hate` is required but was not set" }
-                        .map { it.toImmutable() },
-                    checkNotNull(hateThreatening) {
-                            "`hateThreatening` is required but was not set"
-                        }
-                        .map { it.toImmutable() },
-                    checkNotNull(illicit) { "`illicit` is required but was not set" }
-                        .map { it.toImmutable() },
-                    checkNotNull(illicitViolent) { "`illicitViolent` is required but was not set" }
-                        .map { it.toImmutable() },
-                    checkNotNull(selfHarm) { "`selfHarm` is required but was not set" }
-                        .map { it.toImmutable() },
-                    checkNotNull(selfHarmInstructions) {
-                            "`selfHarmInstructions` is required but was not set"
-                        }
-                        .map { it.toImmutable() },
-                    checkNotNull(selfHarmIntent) { "`selfHarmIntent` is required but was not set" }
-                        .map { it.toImmutable() },
-                    checkNotNull(sexual) { "`sexual` is required but was not set" }
-                        .map { it.toImmutable() },
-                    checkNotNull(sexualMinors) { "`sexualMinors` is required but was not set" }
-                        .map { it.toImmutable() },
-                    checkNotNull(violence) { "`violence` is required but was not set" }
-                        .map { it.toImmutable() },
-                    checkNotNull(violenceGraphic) {
-                            "`violenceGraphic` is required but was not set"
-                        }
-                        .map { it.toImmutable() },
+                    checkRequired("harassment", harassment).map { it.toImmutable() },
+                    checkRequired("harassmentThreatening", harassmentThreatening).map {
+                        it.toImmutable()
+                    },
+                    checkRequired("hate", hate).map { it.toImmutable() },
+                    checkRequired("hateThreatening", hateThreatening).map { it.toImmutable() },
+                    checkRequired("illicit", illicit).map { it.toImmutable() },
+                    checkRequired("illicitViolent", illicitViolent).map { it.toImmutable() },
+                    checkRequired("selfHarm", selfHarm).map { it.toImmutable() },
+                    checkRequired("selfHarmInstructions", selfHarmInstructions).map {
+                        it.toImmutable()
+                    },
+                    checkRequired("selfHarmIntent", selfHarmIntent).map { it.toImmutable() },
+                    checkRequired("sexual", sexual).map { it.toImmutable() },
+                    checkRequired("sexualMinors", sexualMinors).map { it.toImmutable() },
+                    checkRequired("violence", violence).map { it.toImmutable() },
+                    checkRequired("violenceGraphic", violenceGraphic).map { it.toImmutable() },
                     additionalProperties.toImmutable(),
                 )
         }
@@ -2295,27 +2269,19 @@ private constructor(
 
             fun build(): CategoryScores =
                 CategoryScores(
-                    checkNotNull(harassment) { "`harassment` is required but was not set" },
-                    checkNotNull(harassmentThreatening) {
-                        "`harassmentThreatening` is required but was not set"
-                    },
-                    checkNotNull(hate) { "`hate` is required but was not set" },
-                    checkNotNull(hateThreatening) {
-                        "`hateThreatening` is required but was not set"
-                    },
-                    checkNotNull(illicit) { "`illicit` is required but was not set" },
-                    checkNotNull(illicitViolent) { "`illicitViolent` is required but was not set" },
-                    checkNotNull(selfHarm) { "`selfHarm` is required but was not set" },
-                    checkNotNull(selfHarmInstructions) {
-                        "`selfHarmInstructions` is required but was not set"
-                    },
-                    checkNotNull(selfHarmIntent) { "`selfHarmIntent` is required but was not set" },
-                    checkNotNull(sexual) { "`sexual` is required but was not set" },
-                    checkNotNull(sexualMinors) { "`sexualMinors` is required but was not set" },
-                    checkNotNull(violence) { "`violence` is required but was not set" },
-                    checkNotNull(violenceGraphic) {
-                        "`violenceGraphic` is required but was not set"
-                    },
+                    checkRequired("harassment", harassment),
+                    checkRequired("harassmentThreatening", harassmentThreatening),
+                    checkRequired("hate", hate),
+                    checkRequired("hateThreatening", hateThreatening),
+                    checkRequired("illicit", illicit),
+                    checkRequired("illicitViolent", illicitViolent),
+                    checkRequired("selfHarm", selfHarm),
+                    checkRequired("selfHarmInstructions", selfHarmInstructions),
+                    checkRequired("selfHarmIntent", selfHarmIntent),
+                    checkRequired("sexual", sexual),
+                    checkRequired("sexualMinors", sexualMinors),
+                    checkRequired("violence", violence),
+                    checkRequired("violenceGraphic", violenceGraphic),
                     additionalProperties.toImmutable(),
                 )
         }

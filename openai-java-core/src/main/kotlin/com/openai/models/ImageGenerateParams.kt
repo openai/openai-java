@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.immutableEmptyMap
@@ -484,7 +485,7 @@ constructor(
 
             fun build(): ImageGenerateBody =
                 ImageGenerateBody(
-                    checkNotNull(prompt) { "`prompt` is required but was not set" },
+                    checkRequired("prompt", prompt),
                     model,
                     n,
                     quality,

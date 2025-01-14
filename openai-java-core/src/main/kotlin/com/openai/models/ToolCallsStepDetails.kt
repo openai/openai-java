@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -161,9 +162,8 @@ private constructor(
 
         fun build(): ToolCallsStepDetails =
             ToolCallsStepDetails(
-                checkNotNull(toolCalls) { "`toolCalls` is required but was not set" }
-                    .map { it.toImmutable() },
-                checkNotNull(type) { "`type` is required but was not set" },
+                checkRequired("toolCalls", toolCalls).map { it.toImmutable() },
+                checkRequired("type", type),
                 additionalProperties.toImmutable(),
             )
     }

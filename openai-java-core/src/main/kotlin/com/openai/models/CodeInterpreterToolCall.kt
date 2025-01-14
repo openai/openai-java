@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
@@ -155,9 +156,9 @@ private constructor(
 
         fun build(): CodeInterpreterToolCall =
             CodeInterpreterToolCall(
-                checkNotNull(id) { "`id` is required but was not set" },
-                checkNotNull(codeInterpreter) { "`codeInterpreter` is required but was not set" },
-                checkNotNull(type) { "`type` is required but was not set" },
+                checkRequired("id", id),
+                checkRequired("codeInterpreter", codeInterpreter),
+                checkRequired("type", type),
                 additionalProperties.toImmutable(),
             )
     }
@@ -304,9 +305,8 @@ private constructor(
 
             fun build(): CodeInterpreter =
                 CodeInterpreter(
-                    checkNotNull(input) { "`input` is required but was not set" },
-                    checkNotNull(outputs) { "`outputs` is required but was not set" }
-                        .map { it.toImmutable() },
+                    checkRequired("input", input),
+                    checkRequired("outputs", outputs).map { it.toImmutable() },
                     additionalProperties.toImmutable(),
                 )
         }
@@ -543,8 +543,8 @@ private constructor(
 
                     fun build(): LogsOutput =
                         LogsOutput(
-                            checkNotNull(logs) { "`logs` is required but was not set" },
-                            checkNotNull(type) { "`type` is required but was not set" },
+                            checkRequired("logs", logs),
+                            checkRequired("type", type),
                             additionalProperties.toImmutable(),
                         )
                 }
@@ -713,8 +713,8 @@ private constructor(
 
                     fun build(): ImageOutput =
                         ImageOutput(
-                            checkNotNull(image) { "`image` is required but was not set" },
-                            checkNotNull(type) { "`type` is required but was not set" },
+                            checkRequired("image", image),
+                            checkRequired("type", type),
                             additionalProperties.toImmutable(),
                         )
                 }
@@ -814,7 +814,7 @@ private constructor(
 
                         fun build(): Image =
                             Image(
-                                checkNotNull(fileId) { "`fileId` is required but was not set" },
+                                checkRequired("fileId", fileId),
                                 additionalProperties.toImmutable()
                             )
                     }
