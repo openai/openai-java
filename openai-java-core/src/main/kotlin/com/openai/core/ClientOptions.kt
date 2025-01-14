@@ -189,8 +189,8 @@ private constructor(
         }
 
         fun build(): ClientOptions {
-            checkRequired("httpClient", httpClient)
-            checkRequired("apiKey", apiKey)
+            val httpClient = checkRequired("httpClient", httpClient)
+            val apiKey = checkRequired("apiKey", apiKey)
 
             val headers = Headers.builder()
             val queryParams = QueryParams.builder()
@@ -203,7 +203,7 @@ private constructor(
             headers.put("X-Stainless-Runtime-Version", getJavaVersion())
             organization?.let { headers.put("OpenAI-Organization", it) }
             project?.let { headers.put("OpenAI-Project", it) }
-            apiKey?.let {
+            apiKey.let {
                 if (!it.isEmpty()) {
                     headers.put("Authorization", "Bearer $it")
                 }
@@ -212,10 +212,10 @@ private constructor(
             queryParams.replaceAll(this.queryParams.build())
 
             return ClientOptions(
-                httpClient!!,
+                httpClient,
                 PhantomReachableClosingHttpClient(
                     RetryingHttpClient.builder()
-                        .httpClient(httpClient!!)
+                        .httpClient(httpClient)
                         .clock(clock)
                         .maxRetries(maxRetries)
                         .build()
@@ -242,7 +242,7 @@ private constructor(
                 queryParams.build(),
                 responseValidation,
                 maxRetries,
-                apiKey!!,
+                apiKey,
                 organization,
                 project,
             )
