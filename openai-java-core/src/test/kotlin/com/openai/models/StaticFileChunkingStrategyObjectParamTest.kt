@@ -5,29 +5,29 @@ package com.openai.models
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class StaticFileChunkingStrategyParamTest {
+class StaticFileChunkingStrategyObjectParamTest {
 
     @Test
-    fun createStaticFileChunkingStrategyParam() {
-        val staticFileChunkingStrategyParam =
-            StaticFileChunkingStrategyParam.builder()
+    fun createStaticFileChunkingStrategyObjectParam() {
+        val staticFileChunkingStrategyObjectParam =
+            StaticFileChunkingStrategyObjectParam.builder()
                 .static_(
                     StaticFileChunkingStrategy.builder()
                         .chunkOverlapTokens(0L)
                         .maxChunkSizeTokens(100L)
                         .build()
                 )
-                .type(StaticFileChunkingStrategyParam.Type.STATIC)
+                .type(StaticFileChunkingStrategyObjectParam.Type.STATIC)
                 .build()
-        assertThat(staticFileChunkingStrategyParam).isNotNull
-        assertThat(staticFileChunkingStrategyParam.static_())
+        assertThat(staticFileChunkingStrategyObjectParam).isNotNull
+        assertThat(staticFileChunkingStrategyObjectParam.static_())
             .isEqualTo(
                 StaticFileChunkingStrategy.builder()
                     .chunkOverlapTokens(0L)
                     .maxChunkSizeTokens(100L)
                     .build()
             )
-        assertThat(staticFileChunkingStrategyParam.type())
-            .isEqualTo(StaticFileChunkingStrategyParam.Type.STATIC)
+        assertThat(staticFileChunkingStrategyObjectParam.type())
+            .isEqualTo(StaticFileChunkingStrategyObjectParam.Type.STATIC)
     }
 }
