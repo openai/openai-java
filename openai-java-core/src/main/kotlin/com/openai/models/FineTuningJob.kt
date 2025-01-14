@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
@@ -673,22 +674,21 @@ private constructor(
 
         fun build(): FineTuningJob =
             FineTuningJob(
-                checkNotNull(id) { "`id` is required but was not set" },
-                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
-                checkNotNull(error) { "`error` is required but was not set" },
-                checkNotNull(fineTunedModel) { "`fineTunedModel` is required but was not set" },
-                checkNotNull(finishedAt) { "`finishedAt` is required but was not set" },
-                checkNotNull(hyperparameters) { "`hyperparameters` is required but was not set" },
-                checkNotNull(model) { "`model` is required but was not set" },
-                checkNotNull(object_) { "`object_` is required but was not set" },
-                checkNotNull(organizationId) { "`organizationId` is required but was not set" },
-                checkNotNull(resultFiles) { "`resultFiles` is required but was not set" }
-                    .map { it.toImmutable() },
-                checkNotNull(seed) { "`seed` is required but was not set" },
-                checkNotNull(status) { "`status` is required but was not set" },
-                checkNotNull(trainedTokens) { "`trainedTokens` is required but was not set" },
-                checkNotNull(trainingFile) { "`trainingFile` is required but was not set" },
-                checkNotNull(validationFile) { "`validationFile` is required but was not set" },
+                checkRequired("id", id),
+                checkRequired("createdAt", createdAt),
+                checkRequired("error", error),
+                checkRequired("fineTunedModel", fineTunedModel),
+                checkRequired("finishedAt", finishedAt),
+                checkRequired("hyperparameters", hyperparameters),
+                checkRequired("model", model),
+                checkRequired("object_", object_),
+                checkRequired("organizationId", organizationId),
+                checkRequired("resultFiles", resultFiles).map { it.toImmutable() },
+                checkRequired("seed", seed),
+                checkRequired("status", status),
+                checkRequired("trainedTokens", trainedTokens),
+                checkRequired("trainingFile", trainingFile),
+                checkRequired("validationFile", validationFile),
                 estimatedFinish,
                 (integrations ?: JsonMissing.of()).map { it.toImmutable() },
                 method,
@@ -831,9 +831,9 @@ private constructor(
 
             fun build(): Error =
                 Error(
-                    checkNotNull(code) { "`code` is required but was not set" },
-                    checkNotNull(message) { "`message` is required but was not set" },
-                    checkNotNull(param) { "`param` is required but was not set" },
+                    checkRequired("code", code),
+                    checkRequired("message", message),
+                    checkRequired("param", param),
                     additionalProperties.toImmutable(),
                 )
         }

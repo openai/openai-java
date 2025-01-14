@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
@@ -238,12 +239,10 @@ private constructor(
 
         fun build(): ChatCompletionTokenLogprob =
             ChatCompletionTokenLogprob(
-                checkNotNull(token) { "`token` is required but was not set" },
-                checkNotNull(bytes) { "`bytes` is required but was not set" }
-                    .map { it.toImmutable() },
-                checkNotNull(logprob) { "`logprob` is required but was not set" },
-                checkNotNull(topLogprobs) { "`topLogprobs` is required but was not set" }
-                    .map { it.toImmutable() },
+                checkRequired("token", token),
+                checkRequired("bytes", bytes).map { it.toImmutable() },
+                checkRequired("logprob", logprob),
+                checkRequired("topLogprobs", topLogprobs).map { it.toImmutable() },
                 additionalProperties.toImmutable(),
             )
     }
@@ -422,10 +421,9 @@ private constructor(
 
             fun build(): TopLogprob =
                 TopLogprob(
-                    checkNotNull(token) { "`token` is required but was not set" },
-                    checkNotNull(bytes) { "`bytes` is required but was not set" }
-                        .map { it.toImmutable() },
-                    checkNotNull(logprob) { "`logprob` is required but was not set" },
+                    checkRequired("token", token),
+                    checkRequired("bytes", bytes).map { it.toImmutable() },
+                    checkRequired("logprob", logprob),
                     additionalProperties.toImmutable(),
                 )
         }

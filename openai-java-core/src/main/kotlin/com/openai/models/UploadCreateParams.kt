@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.immutableEmptyMap
@@ -268,10 +269,10 @@ constructor(
 
             fun build(): UploadCreateBody =
                 UploadCreateBody(
-                    checkNotNull(bytes) { "`bytes` is required but was not set" },
-                    checkNotNull(filename) { "`filename` is required but was not set" },
-                    checkNotNull(mimeType) { "`mimeType` is required but was not set" },
-                    checkNotNull(purpose) { "`purpose` is required but was not set" },
+                    checkRequired("bytes", bytes),
+                    checkRequired("filename", filename),
+                    checkRequired("mimeType", mimeType),
+                    checkRequired("purpose", purpose),
                     additionalProperties.toImmutable(),
                 )
         }

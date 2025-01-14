@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -258,13 +259,13 @@ private constructor(
 
         fun build(): FileObject =
             FileObject(
-                checkNotNull(id) { "`id` is required but was not set" },
-                checkNotNull(bytes) { "`bytes` is required but was not set" },
-                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
-                checkNotNull(filename) { "`filename` is required but was not set" },
-                checkNotNull(object_) { "`object_` is required but was not set" },
-                checkNotNull(purpose) { "`purpose` is required but was not set" },
-                checkNotNull(status) { "`status` is required but was not set" },
+                checkRequired("id", id),
+                checkRequired("bytes", bytes),
+                checkRequired("createdAt", createdAt),
+                checkRequired("filename", filename),
+                checkRequired("object_", object_),
+                checkRequired("purpose", purpose),
+                checkRequired("status", status),
                 statusDetails,
                 additionalProperties.toImmutable(),
             )

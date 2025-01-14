@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -128,9 +129,9 @@ private constructor(
 
         fun build(): MessageDeltaEvent =
             MessageDeltaEvent(
-                checkNotNull(id) { "`id` is required but was not set" },
-                checkNotNull(delta) { "`delta` is required but was not set" },
-                checkNotNull(object_) { "`object_` is required but was not set" },
+                checkRequired("id", id),
+                checkRequired("delta", delta),
+                checkRequired("object_", object_),
                 additionalProperties.toImmutable(),
             )
     }

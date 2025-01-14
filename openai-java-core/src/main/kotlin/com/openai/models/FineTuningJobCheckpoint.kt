@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -215,15 +216,13 @@ private constructor(
 
         fun build(): FineTuningJobCheckpoint =
             FineTuningJobCheckpoint(
-                checkNotNull(id) { "`id` is required but was not set" },
-                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
-                checkNotNull(fineTunedModelCheckpoint) {
-                    "`fineTunedModelCheckpoint` is required but was not set"
-                },
-                checkNotNull(fineTuningJobId) { "`fineTuningJobId` is required but was not set" },
-                checkNotNull(metrics) { "`metrics` is required but was not set" },
-                checkNotNull(object_) { "`object_` is required but was not set" },
-                checkNotNull(stepNumber) { "`stepNumber` is required but was not set" },
+                checkRequired("id", id),
+                checkRequired("createdAt", createdAt),
+                checkRequired("fineTunedModelCheckpoint", fineTunedModelCheckpoint),
+                checkRequired("fineTuningJobId", fineTuningJobId),
+                checkRequired("metrics", metrics),
+                checkRequired("object_", object_),
+                checkRequired("stepNumber", stepNumber),
                 additionalProperties.toImmutable(),
             )
     }

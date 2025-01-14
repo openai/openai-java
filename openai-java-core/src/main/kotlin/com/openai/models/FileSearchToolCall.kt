@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -138,9 +139,9 @@ private constructor(
 
         fun build(): FileSearchToolCall =
             FileSearchToolCall(
-                checkNotNull(id) { "`id` is required but was not set" },
-                checkNotNull(fileSearch) { "`fileSearch` is required but was not set" },
-                checkNotNull(type) { "`type` is required but was not set" },
+                checkRequired("id", id),
+                checkRequired("fileSearch", fileSearch),
+                checkRequired("type", type),
                 additionalProperties.toImmutable(),
             )
     }
@@ -385,10 +386,8 @@ private constructor(
 
                 fun build(): RankingOptions =
                     RankingOptions(
-                        checkNotNull(ranker) { "`ranker` is required but was not set" },
-                        checkNotNull(scoreThreshold) {
-                            "`scoreThreshold` is required but was not set"
-                        },
+                        checkRequired("ranker", ranker),
+                        checkRequired("scoreThreshold", scoreThreshold),
                         additionalProperties.toImmutable(),
                     )
             }
@@ -641,9 +640,9 @@ private constructor(
 
                 fun build(): Result =
                     Result(
-                        checkNotNull(fileId) { "`fileId` is required but was not set" },
-                        checkNotNull(fileName) { "`fileName` is required but was not set" },
-                        checkNotNull(score) { "`score` is required but was not set" },
+                        checkRequired("fileId", fileId),
+                        checkRequired("fileName", fileName),
+                        checkRequired("score", score),
                         (content ?: JsonMissing.of()).map { it.toImmutable() },
                         additionalProperties.toImmutable(),
                     )

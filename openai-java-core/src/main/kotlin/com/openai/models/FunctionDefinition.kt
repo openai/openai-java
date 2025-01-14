@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
@@ -239,7 +240,7 @@ private constructor(
 
         fun build(): FunctionDefinition =
             FunctionDefinition(
-                checkNotNull(name) { "`name` is required but was not set" },
+                checkRequired("name", name),
                 description,
                 parameters,
                 strict,

@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -2407,9 +2408,8 @@ constructor(
 
             fun build(): ChatCompletionCreateBody =
                 ChatCompletionCreateBody(
-                    checkNotNull(messages) { "`messages` is required but was not set" }
-                        .map { it.toImmutable() },
-                    checkNotNull(model) { "`model` is required but was not set" },
+                    checkRequired("messages", messages).map { it.toImmutable() },
+                    checkRequired("model", model),
                     audio,
                     frequencyPenalty,
                     functionCall,
@@ -3993,7 +3993,7 @@ constructor(
 
             fun build(): Function =
                 Function(
-                    checkNotNull(name) { "`name` is required but was not set" },
+                    checkRequired("name", name),
                     description,
                     parameters,
                     additionalProperties.toImmutable(),

@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -108,8 +109,8 @@ private constructor(
 
         fun build(): ChatCompletionContentPartImage =
             ChatCompletionContentPartImage(
-                checkNotNull(imageUrl) { "`imageUrl` is required but was not set" },
-                checkNotNull(type) { "`type` is required but was not set" },
+                checkRequired("imageUrl", imageUrl),
+                checkRequired("type", type),
                 additionalProperties.toImmutable(),
             )
     }
@@ -219,7 +220,7 @@ private constructor(
 
             fun build(): ImageUrl =
                 ImageUrl(
-                    checkNotNull(url) { "`url` is required but was not set" },
+                    checkRequired("url", url),
                     detail,
                     additionalProperties.toImmutable(),
                 )

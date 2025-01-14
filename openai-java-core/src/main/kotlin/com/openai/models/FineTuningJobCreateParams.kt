@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -661,8 +662,8 @@ constructor(
 
             fun build(): FineTuningJobCreateBody =
                 FineTuningJobCreateBody(
-                    checkNotNull(model) { "`model` is required but was not set" },
-                    checkNotNull(trainingFile) { "`trainingFile` is required but was not set" },
+                    checkRequired("model", model),
+                    checkRequired("trainingFile", trainingFile),
                     hyperparameters,
                     (integrations ?: JsonMissing.of()).map { it.toImmutable() },
                     method,
@@ -1978,8 +1979,8 @@ constructor(
 
             fun build(): Integration =
                 Integration(
-                    checkNotNull(type) { "`type` is required but was not set" },
-                    checkNotNull(wandb) { "`wandb` is required but was not set" },
+                    checkRequired("type", type),
+                    checkRequired("wandb", wandb),
                     additionalProperties.toImmutable(),
                 )
         }
@@ -2250,7 +2251,7 @@ constructor(
 
                 fun build(): Wandb =
                     Wandb(
-                        checkNotNull(project) { "`project` is required but was not set" },
+                        checkRequired("project", project),
                         entity,
                         name,
                         (tags ?: JsonMissing.of()).map { it.toImmutable() },

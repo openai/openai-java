@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -158,11 +159,11 @@ private constructor(
 
         fun build(): FileCitationAnnotation =
             FileCitationAnnotation(
-                checkNotNull(endIndex) { "`endIndex` is required but was not set" },
-                checkNotNull(fileCitation) { "`fileCitation` is required but was not set" },
-                checkNotNull(startIndex) { "`startIndex` is required but was not set" },
-                checkNotNull(text) { "`text` is required but was not set" },
-                checkNotNull(type) { "`type` is required but was not set" },
+                checkRequired("endIndex", endIndex),
+                checkRequired("fileCitation", fileCitation),
+                checkRequired("startIndex", startIndex),
+                checkRequired("text", text),
+                checkRequired("type", type),
                 additionalProperties.toImmutable(),
             )
     }
@@ -243,10 +244,7 @@ private constructor(
             }
 
             fun build(): FileCitation =
-                FileCitation(
-                    checkNotNull(fileId) { "`fileId` is required but was not set" },
-                    additionalProperties.toImmutable()
-                )
+                FileCitation(checkRequired("fileId", fileId), additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {

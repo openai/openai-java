@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -288,8 +289,8 @@ constructor(
 
             fun build(): BetaThreadMessageCreateBody =
                 BetaThreadMessageCreateBody(
-                    checkNotNull(content) { "`content` is required but was not set" },
-                    checkNotNull(role) { "`role` is required but was not set" },
+                    checkRequired("content", content),
+                    checkRequired("role", role),
                     (attachments ?: JsonMissing.of()).map { it.toImmutable() },
                     metadata,
                     additionalProperties.toImmutable(),
@@ -518,7 +519,7 @@ constructor(
 
         fun build(): BetaThreadMessageCreateParams =
             BetaThreadMessageCreateParams(
-                checkNotNull(threadId) { "`threadId` is required but was not set" },
+                checkRequired("threadId", threadId),
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -1072,10 +1073,7 @@ constructor(
                     }
 
                     fun build(): FileSearch =
-                        FileSearch(
-                            checkNotNull(type) { "`type` is required but was not set" },
-                            additionalProperties.toImmutable()
-                        )
+                        FileSearch(checkRequired("type", type), additionalProperties.toImmutable())
                 }
 
                 class Type

@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -308,13 +309,13 @@ private constructor(
 
         fun build(): VectorStoreFile =
             VectorStoreFile(
-                checkNotNull(id) { "`id` is required but was not set" },
-                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
-                checkNotNull(lastError) { "`lastError` is required but was not set" },
-                checkNotNull(object_) { "`object_` is required but was not set" },
-                checkNotNull(status) { "`status` is required but was not set" },
-                checkNotNull(usageBytes) { "`usageBytes` is required but was not set" },
-                checkNotNull(vectorStoreId) { "`vectorStoreId` is required but was not set" },
+                checkRequired("id", id),
+                checkRequired("createdAt", createdAt),
+                checkRequired("lastError", lastError),
+                checkRequired("object_", object_),
+                checkRequired("status", status),
+                checkRequired("usageBytes", usageBytes),
+                checkRequired("vectorStoreId", vectorStoreId),
                 chunkingStrategy,
                 additionalProperties.toImmutable(),
             )
@@ -416,8 +417,8 @@ private constructor(
 
             fun build(): LastError =
                 LastError(
-                    checkNotNull(code) { "`code` is required but was not set" },
-                    checkNotNull(message) { "`message` is required but was not set" },
+                    checkRequired("code", code),
+                    checkRequired("message", message),
                     additionalProperties.toImmutable(),
                 )
         }

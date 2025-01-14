@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -212,12 +213,12 @@ private constructor(
 
         fun build(): VectorStoreFileBatch =
             VectorStoreFileBatch(
-                checkNotNull(id) { "`id` is required but was not set" },
-                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
-                checkNotNull(fileCounts) { "`fileCounts` is required but was not set" },
-                checkNotNull(object_) { "`object_` is required but was not set" },
-                checkNotNull(status) { "`status` is required but was not set" },
-                checkNotNull(vectorStoreId) { "`vectorStoreId` is required but was not set" },
+                checkRequired("id", id),
+                checkRequired("createdAt", createdAt),
+                checkRequired("fileCounts", fileCounts),
+                checkRequired("object_", object_),
+                checkRequired("status", status),
+                checkRequired("vectorStoreId", vectorStoreId),
                 additionalProperties.toImmutable(),
             )
     }
@@ -371,11 +372,11 @@ private constructor(
 
             fun build(): FileCounts =
                 FileCounts(
-                    checkNotNull(cancelled) { "`cancelled` is required but was not set" },
-                    checkNotNull(completed) { "`completed` is required but was not set" },
-                    checkNotNull(failed) { "`failed` is required but was not set" },
-                    checkNotNull(inProgress) { "`inProgress` is required but was not set" },
-                    checkNotNull(total) { "`total` is required but was not set" },
+                    checkRequired("cancelled", cancelled),
+                    checkRequired("completed", completed),
+                    checkRequired("failed", failed),
+                    checkRequired("inProgress", inProgress),
+                    checkRequired("total", total),
                     additionalProperties.toImmutable(),
                 )
         }

@@ -4,6 +4,7 @@ package com.openai.models
 
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -190,7 +191,7 @@ constructor(
 
         fun build(): BetaAssistantDeleteParams =
             BetaAssistantDeleteParams(
-                checkNotNull(assistantId) { "`assistantId` is required but was not set" },
+                checkRequired("assistantId", assistantId),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
