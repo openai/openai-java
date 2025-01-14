@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.11.3 (2025-01-14)
+
+Full Changelog: [v0.11.2...v0.11.3](https://github.com/openai/openai-java/compare/v0.11.2...v0.11.3)
+
+### Bug Fixes
+
+* **streaming:** support assistants ([#106](https://github.com/openai/openai-java/issues/106)) ([bebfa9c](https://github.com/openai/openai-java/commit/bebfa9c39172655e76c7c3fea45757eef705e931))
+
+
+### Chores
+
+* **internal:** fix up root `build.gradle.kts` formatting ([#109](https://github.com/openai/openai-java/issues/109)) ([54a806f](https://github.com/openai/openai-java/commit/54a806fa6bdd9ff4ef0957324cc36380241c6b82))
+* **internal:** remove unused Gradle imports ([#110](https://github.com/openai/openai-java/issues/110)) ([22502eb](https://github.com/openai/openai-java/commit/22502eb53d52a35237ea364d5d8c89bc1ced62bd))
+* **internal:** remove unused or unnecessary Gradle imports ([#111](https://github.com/openai/openai-java/issues/111)) ([8d95893](https://github.com/openai/openai-java/commit/8d95893e22b7f55bc65bad3cafcb0bf78569fd83))
+* **tests:** add more tests for streaming ([#108](https://github.com/openai/openai-java/issues/108)) ([5dec143](https://github.com/openai/openai-java/commit/5dec143db64f4efd3c1f3f1cd55d1fdee280d695))
+
+
+### Documentation
+
+* publish dokka javadoc ([#112](https://github.com/openai/openai-java/issues/112)) ([5521ffc](https://github.com/openai/openai-java/commit/5521ffc83b4a2adae49e9a226c5c745e64bbbc56))
+
 ## 0.11.2 (2025-01-10)
 
 Full Changelog: [v0.11.1...v0.11.2](https://github.com/openai/openai-java/compare/v0.11.1...v0.11.2)
