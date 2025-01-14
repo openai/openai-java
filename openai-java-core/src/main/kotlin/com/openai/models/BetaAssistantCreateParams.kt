@@ -1944,11 +1944,11 @@ constructor(
                      * `auto` strategy. Only applicable if `file_ids` is non-empty.
                      */
                     fun chunkingStrategy(
-                        staticFileChunkingStrategyParam: StaticFileChunkingStrategyParam
+                        staticFileChunkingStrategyObjectParam: StaticFileChunkingStrategyObjectParam
                     ) =
                         chunkingStrategy(
-                            FileChunkingStrategyParam.ofStaticFileChunkingStrategyParam(
-                                staticFileChunkingStrategyParam
+                            FileChunkingStrategyParam.ofStaticFileChunkingStrategyObjectParam(
+                                staticFileChunkingStrategyObjectParam
                             )
                         )
 
