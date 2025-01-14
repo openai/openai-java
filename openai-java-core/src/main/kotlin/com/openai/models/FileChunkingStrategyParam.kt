@@ -27,7 +27,8 @@ import kotlin.jvm.optionals.getOrNull
 class FileChunkingStrategyParam
 private constructor(
     private val autoFileChunkingStrategyParam: AutoFileChunkingStrategyParam? = null,
-    private val staticFileChunkingStrategyParam: StaticFileChunkingStrategyParam? = null,
+    private val staticFileChunkingStrategyObjectParam: StaticFileChunkingStrategyObjectParam? =
+        null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -38,12 +39,13 @@ private constructor(
     fun autoFileChunkingStrategyParam(): Optional<AutoFileChunkingStrategyParam> =
         Optional.ofNullable(autoFileChunkingStrategyParam)
 
-    fun staticFileChunkingStrategyParam(): Optional<StaticFileChunkingStrategyParam> =
-        Optional.ofNullable(staticFileChunkingStrategyParam)
+    fun staticFileChunkingStrategyObjectParam(): Optional<StaticFileChunkingStrategyObjectParam> =
+        Optional.ofNullable(staticFileChunkingStrategyObjectParam)
 
     fun isAutoFileChunkingStrategyParam(): Boolean = autoFileChunkingStrategyParam != null
 
-    fun isStaticFileChunkingStrategyParam(): Boolean = staticFileChunkingStrategyParam != null
+    fun isStaticFileChunkingStrategyObjectParam(): Boolean =
+        staticFileChunkingStrategyObjectParam != null
 
     /**
      * The default strategy. This strategy currently uses a `max_chunk_size_tokens` of `800` and
@@ -52,8 +54,8 @@ private constructor(
     fun asAutoFileChunkingStrategyParam(): AutoFileChunkingStrategyParam =
         autoFileChunkingStrategyParam.getOrThrow("autoFileChunkingStrategyParam")
 
-    fun asStaticFileChunkingStrategyParam(): StaticFileChunkingStrategyParam =
-        staticFileChunkingStrategyParam.getOrThrow("staticFileChunkingStrategyParam")
+    fun asStaticFileChunkingStrategyObjectParam(): StaticFileChunkingStrategyObjectParam =
+        staticFileChunkingStrategyObjectParam.getOrThrow("staticFileChunkingStrategyObjectParam")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -61,8 +63,10 @@ private constructor(
         return when {
             autoFileChunkingStrategyParam != null ->
                 visitor.visitAutoFileChunkingStrategyParam(autoFileChunkingStrategyParam)
-            staticFileChunkingStrategyParam != null ->
-                visitor.visitStaticFileChunkingStrategyParam(staticFileChunkingStrategyParam)
+            staticFileChunkingStrategyObjectParam != null ->
+                visitor.visitStaticFileChunkingStrategyObjectParam(
+                    staticFileChunkingStrategyObjectParam
+                )
             else -> visitor.unknown(_json)
         }
     }
@@ -82,10 +86,10 @@ private constructor(
                     autoFileChunkingStrategyParam.validate()
                 }
 
-                override fun visitStaticFileChunkingStrategyParam(
-                    staticFileChunkingStrategyParam: StaticFileChunkingStrategyParam
+                override fun visitStaticFileChunkingStrategyObjectParam(
+                    staticFileChunkingStrategyObjectParam: StaticFileChunkingStrategyObjectParam
                 ) {
-                    staticFileChunkingStrategyParam.validate()
+                    staticFileChunkingStrategyObjectParam.validate()
                 }
             }
         )
@@ -97,17 +101,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FileChunkingStrategyParam && autoFileChunkingStrategyParam == other.autoFileChunkingStrategyParam && staticFileChunkingStrategyParam == other.staticFileChunkingStrategyParam /* spotless:on */
+        return /* spotless:off */ other is FileChunkingStrategyParam && autoFileChunkingStrategyParam == other.autoFileChunkingStrategyParam && staticFileChunkingStrategyObjectParam == other.staticFileChunkingStrategyObjectParam /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(autoFileChunkingStrategyParam, staticFileChunkingStrategyParam) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(autoFileChunkingStrategyParam, staticFileChunkingStrategyObjectParam) /* spotless:on */
 
     override fun toString(): String =
         when {
             autoFileChunkingStrategyParam != null ->
                 "FileChunkingStrategyParam{autoFileChunkingStrategyParam=$autoFileChunkingStrategyParam}"
-            staticFileChunkingStrategyParam != null ->
-                "FileChunkingStrategyParam{staticFileChunkingStrategyParam=$staticFileChunkingStrategyParam}"
+            staticFileChunkingStrategyObjectParam != null ->
+                "FileChunkingStrategyParam{staticFileChunkingStrategyObjectParam=$staticFileChunkingStrategyObjectParam}"
             _json != null -> "FileChunkingStrategyParam{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid FileChunkingStrategyParam")
         }
@@ -124,11 +128,11 @@ private constructor(
         ) = FileChunkingStrategyParam(autoFileChunkingStrategyParam = autoFileChunkingStrategyParam)
 
         @JvmStatic
-        fun ofStaticFileChunkingStrategyParam(
-            staticFileChunkingStrategyParam: StaticFileChunkingStrategyParam
+        fun ofStaticFileChunkingStrategyObjectParam(
+            staticFileChunkingStrategyObjectParam: StaticFileChunkingStrategyObjectParam
         ) =
             FileChunkingStrategyParam(
-                staticFileChunkingStrategyParam = staticFileChunkingStrategyParam
+                staticFileChunkingStrategyObjectParam = staticFileChunkingStrategyObjectParam
             )
     }
 
@@ -138,8 +142,8 @@ private constructor(
             autoFileChunkingStrategyParam: AutoFileChunkingStrategyParam
         ): T
 
-        fun visitStaticFileChunkingStrategyParam(
-            staticFileChunkingStrategyParam: StaticFileChunkingStrategyParam
+        fun visitStaticFileChunkingStrategyObjectParam(
+            staticFileChunkingStrategyObjectParam: StaticFileChunkingStrategyObjectParam
         ): T
 
         fun unknown(json: JsonValue?): T {
@@ -167,12 +171,12 @@ private constructor(
                         }
                 }
                 "static" -> {
-                    tryDeserialize(node, jacksonTypeRef<StaticFileChunkingStrategyParam>()) {
+                    tryDeserialize(node, jacksonTypeRef<StaticFileChunkingStrategyObjectParam>()) {
                             it.validate()
                         }
                         ?.let {
                             return FileChunkingStrategyParam(
-                                staticFileChunkingStrategyParam = it,
+                                staticFileChunkingStrategyObjectParam = it,
                                 _json = json
                             )
                         }
@@ -193,8 +197,8 @@ private constructor(
             when {
                 value.autoFileChunkingStrategyParam != null ->
                     generator.writeObject(value.autoFileChunkingStrategyParam)
-                value.staticFileChunkingStrategyParam != null ->
-                    generator.writeObject(value.staticFileChunkingStrategyParam)
+                value.staticFileChunkingStrategyObjectParam != null ->
+                    generator.writeObject(value.staticFileChunkingStrategyObjectParam)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid FileChunkingStrategyParam")
             }

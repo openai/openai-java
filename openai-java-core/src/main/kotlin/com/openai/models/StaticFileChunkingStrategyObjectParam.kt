@@ -19,7 +19,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 
 @NoAutoDetect
-class StaticFileChunkingStrategyParam
+class StaticFileChunkingStrategyObjectParam
 @JsonCreator
 private constructor(
     @JsonProperty("static")
@@ -47,7 +47,7 @@ private constructor(
 
     private var validated: Boolean = false
 
-    fun validate(): StaticFileChunkingStrategyParam = apply {
+    fun validate(): StaticFileChunkingStrategyObjectParam = apply {
         if (validated) {
             return@apply
         }
@@ -71,13 +71,14 @@ private constructor(
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(staticFileChunkingStrategyParam: StaticFileChunkingStrategyParam) =
-            apply {
-                static_ = staticFileChunkingStrategyParam.static_
-                type = staticFileChunkingStrategyParam.type
-                additionalProperties =
-                    staticFileChunkingStrategyParam.additionalProperties.toMutableMap()
-            }
+        internal fun from(
+            staticFileChunkingStrategyObjectParam: StaticFileChunkingStrategyObjectParam
+        ) = apply {
+            static_ = staticFileChunkingStrategyObjectParam.static_
+            type = staticFileChunkingStrategyObjectParam.type
+            additionalProperties =
+                staticFileChunkingStrategyObjectParam.additionalProperties.toMutableMap()
+        }
 
         fun static_(static_: StaticFileChunkingStrategy) = static_(JsonField.of(static_))
 
@@ -110,8 +111,8 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
-        fun build(): StaticFileChunkingStrategyParam =
-            StaticFileChunkingStrategyParam(
+        fun build(): StaticFileChunkingStrategyObjectParam =
+            StaticFileChunkingStrategyObjectParam(
                 checkRequired("static_", static_),
                 checkRequired("type", type),
                 additionalProperties.toImmutable(),
@@ -174,7 +175,7 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is StaticFileChunkingStrategyParam && static_ == other.static_ && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is StaticFileChunkingStrategyObjectParam && static_ == other.static_ && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
@@ -184,5 +185,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "StaticFileChunkingStrategyParam{static_=$static_, type=$type, additionalProperties=$additionalProperties}"
+        "StaticFileChunkingStrategyObjectParam{static_=$static_, type=$type, additionalProperties=$additionalProperties}"
 }
