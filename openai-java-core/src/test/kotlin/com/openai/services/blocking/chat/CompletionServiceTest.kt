@@ -8,7 +8,6 @@ import com.openai.core.JsonValue
 import com.openai.models.ChatCompletionAudioParam
 import com.openai.models.ChatCompletionCreateParams
 import com.openai.models.ChatCompletionDeveloperMessageParam
-import com.openai.models.ChatCompletionMessageParam
 import com.openai.models.ChatCompletionModality
 import com.openai.models.ChatCompletionPredictionContent
 import com.openai.models.ChatCompletionReasoningEffort
@@ -37,17 +36,11 @@ class CompletionServiceTest {
             completionService.create(
                 ChatCompletionCreateParams.builder()
                     .addMessage(
-                        ChatCompletionMessageParam.ofChatCompletionDeveloperMessageParam(
-                            ChatCompletionDeveloperMessageParam.builder()
-                                .content(
-                                    ChatCompletionDeveloperMessageParam.Content.ofTextContent(
-                                        "string"
-                                    )
-                                )
-                                .role(ChatCompletionDeveloperMessageParam.Role.DEVELOPER)
-                                .name("name")
-                                .build()
-                        )
+                        ChatCompletionDeveloperMessageParam.builder()
+                            .content("string")
+                            .role(ChatCompletionDeveloperMessageParam.Role.DEVELOPER)
+                            .name("name")
+                            .build()
                     )
                     .model(ChatModel.O1)
                     .audio(
@@ -57,11 +50,7 @@ class CompletionServiceTest {
                             .build()
                     )
                     .frequencyPenalty(-2.0)
-                    .functionCall(
-                        ChatCompletionCreateParams.FunctionCall.ofBehavior(
-                            ChatCompletionCreateParams.FunctionCall.Behavior.NONE
-                        )
-                    )
+                    .functionCall(ChatCompletionCreateParams.FunctionCall.Behavior.NONE)
                     .addFunction(
                         ChatCompletionCreateParams.Function.builder()
                             .name("name")
@@ -91,30 +80,22 @@ class CompletionServiceTest {
                     .parallelToolCalls(true)
                     .prediction(
                         ChatCompletionPredictionContent.builder()
-                            .content(
-                                ChatCompletionPredictionContent.Content.ofTextContent("string")
-                            )
+                            .content("string")
                             .type(ChatCompletionPredictionContent.Type.CONTENT)
                             .build()
                     )
                     .presencePenalty(-2.0)
                     .reasoningEffort(ChatCompletionReasoningEffort.LOW)
                     .responseFormat(
-                        ChatCompletionCreateParams.ResponseFormat.ofResponseFormatText(
-                            ResponseFormatText.builder().type(ResponseFormatText.Type.TEXT).build()
-                        )
+                        ResponseFormatText.builder().type(ResponseFormatText.Type.TEXT).build()
                     )
                     .seed(-9007199254740991L)
                     .serviceTier(ChatCompletionCreateParams.ServiceTier.AUTO)
-                    .stop(ChatCompletionCreateParams.Stop.ofString("string"))
+                    .stop("string")
                     .store(true)
                     .streamOptions(ChatCompletionStreamOptions.builder().includeUsage(true).build())
                     .temperature(1.0)
-                    .toolChoice(
-                        ChatCompletionToolChoiceOption.ofBehavior(
-                            ChatCompletionToolChoiceOption.Behavior.NONE
-                        )
-                    )
+                    .toolChoice(ChatCompletionToolChoiceOption.Behavior.NONE)
                     .addTool(
                         ChatCompletionTool.builder()
                             .function(
@@ -154,17 +135,11 @@ class CompletionServiceTest {
             completionService.createStreaming(
                 ChatCompletionCreateParams.builder()
                     .addMessage(
-                        ChatCompletionMessageParam.ofChatCompletionDeveloperMessageParam(
-                            ChatCompletionDeveloperMessageParam.builder()
-                                .content(
-                                    ChatCompletionDeveloperMessageParam.Content.ofTextContent(
-                                        "string"
-                                    )
-                                )
-                                .role(ChatCompletionDeveloperMessageParam.Role.DEVELOPER)
-                                .name("name")
-                                .build()
-                        )
+                        ChatCompletionDeveloperMessageParam.builder()
+                            .content("string")
+                            .role(ChatCompletionDeveloperMessageParam.Role.DEVELOPER)
+                            .name("name")
+                            .build()
                     )
                     .model(ChatModel.O1)
                     .audio(
@@ -174,11 +149,7 @@ class CompletionServiceTest {
                             .build()
                     )
                     .frequencyPenalty(-2.0)
-                    .functionCall(
-                        ChatCompletionCreateParams.FunctionCall.ofBehavior(
-                            ChatCompletionCreateParams.FunctionCall.Behavior.NONE
-                        )
-                    )
+                    .functionCall(ChatCompletionCreateParams.FunctionCall.Behavior.NONE)
                     .addFunction(
                         ChatCompletionCreateParams.Function.builder()
                             .name("name")
@@ -208,30 +179,22 @@ class CompletionServiceTest {
                     .parallelToolCalls(true)
                     .prediction(
                         ChatCompletionPredictionContent.builder()
-                            .content(
-                                ChatCompletionPredictionContent.Content.ofTextContent("string")
-                            )
+                            .content("string")
                             .type(ChatCompletionPredictionContent.Type.CONTENT)
                             .build()
                     )
                     .presencePenalty(-2.0)
                     .reasoningEffort(ChatCompletionReasoningEffort.LOW)
                     .responseFormat(
-                        ChatCompletionCreateParams.ResponseFormat.ofResponseFormatText(
-                            ResponseFormatText.builder().type(ResponseFormatText.Type.TEXT).build()
-                        )
+                        ResponseFormatText.builder().type(ResponseFormatText.Type.TEXT).build()
                     )
                     .seed(-9007199254740991L)
                     .serviceTier(ChatCompletionCreateParams.ServiceTier.AUTO)
-                    .stop(ChatCompletionCreateParams.Stop.ofString("string"))
+                    .stop("string")
                     .store(true)
                     .streamOptions(ChatCompletionStreamOptions.builder().includeUsage(true).build())
                     .temperature(1.0)
-                    .toolChoice(
-                        ChatCompletionToolChoiceOption.ofBehavior(
-                            ChatCompletionToolChoiceOption.Behavior.NONE
-                        )
-                    )
+                    .toolChoice(ChatCompletionToolChoiceOption.Behavior.NONE)
                     .addTool(
                         ChatCompletionTool.builder()
                             .function(

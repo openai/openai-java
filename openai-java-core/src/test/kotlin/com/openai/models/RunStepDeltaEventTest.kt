@@ -15,16 +15,14 @@ class RunStepDeltaEventTest {
                 .delta(
                     RunStepDelta.builder()
                         .stepDetails(
-                            RunStepDelta.StepDetails.ofRunStepDeltaMessageDelta(
-                                RunStepDeltaMessageDelta.builder()
-                                    .type(RunStepDeltaMessageDelta.Type.MESSAGE_CREATION)
-                                    .messageCreation(
-                                        RunStepDeltaMessageDelta.MessageCreation.builder()
-                                            .messageId("message_id")
-                                            .build()
-                                    )
-                                    .build()
-                            )
+                            RunStepDeltaMessageDelta.builder()
+                                .type(RunStepDeltaMessageDelta.Type.MESSAGE_CREATION)
+                                .messageCreation(
+                                    RunStepDeltaMessageDelta.MessageCreation.builder()
+                                        .messageId("message_id")
+                                        .build()
+                                )
+                                .build()
                         )
                         .build()
                 )
@@ -36,16 +34,14 @@ class RunStepDeltaEventTest {
             .isEqualTo(
                 RunStepDelta.builder()
                     .stepDetails(
-                        RunStepDelta.StepDetails.ofRunStepDeltaMessageDelta(
-                            RunStepDeltaMessageDelta.builder()
-                                .type(RunStepDeltaMessageDelta.Type.MESSAGE_CREATION)
-                                .messageCreation(
-                                    RunStepDeltaMessageDelta.MessageCreation.builder()
-                                        .messageId("message_id")
-                                        .build()
-                                )
-                                .build()
-                        )
+                        RunStepDeltaMessageDelta.builder()
+                            .type(RunStepDeltaMessageDelta.Type.MESSAGE_CREATION)
+                            .messageCreation(
+                                RunStepDeltaMessageDelta.MessageCreation.builder()
+                                    .messageId("message_id")
+                                    .build()
+                            )
+                            .build()
                     )
                     .build()
             )

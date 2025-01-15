@@ -10,9 +10,7 @@ class EmbeddingCreateParamsTest {
     @Test
     fun createEmbeddingCreateParams() {
         EmbeddingCreateParams.builder()
-            .input(
-                EmbeddingCreateParams.Input.ofString("The quick brown fox jumped over the lazy dog")
-            )
+            .input("The quick brown fox jumped over the lazy dog")
             .model(EmbeddingModel.TEXT_EMBEDDING_ADA_002)
             .dimensions(1L)
             .encodingFormat(EmbeddingCreateParams.EncodingFormat.FLOAT)
@@ -24,11 +22,7 @@ class EmbeddingCreateParamsTest {
     fun getBody() {
         val params =
             EmbeddingCreateParams.builder()
-                .input(
-                    EmbeddingCreateParams.Input.ofString(
-                        "The quick brown fox jumped over the lazy dog"
-                    )
-                )
+                .input("The quick brown fox jumped over the lazy dog")
                 .model(EmbeddingModel.TEXT_EMBEDDING_ADA_002)
                 .dimensions(1L)
                 .encodingFormat(EmbeddingCreateParams.EncodingFormat.FLOAT)
@@ -50,11 +44,7 @@ class EmbeddingCreateParamsTest {
     fun getBodyWithoutOptionalFields() {
         val params =
             EmbeddingCreateParams.builder()
-                .input(
-                    EmbeddingCreateParams.Input.ofString(
-                        "The quick brown fox jumped over the lazy dog"
-                    )
-                )
+                .input("The quick brown fox jumped over the lazy dog")
                 .model(EmbeddingModel.TEXT_EMBEDDING_ADA_002)
                 .build()
         val body = params.getBody()

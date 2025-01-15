@@ -9,7 +9,6 @@ import com.openai.models.BetaVectorStoreFileCreateParams
 import com.openai.models.BetaVectorStoreFileDeleteParams
 import com.openai.models.BetaVectorStoreFileListParams
 import com.openai.models.BetaVectorStoreFileRetrieveParams
-import com.openai.models.FileChunkingStrategyParam
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -30,11 +29,9 @@ class FileServiceTest {
                     .vectorStoreId("vs_abc123")
                     .fileId("file_id")
                     .chunkingStrategy(
-                        FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
-                            AutoFileChunkingStrategyParam.builder()
-                                .type(AutoFileChunkingStrategyParam.Type.AUTO)
-                                .build()
-                        )
+                        AutoFileChunkingStrategyParam.builder()
+                            .type(AutoFileChunkingStrategyParam.Type.AUTO)
+                            .build()
                     )
                     .build()
             )

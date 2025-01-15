@@ -58,23 +58,15 @@ class RunTest {
                         .type(Run.RequiredAction.Type.SUBMIT_TOOL_OUTPUTS)
                         .build()
                 )
-                .responseFormat(
-                    AssistantResponseFormatOption.ofBehavior(
-                        AssistantResponseFormatOption.Behavior.AUTO
-                    )
-                )
+                .responseFormat(AssistantResponseFormatOption.Behavior.AUTO)
                 .startedAt(0L)
                 .status(RunStatus.QUEUED)
                 .threadId("thread_id")
-                .toolChoice(
-                    AssistantToolChoiceOption.ofBehavior(AssistantToolChoiceOption.Behavior.NONE)
-                )
+                .toolChoice(AssistantToolChoiceOption.Behavior.NONE)
                 .addTool(
-                    AssistantTool.ofCodeInterpreterTool(
-                        CodeInterpreterTool.builder()
-                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                            .build()
-                    )
+                    CodeInterpreterTool.builder()
+                        .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
+                        .build()
                 )
                 .truncationStrategy(
                     Run.TruncationStrategy.builder()

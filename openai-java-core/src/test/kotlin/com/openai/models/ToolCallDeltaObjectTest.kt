@@ -13,28 +13,23 @@ class ToolCallDeltaObjectTest {
             ToolCallDeltaObject.builder()
                 .type(ToolCallDeltaObject.Type.TOOL_CALLS)
                 .addToolCall(
-                    ToolCallDelta.ofCodeInterpreterToolCallDelta(
-                        CodeInterpreterToolCallDelta.builder()
-                            .index(0L)
-                            .type(CodeInterpreterToolCallDelta.Type.CODE_INTERPRETER)
-                            .id("id")
-                            .codeInterpreter(
-                                CodeInterpreterToolCallDelta.CodeInterpreter.builder()
-                                    .input("input")
-                                    .addOutput(
-                                        CodeInterpreterToolCallDelta.CodeInterpreter.Output
-                                            .ofCodeInterpreterLogs(
-                                                CodeInterpreterLogs.builder()
-                                                    .index(0L)
-                                                    .type(CodeInterpreterLogs.Type.LOGS)
-                                                    .logs("logs")
-                                                    .build()
-                                            )
-                                    )
-                                    .build()
-                            )
-                            .build()
-                    )
+                    CodeInterpreterToolCallDelta.builder()
+                        .index(0L)
+                        .type(CodeInterpreterToolCallDelta.Type.CODE_INTERPRETER)
+                        .id("id")
+                        .codeInterpreter(
+                            CodeInterpreterToolCallDelta.CodeInterpreter.builder()
+                                .input("input")
+                                .addOutput(
+                                    CodeInterpreterLogs.builder()
+                                        .index(0L)
+                                        .type(CodeInterpreterLogs.Type.LOGS)
+                                        .logs("logs")
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
                 )
                 .build()
         assertThat(toolCallDeltaObject).isNotNull
@@ -50,14 +45,11 @@ class ToolCallDeltaObjectTest {
                             CodeInterpreterToolCallDelta.CodeInterpreter.builder()
                                 .input("input")
                                 .addOutput(
-                                    CodeInterpreterToolCallDelta.CodeInterpreter.Output
-                                        .ofCodeInterpreterLogs(
-                                            CodeInterpreterLogs.builder()
-                                                .index(0L)
-                                                .type(CodeInterpreterLogs.Type.LOGS)
-                                                .logs("logs")
-                                                .build()
-                                        )
+                                    CodeInterpreterLogs.builder()
+                                        .index(0L)
+                                        .type(CodeInterpreterLogs.Type.LOGS)
+                                        .logs("logs")
+                                        .build()
                                 )
                                 .build()
                         )

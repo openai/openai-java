@@ -31,24 +31,15 @@ class JobServiceTest {
                     .hyperparameters(
                         FineTuningJobCreateParams.Hyperparameters.builder()
                             .batchSize(
-                                FineTuningJobCreateParams.Hyperparameters.BatchSize.ofBehavior(
-                                    FineTuningJobCreateParams.Hyperparameters.BatchSize.Behavior
-                                        .AUTO
-                                )
+                                FineTuningJobCreateParams.Hyperparameters.BatchSize.Behavior.AUTO
                             )
                             .learningRateMultiplier(
                                 FineTuningJobCreateParams.Hyperparameters.LearningRateMultiplier
-                                    .ofBehavior(
-                                        FineTuningJobCreateParams.Hyperparameters
-                                            .LearningRateMultiplier
-                                            .Behavior
-                                            .AUTO
-                                    )
+                                    .Behavior
+                                    .AUTO
                             )
                             .nEpochs(
-                                FineTuningJobCreateParams.Hyperparameters.NEpochs.ofBehavior(
-                                    FineTuningJobCreateParams.Hyperparameters.NEpochs.Behavior.AUTO
-                                )
+                                FineTuningJobCreateParams.Hyperparameters.NEpochs.Behavior.AUTO
                             )
                             .build()
                     )
@@ -75,46 +66,26 @@ class JobServiceTest {
                                             .batchSize(
                                                 FineTuningJobCreateParams.Method.Dpo.Hyperparameters
                                                     .BatchSize
-                                                    .ofAuto(
-                                                        FineTuningJobCreateParams.Method.Dpo
-                                                            .Hyperparameters
-                                                            .BatchSize
-                                                            .Auto
-                                                            .AUTO
-                                                    )
+                                                    .Auto
+                                                    .AUTO
                                             )
                                             .beta(
                                                 FineTuningJobCreateParams.Method.Dpo.Hyperparameters
                                                     .Beta
-                                                    .ofAuto(
-                                                        FineTuningJobCreateParams.Method.Dpo
-                                                            .Hyperparameters
-                                                            .Beta
-                                                            .Auto
-                                                            .AUTO
-                                                    )
+                                                    .Auto
+                                                    .AUTO
                                             )
                                             .learningRateMultiplier(
                                                 FineTuningJobCreateParams.Method.Dpo.Hyperparameters
                                                     .LearningRateMultiplier
-                                                    .ofAuto(
-                                                        FineTuningJobCreateParams.Method.Dpo
-                                                            .Hyperparameters
-                                                            .LearningRateMultiplier
-                                                            .Auto
-                                                            .AUTO
-                                                    )
+                                                    .Auto
+                                                    .AUTO
                                             )
                                             .nEpochs(
                                                 FineTuningJobCreateParams.Method.Dpo.Hyperparameters
                                                     .NEpochs
-                                                    .ofAuto(
-                                                        FineTuningJobCreateParams.Method.Dpo
-                                                            .Hyperparameters
-                                                            .NEpochs
-                                                            .Auto
-                                                            .AUTO
-                                                    )
+                                                    .Auto
+                                                    .AUTO
                                             )
                                             .build()
                                     )
@@ -129,37 +100,22 @@ class JobServiceTest {
                                                 FineTuningJobCreateParams.Method.Supervised
                                                     .Hyperparameters
                                                     .BatchSize
-                                                    .ofAuto(
-                                                        FineTuningJobCreateParams.Method.Supervised
-                                                            .Hyperparameters
-                                                            .BatchSize
-                                                            .Auto
-                                                            .AUTO
-                                                    )
+                                                    .Auto
+                                                    .AUTO
                                             )
                                             .learningRateMultiplier(
                                                 FineTuningJobCreateParams.Method.Supervised
                                                     .Hyperparameters
                                                     .LearningRateMultiplier
-                                                    .ofAuto(
-                                                        FineTuningJobCreateParams.Method.Supervised
-                                                            .Hyperparameters
-                                                            .LearningRateMultiplier
-                                                            .Auto
-                                                            .AUTO
-                                                    )
+                                                    .Auto
+                                                    .AUTO
                                             )
                                             .nEpochs(
                                                 FineTuningJobCreateParams.Method.Supervised
                                                     .Hyperparameters
                                                     .NEpochs
-                                                    .ofAuto(
-                                                        FineTuningJobCreateParams.Method.Supervised
-                                                            .Hyperparameters
-                                                            .NEpochs
-                                                            .Auto
-                                                            .AUTO
-                                                    )
+                                                    .Auto
+                                                    .AUTO
                                             )
                                             .build()
                                     )
