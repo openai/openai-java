@@ -10,9 +10,3 @@ allprojects {
 subprojects {
     apply(plugin = "org.jetbrains.dokka")
 }
-
-tasks.register<Jar>("dokkaJavadocJar") {
-    dependsOn(tasks.dokkaJavadoc)
-    from(tasks.dokkaJavadoc.flatMap { it.outputDirectory })
-    archiveClassifier.set("javadoc")
-}
