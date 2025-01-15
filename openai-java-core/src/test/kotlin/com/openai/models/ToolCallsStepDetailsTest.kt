@@ -11,55 +11,14 @@ class ToolCallsStepDetailsTest {
     fun createToolCallsStepDetails() {
         val toolCallsStepDetails =
             ToolCallsStepDetails.builder()
-                .toolCalls(
-                    listOf(
-                        ToolCall.ofCodeInterpreterToolCall(
-                            CodeInterpreterToolCall.builder()
-                                .id("id")
-                                .codeInterpreter(
-                                    CodeInterpreterToolCall.CodeInterpreter.builder()
-                                        .input("input")
-                                        .outputs(
-                                            listOf(
-                                                CodeInterpreterToolCall.CodeInterpreter.Output
-                                                    .ofLogs(
-                                                        CodeInterpreterToolCall.CodeInterpreter
-                                                            .Output
-                                                            .LogsOutput
-                                                            .builder()
-                                                            .logs("logs")
-                                                            .type(
-                                                                CodeInterpreterToolCall
-                                                                    .CodeInterpreter
-                                                                    .Output
-                                                                    .LogsOutput
-                                                                    .Type
-                                                                    .LOGS
-                                                            )
-                                                            .build()
-                                                    )
-                                            )
-                                        )
-                                        .build()
-                                )
-                                .type(CodeInterpreterToolCall.Type.CODE_INTERPRETER)
-                                .build()
-                        )
-                    )
-                )
-                .type(ToolCallsStepDetails.Type.TOOL_CALLS)
-                .build()
-        assertThat(toolCallsStepDetails).isNotNull
-        assertThat(toolCallsStepDetails.toolCalls())
-            .containsExactly(
-                ToolCall.ofCodeInterpreterToolCall(
-                    CodeInterpreterToolCall.builder()
-                        .id("id")
-                        .codeInterpreter(
-                            CodeInterpreterToolCall.CodeInterpreter.builder()
-                                .input("input")
-                                .outputs(
-                                    listOf(
+                .addToolCall(
+                    ToolCall.ofCodeInterpreterToolCall(
+                        CodeInterpreterToolCall.builder()
+                            .id("id")
+                            .codeInterpreter(
+                                CodeInterpreterToolCall.CodeInterpreter.builder()
+                                    .input("input")
+                                    .addOutput(
                                         CodeInterpreterToolCall.CodeInterpreter.Output.ofLogs(
                                             CodeInterpreterToolCall.CodeInterpreter.Output
                                                 .LogsOutput
@@ -73,6 +32,36 @@ class ToolCallsStepDetailsTest {
                                                 )
                                                 .build()
                                         )
+                                    )
+                                    .build()
+                            )
+                            .type(CodeInterpreterToolCall.Type.CODE_INTERPRETER)
+                            .build()
+                    )
+                )
+                .type(ToolCallsStepDetails.Type.TOOL_CALLS)
+                .build()
+        assertThat(toolCallsStepDetails).isNotNull
+        assertThat(toolCallsStepDetails.toolCalls())
+            .containsExactly(
+                ToolCall.ofCodeInterpreterToolCall(
+                    CodeInterpreterToolCall.builder()
+                        .id("id")
+                        .codeInterpreter(
+                            CodeInterpreterToolCall.CodeInterpreter.builder()
+                                .input("input")
+                                .addOutput(
+                                    CodeInterpreterToolCall.CodeInterpreter.Output.ofLogs(
+                                        CodeInterpreterToolCall.CodeInterpreter.Output.LogsOutput
+                                            .builder()
+                                            .logs("logs")
+                                            .type(
+                                                CodeInterpreterToolCall.CodeInterpreter.Output
+                                                    .LogsOutput
+                                                    .Type
+                                                    .LOGS
+                                            )
+                                            .build()
                                     )
                                 )
                                 .build()

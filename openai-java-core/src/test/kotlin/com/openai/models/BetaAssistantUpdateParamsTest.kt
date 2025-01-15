@@ -27,23 +27,21 @@ class BetaAssistantUpdateParamsTest {
                 BetaAssistantUpdateParams.ToolResources.builder()
                     .codeInterpreter(
                         BetaAssistantUpdateParams.ToolResources.CodeInterpreter.builder()
-                            .fileIds(listOf("string"))
+                            .addFileId("string")
                             .build()
                     )
                     .fileSearch(
                         BetaAssistantUpdateParams.ToolResources.FileSearch.builder()
-                            .vectorStoreIds(listOf("string"))
+                            .addVectorStoreId("string")
                             .build()
                     )
                     .build()
             )
-            .tools(
-                listOf(
-                    AssistantTool.ofCodeInterpreterTool(
-                        CodeInterpreterTool.builder()
-                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                            .build()
-                    )
+            .addTool(
+                AssistantTool.ofCodeInterpreterTool(
+                    CodeInterpreterTool.builder()
+                        .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
+                        .build()
                 )
             )
             .topP(1.0)
@@ -70,23 +68,21 @@ class BetaAssistantUpdateParamsTest {
                     BetaAssistantUpdateParams.ToolResources.builder()
                         .codeInterpreter(
                             BetaAssistantUpdateParams.ToolResources.CodeInterpreter.builder()
-                                .fileIds(listOf("string"))
+                                .addFileId("string")
                                 .build()
                         )
                         .fileSearch(
                             BetaAssistantUpdateParams.ToolResources.FileSearch.builder()
-                                .vectorStoreIds(listOf("string"))
+                                .addVectorStoreId("string")
                                 .build()
                         )
                         .build()
                 )
-                .tools(
-                    listOf(
-                        AssistantTool.ofCodeInterpreterTool(
-                            CodeInterpreterTool.builder()
-                                .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                .build()
-                        )
+                .addTool(
+                    AssistantTool.ofCodeInterpreterTool(
+                        CodeInterpreterTool.builder()
+                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
+                            .build()
                     )
                 )
                 .topP(1.0)
@@ -110,12 +106,12 @@ class BetaAssistantUpdateParamsTest {
                 BetaAssistantUpdateParams.ToolResources.builder()
                     .codeInterpreter(
                         BetaAssistantUpdateParams.ToolResources.CodeInterpreter.builder()
-                            .fileIds(listOf("string"))
+                            .addFileId("string")
                             .build()
                     )
                     .fileSearch(
                         BetaAssistantUpdateParams.ToolResources.FileSearch.builder()
-                            .vectorStoreIds(listOf("string"))
+                            .addVectorStoreId("string")
                             .build()
                     )
                     .build()

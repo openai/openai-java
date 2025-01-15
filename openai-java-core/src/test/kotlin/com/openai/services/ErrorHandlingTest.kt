@@ -84,20 +84,18 @@ class ErrorHandlingTest {
                         )
                         .build()
                 )
-                .integrations(
-                    listOf(
-                        FineTuningJobCreateParams.Integration.builder()
-                            .type(FineTuningJobCreateParams.Integration.Type.WANDB)
-                            .wandb(
-                                FineTuningJobCreateParams.Integration.Wandb.builder()
-                                    .project("my-wandb-project")
-                                    .entity("entity")
-                                    .name("name")
-                                    .tags(listOf("custom-tag"))
-                                    .build()
-                            )
-                            .build()
-                    )
+                .addIntegration(
+                    FineTuningJobCreateParams.Integration.builder()
+                        .type(FineTuningJobCreateParams.Integration.Type.WANDB)
+                        .wandb(
+                            FineTuningJobCreateParams.Integration.Wandb.builder()
+                                .project("my-wandb-project")
+                                .entity("entity")
+                                .name("name")
+                                .addTag("custom-tag")
+                                .build()
+                        )
+                        .build()
                 )
                 .method(
                     FineTuningJobCreateParams.Method.builder()
@@ -241,27 +239,25 @@ class ErrorHandlingTest {
                 .model("model")
                 .object_(FineTuningJob.Object.FINE_TUNING_JOB)
                 .organizationId("organization_id")
-                .resultFiles(listOf("file-abc123"))
+                .addResultFile("file-abc123")
                 .seed(0L)
                 .status(FineTuningJob.Status.VALIDATING_FILES)
                 .trainedTokens(0L)
                 .trainingFile("training_file")
                 .validationFile("validation_file")
                 .estimatedFinish(0L)
-                .integrations(
-                    listOf(
-                        FineTuningJobWandbIntegrationObject.builder()
-                            .type(FineTuningJobWandbIntegrationObject.Type.WANDB)
-                            .wandb(
-                                FineTuningJobWandbIntegration.builder()
-                                    .project("my-wandb-project")
-                                    .entity("entity")
-                                    .name("name")
-                                    .tags(listOf("custom-tag"))
-                                    .build()
-                            )
-                            .build()
-                    )
+                .addIntegration(
+                    FineTuningJobWandbIntegrationObject.builder()
+                        .type(FineTuningJobWandbIntegrationObject.Type.WANDB)
+                        .wandb(
+                            FineTuningJobWandbIntegration.builder()
+                                .project("my-wandb-project")
+                                .entity("entity")
+                                .name("name")
+                                .addTag("custom-tag")
+                                .build()
+                        )
+                        .build()
                 )
                 .method(
                     FineTuningJob.Method.builder()
@@ -380,20 +376,18 @@ class ErrorHandlingTest {
                         )
                         .build()
                 )
-                .integrations(
-                    listOf(
-                        FineTuningJobCreateParams.Integration.builder()
-                            .type(FineTuningJobCreateParams.Integration.Type.WANDB)
-                            .wandb(
-                                FineTuningJobCreateParams.Integration.Wandb.builder()
-                                    .project("my-wandb-project")
-                                    .entity("entity")
-                                    .name("name")
-                                    .tags(listOf("custom-tag"))
-                                    .build()
-                            )
-                            .build()
-                    )
+                .addIntegration(
+                    FineTuningJobCreateParams.Integration.builder()
+                        .type(FineTuningJobCreateParams.Integration.Type.WANDB)
+                        .wandb(
+                            FineTuningJobCreateParams.Integration.Wandb.builder()
+                                .project("my-wandb-project")
+                                .entity("entity")
+                                .name("name")
+                                .addTag("custom-tag")
+                                .build()
+                        )
+                        .build()
                 )
                 .method(
                     FineTuningJobCreateParams.Method.builder()
@@ -541,20 +535,18 @@ class ErrorHandlingTest {
                         )
                         .build()
                 )
-                .integrations(
-                    listOf(
-                        FineTuningJobCreateParams.Integration.builder()
-                            .type(FineTuningJobCreateParams.Integration.Type.WANDB)
-                            .wandb(
-                                FineTuningJobCreateParams.Integration.Wandb.builder()
-                                    .project("my-wandb-project")
-                                    .entity("entity")
-                                    .name("name")
-                                    .tags(listOf("custom-tag"))
-                                    .build()
-                            )
-                            .build()
-                    )
+                .addIntegration(
+                    FineTuningJobCreateParams.Integration.builder()
+                        .type(FineTuningJobCreateParams.Integration.Type.WANDB)
+                        .wandb(
+                            FineTuningJobCreateParams.Integration.Wandb.builder()
+                                .project("my-wandb-project")
+                                .entity("entity")
+                                .name("name")
+                                .addTag("custom-tag")
+                                .build()
+                        )
+                        .build()
                 )
                 .method(
                     FineTuningJobCreateParams.Method.builder()
@@ -702,20 +694,18 @@ class ErrorHandlingTest {
                         )
                         .build()
                 )
-                .integrations(
-                    listOf(
-                        FineTuningJobCreateParams.Integration.builder()
-                            .type(FineTuningJobCreateParams.Integration.Type.WANDB)
-                            .wandb(
-                                FineTuningJobCreateParams.Integration.Wandb.builder()
-                                    .project("my-wandb-project")
-                                    .entity("entity")
-                                    .name("name")
-                                    .tags(listOf("custom-tag"))
-                                    .build()
-                            )
-                            .build()
-                    )
+                .addIntegration(
+                    FineTuningJobCreateParams.Integration.builder()
+                        .type(FineTuningJobCreateParams.Integration.Type.WANDB)
+                        .wandb(
+                            FineTuningJobCreateParams.Integration.Wandb.builder()
+                                .project("my-wandb-project")
+                                .entity("entity")
+                                .name("name")
+                                .addTag("custom-tag")
+                                .build()
+                        )
+                        .build()
                 )
                 .method(
                     FineTuningJobCreateParams.Method.builder()
@@ -863,20 +853,18 @@ class ErrorHandlingTest {
                         )
                         .build()
                 )
-                .integrations(
-                    listOf(
-                        FineTuningJobCreateParams.Integration.builder()
-                            .type(FineTuningJobCreateParams.Integration.Type.WANDB)
-                            .wandb(
-                                FineTuningJobCreateParams.Integration.Wandb.builder()
-                                    .project("my-wandb-project")
-                                    .entity("entity")
-                                    .name("name")
-                                    .tags(listOf("custom-tag"))
-                                    .build()
-                            )
-                            .build()
-                    )
+                .addIntegration(
+                    FineTuningJobCreateParams.Integration.builder()
+                        .type(FineTuningJobCreateParams.Integration.Type.WANDB)
+                        .wandb(
+                            FineTuningJobCreateParams.Integration.Wandb.builder()
+                                .project("my-wandb-project")
+                                .entity("entity")
+                                .name("name")
+                                .addTag("custom-tag")
+                                .build()
+                        )
+                        .build()
                 )
                 .method(
                     FineTuningJobCreateParams.Method.builder()
@@ -1024,20 +1012,18 @@ class ErrorHandlingTest {
                         )
                         .build()
                 )
-                .integrations(
-                    listOf(
-                        FineTuningJobCreateParams.Integration.builder()
-                            .type(FineTuningJobCreateParams.Integration.Type.WANDB)
-                            .wandb(
-                                FineTuningJobCreateParams.Integration.Wandb.builder()
-                                    .project("my-wandb-project")
-                                    .entity("entity")
-                                    .name("name")
-                                    .tags(listOf("custom-tag"))
-                                    .build()
-                            )
-                            .build()
-                    )
+                .addIntegration(
+                    FineTuningJobCreateParams.Integration.builder()
+                        .type(FineTuningJobCreateParams.Integration.Type.WANDB)
+                        .wandb(
+                            FineTuningJobCreateParams.Integration.Wandb.builder()
+                                .project("my-wandb-project")
+                                .entity("entity")
+                                .name("name")
+                                .addTag("custom-tag")
+                                .build()
+                        )
+                        .build()
                 )
                 .method(
                     FineTuningJobCreateParams.Method.builder()
@@ -1189,20 +1175,18 @@ class ErrorHandlingTest {
                         )
                         .build()
                 )
-                .integrations(
-                    listOf(
-                        FineTuningJobCreateParams.Integration.builder()
-                            .type(FineTuningJobCreateParams.Integration.Type.WANDB)
-                            .wandb(
-                                FineTuningJobCreateParams.Integration.Wandb.builder()
-                                    .project("my-wandb-project")
-                                    .entity("entity")
-                                    .name("name")
-                                    .tags(listOf("custom-tag"))
-                                    .build()
-                            )
-                            .build()
-                    )
+                .addIntegration(
+                    FineTuningJobCreateParams.Integration.builder()
+                        .type(FineTuningJobCreateParams.Integration.Type.WANDB)
+                        .wandb(
+                            FineTuningJobCreateParams.Integration.Wandb.builder()
+                                .project("my-wandb-project")
+                                .entity("entity")
+                                .name("name")
+                                .addTag("custom-tag")
+                                .build()
+                        )
+                        .build()
                 )
                 .method(
                     FineTuningJobCreateParams.Method.builder()
@@ -1350,20 +1334,18 @@ class ErrorHandlingTest {
                         )
                         .build()
                 )
-                .integrations(
-                    listOf(
-                        FineTuningJobCreateParams.Integration.builder()
-                            .type(FineTuningJobCreateParams.Integration.Type.WANDB)
-                            .wandb(
-                                FineTuningJobCreateParams.Integration.Wandb.builder()
-                                    .project("my-wandb-project")
-                                    .entity("entity")
-                                    .name("name")
-                                    .tags(listOf("custom-tag"))
-                                    .build()
-                            )
-                            .build()
-                    )
+                .addIntegration(
+                    FineTuningJobCreateParams.Integration.builder()
+                        .type(FineTuningJobCreateParams.Integration.Type.WANDB)
+                        .wandb(
+                            FineTuningJobCreateParams.Integration.Wandb.builder()
+                                .project("my-wandb-project")
+                                .entity("entity")
+                                .name("name")
+                                .addTag("custom-tag")
+                                .build()
+                        )
+                        .build()
                 )
                 .method(
                     FineTuningJobCreateParams.Method.builder()
@@ -1511,20 +1493,18 @@ class ErrorHandlingTest {
                         )
                         .build()
                 )
-                .integrations(
-                    listOf(
-                        FineTuningJobCreateParams.Integration.builder()
-                            .type(FineTuningJobCreateParams.Integration.Type.WANDB)
-                            .wandb(
-                                FineTuningJobCreateParams.Integration.Wandb.builder()
-                                    .project("my-wandb-project")
-                                    .entity("entity")
-                                    .name("name")
-                                    .tags(listOf("custom-tag"))
-                                    .build()
-                            )
-                            .build()
-                    )
+                .addIntegration(
+                    FineTuningJobCreateParams.Integration.builder()
+                        .type(FineTuningJobCreateParams.Integration.Type.WANDB)
+                        .wandb(
+                            FineTuningJobCreateParams.Integration.Wandb.builder()
+                                .project("my-wandb-project")
+                                .entity("entity")
+                                .name("name")
+                                .addTag("custom-tag")
+                                .build()
+                        )
+                        .build()
                 )
                 .method(
                     FineTuningJobCreateParams.Method.builder()
@@ -1677,20 +1657,18 @@ class ErrorHandlingTest {
                         )
                         .build()
                 )
-                .integrations(
-                    listOf(
-                        FineTuningJobCreateParams.Integration.builder()
-                            .type(FineTuningJobCreateParams.Integration.Type.WANDB)
-                            .wandb(
-                                FineTuningJobCreateParams.Integration.Wandb.builder()
-                                    .project("my-wandb-project")
-                                    .entity("entity")
-                                    .name("name")
-                                    .tags(listOf("custom-tag"))
-                                    .build()
-                            )
-                            .build()
-                    )
+                .addIntegration(
+                    FineTuningJobCreateParams.Integration.builder()
+                        .type(FineTuningJobCreateParams.Integration.Type.WANDB)
+                        .wandb(
+                            FineTuningJobCreateParams.Integration.Wandb.builder()
+                                .project("my-wandb-project")
+                                .entity("entity")
+                                .name("name")
+                                .addTag("custom-tag")
+                                .build()
+                        )
+                        .build()
                 )
                 .method(
                     FineTuningJobCreateParams.Method.builder()
@@ -1837,20 +1815,18 @@ class ErrorHandlingTest {
                         )
                         .build()
                 )
-                .integrations(
-                    listOf(
-                        FineTuningJobCreateParams.Integration.builder()
-                            .type(FineTuningJobCreateParams.Integration.Type.WANDB)
-                            .wandb(
-                                FineTuningJobCreateParams.Integration.Wandb.builder()
-                                    .project("my-wandb-project")
-                                    .entity("entity")
-                                    .name("name")
-                                    .tags(listOf("custom-tag"))
-                                    .build()
-                            )
-                            .build()
-                    )
+                .addIntegration(
+                    FineTuningJobCreateParams.Integration.builder()
+                        .type(FineTuningJobCreateParams.Integration.Type.WANDB)
+                        .wandb(
+                            FineTuningJobCreateParams.Integration.Wandb.builder()
+                                .project("my-wandb-project")
+                                .entity("entity")
+                                .name("name")
+                                .addTag("custom-tag")
+                                .build()
+                        )
+                        .build()
                 )
                 .method(
                     FineTuningJobCreateParams.Method.builder()

@@ -12,16 +12,14 @@ class ChatCompletionTokenLogprobTest {
         val chatCompletionTokenLogprob =
             ChatCompletionTokenLogprob.builder()
                 .token("token")
-                .bytes(listOf(0L))
+                .addByte(0L)
                 .logprob(0.0)
-                .topLogprobs(
-                    listOf(
-                        ChatCompletionTokenLogprob.TopLogprob.builder()
-                            .token("token")
-                            .bytes(listOf(0L))
-                            .logprob(0.0)
-                            .build()
-                    )
+                .addTopLogprob(
+                    ChatCompletionTokenLogprob.TopLogprob.builder()
+                        .token("token")
+                        .addByte(0L)
+                        .logprob(0.0)
+                        .build()
                 )
                 .build()
         assertThat(chatCompletionTokenLogprob).isNotNull
@@ -32,7 +30,7 @@ class ChatCompletionTokenLogprobTest {
             .containsExactly(
                 ChatCompletionTokenLogprob.TopLogprob.builder()
                     .token("token")
-                    .bytes(listOf(0L))
+                    .addByte(0L)
                     .logprob(0.0)
                     .build()
             )

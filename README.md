@@ -88,13 +88,12 @@ import com.openai.models.ChatCompletionCreateParams;
 import com.openai.models.ChatCompletionMessageParam;
 import com.openai.models.ChatCompletionUserMessageParam;
 import com.openai.models.ChatModel;
-import java.util.List;
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-    .messages(List.of(ChatCompletionMessageParam.ofChatCompletionUserMessageParam(ChatCompletionUserMessageParam.builder()
+    .addMessage(ChatCompletionMessageParam.ofChatCompletionUserMessageParam(ChatCompletionUserMessageParam.builder()
         .role(ChatCompletionUserMessageParam.Role.USER)
         .content(ChatCompletionUserMessageParam.Content.ofTextContent("Say this is a test"))
-        .build())))
+        .build()))
     .model(ChatModel.O1)
     .build();
 ChatCompletion chatCompletion = client.chat().completions().create(params);

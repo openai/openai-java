@@ -17,17 +17,15 @@ class CodeInterpreterToolCallDeltaTest {
                 .codeInterpreter(
                     CodeInterpreterToolCallDelta.CodeInterpreter.builder()
                         .input("input")
-                        .outputs(
-                            listOf(
-                                CodeInterpreterToolCallDelta.CodeInterpreter.Output
-                                    .ofCodeInterpreterLogs(
-                                        CodeInterpreterLogs.builder()
-                                            .index(0L)
-                                            .type(CodeInterpreterLogs.Type.LOGS)
-                                            .logs("logs")
-                                            .build()
-                                    )
-                            )
+                        .addOutput(
+                            CodeInterpreterToolCallDelta.CodeInterpreter.Output
+                                .ofCodeInterpreterLogs(
+                                    CodeInterpreterLogs.builder()
+                                        .index(0L)
+                                        .type(CodeInterpreterLogs.Type.LOGS)
+                                        .logs("logs")
+                                        .build()
+                                )
                         )
                         .build()
                 )
@@ -41,16 +39,13 @@ class CodeInterpreterToolCallDeltaTest {
             .contains(
                 CodeInterpreterToolCallDelta.CodeInterpreter.builder()
                     .input("input")
-                    .outputs(
-                        listOf(
-                            CodeInterpreterToolCallDelta.CodeInterpreter.Output
-                                .ofCodeInterpreterLogs(
-                                    CodeInterpreterLogs.builder()
-                                        .index(0L)
-                                        .type(CodeInterpreterLogs.Type.LOGS)
-                                        .logs("logs")
-                                        .build()
-                                )
+                    .addOutput(
+                        CodeInterpreterToolCallDelta.CodeInterpreter.Output.ofCodeInterpreterLogs(
+                            CodeInterpreterLogs.builder()
+                                .index(0L)
+                                .type(CodeInterpreterLogs.Type.LOGS)
+                                .logs("logs")
+                                .build()
                         )
                     )
                     .build()

@@ -11,7 +11,7 @@ class UploadCompleteParamsTest {
     fun createUploadCompleteParams() {
         UploadCompleteParams.builder()
             .uploadId("upload_abc123")
-            .partIds(listOf("string"))
+            .addPartId("string")
             .md5("md5")
             .build()
     }
@@ -21,7 +21,7 @@ class UploadCompleteParamsTest {
         val params =
             UploadCompleteParams.builder()
                 .uploadId("upload_abc123")
-                .partIds(listOf("string"))
+                .addPartId("string")
                 .md5("md5")
                 .build()
         val body = params.getBody()
@@ -33,10 +33,7 @@ class UploadCompleteParamsTest {
     @Test
     fun getBodyWithoutOptionalFields() {
         val params =
-            UploadCompleteParams.builder()
-                .uploadId("upload_abc123")
-                .partIds(listOf("string"))
-                .build()
+            UploadCompleteParams.builder().uploadId("upload_abc123").addPartId("string").build()
         val body = params.getBody()
         assertThat(body).isNotNull
         assertThat(body.partIds()).isEqualTo(listOf("string"))
@@ -45,10 +42,7 @@ class UploadCompleteParamsTest {
     @Test
     fun getPathParam() {
         val params =
-            UploadCompleteParams.builder()
-                .uploadId("upload_abc123")
-                .partIds(listOf("string"))
-                .build()
+            UploadCompleteParams.builder().uploadId("upload_abc123").addPartId("string").build()
         assertThat(params).isNotNull
         // path param "uploadId"
         assertThat(params.getPathParam(0)).isEqualTo("upload_abc123")

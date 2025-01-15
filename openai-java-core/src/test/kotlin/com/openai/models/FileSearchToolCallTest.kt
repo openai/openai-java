@@ -23,26 +23,20 @@ class FileSearchToolCallTest {
                                 .scoreThreshold(0.0)
                                 .build()
                         )
-                        .results(
-                            listOf(
-                                FileSearchToolCall.FileSearch.Result.builder()
-                                    .fileId("file_id")
-                                    .fileName("file_name")
-                                    .score(0.0)
-                                    .content(
-                                        listOf(
-                                            FileSearchToolCall.FileSearch.Result.Content.builder()
-                                                .text("text")
-                                                .type(
-                                                    FileSearchToolCall.FileSearch.Result.Content
-                                                        .Type
-                                                        .TEXT
-                                                )
-                                                .build()
+                        .addResult(
+                            FileSearchToolCall.FileSearch.Result.builder()
+                                .fileId("file_id")
+                                .fileName("file_name")
+                                .score(0.0)
+                                .addContent(
+                                    FileSearchToolCall.FileSearch.Result.Content.builder()
+                                        .text("text")
+                                        .type(
+                                            FileSearchToolCall.FileSearch.Result.Content.Type.TEXT
                                         )
-                                    )
-                                    .build()
-                            )
+                                        .build()
+                                )
+                                .build()
                         )
                         .build()
                 )
@@ -62,25 +56,18 @@ class FileSearchToolCallTest {
                             .scoreThreshold(0.0)
                             .build()
                     )
-                    .results(
-                        listOf(
-                            FileSearchToolCall.FileSearch.Result.builder()
-                                .fileId("file_id")
-                                .fileName("file_name")
-                                .score(0.0)
-                                .content(
-                                    listOf(
-                                        FileSearchToolCall.FileSearch.Result.Content.builder()
-                                            .text("text")
-                                            .type(
-                                                FileSearchToolCall.FileSearch.Result.Content.Type
-                                                    .TEXT
-                                            )
-                                            .build()
-                                    )
-                                )
-                                .build()
-                        )
+                    .addResult(
+                        FileSearchToolCall.FileSearch.Result.builder()
+                            .fileId("file_id")
+                            .fileName("file_name")
+                            .score(0.0)
+                            .addContent(
+                                FileSearchToolCall.FileSearch.Result.Content.builder()
+                                    .text("text")
+                                    .type(FileSearchToolCall.FileSearch.Result.Content.Type.TEXT)
+                                    .build()
+                            )
+                            .build()
                     )
                     .build()
             )
