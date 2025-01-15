@@ -12,14 +12,12 @@ class ImagesResponseTest {
         val imagesResponse =
             ImagesResponse.builder()
                 .created(0L)
-                .data(
-                    listOf(
-                        Image.builder()
-                            .b64Json("b64_json")
-                            .revisedPrompt("revised_prompt")
-                            .url("url")
-                            .build()
-                    )
+                .addData(
+                    Image.builder()
+                        .b64Json("b64_json")
+                        .revisedPrompt("revised_prompt")
+                        .url("url")
+                        .build()
                 )
                 .build()
         assertThat(imagesResponse).isNotNull

@@ -14,7 +14,7 @@ class FineTuningJobWandbIntegrationTest {
                 .project("my-wandb-project")
                 .entity("entity")
                 .name("name")
-                .tags(listOf("custom-tag"))
+                .addTag("custom-tag")
                 .build()
         assertThat(fineTuningJobWandbIntegration).isNotNull
         assertThat(fineTuningJobWandbIntegration.project()).isEqualTo("my-wandb-project")

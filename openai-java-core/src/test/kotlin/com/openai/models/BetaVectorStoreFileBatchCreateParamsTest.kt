@@ -11,7 +11,7 @@ class BetaVectorStoreFileBatchCreateParamsTest {
     fun createBetaVectorStoreFileBatchCreateParams() {
         BetaVectorStoreFileBatchCreateParams.builder()
             .vectorStoreId("vs_abc123")
-            .fileIds(listOf("string"))
+            .addFileId("string")
             .chunkingStrategy(
                 FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
                     AutoFileChunkingStrategyParam.builder()
@@ -27,7 +27,7 @@ class BetaVectorStoreFileBatchCreateParamsTest {
         val params =
             BetaVectorStoreFileBatchCreateParams.builder()
                 .vectorStoreId("vs_abc123")
-                .fileIds(listOf("string"))
+                .addFileId("string")
                 .chunkingStrategy(
                     FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
                         AutoFileChunkingStrategyParam.builder()
@@ -54,7 +54,7 @@ class BetaVectorStoreFileBatchCreateParamsTest {
         val params =
             BetaVectorStoreFileBatchCreateParams.builder()
                 .vectorStoreId("vs_abc123")
-                .fileIds(listOf("string"))
+                .addFileId("string")
                 .build()
         val body = params.getBody()
         assertThat(body).isNotNull
@@ -66,7 +66,7 @@ class BetaVectorStoreFileBatchCreateParamsTest {
         val params =
             BetaVectorStoreFileBatchCreateParams.builder()
                 .vectorStoreId("vs_abc123")
-                .fileIds(listOf("string"))
+                .addFileId("string")
                 .build()
         assertThat(params).isNotNull
         // path param "vectorStoreId"

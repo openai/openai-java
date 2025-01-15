@@ -14,7 +14,7 @@ class BetaThreadRunStepRetrieveParamsTest {
             .threadId("thread_id")
             .runId("run_id")
             .stepId("step_id")
-            .include(listOf(RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT))
+            .addInclude(RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT)
             .build()
     }
 
@@ -25,7 +25,7 @@ class BetaThreadRunStepRetrieveParamsTest {
                 .threadId("thread_id")
                 .runId("run_id")
                 .stepId("step_id")
-                .include(listOf(RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT))
+                .addInclude(RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT)
                 .build()
         val expected = QueryParams.builder()
         expected.put(

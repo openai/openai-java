@@ -12,88 +12,72 @@ class ChatCompletionChunkTest {
         val chatCompletionChunk =
             ChatCompletionChunk.builder()
                 .id("id")
-                .choices(
-                    listOf(
-                        ChatCompletionChunk.Choice.builder()
-                            .delta(
-                                ChatCompletionChunk.Choice.Delta.builder()
-                                    .content("content")
-                                    .functionCall(
-                                        ChatCompletionChunk.Choice.Delta.FunctionCall.builder()
-                                            .arguments("arguments")
-                                            .name("name")
-                                            .build()
-                                    )
-                                    .refusal("refusal")
-                                    .role(ChatCompletionChunk.Choice.Delta.Role.SYSTEM)
-                                    .toolCalls(
-                                        listOf(
-                                            ChatCompletionChunk.Choice.Delta.ToolCall.builder()
-                                                .index(0L)
-                                                .id("id")
-                                                .function(
-                                                    ChatCompletionChunk.Choice.Delta.ToolCall
-                                                        .Function
-                                                        .builder()
-                                                        .arguments("arguments")
-                                                        .name("name")
-                                                        .build()
-                                                )
-                                                .type(
-                                                    ChatCompletionChunk.Choice.Delta.ToolCall.Type
-                                                        .FUNCTION
-                                                )
+                .addChoice(
+                    ChatCompletionChunk.Choice.builder()
+                        .delta(
+                            ChatCompletionChunk.Choice.Delta.builder()
+                                .content("content")
+                                .functionCall(
+                                    ChatCompletionChunk.Choice.Delta.FunctionCall.builder()
+                                        .arguments("arguments")
+                                        .name("name")
+                                        .build()
+                                )
+                                .refusal("refusal")
+                                .role(ChatCompletionChunk.Choice.Delta.Role.SYSTEM)
+                                .addToolCall(
+                                    ChatCompletionChunk.Choice.Delta.ToolCall.builder()
+                                        .index(0L)
+                                        .id("id")
+                                        .function(
+                                            ChatCompletionChunk.Choice.Delta.ToolCall.Function
+                                                .builder()
+                                                .arguments("arguments")
+                                                .name("name")
                                                 .build()
                                         )
-                                    )
-                                    .build()
-                            )
-                            .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
-                            .index(0L)
-                            .logprobs(
-                                ChatCompletionChunk.Choice.Logprobs.builder()
-                                    .content(
-                                        listOf(
-                                            ChatCompletionTokenLogprob.builder()
+                                        .type(
+                                            ChatCompletionChunk.Choice.Delta.ToolCall.Type.FUNCTION
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
+                        .index(0L)
+                        .logprobs(
+                            ChatCompletionChunk.Choice.Logprobs.builder()
+                                .addContent(
+                                    ChatCompletionTokenLogprob.builder()
+                                        .token("token")
+                                        .addByte(0L)
+                                        .logprob(0.0)
+                                        .addTopLogprob(
+                                            ChatCompletionTokenLogprob.TopLogprob.builder()
                                                 .token("token")
-                                                .bytes(listOf(0L))
+                                                .addByte(0L)
                                                 .logprob(0.0)
-                                                .topLogprobs(
-                                                    listOf(
-                                                        ChatCompletionTokenLogprob.TopLogprob
-                                                            .builder()
-                                                            .token("token")
-                                                            .bytes(listOf(0L))
-                                                            .logprob(0.0)
-                                                            .build()
-                                                    )
-                                                )
                                                 .build()
                                         )
-                                    )
-                                    .refusal(
-                                        listOf(
-                                            ChatCompletionTokenLogprob.builder()
+                                        .build()
+                                )
+                                .addRefusal(
+                                    ChatCompletionTokenLogprob.builder()
+                                        .token("token")
+                                        .addByte(0L)
+                                        .logprob(0.0)
+                                        .addTopLogprob(
+                                            ChatCompletionTokenLogprob.TopLogprob.builder()
                                                 .token("token")
-                                                .bytes(listOf(0L))
+                                                .addByte(0L)
                                                 .logprob(0.0)
-                                                .topLogprobs(
-                                                    listOf(
-                                                        ChatCompletionTokenLogprob.TopLogprob
-                                                            .builder()
-                                                            .token("token")
-                                                            .bytes(listOf(0L))
-                                                            .logprob(0.0)
-                                                            .build()
-                                                    )
-                                                )
                                                 .build()
                                         )
-                                    )
-                                    .build()
-                            )
-                            .build()
-                    )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
                 )
                 .created(0L)
                 .model("model")
@@ -138,23 +122,18 @@ class ChatCompletionChunkTest {
                             )
                             .refusal("refusal")
                             .role(ChatCompletionChunk.Choice.Delta.Role.SYSTEM)
-                            .toolCalls(
-                                listOf(
-                                    ChatCompletionChunk.Choice.Delta.ToolCall.builder()
-                                        .index(0L)
-                                        .id("id")
-                                        .function(
-                                            ChatCompletionChunk.Choice.Delta.ToolCall.Function
-                                                .builder()
-                                                .arguments("arguments")
-                                                .name("name")
-                                                .build()
-                                        )
-                                        .type(
-                                            ChatCompletionChunk.Choice.Delta.ToolCall.Type.FUNCTION
-                                        )
-                                        .build()
-                                )
+                            .addToolCall(
+                                ChatCompletionChunk.Choice.Delta.ToolCall.builder()
+                                    .index(0L)
+                                    .id("id")
+                                    .function(
+                                        ChatCompletionChunk.Choice.Delta.ToolCall.Function.builder()
+                                            .arguments("arguments")
+                                            .name("name")
+                                            .build()
+                                    )
+                                    .type(ChatCompletionChunk.Choice.Delta.ToolCall.Type.FUNCTION)
+                                    .build()
                             )
                             .build()
                     )
@@ -162,41 +141,33 @@ class ChatCompletionChunkTest {
                     .index(0L)
                     .logprobs(
                         ChatCompletionChunk.Choice.Logprobs.builder()
-                            .content(
-                                listOf(
-                                    ChatCompletionTokenLogprob.builder()
-                                        .token("token")
-                                        .bytes(listOf(0L))
-                                        .logprob(0.0)
-                                        .topLogprobs(
-                                            listOf(
-                                                ChatCompletionTokenLogprob.TopLogprob.builder()
-                                                    .token("token")
-                                                    .bytes(listOf(0L))
-                                                    .logprob(0.0)
-                                                    .build()
-                                            )
-                                        )
-                                        .build()
-                                )
+                            .addContent(
+                                ChatCompletionTokenLogprob.builder()
+                                    .token("token")
+                                    .addByte(0L)
+                                    .logprob(0.0)
+                                    .addTopLogprob(
+                                        ChatCompletionTokenLogprob.TopLogprob.builder()
+                                            .token("token")
+                                            .addByte(0L)
+                                            .logprob(0.0)
+                                            .build()
+                                    )
+                                    .build()
                             )
-                            .refusal(
-                                listOf(
-                                    ChatCompletionTokenLogprob.builder()
-                                        .token("token")
-                                        .bytes(listOf(0L))
-                                        .logprob(0.0)
-                                        .topLogprobs(
-                                            listOf(
-                                                ChatCompletionTokenLogprob.TopLogprob.builder()
-                                                    .token("token")
-                                                    .bytes(listOf(0L))
-                                                    .logprob(0.0)
-                                                    .build()
-                                            )
-                                        )
-                                        .build()
-                                )
+                            .addRefusal(
+                                ChatCompletionTokenLogprob.builder()
+                                    .token("token")
+                                    .addByte(0L)
+                                    .logprob(0.0)
+                                    .addTopLogprob(
+                                        ChatCompletionTokenLogprob.TopLogprob.builder()
+                                            .token("token")
+                                            .addByte(0L)
+                                            .logprob(0.0)
+                                            .build()
+                                    )
+                                    .build()
                             )
                             .build()
                     )

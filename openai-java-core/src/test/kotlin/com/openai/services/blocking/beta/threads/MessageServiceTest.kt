@@ -31,22 +31,17 @@ class MessageServiceTest {
                     .threadId("thread_id")
                     .content(BetaThreadMessageCreateParams.Content.ofTextContent("string"))
                     .role(BetaThreadMessageCreateParams.Role.USER)
-                    .attachments(
-                        listOf(
-                            BetaThreadMessageCreateParams.Attachment.builder()
-                                .fileId("file_id")
-                                .tools(
-                                    listOf(
-                                        BetaThreadMessageCreateParams.Attachment.Tool
-                                            .ofCodeInterpreterTool(
-                                                CodeInterpreterTool.builder()
-                                                    .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                                    .build()
-                                            )
-                                    )
+                    .addAttachment(
+                        BetaThreadMessageCreateParams.Attachment.builder()
+                            .fileId("file_id")
+                            .addTool(
+                                BetaThreadMessageCreateParams.Attachment.Tool.ofCodeInterpreterTool(
+                                    CodeInterpreterTool.builder()
+                                        .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
+                                        .build()
                                 )
-                                .build()
-                        )
+                            )
+                            .build()
                     )
                     .metadata(JsonValue.from(mapOf<String, Any>()))
                     .build()

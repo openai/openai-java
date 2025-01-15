@@ -12,90 +12,76 @@ class ChatCompletionTest {
         val chatCompletion =
             ChatCompletion.builder()
                 .id("id")
-                .choices(
-                    listOf(
-                        ChatCompletion.Choice.builder()
-                            .finishReason(ChatCompletion.Choice.FinishReason.STOP)
-                            .index(0L)
-                            .logprobs(
-                                ChatCompletion.Choice.Logprobs.builder()
-                                    .content(
-                                        listOf(
-                                            ChatCompletionTokenLogprob.builder()
+                .addChoice(
+                    ChatCompletion.Choice.builder()
+                        .finishReason(ChatCompletion.Choice.FinishReason.STOP)
+                        .index(0L)
+                        .logprobs(
+                            ChatCompletion.Choice.Logprobs.builder()
+                                .addContent(
+                                    ChatCompletionTokenLogprob.builder()
+                                        .token("token")
+                                        .addByte(0L)
+                                        .logprob(0.0)
+                                        .addTopLogprob(
+                                            ChatCompletionTokenLogprob.TopLogprob.builder()
                                                 .token("token")
-                                                .bytes(listOf(0L))
+                                                .addByte(0L)
                                                 .logprob(0.0)
-                                                .topLogprobs(
-                                                    listOf(
-                                                        ChatCompletionTokenLogprob.TopLogprob
-                                                            .builder()
-                                                            .token("token")
-                                                            .bytes(listOf(0L))
-                                                            .logprob(0.0)
-                                                            .build()
-                                                    )
-                                                )
                                                 .build()
                                         )
-                                    )
-                                    .refusal(
-                                        listOf(
-                                            ChatCompletionTokenLogprob.builder()
+                                        .build()
+                                )
+                                .addRefusal(
+                                    ChatCompletionTokenLogprob.builder()
+                                        .token("token")
+                                        .addByte(0L)
+                                        .logprob(0.0)
+                                        .addTopLogprob(
+                                            ChatCompletionTokenLogprob.TopLogprob.builder()
                                                 .token("token")
-                                                .bytes(listOf(0L))
+                                                .addByte(0L)
                                                 .logprob(0.0)
-                                                .topLogprobs(
-                                                    listOf(
-                                                        ChatCompletionTokenLogprob.TopLogprob
-                                                            .builder()
-                                                            .token("token")
-                                                            .bytes(listOf(0L))
-                                                            .logprob(0.0)
-                                                            .build()
-                                                    )
-                                                )
                                                 .build()
                                         )
-                                    )
-                                    .build()
-                            )
-                            .message(
-                                ChatCompletionMessage.builder()
-                                    .content("content")
-                                    .refusal("refusal")
-                                    .role(ChatCompletionMessage.Role.ASSISTANT)
-                                    .audio(
-                                        ChatCompletionAudio.builder()
-                                            .id("id")
-                                            .data("data")
-                                            .expiresAt(0L)
-                                            .transcript("transcript")
-                                            .build()
-                                    )
-                                    .functionCall(
-                                        ChatCompletionMessage.FunctionCall.builder()
-                                            .arguments("arguments")
-                                            .name("name")
-                                            .build()
-                                    )
-                                    .toolCalls(
-                                        listOf(
-                                            ChatCompletionMessageToolCall.builder()
-                                                .id("id")
-                                                .function(
-                                                    ChatCompletionMessageToolCall.Function.builder()
-                                                        .arguments("arguments")
-                                                        .name("name")
-                                                        .build()
-                                                )
-                                                .type(ChatCompletionMessageToolCall.Type.FUNCTION)
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .message(
+                            ChatCompletionMessage.builder()
+                                .content("content")
+                                .refusal("refusal")
+                                .role(ChatCompletionMessage.Role.ASSISTANT)
+                                .audio(
+                                    ChatCompletionAudio.builder()
+                                        .id("id")
+                                        .data("data")
+                                        .expiresAt(0L)
+                                        .transcript("transcript")
+                                        .build()
+                                )
+                                .functionCall(
+                                    ChatCompletionMessage.FunctionCall.builder()
+                                        .arguments("arguments")
+                                        .name("name")
+                                        .build()
+                                )
+                                .addToolCall(
+                                    ChatCompletionMessageToolCall.builder()
+                                        .id("id")
+                                        .function(
+                                            ChatCompletionMessageToolCall.Function.builder()
+                                                .arguments("arguments")
+                                                .name("name")
                                                 .build()
                                         )
-                                    )
-                                    .build()
-                            )
-                            .build()
-                    )
+                                        .type(ChatCompletionMessageToolCall.Type.FUNCTION)
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
                 )
                 .created(0L)
                 .model("model")
@@ -133,41 +119,33 @@ class ChatCompletionTest {
                     .index(0L)
                     .logprobs(
                         ChatCompletion.Choice.Logprobs.builder()
-                            .content(
-                                listOf(
-                                    ChatCompletionTokenLogprob.builder()
-                                        .token("token")
-                                        .bytes(listOf(0L))
-                                        .logprob(0.0)
-                                        .topLogprobs(
-                                            listOf(
-                                                ChatCompletionTokenLogprob.TopLogprob.builder()
-                                                    .token("token")
-                                                    .bytes(listOf(0L))
-                                                    .logprob(0.0)
-                                                    .build()
-                                            )
-                                        )
-                                        .build()
-                                )
+                            .addContent(
+                                ChatCompletionTokenLogprob.builder()
+                                    .token("token")
+                                    .addByte(0L)
+                                    .logprob(0.0)
+                                    .addTopLogprob(
+                                        ChatCompletionTokenLogprob.TopLogprob.builder()
+                                            .token("token")
+                                            .addByte(0L)
+                                            .logprob(0.0)
+                                            .build()
+                                    )
+                                    .build()
                             )
-                            .refusal(
-                                listOf(
-                                    ChatCompletionTokenLogprob.builder()
-                                        .token("token")
-                                        .bytes(listOf(0L))
-                                        .logprob(0.0)
-                                        .topLogprobs(
-                                            listOf(
-                                                ChatCompletionTokenLogprob.TopLogprob.builder()
-                                                    .token("token")
-                                                    .bytes(listOf(0L))
-                                                    .logprob(0.0)
-                                                    .build()
-                                            )
-                                        )
-                                        .build()
-                                )
+                            .addRefusal(
+                                ChatCompletionTokenLogprob.builder()
+                                    .token("token")
+                                    .addByte(0L)
+                                    .logprob(0.0)
+                                    .addTopLogprob(
+                                        ChatCompletionTokenLogprob.TopLogprob.builder()
+                                            .token("token")
+                                            .addByte(0L)
+                                            .logprob(0.0)
+                                            .build()
+                                    )
+                                    .build()
                             )
                             .build()
                     )
@@ -190,19 +168,17 @@ class ChatCompletionTest {
                                     .name("name")
                                     .build()
                             )
-                            .toolCalls(
-                                listOf(
-                                    ChatCompletionMessageToolCall.builder()
-                                        .id("id")
-                                        .function(
-                                            ChatCompletionMessageToolCall.Function.builder()
-                                                .arguments("arguments")
-                                                .name("name")
-                                                .build()
-                                        )
-                                        .type(ChatCompletionMessageToolCall.Type.FUNCTION)
-                                        .build()
-                                )
+                            .addToolCall(
+                                ChatCompletionMessageToolCall.builder()
+                                    .id("id")
+                                    .function(
+                                        ChatCompletionMessageToolCall.Function.builder()
+                                            .arguments("arguments")
+                                            .name("name")
+                                            .build()
+                                    )
+                                    .type(ChatCompletionMessageToolCall.Type.FUNCTION)
+                                    .build()
                             )
                             .build()
                     )

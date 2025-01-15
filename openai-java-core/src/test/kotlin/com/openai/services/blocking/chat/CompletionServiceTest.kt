@@ -36,19 +36,17 @@ class CompletionServiceTest {
         val chatCompletion =
             completionService.create(
                 ChatCompletionCreateParams.builder()
-                    .messages(
-                        listOf(
-                            ChatCompletionMessageParam.ofChatCompletionDeveloperMessageParam(
-                                ChatCompletionDeveloperMessageParam.builder()
-                                    .content(
-                                        ChatCompletionDeveloperMessageParam.Content.ofTextContent(
-                                            "string"
-                                        )
+                    .addMessage(
+                        ChatCompletionMessageParam.ofChatCompletionDeveloperMessageParam(
+                            ChatCompletionDeveloperMessageParam.builder()
+                                .content(
+                                    ChatCompletionDeveloperMessageParam.Content.ofTextContent(
+                                        "string"
                                     )
-                                    .role(ChatCompletionDeveloperMessageParam.Role.DEVELOPER)
-                                    .name("name")
-                                    .build()
-                            )
+                                )
+                                .role(ChatCompletionDeveloperMessageParam.Role.DEVELOPER)
+                                .name("name")
+                                .build()
                         )
                     )
                     .model(ChatModel.O1)
@@ -64,18 +62,16 @@ class CompletionServiceTest {
                             ChatCompletionCreateParams.FunctionCall.Behavior.NONE
                         )
                     )
-                    .functions(
-                        listOf(
-                            ChatCompletionCreateParams.Function.builder()
-                                .name("name")
-                                .description("description")
-                                .parameters(
-                                    FunctionParameters.builder()
-                                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                        .build()
-                                )
-                                .build()
-                        )
+                    .addFunction(
+                        ChatCompletionCreateParams.Function.builder()
+                            .name("name")
+                            .description("description")
+                            .parameters(
+                                FunctionParameters.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .build()
                     )
                     .logitBias(
                         ChatCompletionCreateParams.LogitBias.builder()
@@ -90,7 +86,7 @@ class CompletionServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .modalities(listOf(ChatCompletionModality.TEXT))
+                    .addModality(ChatCompletionModality.TEXT)
                     .n(1L)
                     .parallelToolCalls(true)
                     .prediction(
@@ -119,24 +115,22 @@ class CompletionServiceTest {
                             ChatCompletionToolChoiceOption.Behavior.NONE
                         )
                     )
-                    .tools(
-                        listOf(
-                            ChatCompletionTool.builder()
-                                .function(
-                                    FunctionDefinition.builder()
-                                        .name("name")
-                                        .description("description")
-                                        .parameters(
-                                            FunctionParameters.builder()
-                                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                                .build()
-                                        )
-                                        .strict(true)
-                                        .build()
-                                )
-                                .type(ChatCompletionTool.Type.FUNCTION)
-                                .build()
-                        )
+                    .addTool(
+                        ChatCompletionTool.builder()
+                            .function(
+                                FunctionDefinition.builder()
+                                    .name("name")
+                                    .description("description")
+                                    .parameters(
+                                        FunctionParameters.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                            .build()
+                                    )
+                                    .strict(true)
+                                    .build()
+                            )
+                            .type(ChatCompletionTool.Type.FUNCTION)
+                            .build()
                     )
                     .topLogprobs(0L)
                     .topP(1.0)
@@ -159,19 +153,17 @@ class CompletionServiceTest {
         val chatCompletionStream =
             completionService.createStreaming(
                 ChatCompletionCreateParams.builder()
-                    .messages(
-                        listOf(
-                            ChatCompletionMessageParam.ofChatCompletionDeveloperMessageParam(
-                                ChatCompletionDeveloperMessageParam.builder()
-                                    .content(
-                                        ChatCompletionDeveloperMessageParam.Content.ofTextContent(
-                                            "string"
-                                        )
+                    .addMessage(
+                        ChatCompletionMessageParam.ofChatCompletionDeveloperMessageParam(
+                            ChatCompletionDeveloperMessageParam.builder()
+                                .content(
+                                    ChatCompletionDeveloperMessageParam.Content.ofTextContent(
+                                        "string"
                                     )
-                                    .role(ChatCompletionDeveloperMessageParam.Role.DEVELOPER)
-                                    .name("name")
-                                    .build()
-                            )
+                                )
+                                .role(ChatCompletionDeveloperMessageParam.Role.DEVELOPER)
+                                .name("name")
+                                .build()
                         )
                     )
                     .model(ChatModel.O1)
@@ -187,18 +179,16 @@ class CompletionServiceTest {
                             ChatCompletionCreateParams.FunctionCall.Behavior.NONE
                         )
                     )
-                    .functions(
-                        listOf(
-                            ChatCompletionCreateParams.Function.builder()
-                                .name("name")
-                                .description("description")
-                                .parameters(
-                                    FunctionParameters.builder()
-                                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                        .build()
-                                )
-                                .build()
-                        )
+                    .addFunction(
+                        ChatCompletionCreateParams.Function.builder()
+                            .name("name")
+                            .description("description")
+                            .parameters(
+                                FunctionParameters.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .build()
                     )
                     .logitBias(
                         ChatCompletionCreateParams.LogitBias.builder()
@@ -213,7 +203,7 @@ class CompletionServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .modalities(listOf(ChatCompletionModality.TEXT))
+                    .addModality(ChatCompletionModality.TEXT)
                     .n(1L)
                     .parallelToolCalls(true)
                     .prediction(
@@ -242,24 +232,22 @@ class CompletionServiceTest {
                             ChatCompletionToolChoiceOption.Behavior.NONE
                         )
                     )
-                    .tools(
-                        listOf(
-                            ChatCompletionTool.builder()
-                                .function(
-                                    FunctionDefinition.builder()
-                                        .name("name")
-                                        .description("description")
-                                        .parameters(
-                                            FunctionParameters.builder()
-                                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                                .build()
-                                        )
-                                        .strict(true)
-                                        .build()
-                                )
-                                .type(ChatCompletionTool.Type.FUNCTION)
-                                .build()
-                        )
+                    .addTool(
+                        ChatCompletionTool.builder()
+                            .function(
+                                FunctionDefinition.builder()
+                                    .name("name")
+                                    .description("description")
+                                    .parameters(
+                                        FunctionParameters.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                            .build()
+                                    )
+                                    .strict(true)
+                                    .build()
+                            )
+                            .type(ChatCompletionTool.Type.FUNCTION)
+                            .build()
                     )
                     .topLogprobs(0L)
                     .topP(1.0)

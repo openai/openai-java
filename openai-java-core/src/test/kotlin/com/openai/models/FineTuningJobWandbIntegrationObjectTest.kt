@@ -17,7 +17,7 @@ class FineTuningJobWandbIntegrationObjectTest {
                         .project("my-wandb-project")
                         .entity("entity")
                         .name("name")
-                        .tags(listOf("custom-tag"))
+                        .addTag("custom-tag")
                         .build()
                 )
                 .build()
@@ -30,7 +30,7 @@ class FineTuningJobWandbIntegrationObjectTest {
                     .project("my-wandb-project")
                     .entity("entity")
                     .name("name")
-                    .tags(listOf("custom-tag"))
+                    .addTag("custom-tag")
                     .build()
             )
     }

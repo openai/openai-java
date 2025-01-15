@@ -11,7 +11,7 @@ class EmbeddingTest {
     fun createEmbedding() {
         val embedding =
             Embedding.builder()
-                .embedding(listOf(0.0))
+                .addEmbedding(0.0)
                 .index(0L)
                 .object_(Embedding.Object.EMBEDDING)
                 .build()

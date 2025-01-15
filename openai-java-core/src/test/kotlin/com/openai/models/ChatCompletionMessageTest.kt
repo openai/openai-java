@@ -28,19 +28,17 @@ class ChatCompletionMessageTest {
                         .name("name")
                         .build()
                 )
-                .toolCalls(
-                    listOf(
-                        ChatCompletionMessageToolCall.builder()
-                            .id("id")
-                            .function(
-                                ChatCompletionMessageToolCall.Function.builder()
-                                    .arguments("arguments")
-                                    .name("name")
-                                    .build()
-                            )
-                            .type(ChatCompletionMessageToolCall.Type.FUNCTION)
-                            .build()
-                    )
+                .addToolCall(
+                    ChatCompletionMessageToolCall.builder()
+                        .id("id")
+                        .function(
+                            ChatCompletionMessageToolCall.Function.builder()
+                                .arguments("arguments")
+                                .name("name")
+                                .build()
+                        )
+                        .type(ChatCompletionMessageToolCall.Type.FUNCTION)
+                        .build()
                 )
                 .build()
         assertThat(chatCompletionMessage).isNotNull

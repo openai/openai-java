@@ -16,15 +16,13 @@ class CompletionChoiceTest {
                 .index(0L)
                 .logprobs(
                     CompletionChoice.Logprobs.builder()
-                        .textOffset(listOf(0L))
-                        .tokenLogprobs(listOf(0.0))
-                        .tokens(listOf("string"))
-                        .topLogprobs(
-                            listOf(
-                                CompletionChoice.Logprobs.TopLogprob.builder()
-                                    .putAdditionalProperty("foo", JsonValue.from(0))
-                                    .build()
-                            )
+                        .addTextOffset(0L)
+                        .addTokenLogprob(0.0)
+                        .addToken("string")
+                        .addTopLogprob(
+                            CompletionChoice.Logprobs.TopLogprob.builder()
+                                .putAdditionalProperty("foo", JsonValue.from(0))
+                                .build()
                         )
                         .build()
                 )
@@ -36,15 +34,13 @@ class CompletionChoiceTest {
         assertThat(completionChoice.logprobs())
             .contains(
                 CompletionChoice.Logprobs.builder()
-                    .textOffset(listOf(0L))
-                    .tokenLogprobs(listOf(0.0))
-                    .tokens(listOf("string"))
-                    .topLogprobs(
-                        listOf(
-                            CompletionChoice.Logprobs.TopLogprob.builder()
-                                .putAdditionalProperty("foo", JsonValue.from(0))
-                                .build()
-                        )
+                    .addTextOffset(0L)
+                    .addTokenLogprob(0.0)
+                    .addToken("string")
+                    .addTopLogprob(
+                        CompletionChoice.Logprobs.TopLogprob.builder()
+                            .putAdditionalProperty("foo", JsonValue.from(0))
+                            .build()
                     )
                     .build()
             )

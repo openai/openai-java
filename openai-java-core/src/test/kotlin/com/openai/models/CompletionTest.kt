@@ -13,28 +13,24 @@ class CompletionTest {
         val completion =
             Completion.builder()
                 .id("id")
-                .choices(
-                    listOf(
-                        CompletionChoice.builder()
-                            .finishReason(CompletionChoice.FinishReason.STOP)
-                            .index(0L)
-                            .logprobs(
-                                CompletionChoice.Logprobs.builder()
-                                    .textOffset(listOf(0L))
-                                    .tokenLogprobs(listOf(0.0))
-                                    .tokens(listOf("string"))
-                                    .topLogprobs(
-                                        listOf(
-                                            CompletionChoice.Logprobs.TopLogprob.builder()
-                                                .putAdditionalProperty("foo", JsonValue.from(0))
-                                                .build()
-                                        )
-                                    )
-                                    .build()
-                            )
-                            .text("text")
-                            .build()
-                    )
+                .addChoice(
+                    CompletionChoice.builder()
+                        .finishReason(CompletionChoice.FinishReason.STOP)
+                        .index(0L)
+                        .logprobs(
+                            CompletionChoice.Logprobs.builder()
+                                .addTextOffset(0L)
+                                .addTokenLogprob(0.0)
+                                .addToken("string")
+                                .addTopLogprob(
+                                    CompletionChoice.Logprobs.TopLogprob.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from(0))
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .text("text")
+                        .build()
                 )
                 .created(0L)
                 .model("model")
@@ -71,15 +67,13 @@ class CompletionTest {
                     .index(0L)
                     .logprobs(
                         CompletionChoice.Logprobs.builder()
-                            .textOffset(listOf(0L))
-                            .tokenLogprobs(listOf(0.0))
-                            .tokens(listOf("string"))
-                            .topLogprobs(
-                                listOf(
-                                    CompletionChoice.Logprobs.TopLogprob.builder()
-                                        .putAdditionalProperty("foo", JsonValue.from(0))
-                                        .build()
-                                )
+                            .addTextOffset(0L)
+                            .addTokenLogprob(0.0)
+                            .addToken("string")
+                            .addTopLogprob(
+                                CompletionChoice.Logprobs.TopLogprob.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from(0))
+                                    .build()
                             )
                             .build()
                     )
