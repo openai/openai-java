@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -162,10 +163,9 @@ private constructor(
 
         fun build(): Embedding =
             Embedding(
-                checkNotNull(embedding) { "`embedding` is required but was not set" }
-                    .map { it.toImmutable() },
-                checkNotNull(index) { "`index` is required but was not set" },
-                checkNotNull(object_) { "`object_` is required but was not set" },
+                checkRequired("embedding", embedding).map { it.toImmutable() },
+                checkRequired("index", index),
+                checkRequired("object_", object_),
                 additionalProperties.toImmutable(),
             )
     }

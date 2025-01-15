@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -1422,8 +1423,8 @@ constructor(
 
             fun build(): CompletionCreateBody =
                 CompletionCreateBody(
-                    checkNotNull(model) { "`model` is required but was not set" },
-                    checkNotNull(prompt) { "`prompt` is required but was not set" },
+                    checkRequired("model", model),
+                    checkRequired("prompt", prompt),
                     bestOf,
                     echo,
                     frequencyPenalty,

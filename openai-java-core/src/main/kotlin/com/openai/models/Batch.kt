@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -455,13 +456,13 @@ private constructor(
 
         fun build(): Batch =
             Batch(
-                checkNotNull(id) { "`id` is required but was not set" },
-                checkNotNull(completionWindow) { "`completionWindow` is required but was not set" },
-                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
-                checkNotNull(endpoint) { "`endpoint` is required but was not set" },
-                checkNotNull(inputFileId) { "`inputFileId` is required but was not set" },
-                checkNotNull(object_) { "`object_` is required but was not set" },
-                checkNotNull(status) { "`status` is required but was not set" },
+                checkRequired("id", id),
+                checkRequired("completionWindow", completionWindow),
+                checkRequired("createdAt", createdAt),
+                checkRequired("endpoint", endpoint),
+                checkRequired("inputFileId", inputFileId),
+                checkRequired("object_", object_),
+                checkRequired("status", status),
                 cancelledAt,
                 cancellingAt,
                 completedAt,

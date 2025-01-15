@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.immutableEmptyMap
@@ -241,8 +242,7 @@ constructor(
 
             fun build(): BetaVectorStoreFileBatchCreateBody =
                 BetaVectorStoreFileBatchCreateBody(
-                    checkNotNull(fileIds) { "`fileIds` is required but was not set" }
-                        .map { it.toImmutable() },
+                    checkRequired("fileIds", fileIds).map { it.toImmutable() },
                     chunkingStrategy,
                     additionalProperties.toImmutable(),
                 )
@@ -465,7 +465,7 @@ constructor(
 
         fun build(): BetaVectorStoreFileBatchCreateParams =
             BetaVectorStoreFileBatchCreateParams(
-                checkNotNull(vectorStoreId) { "`vectorStoreId` is required but was not set" },
+                checkRequired("vectorStoreId", vectorStoreId),
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),

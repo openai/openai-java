@@ -230,8 +230,8 @@ private constructor(
         }
 
         fun build(): ClientOptions {
-            checkNotNull(httpClient) { "`httpClient` is required but was not set" }
-            checkNotNull(credential) { "`credential` is required but was not set" }
+            checkRequired("httpClient", httpClient)
+            checkRequired("credential", credential)
 
             val headers = Headers.builder()
             val queryParams = QueryParams.builder()

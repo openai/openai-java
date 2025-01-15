@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
@@ -128,10 +129,10 @@ private constructor(
 
         fun build(): ErrorObject =
             ErrorObject(
-                checkNotNull(code) { "`code` is required but was not set" },
-                checkNotNull(message) { "`message` is required but was not set" },
-                checkNotNull(param) { "`param` is required but was not set" },
-                checkNotNull(type) { "`type` is required but was not set" },
+                checkRequired("code", code),
+                checkRequired("message", message),
+                checkRequired("param", param),
+                checkRequired("type", type),
                 additionalProperties.toImmutable(),
             )
     }

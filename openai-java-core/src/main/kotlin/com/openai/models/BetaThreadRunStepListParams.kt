@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.openai.core.Enum
 import com.openai.core.JsonField
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -331,8 +332,8 @@ constructor(
 
         fun build(): BetaThreadRunStepListParams =
             BetaThreadRunStepListParams(
-                checkNotNull(threadId) { "`threadId` is required but was not set" },
-                checkNotNull(runId) { "`runId` is required but was not set" },
+                checkRequired("threadId", threadId),
+                checkRequired("runId", runId),
                 after,
                 before,
                 include?.toImmutable(),

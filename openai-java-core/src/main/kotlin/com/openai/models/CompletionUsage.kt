@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
@@ -185,9 +186,9 @@ private constructor(
 
         fun build(): CompletionUsage =
             CompletionUsage(
-                checkNotNull(completionTokens) { "`completionTokens` is required but was not set" },
-                checkNotNull(promptTokens) { "`promptTokens` is required but was not set" },
-                checkNotNull(totalTokens) { "`totalTokens` is required but was not set" },
+                checkRequired("completionTokens", completionTokens),
+                checkRequired("promptTokens", promptTokens),
+                checkRequired("totalTokens", totalTokens),
                 completionTokensDetails,
                 promptTokensDetails,
                 additionalProperties.toImmutable(),

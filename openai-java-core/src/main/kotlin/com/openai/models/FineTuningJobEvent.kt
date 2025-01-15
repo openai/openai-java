@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -188,11 +189,11 @@ private constructor(
 
         fun build(): FineTuningJobEvent =
             FineTuningJobEvent(
-                checkNotNull(id) { "`id` is required but was not set" },
-                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
-                checkNotNull(level) { "`level` is required but was not set" },
-                checkNotNull(message) { "`message` is required but was not set" },
-                checkNotNull(object_) { "`object_` is required but was not set" },
+                checkRequired("id", id),
+                checkRequired("createdAt", createdAt),
+                checkRequired("level", level),
+                checkRequired("message", message),
+                checkRequired("object_", object_),
                 data,
                 type,
                 additionalProperties.toImmutable(),

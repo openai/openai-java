@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -282,12 +283,11 @@ private constructor(
 
         fun build(): ChatCompletion =
             ChatCompletion(
-                checkNotNull(id) { "`id` is required but was not set" },
-                checkNotNull(choices) { "`choices` is required but was not set" }
-                    .map { it.toImmutable() },
-                checkNotNull(created) { "`created` is required but was not set" },
-                checkNotNull(model) { "`model` is required but was not set" },
-                checkNotNull(object_) { "`object_` is required but was not set" },
+                checkRequired("id", id),
+                checkRequired("choices", choices).map { it.toImmutable() },
+                checkRequired("created", created),
+                checkRequired("model", model),
+                checkRequired("object_", object_),
                 serviceTier,
                 systemFingerprint,
                 usage,
@@ -461,10 +461,10 @@ private constructor(
 
             fun build(): Choice =
                 Choice(
-                    checkNotNull(finishReason) { "`finishReason` is required but was not set" },
-                    checkNotNull(index) { "`index` is required but was not set" },
-                    checkNotNull(logprobs) { "`logprobs` is required but was not set" },
-                    checkNotNull(message) { "`message` is required but was not set" },
+                    checkRequired("finishReason", finishReason),
+                    checkRequired("index", index),
+                    checkRequired("logprobs", logprobs),
+                    checkRequired("message", message),
                     additionalProperties.toImmutable(),
                 )
         }
@@ -691,10 +691,8 @@ private constructor(
 
                 fun build(): Logprobs =
                     Logprobs(
-                        checkNotNull(content) { "`content` is required but was not set" }
-                            .map { it.toImmutable() },
-                        checkNotNull(refusal) { "`refusal` is required but was not set" }
-                            .map { it.toImmutable() },
+                        checkRequired("content", content).map { it.toImmutable() },
+                        checkRequired("refusal", refusal).map { it.toImmutable() },
                         additionalProperties.toImmutable(),
                     )
             }

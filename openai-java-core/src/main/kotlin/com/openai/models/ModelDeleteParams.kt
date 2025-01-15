@@ -4,6 +4,7 @@ package com.openai.models
 
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -191,7 +192,7 @@ constructor(
 
         fun build(): ModelDeleteParams =
             ModelDeleteParams(
-                checkNotNull(model) { "`model` is required but was not set" },
+                checkRequired("model", model),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),

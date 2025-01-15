@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -688,16 +689,15 @@ private constructor(
 
         fun build(): Assistant =
             Assistant(
-                checkNotNull(id) { "`id` is required but was not set" },
-                checkNotNull(createdAt) { "`createdAt` is required but was not set" },
-                checkNotNull(description) { "`description` is required but was not set" },
-                checkNotNull(instructions) { "`instructions` is required but was not set" },
-                checkNotNull(metadata) { "`metadata` is required but was not set" },
-                checkNotNull(model) { "`model` is required but was not set" },
-                checkNotNull(name) { "`name` is required but was not set" },
-                checkNotNull(object_) { "`object_` is required but was not set" },
-                checkNotNull(tools) { "`tools` is required but was not set" }
-                    .map { it.toImmutable() },
+                checkRequired("id", id),
+                checkRequired("createdAt", createdAt),
+                checkRequired("description", description),
+                checkRequired("instructions", instructions),
+                checkRequired("metadata", metadata),
+                checkRequired("model", model),
+                checkRequired("name", name),
+                checkRequired("object_", object_),
+                checkRequired("tools", tools).map { it.toImmutable() },
                 responseFormat,
                 temperature,
                 toolResources,

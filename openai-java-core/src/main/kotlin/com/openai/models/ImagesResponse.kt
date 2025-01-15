@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
@@ -116,9 +117,8 @@ private constructor(
 
         fun build(): ImagesResponse =
             ImagesResponse(
-                checkNotNull(created) { "`created` is required but was not set" },
-                checkNotNull(data) { "`data` is required but was not set" }
-                    .map { it.toImmutable() },
+                checkRequired("created", created),
+                checkRequired("data", data).map { it.toImmutable() },
                 additionalProperties.toImmutable(),
             )
     }

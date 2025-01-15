@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
@@ -318,7 +319,7 @@ private constructor(
 
         fun build(): ChatCompletionAssistantMessageParam =
             ChatCompletionAssistantMessageParam(
-                checkNotNull(role) { "`role` is required but was not set" },
+                checkRequired("role", role),
                 audio,
                 content,
                 functionCall,
@@ -457,11 +458,7 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): Audio =
-                Audio(
-                    checkNotNull(id) { "`id` is required but was not set" },
-                    additionalProperties.toImmutable()
-                )
+            fun build(): Audio = Audio(checkRequired("id", id), additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
@@ -962,8 +959,8 @@ private constructor(
 
             fun build(): FunctionCall =
                 FunctionCall(
-                    checkNotNull(arguments) { "`arguments` is required but was not set" },
-                    checkNotNull(name) { "`name` is required but was not set" },
+                    checkRequired("arguments", arguments),
+                    checkRequired("name", name),
                     additionalProperties.toImmutable(),
                 )
         }

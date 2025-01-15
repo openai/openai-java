@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
@@ -172,8 +173,8 @@ private constructor(
 
         fun build(): CodeInterpreterToolCallDelta =
             CodeInterpreterToolCallDelta(
-                checkNotNull(index) { "`index` is required but was not set" },
-                checkNotNull(type) { "`type` is required but was not set" },
+                checkRequired("index", index),
+                checkRequired("type", type),
                 id,
                 codeInterpreter,
                 additionalProperties.toImmutable(),

@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -111,8 +112,8 @@ private constructor(
 
         fun build(): ChatCompletionContentPartInputAudio =
             ChatCompletionContentPartInputAudio(
-                checkNotNull(inputAudio) { "`inputAudio` is required but was not set" },
-                checkNotNull(type) { "`type` is required but was not set" },
+                checkRequired("inputAudio", inputAudio),
+                checkRequired("type", type),
                 additionalProperties.toImmutable(),
             )
     }
@@ -212,8 +213,8 @@ private constructor(
 
             fun build(): InputAudio =
                 InputAudio(
-                    checkNotNull(data) { "`data` is required but was not set" },
-                    checkNotNull(format) { "`format` is required but was not set" },
+                    checkRequired("data", data),
+                    checkRequired("format", format),
                     additionalProperties.toImmutable(),
                 )
         }

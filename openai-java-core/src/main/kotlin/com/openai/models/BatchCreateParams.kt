@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.immutableEmptyMap
@@ -311,11 +312,9 @@ constructor(
 
             fun build(): BatchCreateBody =
                 BatchCreateBody(
-                    checkNotNull(completionWindow) {
-                        "`completionWindow` is required but was not set"
-                    },
-                    checkNotNull(endpoint) { "`endpoint` is required but was not set" },
-                    checkNotNull(inputFileId) { "`inputFileId` is required but was not set" },
+                    checkRequired("completionWindow", completionWindow),
+                    checkRequired("endpoint", endpoint),
+                    checkRequired("inputFileId", inputFileId),
                     metadata,
                     additionalProperties.toImmutable(),
                 )

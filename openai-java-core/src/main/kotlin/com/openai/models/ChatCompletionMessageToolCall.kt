@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -125,9 +126,9 @@ private constructor(
 
         fun build(): ChatCompletionMessageToolCall =
             ChatCompletionMessageToolCall(
-                checkNotNull(id) { "`id` is required but was not set" },
-                checkNotNull(function) { "`function` is required but was not set" },
-                checkNotNull(type) { "`type` is required but was not set" },
+                checkRequired("id", id),
+                checkRequired("function", function),
+                checkRequired("type", type),
                 additionalProperties.toImmutable(),
             )
     }
@@ -248,8 +249,8 @@ private constructor(
 
             fun build(): Function =
                 Function(
-                    checkNotNull(arguments) { "`arguments` is required but was not set" },
-                    checkNotNull(name) { "`name` is required but was not set" },
+                    checkRequired("arguments", arguments),
+                    checkRequired("name", name),
                     additionalProperties.toImmutable(),
                 )
         }

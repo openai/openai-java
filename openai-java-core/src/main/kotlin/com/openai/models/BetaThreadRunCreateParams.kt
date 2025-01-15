@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -1306,7 +1307,7 @@ constructor(
 
             fun build(): BetaThreadRunCreateBody =
                 BetaThreadRunCreateBody(
-                    checkNotNull(assistantId) { "`assistantId` is required but was not set" },
+                    checkRequired("assistantId", assistantId),
                     additionalInstructions,
                     (additionalMessages ?: JsonMissing.of()).map { it.toImmutable() },
                     instructions,
@@ -2069,7 +2070,7 @@ constructor(
 
         fun build(): BetaThreadRunCreateParams =
             BetaThreadRunCreateParams(
-                checkNotNull(threadId) { "`threadId` is required but was not set" },
+                checkRequired("threadId", threadId),
                 include?.toImmutable(),
                 body.build(),
                 additionalHeaders.build(),
@@ -2266,8 +2267,8 @@ constructor(
 
             fun build(): AdditionalMessage =
                 AdditionalMessage(
-                    checkNotNull(content) { "`content` is required but was not set" },
-                    checkNotNull(role) { "`role` is required but was not set" },
+                    checkRequired("content", content),
+                    checkRequired("role", role),
                     (attachments ?: JsonMissing.of()).map { it.toImmutable() },
                     metadata,
                     additionalProperties.toImmutable(),
@@ -2831,7 +2832,7 @@ constructor(
 
                         fun build(): FileSearch =
                             FileSearch(
-                                checkNotNull(type) { "`type` is required but was not set" },
+                                checkRequired("type", type),
                                 additionalProperties.toImmutable()
                             )
                     }
@@ -3091,7 +3092,7 @@ constructor(
 
             fun build(): TruncationStrategy =
                 TruncationStrategy(
-                    checkNotNull(type) { "`type` is required but was not set" },
+                    checkRequired("type", type),
                     lastMessages,
                     additionalProperties.toImmutable(),
                 )

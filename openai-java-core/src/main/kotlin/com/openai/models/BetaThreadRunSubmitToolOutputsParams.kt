@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.immutableEmptyMap
@@ -161,8 +162,7 @@ constructor(
 
             fun build(): BetaThreadRunSubmitToolOutputsBody =
                 BetaThreadRunSubmitToolOutputsBody(
-                    checkNotNull(toolOutputs) { "`toolOutputs` is required but was not set" }
-                        .map { it.toImmutable() },
+                    checkRequired("toolOutputs", toolOutputs).map { it.toImmutable() },
                     additionalProperties.toImmutable()
                 )
         }
@@ -348,8 +348,8 @@ constructor(
 
         fun build(): BetaThreadRunSubmitToolOutputsParams =
             BetaThreadRunSubmitToolOutputsParams(
-                checkNotNull(threadId) { "`threadId` is required but was not set" },
-                checkNotNull(runId) { "`runId` is required but was not set" },
+                checkRequired("threadId", threadId),
+                checkRequired("runId", runId),
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),

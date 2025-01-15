@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -158,10 +159,10 @@ private constructor(
 
         fun build(): CompletionChoice =
             CompletionChoice(
-                checkNotNull(finishReason) { "`finishReason` is required but was not set" },
-                checkNotNull(index) { "`index` is required but was not set" },
-                checkNotNull(logprobs) { "`logprobs` is required but was not set" },
-                checkNotNull(text) { "`text` is required but was not set" },
+                checkRequired("finishReason", finishReason),
+                checkRequired("index", index),
+                checkRequired("logprobs", logprobs),
+                checkRequired("text", text),
                 additionalProperties.toImmutable(),
             )
     }

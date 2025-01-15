@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
@@ -443,8 +444,8 @@ private constructor(
 
             fun build(): ThreadMessageCreated =
                 ThreadMessageCreated(
-                    checkNotNull(data) { "`data` is required but was not set" },
-                    checkNotNull(event) { "`event` is required but was not set" },
+                    checkRequired("data", data),
+                    checkRequired("event", event),
                     additionalProperties.toImmutable(),
                 )
         }
@@ -625,8 +626,8 @@ private constructor(
 
             fun build(): ThreadMessageInProgress =
                 ThreadMessageInProgress(
-                    checkNotNull(data) { "`data` is required but was not set" },
-                    checkNotNull(event) { "`event` is required but was not set" },
+                    checkRequired("data", data),
+                    checkRequired("event", event),
                     additionalProperties.toImmutable(),
                 )
         }
@@ -795,8 +796,8 @@ private constructor(
 
             fun build(): ThreadMessageDelta =
                 ThreadMessageDelta(
-                    checkNotNull(data) { "`data` is required but was not set" },
-                    checkNotNull(event) { "`event` is required but was not set" },
+                    checkRequired("data", data),
+                    checkRequired("event", event),
                     additionalProperties.toImmutable(),
                 )
         }
@@ -977,8 +978,8 @@ private constructor(
 
             fun build(): ThreadMessageCompleted =
                 ThreadMessageCompleted(
-                    checkNotNull(data) { "`data` is required but was not set" },
-                    checkNotNull(event) { "`event` is required but was not set" },
+                    checkRequired("data", data),
+                    checkRequired("event", event),
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1159,8 +1160,8 @@ private constructor(
 
             fun build(): ThreadMessageIncomplete =
                 ThreadMessageIncomplete(
-                    checkNotNull(data) { "`data` is required but was not set" },
-                    checkNotNull(event) { "`event` is required but was not set" },
+                    checkRequired("data", data),
+                    checkRequired("event", event),
                     additionalProperties.toImmutable(),
                 )
         }
