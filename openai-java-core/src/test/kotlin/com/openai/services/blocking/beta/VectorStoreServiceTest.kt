@@ -11,7 +11,6 @@ import com.openai.models.BetaVectorStoreDeleteParams
 import com.openai.models.BetaVectorStoreListParams
 import com.openai.models.BetaVectorStoreRetrieveParams
 import com.openai.models.BetaVectorStoreUpdateParams
-import com.openai.models.FileChunkingStrategyParam
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -30,11 +29,9 @@ class VectorStoreServiceTest {
             vectorStoreService.create(
                 BetaVectorStoreCreateParams.builder()
                     .chunkingStrategy(
-                        FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
-                            AutoFileChunkingStrategyParam.builder()
-                                .type(AutoFileChunkingStrategyParam.Type.AUTO)
-                                .build()
-                        )
+                        AutoFileChunkingStrategyParam.builder()
+                            .type(AutoFileChunkingStrategyParam.Type.AUTO)
+                            .build()
                     )
                     .expiresAfter(
                         BetaVectorStoreCreateParams.ExpiresAfter.builder()

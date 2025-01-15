@@ -12,17 +12,15 @@ class BetaThreadMessageCreateParamsTest {
     fun createBetaThreadMessageCreateParams() {
         BetaThreadMessageCreateParams.builder()
             .threadId("thread_id")
-            .content(BetaThreadMessageCreateParams.Content.ofTextContent("string"))
+            .content("string")
             .role(BetaThreadMessageCreateParams.Role.USER)
             .addAttachment(
                 BetaThreadMessageCreateParams.Attachment.builder()
                     .fileId("file_id")
                     .addTool(
-                        BetaThreadMessageCreateParams.Attachment.Tool.ofCodeInterpreterTool(
-                            CodeInterpreterTool.builder()
-                                .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                .build()
-                        )
+                        CodeInterpreterTool.builder()
+                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
+                            .build()
                     )
                     .build()
             )
@@ -35,17 +33,15 @@ class BetaThreadMessageCreateParamsTest {
         val params =
             BetaThreadMessageCreateParams.builder()
                 .threadId("thread_id")
-                .content(BetaThreadMessageCreateParams.Content.ofTextContent("string"))
+                .content("string")
                 .role(BetaThreadMessageCreateParams.Role.USER)
                 .addAttachment(
                     BetaThreadMessageCreateParams.Attachment.builder()
                         .fileId("file_id")
                         .addTool(
-                            BetaThreadMessageCreateParams.Attachment.Tool.ofCodeInterpreterTool(
-                                CodeInterpreterTool.builder()
-                                    .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                    .build()
-                            )
+                            CodeInterpreterTool.builder()
+                                .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
+                                .build()
                         )
                         .build()
                 )
@@ -62,11 +58,9 @@ class BetaThreadMessageCreateParamsTest {
                     BetaThreadMessageCreateParams.Attachment.builder()
                         .fileId("file_id")
                         .addTool(
-                            BetaThreadMessageCreateParams.Attachment.Tool.ofCodeInterpreterTool(
-                                CodeInterpreterTool.builder()
-                                    .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                    .build()
-                            )
+                            CodeInterpreterTool.builder()
+                                .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
+                                .build()
                         )
                         .build()
                 )
@@ -79,7 +73,7 @@ class BetaThreadMessageCreateParamsTest {
         val params =
             BetaThreadMessageCreateParams.builder()
                 .threadId("thread_id")
-                .content(BetaThreadMessageCreateParams.Content.ofTextContent("string"))
+                .content("string")
                 .role(BetaThreadMessageCreateParams.Role.USER)
                 .build()
         val body = params.getBody()
@@ -94,7 +88,7 @@ class BetaThreadMessageCreateParamsTest {
         val params =
             BetaThreadMessageCreateParams.builder()
                 .threadId("thread_id")
-                .content(BetaThreadMessageCreateParams.Content.ofTextContent("string"))
+                .content("string")
                 .role(BetaThreadMessageCreateParams.Role.USER)
                 .build()
         assertThat(params).isNotNull

@@ -24,17 +24,15 @@ class VectorStoreFileTest {
                 .usageBytes(0L)
                 .vectorStoreId("vector_store_id")
                 .chunkingStrategy(
-                    FileChunkingStrategy.ofStaticFileChunkingStrategyObject(
-                        StaticFileChunkingStrategyObject.builder()
-                            .static_(
-                                StaticFileChunkingStrategy.builder()
-                                    .chunkOverlapTokens(0L)
-                                    .maxChunkSizeTokens(100L)
-                                    .build()
-                            )
-                            .type(StaticFileChunkingStrategyObject.Type.STATIC)
-                            .build()
-                    )
+                    StaticFileChunkingStrategyObject.builder()
+                        .static_(
+                            StaticFileChunkingStrategy.builder()
+                                .chunkOverlapTokens(0L)
+                                .maxChunkSizeTokens(100L)
+                                .build()
+                        )
+                        .type(StaticFileChunkingStrategyObject.Type.STATIC)
+                        .build()
                 )
                 .build()
         assertThat(vectorStoreFile).isNotNull

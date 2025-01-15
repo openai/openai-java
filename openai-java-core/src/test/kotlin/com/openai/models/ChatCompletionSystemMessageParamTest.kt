@@ -11,7 +11,7 @@ class ChatCompletionSystemMessageParamTest {
     fun createChatCompletionSystemMessageParam() {
         val chatCompletionSystemMessageParam =
             ChatCompletionSystemMessageParam.builder()
-                .content(ChatCompletionSystemMessageParam.Content.ofTextContent("string"))
+                .content("string")
                 .role(ChatCompletionSystemMessageParam.Role.SYSTEM)
                 .name("name")
                 .build()

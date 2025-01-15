@@ -6,7 +6,6 @@ import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
 import com.openai.models.AssistantResponseFormatOption
-import com.openai.models.AssistantTool
 import com.openai.models.AssistantToolChoiceOption
 import com.openai.models.BetaThreadRunCancelParams
 import com.openai.models.BetaThreadRunCreateParams
@@ -40,22 +39,15 @@ class RunServiceTest {
                     .additionalInstructions("additional_instructions")
                     .addAdditionalMessage(
                         BetaThreadRunCreateParams.AdditionalMessage.builder()
-                            .content(
-                                BetaThreadRunCreateParams.AdditionalMessage.Content.ofTextContent(
-                                    "string"
-                                )
-                            )
+                            .content("string")
                             .role(BetaThreadRunCreateParams.AdditionalMessage.Role.USER)
                             .addAttachment(
                                 BetaThreadRunCreateParams.AdditionalMessage.Attachment.builder()
                                     .fileId("file_id")
                                     .addTool(
-                                        BetaThreadRunCreateParams.AdditionalMessage.Attachment.Tool
-                                            .ofCodeInterpreterTool(
-                                                CodeInterpreterTool.builder()
-                                                    .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                                    .build()
-                                            )
+                                        CodeInterpreterTool.builder()
+                                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
+                                            .build()
                                     )
                                     .build()
                             )
@@ -68,23 +60,13 @@ class RunServiceTest {
                     .metadata(JsonValue.from(mapOf<String, Any>()))
                     .model(ChatModel.GPT_4O)
                     .parallelToolCalls(true)
-                    .responseFormat(
-                        AssistantResponseFormatOption.ofBehavior(
-                            AssistantResponseFormatOption.Behavior.AUTO
-                        )
-                    )
+                    .responseFormat(AssistantResponseFormatOption.Behavior.AUTO)
                     .temperature(1.0)
-                    .toolChoice(
-                        AssistantToolChoiceOption.ofBehavior(
-                            AssistantToolChoiceOption.Behavior.NONE
-                        )
-                    )
+                    .toolChoice(AssistantToolChoiceOption.Behavior.NONE)
                     .addTool(
-                        AssistantTool.ofCodeInterpreterTool(
-                            CodeInterpreterTool.builder()
-                                .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                .build()
-                        )
+                        CodeInterpreterTool.builder()
+                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
+                            .build()
                     )
                     .topP(1.0)
                     .truncationStrategy(
@@ -117,22 +99,15 @@ class RunServiceTest {
                     .additionalInstructions("additional_instructions")
                     .addAdditionalMessage(
                         BetaThreadRunCreateParams.AdditionalMessage.builder()
-                            .content(
-                                BetaThreadRunCreateParams.AdditionalMessage.Content.ofTextContent(
-                                    "string"
-                                )
-                            )
+                            .content("string")
                             .role(BetaThreadRunCreateParams.AdditionalMessage.Role.USER)
                             .addAttachment(
                                 BetaThreadRunCreateParams.AdditionalMessage.Attachment.builder()
                                     .fileId("file_id")
                                     .addTool(
-                                        BetaThreadRunCreateParams.AdditionalMessage.Attachment.Tool
-                                            .ofCodeInterpreterTool(
-                                                CodeInterpreterTool.builder()
-                                                    .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                                    .build()
-                                            )
+                                        CodeInterpreterTool.builder()
+                                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
+                                            .build()
                                     )
                                     .build()
                             )
@@ -145,23 +120,13 @@ class RunServiceTest {
                     .metadata(JsonValue.from(mapOf<String, Any>()))
                     .model(ChatModel.GPT_4O)
                     .parallelToolCalls(true)
-                    .responseFormat(
-                        AssistantResponseFormatOption.ofBehavior(
-                            AssistantResponseFormatOption.Behavior.AUTO
-                        )
-                    )
+                    .responseFormat(AssistantResponseFormatOption.Behavior.AUTO)
                     .temperature(1.0)
-                    .toolChoice(
-                        AssistantToolChoiceOption.ofBehavior(
-                            AssistantToolChoiceOption.Behavior.NONE
-                        )
-                    )
+                    .toolChoice(AssistantToolChoiceOption.Behavior.NONE)
                     .addTool(
-                        AssistantTool.ofCodeInterpreterTool(
-                            CodeInterpreterTool.builder()
-                                .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                .build()
-                        )
+                        CodeInterpreterTool.builder()
+                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
+                            .build()
                     )
                     .topP(1.0)
                     .truncationStrategy(

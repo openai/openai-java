@@ -11,7 +11,7 @@ class ChatCompletionUserMessageParamTest {
     fun createChatCompletionUserMessageParam() {
         val chatCompletionUserMessageParam =
             ChatCompletionUserMessageParam.builder()
-                .content(ChatCompletionUserMessageParam.Content.ofTextContent("string"))
+                .content("string")
                 .role(ChatCompletionUserMessageParam.Role.USER)
                 .name("name")
                 .build()

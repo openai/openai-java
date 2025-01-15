@@ -11,7 +11,7 @@ class ChatCompletionToolMessageParamTest {
     fun createChatCompletionToolMessageParam() {
         val chatCompletionToolMessageParam =
             ChatCompletionToolMessageParam.builder()
-                .content(ChatCompletionToolMessageParam.Content.ofTextContent("string"))
+                .content("string")
                 .role(ChatCompletionToolMessageParam.Role.TOOL)
                 .toolCallId("tool_call_id")
                 .build()

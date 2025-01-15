@@ -11,7 +11,7 @@ class ChatCompletionDeveloperMessageParamTest {
     fun createChatCompletionDeveloperMessageParam() {
         val chatCompletionDeveloperMessageParam =
             ChatCompletionDeveloperMessageParam.builder()
-                .content(ChatCompletionDeveloperMessageParam.Content.ofTextContent("string"))
+                .content("string")
                 .role(ChatCompletionDeveloperMessageParam.Role.DEVELOPER)
                 .name("name")
                 .build()

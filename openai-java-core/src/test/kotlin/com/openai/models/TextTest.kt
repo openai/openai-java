@@ -12,19 +12,15 @@ class TextTest {
         val text =
             Text.builder()
                 .addAnnotation(
-                    Annotation.ofFileCitationAnnotation(
-                        FileCitationAnnotation.builder()
-                            .endIndex(0L)
-                            .fileCitation(
-                                FileCitationAnnotation.FileCitation.builder()
-                                    .fileId("file_id")
-                                    .build()
-                            )
-                            .startIndex(0L)
-                            .text("text")
-                            .type(FileCitationAnnotation.Type.FILE_CITATION)
-                            .build()
-                    )
+                    FileCitationAnnotation.builder()
+                        .endIndex(0L)
+                        .fileCitation(
+                            FileCitationAnnotation.FileCitation.builder().fileId("file_id").build()
+                        )
+                        .startIndex(0L)
+                        .text("text")
+                        .type(FileCitationAnnotation.Type.FILE_CITATION)
+                        .build()
                 )
                 .value("value")
                 .build()

@@ -10,7 +10,7 @@ class ModerationCreateParamsTest {
     @Test
     fun createModerationCreateParams() {
         ModerationCreateParams.builder()
-            .input(ModerationCreateParams.Input.ofString("I want to kill them."))
+            .input("I want to kill them.")
             .model(ModerationModel.OMNI_MODERATION_LATEST)
             .build()
     }
@@ -19,7 +19,7 @@ class ModerationCreateParamsTest {
     fun getBody() {
         val params =
             ModerationCreateParams.builder()
-                .input(ModerationCreateParams.Input.ofString("I want to kill them."))
+                .input("I want to kill them.")
                 .model(ModerationModel.OMNI_MODERATION_LATEST)
                 .build()
         val body = params.getBody()
@@ -31,10 +31,7 @@ class ModerationCreateParamsTest {
 
     @Test
     fun getBodyWithoutOptionalFields() {
-        val params =
-            ModerationCreateParams.builder()
-                .input(ModerationCreateParams.Input.ofString("I want to kill them."))
-                .build()
+        val params = ModerationCreateParams.builder().input("I want to kill them.").build()
         val body = params.getBody()
         assertThat(body).isNotNull
         assertThat(body.input())

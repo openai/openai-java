@@ -12,16 +12,14 @@ class RunStepDeltaTest {
         val runStepDelta =
             RunStepDelta.builder()
                 .stepDetails(
-                    RunStepDelta.StepDetails.ofRunStepDeltaMessageDelta(
-                        RunStepDeltaMessageDelta.builder()
-                            .type(RunStepDeltaMessageDelta.Type.MESSAGE_CREATION)
-                            .messageCreation(
-                                RunStepDeltaMessageDelta.MessageCreation.builder()
-                                    .messageId("message_id")
-                                    .build()
-                            )
-                            .build()
-                    )
+                    RunStepDeltaMessageDelta.builder()
+                        .type(RunStepDeltaMessageDelta.Type.MESSAGE_CREATION)
+                        .messageCreation(
+                            RunStepDeltaMessageDelta.MessageCreation.builder()
+                                .messageId("message_id")
+                                .build()
+                        )
+                        .build()
                 )
                 .build()
         assertThat(runStepDelta).isNotNull

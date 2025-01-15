@@ -12,18 +12,16 @@ class MessageDeltaTest {
         val messageDelta =
             MessageDelta.builder()
                 .addContent(
-                    MessageContentDelta.ofImageFileDeltaBlock(
-                        ImageFileDeltaBlock.builder()
-                            .index(0L)
-                            .type(ImageFileDeltaBlock.Type.IMAGE_FILE)
-                            .imageFile(
-                                ImageFileDelta.builder()
-                                    .detail(ImageFileDelta.Detail.AUTO)
-                                    .fileId("file_id")
-                                    .build()
-                            )
-                            .build()
-                    )
+                    ImageFileDeltaBlock.builder()
+                        .index(0L)
+                        .type(ImageFileDeltaBlock.Type.IMAGE_FILE)
+                        .imageFile(
+                            ImageFileDelta.builder()
+                                .detail(ImageFileDelta.Detail.AUTO)
+                                .fileId("file_id")
+                                .build()
+                        )
+                        .build()
                 )
                 .role(MessageDelta.Role.USER)
                 .build()

@@ -85,15 +85,14 @@ To create a new chat completion, first use the `ChatCompletionCreateParams` buil
 ```java
 import com.openai.models.ChatCompletion;
 import com.openai.models.ChatCompletionCreateParams;
-import com.openai.models.ChatCompletionMessageParam;
 import com.openai.models.ChatCompletionUserMessageParam;
 import com.openai.models.ChatModel;
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-    .addMessage(ChatCompletionMessageParam.ofChatCompletionUserMessageParam(ChatCompletionUserMessageParam.builder()
+    .addMessage(ChatCompletionUserMessageParam.builder()
         .role(ChatCompletionUserMessageParam.Role.USER)
-        .content(ChatCompletionUserMessageParam.Content.ofTextContent("Say this is a test"))
-        .build()))
+        .content("Say this is a test")
+        .build())
     .model(ChatModel.O1)
     .build();
 ChatCompletion chatCompletion = client.chat().completions().create(params);

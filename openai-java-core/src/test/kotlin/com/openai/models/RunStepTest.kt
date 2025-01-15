@@ -30,16 +30,14 @@ class RunStepTest {
                 .runId("run_id")
                 .status(RunStep.Status.IN_PROGRESS)
                 .stepDetails(
-                    RunStep.StepDetails.ofMessageCreationStepDetails(
-                        MessageCreationStepDetails.builder()
-                            .messageCreation(
-                                MessageCreationStepDetails.MessageCreation.builder()
-                                    .messageId("message_id")
-                                    .build()
-                            )
-                            .type(MessageCreationStepDetails.Type.MESSAGE_CREATION)
-                            .build()
-                    )
+                    MessageCreationStepDetails.builder()
+                        .messageCreation(
+                            MessageCreationStepDetails.MessageCreation.builder()
+                                .messageId("message_id")
+                                .build()
+                        )
+                        .type(MessageCreationStepDetails.Type.MESSAGE_CREATION)
+                        .build()
                 )
                 .threadId("thread_id")
                 .type(RunStep.Type.MESSAGE_CREATION)

@@ -18,14 +18,11 @@ class CodeInterpreterToolCallDeltaTest {
                     CodeInterpreterToolCallDelta.CodeInterpreter.builder()
                         .input("input")
                         .addOutput(
-                            CodeInterpreterToolCallDelta.CodeInterpreter.Output
-                                .ofCodeInterpreterLogs(
-                                    CodeInterpreterLogs.builder()
-                                        .index(0L)
-                                        .type(CodeInterpreterLogs.Type.LOGS)
-                                        .logs("logs")
-                                        .build()
-                                )
+                            CodeInterpreterLogs.builder()
+                                .index(0L)
+                                .type(CodeInterpreterLogs.Type.LOGS)
+                                .logs("logs")
+                                .build()
                         )
                         .build()
                 )
@@ -40,13 +37,11 @@ class CodeInterpreterToolCallDeltaTest {
                 CodeInterpreterToolCallDelta.CodeInterpreter.builder()
                     .input("input")
                     .addOutput(
-                        CodeInterpreterToolCallDelta.CodeInterpreter.Output.ofCodeInterpreterLogs(
-                            CodeInterpreterLogs.builder()
-                                .index(0L)
-                                .type(CodeInterpreterLogs.Type.LOGS)
-                                .logs("logs")
-                                .build()
-                        )
+                        CodeInterpreterLogs.builder()
+                            .index(0L)
+                            .type(CodeInterpreterLogs.Type.LOGS)
+                            .logs("logs")
+                            .build()
                     )
                     .build()
             )

@@ -16,34 +16,6 @@ class TextDeltaBlockTest {
                 .text(
                     TextDelta.builder()
                         .addAnnotation(
-                            AnnotationDelta.ofFileCitationDeltaAnnotation(
-                                FileCitationDeltaAnnotation.builder()
-                                    .index(0L)
-                                    .type(FileCitationDeltaAnnotation.Type.FILE_CITATION)
-                                    .endIndex(0L)
-                                    .fileCitation(
-                                        FileCitationDeltaAnnotation.FileCitation.builder()
-                                            .fileId("file_id")
-                                            .quote("quote")
-                                            .build()
-                                    )
-                                    .startIndex(0L)
-                                    .text("text")
-                                    .build()
-                            )
-                        )
-                        .value("value")
-                        .build()
-                )
-                .build()
-        assertThat(textDeltaBlock).isNotNull
-        assertThat(textDeltaBlock.index()).isEqualTo(0L)
-        assertThat(textDeltaBlock.type()).isEqualTo(TextDeltaBlock.Type.TEXT)
-        assertThat(textDeltaBlock.text())
-            .contains(
-                TextDelta.builder()
-                    .addAnnotation(
-                        AnnotationDelta.ofFileCitationDeltaAnnotation(
                             FileCitationDeltaAnnotation.builder()
                                 .index(0L)
                                 .type(FileCitationDeltaAnnotation.Type.FILE_CITATION)
@@ -58,6 +30,30 @@ class TextDeltaBlockTest {
                                 .text("text")
                                 .build()
                         )
+                        .value("value")
+                        .build()
+                )
+                .build()
+        assertThat(textDeltaBlock).isNotNull
+        assertThat(textDeltaBlock.index()).isEqualTo(0L)
+        assertThat(textDeltaBlock.type()).isEqualTo(TextDeltaBlock.Type.TEXT)
+        assertThat(textDeltaBlock.text())
+            .contains(
+                TextDelta.builder()
+                    .addAnnotation(
+                        FileCitationDeltaAnnotation.builder()
+                            .index(0L)
+                            .type(FileCitationDeltaAnnotation.Type.FILE_CITATION)
+                            .endIndex(0L)
+                            .fileCitation(
+                                FileCitationDeltaAnnotation.FileCitation.builder()
+                                    .fileId("file_id")
+                                    .quote("quote")
+                                    .build()
+                            )
+                            .startIndex(0L)
+                            .text("text")
+                            .build()
                     )
                     .value("value")
                     .build()

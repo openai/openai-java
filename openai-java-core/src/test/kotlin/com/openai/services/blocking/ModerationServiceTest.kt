@@ -23,7 +23,7 @@ class ModerationServiceTest {
         val moderationCreateResponse =
             moderationService.create(
                 ModerationCreateParams.builder()
-                    .input(ModerationCreateParams.Input.ofString("I want to kill them."))
+                    .input("I want to kill them.")
                     .model(ModerationModel.OMNI_MODERATION_LATEST)
                     .build()
             )
