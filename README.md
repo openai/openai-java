@@ -8,8 +8,6 @@
 
 The OpenAI Java SDK provides convenient access to the OpenAI REST API from applications written in Java. It includes helper classes with helpful types and documentation for every request and response property.
 
-The OpenAI Java SDK is similar to the OpenAI Kotlin SDK but with minor differences that make it more ergonomic for use in Java, such as `Optional` instead of nullable values, `Stream` instead of `Sequence`, and `CompletableFuture` instead of suspend functions.
-
 ## Documentation
 
 The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs).
