@@ -13,11 +13,9 @@ class BetaVectorStoreFileBatchCreateParamsTest {
             .vectorStoreId("vs_abc123")
             .addFileId("string")
             .chunkingStrategy(
-                FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
-                    AutoFileChunkingStrategyParam.builder()
-                        .type(AutoFileChunkingStrategyParam.Type.AUTO)
-                        .build()
-                )
+                AutoFileChunkingStrategyParam.builder()
+                    .type(AutoFileChunkingStrategyParam.Type.AUTO)
+                    .build()
             )
             .build()
     }
@@ -29,11 +27,9 @@ class BetaVectorStoreFileBatchCreateParamsTest {
                 .vectorStoreId("vs_abc123")
                 .addFileId("string")
                 .chunkingStrategy(
-                    FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
-                        AutoFileChunkingStrategyParam.builder()
-                            .type(AutoFileChunkingStrategyParam.Type.AUTO)
-                            .build()
-                    )
+                    AutoFileChunkingStrategyParam.builder()
+                        .type(AutoFileChunkingStrategyParam.Type.AUTO)
+                        .build()
                 )
                 .build()
         val body = params.getBody()

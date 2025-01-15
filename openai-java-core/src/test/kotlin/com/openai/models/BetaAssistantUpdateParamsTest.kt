@@ -17,11 +17,7 @@ class BetaAssistantUpdateParamsTest {
             .metadata(JsonValue.from(mapOf<String, Any>()))
             .model("model")
             .name("name")
-            .responseFormat(
-                AssistantResponseFormatOption.ofBehavior(
-                    AssistantResponseFormatOption.Behavior.AUTO
-                )
-            )
+            .responseFormat(AssistantResponseFormatOption.Behavior.AUTO)
             .temperature(1.0)
             .toolResources(
                 BetaAssistantUpdateParams.ToolResources.builder()
@@ -38,11 +34,9 @@ class BetaAssistantUpdateParamsTest {
                     .build()
             )
             .addTool(
-                AssistantTool.ofCodeInterpreterTool(
-                    CodeInterpreterTool.builder()
-                        .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                        .build()
-                )
+                CodeInterpreterTool.builder()
+                    .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
+                    .build()
             )
             .topP(1.0)
             .build()
@@ -58,11 +52,7 @@ class BetaAssistantUpdateParamsTest {
                 .metadata(JsonValue.from(mapOf<String, Any>()))
                 .model("model")
                 .name("name")
-                .responseFormat(
-                    AssistantResponseFormatOption.ofBehavior(
-                        AssistantResponseFormatOption.Behavior.AUTO
-                    )
-                )
+                .responseFormat(AssistantResponseFormatOption.Behavior.AUTO)
                 .temperature(1.0)
                 .toolResources(
                     BetaAssistantUpdateParams.ToolResources.builder()
@@ -79,11 +69,9 @@ class BetaAssistantUpdateParamsTest {
                         .build()
                 )
                 .addTool(
-                    AssistantTool.ofCodeInterpreterTool(
-                        CodeInterpreterTool.builder()
-                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                            .build()
-                    )
+                    CodeInterpreterTool.builder()
+                        .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
+                        .build()
                 )
                 .topP(1.0)
                 .build()

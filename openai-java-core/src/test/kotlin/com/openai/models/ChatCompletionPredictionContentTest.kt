@@ -11,7 +11,7 @@ class ChatCompletionPredictionContentTest {
     fun createChatCompletionPredictionContent() {
         val chatCompletionPredictionContent =
             ChatCompletionPredictionContent.builder()
-                .content(ChatCompletionPredictionContent.Content.ofTextContent("string"))
+                .content("string")
                 .type(ChatCompletionPredictionContent.Type.CONTENT)
                 .build()
         assertThat(chatCompletionPredictionContent).isNotNull

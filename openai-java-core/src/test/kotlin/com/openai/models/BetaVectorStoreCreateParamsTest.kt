@@ -12,11 +12,9 @@ class BetaVectorStoreCreateParamsTest {
     fun createBetaVectorStoreCreateParams() {
         BetaVectorStoreCreateParams.builder()
             .chunkingStrategy(
-                FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
-                    AutoFileChunkingStrategyParam.builder()
-                        .type(AutoFileChunkingStrategyParam.Type.AUTO)
-                        .build()
-                )
+                AutoFileChunkingStrategyParam.builder()
+                    .type(AutoFileChunkingStrategyParam.Type.AUTO)
+                    .build()
             )
             .expiresAfter(
                 BetaVectorStoreCreateParams.ExpiresAfter.builder()
@@ -35,11 +33,9 @@ class BetaVectorStoreCreateParamsTest {
         val params =
             BetaVectorStoreCreateParams.builder()
                 .chunkingStrategy(
-                    FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
-                        AutoFileChunkingStrategyParam.builder()
-                            .type(AutoFileChunkingStrategyParam.Type.AUTO)
-                            .build()
-                    )
+                    AutoFileChunkingStrategyParam.builder()
+                        .type(AutoFileChunkingStrategyParam.Type.AUTO)
+                        .build()
                 )
                 .expiresAfter(
                     BetaVectorStoreCreateParams.ExpiresAfter.builder()

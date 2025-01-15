@@ -12,7 +12,7 @@ class CompletionCreateParamsTest {
     fun createCompletionCreateParams() {
         CompletionCreateParams.builder()
             .model(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
-            .prompt(CompletionCreateParams.Prompt.ofString("This is a test."))
+            .prompt("This is a test.")
             .bestOf(0L)
             .echo(true)
             .frequencyPenalty(-2.0)
@@ -26,7 +26,7 @@ class CompletionCreateParamsTest {
             .n(1L)
             .presencePenalty(-2.0)
             .seed(-9007199254740991L)
-            .stop(CompletionCreateParams.Stop.ofString("\n"))
+            .stop("\n")
             .streamOptions(ChatCompletionStreamOptions.builder().includeUsage(true).build())
             .suffix("test.")
             .temperature(1.0)
@@ -40,7 +40,7 @@ class CompletionCreateParamsTest {
         val params =
             CompletionCreateParams.builder()
                 .model(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
-                .prompt(CompletionCreateParams.Prompt.ofString("This is a test."))
+                .prompt("This is a test.")
                 .bestOf(0L)
                 .echo(true)
                 .frequencyPenalty(-2.0)
@@ -54,7 +54,7 @@ class CompletionCreateParamsTest {
                 .n(1L)
                 .presencePenalty(-2.0)
                 .seed(-9007199254740991L)
-                .stop(CompletionCreateParams.Stop.ofString("\n"))
+                .stop("\n")
                 .streamOptions(ChatCompletionStreamOptions.builder().includeUsage(true).build())
                 .suffix("test.")
                 .temperature(1.0)
@@ -94,7 +94,7 @@ class CompletionCreateParamsTest {
         val params =
             CompletionCreateParams.builder()
                 .model(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
-                .prompt(CompletionCreateParams.Prompt.ofString("This is a test."))
+                .prompt("This is a test.")
                 .build()
         val body = params.getBody()
         assertThat(body).isNotNull

@@ -21,17 +21,11 @@ class AssistantTest {
                 .name("name")
                 .object_(Assistant.Object.ASSISTANT)
                 .addTool(
-                    AssistantTool.ofCodeInterpreterTool(
-                        CodeInterpreterTool.builder()
-                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                            .build()
-                    )
+                    CodeInterpreterTool.builder()
+                        .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
+                        .build()
                 )
-                .responseFormat(
-                    AssistantResponseFormatOption.ofBehavior(
-                        AssistantResponseFormatOption.Behavior.AUTO
-                    )
-                )
+                .responseFormat(AssistantResponseFormatOption.Behavior.AUTO)
                 .temperature(1.0)
                 .toolResources(
                     Assistant.ToolResources.builder()

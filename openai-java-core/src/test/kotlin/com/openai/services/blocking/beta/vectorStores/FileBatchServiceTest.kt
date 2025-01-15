@@ -9,7 +9,6 @@ import com.openai.models.BetaVectorStoreFileBatchCancelParams
 import com.openai.models.BetaVectorStoreFileBatchCreateParams
 import com.openai.models.BetaVectorStoreFileBatchListFilesParams
 import com.openai.models.BetaVectorStoreFileBatchRetrieveParams
-import com.openai.models.FileChunkingStrategyParam
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -30,11 +29,9 @@ class FileBatchServiceTest {
                     .vectorStoreId("vs_abc123")
                     .addFileId("string")
                     .chunkingStrategy(
-                        FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
-                            AutoFileChunkingStrategyParam.builder()
-                                .type(AutoFileChunkingStrategyParam.Type.AUTO)
-                                .build()
-                        )
+                        AutoFileChunkingStrategyParam.builder()
+                            .type(AutoFileChunkingStrategyParam.Type.AUTO)
+                            .build()
                     )
                     .build()
             )

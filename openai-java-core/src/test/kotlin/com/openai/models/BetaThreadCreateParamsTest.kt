@@ -13,18 +13,15 @@ class BetaThreadCreateParamsTest {
         BetaThreadCreateParams.builder()
             .addMessage(
                 BetaThreadCreateParams.Message.builder()
-                    .content(BetaThreadCreateParams.Message.Content.ofTextContent("string"))
+                    .content("string")
                     .role(BetaThreadCreateParams.Message.Role.USER)
                     .addAttachment(
                         BetaThreadCreateParams.Message.Attachment.builder()
                             .fileId("file_id")
                             .addTool(
-                                BetaThreadCreateParams.Message.Attachment.Tool
-                                    .ofCodeInterpreterTool(
-                                        CodeInterpreterTool.builder()
-                                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                            .build()
-                                    )
+                                CodeInterpreterTool.builder()
+                                    .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
+                                    .build()
                             )
                             .build()
                     )
@@ -46,11 +43,9 @@ class BetaThreadCreateParamsTest {
                                 BetaThreadCreateParams.ToolResources.FileSearch.VectorStore
                                     .builder()
                                     .chunkingStrategy(
-                                        FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
-                                            AutoFileChunkingStrategyParam.builder()
-                                                .type(AutoFileChunkingStrategyParam.Type.AUTO)
-                                                .build()
-                                        )
+                                        AutoFileChunkingStrategyParam.builder()
+                                            .type(AutoFileChunkingStrategyParam.Type.AUTO)
+                                            .build()
                                     )
                                     .addFileId("string")
                                     .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -69,18 +64,15 @@ class BetaThreadCreateParamsTest {
             BetaThreadCreateParams.builder()
                 .addMessage(
                     BetaThreadCreateParams.Message.builder()
-                        .content(BetaThreadCreateParams.Message.Content.ofTextContent("string"))
+                        .content("string")
                         .role(BetaThreadCreateParams.Message.Role.USER)
                         .addAttachment(
                             BetaThreadCreateParams.Message.Attachment.builder()
                                 .fileId("file_id")
                                 .addTool(
-                                    BetaThreadCreateParams.Message.Attachment.Tool
-                                        .ofCodeInterpreterTool(
-                                            CodeInterpreterTool.builder()
-                                                .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                                .build()
-                                        )
+                                    CodeInterpreterTool.builder()
+                                        .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
+                                        .build()
                                 )
                                 .build()
                         )
@@ -102,14 +94,9 @@ class BetaThreadCreateParamsTest {
                                     BetaThreadCreateParams.ToolResources.FileSearch.VectorStore
                                         .builder()
                                         .chunkingStrategy(
-                                            FileChunkingStrategyParam
-                                                .ofAutoFileChunkingStrategyParam(
-                                                    AutoFileChunkingStrategyParam.builder()
-                                                        .type(
-                                                            AutoFileChunkingStrategyParam.Type.AUTO
-                                                        )
-                                                        .build()
-                                                )
+                                            AutoFileChunkingStrategyParam.builder()
+                                                .type(AutoFileChunkingStrategyParam.Type.AUTO)
+                                                .build()
                                         )
                                         .addFileId("string")
                                         .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -126,18 +113,15 @@ class BetaThreadCreateParamsTest {
             .contains(
                 listOf(
                     BetaThreadCreateParams.Message.builder()
-                        .content(BetaThreadCreateParams.Message.Content.ofTextContent("string"))
+                        .content("string")
                         .role(BetaThreadCreateParams.Message.Role.USER)
                         .addAttachment(
                             BetaThreadCreateParams.Message.Attachment.builder()
                                 .fileId("file_id")
                                 .addTool(
-                                    BetaThreadCreateParams.Message.Attachment.Tool
-                                        .ofCodeInterpreterTool(
-                                            CodeInterpreterTool.builder()
-                                                .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                                .build()
-                                        )
+                                    CodeInterpreterTool.builder()
+                                        .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
+                                        .build()
                                 )
                                 .build()
                         )
@@ -161,11 +145,9 @@ class BetaThreadCreateParamsTest {
                                 BetaThreadCreateParams.ToolResources.FileSearch.VectorStore
                                     .builder()
                                     .chunkingStrategy(
-                                        FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
-                                            AutoFileChunkingStrategyParam.builder()
-                                                .type(AutoFileChunkingStrategyParam.Type.AUTO)
-                                                .build()
-                                        )
+                                        AutoFileChunkingStrategyParam.builder()
+                                            .type(AutoFileChunkingStrategyParam.Type.AUTO)
+                                            .build()
                                     )
                                     .addFileId("string")
                                     .metadata(JsonValue.from(mapOf<String, Any>()))
