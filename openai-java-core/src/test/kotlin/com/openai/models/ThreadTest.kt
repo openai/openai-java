@@ -20,12 +20,12 @@ class ThreadTest {
                     Thread.ToolResources.builder()
                         .codeInterpreter(
                             Thread.ToolResources.CodeInterpreter.builder()
-                                .fileIds(listOf("string"))
+                                .addFileId("string")
                                 .build()
                         )
                         .fileSearch(
                             Thread.ToolResources.FileSearch.builder()
-                                .vectorStoreIds(listOf("string"))
+                                .addVectorStoreId("string")
                                 .build()
                         )
                         .build()
@@ -40,14 +40,10 @@ class ThreadTest {
             .contains(
                 Thread.ToolResources.builder()
                     .codeInterpreter(
-                        Thread.ToolResources.CodeInterpreter.builder()
-                            .fileIds(listOf("string"))
-                            .build()
+                        Thread.ToolResources.CodeInterpreter.builder().addFileId("string").build()
                     )
                     .fileSearch(
-                        Thread.ToolResources.FileSearch.builder()
-                            .vectorStoreIds(listOf("string"))
-                            .build()
+                        Thread.ToolResources.FileSearch.builder().addVectorStoreId("string").build()
                     )
                     .build()
             )

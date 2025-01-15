@@ -12,13 +12,11 @@ class BetaThreadRunSubmitToolOutputsParamsTest {
         BetaThreadRunSubmitToolOutputsParams.builder()
             .threadId("thread_id")
             .runId("run_id")
-            .toolOutputs(
-                listOf(
-                    BetaThreadRunSubmitToolOutputsParams.ToolOutput.builder()
-                        .output("output")
-                        .toolCallId("tool_call_id")
-                        .build()
-                )
+            .addToolOutput(
+                BetaThreadRunSubmitToolOutputsParams.ToolOutput.builder()
+                    .output("output")
+                    .toolCallId("tool_call_id")
+                    .build()
             )
             .build()
     }
@@ -29,13 +27,11 @@ class BetaThreadRunSubmitToolOutputsParamsTest {
             BetaThreadRunSubmitToolOutputsParams.builder()
                 .threadId("thread_id")
                 .runId("run_id")
-                .toolOutputs(
-                    listOf(
-                        BetaThreadRunSubmitToolOutputsParams.ToolOutput.builder()
-                            .output("output")
-                            .toolCallId("tool_call_id")
-                            .build()
-                    )
+                .addToolOutput(
+                    BetaThreadRunSubmitToolOutputsParams.ToolOutput.builder()
+                        .output("output")
+                        .toolCallId("tool_call_id")
+                        .build()
                 )
                 .build()
         val body = params.getBody()
@@ -57,9 +53,7 @@ class BetaThreadRunSubmitToolOutputsParamsTest {
             BetaThreadRunSubmitToolOutputsParams.builder()
                 .threadId("thread_id")
                 .runId("run_id")
-                .toolOutputs(
-                    listOf(BetaThreadRunSubmitToolOutputsParams.ToolOutput.builder().build())
-                )
+                .addToolOutput(BetaThreadRunSubmitToolOutputsParams.ToolOutput.builder().build())
                 .build()
         val body = params.getBody()
         assertThat(body).isNotNull
@@ -73,9 +67,7 @@ class BetaThreadRunSubmitToolOutputsParamsTest {
             BetaThreadRunSubmitToolOutputsParams.builder()
                 .threadId("thread_id")
                 .runId("run_id")
-                .toolOutputs(
-                    listOf(BetaThreadRunSubmitToolOutputsParams.ToolOutput.builder().build())
-                )
+                .addToolOutput(BetaThreadRunSubmitToolOutputsParams.ToolOutput.builder().build())
                 .build()
         assertThat(params).isNotNull
         // path param "threadId"

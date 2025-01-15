@@ -61,7 +61,7 @@ class UploadServiceTest {
             uploadService.complete(
                 UploadCompleteParams.builder()
                     .uploadId("upload_abc123")
-                    .partIds(listOf("string"))
+                    .addPartId("string")
                     .md5("md5")
                     .build()
             )

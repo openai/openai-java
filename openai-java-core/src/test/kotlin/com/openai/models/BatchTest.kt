@@ -25,15 +25,13 @@ class BatchTest {
                 .errorFileId("error_file_id")
                 .errors(
                     Batch.Errors.builder()
-                        .data(
-                            listOf(
-                                BatchError.builder()
-                                    .code("code")
-                                    .line(0L)
-                                    .message("message")
-                                    .param("param")
-                                    .build()
-                            )
+                        .addData(
+                            BatchError.builder()
+                                .code("code")
+                                .line(0L)
+                                .message("message")
+                                .param("param")
+                                .build()
                         )
                         .object_("object")
                         .build()
@@ -64,15 +62,13 @@ class BatchTest {
         assertThat(batch.errors())
             .contains(
                 Batch.Errors.builder()
-                    .data(
-                        listOf(
-                            BatchError.builder()
-                                .code("code")
-                                .line(0L)
-                                .message("message")
-                                .param("param")
-                                .build()
-                        )
+                    .addData(
+                        BatchError.builder()
+                            .code("code")
+                            .line(0L)
+                            .message("message")
+                            .param("param")
+                            .build()
                     )
                     .object_("object")
                     .build()

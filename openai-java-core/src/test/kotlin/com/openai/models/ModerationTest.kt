@@ -30,30 +30,26 @@ class ModerationTest {
                 )
                 .categoryAppliedInputTypes(
                     Moderation.CategoryAppliedInputTypes.builder()
-                        .harassment(listOf(Moderation.CategoryAppliedInputTypes.Harassment.TEXT))
-                        .harassmentThreatening(
-                            listOf(Moderation.CategoryAppliedInputTypes.HarassmentThreatening.TEXT)
+                        .addHarassment(Moderation.CategoryAppliedInputTypes.Harassment.TEXT)
+                        .addHarassmentThreatening(
+                            Moderation.CategoryAppliedInputTypes.HarassmentThreatening.TEXT
                         )
-                        .hate(listOf(Moderation.CategoryAppliedInputTypes.Hate.TEXT))
-                        .hateThreatening(
-                            listOf(Moderation.CategoryAppliedInputTypes.HateThreatening.TEXT)
+                        .addHate(Moderation.CategoryAppliedInputTypes.Hate.TEXT)
+                        .addHateThreatening(
+                            Moderation.CategoryAppliedInputTypes.HateThreatening.TEXT
                         )
-                        .illicit(listOf(Moderation.CategoryAppliedInputTypes.Illicit.TEXT))
-                        .illicitViolent(
-                            listOf(Moderation.CategoryAppliedInputTypes.IllicitViolent.TEXT)
+                        .addIllicit(Moderation.CategoryAppliedInputTypes.Illicit.TEXT)
+                        .addIllicitViolent(Moderation.CategoryAppliedInputTypes.IllicitViolent.TEXT)
+                        .addSelfHarm(Moderation.CategoryAppliedInputTypes.SelfHarm.TEXT)
+                        .addSelfHarmInstruction(
+                            Moderation.CategoryAppliedInputTypes.SelfHarmInstruction.TEXT
                         )
-                        .selfHarm(listOf(Moderation.CategoryAppliedInputTypes.SelfHarm.TEXT))
-                        .selfHarmInstructions(
-                            listOf(Moderation.CategoryAppliedInputTypes.SelfHarmInstruction.TEXT)
-                        )
-                        .selfHarmIntent(
-                            listOf(Moderation.CategoryAppliedInputTypes.SelfHarmIntent.TEXT)
-                        )
-                        .sexual(listOf(Moderation.CategoryAppliedInputTypes.Sexual.TEXT))
-                        .sexualMinors(listOf(Moderation.CategoryAppliedInputTypes.SexualMinor.TEXT))
-                        .violence(listOf(Moderation.CategoryAppliedInputTypes.Violence.TEXT))
-                        .violenceGraphic(
-                            listOf(Moderation.CategoryAppliedInputTypes.ViolenceGraphic.TEXT)
+                        .addSelfHarmIntent(Moderation.CategoryAppliedInputTypes.SelfHarmIntent.TEXT)
+                        .addSexual(Moderation.CategoryAppliedInputTypes.Sexual.TEXT)
+                        .addSexualMinor(Moderation.CategoryAppliedInputTypes.SexualMinor.TEXT)
+                        .addViolence(Moderation.CategoryAppliedInputTypes.Violence.TEXT)
+                        .addViolenceGraphic(
+                            Moderation.CategoryAppliedInputTypes.ViolenceGraphic.TEXT
                         )
                         .build()
                 )
@@ -98,31 +94,23 @@ class ModerationTest {
         assertThat(moderation.categoryAppliedInputTypes())
             .isEqualTo(
                 Moderation.CategoryAppliedInputTypes.builder()
-                    .harassment(listOf(Moderation.CategoryAppliedInputTypes.Harassment.TEXT))
-                    .harassmentThreatening(
-                        listOf(Moderation.CategoryAppliedInputTypes.HarassmentThreatening.TEXT)
+                    .addHarassment(Moderation.CategoryAppliedInputTypes.Harassment.TEXT)
+                    .addHarassmentThreatening(
+                        Moderation.CategoryAppliedInputTypes.HarassmentThreatening.TEXT
                     )
-                    .hate(listOf(Moderation.CategoryAppliedInputTypes.Hate.TEXT))
-                    .hateThreatening(
-                        listOf(Moderation.CategoryAppliedInputTypes.HateThreatening.TEXT)
+                    .addHate(Moderation.CategoryAppliedInputTypes.Hate.TEXT)
+                    .addHateThreatening(Moderation.CategoryAppliedInputTypes.HateThreatening.TEXT)
+                    .addIllicit(Moderation.CategoryAppliedInputTypes.Illicit.TEXT)
+                    .addIllicitViolent(Moderation.CategoryAppliedInputTypes.IllicitViolent.TEXT)
+                    .addSelfHarm(Moderation.CategoryAppliedInputTypes.SelfHarm.TEXT)
+                    .addSelfHarmInstruction(
+                        Moderation.CategoryAppliedInputTypes.SelfHarmInstruction.TEXT
                     )
-                    .illicit(listOf(Moderation.CategoryAppliedInputTypes.Illicit.TEXT))
-                    .illicitViolent(
-                        listOf(Moderation.CategoryAppliedInputTypes.IllicitViolent.TEXT)
-                    )
-                    .selfHarm(listOf(Moderation.CategoryAppliedInputTypes.SelfHarm.TEXT))
-                    .selfHarmInstructions(
-                        listOf(Moderation.CategoryAppliedInputTypes.SelfHarmInstruction.TEXT)
-                    )
-                    .selfHarmIntent(
-                        listOf(Moderation.CategoryAppliedInputTypes.SelfHarmIntent.TEXT)
-                    )
-                    .sexual(listOf(Moderation.CategoryAppliedInputTypes.Sexual.TEXT))
-                    .sexualMinors(listOf(Moderation.CategoryAppliedInputTypes.SexualMinor.TEXT))
-                    .violence(listOf(Moderation.CategoryAppliedInputTypes.Violence.TEXT))
-                    .violenceGraphic(
-                        listOf(Moderation.CategoryAppliedInputTypes.ViolenceGraphic.TEXT)
-                    )
+                    .addSelfHarmIntent(Moderation.CategoryAppliedInputTypes.SelfHarmIntent.TEXT)
+                    .addSexual(Moderation.CategoryAppliedInputTypes.Sexual.TEXT)
+                    .addSexualMinor(Moderation.CategoryAppliedInputTypes.SexualMinor.TEXT)
+                    .addViolence(Moderation.CategoryAppliedInputTypes.Violence.TEXT)
+                    .addViolenceGraphic(Moderation.CategoryAppliedInputTypes.ViolenceGraphic.TEXT)
                     .build()
             )
         assertThat(moderation.categoryScores())

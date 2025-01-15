@@ -52,20 +52,18 @@ class JobServiceTest {
                             )
                             .build()
                     )
-                    .integrations(
-                        listOf(
-                            FineTuningJobCreateParams.Integration.builder()
-                                .type(FineTuningJobCreateParams.Integration.Type.WANDB)
-                                .wandb(
-                                    FineTuningJobCreateParams.Integration.Wandb.builder()
-                                        .project("my-wandb-project")
-                                        .entity("entity")
-                                        .name("name")
-                                        .tags(listOf("custom-tag"))
-                                        .build()
-                                )
-                                .build()
-                        )
+                    .addIntegration(
+                        FineTuningJobCreateParams.Integration.builder()
+                            .type(FineTuningJobCreateParams.Integration.Type.WANDB)
+                            .wandb(
+                                FineTuningJobCreateParams.Integration.Wandb.builder()
+                                    .project("my-wandb-project")
+                                    .entity("entity")
+                                    .name("name")
+                                    .addTag("custom-tag")
+                                    .build()
+                            )
+                            .build()
                     )
                     .method(
                         FineTuningJobCreateParams.Method.builder()

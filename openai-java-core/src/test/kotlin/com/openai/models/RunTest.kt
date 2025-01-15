@@ -41,19 +41,17 @@ class RunTest {
                     Run.RequiredAction.builder()
                         .submitToolOutputs(
                             Run.RequiredAction.SubmitToolOutputs.builder()
-                                .toolCalls(
-                                    listOf(
-                                        RequiredActionFunctionToolCall.builder()
-                                            .id("id")
-                                            .function(
-                                                RequiredActionFunctionToolCall.Function.builder()
-                                                    .arguments("arguments")
-                                                    .name("name")
-                                                    .build()
-                                            )
-                                            .type(RequiredActionFunctionToolCall.Type.FUNCTION)
-                                            .build()
-                                    )
+                                .addToolCall(
+                                    RequiredActionFunctionToolCall.builder()
+                                        .id("id")
+                                        .function(
+                                            RequiredActionFunctionToolCall.Function.builder()
+                                                .arguments("arguments")
+                                                .name("name")
+                                                .build()
+                                        )
+                                        .type(RequiredActionFunctionToolCall.Type.FUNCTION)
+                                        .build()
                                 )
                                 .build()
                         )
@@ -71,13 +69,11 @@ class RunTest {
                 .toolChoice(
                     AssistantToolChoiceOption.ofBehavior(AssistantToolChoiceOption.Behavior.NONE)
                 )
-                .tools(
-                    listOf(
-                        AssistantTool.ofCodeInterpreterTool(
-                            CodeInterpreterTool.builder()
-                                .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                .build()
-                        )
+                .addTool(
+                    AssistantTool.ofCodeInterpreterTool(
+                        CodeInterpreterTool.builder()
+                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
+                            .build()
                     )
                 )
                 .truncationStrategy(
@@ -129,19 +125,17 @@ class RunTest {
                 Run.RequiredAction.builder()
                     .submitToolOutputs(
                         Run.RequiredAction.SubmitToolOutputs.builder()
-                            .toolCalls(
-                                listOf(
-                                    RequiredActionFunctionToolCall.builder()
-                                        .id("id")
-                                        .function(
-                                            RequiredActionFunctionToolCall.Function.builder()
-                                                .arguments("arguments")
-                                                .name("name")
-                                                .build()
-                                        )
-                                        .type(RequiredActionFunctionToolCall.Type.FUNCTION)
-                                        .build()
-                                )
+                            .addToolCall(
+                                RequiredActionFunctionToolCall.builder()
+                                    .id("id")
+                                    .function(
+                                        RequiredActionFunctionToolCall.Function.builder()
+                                            .arguments("arguments")
+                                            .name("name")
+                                            .build()
+                                    )
+                                    .type(RequiredActionFunctionToolCall.Type.FUNCTION)
+                                    .build()
                             )
                             .build()
                     )

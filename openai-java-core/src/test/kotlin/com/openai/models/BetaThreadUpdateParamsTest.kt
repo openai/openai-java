@@ -17,12 +17,12 @@ class BetaThreadUpdateParamsTest {
                 BetaThreadUpdateParams.ToolResources.builder()
                     .codeInterpreter(
                         BetaThreadUpdateParams.ToolResources.CodeInterpreter.builder()
-                            .fileIds(listOf("string"))
+                            .addFileId("string")
                             .build()
                     )
                     .fileSearch(
                         BetaThreadUpdateParams.ToolResources.FileSearch.builder()
-                            .vectorStoreIds(listOf("string"))
+                            .addVectorStoreId("string")
                             .build()
                     )
                     .build()
@@ -40,12 +40,12 @@ class BetaThreadUpdateParamsTest {
                     BetaThreadUpdateParams.ToolResources.builder()
                         .codeInterpreter(
                             BetaThreadUpdateParams.ToolResources.CodeInterpreter.builder()
-                                .fileIds(listOf("string"))
+                                .addFileId("string")
                                 .build()
                         )
                         .fileSearch(
                             BetaThreadUpdateParams.ToolResources.FileSearch.builder()
-                                .vectorStoreIds(listOf("string"))
+                                .addVectorStoreId("string")
                                 .build()
                         )
                         .build()
@@ -59,12 +59,12 @@ class BetaThreadUpdateParamsTest {
                 BetaThreadUpdateParams.ToolResources.builder()
                     .codeInterpreter(
                         BetaThreadUpdateParams.ToolResources.CodeInterpreter.builder()
-                            .fileIds(listOf("string"))
+                            .addFileId("string")
                             .build()
                     )
                     .fileSearch(
                         BetaThreadUpdateParams.ToolResources.FileSearch.builder()
-                            .vectorStoreIds(listOf("string"))
+                            .addVectorStoreId("string")
                             .build()
                     )
                     .build()

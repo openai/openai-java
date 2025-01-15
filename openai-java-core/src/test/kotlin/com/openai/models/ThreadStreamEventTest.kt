@@ -22,12 +22,12 @@ class ThreadStreamEventTest {
                             Thread.ToolResources.builder()
                                 .codeInterpreter(
                                     Thread.ToolResources.CodeInterpreter.builder()
-                                        .fileIds(listOf("string"))
+                                        .addFileId("string")
                                         .build()
                                 )
                                 .fileSearch(
                                     Thread.ToolResources.FileSearch.builder()
-                                        .vectorStoreIds(listOf("string"))
+                                        .addVectorStoreId("string")
                                         .build()
                                 )
                                 .build()
@@ -49,12 +49,12 @@ class ThreadStreamEventTest {
                         Thread.ToolResources.builder()
                             .codeInterpreter(
                                 Thread.ToolResources.CodeInterpreter.builder()
-                                    .fileIds(listOf("string"))
+                                    .addFileId("string")
                                     .build()
                             )
                             .fileSearch(
                                 Thread.ToolResources.FileSearch.builder()
-                                    .vectorStoreIds(listOf("string"))
+                                    .addVectorStoreId("string")
                                     .build()
                             )
                             .build()

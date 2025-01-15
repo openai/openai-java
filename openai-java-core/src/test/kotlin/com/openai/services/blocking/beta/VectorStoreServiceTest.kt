@@ -42,7 +42,7 @@ class VectorStoreServiceTest {
                             .days(1L)
                             .build()
                     )
-                    .fileIds(listOf("string"))
+                    .addFileId("string")
                     .metadata(JsonValue.from(mapOf<String, Any>()))
                     .name("name")
                     .build()

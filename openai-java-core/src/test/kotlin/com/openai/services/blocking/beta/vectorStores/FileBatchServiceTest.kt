@@ -28,7 +28,7 @@ class FileBatchServiceTest {
             fileBatchService.create(
                 BetaVectorStoreFileBatchCreateParams.builder()
                     .vectorStoreId("vs_abc123")
-                    .fileIds(listOf("string"))
+                    .addFileId("string")
                     .chunkingStrategy(
                         FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
                             AutoFileChunkingStrategyParam.builder()
