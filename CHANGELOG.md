@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.11.4 (2025-01-16)
+
+Full Changelog: [v0.11.3...v0.11.4](https://github.com/openai/openai-java/compare/v0.11.3...v0.11.4)
+
+### Chores
+
+* **internal:** add and tweak check functions ([#117](https://github.com/openai/openai-java/issues/117)) ([627cb56](https://github.com/openai/openai-java/commit/627cb568af9ff28a570de4d9ebae04a2ba5c46d7))
+* **internal:** extract a `checkRequired` function ([#113](https://github.com/openai/openai-java/issues/113)) ([b63b2b1](https://github.com/openai/openai-java/commit/b63b2b159bd6c9d01d22a64980a13bfcc3f64863))
+* **internal:** fix tests ([61ada05](https://github.com/openai/openai-java/commit/61ada05fe8d4a3509fc59c6626611e5dbc308aff))
+* **internal:** remove space ([#125](https://github.com/openai/openai-java/issues/125)) ([27bfcec](https://github.com/openai/openai-java/commit/27bfcec6deccf7d000a305e630b4eda012154222))
+* **internal:** remove unused gradle task ([#121](https://github.com/openai/openai-java/issues/121)) ([0b4e59a](https://github.com/openai/openai-java/commit/0b4e59abac5343abe8cda697864fe8afa9fe1774))
+* **internal:** tweak client options nullability handling ([627cb56](https://github.com/openai/openai-java/commit/627cb568af9ff28a570de4d9ebae04a2ba5c46d7))
+* simplify examples involving lists ([#118](https://github.com/openai/openai-java/issues/118)) ([557c071](https://github.com/openai/openai-java/commit/557c0713590c7e0556dd68e77e4179fde8923c86))
+* simplify examples involving unions ([#119](https://github.com/openai/openai-java/issues/119)) ([7c7795c](https://github.com/openai/openai-java/commit/7c7795c852c09bca6ab23b22435fd7846730e95c))
+* **types:** rename vector store chunking strategy ([#116](https://github.com/openai/openai-java/issues/116)) ([387935f](https://github.com/openai/openai-java/commit/387935fa16873ae252522aa926d3ed701186a292))
+
+
+### Documentation
+
+* don't mention a non-existent SDK ([#120](https://github.com/openai/openai-java/issues/120)) ([23eb658](https://github.com/openai/openai-java/commit/23eb6584b4ba7dfd8e5a9147d815ab01e364726e))
+
 ## 0.11.3 (2025-01-14)
 
 Full Changelog: [v0.11.2...v0.11.3](https://github.com/openai/openai-java/compare/v0.11.2...v0.11.3)
