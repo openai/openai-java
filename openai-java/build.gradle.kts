@@ -19,7 +19,7 @@ tasks.named("dokkaJavadoc").configure {
     val outputDirectory = project.layout.buildDirectory.dir("dokka/javadoc")
     doLast {
         copy {
-            from( dokkaJavadocCollector.outputs.files)
+            from(dokkaJavadocCollector.outputs.files)
             into(outputDirectory)
             duplicatesStrategy = DuplicatesStrategy.INCLUDE
         }
