@@ -230,8 +230,8 @@ private constructor(
         }
 
         fun build(): ClientOptions {
-            checkRequired("httpClient", httpClient)
-            checkRequired("credential", credential)
+            val httpClient = checkRequired("httpClient", httpClient)
+            val credential = checkRequired("credential", credential)
 
             val headers = Headers.builder()
             val queryParams = QueryParams.builder()
@@ -245,12 +245,12 @@ private constructor(
             organization?.let { headers.put("OpenAI-Organization", it) }
             project?.let { headers.put("OpenAI-Project", it) }
 
-            when (val currentCredential = credential) {
+            when (credential) {
                 is AzureApiKeyCredential -> {
-                    headers.put("api-key", currentCredential.apiKey())
+                    headers.put("api-key", credential.apiKey())
                 }
                 is BearerTokenCredential -> {
-                    headers.put("Authorization", "Bearer ${currentCredential.token()}")
+                    headers.put("Authorization", "Bearer ${credential.token()}")
                 }
                 else -> {
                     throw IllegalArgumentException("Invalid credential type")
@@ -268,10 +268,10 @@ private constructor(
             queryParams.replaceAll(this.queryParams.build())
 
             return ClientOptions(
-                httpClient!!,
+                httpClient,
                 PhantomReachableClosingHttpClient(
                     RetryingHttpClient.builder()
-                        .httpClient(httpClient!!)
+                        .httpClient(httpClient)
                         .clock(clock)
                         .maxRetries(maxRetries)
                         .build()
@@ -298,7 +298,7 @@ private constructor(
                 queryParams.build(),
                 responseValidation,
                 maxRetries,
-                credential!!,
+                credential,
                 organization,
                 project,
             )
