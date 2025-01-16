@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.11.5 (2025-01-16)
+
+Full Changelog: [v0.11.4...v0.11.5](https://github.com/openai/openai-java/compare/v0.11.4...v0.11.5)
+
+### Bug Fixes
+
+* **internal:** publishing error ([73e22ea](https://github.com/openai/openai-java/commit/73e22eae2e905919172ab4d7e3b18b44d435205e))
+
 ## 0.11.4 (2025-01-16)
 
 Full Changelog: [v0.11.3...v0.11.4](https://github.com/openai/openai-java/compare/v0.11.3...v0.11.4)
