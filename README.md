@@ -10,7 +10,7 @@
 <!-- x-release-please-start-version -->
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/0.11.7)
-[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/0.11.7/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/0.11.6)
+[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/0.11.7/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/0.11.7)
 
 <!-- x-release-please-end -->
 
