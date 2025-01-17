@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.11.7 (2025-01-17)
+
+Full Changelog: [v0.11.6...v0.11.7](https://github.com/openai/openai-java/compare/v0.11.6...v0.11.7)
+
+### Chores
+
+* **internal:** upgrade kotlin compiler and gradle ([#132](https://github.com/openai/openai-java/issues/132)) ([61a0b0d](https://github.com/openai/openai-java/commit/61a0b0debfd50646fc9fe310b5decc2e891f48d0))
+
+
+### Documentation
+
+* add javadoc.io badge ([#135](https://github.com/openai/openai-java/issues/135)) ([e905ce5](https://github.com/openai/openai-java/commit/e905ce509aabe1b9db9519b6ff77a79fc95434e1))
+* add more documentation ([#134](https://github.com/openai/openai-java/issues/134)) ([893eafc](https://github.com/openai/openai-java/commit/893eafcb367b4ea96331c6deccb71c865eb67d4b))
+
 ## 0.11.6 (2025-01-17)
 
 Full Changelog: [v0.11.5...v0.11.6](https://github.com/openai/openai-java/compare/v0.11.5...v0.11.6)
