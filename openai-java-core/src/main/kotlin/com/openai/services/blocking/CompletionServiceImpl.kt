@@ -9,7 +9,6 @@ import com.openai.core.JsonValue
 import com.openai.core.RequestOptions
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
-import com.openai.core.handlers.map
 import com.openai.core.handlers.mapJson
 import com.openai.core.handlers.sseHandler
 import com.openai.core.handlers.withErrorHandler
@@ -17,6 +16,7 @@ import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.StreamResponse
+import com.openai.core.http.map
 import com.openai.core.json
 import com.openai.errors.OpenAIError
 import com.openai.models.Completion

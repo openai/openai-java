@@ -8,8 +8,8 @@ import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.SseMessage
 import com.openai.core.http.StreamResponse
+import com.openai.core.http.map
 import com.openai.errors.OpenAIException
-import java.util.stream.Stream
 import kotlin.jvm.optionals.getOrNull
 
 @JvmSynthetic
@@ -128,12 +128,4 @@ internal inline fun <reified T> Handler<StreamResponse<SseMessage>>.mapJson():
                     throw OpenAIException("Error reading response", e)
                 }
             }
-    }
-
-@JvmSynthetic
-internal fun <T, R> StreamResponse<T>.map(transform: (T) -> R): StreamResponse<R> =
-    object : StreamResponse<R> {
-        override fun stream(): Stream<R> = this@map.stream().map(transform)
-
-        override fun close() = this@map.close()
     }
