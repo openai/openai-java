@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.11.8 (2025-01-17)
+
+Full Changelog: [v0.11.7...v0.11.8](https://github.com/openai/openai-java/compare/v0.11.7...v0.11.8)
+
+### Documentation
+
+* fix javadoc.io link ([ba07770](https://github.com/openai/openai-java/commit/ba07770369a44a7487a7a7fae9e85da6600204ce))
+* fix javadoc.io link again ([0d2b8ce](https://github.com/openai/openai-java/commit/0d2b8ce0894ae592047e6014ff82876060152ee7))
+
 ## 0.11.7 (2025-01-17)
 
 Full Changelog: [v0.11.6...v0.11.7](https://github.com/openai/openai-java/compare/v0.11.6...v0.11.7)
