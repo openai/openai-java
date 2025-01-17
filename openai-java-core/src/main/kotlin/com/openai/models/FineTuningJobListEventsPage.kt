@@ -19,6 +19,7 @@ import java.util.Optional
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
 
+/** Get status updates for a fine-tuning job. */
 class FineTuningJobListEventsPage
 private constructor(
     private val jobsService: JobService,

@@ -546,10 +546,13 @@ constructor(
 
         interface Visitor<out T> {
 
+            /** A string of text to classify for moderation. */
             fun visitString(string: String): T
 
+            /** An array of strings to classify for moderation. */
             fun visitStrings(strings: List<String>): T
 
+            /** An array of multi-modal inputs to the moderation model. */
             fun visitModerationMultiModalArray(
                 moderationMultiModalArray: List<ModerationMultiModalInput>
             ): T

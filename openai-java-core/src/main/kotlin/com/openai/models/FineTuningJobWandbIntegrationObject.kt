@@ -141,6 +141,7 @@ private constructor(
             )
     }
 
+    /** The type of the integration being enabled for the fine-tuning job */
     class Type
     @JsonCreator
     private constructor(

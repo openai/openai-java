@@ -141,6 +141,7 @@ private constructor(
 
     interface Visitor<out T> {
 
+        /** Details of the Code Interpreter tool call the run step was involved in. */
         fun visitCodeInterpreterToolCallDelta(
             codeInterpreterToolCallDelta: CodeInterpreterToolCallDelta
         ): T

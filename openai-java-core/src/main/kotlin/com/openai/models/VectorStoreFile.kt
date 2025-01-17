@@ -423,6 +423,7 @@ private constructor(
                 )
         }
 
+        /** One of `server_error` or `rate_limit_exceeded`. */
         class Code
         @JsonCreator
         private constructor(
@@ -504,6 +505,7 @@ private constructor(
             "LastError{code=$code, message=$message, additionalProperties=$additionalProperties}"
     }
 
+    /** The object type, which is always `vector_store.file`. */
     class Object
     @JsonCreator
     private constructor(
@@ -555,6 +557,11 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /**
+     * The status of the vector store file, which can be either `in_progress`, `completed`,
+     * `cancelled`, or `failed`. The status `completed` indicates that the vector store file is
+     * ready for use.
+     */
     class Status
     @JsonCreator
     private constructor(

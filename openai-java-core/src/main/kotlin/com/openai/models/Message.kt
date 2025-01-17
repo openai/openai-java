@@ -874,6 +874,7 @@ private constructor(
                         )
                 }
 
+                /** The type of tool being defined: `file_search` */
                 class Type
                 @JsonCreator
                 private constructor(
@@ -1046,6 +1047,7 @@ private constructor(
                 )
         }
 
+        /** The reason the message is incomplete. */
         class Reason
         @JsonCreator
         private constructor(
@@ -1139,6 +1141,7 @@ private constructor(
             "IncompleteDetails{reason=$reason, additionalProperties=$additionalProperties}"
     }
 
+    /** The object type, which is always `thread.message`. */
     class Object
     @JsonCreator
     private constructor(
@@ -1190,6 +1193,7 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /** The entity that produced the message. One of `user` or `assistant`. */
     class Role
     @JsonCreator
     private constructor(
@@ -1247,6 +1251,9 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /**
+     * The status of the message, which can be either `in_progress`, `incomplete`, or `completed`.
+     */
     class Status
     @JsonCreator
     private constructor(

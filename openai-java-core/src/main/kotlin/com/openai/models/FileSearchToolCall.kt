@@ -392,6 +392,7 @@ private constructor(
                     )
             }
 
+            /** The ranker used for the file search. */
             class Ranker
             @JsonCreator
             private constructor(
@@ -752,6 +753,7 @@ private constructor(
                         )
                 }
 
+                /** The type of the content. */
                 class Type
                 @JsonCreator
                 private constructor(
@@ -858,6 +860,9 @@ private constructor(
             "FileSearch{rankingOptions=$rankingOptions, results=$results, additionalProperties=$additionalProperties}"
     }
 
+    /**
+     * The type of tool call. This is always going to be `file_search` for this type of tool call.
+     */
     class Type
     @JsonCreator
     private constructor(

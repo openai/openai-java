@@ -200,6 +200,7 @@ private constructor(
             )
     }
 
+    /** The log level of the event. */
     class Level
     @JsonCreator
     private constructor(
@@ -263,6 +264,7 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /** The object type, which is always "fine_tuning.job.event". */
     class Object
     @JsonCreator
     private constructor(
@@ -314,6 +316,7 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /** The type of event. */
     class Type
     @JsonCreator
     private constructor(

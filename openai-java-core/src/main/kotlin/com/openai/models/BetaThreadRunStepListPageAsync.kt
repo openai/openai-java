@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.function.Predicate
 
+/** Returns a list of run steps belonging to a run. */
 class BetaThreadRunStepListPageAsync
 private constructor(
     private val stepsService: StepServiceAsync,

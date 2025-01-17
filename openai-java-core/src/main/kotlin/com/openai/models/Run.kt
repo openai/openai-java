@@ -1256,6 +1256,10 @@ private constructor(
                 IncompleteDetails(reason, additionalProperties.toImmutable())
         }
 
+        /**
+         * The reason why the run is incomplete. This will point to which specific token limit was
+         * reached over the course of the run.
+         */
         class Reason
         @JsonCreator
         private constructor(
@@ -1431,6 +1435,7 @@ private constructor(
                 )
         }
 
+        /** One of `server_error`, `rate_limit_exceeded`, or `invalid_prompt`. */
         class Code
         @JsonCreator
         private constructor(
@@ -1512,6 +1517,7 @@ private constructor(
             "LastError{code=$code, message=$message, additionalProperties=$additionalProperties}"
     }
 
+    /** The object type, which is always `thread.run`. */
     class Object
     @JsonCreator
     private constructor(
@@ -1797,6 +1803,7 @@ private constructor(
                 "SubmitToolOutputs{toolCalls=$toolCalls, additionalProperties=$additionalProperties}"
         }
 
+        /** For now, this is always `submit_tool_outputs`. */
         class Type
         @JsonCreator
         private constructor(
@@ -2020,6 +2027,12 @@ private constructor(
                 )
         }
 
+        /**
+         * The truncation strategy to use for the thread. The default is `auto`. If set to
+         * `last_messages`, the thread will be truncated to the n most recent messages in the
+         * thread. When set to `auto`, messages in the middle of the thread will be dropped to fit
+         * the context length of the model, `max_prompt_tokens`.
+         */
         class Type
         @JsonCreator
         private constructor(

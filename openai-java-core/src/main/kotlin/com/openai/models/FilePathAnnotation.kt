@@ -260,6 +260,7 @@ private constructor(
             "FilePath{fileId=$fileId, additionalProperties=$additionalProperties}"
     }
 
+    /** Always `file_path`. */
     class Type
     @JsonCreator
     private constructor(

@@ -706,6 +706,7 @@ private constructor(
             )
     }
 
+    /** The object type, which is always `assistant`. */
     class Object
     @JsonCreator
     private constructor(

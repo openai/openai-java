@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.function.Predicate
 
+/** Get status updates for a fine-tuning job. */
 class FineTuningJobListEventsPageAsync
 private constructor(
     private val jobsService: JobServiceAsync,

@@ -113,6 +113,7 @@ private constructor(
             )
     }
 
+    /** The type of the content part. */
     class Type
     @JsonCreator
     private constructor(

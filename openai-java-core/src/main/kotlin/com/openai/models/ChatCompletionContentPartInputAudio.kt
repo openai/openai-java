@@ -219,6 +219,7 @@ private constructor(
                 )
         }
 
+        /** The format of the encoded audio data. Currently supports "wav" and "mp3". */
         class Format
         @JsonCreator
         private constructor(
@@ -294,6 +295,7 @@ private constructor(
             "InputAudio{data=$data, format=$format, additionalProperties=$additionalProperties}"
     }
 
+    /** The type of the content part. Always `input_audio`. */
     class Type
     @JsonCreator
     private constructor(

@@ -551,6 +551,9 @@ constructor(
             )
     }
 
+    /**
+     * The time frame within which the batch should be processed. Currently only `24h` is supported.
+     */
     class CompletionWindow
     @JsonCreator
     private constructor(
@@ -602,6 +605,11 @@ constructor(
         override fun toString() = value.toString()
     }
 
+    /**
+     * The endpoint to be used for all requests in the batch. Currently `/v1/chat/completions`,
+     * `/v1/embeddings`, and `/v1/completions` are supported. Note that `/v1/embeddings` batches are
+     * also restricted to a maximum of 50,000 embedding inputs across all requests in the batch.
+     */
     class Endpoint
     @JsonCreator
     private constructor(

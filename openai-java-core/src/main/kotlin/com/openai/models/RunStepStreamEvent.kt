@@ -328,18 +328,51 @@ private constructor(
 
     interface Visitor<out T> {
 
+        /**
+         * Occurs when a
+         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
+         * created.
+         */
         fun visitThreadRunStepCreated(threadRunStepCreated: ThreadRunStepCreated): T
 
+        /**
+         * Occurs when a
+         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) moves to
+         * an `in_progress` state.
+         */
         fun visitThreadRunStepInProgress(threadRunStepInProgress: ThreadRunStepInProgress): T
 
+        /**
+         * Occurs when parts of a
+         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) are
+         * being streamed.
+         */
         fun visitThreadRunStepDelta(threadRunStepDelta: ThreadRunStepDelta): T
 
+        /**
+         * Occurs when a
+         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
+         * completed.
+         */
         fun visitThreadRunStepCompleted(threadRunStepCompleted: ThreadRunStepCompleted): T
 
+        /**
+         * Occurs when a
+         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) fails.
+         */
         fun visitThreadRunStepFailed(threadRunStepFailed: ThreadRunStepFailed): T
 
+        /**
+         * Occurs when a
+         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
+         * cancelled.
+         */
         fun visitThreadRunStepCancelled(threadRunStepCancelled: ThreadRunStepCancelled): T
 
+        /**
+         * Occurs when a
+         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) expires.
+         */
         fun visitThreadRunStepExpired(threadRunStepExpired: ThreadRunStepExpired): T
 
         fun unknown(json: JsonValue?): T {

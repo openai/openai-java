@@ -119,6 +119,7 @@ private constructor(
             )
     }
 
+    /** Always `static`. */
     class Type
     @JsonCreator
     private constructor(

@@ -469,6 +469,13 @@ private constructor(
                 )
         }
 
+        /**
+         * The reason the model stopped generating tokens. This will be `stop` if the model hit a
+         * natural stop point or a provided stop sequence, `length` if the maximum number of tokens
+         * specified in the request was reached, `content_filter` if content was omitted due to a
+         * flag from our content filters, `tool_calls` if the model called a tool, or
+         * `function_call` (deprecated) if the model called a function.
+         */
         class FinishReason
         @JsonCreator
         private constructor(
@@ -733,6 +740,7 @@ private constructor(
             "Choice{finishReason=$finishReason, index=$index, logprobs=$logprobs, message=$message, additionalProperties=$additionalProperties}"
     }
 
+    /** The object type, which is always `chat.completion`. */
     class Object
     @JsonCreator
     private constructor(
@@ -784,6 +792,10 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /**
+     * The service tier used for processing the request. This field is only included if the
+     * `service_tier` parameter is specified in the request.
+     */
     class ServiceTier
     @JsonCreator
     private constructor(

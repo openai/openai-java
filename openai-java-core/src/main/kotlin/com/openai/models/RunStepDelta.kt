@@ -220,8 +220,10 @@ private constructor(
 
         interface Visitor<out T> {
 
+            /** Details of the message creation by the run step. */
             fun visitRunStepDeltaMessageDelta(runStepDeltaMessageDelta: RunStepDeltaMessageDelta): T
 
+            /** Details of the tool call. */
             fun visitToolCallDeltaObject(toolCallDeltaObject: ToolCallDeltaObject): T
 
             fun unknown(json: JsonValue?): T {

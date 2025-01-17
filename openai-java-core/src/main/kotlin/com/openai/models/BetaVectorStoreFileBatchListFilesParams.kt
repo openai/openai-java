@@ -308,6 +308,7 @@ constructor(
             )
     }
 
+    /** Filter by file status. One of `in_progress`, `completed`, `failed`, `cancelled`. */
     class Filter
     @JsonCreator
     private constructor(
@@ -377,6 +378,10 @@ constructor(
         override fun toString() = value.toString()
     }
 
+    /**
+     * Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and `desc`
+     * for descending order.
+     */
     class Order
     @JsonCreator
     private constructor(

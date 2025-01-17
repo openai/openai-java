@@ -19,6 +19,7 @@ import java.util.Optional
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
 
+/** List checkpoints for a fine-tuning job. */
 class FineTuningJobCheckpointListPage
 private constructor(
     private val checkpointsService: CheckpointService,

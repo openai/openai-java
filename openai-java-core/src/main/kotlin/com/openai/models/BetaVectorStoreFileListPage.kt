@@ -19,6 +19,7 @@ import java.util.Optional
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
 
+/** Returns a list of vector store files. */
 class BetaVectorStoreFileListPage
 private constructor(
     private val filesService: FileService,

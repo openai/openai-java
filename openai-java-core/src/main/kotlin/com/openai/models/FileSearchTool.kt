@@ -120,6 +120,7 @@ private constructor(
             )
     }
 
+    /** The type of tool being defined: `file_search` */
     class Type
     @JsonCreator
     private constructor(
@@ -485,6 +486,9 @@ private constructor(
                     )
             }
 
+            /**
+             * The ranker to use for the file search. If not specified will use the `auto` ranker.
+             */
             class Ranker
             @JsonCreator
             private constructor(

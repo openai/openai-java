@@ -19,6 +19,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
+@Deprecated("deprecated")
 @NoAutoDetect
 class ChatCompletionFunctionMessageParam
 @JsonCreator
@@ -139,6 +140,7 @@ private constructor(
             )
     }
 
+    /** The role of the messages author, in this case `function`. */
     class Role
     @JsonCreator
     private constructor(

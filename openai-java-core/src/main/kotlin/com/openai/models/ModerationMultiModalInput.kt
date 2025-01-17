@@ -117,8 +117,10 @@ private constructor(
 
     interface Visitor<out T> {
 
+        /** An object describing an image to classify. */
         fun visitModerationImageUrlInput(moderationImageUrlInput: ModerationImageUrlInput): T
 
+        /** An object describing text to classify. */
         fun visitModerationTextInput(moderationTextInput: ModerationTextInput): T
 
         fun unknown(json: JsonValue?): T {

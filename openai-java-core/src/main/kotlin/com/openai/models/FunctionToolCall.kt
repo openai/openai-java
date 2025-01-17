@@ -298,6 +298,7 @@ private constructor(
             "Function{arguments=$arguments, name=$name, output=$output, additionalProperties=$additionalProperties}"
     }
 
+    /** The type of tool call. This is always going to be `function` for this type of tool call. */
     class Type
     @JsonCreator
     private constructor(

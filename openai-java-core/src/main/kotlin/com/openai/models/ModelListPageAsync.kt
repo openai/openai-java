@@ -20,6 +20,10 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.function.Predicate
 
+/**
+ * Lists the currently available models, and provides basic information about each one such as the
+ * owner and availability.
+ */
 class ModelListPageAsync
 private constructor(
     private val modelsService: ModelServiceAsync,

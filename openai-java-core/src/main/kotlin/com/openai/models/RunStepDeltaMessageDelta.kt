@@ -120,6 +120,7 @@ private constructor(
             )
     }
 
+    /** Always `message_creation`. */
     class Type
     @JsonCreator
     private constructor(

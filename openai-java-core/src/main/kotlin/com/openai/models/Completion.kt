@@ -258,6 +258,7 @@ private constructor(
             )
     }
 
+    /** The object type, which is always "text_completion" */
     class Object
     @JsonCreator
     private constructor(
