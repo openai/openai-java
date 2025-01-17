@@ -1600,6 +1600,7 @@ private constructor(
             "Hyperparameters{batchSize=$batchSize, learningRateMultiplier=$learningRateMultiplier, nEpochs=$nEpochs, additionalProperties=$additionalProperties}"
     }
 
+    /** The object type, which is always "fine_tuning.job". */
     class Object
     @JsonCreator
     private constructor(
@@ -1651,6 +1652,10 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /**
+     * The current status of the fine-tuning job, which can be either `validating_files`, `queued`,
+     * `running`, `succeeded`, `failed`, or `cancelled`.
+     */
     class Status
     @JsonCreator
     private constructor(
@@ -3807,6 +3812,7 @@ private constructor(
                 "Supervised{hyperparameters=$hyperparameters, additionalProperties=$additionalProperties}"
         }
 
+        /** The type of method. Is either `supervised` or `dpo`. */
         class Type
         @JsonCreator
         private constructor(

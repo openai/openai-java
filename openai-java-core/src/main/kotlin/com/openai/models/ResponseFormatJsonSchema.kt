@@ -419,6 +419,7 @@ private constructor(
             "JsonSchema{name=$name, description=$description, schema=$schema, strict=$strict, additionalProperties=$additionalProperties}"
     }
 
+    /** The type of response format being defined: `json_schema` */
     class Type
     @JsonCreator
     private constructor(

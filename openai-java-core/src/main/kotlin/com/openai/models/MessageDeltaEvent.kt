@@ -136,6 +136,7 @@ private constructor(
             )
     }
 
+    /** The object type, which is always `thread.message.delta`. */
     class Object
     @JsonCreator
     private constructor(

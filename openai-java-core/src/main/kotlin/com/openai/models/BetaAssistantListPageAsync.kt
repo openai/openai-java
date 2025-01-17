@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.function.Predicate
 
+/** Returns a list of assistants. */
 class BetaAssistantListPageAsync
 private constructor(
     private val assistantsService: AssistantServiceAsync,

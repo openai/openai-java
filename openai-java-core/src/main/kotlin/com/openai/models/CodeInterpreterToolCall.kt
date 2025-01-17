@@ -394,6 +394,7 @@ private constructor(
 
             interface Visitor<out T> {
 
+                /** Text output from the Code Interpreter tool call as part of a run step. */
                 fun visitLogs(logs: LogsOutput): T
 
                 fun visitImage(image: ImageOutput): T
@@ -549,6 +550,7 @@ private constructor(
                         )
                 }
 
+                /** Always `logs`. */
                 class Type
                 @JsonCreator
                 private constructor(
@@ -837,6 +839,7 @@ private constructor(
                         "Image{fileId=$fileId, additionalProperties=$additionalProperties}"
                 }
 
+                /** Always `image`. */
                 class Type
                 @JsonCreator
                 private constructor(
@@ -926,6 +929,10 @@ private constructor(
             "CodeInterpreter{input=$input, outputs=$outputs, additionalProperties=$additionalProperties}"
     }
 
+    /**
+     * The type of tool call. This is always going to be `code_interpreter` for this type of tool
+     * call.
+     */
     class Type
     @JsonCreator
     private constructor(

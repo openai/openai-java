@@ -115,6 +115,7 @@ private constructor(
             )
     }
 
+    /** Always `text`. */
     class Type
     @JsonCreator
     private constructor(

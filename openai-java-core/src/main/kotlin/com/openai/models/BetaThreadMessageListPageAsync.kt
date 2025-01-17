@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.function.Predicate
 
+/** Returns a list of messages for a given thread. */
 class BetaThreadMessageListPageAsync
 private constructor(
     private val messagesService: MessageServiceAsync,

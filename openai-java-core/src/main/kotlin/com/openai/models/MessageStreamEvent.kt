@@ -252,14 +252,35 @@ private constructor(
 
     interface Visitor<out T> {
 
+        /**
+         * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object)
+         * is created.
+         */
         fun visitThreadMessageCreated(threadMessageCreated: ThreadMessageCreated): T
 
+        /**
+         * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object)
+         * moves to an `in_progress` state.
+         */
         fun visitThreadMessageInProgress(threadMessageInProgress: ThreadMessageInProgress): T
 
+        /**
+         * Occurs when parts of a
+         * [Message](https://platform.openai.com/docs/api-reference/messages/object) are being
+         * streamed.
+         */
         fun visitThreadMessageDelta(threadMessageDelta: ThreadMessageDelta): T
 
+        /**
+         * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object)
+         * is completed.
+         */
         fun visitThreadMessageCompleted(threadMessageCompleted: ThreadMessageCompleted): T
 
+        /**
+         * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object)
+         * ends before it is completed.
+         */
         fun visitThreadMessageIncomplete(threadMessageIncomplete: ThreadMessageIncomplete): T
 
         fun unknown(json: JsonValue?): T {

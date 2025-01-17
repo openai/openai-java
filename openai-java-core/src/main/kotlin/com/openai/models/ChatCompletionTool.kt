@@ -114,6 +114,7 @@ private constructor(
             )
     }
 
+    /** The type of the tool. Currently, only `function` is supported. */
     class Type
     @JsonCreator
     private constructor(

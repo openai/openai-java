@@ -218,6 +218,7 @@ private constructor(
             "MessageCreation{messageId=$messageId, additionalProperties=$additionalProperties}"
     }
 
+    /** Always `message_creation`. */
     class Type
     @JsonCreator
     private constructor(

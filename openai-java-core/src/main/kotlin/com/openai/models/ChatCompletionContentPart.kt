@@ -158,14 +158,17 @@ private constructor(
 
     interface Visitor<out T> {
 
+        /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
         fun visitChatCompletionContentPartText(
             chatCompletionContentPartText: ChatCompletionContentPartText
         ): T
 
+        /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
         fun visitChatCompletionContentPartImage(
             chatCompletionContentPartImage: ChatCompletionContentPartImage
         ): T
 
+        /** Learn about [audio inputs](https://platform.openai.com/docs/guides/audio). */
         fun visitChatCompletionContentPartInputAudio(
             chatCompletionContentPartInputAudio: ChatCompletionContentPartInputAudio
         ): T

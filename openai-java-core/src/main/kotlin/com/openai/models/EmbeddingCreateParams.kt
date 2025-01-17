@@ -798,12 +798,16 @@ constructor(
 
         interface Visitor<out T> {
 
+            /** The string that will be turned into an embedding. */
             fun visitString(string: String): T
 
+            /** The array of strings that will be turned into an embedding. */
             fun visitArrayOfStrings(arrayOfStrings: List<String>): T
 
+            /** The array of integers that will be turned into an embedding. */
             fun visitArrayOfTokens(arrayOfTokens: List<Long>): T
 
+            /** The array of arrays containing integers that will be turned into an embedding. */
             fun visitArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>): T
 
             fun unknown(json: JsonValue?): T {
@@ -853,6 +857,10 @@ constructor(
         }
     }
 
+    /**
+     * The format to return the embeddings in. Can be either `float` or
+     * [`base64`](https://pypi.org/project/pybase64/).
+     */
     class EncodingFormat
     @JsonCreator
     private constructor(

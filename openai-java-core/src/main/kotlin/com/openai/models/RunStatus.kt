@@ -7,6 +7,10 @@ import com.openai.core.Enum
 import com.openai.core.JsonField
 import com.openai.errors.OpenAIInvalidDataException
 
+/**
+ * The status of the run, which can be either `queued`, `in_progress`, `requires_action`,
+ * `cancelling`, `cancelled`, `failed`, `completed`, `incomplete`, or `expired`.
+ */
 class RunStatus
 @JsonCreator
 private constructor(

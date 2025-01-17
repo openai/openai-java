@@ -187,6 +187,7 @@ private constructor(
             )
     }
 
+    /** Always `file_citation`. */
     class Type
     @JsonCreator
     private constructor(

@@ -7,6 +7,7 @@ import com.openai.core.Enum
 import com.openai.core.JsonField
 import com.openai.errors.OpenAIInvalidDataException
 
+/** The role of the author of a message */
 class ChatCompletionRole
 @JsonCreator
 private constructor(

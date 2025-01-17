@@ -19,6 +19,10 @@ import java.util.Optional
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
 
+/**
+ * Lists the currently available models, and provides basic information about each one such as the
+ * owner and availability.
+ */
 class ModelListPage
 private constructor(
     private val modelsService: ModelService,

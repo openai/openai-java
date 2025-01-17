@@ -268,6 +268,7 @@ private constructor(
             )
     }
 
+    /** The object type, which is always "upload". */
     class Object
     @JsonCreator
     private constructor(
@@ -319,6 +320,7 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /** The status of the Upload. */
     class Status
     @JsonCreator
     private constructor(

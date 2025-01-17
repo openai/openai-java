@@ -480,6 +480,7 @@ private constructor(
             )
     }
 
+    /** The object type, which is always `batch`. */
     class Object
     @JsonCreator
     private constructor(
@@ -531,6 +532,7 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /** The current status of the batch. */
     class Status
     @JsonCreator
     private constructor(

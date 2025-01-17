@@ -209,6 +209,7 @@ private constructor(
         override fun toString() = "Function{name=$name, additionalProperties=$additionalProperties}"
     }
 
+    /** The type of the tool. Currently, only `function` is supported. */
     class Type
     @JsonCreator
     private constructor(

@@ -256,8 +256,13 @@ private constructor(
 
         interface Visitor<out T> {
 
+            /** The contents of the tool message. */
             fun visitTextContent(textContent: String): T
 
+            /**
+             * An array of content parts with a defined type. For tool messages, only type `text` is
+             * supported.
+             */
             fun visitArrayOfContentParts(
                 arrayOfContentParts: List<ChatCompletionContentPartText>
             ): T
@@ -304,6 +309,7 @@ private constructor(
         }
     }
 
+    /** The role of the messages author, in this case `tool`. */
     class Role
     @JsonCreator
     private constructor(

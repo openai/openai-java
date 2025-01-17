@@ -171,6 +171,7 @@ private constructor(
 
     interface Visitor<out T> {
 
+        /** `auto` is the default value */
         fun visitBehavior(behavior: Behavior): T
 
         fun visitResponseFormatText(responseFormatText: ResponseFormatText): T
@@ -237,6 +238,7 @@ private constructor(
         }
     }
 
+    /** `auto` is the default value */
     class Behavior
     @JsonCreator
     private constructor(

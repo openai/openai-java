@@ -617,6 +617,7 @@ private constructor(
                 )
         }
 
+        /** One of `server_error` or `rate_limit_exceeded`. */
         class Code
         @JsonCreator
         private constructor(
@@ -692,6 +693,7 @@ private constructor(
             "LastError{code=$code, message=$message, additionalProperties=$additionalProperties}"
     }
 
+    /** The object type, which is always `thread.run.step`. */
     class Object
     @JsonCreator
     private constructor(
@@ -743,6 +745,10 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /**
+     * The status of the run step, which can be either `in_progress`, `cancelled`, `failed`,
+     * `completed`, or `expired`.
+     */
     class Status
     @JsonCreator
     private constructor(
@@ -921,10 +927,12 @@ private constructor(
 
         interface Visitor<out T> {
 
+            /** Details of the message creation by the run step. */
             fun visitMessageCreationStepDetails(
                 messageCreationStepDetails: MessageCreationStepDetails
             ): T
 
+            /** Details of the tool call. */
             fun visitToolCallsStepDetails(toolCallsStepDetails: ToolCallsStepDetails): T
 
             fun unknown(json: JsonValue?): T {
@@ -980,6 +988,7 @@ private constructor(
         }
     }
 
+    /** The type of run step, which can be either `message_creation` or `tool_calls`. */
     class Type
     @JsonCreator
     private constructor(

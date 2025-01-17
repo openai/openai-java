@@ -61,6 +61,7 @@ private constructor(
     fun chatCompletionToolMessageParam(): Optional<ChatCompletionToolMessageParam> =
         Optional.ofNullable(chatCompletionToolMessageParam)
 
+    @Deprecated("deprecated")
     fun chatCompletionFunctionMessageParam(): Optional<ChatCompletionFunctionMessageParam> =
         Optional.ofNullable(chatCompletionFunctionMessageParam)
 
@@ -76,6 +77,7 @@ private constructor(
 
     fun isChatCompletionToolMessageParam(): Boolean = chatCompletionToolMessageParam != null
 
+    @Deprecated("deprecated")
     fun isChatCompletionFunctionMessageParam(): Boolean = chatCompletionFunctionMessageParam != null
 
     /**
@@ -104,6 +106,7 @@ private constructor(
     fun asChatCompletionToolMessageParam(): ChatCompletionToolMessageParam =
         chatCompletionToolMessageParam.getOrThrow("chatCompletionToolMessageParam")
 
+    @Deprecated("deprecated")
     fun asChatCompletionFunctionMessageParam(): ChatCompletionFunctionMessageParam =
         chatCompletionFunctionMessageParam.getOrThrow("chatCompletionFunctionMessageParam")
 
@@ -261,6 +264,7 @@ private constructor(
                 chatCompletionToolMessageParam = chatCompletionToolMessageParam
             )
 
+        @Deprecated("deprecated")
         @JvmStatic
         fun ofChatCompletionFunctionMessageParam(
             chatCompletionFunctionMessageParam: ChatCompletionFunctionMessageParam
@@ -272,18 +276,29 @@ private constructor(
 
     interface Visitor<out T> {
 
+        /**
+         * Developer-provided instructions that the model should follow, regardless of messages sent
+         * by the user. With o1 models and newer, `developer` messages replace the previous `system`
+         * messages.
+         */
         fun visitChatCompletionDeveloperMessageParam(
             chatCompletionDeveloperMessageParam: ChatCompletionDeveloperMessageParam
         ): T
 
+        /**
+         * Developer-provided instructions that the model should follow, regardless of messages sent
+         * by the user. With o1 models and newer, use `developer` messages for this purpose instead.
+         */
         fun visitChatCompletionSystemMessageParam(
             chatCompletionSystemMessageParam: ChatCompletionSystemMessageParam
         ): T
 
+        /** Messages sent by an end user, containing prompts or additional context information. */
         fun visitChatCompletionUserMessageParam(
             chatCompletionUserMessageParam: ChatCompletionUserMessageParam
         ): T
 
+        /** Messages sent by the model in response to user messages. */
         fun visitChatCompletionAssistantMessageParam(
             chatCompletionAssistantMessageParam: ChatCompletionAssistantMessageParam
         ): T
@@ -292,6 +307,7 @@ private constructor(
             chatCompletionToolMessageParam: ChatCompletionToolMessageParam
         ): T
 
+        @Deprecated("deprecated")
         fun visitChatCompletionFunctionMessageParam(
             chatCompletionFunctionMessageParam: ChatCompletionFunctionMessageParam
         ): T

@@ -284,8 +284,17 @@ private constructor(
 
         interface Visitor<out T> {
 
+            /**
+             * The content used for a Predicted Output. This is often the text of a file you are
+             * regenerating with minor changes.
+             */
             fun visitTextContent(textContent: String): T
 
+            /**
+             * An array of content parts with a defined type. Supported options differ based on the
+             * [model](https://platform.openai.com/docs/models) being used to generate the response.
+             * Can contain text inputs.
+             */
             fun visitArrayOfContentParts(
                 arrayOfContentParts: List<ChatCompletionContentPartText>
             ): T
@@ -332,6 +341,10 @@ private constructor(
         }
     }
 
+    /**
+     * The type of the predicted content you want to provide. This type is currently always
+     * `content`.
+     */
     class Type
     @JsonCreator
     private constructor(

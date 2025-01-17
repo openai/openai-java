@@ -168,6 +168,7 @@ private constructor(
             )
     }
 
+    /** Always `tool_calls`. */
     class Type
     @JsonCreator
     private constructor(

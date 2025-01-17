@@ -226,6 +226,10 @@ private constructor(
                 )
         }
 
+        /**
+         * Specifies the detail level of the image. Learn more in the
+         * [Vision guide](https://platform.openai.com/docs/guides/vision#low-or-high-fidelity-image-understanding).
+         */
         class Detail
         @JsonCreator
         private constructor(
@@ -307,6 +311,7 @@ private constructor(
             "ImageUrl{url=$url, detail=$detail, additionalProperties=$additionalProperties}"
     }
 
+    /** The type of the content part. */
     class Type
     @JsonCreator
     private constructor(

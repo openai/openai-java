@@ -133,6 +133,7 @@ private constructor(
             )
     }
 
+    /** Always `logs`. */
     class Type
     @JsonCreator
     private constructor(

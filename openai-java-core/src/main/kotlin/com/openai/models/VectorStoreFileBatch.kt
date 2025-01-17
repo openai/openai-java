@@ -399,6 +399,7 @@ private constructor(
             "FileCounts{cancelled=$cancelled, completed=$completed, failed=$failed, inProgress=$inProgress, total=$total, additionalProperties=$additionalProperties}"
     }
 
+    /** The object type, which is always `vector_store.file_batch`. */
     class Object
     @JsonCreator
     private constructor(
@@ -450,6 +451,10 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /**
+     * The status of the vector store files batch, which can be either `in_progress`, `completed`,
+     * `cancelled` or `failed`.
+     */
     class Status
     @JsonCreator
     private constructor(

@@ -97,6 +97,7 @@ private constructor(
             )
     }
 
+    /** The type of response format being defined: `json_object` */
     class Type
     @JsonCreator
     private constructor(

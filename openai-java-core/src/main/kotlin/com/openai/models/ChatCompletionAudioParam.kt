@@ -146,6 +146,9 @@ private constructor(
             )
     }
 
+    /**
+     * Specifies the output audio format. Must be one of `wav`, `mp3`, `flac`, `opus`, or `pcm16`.
+     */
     class Format
     @JsonCreator
     private constructor(
@@ -221,6 +224,11 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /**
+     * The voice the model uses to respond. Supported voices are `ash`, `ballad`, `coral`, `sage`,
+     * and `verse` (also supported but not recommended are `alloy`, `echo`, and `shimmer`; these
+     * voices are less expressive).
+     */
     class Voice
     @JsonCreator
     private constructor(

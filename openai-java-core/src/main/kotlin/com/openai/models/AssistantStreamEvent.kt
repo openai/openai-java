@@ -861,52 +861,152 @@ private constructor(
 
     interface Visitor<out T> {
 
+        /**
+         * Occurs when a new [thread](https://platform.openai.com/docs/api-reference/threads/object)
+         * is created.
+         */
         fun visitThreadCreated(threadCreated: ThreadCreated): T
 
+        /**
+         * Occurs when a new [run](https://platform.openai.com/docs/api-reference/runs/object) is
+         * created.
+         */
         fun visitThreadRunCreated(threadRunCreated: ThreadRunCreated): T
 
+        /**
+         * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) moves to
+         * a `queued` status.
+         */
         fun visitThreadRunQueued(threadRunQueued: ThreadRunQueued): T
 
+        /**
+         * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) moves to
+         * an `in_progress` status.
+         */
         fun visitThreadRunInProgress(threadRunInProgress: ThreadRunInProgress): T
 
+        /**
+         * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) moves to
+         * a `requires_action` status.
+         */
         fun visitThreadRunRequiresAction(threadRunRequiresAction: ThreadRunRequiresAction): T
 
+        /**
+         * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) is
+         * completed.
+         */
         fun visitThreadRunCompleted(threadRunCompleted: ThreadRunCompleted): T
 
+        /**
+         * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) ends with
+         * status `incomplete`.
+         */
         fun visitThreadRunIncomplete(threadRunIncomplete: ThreadRunIncomplete): T
 
+        /**
+         * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) fails.
+         */
         fun visitThreadRunFailed(threadRunFailed: ThreadRunFailed): T
 
+        /**
+         * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) moves to
+         * a `cancelling` status.
+         */
         fun visitThreadRunCancelling(threadRunCancelling: ThreadRunCancelling): T
 
+        /**
+         * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) is
+         * cancelled.
+         */
         fun visitThreadRunCancelled(threadRunCancelled: ThreadRunCancelled): T
 
+        /**
+         * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) expires.
+         */
         fun visitThreadRunExpired(threadRunExpired: ThreadRunExpired): T
 
+        /**
+         * Occurs when a
+         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
+         * created.
+         */
         fun visitThreadRunStepCreated(threadRunStepCreated: ThreadRunStepCreated): T
 
+        /**
+         * Occurs when a
+         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) moves to
+         * an `in_progress` state.
+         */
         fun visitThreadRunStepInProgress(threadRunStepInProgress: ThreadRunStepInProgress): T
 
+        /**
+         * Occurs when parts of a
+         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) are
+         * being streamed.
+         */
         fun visitThreadRunStepDelta(threadRunStepDelta: ThreadRunStepDelta): T
 
+        /**
+         * Occurs when a
+         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
+         * completed.
+         */
         fun visitThreadRunStepCompleted(threadRunStepCompleted: ThreadRunStepCompleted): T
 
+        /**
+         * Occurs when a
+         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) fails.
+         */
         fun visitThreadRunStepFailed(threadRunStepFailed: ThreadRunStepFailed): T
 
+        /**
+         * Occurs when a
+         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
+         * cancelled.
+         */
         fun visitThreadRunStepCancelled(threadRunStepCancelled: ThreadRunStepCancelled): T
 
+        /**
+         * Occurs when a
+         * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) expires.
+         */
         fun visitThreadRunStepExpired(threadRunStepExpired: ThreadRunStepExpired): T
 
+        /**
+         * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object)
+         * is created.
+         */
         fun visitThreadMessageCreated(threadMessageCreated: ThreadMessageCreated): T
 
+        /**
+         * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object)
+         * moves to an `in_progress` state.
+         */
         fun visitThreadMessageInProgress(threadMessageInProgress: ThreadMessageInProgress): T
 
+        /**
+         * Occurs when parts of a
+         * [Message](https://platform.openai.com/docs/api-reference/messages/object) are being
+         * streamed.
+         */
         fun visitThreadMessageDelta(threadMessageDelta: ThreadMessageDelta): T
 
+        /**
+         * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object)
+         * is completed.
+         */
         fun visitThreadMessageCompleted(threadMessageCompleted: ThreadMessageCompleted): T
 
+        /**
+         * Occurs when a [message](https://platform.openai.com/docs/api-reference/messages/object)
+         * ends before it is completed.
+         */
         fun visitThreadMessageIncomplete(threadMessageIncomplete: ThreadMessageIncomplete): T
 
+        /**
+         * Occurs when an [error](https://platform.openai.com/docs/guides/error-codes#api-errors)
+         * occurs. This can happen due to an internal server error or a timeout.
+         */
         fun visitErrorEvent(errorEvent: ErrorEvent): T
 
         fun unknown(json: JsonValue?): T {

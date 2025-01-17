@@ -210,6 +210,7 @@ private constructor(
             )
     }
 
+    /** The object type, which is always `thread`. */
     class Object
     @JsonCreator
     private constructor(
