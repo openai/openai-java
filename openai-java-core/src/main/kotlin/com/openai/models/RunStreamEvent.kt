@@ -371,24 +371,62 @@ private constructor(
 
     interface Visitor<out T> {
 
+        /**
+         * Occurs when a new [run](https://platform.openai.com/docs/api-reference/runs/object) is
+         * created.
+         */
         fun visitThreadRunCreated(threadRunCreated: ThreadRunCreated): T
 
+        /**
+         * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) moves to
+         * a `queued` status.
+         */
         fun visitThreadRunQueued(threadRunQueued: ThreadRunQueued): T
 
+        /**
+         * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) moves to
+         * an `in_progress` status.
+         */
         fun visitThreadRunInProgress(threadRunInProgress: ThreadRunInProgress): T
 
+        /**
+         * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) moves to
+         * a `requires_action` status.
+         */
         fun visitThreadRunRequiresAction(threadRunRequiresAction: ThreadRunRequiresAction): T
 
+        /**
+         * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) is
+         * completed.
+         */
         fun visitThreadRunCompleted(threadRunCompleted: ThreadRunCompleted): T
 
+        /**
+         * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) ends with
+         * status `incomplete`.
+         */
         fun visitThreadRunIncomplete(threadRunIncomplete: ThreadRunIncomplete): T
 
+        /**
+         * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) fails.
+         */
         fun visitThreadRunFailed(threadRunFailed: ThreadRunFailed): T
 
+        /**
+         * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) moves to
+         * a `cancelling` status.
+         */
         fun visitThreadRunCancelling(threadRunCancelling: ThreadRunCancelling): T
 
+        /**
+         * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) is
+         * cancelled.
+         */
         fun visitThreadRunCancelled(threadRunCancelled: ThreadRunCancelled): T
 
+        /**
+         * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) expires.
+         */
         fun visitThreadRunExpired(threadRunExpired: ThreadRunExpired): T
 
         fun unknown(json: JsonValue?): T {

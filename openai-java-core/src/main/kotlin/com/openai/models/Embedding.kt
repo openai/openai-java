@@ -170,6 +170,7 @@ private constructor(
             )
     }
 
+    /** The object type, which is always "embedding". */
     class Object
     @JsonCreator
     private constructor(

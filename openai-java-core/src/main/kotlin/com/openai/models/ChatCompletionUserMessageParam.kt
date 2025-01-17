@@ -271,8 +271,14 @@ private constructor(
 
         interface Visitor<out T> {
 
+            /** The text contents of the message. */
             fun visitTextContent(textContent: String): T
 
+            /**
+             * An array of content parts with a defined type. Supported options differ based on the
+             * [model](https://platform.openai.com/docs/models) being used to generate the response.
+             * Can contain text, image, or audio inputs.
+             */
             fun visitArrayOfContentParts(arrayOfContentParts: List<ChatCompletionContentPart>): T
 
             fun unknown(json: JsonValue?): T {
@@ -317,6 +323,7 @@ private constructor(
         }
     }
 
+    /** The role of the messages author, in this case `user`. */
     class Role
     @JsonCreator
     private constructor(

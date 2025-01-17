@@ -344,6 +344,10 @@ constructor(
             )
     }
 
+    /**
+     * Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and `desc`
+     * for descending order.
+     */
     class Order
     @JsonCreator
     private constructor(

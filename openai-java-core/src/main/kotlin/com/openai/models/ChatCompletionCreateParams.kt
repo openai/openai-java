@@ -94,14 +94,14 @@ constructor(
      * `none` is the default when no functions are present. `auto` is the default if functions are
      * present.
      */
-    fun functionCall(): Optional<FunctionCall> = body.functionCall()
+    @Deprecated("deprecated") fun functionCall(): Optional<FunctionCall> = body.functionCall()
 
     /**
      * Deprecated in favor of `tools`.
      *
      * A list of functions the model may generate JSON inputs for.
      */
-    fun functions(): Optional<List<Function>> = body.functions()
+    @Deprecated("deprecated") fun functions(): Optional<List<Function>> = body.functions()
 
     /**
      * Modify the likelihood of specified tokens appearing in the completion.
@@ -135,7 +135,7 @@ constructor(
      * This value is now deprecated in favor of `max_completion_tokens`, and is not compatible with
      * [o1 series models](https://platform.openai.com/docs/guides/reasoning).
      */
-    fun maxTokens(): Optional<Long> = body.maxTokens()
+    @Deprecated("deprecated") fun maxTokens(): Optional<Long> = body.maxTokens()
 
     /**
      * Developer-defined tags and values used for filtering completions in the
@@ -341,14 +341,14 @@ constructor(
      * `none` is the default when no functions are present. `auto` is the default if functions are
      * present.
      */
-    fun _functionCall(): JsonField<FunctionCall> = body._functionCall()
+    @Deprecated("deprecated") fun _functionCall(): JsonField<FunctionCall> = body._functionCall()
 
     /**
      * Deprecated in favor of `tools`.
      *
      * A list of functions the model may generate JSON inputs for.
      */
-    fun _functions(): JsonField<List<Function>> = body._functions()
+    @Deprecated("deprecated") fun _functions(): JsonField<List<Function>> = body._functions()
 
     /**
      * Modify the likelihood of specified tokens appearing in the completion.
@@ -382,7 +382,7 @@ constructor(
      * This value is now deprecated in favor of `max_completion_tokens`, and is not compatible with
      * [o1 series models](https://platform.openai.com/docs/guides/reasoning).
      */
-    fun _maxTokens(): JsonField<Long> = body._maxTokens()
+    @Deprecated("deprecated") fun _maxTokens(): JsonField<Long> = body._maxTokens()
 
     /**
      * Developer-defined tags and values used for filtering completions in the
@@ -691,6 +691,7 @@ constructor(
          * `none` is the default when no functions are present. `auto` is the default if functions
          * are present.
          */
+        @Deprecated("deprecated")
         fun functionCall(): Optional<FunctionCall> =
             Optional.ofNullable(functionCall.getNullable("function_call"))
 
@@ -699,6 +700,7 @@ constructor(
          *
          * A list of functions the model may generate JSON inputs for.
          */
+        @Deprecated("deprecated")
         fun functions(): Optional<List<Function>> =
             Optional.ofNullable(functions.getNullable("functions"))
 
@@ -736,6 +738,7 @@ constructor(
          * This value is now deprecated in favor of `max_completion_tokens`, and is not compatible
          * with [o1 series models](https://platform.openai.com/docs/guides/reasoning).
          */
+        @Deprecated("deprecated")
         fun maxTokens(): Optional<Long> = Optional.ofNullable(maxTokens.getNullable("max_tokens"))
 
         /**
@@ -962,6 +965,7 @@ constructor(
          * `none` is the default when no functions are present. `auto` is the default if functions
          * are present.
          */
+        @Deprecated("deprecated")
         @JsonProperty("function_call")
         @ExcludeMissing
         fun _functionCall(): JsonField<FunctionCall> = functionCall
@@ -971,6 +975,7 @@ constructor(
          *
          * A list of functions the model may generate JSON inputs for.
          */
+        @Deprecated("deprecated")
         @JsonProperty("functions")
         @ExcludeMissing
         fun _functions(): JsonField<List<Function>> = functions
@@ -1011,7 +1016,10 @@ constructor(
          * This value is now deprecated in favor of `max_completion_tokens`, and is not compatible
          * with [o1 series models](https://platform.openai.com/docs/guides/reasoning).
          */
-        @JsonProperty("max_tokens") @ExcludeMissing fun _maxTokens(): JsonField<Long> = maxTokens
+        @Deprecated("deprecated")
+        @JsonProperty("max_tokens")
+        @ExcludeMissing
+        fun _maxTokens(): JsonField<Long> = maxTokens
 
         /**
          * Developer-defined tags and values used for filtering completions in the
@@ -1428,6 +1436,7 @@ constructor(
              * [images](https://platform.openai.com/docs/guides/vision), and
              * [audio](https://platform.openai.com/docs/guides/audio).
              */
+            @Deprecated("deprecated")
             fun addMessage(chatCompletionFunctionMessageParam: ChatCompletionFunctionMessageParam) =
                 addMessage(
                     ChatCompletionMessageParam.ofChatCompletionFunctionMessageParam(
@@ -1523,6 +1532,7 @@ constructor(
              * `none` is the default when no functions are present. `auto` is the default if
              * functions are present.
              */
+            @Deprecated("deprecated")
             fun functionCall(functionCall: FunctionCall) = functionCall(JsonField.of(functionCall))
 
             /**
@@ -1540,6 +1550,7 @@ constructor(
              * `none` is the default when no functions are present. `auto` is the default if
              * functions are present.
              */
+            @Deprecated("deprecated")
             fun functionCall(functionCall: JsonField<FunctionCall>) = apply {
                 this.functionCall = functionCall
             }
@@ -1563,6 +1574,7 @@ constructor(
              *
              * A list of functions the model may generate JSON inputs for.
              */
+            @Deprecated("deprecated")
             fun functions(functions: List<Function>) = functions(JsonField.of(functions))
 
             /**
@@ -1570,6 +1582,7 @@ constructor(
              *
              * A list of functions the model may generate JSON inputs for.
              */
+            @Deprecated("deprecated")
             fun functions(functions: JsonField<List<Function>>) = apply {
                 this.functions = functions.map { it.toMutableList() }
             }
@@ -1579,6 +1592,7 @@ constructor(
              *
              * A list of functions the model may generate JSON inputs for.
              */
+            @Deprecated("deprecated")
             fun addFunction(function: Function) = apply {
                 functions =
                     (functions ?: JsonField.of(mutableListOf())).apply {
@@ -1696,6 +1710,7 @@ constructor(
              * compatible with
              * [o1 series models](https://platform.openai.com/docs/guides/reasoning).
              */
+            @Deprecated("deprecated")
             fun maxTokens(maxTokens: Long?) = maxTokens(JsonField.ofNullable(maxTokens))
 
             /**
@@ -1707,7 +1722,7 @@ constructor(
              * compatible with
              * [o1 series models](https://platform.openai.com/docs/guides/reasoning).
              */
-            fun maxTokens(maxTokens: Long) = maxTokens(maxTokens as Long?)
+            @Deprecated("deprecated") fun maxTokens(maxTokens: Long) = maxTokens(maxTokens as Long?)
 
             /**
              * The maximum number of [tokens](/tokenizer) that can be generated in the chat
@@ -1718,6 +1733,7 @@ constructor(
              * compatible with
              * [o1 series models](https://platform.openai.com/docs/guides/reasoning).
              */
+            @Deprecated("deprecated")
             @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
             fun maxTokens(maxTokens: Optional<Long>) = maxTokens(maxTokens.orElse(null) as Long?)
 
@@ -1730,6 +1746,7 @@ constructor(
              * compatible with
              * [o1 series models](https://platform.openai.com/docs/guides/reasoning).
              */
+            @Deprecated("deprecated")
             fun maxTokens(maxTokens: JsonField<Long>) = apply { this.maxTokens = maxTokens }
 
             /**
@@ -2561,6 +2578,7 @@ constructor(
          * [images](https://platform.openai.com/docs/guides/vision), and
          * [audio](https://platform.openai.com/docs/guides/audio).
          */
+        @Deprecated("deprecated")
         fun addMessage(chatCompletionFunctionMessageParam: ChatCompletionFunctionMessageParam) =
             apply {
                 body.addMessage(chatCompletionFunctionMessageParam)
@@ -2655,6 +2673,7 @@ constructor(
          * `none` is the default when no functions are present. `auto` is the default if functions
          * are present.
          */
+        @Deprecated("deprecated")
         fun functionCall(functionCall: FunctionCall) = apply { body.functionCall(functionCall) }
 
         /**
@@ -2672,6 +2691,7 @@ constructor(
          * `none` is the default when no functions are present. `auto` is the default if functions
          * are present.
          */
+        @Deprecated("deprecated")
         fun functionCall(functionCall: JsonField<FunctionCall>) = apply {
             body.functionCall(functionCall)
         }
@@ -2695,6 +2715,7 @@ constructor(
          *
          * A list of functions the model may generate JSON inputs for.
          */
+        @Deprecated("deprecated")
         fun functions(functions: List<Function>) = apply { body.functions(functions) }
 
         /**
@@ -2702,6 +2723,7 @@ constructor(
          *
          * A list of functions the model may generate JSON inputs for.
          */
+        @Deprecated("deprecated")
         fun functions(functions: JsonField<List<Function>>) = apply { body.functions(functions) }
 
         /**
@@ -2709,6 +2731,7 @@ constructor(
          *
          * A list of functions the model may generate JSON inputs for.
          */
+        @Deprecated("deprecated")
         fun addFunction(function: Function) = apply { body.addFunction(function) }
 
         /**
@@ -2812,6 +2835,7 @@ constructor(
          * This value is now deprecated in favor of `max_completion_tokens`, and is not compatible
          * with [o1 series models](https://platform.openai.com/docs/guides/reasoning).
          */
+        @Deprecated("deprecated")
         fun maxTokens(maxTokens: Long?) = apply { body.maxTokens(maxTokens) }
 
         /**
@@ -2822,7 +2846,7 @@ constructor(
          * This value is now deprecated in favor of `max_completion_tokens`, and is not compatible
          * with [o1 series models](https://platform.openai.com/docs/guides/reasoning).
          */
-        fun maxTokens(maxTokens: Long) = maxTokens(maxTokens as Long?)
+        @Deprecated("deprecated") fun maxTokens(maxTokens: Long) = maxTokens(maxTokens as Long?)
 
         /**
          * The maximum number of [tokens](/tokenizer) that can be generated in the chat completion.
@@ -2832,6 +2856,7 @@ constructor(
          * This value is now deprecated in favor of `max_completion_tokens`, and is not compatible
          * with [o1 series models](https://platform.openai.com/docs/guides/reasoning).
          */
+        @Deprecated("deprecated")
         @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
         fun maxTokens(maxTokens: Optional<Long>) = maxTokens(maxTokens.orElse(null) as Long?)
 
@@ -2843,6 +2868,7 @@ constructor(
          * This value is now deprecated in favor of `max_completion_tokens`, and is not compatible
          * with [o1 series models](https://platform.openai.com/docs/guides/reasoning).
          */
+        @Deprecated("deprecated")
         fun maxTokens(maxTokens: JsonField<Long>) = apply { body.maxTokens(maxTokens) }
 
         /**
@@ -3608,6 +3634,7 @@ constructor(
      * `none` is the default when no functions are present. `auto` is the default if functions are
      * present.
      */
+    @Deprecated("deprecated")
     @JsonDeserialize(using = FunctionCall.Deserializer::class)
     @JsonSerialize(using = FunctionCall.Serializer::class)
     class FunctionCall
@@ -3715,8 +3742,16 @@ constructor(
 
         interface Visitor<out T> {
 
+            /**
+             * `none` means the model will not call a function and instead generates a message.
+             * `auto` means the model can pick between generating a message or calling a function.
+             */
             fun visitBehavior(behavior: Behavior): T
 
+            /**
+             * Specifying a particular function via `{"name": "my_function"}` forces the model to
+             * call that function.
+             */
             fun visitFunctionCallOption(functionCallOption: ChatCompletionFunctionCallOption): T
 
             fun unknown(json: JsonValue?): T {
@@ -3760,6 +3795,10 @@ constructor(
             }
         }
 
+        /**
+         * `none` means the model will not call a function and instead generates a message. `auto`
+         * means the model can pick between generating a message or calling a function.
+         */
         class Behavior
         @JsonCreator
         private constructor(
@@ -3818,6 +3857,7 @@ constructor(
         }
     }
 
+    @Deprecated("deprecated")
     @NoAutoDetect
     class Function
     @JsonCreator
@@ -4371,6 +4411,19 @@ constructor(
         }
     }
 
+    /**
+     * Specifies the latency tier to use for processing the request. This parameter is relevant for
+     * customers subscribed to the scale tier service:
+     * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale tier
+     *   credits until they are exhausted.
+     * - If set to 'auto', and the Project is not Scale tier enabled, the request will be processed
+     *   using the default service tier with a lower uptime SLA and no latency guarentee.
+     * - If set to 'default', the request will be processed using the default service tier with a
+     *   lower uptime SLA and no latency guarentee.
+     * - When not set, the default behavior is 'auto'.
+     *
+     * When this parameter is set, the response body will include the `service_tier` utilized.
+     */
     class ServiceTier
     @JsonCreator
     private constructor(

@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.function.Predicate
 
+/** Returns a list of runs belonging to a thread. */
 class BetaThreadRunListPageAsync
 private constructor(
     private val runsService: RunServiceAsync,

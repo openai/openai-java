@@ -116,6 +116,7 @@ private constructor(
             )
     }
 
+    /** Always `image_file`. */
     class Type
     @JsonCreator
     private constructor(

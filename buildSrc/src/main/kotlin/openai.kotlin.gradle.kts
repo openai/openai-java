@@ -21,8 +21,12 @@ configure<SpotlessExtension> {
 
 tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
-        allWarningsAsErrors = true
-        freeCompilerArgs = listOf("-Xjvm-default=all", "-Xjdk-release=1.8")
+        freeCompilerArgs = listOf(
+          "-Xjvm-default=all",
+          "-Xjdk-release=1.8",
+          // Suppress deprecation warnings because we may still reference and test deprecated members.
+          "-Xsuppress-warning=DEPRECATION"
+        )
         jvmTarget = "1.8"
     }
 }

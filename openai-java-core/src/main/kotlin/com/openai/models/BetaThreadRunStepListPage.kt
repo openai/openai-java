@@ -19,6 +19,7 @@ import java.util.Optional
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
 
+/** Returns a list of run steps belonging to a run. */
 class BetaThreadRunStepListPage
 private constructor(
     private val stepsService: StepService,

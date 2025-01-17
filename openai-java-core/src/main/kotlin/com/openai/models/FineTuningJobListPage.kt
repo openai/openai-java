@@ -19,6 +19,7 @@ import java.util.Optional
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
 
+/** List your organization's fine-tuning jobs */
 class FineTuningJobListPage
 private constructor(
     private val jobsService: JobService,

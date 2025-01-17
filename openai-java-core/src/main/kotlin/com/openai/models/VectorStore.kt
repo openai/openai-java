@@ -495,6 +495,7 @@ private constructor(
             "FileCounts{cancelled=$cancelled, completed=$completed, failed=$failed, inProgress=$inProgress, total=$total, additionalProperties=$additionalProperties}"
     }
 
+    /** The object type, which is always `vector_store`. */
     class Object
     @JsonCreator
     private constructor(
@@ -546,6 +547,10 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /**
+     * The status of the vector store, which can be either `expired`, `in_progress`, or `completed`.
+     * A status of `completed` indicates that the vector store is ready for use.
+     */
     class Status
     @JsonCreator
     private constructor(
@@ -721,6 +726,10 @@ private constructor(
                 )
         }
 
+        /**
+         * Anchor timestamp after which the expiration policy applies. Supported anchors:
+         * `last_active_at`.
+         */
         class Anchor
         @JsonCreator
         private constructor(

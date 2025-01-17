@@ -119,6 +119,7 @@ private constructor(
             )
     }
 
+    /** The type of the tool. If type is `function`, the function name must be set */
     class Type
     @JsonCreator
     private constructor(

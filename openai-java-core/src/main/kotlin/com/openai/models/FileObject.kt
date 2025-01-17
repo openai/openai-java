@@ -72,12 +72,13 @@ private constructor(
      * Deprecated. The current status of the file, which can be either `uploaded`, `processed`, or
      * `error`.
      */
-    fun status(): Status = status.getRequired("status")
+    @Deprecated("deprecated") fun status(): Status = status.getRequired("status")
 
     /**
      * Deprecated. For details on why a fine-tuning training file failed validation, see the `error`
      * field on `fine_tuning.job`.
      */
+    @Deprecated("deprecated")
     fun statusDetails(): Optional<String> =
         Optional.ofNullable(statusDetails.getNullable("status_details"))
 
@@ -106,12 +107,16 @@ private constructor(
      * Deprecated. The current status of the file, which can be either `uploaded`, `processed`, or
      * `error`.
      */
-    @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+    @Deprecated("deprecated")
+    @JsonProperty("status")
+    @ExcludeMissing
+    fun _status(): JsonField<Status> = status
 
     /**
      * Deprecated. For details on why a fine-tuning training file failed validation, see the `error`
      * field on `fine_tuning.job`.
      */
+    @Deprecated("deprecated")
     @JsonProperty("status_details")
     @ExcludeMissing
     fun _statusDetails(): JsonField<String> = statusDetails
@@ -216,24 +221,27 @@ private constructor(
          * Deprecated. The current status of the file, which can be either `uploaded`, `processed`,
          * or `error`.
          */
-        fun status(status: Status) = status(JsonField.of(status))
+        @Deprecated("deprecated") fun status(status: Status) = status(JsonField.of(status))
 
         /**
          * Deprecated. The current status of the file, which can be either `uploaded`, `processed`,
          * or `error`.
          */
+        @Deprecated("deprecated")
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
         /**
          * Deprecated. For details on why a fine-tuning training file failed validation, see the
          * `error` field on `fine_tuning.job`.
          */
+        @Deprecated("deprecated")
         fun statusDetails(statusDetails: String) = statusDetails(JsonField.of(statusDetails))
 
         /**
          * Deprecated. For details on why a fine-tuning training file failed validation, see the
          * `error` field on `fine_tuning.job`.
          */
+        @Deprecated("deprecated")
         fun statusDetails(statusDetails: JsonField<String>) = apply {
             this.statusDetails = statusDetails
         }
@@ -271,6 +279,7 @@ private constructor(
             )
     }
 
+    /** The object type, which is always `file`. */
     class Object
     @JsonCreator
     private constructor(
@@ -322,6 +331,10 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /**
+     * The intended purpose of the file. Supported values are `assistants`, `assistants_output`,
+     * `batch`, `batch_output`, `fine-tune`, `fine-tune-results` and `vision`.
+     */
     class Purpose
     @JsonCreator
     private constructor(
@@ -409,6 +422,11 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /**
+     * Deprecated. The current status of the file, which can be either `uploaded`, `processed`, or
+     * `error`.
+     */
+    @Deprecated("deprecated")
     class Status
     @JsonCreator
     private constructor(

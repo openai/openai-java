@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.function.Predicate
 
+/** Returns a list of vector store files. */
 class BetaVectorStoreFileListPageAsync
 private constructor(
     private val filesService: FileServiceAsync,

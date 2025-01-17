@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.function.Predicate
 
+/** List your organization's batches. */
 class BatchListPageAsync
 private constructor(
     private val batchesService: BatchServiceAsync,

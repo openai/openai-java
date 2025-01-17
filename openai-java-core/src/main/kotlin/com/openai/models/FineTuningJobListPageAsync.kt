@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.function.Predicate
 
+/** List your organization's fine-tuning jobs */
 class FineTuningJobListPageAsync
 private constructor(
     private val jobsService: JobServiceAsync,

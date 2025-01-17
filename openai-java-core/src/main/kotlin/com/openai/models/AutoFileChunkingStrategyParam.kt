@@ -101,6 +101,7 @@ private constructor(
             )
     }
 
+    /** Always `auto`. */
     class Type
     @JsonCreator
     private constructor(

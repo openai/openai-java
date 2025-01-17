@@ -77,6 +77,7 @@ constructor(
      * The hyperparameters used for the fine-tuning job. This value is now deprecated in favor of
      * `method`, and should be passed in under the `method` parameter.
      */
+    @Deprecated("deprecated")
     fun hyperparameters(): Optional<Hyperparameters> = body.hyperparameters()
 
     /** A list of integrations to enable for your fine-tuning job. */
@@ -146,6 +147,7 @@ constructor(
      * The hyperparameters used for the fine-tuning job. This value is now deprecated in favor of
      * `method`, and should be passed in under the `method` parameter.
      */
+    @Deprecated("deprecated")
     fun _hyperparameters(): JsonField<Hyperparameters> = body._hyperparameters()
 
     /** A list of integrations to enable for your fine-tuning job. */
@@ -257,6 +259,7 @@ constructor(
          * The hyperparameters used for the fine-tuning job. This value is now deprecated in favor
          * of `method`, and should be passed in under the `method` parameter.
          */
+        @Deprecated("deprecated")
         fun hyperparameters(): Optional<Hyperparameters> =
             Optional.ofNullable(hyperparameters.getNullable("hyperparameters"))
 
@@ -331,6 +334,7 @@ constructor(
          * The hyperparameters used for the fine-tuning job. This value is now deprecated in favor
          * of `method`, and should be passed in under the `method` parameter.
          */
+        @Deprecated("deprecated")
         @JsonProperty("hyperparameters")
         @ExcludeMissing
         fun _hyperparameters(): JsonField<Hyperparameters> = hyperparameters
@@ -495,6 +499,7 @@ constructor(
              * The hyperparameters used for the fine-tuning job. This value is now deprecated in
              * favor of `method`, and should be passed in under the `method` parameter.
              */
+            @Deprecated("deprecated")
             fun hyperparameters(hyperparameters: Hyperparameters) =
                 hyperparameters(JsonField.of(hyperparameters))
 
@@ -502,6 +507,7 @@ constructor(
              * The hyperparameters used for the fine-tuning job. This value is now deprecated in
              * favor of `method`, and should be passed in under the `method` parameter.
              */
+            @Deprecated("deprecated")
             fun hyperparameters(hyperparameters: JsonField<Hyperparameters>) = apply {
                 this.hyperparameters = hyperparameters
             }
@@ -779,6 +785,7 @@ constructor(
          * The hyperparameters used for the fine-tuning job. This value is now deprecated in favor
          * of `method`, and should be passed in under the `method` parameter.
          */
+        @Deprecated("deprecated")
         fun hyperparameters(hyperparameters: Hyperparameters) = apply {
             body.hyperparameters(hyperparameters)
         }
@@ -787,6 +794,7 @@ constructor(
          * The hyperparameters used for the fine-tuning job. This value is now deprecated in favor
          * of `method`, and should be passed in under the `method` parameter.
          */
+        @Deprecated("deprecated")
         fun hyperparameters(hyperparameters: JsonField<Hyperparameters>) = apply {
             body.hyperparameters(hyperparameters)
         }
@@ -1040,6 +1048,10 @@ constructor(
             )
     }
 
+    /**
+     * The name of the model to fine-tune. You can select one of the
+     * [supported models](https://platform.openai.com/docs/guides/fine-tuning#which-models-can-be-fine-tuned).
+     */
     class Model
     @JsonCreator
     private constructor(
@@ -1113,6 +1125,7 @@ constructor(
      * The hyperparameters used for the fine-tuning job. This value is now deprecated in favor of
      * `method`, and should be passed in under the `method` parameter.
      */
+    @Deprecated("deprecated")
     @NoAutoDetect
     class Hyperparameters
     @JsonCreator
@@ -1985,6 +1998,10 @@ constructor(
                 )
         }
 
+        /**
+         * The type of integration to enable. Currently, only "wandb" (Weights and Biases) is
+         * supported.
+         */
         class Type
         @JsonCreator
         private constructor(
@@ -4370,6 +4387,7 @@ constructor(
                 "Supervised{hyperparameters=$hyperparameters, additionalProperties=$additionalProperties}"
         }
 
+        /** The type of method. Is either `supervised` or `dpo`. */
         class Type
         @JsonCreator
         private constructor(

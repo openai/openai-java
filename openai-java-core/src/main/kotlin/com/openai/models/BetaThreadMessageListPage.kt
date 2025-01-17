@@ -19,6 +19,7 @@ import java.util.Optional
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
 
+/** Returns a list of messages for a given thread. */
 class BetaThreadMessageListPage
 private constructor(
     private val messagesService: MessageService,

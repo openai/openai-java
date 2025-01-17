@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.function.Predicate
 
+/** Returns a list of vector store files in a batch. */
 class BetaVectorStoreFileBatchListFilesPageAsync
 private constructor(
     private val fileBatchesService: FileBatchServiceAsync,

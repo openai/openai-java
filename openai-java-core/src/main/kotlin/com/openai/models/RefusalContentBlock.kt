@@ -113,6 +113,7 @@ private constructor(
             )
     }
 
+    /** Always `refusal`. */
     class Type
     @JsonCreator
     private constructor(

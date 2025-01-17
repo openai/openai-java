@@ -128,6 +128,10 @@ private constructor(
             )
     }
 
+    /**
+     * Specifies the detail level of the image. `low` uses fewer tokens, you can opt in to high
+     * resolution using `high`.
+     */
     class Detail
     @JsonCreator
     private constructor(

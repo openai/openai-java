@@ -181,6 +181,10 @@ private constructor(
             )
     }
 
+    /**
+     * The type of tool call. This is always going to be `code_interpreter` for this type of tool
+     * call.
+     */
     class Type
     @JsonCreator
     private constructor(
@@ -482,6 +486,7 @@ private constructor(
 
             interface Visitor<out T> {
 
+                /** Text output from the Code Interpreter tool call as part of a run step. */
                 fun visitCodeInterpreterLogs(codeInterpreterLogs: CodeInterpreterLogs): T
 
                 fun visitCodeInterpreterOutputImage(

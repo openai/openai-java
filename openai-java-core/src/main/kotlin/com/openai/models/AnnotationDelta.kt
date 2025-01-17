@@ -146,10 +146,19 @@ private constructor(
 
     interface Visitor<out T> {
 
+        /**
+         * A citation within the message that points to a specific quote from a specific File
+         * associated with the assistant or the message. Generated when the assistant uses the
+         * "file_search" tool to search files.
+         */
         fun visitFileCitationDeltaAnnotation(
             fileCitationDeltaAnnotation: FileCitationDeltaAnnotation
         ): T
 
+        /**
+         * A URL for the file that's generated when the assistant used the `code_interpreter` tool
+         * to generate a file.
+         */
         fun visitFilePathDeltaAnnotation(filePathDeltaAnnotation: FilePathDeltaAnnotation): T
 
         fun unknown(json: JsonValue?): T {

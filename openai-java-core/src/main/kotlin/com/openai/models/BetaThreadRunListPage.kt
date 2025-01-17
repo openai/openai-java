@@ -19,6 +19,7 @@ import java.util.Optional
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
 
+/** Returns a list of runs belonging to a thread. */
 class BetaThreadRunListPage
 private constructor(
     private val runsService: RunService,

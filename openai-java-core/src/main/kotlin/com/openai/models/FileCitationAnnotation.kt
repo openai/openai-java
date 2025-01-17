@@ -265,6 +265,7 @@ private constructor(
             "FileCitation{fileId=$fileId, additionalProperties=$additionalProperties}"
     }
 
+    /** Always `file_citation`. */
     class Type
     @JsonCreator
     private constructor(

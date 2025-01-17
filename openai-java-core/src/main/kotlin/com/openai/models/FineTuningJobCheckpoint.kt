@@ -439,6 +439,7 @@ private constructor(
             "Metrics{fullValidLoss=$fullValidLoss, fullValidMeanTokenAccuracy=$fullValidMeanTokenAccuracy, step=$step, trainLoss=$trainLoss, trainMeanTokenAccuracy=$trainMeanTokenAccuracy, validLoss=$validLoss, validMeanTokenAccuracy=$validMeanTokenAccuracy, additionalProperties=$additionalProperties}"
     }
 
+    /** The object type, which is always "fine_tuning.job.checkpoint". */
     class Object
     @JsonCreator
     private constructor(

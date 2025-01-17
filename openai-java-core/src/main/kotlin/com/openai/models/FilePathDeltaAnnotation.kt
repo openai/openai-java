@@ -181,6 +181,7 @@ private constructor(
             )
     }
 
+    /** Always `file_path`. */
     class Type
     @JsonCreator
     private constructor(

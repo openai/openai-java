@@ -94,6 +94,7 @@ private constructor(
             CodeInterpreterTool(checkRequired("type", type), additionalProperties.toImmutable())
     }
 
+    /** The type of tool being defined: `code_interpreter` */
     class Type
     @JsonCreator
     private constructor(

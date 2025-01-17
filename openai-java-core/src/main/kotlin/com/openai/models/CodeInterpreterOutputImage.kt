@@ -128,6 +128,7 @@ private constructor(
             )
     }
 
+    /** Always `image`. */
     class Type
     @JsonCreator
     private constructor(

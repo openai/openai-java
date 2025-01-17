@@ -155,6 +155,7 @@ private constructor(
             )
     }
 
+    /** The entity that produced the message. One of `user` or `assistant`. */
     class Role
     @JsonCreator
     private constructor(

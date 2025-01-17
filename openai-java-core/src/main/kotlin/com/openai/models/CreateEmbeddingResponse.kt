@@ -168,6 +168,7 @@ private constructor(
             )
     }
 
+    /** The object type, which is always "list". */
     class Object
     @JsonCreator
     private constructor(

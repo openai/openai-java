@@ -103,6 +103,7 @@ private constructor(
             )
     }
 
+    /** Always `other`. */
     class Type
     @JsonCreator
     private constructor(

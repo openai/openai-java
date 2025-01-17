@@ -212,6 +212,7 @@ private constructor(
         override fun toString() = "ImageUrl{url=$url, additionalProperties=$additionalProperties}"
     }
 
+    /** Always `image_url`. */
     class Type
     @JsonCreator
     private constructor(

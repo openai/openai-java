@@ -7,6 +7,14 @@ import com.openai.core.Enum
 import com.openai.core.JsonField
 import com.openai.errors.OpenAIInvalidDataException
 
+/**
+ * The intended purpose of the uploaded file.
+ *
+ * Use "assistants" for [Assistants](https://platform.openai.com/docs/api-reference/assistants) and
+ * [Message](https://platform.openai.com/docs/api-reference/messages) files, "vision" for Assistants
+ * image file inputs, "batch" for [Batch API](https://platform.openai.com/docs/guides/batch), and
+ * "fine-tune" for [Fine-tuning](https://platform.openai.com/docs/api-reference/fine-tuning).
+ */
 class FilePurpose
 @JsonCreator
 private constructor(

@@ -131,8 +131,16 @@ private constructor(
 
     interface Visitor<out T> {
 
+        /**
+         * `none` means the model will not call any tools and instead generates a message. `auto`
+         * means the model can pick between generating a message or calling one or more tools.
+         * `required` means the model must call one or more tools before responding to the user.
+         */
         fun visitBehavior(behavior: Behavior): T
 
+        /**
+         * Specifies a tool the model should use. Use to force the model to call a specific tool.
+         */
         fun visitAssistantToolChoice(assistantToolChoice: AssistantToolChoice): T
 
         fun unknown(json: JsonValue?): T {
@@ -175,6 +183,11 @@ private constructor(
         }
     }
 
+    /**
+     * `none` means the model will not call any tools and instead generates a message. `auto` means
+     * the model can pick between generating a message or calling one or more tools. `required`
+     * means the model must call one or more tools before responding to the user.
+     */
     class Behavior
     @JsonCreator
     private constructor(

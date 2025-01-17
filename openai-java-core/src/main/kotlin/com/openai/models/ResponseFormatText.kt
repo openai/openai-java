@@ -94,6 +94,7 @@ private constructor(
             ResponseFormatText(checkRequired("type", type), additionalProperties.toImmutable())
     }
 
+    /** The type of response format being defined: `text` */
     class Type
     @JsonCreator
     private constructor(

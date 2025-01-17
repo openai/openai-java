@@ -165,12 +165,19 @@ private constructor(
 
     interface Visitor<out T> {
 
+        /**
+         * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
+         * content of a message.
+         */
         fun visitImageFileDeltaBlock(imageFileDeltaBlock: ImageFileDeltaBlock): T
 
+        /** The text content that is part of a message. */
         fun visitTextDeltaBlock(textDeltaBlock: TextDeltaBlock): T
 
+        /** The refusal content that is part of a message. */
         fun visitRefusalDeltaBlock(refusalDeltaBlock: RefusalDeltaBlock): T
 
+        /** References an image URL in the content of a message. */
         fun visitImageUrlDeltaBlock(imageUrlDeltaBlock: ImageUrlDeltaBlock): T
 
         fun unknown(json: JsonValue?): T {
