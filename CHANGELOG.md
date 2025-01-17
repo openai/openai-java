@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.11.6 (2025-01-17)
+
+Full Changelog: [v0.11.5...v0.11.6](https://github.com/openai/openai-java/compare/v0.11.5...v0.11.6)
+
+### Chores
+
+* **internal:** move `StreamResponse` method ([#131](https://github.com/openai/openai-java/issues/131)) ([5888e39](https://github.com/openai/openai-java/commit/5888e398597b68a520b4bb3953d96403023331fd))
+* **internal:** refactor streaming implementation ([#129](https://github.com/openai/openai-java/issues/129)) ([d2831ec](https://github.com/openai/openai-java/commit/d2831ec587d37a2c2d51332f5f2f62ba3dd1181d))
+
 ## 0.11.5 (2025-01-16)
 
 Full Changelog: [v0.11.4...v0.11.5](https://github.com/openai/openai-java/compare/v0.11.4...v0.11.5)
