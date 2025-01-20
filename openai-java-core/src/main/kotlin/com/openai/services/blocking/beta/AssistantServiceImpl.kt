@@ -22,7 +22,7 @@ import com.openai.models.BetaAssistantRetrieveParams
 import com.openai.models.BetaAssistantUpdateParams
 
 class AssistantServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : AssistantService {
 

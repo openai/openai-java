@@ -35,7 +35,7 @@ import com.openai.services.async.beta.threads.RunServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 
 class ThreadServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : ThreadServiceAsync {
 

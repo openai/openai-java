@@ -20,7 +20,7 @@ import com.openai.services.blocking.uploads.PartService
 import com.openai.services.blocking.uploads.PartServiceImpl
 
 class UploadServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : UploadService {
 

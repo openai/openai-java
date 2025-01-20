@@ -25,7 +25,7 @@ import com.openai.services.async.fineTuning.jobs.CheckpointServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 
 class JobServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : JobServiceAsync {
 

@@ -18,7 +18,7 @@ import com.openai.models.RunStep
 import java.util.concurrent.CompletableFuture
 
 class StepServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : StepServiceAsync {
 

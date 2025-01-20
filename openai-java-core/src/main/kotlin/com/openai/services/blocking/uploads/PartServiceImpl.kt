@@ -5,6 +5,6 @@ package com.openai.services.blocking.uploads
 import com.openai.core.ClientOptions
 
 class PartServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : PartService

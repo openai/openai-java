@@ -21,7 +21,7 @@ import com.openai.models.FileRetrieveParams
 import java.util.concurrent.CompletableFuture
 
 class FileServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : FileServiceAsync {
 

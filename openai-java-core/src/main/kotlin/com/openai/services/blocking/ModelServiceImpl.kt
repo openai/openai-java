@@ -20,7 +20,7 @@ import com.openai.models.ModelListParams
 import com.openai.models.ModelRetrieveParams
 
 class ModelServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : ModelService {
 

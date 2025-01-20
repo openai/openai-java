@@ -17,7 +17,7 @@ import com.openai.models.ModerationCreateResponse
 import java.util.concurrent.CompletableFuture
 
 class ModerationServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : ModerationServiceAsync {
 

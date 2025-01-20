@@ -33,7 +33,7 @@ import com.openai.services.async.beta.threads.runs.StepServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 
 class RunServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : RunServiceAsync {
 

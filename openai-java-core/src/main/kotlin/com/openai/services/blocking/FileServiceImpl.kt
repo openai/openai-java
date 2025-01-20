@@ -20,7 +20,7 @@ import com.openai.models.FileObject
 import com.openai.models.FileRetrieveParams
 
 class FileServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : FileService {
 

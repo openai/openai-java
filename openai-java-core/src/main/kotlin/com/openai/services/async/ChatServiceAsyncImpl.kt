@@ -7,7 +7,7 @@ import com.openai.services.async.chat.CompletionServiceAsync
 import com.openai.services.async.chat.CompletionServiceAsyncImpl
 
 class ChatServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : ChatServiceAsync {
 

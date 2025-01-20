@@ -22,7 +22,7 @@ import com.openai.models.ChatCompletionChunk
 import com.openai.models.ChatCompletionCreateParams
 
 class CompletionServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : CompletionService {
 

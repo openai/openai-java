@@ -15,7 +15,7 @@ import com.openai.models.FineTuningJobCheckpointListPage
 import com.openai.models.FineTuningJobCheckpointListParams
 
 class CheckpointServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : CheckpointService {
 

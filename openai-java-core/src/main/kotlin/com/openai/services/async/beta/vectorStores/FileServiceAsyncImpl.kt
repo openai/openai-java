@@ -22,7 +22,7 @@ import com.openai.models.VectorStoreFileDeleted
 import java.util.concurrent.CompletableFuture
 
 class FileServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : FileServiceAsync {
 
