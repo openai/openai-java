@@ -7,7 +7,7 @@ import com.openai.services.async.fineTuning.JobServiceAsync
 import com.openai.services.async.fineTuning.JobServiceAsyncImpl
 
 class FineTuningServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : FineTuningServiceAsync {
 

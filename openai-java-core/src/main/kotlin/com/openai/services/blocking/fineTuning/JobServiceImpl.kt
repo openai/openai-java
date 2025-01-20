@@ -24,7 +24,7 @@ import com.openai.services.blocking.fineTuning.jobs.CheckpointService
 import com.openai.services.blocking.fineTuning.jobs.CheckpointServiceImpl
 
 class JobServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : JobService {
 

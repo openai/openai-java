@@ -27,7 +27,7 @@ import com.openai.services.async.beta.vectorStores.FileServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 
 class VectorStoreServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : VectorStoreServiceAsync {
 

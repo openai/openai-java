@@ -30,7 +30,7 @@ import com.openai.services.blocking.beta.threads.runs.StepService
 import com.openai.services.blocking.beta.threads.runs.StepServiceImpl
 
 class RunServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : RunService {
 

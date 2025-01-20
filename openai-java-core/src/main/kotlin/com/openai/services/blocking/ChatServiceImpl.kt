@@ -7,7 +7,7 @@ import com.openai.services.blocking.chat.CompletionService
 import com.openai.services.blocking.chat.CompletionServiceImpl
 
 class ChatServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : ChatService {
 

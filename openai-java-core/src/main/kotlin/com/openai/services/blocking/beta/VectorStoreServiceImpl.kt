@@ -26,7 +26,7 @@ import com.openai.services.blocking.beta.vectorStores.FileService
 import com.openai.services.blocking.beta.vectorStores.FileServiceImpl
 
 class VectorStoreServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : VectorStoreService {
 

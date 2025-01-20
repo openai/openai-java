@@ -32,7 +32,7 @@ import com.openai.services.blocking.beta.threads.RunService
 import com.openai.services.blocking.beta.threads.RunServiceImpl
 
 class ThreadServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : ThreadService {
 

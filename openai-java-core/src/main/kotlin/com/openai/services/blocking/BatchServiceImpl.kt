@@ -20,7 +20,7 @@ import com.openai.models.BatchListParams
 import com.openai.models.BatchRetrieveParams
 
 class BatchServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : BatchService {
 

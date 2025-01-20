@@ -17,7 +17,7 @@ import com.openai.models.BetaThreadRunStepRetrieveParams
 import com.openai.models.RunStep
 
 class StepServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : StepService {
 

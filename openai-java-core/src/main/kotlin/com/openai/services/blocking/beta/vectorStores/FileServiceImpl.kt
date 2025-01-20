@@ -21,7 +21,7 @@ import com.openai.models.VectorStoreFile
 import com.openai.models.VectorStoreFileDeleted
 
 class FileServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : FileService {
 

@@ -11,7 +11,7 @@ import com.openai.services.blocking.beta.VectorStoreService
 import com.openai.services.blocking.beta.VectorStoreServiceImpl
 
 class BetaServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : BetaService {
 

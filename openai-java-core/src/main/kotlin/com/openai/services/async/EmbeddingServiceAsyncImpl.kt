@@ -17,7 +17,7 @@ import com.openai.models.EmbeddingCreateParams
 import java.util.concurrent.CompletableFuture
 
 class EmbeddingServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : EmbeddingServiceAsync {
 
