@@ -19,7 +19,7 @@ import com.openai.models.ImagesResponse
 import java.util.concurrent.CompletableFuture
 
 class ImageServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : ImageServiceAsync {
 

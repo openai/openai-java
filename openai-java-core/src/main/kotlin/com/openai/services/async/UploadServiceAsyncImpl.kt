@@ -21,7 +21,7 @@ import com.openai.services.async.uploads.PartServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 
 class UploadServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : UploadServiceAsync {
 

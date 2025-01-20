@@ -18,7 +18,7 @@ import com.openai.models.ImageGenerateParams
 import com.openai.models.ImagesResponse
 
 class ImageServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : ImageService {
 

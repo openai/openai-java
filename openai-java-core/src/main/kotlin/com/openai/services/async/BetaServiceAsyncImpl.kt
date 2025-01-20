@@ -11,7 +11,7 @@ import com.openai.services.async.beta.VectorStoreServiceAsync
 import com.openai.services.async.beta.VectorStoreServiceAsyncImpl
 
 class BetaServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : BetaServiceAsync {
 

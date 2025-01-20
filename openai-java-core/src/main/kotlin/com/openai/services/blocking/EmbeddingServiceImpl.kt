@@ -18,7 +18,7 @@ import com.openai.models.CreateEmbeddingResponse
 import com.openai.models.EmbeddingCreateParams
 
 class EmbeddingServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : EmbeddingService {
 

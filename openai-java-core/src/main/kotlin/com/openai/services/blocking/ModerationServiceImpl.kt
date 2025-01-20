@@ -16,7 +16,7 @@ import com.openai.models.ModerationCreateParams
 import com.openai.models.ModerationCreateResponse
 
 class ModerationServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : ModerationService {
 

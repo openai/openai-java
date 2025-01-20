@@ -23,7 +23,7 @@ import com.openai.models.Completion
 import com.openai.models.CompletionCreateParams
 
 class CompletionServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : CompletionService {
 

@@ -23,7 +23,7 @@ import com.openai.models.MessageDeleted
 import java.util.concurrent.CompletableFuture
 
 class MessageServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : MessageServiceAsync {
 

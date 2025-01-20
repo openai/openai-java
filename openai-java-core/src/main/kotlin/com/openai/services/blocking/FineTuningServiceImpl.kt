@@ -7,7 +7,7 @@ import com.openai.services.blocking.fineTuning.JobService
 import com.openai.services.blocking.fineTuning.JobServiceImpl
 
 class FineTuningServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : FineTuningService {
 

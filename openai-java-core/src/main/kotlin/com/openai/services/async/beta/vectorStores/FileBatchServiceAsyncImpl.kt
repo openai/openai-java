@@ -21,7 +21,7 @@ import com.openai.models.VectorStoreFileBatch
 import java.util.concurrent.CompletableFuture
 
 class FileBatchServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : FileBatchServiceAsync {
 

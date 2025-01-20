@@ -20,7 +20,7 @@ import com.openai.models.BetaVectorStoreFileBatchRetrieveParams
 import com.openai.models.VectorStoreFileBatch
 
 class FileBatchServiceImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : FileBatchService {
 

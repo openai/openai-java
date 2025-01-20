@@ -16,7 +16,7 @@ import com.openai.models.FineTuningJobCheckpointListParams
 import java.util.concurrent.CompletableFuture
 
 class CheckpointServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : CheckpointServiceAsync {
 

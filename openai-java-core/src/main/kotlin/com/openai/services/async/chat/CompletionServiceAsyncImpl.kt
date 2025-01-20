@@ -27,7 +27,7 @@ import com.openai.models.ChatCompletionCreateParams
 import java.util.concurrent.CompletableFuture
 
 class CompletionServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : CompletionServiceAsync {
 

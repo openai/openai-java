@@ -23,7 +23,7 @@ import com.openai.models.BetaAssistantUpdateParams
 import java.util.concurrent.CompletableFuture
 
 class AssistantServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : AssistantServiceAsync {
 

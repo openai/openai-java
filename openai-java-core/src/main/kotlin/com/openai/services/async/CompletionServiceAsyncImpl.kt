@@ -26,7 +26,7 @@ import com.openai.models.CompletionCreateParams
 import java.util.concurrent.CompletableFuture
 
 class CompletionServiceAsyncImpl
-constructor(
+internal constructor(
     private val clientOptions: ClientOptions,
 ) : CompletionServiceAsync {
 
