@@ -3,6 +3,7 @@
 package com.openai.services.blocking
 
 import com.openai.core.ClientOptions
+import com.openai.core.http.Headers
 import com.openai.services.blocking.beta.AssistantService
 import com.openai.services.blocking.beta.AssistantServiceImpl
 import com.openai.services.blocking.beta.ThreadService
@@ -14,6 +15,11 @@ class BetaServiceImpl
 internal constructor(
     private val clientOptions: ClientOptions,
 ) : BetaService {
+
+    companion object {
+
+        private val DEFAULT_HEADERS = Headers.builder().put("OpenAI-Beta", "assistants=v2").build()
+    }
 
     private val vectorStores: VectorStoreService by lazy { VectorStoreServiceImpl(clientOptions) }
 
