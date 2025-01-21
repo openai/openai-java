@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.11.10 (2025-01-21)
+
+Full Changelog: [v0.11.9...v0.11.10](https://github.com/openai/openai-java/compare/v0.11.9...v0.11.10)
+
+### Bug Fixes
+
+* **client:** add missing default headers ([#145](https://github.com/openai/openai-java/issues/145)) ([18d5270](https://github.com/openai/openai-java/commit/18d5270326561ca8e5f10b5a671da1d30ced5993))
+
 ## 0.11.9 (2025-01-21)
 
 Full Changelog: [v0.11.8...v0.11.9](https://github.com/openai/openai-java/compare/v0.11.8...v0.11.9)
