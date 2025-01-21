@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.11.9 (2025-01-21)
+
+Full Changelog: [v0.11.8...v0.11.9](https://github.com/openai/openai-java/compare/v0.11.8...v0.11.9)
+
+### Bug Fixes
+
+* **client:** make service impl constructors internal ([#141](https://github.com/openai/openai-java/issues/141)) ([da35557](https://github.com/openai/openai-java/commit/da35557895e233dd5e490e139043faad92173782))
+
 ## 0.11.8 (2025-01-17)
 
 Full Changelog: [v0.11.7...v0.11.8](https://github.com/openai/openai-java/compare/v0.11.7...v0.11.8)
