@@ -1,3 +1,5 @@
+// File generated from our OpenAPI spec by Stainless.
+
 package com.openai.core.http
 
 import com.fasterxml.jackson.databind.json.JsonMapper
@@ -39,7 +41,17 @@ private constructor(
         fun build(): SseMessage = SseMessage(jsonMapper!!, event, data, id, retry)
     }
 
-    inline fun <reified T> json(): T = jsonMapper.readerFor(jacksonTypeRef<T>()).readValue(jsonNode)
+    inline fun <reified T> json(includeEventAndData: Boolean = false): T {
+        var jsonNode = jsonNode
+        if (includeEventAndData) {
+            val newJsonNode = jsonMapper.createObjectNode()
+            event?.let { newJsonNode.put("event", event) }
+            newJsonNode.replace("data", jsonNode)
+            jsonNode = newJsonNode
+        }
+
+        return jsonMapper.readerFor(jacksonTypeRef<T>()).readValue(jsonNode)
+    }
 
     private val jsonNode by lazy {
         try {

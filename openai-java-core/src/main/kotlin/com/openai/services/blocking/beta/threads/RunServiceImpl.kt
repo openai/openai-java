@@ -75,7 +75,7 @@ internal constructor(
 
     private val createStreamingHandler: Handler<StreamResponse<AssistantStreamEvent>> =
         sseHandler(clientOptions.jsonMapper)
-            .mapJson<AssistantStreamEvent>()
+            .mapJson<AssistantStreamEvent>(includeEventAndData = true)
             .withErrorHandler(errorHandler)
 
     /** Create a run. */
@@ -278,7 +278,7 @@ internal constructor(
 
     private val submitToolOutputsStreamingHandler: Handler<StreamResponse<AssistantStreamEvent>> =
         sseHandler(clientOptions.jsonMapper)
-            .mapJson<AssistantStreamEvent>()
+            .mapJson<AssistantStreamEvent>(includeEventAndData = true)
             .withErrorHandler(errorHandler)
 
     /**
