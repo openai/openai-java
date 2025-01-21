@@ -1,3 +1,5 @@
+// File generated from our OpenAPI spec by Stainless.
+
 @file:JvmName("SseHandler")
 
 package com.openai.core.handlers
@@ -117,13 +119,14 @@ private class SseState(
 }
 
 @JvmSynthetic
-internal inline fun <reified T> Handler<StreamResponse<SseMessage>>.mapJson():
-    Handler<StreamResponse<T>> =
+internal inline fun <reified T> Handler<StreamResponse<SseMessage>>.mapJson(
+    includeEventAndData: Boolean = false
+): Handler<StreamResponse<T>> =
     object : Handler<StreamResponse<T>> {
         override fun handle(response: HttpResponse): StreamResponse<T> =
             this@mapJson.handle(response).map {
                 try {
-                    it.json<T>()
+                    it.json<T>(includeEventAndData)
                 } catch (e: Exception) {
                     throw OpenAIException("Error reading response", e)
                 }
