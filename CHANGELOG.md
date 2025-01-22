@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.13.0 (2025-01-22)
+
+Full Changelog: [v0.12.0...v0.13.0](https://github.com/openai/openai-java/compare/v0.12.0...v0.13.0)
+
+### Features
+
+* **api:** update enum values, comments, examples, and constants ([#149](https://github.com/openai/openai-java/issues/149)) ([4bfa305](https://github.com/openai/openai-java/commit/4bfa3055d017aa23cc8cc41827012dc773cbf508))
+
+
+### Bug Fixes
+
+* **examples:** remove now unneeded role param ([045f141](https://github.com/openai/openai-java/commit/045f141a7956d13a2ac35af30e64c5160252ee6b))
+
 ## 0.12.0 (2025-01-22)
 
 Full Changelog: [v0.11.10...v0.12.0](https://github.com/openai/openai-java/compare/v0.11.10...v0.12.0)
