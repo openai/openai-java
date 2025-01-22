@@ -12,7 +12,6 @@ class FileCitationDeltaAnnotationTest {
         val fileCitationDeltaAnnotation =
             FileCitationDeltaAnnotation.builder()
                 .index(0L)
-                .type(FileCitationDeltaAnnotation.Type.FILE_CITATION)
                 .endIndex(0L)
                 .fileCitation(
                     FileCitationDeltaAnnotation.FileCitation.builder()
@@ -25,8 +24,6 @@ class FileCitationDeltaAnnotationTest {
                 .build()
         assertThat(fileCitationDeltaAnnotation).isNotNull
         assertThat(fileCitationDeltaAnnotation.index()).isEqualTo(0L)
-        assertThat(fileCitationDeltaAnnotation.type())
-            .isEqualTo(FileCitationDeltaAnnotation.Type.FILE_CITATION)
         assertThat(fileCitationDeltaAnnotation.endIndex()).contains(0L)
         assertThat(fileCitationDeltaAnnotation.fileCitation())
             .contains(

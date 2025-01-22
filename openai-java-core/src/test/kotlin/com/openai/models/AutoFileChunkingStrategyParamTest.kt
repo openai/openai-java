@@ -9,12 +9,7 @@ class AutoFileChunkingStrategyParamTest {
 
     @Test
     fun createAutoFileChunkingStrategyParam() {
-        val autoFileChunkingStrategyParam =
-            AutoFileChunkingStrategyParam.builder()
-                .type(AutoFileChunkingStrategyParam.Type.AUTO)
-                .build()
+        val autoFileChunkingStrategyParam = AutoFileChunkingStrategyParam.builder().build()
         assertThat(autoFileChunkingStrategyParam).isNotNull
-        assertThat(autoFileChunkingStrategyParam.type())
-            .isEqualTo(AutoFileChunkingStrategyParam.Type.AUTO)
     }
 }

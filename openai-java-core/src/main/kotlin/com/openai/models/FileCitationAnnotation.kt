@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -37,7 +36,7 @@ private constructor(
     @ExcludeMissing
     private val startIndex: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("text") @ExcludeMissing private val text: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
@@ -51,7 +50,7 @@ private constructor(
     fun text(): String = text.getRequired("text")
 
     /** Always `file_citation`. */
-    fun type(): Type = type.getRequired("type")
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     @JsonProperty("end_index") @ExcludeMissing fun _endIndex(): JsonField<Long> = endIndex
 
@@ -63,9 +62,6 @@ private constructor(
 
     /** The text in the message content that needs to be replaced. */
     @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
-
-    /** Always `file_citation`. */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -82,7 +78,11 @@ private constructor(
         fileCitation().validate()
         startIndex()
         text()
-        type()
+        _type().let {
+            if (it != JsonValue.from("file_citation")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
         validated = true
     }
 
@@ -99,7 +99,7 @@ private constructor(
         private var fileCitation: JsonField<FileCitation>? = null
         private var startIndex: JsonField<Long>? = null
         private var text: JsonField<String>? = null
-        private var type: JsonField<Type>? = null
+        private var type: JsonValue = JsonValue.from("file_citation")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -133,10 +133,7 @@ private constructor(
         fun text(text: JsonField<String>) = apply { this.text = text }
 
         /** Always `file_citation`. */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /** Always `file_citation`. */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
+        fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -163,7 +160,7 @@ private constructor(
                 checkRequired("fileCitation", fileCitation),
                 checkRequired("startIndex", startIndex),
                 checkRequired("text", text),
-                checkRequired("type", type),
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -263,58 +260,6 @@ private constructor(
 
         override fun toString() =
             "FileCitation{fileId=$fileId, additionalProperties=$additionalProperties}"
-    }
-
-    /** Always `file_citation`. */
-    class Type
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val FILE_CITATION = of("file_citation")
-
-            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-        }
-
-        enum class Known {
-            FILE_CITATION,
-        }
-
-        enum class Value {
-            FILE_CITATION,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                FILE_CITATION -> Value.FILE_CITATION
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                FILE_CITATION -> Known.FILE_CITATION
-                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

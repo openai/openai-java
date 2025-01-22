@@ -11,17 +11,8 @@ class BetaVectorStoreCreateParamsTest {
     @Test
     fun createBetaVectorStoreCreateParams() {
         BetaVectorStoreCreateParams.builder()
-            .chunkingStrategy(
-                AutoFileChunkingStrategyParam.builder()
-                    .type(AutoFileChunkingStrategyParam.Type.AUTO)
-                    .build()
-            )
-            .expiresAfter(
-                BetaVectorStoreCreateParams.ExpiresAfter.builder()
-                    .anchor(BetaVectorStoreCreateParams.ExpiresAfter.Anchor.LAST_ACTIVE_AT)
-                    .days(1L)
-                    .build()
-            )
+            .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
+            .expiresAfter(BetaVectorStoreCreateParams.ExpiresAfter.builder().days(1L).build())
             .addFileId("string")
             .metadata(JsonValue.from(mapOf<String, Any>()))
             .name("name")
@@ -32,17 +23,8 @@ class BetaVectorStoreCreateParamsTest {
     fun getBody() {
         val params =
             BetaVectorStoreCreateParams.builder()
-                .chunkingStrategy(
-                    AutoFileChunkingStrategyParam.builder()
-                        .type(AutoFileChunkingStrategyParam.Type.AUTO)
-                        .build()
-                )
-                .expiresAfter(
-                    BetaVectorStoreCreateParams.ExpiresAfter.builder()
-                        .anchor(BetaVectorStoreCreateParams.ExpiresAfter.Anchor.LAST_ACTIVE_AT)
-                        .days(1L)
-                        .build()
-                )
+                .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
+                .expiresAfter(BetaVectorStoreCreateParams.ExpiresAfter.builder().days(1L).build())
                 .addFileId("string")
                 .metadata(JsonValue.from(mapOf<String, Any>()))
                 .name("name")
@@ -52,18 +34,11 @@ class BetaVectorStoreCreateParamsTest {
         assertThat(body.chunkingStrategy())
             .contains(
                 FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
-                    AutoFileChunkingStrategyParam.builder()
-                        .type(AutoFileChunkingStrategyParam.Type.AUTO)
-                        .build()
+                    AutoFileChunkingStrategyParam.builder().build()
                 )
             )
         assertThat(body.expiresAfter())
-            .contains(
-                BetaVectorStoreCreateParams.ExpiresAfter.builder()
-                    .anchor(BetaVectorStoreCreateParams.ExpiresAfter.Anchor.LAST_ACTIVE_AT)
-                    .days(1L)
-                    .build()
-            )
+            .contains(BetaVectorStoreCreateParams.ExpiresAfter.builder().days(1L).build())
         assertThat(body.fileIds()).contains(listOf("string"))
         assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.name()).contains("name")

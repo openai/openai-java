@@ -594,8 +594,7 @@ constructor(
             }
 
             /** `auto` is the default value */
-            fun responseFormat(behavior: AssistantResponseFormatOption.Behavior) =
-                responseFormat(AssistantResponseFormatOption.ofBehavior(behavior))
+            fun responseFormatAuto() = responseFormat(AssistantResponseFormatOption.ofAuto())
 
             /**
              * Specifies the format that the model must output. Compatible with
@@ -1036,9 +1035,7 @@ constructor(
         }
 
         /** `auto` is the default value */
-        fun responseFormat(behavior: AssistantResponseFormatOption.Behavior) = apply {
-            body.responseFormat(behavior)
-        }
+        fun responseFormatAuto() = apply { body.responseFormatAuto() }
 
         /**
          * Specifies the format that the model must output. Compatible with

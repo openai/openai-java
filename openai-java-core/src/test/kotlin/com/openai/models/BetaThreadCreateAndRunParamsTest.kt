@@ -18,7 +18,7 @@ class BetaThreadCreateAndRunParamsTest {
             .metadata(JsonValue.from(mapOf<String, Any>()))
             .model(ChatModel.GPT_4O)
             .parallelToolCalls(true)
-            .responseFormat(AssistantResponseFormatOption.Behavior.AUTO)
+            .responseFormatAuto()
             .temperature(1.0)
             .thread(
                 BetaThreadCreateAndRunParams.Thread.builder()
@@ -29,11 +29,7 @@ class BetaThreadCreateAndRunParamsTest {
                             .addAttachment(
                                 BetaThreadCreateAndRunParams.Thread.Message.Attachment.builder()
                                     .fileId("file_id")
-                                    .addTool(
-                                        CodeInterpreterTool.builder()
-                                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                            .build()
-                                    )
+                                    .addTool(CodeInterpreterTool.builder().build())
                                     .build()
                             )
                             .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -57,9 +53,7 @@ class BetaThreadCreateAndRunParamsTest {
                                             .VectorStore
                                             .builder()
                                             .chunkingStrategy(
-                                                AutoFileChunkingStrategyParam.builder()
-                                                    .type(AutoFileChunkingStrategyParam.Type.AUTO)
-                                                    .build()
+                                                AutoFileChunkingStrategyParam.builder().build()
                                             )
                                             .addFileId("string")
                                             .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -71,7 +65,7 @@ class BetaThreadCreateAndRunParamsTest {
                     )
                     .build()
             )
-            .toolChoice(AssistantToolChoiceOption.Behavior.NONE)
+            .toolChoice(AssistantToolChoiceOption.Auto.NONE)
             .toolResources(
                 BetaThreadCreateAndRunParams.ToolResources.builder()
                     .codeInterpreter(
@@ -86,11 +80,7 @@ class BetaThreadCreateAndRunParamsTest {
                     )
                     .build()
             )
-            .addTool(
-                CodeInterpreterTool.builder()
-                    .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                    .build()
-            )
+            .addTool(CodeInterpreterTool.builder().build())
             .topP(1.0)
             .truncationStrategy(
                 BetaThreadCreateAndRunParams.TruncationStrategy.builder()
@@ -112,7 +102,7 @@ class BetaThreadCreateAndRunParamsTest {
                 .metadata(JsonValue.from(mapOf<String, Any>()))
                 .model(ChatModel.GPT_4O)
                 .parallelToolCalls(true)
-                .responseFormat(AssistantResponseFormatOption.Behavior.AUTO)
+                .responseFormatAuto()
                 .temperature(1.0)
                 .thread(
                     BetaThreadCreateAndRunParams.Thread.builder()
@@ -123,11 +113,7 @@ class BetaThreadCreateAndRunParamsTest {
                                 .addAttachment(
                                     BetaThreadCreateAndRunParams.Thread.Message.Attachment.builder()
                                         .fileId("file_id")
-                                        .addTool(
-                                            CodeInterpreterTool.builder()
-                                                .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                                .build()
-                                        )
+                                        .addTool(CodeInterpreterTool.builder().build())
                                         .build()
                                 )
                                 .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -153,11 +139,7 @@ class BetaThreadCreateAndRunParamsTest {
                                                 .VectorStore
                                                 .builder()
                                                 .chunkingStrategy(
-                                                    AutoFileChunkingStrategyParam.builder()
-                                                        .type(
-                                                            AutoFileChunkingStrategyParam.Type.AUTO
-                                                        )
-                                                        .build()
+                                                    AutoFileChunkingStrategyParam.builder().build()
                                                 )
                                                 .addFileId("string")
                                                 .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -169,7 +151,7 @@ class BetaThreadCreateAndRunParamsTest {
                         )
                         .build()
                 )
-                .toolChoice(AssistantToolChoiceOption.Behavior.NONE)
+                .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                 .toolResources(
                     BetaThreadCreateAndRunParams.ToolResources.builder()
                         .codeInterpreter(
@@ -184,11 +166,7 @@ class BetaThreadCreateAndRunParamsTest {
                         )
                         .build()
                 )
-                .addTool(
-                    CodeInterpreterTool.builder()
-                        .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                        .build()
-                )
+                .addTool(CodeInterpreterTool.builder().build())
                 .topP(1.0)
                 .truncationStrategy(
                     BetaThreadCreateAndRunParams.TruncationStrategy.builder()
@@ -206,12 +184,7 @@ class BetaThreadCreateAndRunParamsTest {
         assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.model()).contains(ChatModel.GPT_4O)
         assertThat(body.parallelToolCalls()).contains(true)
-        assertThat(body.responseFormat())
-            .contains(
-                AssistantResponseFormatOption.ofBehavior(
-                    AssistantResponseFormatOption.Behavior.AUTO
-                )
-            )
+        assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
         assertThat(body.temperature()).contains(1.0)
         assertThat(body.thread())
             .contains(
@@ -223,11 +196,7 @@ class BetaThreadCreateAndRunParamsTest {
                             .addAttachment(
                                 BetaThreadCreateAndRunParams.Thread.Message.Attachment.builder()
                                     .fileId("file_id")
-                                    .addTool(
-                                        CodeInterpreterTool.builder()
-                                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                            .build()
-                                    )
+                                    .addTool(CodeInterpreterTool.builder().build())
                                     .build()
                             )
                             .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -251,9 +220,7 @@ class BetaThreadCreateAndRunParamsTest {
                                             .VectorStore
                                             .builder()
                                             .chunkingStrategy(
-                                                AutoFileChunkingStrategyParam.builder()
-                                                    .type(AutoFileChunkingStrategyParam.Type.AUTO)
-                                                    .build()
+                                                AutoFileChunkingStrategyParam.builder().build()
                                             )
                                             .addFileId("string")
                                             .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -266,7 +233,7 @@ class BetaThreadCreateAndRunParamsTest {
                     .build()
             )
         assertThat(body.toolChoice())
-            .contains(AssistantToolChoiceOption.ofBehavior(AssistantToolChoiceOption.Behavior.NONE))
+            .contains(AssistantToolChoiceOption.ofAuto(AssistantToolChoiceOption.Auto.NONE))
         assertThat(body.toolResources())
             .contains(
                 BetaThreadCreateAndRunParams.ToolResources.builder()
@@ -286,9 +253,7 @@ class BetaThreadCreateAndRunParamsTest {
             .contains(
                 listOf(
                     BetaThreadCreateAndRunParams.Tool.ofCodeInterpreterTool(
-                        CodeInterpreterTool.builder()
-                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                            .build()
+                        CodeInterpreterTool.builder().build()
                     )
                 )
             )

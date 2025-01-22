@@ -18,7 +18,6 @@ class RequiredActionFunctionToolCallTest {
                         .name("name")
                         .build()
                 )
-                .type(RequiredActionFunctionToolCall.Type.FUNCTION)
                 .build()
         assertThat(requiredActionFunctionToolCall).isNotNull
         assertThat(requiredActionFunctionToolCall.id()).isEqualTo("id")
@@ -29,7 +28,5 @@ class RequiredActionFunctionToolCallTest {
                     .name("name")
                     .build()
             )
-        assertThat(requiredActionFunctionToolCall.type())
-            .isEqualTo(RequiredActionFunctionToolCall.Type.FUNCTION)
     }
 }

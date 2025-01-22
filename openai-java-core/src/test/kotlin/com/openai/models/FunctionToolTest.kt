@@ -24,7 +24,6 @@ class FunctionToolTest {
                         .strict(true)
                         .build()
                 )
-                .type(FunctionTool.Type.FUNCTION)
                 .build()
         assertThat(functionTool).isNotNull
         assertThat(functionTool.function())
@@ -40,6 +39,5 @@ class FunctionToolTest {
                     .strict(true)
                     .build()
             )
-        assertThat(functionTool.type()).isEqualTo(FunctionTool.Type.FUNCTION)
     }
 }

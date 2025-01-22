@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -22,7 +21,7 @@ import java.util.Objects
 class FineTuningJobWandbIntegrationObject
 @JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
     @JsonProperty("wandb")
     @ExcludeMissing
     private val wandb: JsonField<FineTuningJobWandbIntegration> = JsonMissing.of(),
@@ -30,7 +29,7 @@ private constructor(
 ) {
 
     /** The type of the integration being enabled for the fine-tuning job */
-    fun type(): Type = type.getRequired("type")
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
      * The settings for your integration with Weights and Biases. This payload specifies the project
@@ -39,9 +38,6 @@ private constructor(
      * your run.
      */
     fun wandb(): FineTuningJobWandbIntegration = wandb.getRequired("wandb")
-
-    /** The type of the integration being enabled for the fine-tuning job */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     /**
      * The settings for your integration with Weights and Biases. This payload specifies the project
@@ -64,7 +60,11 @@ private constructor(
             return@apply
         }
 
-        type()
+        _type().let {
+            if (it != JsonValue.from("wandb")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
         wandb().validate()
         validated = true
     }
@@ -78,7 +78,7 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type>? = null
+        private var type: JsonValue = JsonValue.from("wandb")
         private var wandb: JsonField<FineTuningJobWandbIntegration>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -93,10 +93,7 @@ private constructor(
         }
 
         /** The type of the integration being enabled for the fine-tuning job */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /** The type of the integration being enabled for the fine-tuning job */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
+        fun type(type: JsonValue) = apply { this.type = type }
 
         /**
          * The settings for your integration with Weights and Biases. This payload specifies the
@@ -135,62 +132,10 @@ private constructor(
 
         fun build(): FineTuningJobWandbIntegrationObject =
             FineTuningJobWandbIntegrationObject(
-                checkRequired("type", type),
+                type,
                 checkRequired("wandb", wandb),
                 additionalProperties.toImmutable(),
             )
-    }
-
-    /** The type of the integration being enabled for the fine-tuning job */
-    class Type
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val WANDB = of("wandb")
-
-            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-        }
-
-        enum class Known {
-            WANDB,
-        }
-
-        enum class Value {
-            WANDB,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                WANDB -> Value.WANDB
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                WANDB -> Known.WANDB
-                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

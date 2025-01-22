@@ -63,9 +63,7 @@ private constructor(
     private val maxPromptTokens: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonValue = JsonMissing.of(),
     @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonProperty("parallel_tool_calls")
     @ExcludeMissing
     private val parallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
@@ -165,7 +163,7 @@ private constructor(
     fun model(): String = model.getRequired("model")
 
     /** The object type, which is always `thread.run`. */
-    fun object_(): Object = object_.getRequired("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * Whether to enable
@@ -318,9 +316,6 @@ private constructor(
      */
     @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
 
-    /** The object type, which is always `thread.run`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
-
     /**
      * Whether to enable
      * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
@@ -438,7 +433,11 @@ private constructor(
         maxCompletionTokens()
         maxPromptTokens()
         model()
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("thread.run")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         parallelToolCalls()
         requiredAction().ifPresent { it.validate() }
         responseFormat().ifPresent { it.validate() }
@@ -477,7 +476,7 @@ private constructor(
         private var maxPromptTokens: JsonField<Long>? = null
         private var metadata: JsonValue? = null
         private var model: JsonField<String>? = null
-        private var object_: JsonField<Object>? = null
+        private var object_: JsonValue = JsonValue.from("thread.run")
         private var parallelToolCalls: JsonField<Boolean>? = null
         private var requiredAction: JsonField<RequiredAction>? = null
         private var responseFormat: JsonField<AssistantResponseFormatOption>? = null
@@ -717,10 +716,7 @@ private constructor(
         fun model(model: JsonField<String>) = apply { this.model = model }
 
         /** The object type, which is always `thread.run`. */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always `thread.run`. */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /**
          * Whether to enable
@@ -832,8 +828,7 @@ private constructor(
         }
 
         /** `auto` is the default value */
-        fun responseFormat(behavior: AssistantResponseFormatOption.Behavior) =
-            responseFormat(AssistantResponseFormatOption.ofBehavior(behavior))
+        fun responseFormatAuto() = responseFormat(AssistantResponseFormatOption.ofAuto())
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -984,8 +979,8 @@ private constructor(
          * means the model can pick between generating a message or calling one or more tools.
          * `required` means the model must call one or more tools before responding to the user.
          */
-        fun toolChoice(behavior: AssistantToolChoiceOption.Behavior) =
-            toolChoice(AssistantToolChoiceOption.ofBehavior(behavior))
+        fun toolChoice(auto: AssistantToolChoiceOption.Auto) =
+            toolChoice(AssistantToolChoiceOption.ofAuto(auto))
 
         /**
          * Specifies a tool the model should use. Use to force the model to call a specific tool.
@@ -1147,7 +1142,7 @@ private constructor(
                 checkRequired("maxPromptTokens", maxPromptTokens),
                 checkRequired("metadata", metadata),
                 checkRequired("model", model),
-                checkRequired("object_", object_),
+                object_,
                 checkRequired("parallelToolCalls", parallelToolCalls),
                 checkRequired("requiredAction", requiredAction),
                 checkRequired("responseFormat", responseFormat),
@@ -1517,58 +1512,6 @@ private constructor(
             "LastError{code=$code, message=$message, additionalProperties=$additionalProperties}"
     }
 
-    /** The object type, which is always `thread.run`. */
-    class Object
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val THREAD_RUN = of("thread.run")
-
-            @JvmStatic fun of(value: String) = Object(JsonField.of(value))
-        }
-
-        enum class Known {
-            THREAD_RUN,
-        }
-
-        enum class Value {
-            THREAD_RUN,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                THREAD_RUN -> Value.THREAD_RUN
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                THREAD_RUN -> Known.THREAD_RUN
-                else -> throw OpenAIInvalidDataException("Unknown Object: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-    }
-
     /**
      * Details on the action required to continue the run. Will be `null` if no action is required.
      */
@@ -1579,7 +1522,7 @@ private constructor(
         @JsonProperty("submit_tool_outputs")
         @ExcludeMissing
         private val submitToolOutputs: JsonField<SubmitToolOutputs> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -1589,15 +1532,12 @@ private constructor(
             submitToolOutputs.getRequired("submit_tool_outputs")
 
         /** For now, this is always `submit_tool_outputs`. */
-        fun type(): Type = type.getRequired("type")
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
         /** Details on the tool outputs needed for this run to continue. */
         @JsonProperty("submit_tool_outputs")
         @ExcludeMissing
         fun _submitToolOutputs(): JsonField<SubmitToolOutputs> = submitToolOutputs
-
-        /** For now, this is always `submit_tool_outputs`. */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1611,7 +1551,11 @@ private constructor(
             }
 
             submitToolOutputs().validate()
-            type()
+            _type().let {
+                if (it != JsonValue.from("submit_tool_outputs")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
             validated = true
         }
 
@@ -1625,7 +1569,7 @@ private constructor(
         class Builder {
 
             private var submitToolOutputs: JsonField<SubmitToolOutputs>? = null
-            private var type: JsonField<Type>? = null
+            private var type: JsonValue = JsonValue.from("submit_tool_outputs")
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1645,10 +1589,7 @@ private constructor(
             }
 
             /** For now, this is always `submit_tool_outputs`. */
-            fun type(type: Type) = type(JsonField.of(type))
-
-            /** For now, this is always `submit_tool_outputs`. */
-            fun type(type: JsonField<Type>) = apply { this.type = type }
+            fun type(type: JsonValue) = apply { this.type = type }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1672,7 +1613,7 @@ private constructor(
             fun build(): RequiredAction =
                 RequiredAction(
                     checkRequired("submitToolOutputs", submitToolOutputs),
-                    checkRequired("type", type),
+                    type,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -1801,58 +1742,6 @@ private constructor(
 
             override fun toString() =
                 "SubmitToolOutputs{toolCalls=$toolCalls, additionalProperties=$additionalProperties}"
-        }
-
-        /** For now, this is always `submit_tool_outputs`. */
-        class Type
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val SUBMIT_TOOL_OUTPUTS = of("submit_tool_outputs")
-
-                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-            }
-
-            enum class Known {
-                SUBMIT_TOOL_OUTPUTS,
-            }
-
-            enum class Value {
-                SUBMIT_TOOL_OUTPUTS,
-                _UNKNOWN,
-            }
-
-            fun value(): Value =
-                when (this) {
-                    SUBMIT_TOOL_OUTPUTS -> Value.SUBMIT_TOOL_OUTPUTS
-                    else -> Value._UNKNOWN
-                }
-
-            fun known(): Known =
-                when (this) {
-                    SUBMIT_TOOL_OUTPUTS -> Known.SUBMIT_TOOL_OUTPUTS
-                    else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-                }
-
-            fun asString(): String = _value().asStringOrThrow()
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
         }
 
         override fun equals(other: Any?): Boolean {

@@ -2,7 +2,6 @@
 
 package com.openai.models
 
-import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.ObjectCodec
 import com.fasterxml.jackson.databind.JsonNode
@@ -12,8 +11,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
-import com.openai.core.Enum
-import com.openai.core.JsonField
 import com.openai.core.JsonValue
 import com.openai.core.getOrThrow
 import com.openai.errors.OpenAIInvalidDataException
@@ -44,7 +41,7 @@ import java.util.Optional
 @JsonSerialize(using = AssistantResponseFormatOption.Serializer::class)
 class AssistantResponseFormatOption
 private constructor(
-    private val behavior: Behavior? = null,
+    private val auto: JsonValue? = null,
     private val responseFormatText: ResponseFormatText? = null,
     private val responseFormatJsonObject: ResponseFormatJsonObject? = null,
     private val responseFormatJsonSchema: ResponseFormatJsonSchema? = null,
@@ -52,7 +49,7 @@ private constructor(
 ) {
 
     /** `auto` is the default value */
-    fun behavior(): Optional<Behavior> = Optional.ofNullable(behavior)
+    fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
 
     fun responseFormatText(): Optional<ResponseFormatText> = Optional.ofNullable(responseFormatText)
 
@@ -62,7 +59,7 @@ private constructor(
     fun responseFormatJsonSchema(): Optional<ResponseFormatJsonSchema> =
         Optional.ofNullable(responseFormatJsonSchema)
 
-    fun isBehavior(): Boolean = behavior != null
+    fun isAuto(): Boolean = auto != null
 
     fun isResponseFormatText(): Boolean = responseFormatText != null
 
@@ -71,7 +68,7 @@ private constructor(
     fun isResponseFormatJsonSchema(): Boolean = responseFormatJsonSchema != null
 
     /** `auto` is the default value */
-    fun asBehavior(): Behavior = behavior.getOrThrow("behavior")
+    fun asAuto(): JsonValue = auto.getOrThrow("auto")
 
     fun asResponseFormatText(): ResponseFormatText =
         responseFormatText.getOrThrow("responseFormatText")
@@ -86,7 +83,7 @@ private constructor(
 
     fun <T> accept(visitor: Visitor<T>): T {
         return when {
-            behavior != null -> visitor.visitBehavior(behavior)
+            auto != null -> visitor.visitAuto(auto)
             responseFormatText != null -> visitor.visitResponseFormatText(responseFormatText)
             responseFormatJsonObject != null ->
                 visitor.visitResponseFormatJsonObject(responseFormatJsonObject)
@@ -105,7 +102,13 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
-                override fun visitBehavior(behavior: Behavior) {}
+                override fun visitAuto(auto: JsonValue) {
+                    auto.let {
+                        if (it != JsonValue.from("auto")) {
+                            throw OpenAIInvalidDataException("'auto' is invalid, received $it")
+                        }
+                    }
+                }
 
                 override fun visitResponseFormatText(responseFormatText: ResponseFormatText) {
                     responseFormatText.validate()
@@ -132,14 +135,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is AssistantResponseFormatOption && behavior == other.behavior && responseFormatText == other.responseFormatText && responseFormatJsonObject == other.responseFormatJsonObject && responseFormatJsonSchema == other.responseFormatJsonSchema /* spotless:on */
+        return /* spotless:off */ other is AssistantResponseFormatOption && auto == other.auto && responseFormatText == other.responseFormatText && responseFormatJsonObject == other.responseFormatJsonObject && responseFormatJsonSchema == other.responseFormatJsonSchema /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(behavior, responseFormatText, responseFormatJsonObject, responseFormatJsonSchema) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, responseFormatText, responseFormatJsonObject, responseFormatJsonSchema) /* spotless:on */
 
     override fun toString(): String =
         when {
-            behavior != null -> "AssistantResponseFormatOption{behavior=$behavior}"
+            auto != null -> "AssistantResponseFormatOption{auto=$auto}"
             responseFormatText != null ->
                 "AssistantResponseFormatOption{responseFormatText=$responseFormatText}"
             responseFormatJsonObject != null ->
@@ -153,8 +156,7 @@ private constructor(
     companion object {
 
         /** `auto` is the default value */
-        @JvmStatic
-        fun ofBehavior(behavior: Behavior) = AssistantResponseFormatOption(behavior = behavior)
+        @JvmStatic fun ofAuto() = AssistantResponseFormatOption(auto = JsonValue.from("auto"))
 
         @JvmStatic
         fun ofResponseFormatText(responseFormatText: ResponseFormatText) =
@@ -172,7 +174,7 @@ private constructor(
     interface Visitor<out T> {
 
         /** `auto` is the default value */
-        fun visitBehavior(behavior: Behavior): T
+        fun visitAuto(auto: JsonValue): T
 
         fun visitResponseFormatText(responseFormatText: ResponseFormatText): T
 
@@ -191,9 +193,16 @@ private constructor(
         override fun ObjectCodec.deserialize(node: JsonNode): AssistantResponseFormatOption {
             val json = JsonValue.fromJsonNode(node)
 
-            tryDeserialize(node, jacksonTypeRef<Behavior>())?.let {
-                return AssistantResponseFormatOption(behavior = it, _json = json)
-            }
+            tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
+                    it.let {
+                        if (it != JsonValue.from("auto")) {
+                            throw OpenAIInvalidDataException("'auto' is invalid, received $it")
+                        }
+                    }
+                }
+                ?.let {
+                    return AssistantResponseFormatOption(auto = it, _json = json)
+                }
             tryDeserialize(node, jacksonTypeRef<ResponseFormatText>()) { it.validate() }
                 ?.let {
                     return AssistantResponseFormatOption(responseFormatText = it, _json = json)
@@ -226,7 +235,7 @@ private constructor(
             provider: SerializerProvider
         ) {
             when {
-                value.behavior != null -> generator.writeObject(value.behavior)
+                value.auto != null -> generator.writeObject(value.auto)
                 value.responseFormatText != null -> generator.writeObject(value.responseFormatText)
                 value.responseFormatJsonObject != null ->
                     generator.writeObject(value.responseFormatJsonObject)
@@ -236,57 +245,5 @@ private constructor(
                 else -> throw IllegalStateException("Invalid AssistantResponseFormatOption")
             }
         }
-    }
-
-    /** `auto` is the default value */
-    class Behavior
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val AUTO = of("auto")
-
-            @JvmStatic fun of(value: String) = Behavior(JsonField.of(value))
-        }
-
-        enum class Known {
-            AUTO,
-        }
-
-        enum class Value {
-            AUTO,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                AUTO -> Value.AUTO
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                AUTO -> Known.AUTO
-                else -> throw OpenAIInvalidDataException("Unknown Behavior: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Behavior && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 }

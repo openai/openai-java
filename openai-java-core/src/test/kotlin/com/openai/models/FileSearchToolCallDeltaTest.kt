@@ -14,15 +14,12 @@ class FileSearchToolCallDeltaTest {
             FileSearchToolCallDelta.builder()
                 .fileSearch(JsonValue.from(mapOf<String, Any>()))
                 .index(0L)
-                .type(FileSearchToolCallDelta.Type.FILE_SEARCH)
                 .id("id")
                 .build()
         assertThat(fileSearchToolCallDelta).isNotNull
         assertThat(fileSearchToolCallDelta._fileSearch())
             .isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(fileSearchToolCallDelta.index()).isEqualTo(0L)
-        assertThat(fileSearchToolCallDelta.type())
-            .isEqualTo(FileSearchToolCallDelta.Type.FILE_SEARCH)
         assertThat(fileSearchToolCallDelta.id()).contains("id")
     }
 }

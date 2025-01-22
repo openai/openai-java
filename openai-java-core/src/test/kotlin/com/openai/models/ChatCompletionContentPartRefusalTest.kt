@@ -10,13 +10,8 @@ class ChatCompletionContentPartRefusalTest {
     @Test
     fun createChatCompletionContentPartRefusal() {
         val chatCompletionContentPartRefusal =
-            ChatCompletionContentPartRefusal.builder()
-                .refusal("refusal")
-                .type(ChatCompletionContentPartRefusal.Type.REFUSAL)
-                .build()
+            ChatCompletionContentPartRefusal.builder().refusal("refusal").build()
         assertThat(chatCompletionContentPartRefusal).isNotNull
         assertThat(chatCompletionContentPartRefusal.refusal()).isEqualTo("refusal")
-        assertThat(chatCompletionContentPartRefusal.type())
-            .isEqualTo(ChatCompletionContentPartRefusal.Type.REFUSAL)
     }
 }

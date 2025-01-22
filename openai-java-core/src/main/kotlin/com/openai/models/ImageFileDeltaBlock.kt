@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -28,7 +27,7 @@ class ImageFileDeltaBlock
 @JsonCreator
 private constructor(
     @JsonProperty("index") @ExcludeMissing private val index: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
     @JsonProperty("image_file")
     @ExcludeMissing
     private val imageFile: JsonField<ImageFileDelta> = JsonMissing.of(),
@@ -39,16 +38,13 @@ private constructor(
     fun index(): Long = index.getRequired("index")
 
     /** Always `image_file`. */
-    fun type(): Type = type.getRequired("type")
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     fun imageFile(): Optional<ImageFileDelta> =
         Optional.ofNullable(imageFile.getNullable("image_file"))
 
     /** The index of the content part in the message. */
     @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
-
-    /** Always `image_file`. */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonProperty("image_file")
     @ExcludeMissing
@@ -66,7 +62,11 @@ private constructor(
         }
 
         index()
-        type()
+        _type().let {
+            if (it != JsonValue.from("image_file")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
         imageFile().ifPresent { it.validate() }
         validated = true
     }
@@ -81,7 +81,7 @@ private constructor(
     class Builder {
 
         private var index: JsonField<Long>? = null
-        private var type: JsonField<Type>? = null
+        private var type: JsonValue = JsonValue.from("image_file")
         private var imageFile: JsonField<ImageFileDelta> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -100,10 +100,7 @@ private constructor(
         fun index(index: JsonField<Long>) = apply { this.index = index }
 
         /** Always `image_file`. */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /** Always `image_file`. */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
+        fun type(type: JsonValue) = apply { this.type = type }
 
         fun imageFile(imageFile: ImageFileDelta) = imageFile(JsonField.of(imageFile))
 
@@ -131,62 +128,10 @@ private constructor(
         fun build(): ImageFileDeltaBlock =
             ImageFileDeltaBlock(
                 checkRequired("index", index),
-                checkRequired("type", type),
+                type,
                 imageFile,
                 additionalProperties.toImmutable(),
             )
-    }
-
-    /** Always `image_file`. */
-    class Type
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val IMAGE_FILE = of("image_file")
-
-            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-        }
-
-        enum class Known {
-            IMAGE_FILE,
-        }
-
-        enum class Value {
-            IMAGE_FILE,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                IMAGE_FILE -> Value.IMAGE_FILE
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                IMAGE_FILE -> Known.IMAGE_FILE
-                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

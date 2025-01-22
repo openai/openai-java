@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -39,7 +38,7 @@ private constructor(
     @JsonProperty("code_interpreter")
     @ExcludeMissing
     private val codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
@@ -53,7 +52,7 @@ private constructor(
      * The type of tool call. This is always going to be `code_interpreter` for this type of tool
      * call.
      */
-    fun type(): Type = type.getRequired("type")
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /** The ID of the tool call. */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
@@ -62,12 +61,6 @@ private constructor(
     @JsonProperty("code_interpreter")
     @ExcludeMissing
     fun _codeInterpreter(): JsonField<CodeInterpreter> = codeInterpreter
-
-    /**
-     * The type of tool call. This is always going to be `code_interpreter` for this type of tool
-     * call.
-     */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -82,7 +75,11 @@ private constructor(
 
         id()
         codeInterpreter().validate()
-        type()
+        _type().let {
+            if (it != JsonValue.from("code_interpreter")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
         validated = true
     }
 
@@ -97,7 +94,7 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var codeInterpreter: JsonField<CodeInterpreter>? = null
-        private var type: JsonField<Type>? = null
+        private var type: JsonValue = JsonValue.from("code_interpreter")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -127,13 +124,7 @@ private constructor(
          * The type of tool call. This is always going to be `code_interpreter` for this type of
          * tool call.
          */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /**
-         * The type of tool call. This is always going to be `code_interpreter` for this type of
-         * tool call.
-         */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
+        fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -158,7 +149,7 @@ private constructor(
             CodeInterpreterToolCall(
                 checkRequired("id", id),
                 checkRequired("codeInterpreter", codeInterpreter),
-                checkRequired("type", type),
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -455,7 +446,7 @@ private constructor(
                 private val logs: JsonField<String> = JsonMissing.of(),
                 @JsonProperty("type")
                 @ExcludeMissing
-                private val type: JsonField<Type> = JsonMissing.of(),
+                private val type: JsonValue = JsonMissing.of(),
                 @JsonAnySetter
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
@@ -464,13 +455,10 @@ private constructor(
                 fun logs(): String = logs.getRequired("logs")
 
                 /** Always `logs`. */
-                fun type(): Type = type.getRequired("type")
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                 /** The text output from the Code Interpreter tool call. */
                 @JsonProperty("logs") @ExcludeMissing fun _logs(): JsonField<String> = logs
-
-                /** Always `logs`. */
-                @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                 @JsonAnyGetter
                 @ExcludeMissing
@@ -484,7 +472,11 @@ private constructor(
                     }
 
                     logs()
-                    type()
+                    _type().let {
+                        if (it != JsonValue.from("logs")) {
+                            throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                        }
+                    }
                     validated = true
                 }
 
@@ -498,7 +490,7 @@ private constructor(
                 class Builder {
 
                     private var logs: JsonField<String>? = null
-                    private var type: JsonField<Type>? = null
+                    private var type: JsonValue = JsonValue.from("logs")
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
@@ -515,10 +507,7 @@ private constructor(
                     fun logs(logs: JsonField<String>) = apply { this.logs = logs }
 
                     /** Always `logs`. */
-                    fun type(type: Type) = type(JsonField.of(type))
-
-                    /** Always `logs`. */
-                    fun type(type: JsonField<Type>) = apply { this.type = type }
+                    fun type(type: JsonValue) = apply { this.type = type }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
@@ -545,62 +534,9 @@ private constructor(
                     fun build(): LogsOutput =
                         LogsOutput(
                             checkRequired("logs", logs),
-                            checkRequired("type", type),
+                            type,
                             additionalProperties.toImmutable(),
                         )
-                }
-
-                /** Always `logs`. */
-                class Type
-                @JsonCreator
-                private constructor(
-                    private val value: JsonField<String>,
-                ) : Enum {
-
-                    @com.fasterxml.jackson.annotation.JsonValue
-                    fun _value(): JsonField<String> = value
-
-                    companion object {
-
-                        @JvmField val LOGS = of("logs")
-
-                        @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                    }
-
-                    enum class Known {
-                        LOGS,
-                    }
-
-                    enum class Value {
-                        LOGS,
-                        _UNKNOWN,
-                    }
-
-                    fun value(): Value =
-                        when (this) {
-                            LOGS -> Value.LOGS
-                            else -> Value._UNKNOWN
-                        }
-
-                    fun known(): Known =
-                        when (this) {
-                            LOGS -> Known.LOGS
-                            else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-                        }
-
-                    fun asString(): String = _value().asStringOrThrow()
-
-                    override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
-
-                        return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                    }
-
-                    override fun hashCode() = value.hashCode()
-
-                    override fun toString() = value.toString()
                 }
 
                 override fun equals(other: Any?): Boolean {
@@ -630,7 +566,7 @@ private constructor(
                 private val image: JsonField<Image> = JsonMissing.of(),
                 @JsonProperty("type")
                 @ExcludeMissing
-                private val type: JsonField<Type> = JsonMissing.of(),
+                private val type: JsonValue = JsonMissing.of(),
                 @JsonAnySetter
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
@@ -638,12 +574,9 @@ private constructor(
                 fun image(): Image = image.getRequired("image")
 
                 /** Always `image`. */
-                fun type(): Type = type.getRequired("type")
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
                 @JsonProperty("image") @ExcludeMissing fun _image(): JsonField<Image> = image
-
-                /** Always `image`. */
-                @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                 @JsonAnyGetter
                 @ExcludeMissing
@@ -657,7 +590,11 @@ private constructor(
                     }
 
                     image().validate()
-                    type()
+                    _type().let {
+                        if (it != JsonValue.from("image")) {
+                            throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                        }
+                    }
                     validated = true
                 }
 
@@ -671,7 +608,7 @@ private constructor(
                 class Builder {
 
                     private var image: JsonField<Image>? = null
-                    private var type: JsonField<Type>? = null
+                    private var type: JsonValue = JsonValue.from("image")
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
@@ -686,10 +623,7 @@ private constructor(
                     fun image(image: JsonField<Image>) = apply { this.image = image }
 
                     /** Always `image`. */
-                    fun type(type: Type) = type(JsonField.of(type))
-
-                    /** Always `image`. */
-                    fun type(type: JsonField<Type>) = apply { this.type = type }
+                    fun type(type: JsonValue) = apply { this.type = type }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
@@ -716,7 +650,7 @@ private constructor(
                     fun build(): ImageOutput =
                         ImageOutput(
                             checkRequired("image", image),
-                            checkRequired("type", type),
+                            type,
                             additionalProperties.toImmutable(),
                         )
                 }
@@ -839,59 +773,6 @@ private constructor(
                         "Image{fileId=$fileId, additionalProperties=$additionalProperties}"
                 }
 
-                /** Always `image`. */
-                class Type
-                @JsonCreator
-                private constructor(
-                    private val value: JsonField<String>,
-                ) : Enum {
-
-                    @com.fasterxml.jackson.annotation.JsonValue
-                    fun _value(): JsonField<String> = value
-
-                    companion object {
-
-                        @JvmField val IMAGE = of("image")
-
-                        @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                    }
-
-                    enum class Known {
-                        IMAGE,
-                    }
-
-                    enum class Value {
-                        IMAGE,
-                        _UNKNOWN,
-                    }
-
-                    fun value(): Value =
-                        when (this) {
-                            IMAGE -> Value.IMAGE
-                            else -> Value._UNKNOWN
-                        }
-
-                    fun known(): Known =
-                        when (this) {
-                            IMAGE -> Known.IMAGE
-                            else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-                        }
-
-                    fun asString(): String = _value().asStringOrThrow()
-
-                    override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
-
-                        return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                    }
-
-                    override fun hashCode() = value.hashCode()
-
-                    override fun toString() = value.toString()
-                }
-
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
                         return true
@@ -927,61 +808,6 @@ private constructor(
 
         override fun toString() =
             "CodeInterpreter{input=$input, outputs=$outputs, additionalProperties=$additionalProperties}"
-    }
-
-    /**
-     * The type of tool call. This is always going to be `code_interpreter` for this type of tool
-     * call.
-     */
-    class Type
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val CODE_INTERPRETER = of("code_interpreter")
-
-            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-        }
-
-        enum class Known {
-            CODE_INTERPRETER,
-        }
-
-        enum class Value {
-            CODE_INTERPRETER,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                CODE_INTERPRETER -> Value.CODE_INTERPRETER
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                CODE_INTERPRETER -> Known.CODE_INTERPRETER
-                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

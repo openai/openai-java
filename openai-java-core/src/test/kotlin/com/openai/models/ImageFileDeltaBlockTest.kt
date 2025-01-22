@@ -12,7 +12,6 @@ class ImageFileDeltaBlockTest {
         val imageFileDeltaBlock =
             ImageFileDeltaBlock.builder()
                 .index(0L)
-                .type(ImageFileDeltaBlock.Type.IMAGE_FILE)
                 .imageFile(
                     ImageFileDelta.builder()
                         .detail(ImageFileDelta.Detail.AUTO)
@@ -22,7 +21,6 @@ class ImageFileDeltaBlockTest {
                 .build()
         assertThat(imageFileDeltaBlock).isNotNull
         assertThat(imageFileDeltaBlock.index()).isEqualTo(0L)
-        assertThat(imageFileDeltaBlock.type()).isEqualTo(ImageFileDeltaBlock.Type.IMAGE_FILE)
         assertThat(imageFileDeltaBlock.imageFile())
             .contains(
                 ImageFileDelta.builder()

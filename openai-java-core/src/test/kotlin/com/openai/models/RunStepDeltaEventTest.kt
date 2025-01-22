@@ -16,7 +16,6 @@ class RunStepDeltaEventTest {
                     RunStepDelta.builder()
                         .stepDetails(
                             RunStepDeltaMessageDelta.builder()
-                                .type(RunStepDeltaMessageDelta.Type.MESSAGE_CREATION)
                                 .messageCreation(
                                     RunStepDeltaMessageDelta.MessageCreation.builder()
                                         .messageId("message_id")
@@ -26,7 +25,6 @@ class RunStepDeltaEventTest {
                         )
                         .build()
                 )
-                .object_(RunStepDeltaEvent.Object.THREAD_RUN_STEP_DELTA)
                 .build()
         assertThat(runStepDeltaEvent).isNotNull
         assertThat(runStepDeltaEvent.id()).isEqualTo("id")
@@ -35,7 +33,6 @@ class RunStepDeltaEventTest {
                 RunStepDelta.builder()
                     .stepDetails(
                         RunStepDeltaMessageDelta.builder()
-                            .type(RunStepDeltaMessageDelta.Type.MESSAGE_CREATION)
                             .messageCreation(
                                 RunStepDeltaMessageDelta.MessageCreation.builder()
                                     .messageId("message_id")
@@ -45,7 +42,5 @@ class RunStepDeltaEventTest {
                     )
                     .build()
             )
-        assertThat(runStepDeltaEvent.object_())
-            .isEqualTo(RunStepDeltaEvent.Object.THREAD_RUN_STEP_DELTA)
     }
 }

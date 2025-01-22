@@ -17,7 +17,7 @@ class BetaAssistantUpdateParamsTest {
             .metadata(JsonValue.from(mapOf<String, Any>()))
             .model("model")
             .name("name")
-            .responseFormat(AssistantResponseFormatOption.Behavior.AUTO)
+            .responseFormatAuto()
             .temperature(1.0)
             .toolResources(
                 BetaAssistantUpdateParams.ToolResources.builder()
@@ -33,11 +33,7 @@ class BetaAssistantUpdateParamsTest {
                     )
                     .build()
             )
-            .addTool(
-                CodeInterpreterTool.builder()
-                    .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                    .build()
-            )
+            .addTool(CodeInterpreterTool.builder().build())
             .topP(1.0)
             .build()
     }
@@ -52,7 +48,7 @@ class BetaAssistantUpdateParamsTest {
                 .metadata(JsonValue.from(mapOf<String, Any>()))
                 .model("model")
                 .name("name")
-                .responseFormat(AssistantResponseFormatOption.Behavior.AUTO)
+                .responseFormatAuto()
                 .temperature(1.0)
                 .toolResources(
                     BetaAssistantUpdateParams.ToolResources.builder()
@@ -68,11 +64,7 @@ class BetaAssistantUpdateParamsTest {
                         )
                         .build()
                 )
-                .addTool(
-                    CodeInterpreterTool.builder()
-                        .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                        .build()
-                )
+                .addTool(CodeInterpreterTool.builder().build())
                 .topP(1.0)
                 .build()
         val body = params.getBody()
@@ -82,12 +74,7 @@ class BetaAssistantUpdateParamsTest {
         assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.model()).contains("model")
         assertThat(body.name()).contains("name")
-        assertThat(body.responseFormat())
-            .contains(
-                AssistantResponseFormatOption.ofBehavior(
-                    AssistantResponseFormatOption.Behavior.AUTO
-                )
-            )
+        assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
         assertThat(body.temperature()).contains(1.0)
         assertThat(body.toolResources())
             .contains(
@@ -106,13 +93,7 @@ class BetaAssistantUpdateParamsTest {
             )
         assertThat(body.tools())
             .contains(
-                listOf(
-                    AssistantTool.ofCodeInterpreterTool(
-                        CodeInterpreterTool.builder()
-                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                            .build()
-                    )
-                )
+                listOf(AssistantTool.ofCodeInterpreterTool(CodeInterpreterTool.builder().build()))
             )
         assertThat(body.topP()).contains(1.0)
     }

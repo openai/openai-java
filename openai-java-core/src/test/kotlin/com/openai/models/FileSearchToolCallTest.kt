@@ -16,10 +16,6 @@ class FileSearchToolCallTest {
                     FileSearchToolCall.FileSearch.builder()
                         .rankingOptions(
                             FileSearchToolCall.FileSearch.RankingOptions.builder()
-                                .ranker(
-                                    FileSearchToolCall.FileSearch.RankingOptions.Ranker
-                                        .DEFAULT_2024_08_21
-                                )
                                 .scoreThreshold(0.0)
                                 .build()
                         )
@@ -40,7 +36,6 @@ class FileSearchToolCallTest {
                         )
                         .build()
                 )
-                .type(FileSearchToolCall.Type.FILE_SEARCH)
                 .build()
         assertThat(fileSearchToolCall).isNotNull
         assertThat(fileSearchToolCall.id()).isEqualTo("id")
@@ -49,10 +44,6 @@ class FileSearchToolCallTest {
                 FileSearchToolCall.FileSearch.builder()
                     .rankingOptions(
                         FileSearchToolCall.FileSearch.RankingOptions.builder()
-                            .ranker(
-                                FileSearchToolCall.FileSearch.RankingOptions.Ranker
-                                    .DEFAULT_2024_08_21
-                            )
                             .scoreThreshold(0.0)
                             .build()
                     )
@@ -71,6 +62,5 @@ class FileSearchToolCallTest {
                     )
                     .build()
             )
-        assertThat(fileSearchToolCall.type()).isEqualTo(FileSearchToolCall.Type.FILE_SEARCH)
     }
 }

@@ -9,13 +9,8 @@ class TextContentBlockParamTest {
 
     @Test
     fun createTextContentBlockParam() {
-        val textContentBlockParam =
-            TextContentBlockParam.builder()
-                .text("text")
-                .type(TextContentBlockParam.Type.TEXT)
-                .build()
+        val textContentBlockParam = TextContentBlockParam.builder().text("text").build()
         assertThat(textContentBlockParam).isNotNull
         assertThat(textContentBlockParam.text()).isEqualTo("text")
-        assertThat(textContentBlockParam.type()).isEqualTo(TextContentBlockParam.Type.TEXT)
     }
 }

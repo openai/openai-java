@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -546,9 +545,7 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
-        @JsonProperty("event")
-        @ExcludeMissing
-        private val event: JsonField<Event> = JsonMissing.of(),
+        @JsonProperty("event") @ExcludeMissing private val event: JsonValue = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -559,15 +556,13 @@ private constructor(
          */
         fun data(): Run = data.getRequired("data")
 
-        fun event(): Event = event.getRequired("event")
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Run> = data
-
-        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<Event> = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -581,7 +576,11 @@ private constructor(
             }
 
             data().validate()
-            event()
+            _event().let {
+                if (it != JsonValue.from("thread.run.created")) {
+                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
+                }
+            }
             validated = true
         }
 
@@ -595,7 +594,7 @@ private constructor(
         class Builder {
 
             private var data: JsonField<Run>? = null
-            private var event: JsonField<Event>? = null
+            private var event: JsonValue = JsonValue.from("thread.run.created")
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -617,9 +616,7 @@ private constructor(
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
 
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
+            fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -643,60 +640,9 @@ private constructor(
             fun build(): ThreadRunCreated =
                 ThreadRunCreated(
                     checkRequired("data", data),
-                    checkRequired("event", event),
+                    event,
                     additionalProperties.toImmutable(),
                 )
-        }
-
-        class Event
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val THREAD_RUN_CREATED = of("thread.run.created")
-
-                @JvmStatic fun of(value: String) = Event(JsonField.of(value))
-            }
-
-            enum class Known {
-                THREAD_RUN_CREATED,
-            }
-
-            enum class Value {
-                THREAD_RUN_CREATED,
-                _UNKNOWN,
-            }
-
-            fun value(): Value =
-                when (this) {
-                    THREAD_RUN_CREATED -> Value.THREAD_RUN_CREATED
-                    else -> Value._UNKNOWN
-                }
-
-            fun known(): Known =
-                when (this) {
-                    THREAD_RUN_CREATED -> Known.THREAD_RUN_CREATED
-                    else -> throw OpenAIInvalidDataException("Unknown Event: $value")
-                }
-
-            fun asString(): String = _value().asStringOrThrow()
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Event && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
         }
 
         override fun equals(other: Any?): Boolean {
@@ -726,9 +672,7 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
-        @JsonProperty("event")
-        @ExcludeMissing
-        private val event: JsonField<Event> = JsonMissing.of(),
+        @JsonProperty("event") @ExcludeMissing private val event: JsonValue = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -739,15 +683,13 @@ private constructor(
          */
         fun data(): Run = data.getRequired("data")
 
-        fun event(): Event = event.getRequired("event")
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Run> = data
-
-        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<Event> = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -761,7 +703,11 @@ private constructor(
             }
 
             data().validate()
-            event()
+            _event().let {
+                if (it != JsonValue.from("thread.run.queued")) {
+                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
+                }
+            }
             validated = true
         }
 
@@ -775,7 +721,7 @@ private constructor(
         class Builder {
 
             private var data: JsonField<Run>? = null
-            private var event: JsonField<Event>? = null
+            private var event: JsonValue = JsonValue.from("thread.run.queued")
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -797,9 +743,7 @@ private constructor(
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
 
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
+            fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -823,60 +767,9 @@ private constructor(
             fun build(): ThreadRunQueued =
                 ThreadRunQueued(
                     checkRequired("data", data),
-                    checkRequired("event", event),
+                    event,
                     additionalProperties.toImmutable(),
                 )
-        }
-
-        class Event
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val THREAD_RUN_QUEUED = of("thread.run.queued")
-
-                @JvmStatic fun of(value: String) = Event(JsonField.of(value))
-            }
-
-            enum class Known {
-                THREAD_RUN_QUEUED,
-            }
-
-            enum class Value {
-                THREAD_RUN_QUEUED,
-                _UNKNOWN,
-            }
-
-            fun value(): Value =
-                when (this) {
-                    THREAD_RUN_QUEUED -> Value.THREAD_RUN_QUEUED
-                    else -> Value._UNKNOWN
-                }
-
-            fun known(): Known =
-                when (this) {
-                    THREAD_RUN_QUEUED -> Known.THREAD_RUN_QUEUED
-                    else -> throw OpenAIInvalidDataException("Unknown Event: $value")
-                }
-
-            fun asString(): String = _value().asStringOrThrow()
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Event && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
         }
 
         override fun equals(other: Any?): Boolean {
@@ -906,9 +799,7 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
-        @JsonProperty("event")
-        @ExcludeMissing
-        private val event: JsonField<Event> = JsonMissing.of(),
+        @JsonProperty("event") @ExcludeMissing private val event: JsonValue = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -919,15 +810,13 @@ private constructor(
          */
         fun data(): Run = data.getRequired("data")
 
-        fun event(): Event = event.getRequired("event")
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Run> = data
-
-        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<Event> = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -941,7 +830,11 @@ private constructor(
             }
 
             data().validate()
-            event()
+            _event().let {
+                if (it != JsonValue.from("thread.run.in_progress")) {
+                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
+                }
+            }
             validated = true
         }
 
@@ -955,7 +848,7 @@ private constructor(
         class Builder {
 
             private var data: JsonField<Run>? = null
-            private var event: JsonField<Event>? = null
+            private var event: JsonValue = JsonValue.from("thread.run.in_progress")
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -977,9 +870,7 @@ private constructor(
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
 
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
+            fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1003,60 +894,9 @@ private constructor(
             fun build(): ThreadRunInProgress =
                 ThreadRunInProgress(
                     checkRequired("data", data),
-                    checkRequired("event", event),
+                    event,
                     additionalProperties.toImmutable(),
                 )
-        }
-
-        class Event
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val THREAD_RUN_IN_PROGRESS = of("thread.run.in_progress")
-
-                @JvmStatic fun of(value: String) = Event(JsonField.of(value))
-            }
-
-            enum class Known {
-                THREAD_RUN_IN_PROGRESS,
-            }
-
-            enum class Value {
-                THREAD_RUN_IN_PROGRESS,
-                _UNKNOWN,
-            }
-
-            fun value(): Value =
-                when (this) {
-                    THREAD_RUN_IN_PROGRESS -> Value.THREAD_RUN_IN_PROGRESS
-                    else -> Value._UNKNOWN
-                }
-
-            fun known(): Known =
-                when (this) {
-                    THREAD_RUN_IN_PROGRESS -> Known.THREAD_RUN_IN_PROGRESS
-                    else -> throw OpenAIInvalidDataException("Unknown Event: $value")
-                }
-
-            fun asString(): String = _value().asStringOrThrow()
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Event && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
         }
 
         override fun equals(other: Any?): Boolean {
@@ -1086,9 +926,7 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
-        @JsonProperty("event")
-        @ExcludeMissing
-        private val event: JsonField<Event> = JsonMissing.of(),
+        @JsonProperty("event") @ExcludeMissing private val event: JsonValue = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -1099,15 +937,13 @@ private constructor(
          */
         fun data(): Run = data.getRequired("data")
 
-        fun event(): Event = event.getRequired("event")
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Run> = data
-
-        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<Event> = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1121,7 +957,11 @@ private constructor(
             }
 
             data().validate()
-            event()
+            _event().let {
+                if (it != JsonValue.from("thread.run.requires_action")) {
+                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
+                }
+            }
             validated = true
         }
 
@@ -1135,7 +975,7 @@ private constructor(
         class Builder {
 
             private var data: JsonField<Run>? = null
-            private var event: JsonField<Event>? = null
+            private var event: JsonValue = JsonValue.from("thread.run.requires_action")
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1157,9 +997,7 @@ private constructor(
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
 
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
+            fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1183,60 +1021,9 @@ private constructor(
             fun build(): ThreadRunRequiresAction =
                 ThreadRunRequiresAction(
                     checkRequired("data", data),
-                    checkRequired("event", event),
+                    event,
                     additionalProperties.toImmutable(),
                 )
-        }
-
-        class Event
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val THREAD_RUN_REQUIRES_ACTION = of("thread.run.requires_action")
-
-                @JvmStatic fun of(value: String) = Event(JsonField.of(value))
-            }
-
-            enum class Known {
-                THREAD_RUN_REQUIRES_ACTION,
-            }
-
-            enum class Value {
-                THREAD_RUN_REQUIRES_ACTION,
-                _UNKNOWN,
-            }
-
-            fun value(): Value =
-                when (this) {
-                    THREAD_RUN_REQUIRES_ACTION -> Value.THREAD_RUN_REQUIRES_ACTION
-                    else -> Value._UNKNOWN
-                }
-
-            fun known(): Known =
-                when (this) {
-                    THREAD_RUN_REQUIRES_ACTION -> Known.THREAD_RUN_REQUIRES_ACTION
-                    else -> throw OpenAIInvalidDataException("Unknown Event: $value")
-                }
-
-            fun asString(): String = _value().asStringOrThrow()
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Event && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
         }
 
         override fun equals(other: Any?): Boolean {
@@ -1265,9 +1052,7 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
-        @JsonProperty("event")
-        @ExcludeMissing
-        private val event: JsonField<Event> = JsonMissing.of(),
+        @JsonProperty("event") @ExcludeMissing private val event: JsonValue = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -1278,15 +1063,13 @@ private constructor(
          */
         fun data(): Run = data.getRequired("data")
 
-        fun event(): Event = event.getRequired("event")
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Run> = data
-
-        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<Event> = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1300,7 +1083,11 @@ private constructor(
             }
 
             data().validate()
-            event()
+            _event().let {
+                if (it != JsonValue.from("thread.run.completed")) {
+                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
+                }
+            }
             validated = true
         }
 
@@ -1314,7 +1101,7 @@ private constructor(
         class Builder {
 
             private var data: JsonField<Run>? = null
-            private var event: JsonField<Event>? = null
+            private var event: JsonValue = JsonValue.from("thread.run.completed")
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1336,9 +1123,7 @@ private constructor(
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
 
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
+            fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1362,60 +1147,9 @@ private constructor(
             fun build(): ThreadRunCompleted =
                 ThreadRunCompleted(
                     checkRequired("data", data),
-                    checkRequired("event", event),
+                    event,
                     additionalProperties.toImmutable(),
                 )
-        }
-
-        class Event
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val THREAD_RUN_COMPLETED = of("thread.run.completed")
-
-                @JvmStatic fun of(value: String) = Event(JsonField.of(value))
-            }
-
-            enum class Known {
-                THREAD_RUN_COMPLETED,
-            }
-
-            enum class Value {
-                THREAD_RUN_COMPLETED,
-                _UNKNOWN,
-            }
-
-            fun value(): Value =
-                when (this) {
-                    THREAD_RUN_COMPLETED -> Value.THREAD_RUN_COMPLETED
-                    else -> Value._UNKNOWN
-                }
-
-            fun known(): Known =
-                when (this) {
-                    THREAD_RUN_COMPLETED -> Known.THREAD_RUN_COMPLETED
-                    else -> throw OpenAIInvalidDataException("Unknown Event: $value")
-                }
-
-            fun asString(): String = _value().asStringOrThrow()
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Event && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
         }
 
         override fun equals(other: Any?): Boolean {
@@ -1445,9 +1179,7 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
-        @JsonProperty("event")
-        @ExcludeMissing
-        private val event: JsonField<Event> = JsonMissing.of(),
+        @JsonProperty("event") @ExcludeMissing private val event: JsonValue = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -1458,15 +1190,13 @@ private constructor(
          */
         fun data(): Run = data.getRequired("data")
 
-        fun event(): Event = event.getRequired("event")
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Run> = data
-
-        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<Event> = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1480,7 +1210,11 @@ private constructor(
             }
 
             data().validate()
-            event()
+            _event().let {
+                if (it != JsonValue.from("thread.run.incomplete")) {
+                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
+                }
+            }
             validated = true
         }
 
@@ -1494,7 +1228,7 @@ private constructor(
         class Builder {
 
             private var data: JsonField<Run>? = null
-            private var event: JsonField<Event>? = null
+            private var event: JsonValue = JsonValue.from("thread.run.incomplete")
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1516,9 +1250,7 @@ private constructor(
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
 
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
+            fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1542,60 +1274,9 @@ private constructor(
             fun build(): ThreadRunIncomplete =
                 ThreadRunIncomplete(
                     checkRequired("data", data),
-                    checkRequired("event", event),
+                    event,
                     additionalProperties.toImmutable(),
                 )
-        }
-
-        class Event
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val THREAD_RUN_INCOMPLETE = of("thread.run.incomplete")
-
-                @JvmStatic fun of(value: String) = Event(JsonField.of(value))
-            }
-
-            enum class Known {
-                THREAD_RUN_INCOMPLETE,
-            }
-
-            enum class Value {
-                THREAD_RUN_INCOMPLETE,
-                _UNKNOWN,
-            }
-
-            fun value(): Value =
-                when (this) {
-                    THREAD_RUN_INCOMPLETE -> Value.THREAD_RUN_INCOMPLETE
-                    else -> Value._UNKNOWN
-                }
-
-            fun known(): Known =
-                when (this) {
-                    THREAD_RUN_INCOMPLETE -> Known.THREAD_RUN_INCOMPLETE
-                    else -> throw OpenAIInvalidDataException("Unknown Event: $value")
-                }
-
-            fun asString(): String = _value().asStringOrThrow()
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Event && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
         }
 
         override fun equals(other: Any?): Boolean {
@@ -1622,9 +1303,7 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
-        @JsonProperty("event")
-        @ExcludeMissing
-        private val event: JsonField<Event> = JsonMissing.of(),
+        @JsonProperty("event") @ExcludeMissing private val event: JsonValue = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -1635,15 +1314,13 @@ private constructor(
          */
         fun data(): Run = data.getRequired("data")
 
-        fun event(): Event = event.getRequired("event")
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Run> = data
-
-        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<Event> = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1657,7 +1334,11 @@ private constructor(
             }
 
             data().validate()
-            event()
+            _event().let {
+                if (it != JsonValue.from("thread.run.failed")) {
+                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
+                }
+            }
             validated = true
         }
 
@@ -1671,7 +1352,7 @@ private constructor(
         class Builder {
 
             private var data: JsonField<Run>? = null
-            private var event: JsonField<Event>? = null
+            private var event: JsonValue = JsonValue.from("thread.run.failed")
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1693,9 +1374,7 @@ private constructor(
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
 
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
+            fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1719,60 +1398,9 @@ private constructor(
             fun build(): ThreadRunFailed =
                 ThreadRunFailed(
                     checkRequired("data", data),
-                    checkRequired("event", event),
+                    event,
                     additionalProperties.toImmutable(),
                 )
-        }
-
-        class Event
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val THREAD_RUN_FAILED = of("thread.run.failed")
-
-                @JvmStatic fun of(value: String) = Event(JsonField.of(value))
-            }
-
-            enum class Known {
-                THREAD_RUN_FAILED,
-            }
-
-            enum class Value {
-                THREAD_RUN_FAILED,
-                _UNKNOWN,
-            }
-
-            fun value(): Value =
-                when (this) {
-                    THREAD_RUN_FAILED -> Value.THREAD_RUN_FAILED
-                    else -> Value._UNKNOWN
-                }
-
-            fun known(): Known =
-                when (this) {
-                    THREAD_RUN_FAILED -> Known.THREAD_RUN_FAILED
-                    else -> throw OpenAIInvalidDataException("Unknown Event: $value")
-                }
-
-            fun asString(): String = _value().asStringOrThrow()
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Event && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
         }
 
         override fun equals(other: Any?): Boolean {
@@ -1802,9 +1430,7 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
-        @JsonProperty("event")
-        @ExcludeMissing
-        private val event: JsonField<Event> = JsonMissing.of(),
+        @JsonProperty("event") @ExcludeMissing private val event: JsonValue = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -1815,15 +1441,13 @@ private constructor(
          */
         fun data(): Run = data.getRequired("data")
 
-        fun event(): Event = event.getRequired("event")
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Run> = data
-
-        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<Event> = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -1837,7 +1461,11 @@ private constructor(
             }
 
             data().validate()
-            event()
+            _event().let {
+                if (it != JsonValue.from("thread.run.cancelling")) {
+                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
+                }
+            }
             validated = true
         }
 
@@ -1851,7 +1479,7 @@ private constructor(
         class Builder {
 
             private var data: JsonField<Run>? = null
-            private var event: JsonField<Event>? = null
+            private var event: JsonValue = JsonValue.from("thread.run.cancelling")
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1873,9 +1501,7 @@ private constructor(
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
 
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
+            fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1899,60 +1525,9 @@ private constructor(
             fun build(): ThreadRunCancelling =
                 ThreadRunCancelling(
                     checkRequired("data", data),
-                    checkRequired("event", event),
+                    event,
                     additionalProperties.toImmutable(),
                 )
-        }
-
-        class Event
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val THREAD_RUN_CANCELLING = of("thread.run.cancelling")
-
-                @JvmStatic fun of(value: String) = Event(JsonField.of(value))
-            }
-
-            enum class Known {
-                THREAD_RUN_CANCELLING,
-            }
-
-            enum class Value {
-                THREAD_RUN_CANCELLING,
-                _UNKNOWN,
-            }
-
-            fun value(): Value =
-                when (this) {
-                    THREAD_RUN_CANCELLING -> Value.THREAD_RUN_CANCELLING
-                    else -> Value._UNKNOWN
-                }
-
-            fun known(): Known =
-                when (this) {
-                    THREAD_RUN_CANCELLING -> Known.THREAD_RUN_CANCELLING
-                    else -> throw OpenAIInvalidDataException("Unknown Event: $value")
-                }
-
-            fun asString(): String = _value().asStringOrThrow()
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Event && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
         }
 
         override fun equals(other: Any?): Boolean {
@@ -1981,9 +1556,7 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
-        @JsonProperty("event")
-        @ExcludeMissing
-        private val event: JsonField<Event> = JsonMissing.of(),
+        @JsonProperty("event") @ExcludeMissing private val event: JsonValue = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -1994,15 +1567,13 @@ private constructor(
          */
         fun data(): Run = data.getRequired("data")
 
-        fun event(): Event = event.getRequired("event")
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Run> = data
-
-        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<Event> = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -2016,7 +1587,11 @@ private constructor(
             }
 
             data().validate()
-            event()
+            _event().let {
+                if (it != JsonValue.from("thread.run.cancelled")) {
+                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
+                }
+            }
             validated = true
         }
 
@@ -2030,7 +1605,7 @@ private constructor(
         class Builder {
 
             private var data: JsonField<Run>? = null
-            private var event: JsonField<Event>? = null
+            private var event: JsonValue = JsonValue.from("thread.run.cancelled")
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -2052,9 +1627,7 @@ private constructor(
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
 
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
+            fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -2078,60 +1651,9 @@ private constructor(
             fun build(): ThreadRunCancelled =
                 ThreadRunCancelled(
                     checkRequired("data", data),
-                    checkRequired("event", event),
+                    event,
                     additionalProperties.toImmutable(),
                 )
-        }
-
-        class Event
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val THREAD_RUN_CANCELLED = of("thread.run.cancelled")
-
-                @JvmStatic fun of(value: String) = Event(JsonField.of(value))
-            }
-
-            enum class Known {
-                THREAD_RUN_CANCELLED,
-            }
-
-            enum class Value {
-                THREAD_RUN_CANCELLED,
-                _UNKNOWN,
-            }
-
-            fun value(): Value =
-                when (this) {
-                    THREAD_RUN_CANCELLED -> Value.THREAD_RUN_CANCELLED
-                    else -> Value._UNKNOWN
-                }
-
-            fun known(): Known =
-                when (this) {
-                    THREAD_RUN_CANCELLED -> Known.THREAD_RUN_CANCELLED
-                    else -> throw OpenAIInvalidDataException("Unknown Event: $value")
-                }
-
-            fun asString(): String = _value().asStringOrThrow()
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Event && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
         }
 
         override fun equals(other: Any?): Boolean {
@@ -2158,9 +1680,7 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("data") @ExcludeMissing private val data: JsonField<Run> = JsonMissing.of(),
-        @JsonProperty("event")
-        @ExcludeMissing
-        private val event: JsonField<Event> = JsonMissing.of(),
+        @JsonProperty("event") @ExcludeMissing private val event: JsonValue = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -2171,15 +1691,13 @@ private constructor(
          */
         fun data(): Run = data.getRequired("data")
 
-        fun event(): Event = event.getRequired("event")
+        @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Run> = data
-
-        @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<Event> = event
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -2193,7 +1711,11 @@ private constructor(
             }
 
             data().validate()
-            event()
+            _event().let {
+                if (it != JsonValue.from("thread.run.expired")) {
+                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
+                }
+            }
             validated = true
         }
 
@@ -2207,7 +1729,7 @@ private constructor(
         class Builder {
 
             private var data: JsonField<Run>? = null
-            private var event: JsonField<Event>? = null
+            private var event: JsonValue = JsonValue.from("thread.run.expired")
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -2229,9 +1751,7 @@ private constructor(
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
 
-            fun event(event: Event) = event(JsonField.of(event))
-
-            fun event(event: JsonField<Event>) = apply { this.event = event }
+            fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -2255,60 +1775,9 @@ private constructor(
             fun build(): ThreadRunExpired =
                 ThreadRunExpired(
                     checkRequired("data", data),
-                    checkRequired("event", event),
+                    event,
                     additionalProperties.toImmutable(),
                 )
-        }
-
-        class Event
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val THREAD_RUN_EXPIRED = of("thread.run.expired")
-
-                @JvmStatic fun of(value: String) = Event(JsonField.of(value))
-            }
-
-            enum class Known {
-                THREAD_RUN_EXPIRED,
-            }
-
-            enum class Value {
-                THREAD_RUN_EXPIRED,
-                _UNKNOWN,
-            }
-
-            fun value(): Value =
-                when (this) {
-                    THREAD_RUN_EXPIRED -> Value.THREAD_RUN_EXPIRED
-                    else -> Value._UNKNOWN
-                }
-
-            fun known(): Known =
-                when (this) {
-                    THREAD_RUN_EXPIRED -> Known.THREAD_RUN_EXPIRED
-                    else -> throw OpenAIInvalidDataException("Unknown Event: $value")
-                }
-
-            fun asString(): String = _value().asStringOrThrow()
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Event && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
         }
 
         override fun equals(other: Any?): Boolean {

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -24,7 +23,7 @@ class FunctionToolCallDelta
 @JsonCreator
 private constructor(
     @JsonProperty("index") @ExcludeMissing private val index: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
     @JsonProperty("function")
     @ExcludeMissing
@@ -36,7 +35,7 @@ private constructor(
     fun index(): Long = index.getRequired("index")
 
     /** The type of tool call. This is always going to be `function` for this type of tool call. */
-    fun type(): Type = type.getRequired("type")
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /** The ID of the tool call object. */
     fun id(): Optional<String> = Optional.ofNullable(id.getNullable("id"))
@@ -46,9 +45,6 @@ private constructor(
 
     /** The index of the tool call in the tool calls array. */
     @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
-
-    /** The type of tool call. This is always going to be `function` for this type of tool call. */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     /** The ID of the tool call object. */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
@@ -68,7 +64,11 @@ private constructor(
         }
 
         index()
-        type()
+        _type().let {
+            if (it != JsonValue.from("function")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
         id()
         function().ifPresent { it.validate() }
         validated = true
@@ -84,7 +84,7 @@ private constructor(
     class Builder {
 
         private var index: JsonField<Long>? = null
-        private var type: JsonField<Type>? = null
+        private var type: JsonValue = JsonValue.from("function")
         private var id: JsonField<String> = JsonMissing.of()
         private var function: JsonField<Function> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -107,12 +107,7 @@ private constructor(
         /**
          * The type of tool call. This is always going to be `function` for this type of tool call.
          */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /**
-         * The type of tool call. This is always going to be `function` for this type of tool call.
-         */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
+        fun type(type: JsonValue) = apply { this.type = type }
 
         /** The ID of the tool call object. */
         fun id(id: String) = id(JsonField.of(id))
@@ -148,63 +143,11 @@ private constructor(
         fun build(): FunctionToolCallDelta =
             FunctionToolCallDelta(
                 checkRequired("index", index),
-                checkRequired("type", type),
+                type,
                 id,
                 function,
                 additionalProperties.toImmutable(),
             )
-    }
-
-    /** The type of tool call. This is always going to be `function` for this type of tool call. */
-    class Type
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val FUNCTION = of("function")
-
-            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-        }
-
-        enum class Known {
-            FUNCTION,
-        }
-
-        enum class Value {
-            FUNCTION,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                FUNCTION -> Value.FUNCTION
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                FUNCTION -> Known.FUNCTION
-                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     /** The definition of the function that was called. */

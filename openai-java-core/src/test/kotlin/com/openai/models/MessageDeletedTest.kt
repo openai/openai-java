@@ -9,15 +9,9 @@ class MessageDeletedTest {
 
     @Test
     fun createMessageDeleted() {
-        val messageDeleted =
-            MessageDeleted.builder()
-                .id("id")
-                .deleted(true)
-                .object_(MessageDeleted.Object.THREAD_MESSAGE_DELETED)
-                .build()
+        val messageDeleted = MessageDeleted.builder().id("id").deleted(true).build()
         assertThat(messageDeleted).isNotNull
         assertThat(messageDeleted.id()).isEqualTo("id")
         assertThat(messageDeleted.deleted()).isEqualTo(true)
-        assertThat(messageDeleted.object_()).isEqualTo(MessageDeleted.Object.THREAD_MESSAGE_DELETED)
     }
 }

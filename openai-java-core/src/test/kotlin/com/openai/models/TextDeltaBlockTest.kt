@@ -12,13 +12,11 @@ class TextDeltaBlockTest {
         val textDeltaBlock =
             TextDeltaBlock.builder()
                 .index(0L)
-                .type(TextDeltaBlock.Type.TEXT)
                 .text(
                     TextDelta.builder()
                         .addAnnotation(
                             FileCitationDeltaAnnotation.builder()
                                 .index(0L)
-                                .type(FileCitationDeltaAnnotation.Type.FILE_CITATION)
                                 .endIndex(0L)
                                 .fileCitation(
                                     FileCitationDeltaAnnotation.FileCitation.builder()
@@ -36,14 +34,12 @@ class TextDeltaBlockTest {
                 .build()
         assertThat(textDeltaBlock).isNotNull
         assertThat(textDeltaBlock.index()).isEqualTo(0L)
-        assertThat(textDeltaBlock.type()).isEqualTo(TextDeltaBlock.Type.TEXT)
         assertThat(textDeltaBlock.text())
             .contains(
                 TextDelta.builder()
                     .addAnnotation(
                         FileCitationDeltaAnnotation.builder()
                             .index(0L)
-                            .type(FileCitationDeltaAnnotation.Type.FILE_CITATION)
                             .endIndex(0L)
                             .fileCitation(
                                 FileCitationDeltaAnnotation.FileCitation.builder()

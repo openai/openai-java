@@ -9,9 +9,7 @@ class CodeInterpreterToolTest {
 
     @Test
     fun createCodeInterpreterTool() {
-        val codeInterpreterTool =
-            CodeInterpreterTool.builder().type(CodeInterpreterTool.Type.CODE_INTERPRETER).build()
+        val codeInterpreterTool = CodeInterpreterTool.builder().build()
         assertThat(codeInterpreterTool).isNotNull
-        assertThat(codeInterpreterTool.type()).isEqualTo(CodeInterpreterTool.Type.CODE_INTERPRETER)
     }
 }

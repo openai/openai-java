@@ -28,11 +28,7 @@ class FileServiceTest {
                 BetaVectorStoreFileCreateParams.builder()
                     .vectorStoreId("vs_abc123")
                     .fileId("file_id")
-                    .chunkingStrategy(
-                        AutoFileChunkingStrategyParam.builder()
-                            .type(AutoFileChunkingStrategyParam.Type.AUTO)
-                            .build()
-                    )
+                    .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
                     .build()
             )
         println(vectorStoreFile)

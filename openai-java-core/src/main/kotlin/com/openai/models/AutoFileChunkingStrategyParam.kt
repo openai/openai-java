@@ -6,13 +6,10 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
-import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
-import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -26,15 +23,12 @@ import java.util.Objects
 class AutoFileChunkingStrategyParam
 @JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** Always `auto`. */
-    fun type(): Type = type.getRequired("type")
-
-    /** Always `auto`. */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -47,7 +41,11 @@ private constructor(
             return@apply
         }
 
-        type()
+        _type().let {
+            if (it != JsonValue.from("auto")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
         validated = true
     }
 
@@ -60,7 +58,7 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type>? = null
+        private var type: JsonValue = JsonValue.from("auto")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -70,10 +68,7 @@ private constructor(
         }
 
         /** Always `auto`. */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /** Always `auto`. */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
+        fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -95,62 +90,7 @@ private constructor(
         }
 
         fun build(): AutoFileChunkingStrategyParam =
-            AutoFileChunkingStrategyParam(
-                checkRequired("type", type),
-                additionalProperties.toImmutable()
-            )
-    }
-
-    /** Always `auto`. */
-    class Type
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val AUTO = of("auto")
-
-            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-        }
-
-        enum class Known {
-            AUTO,
-        }
-
-        enum class Value {
-            AUTO,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                AUTO -> Value.AUTO
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                AUTO -> Known.AUTO
-                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
+            AutoFileChunkingStrategyParam(type, additionalProperties.toImmutable())
     }
 
     override fun equals(other: Any?): Boolean {

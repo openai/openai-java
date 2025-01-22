@@ -76,7 +76,6 @@ class ServiceParamsTest {
                 .addMessage(
                     ChatCompletionDeveloperMessageParam.builder()
                         .content("string")
-                        .role(ChatCompletionDeveloperMessageParam.Role.DEVELOPER)
                         .name("name")
                         .build()
                 )
@@ -88,7 +87,7 @@ class ServiceParamsTest {
                         .build()
                 )
                 .frequencyPenalty(-2.0)
-                .functionCall(ChatCompletionCreateParams.FunctionCall.Behavior.NONE)
+                .functionCall(ChatCompletionCreateParams.FunctionCall.Auto.NONE)
                 .addFunction(
                     ChatCompletionCreateParams.Function.builder()
                         .name("name")
@@ -116,24 +115,17 @@ class ServiceParamsTest {
                 .addModality(ChatCompletionModality.TEXT)
                 .n(1L)
                 .parallelToolCalls(true)
-                .prediction(
-                    ChatCompletionPredictionContent.builder()
-                        .content("string")
-                        .type(ChatCompletionPredictionContent.Type.CONTENT)
-                        .build()
-                )
+                .prediction(ChatCompletionPredictionContent.builder().content("string").build())
                 .presencePenalty(-2.0)
                 .reasoningEffort(ChatCompletionReasoningEffort.LOW)
-                .responseFormat(
-                    ResponseFormatText.builder().type(ResponseFormatText.Type.TEXT).build()
-                )
-                .seed(-9007199254740991L)
+                .responseFormat(ResponseFormatText.builder().build())
+                .seed(0L)
                 .serviceTier(ChatCompletionCreateParams.ServiceTier.AUTO)
                 .stop("string")
                 .store(true)
                 .streamOptions(ChatCompletionStreamOptions.builder().includeUsage(true).build())
                 .temperature(1.0)
-                .toolChoice(ChatCompletionToolChoiceOption.Behavior.NONE)
+                .toolChoice(ChatCompletionToolChoiceOption.Auto.NONE)
                 .addTool(
                     ChatCompletionTool.builder()
                         .function(
@@ -148,7 +140,6 @@ class ServiceParamsTest {
                                 .strict(true)
                                 .build()
                         )
-                        .type(ChatCompletionTool.Type.FUNCTION)
                         .build()
                 )
                 .topLogprobs(0L)
@@ -202,7 +193,6 @@ class ServiceParamsTest {
                             ChatCompletionMessage.builder()
                                 .content("content")
                                 .refusal("refusal")
-                                .role(ChatCompletionMessage.Role.ASSISTANT)
                                 .audio(
                                     ChatCompletionAudio.builder()
                                         .id("id")
@@ -226,7 +216,6 @@ class ServiceParamsTest {
                                                 .name("name")
                                                 .build()
                                         )
-                                        .type(ChatCompletionMessageToolCall.Type.FUNCTION)
                                         .build()
                                 )
                                 .build()
@@ -235,7 +224,6 @@ class ServiceParamsTest {
                 )
                 .created(0L)
                 .model("model")
-                .object_(ChatCompletion.Object.CHAT_COMPLETION)
                 .serviceTier(ChatCompletion.ServiceTier.SCALE)
                 .systemFingerprint("system_fingerprint")
                 .usage(

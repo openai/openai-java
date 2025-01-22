@@ -17,7 +17,6 @@ class MessageDeltaEventTest {
                         .addContent(
                             ImageFileDeltaBlock.builder()
                                 .index(0L)
-                                .type(ImageFileDeltaBlock.Type.IMAGE_FILE)
                                 .imageFile(
                                     ImageFileDelta.builder()
                                         .detail(ImageFileDelta.Detail.AUTO)
@@ -29,7 +28,6 @@ class MessageDeltaEventTest {
                         .role(MessageDelta.Role.USER)
                         .build()
                 )
-                .object_(MessageDeltaEvent.Object.THREAD_MESSAGE_DELTA)
                 .build()
         assertThat(messageDeltaEvent).isNotNull
         assertThat(messageDeltaEvent.id()).isEqualTo("id")
@@ -39,7 +37,6 @@ class MessageDeltaEventTest {
                     .addContent(
                         ImageFileDeltaBlock.builder()
                             .index(0L)
-                            .type(ImageFileDeltaBlock.Type.IMAGE_FILE)
                             .imageFile(
                                 ImageFileDelta.builder()
                                     .detail(ImageFileDelta.Detail.AUTO)
@@ -51,7 +48,5 @@ class MessageDeltaEventTest {
                     .role(MessageDelta.Role.USER)
                     .build()
             )
-        assertThat(messageDeltaEvent.object_())
-            .isEqualTo(MessageDeltaEvent.Object.THREAD_MESSAGE_DELTA)
     }
 }

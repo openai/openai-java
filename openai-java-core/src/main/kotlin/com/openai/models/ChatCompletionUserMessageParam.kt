@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -37,7 +36,7 @@ private constructor(
     @JsonProperty("content")
     @ExcludeMissing
     private val content: JsonField<Content> = JsonMissing.of(),
-    @JsonProperty("role") @ExcludeMissing private val role: JsonField<Role> = JsonMissing.of(),
+    @JsonProperty("role") @ExcludeMissing private val role: JsonValue = JsonMissing.of(),
     @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
@@ -46,7 +45,7 @@ private constructor(
     fun content(): Content = content.getRequired("content")
 
     /** The role of the messages author, in this case `user`. */
-    fun role(): Role = role.getRequired("role")
+    @JsonProperty("role") @ExcludeMissing fun _role(): JsonValue = role
 
     /**
      * An optional name for the participant. Provides the model information to differentiate between
@@ -56,9 +55,6 @@ private constructor(
 
     /** The contents of the user message. */
     @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<Content> = content
-
-    /** The role of the messages author, in this case `user`. */
-    @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
 
     /**
      * An optional name for the participant. Provides the model information to differentiate between
@@ -78,7 +74,11 @@ private constructor(
         }
 
         content().validate()
-        role()
+        _role().let {
+            if (it != JsonValue.from("user")) {
+                throw OpenAIInvalidDataException("'role' is invalid, received $it")
+            }
+        }
         name()
         validated = true
     }
@@ -93,7 +93,7 @@ private constructor(
     class Builder {
 
         private var content: JsonField<Content>? = null
-        private var role: JsonField<Role>? = null
+        private var role: JsonValue = JsonValue.from("user")
         private var name: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -124,10 +124,7 @@ private constructor(
             content(Content.ofArrayOfContentParts(arrayOfContentParts))
 
         /** The role of the messages author, in this case `user`. */
-        fun role(role: Role) = role(JsonField.of(role))
-
-        /** The role of the messages author, in this case `user`. */
-        fun role(role: JsonField<Role>) = apply { this.role = role }
+        fun role(role: JsonValue) = apply { this.role = role }
 
         /**
          * An optional name for the participant. Provides the model information to differentiate
@@ -163,7 +160,7 @@ private constructor(
         fun build(): ChatCompletionUserMessageParam =
             ChatCompletionUserMessageParam(
                 checkRequired("content", content),
-                checkRequired("role", role),
+                role,
                 name,
                 additionalProperties.toImmutable(),
             )
@@ -321,58 +318,6 @@ private constructor(
                 }
             }
         }
-    }
-
-    /** The role of the messages author, in this case `user`. */
-    class Role
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val USER = of("user")
-
-            @JvmStatic fun of(value: String) = Role(JsonField.of(value))
-        }
-
-        enum class Known {
-            USER,
-        }
-
-        enum class Value {
-            USER,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                USER -> Value.USER
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                USER -> Known.USER
-                else -> throw OpenAIInvalidDataException("Unknown Role: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Role && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

@@ -13,7 +13,6 @@ class RunStepDeltaTest {
             RunStepDelta.builder()
                 .stepDetails(
                     RunStepDeltaMessageDelta.builder()
-                        .type(RunStepDeltaMessageDelta.Type.MESSAGE_CREATION)
                         .messageCreation(
                             RunStepDeltaMessageDelta.MessageCreation.builder()
                                 .messageId("message_id")
@@ -27,7 +26,6 @@ class RunStepDeltaTest {
             .contains(
                 RunStepDelta.StepDetails.ofRunStepDeltaMessageDelta(
                     RunStepDeltaMessageDelta.builder()
-                        .type(RunStepDeltaMessageDelta.Type.MESSAGE_CREATION)
                         .messageCreation(
                             RunStepDeltaMessageDelta.MessageCreation.builder()
                                 .messageId("message_id")

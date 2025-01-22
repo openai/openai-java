@@ -9,16 +9,9 @@ class VectorStoreDeletedTest {
 
     @Test
     fun createVectorStoreDeleted() {
-        val vectorStoreDeleted =
-            VectorStoreDeleted.builder()
-                .id("id")
-                .deleted(true)
-                .object_(VectorStoreDeleted.Object.VECTOR_STORE_DELETED)
-                .build()
+        val vectorStoreDeleted = VectorStoreDeleted.builder().id("id").deleted(true).build()
         assertThat(vectorStoreDeleted).isNotNull
         assertThat(vectorStoreDeleted.id()).isEqualTo("id")
         assertThat(vectorStoreDeleted.deleted()).isEqualTo(true)
-        assertThat(vectorStoreDeleted.object_())
-            .isEqualTo(VectorStoreDeleted.Object.VECTOR_STORE_DELETED)
     }
 }

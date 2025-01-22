@@ -9,9 +9,7 @@ class ResponseFormatTextTest {
 
     @Test
     fun createResponseFormatText() {
-        val responseFormatText =
-            ResponseFormatText.builder().type(ResponseFormatText.Type.TEXT).build()
+        val responseFormatText = ResponseFormatText.builder().build()
         assertThat(responseFormatText).isNotNull
-        assertThat(responseFormatText.type()).isEqualTo(ResponseFormatText.Type.TEXT)
     }
 }

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -27,9 +26,7 @@ private constructor(
     @JsonProperty("created")
     @ExcludeMissing
     private val created: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonProperty("owned_by")
     @ExcludeMissing
     private val ownedBy: JsonField<String> = JsonMissing.of(),
@@ -43,7 +40,7 @@ private constructor(
     fun created(): Long = created.getRequired("created")
 
     /** The object type, which is always "model". */
-    fun object_(): Object = object_.getRequired("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /** The organization that owns the model. */
     fun ownedBy(): String = ownedBy.getRequired("owned_by")
@@ -53,9 +50,6 @@ private constructor(
 
     /** The Unix timestamp (in seconds) when the model was created. */
     @JsonProperty("created") @ExcludeMissing fun _created(): JsonField<Long> = created
-
-    /** The object type, which is always "model". */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /** The organization that owns the model. */
     @JsonProperty("owned_by") @ExcludeMissing fun _ownedBy(): JsonField<String> = ownedBy
@@ -73,7 +67,11 @@ private constructor(
 
         id()
         created()
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("model")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         ownedBy()
         validated = true
     }
@@ -89,7 +87,7 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var created: JsonField<Long>? = null
-        private var object_: JsonField<Object>? = null
+        private var object_: JsonValue = JsonValue.from("model")
         private var ownedBy: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -115,10 +113,7 @@ private constructor(
         fun created(created: JsonField<Long>) = apply { this.created = created }
 
         /** The object type, which is always "model". */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always "model". */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /** The organization that owns the model. */
         fun ownedBy(ownedBy: String) = ownedBy(JsonField.of(ownedBy))
@@ -149,62 +144,10 @@ private constructor(
             Model(
                 checkRequired("id", id),
                 checkRequired("created", created),
-                checkRequired("object_", object_),
+                object_,
                 checkRequired("ownedBy", ownedBy),
                 additionalProperties.toImmutable(),
             )
-    }
-
-    /** The object type, which is always "model". */
-    class Object
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val MODEL = of("model")
-
-            @JvmStatic fun of(value: String) = Object(JsonField.of(value))
-        }
-
-        enum class Known {
-            MODEL,
-        }
-
-        enum class Value {
-            MODEL,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                MODEL -> Value.MODEL
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                MODEL -> Known.MODEL
-                else -> throw OpenAIInvalidDataException("Unknown Object: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

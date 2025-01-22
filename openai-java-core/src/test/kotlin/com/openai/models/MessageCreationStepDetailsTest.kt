@@ -16,14 +16,11 @@ class MessageCreationStepDetailsTest {
                         .messageId("message_id")
                         .build()
                 )
-                .type(MessageCreationStepDetails.Type.MESSAGE_CREATION)
                 .build()
         assertThat(messageCreationStepDetails).isNotNull
         assertThat(messageCreationStepDetails.messageCreation())
             .isEqualTo(
                 MessageCreationStepDetails.MessageCreation.builder().messageId("message_id").build()
             )
-        assertThat(messageCreationStepDetails.type())
-            .isEqualTo(MessageCreationStepDetails.Type.MESSAGE_CREATION)
     }
 }
