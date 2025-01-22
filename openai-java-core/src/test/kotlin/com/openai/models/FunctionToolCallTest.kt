@@ -19,7 +19,6 @@ class FunctionToolCallTest {
                         .output("output")
                         .build()
                 )
-                .type(FunctionToolCall.Type.FUNCTION)
                 .build()
         assertThat(functionToolCall).isNotNull
         assertThat(functionToolCall.id()).isEqualTo("id")
@@ -31,6 +30,5 @@ class FunctionToolCallTest {
                     .output("output")
                     .build()
             )
-        assertThat(functionToolCall.type()).isEqualTo(FunctionToolCall.Type.FUNCTION)
     }
 }

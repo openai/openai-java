@@ -9,15 +9,9 @@ class RefusalDeltaBlockTest {
 
     @Test
     fun createRefusalDeltaBlock() {
-        val refusalDeltaBlock =
-            RefusalDeltaBlock.builder()
-                .index(0L)
-                .type(RefusalDeltaBlock.Type.REFUSAL)
-                .refusal("refusal")
-                .build()
+        val refusalDeltaBlock = RefusalDeltaBlock.builder().index(0L).refusal("refusal").build()
         assertThat(refusalDeltaBlock).isNotNull
         assertThat(refusalDeltaBlock.index()).isEqualTo(0L)
-        assertThat(refusalDeltaBlock.type()).isEqualTo(RefusalDeltaBlock.Type.REFUSAL)
         assertThat(refusalDeltaBlock.refusal()).contains("refusal")
     }
 }

@@ -26,7 +26,6 @@ class FineTuningJobCheckpointTest {
                         .validMeanTokenAccuracy(0.0)
                         .build()
                 )
-                .object_(FineTuningJobCheckpoint.Object.FINE_TUNING_JOB_CHECKPOINT)
                 .stepNumber(0L)
                 .build()
         assertThat(fineTuningJobCheckpoint).isNotNull
@@ -47,8 +46,6 @@ class FineTuningJobCheckpointTest {
                     .validMeanTokenAccuracy(0.0)
                     .build()
             )
-        assertThat(fineTuningJobCheckpoint.object_())
-            .isEqualTo(FineTuningJobCheckpoint.Object.FINE_TUNING_JOB_CHECKPOINT)
         assertThat(fineTuningJobCheckpoint.stepNumber()).isEqualTo(0L)
     }
 }

@@ -10,14 +10,9 @@ class ChatCompletionPredictionContentTest {
     @Test
     fun createChatCompletionPredictionContent() {
         val chatCompletionPredictionContent =
-            ChatCompletionPredictionContent.builder()
-                .content("string")
-                .type(ChatCompletionPredictionContent.Type.CONTENT)
-                .build()
+            ChatCompletionPredictionContent.builder().content("string").build()
         assertThat(chatCompletionPredictionContent).isNotNull
         assertThat(chatCompletionPredictionContent.content())
             .isEqualTo(ChatCompletionPredictionContent.Content.ofTextContent("string"))
-        assertThat(chatCompletionPredictionContent.type())
-            .isEqualTo(ChatCompletionPredictionContent.Type.CONTENT)
     }
 }

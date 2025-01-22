@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -40,9 +39,7 @@ private constructor(
     @JsonProperty("metrics")
     @ExcludeMissing
     private val metrics: JsonField<Metrics> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonProperty("step_number")
     @ExcludeMissing
     private val stepNumber: JsonField<Long> = JsonMissing.of(),
@@ -66,7 +63,7 @@ private constructor(
     fun metrics(): Metrics = metrics.getRequired("metrics")
 
     /** The object type, which is always "fine_tuning.job.checkpoint". */
-    fun object_(): Object = object_.getRequired("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /** The step number that the checkpoint was created at. */
     fun stepNumber(): Long = stepNumber.getRequired("step_number")
@@ -90,9 +87,6 @@ private constructor(
     /** Metrics at the step number during the fine-tuning job. */
     @JsonProperty("metrics") @ExcludeMissing fun _metrics(): JsonField<Metrics> = metrics
 
-    /** The object type, which is always "fine_tuning.job.checkpoint". */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
-
     /** The step number that the checkpoint was created at. */
     @JsonProperty("step_number") @ExcludeMissing fun _stepNumber(): JsonField<Long> = stepNumber
 
@@ -112,7 +106,11 @@ private constructor(
         fineTunedModelCheckpoint()
         fineTuningJobId()
         metrics().validate()
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("fine_tuning.job.checkpoint")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         stepNumber()
         validated = true
     }
@@ -131,7 +129,7 @@ private constructor(
         private var fineTunedModelCheckpoint: JsonField<String>? = null
         private var fineTuningJobId: JsonField<String>? = null
         private var metrics: JsonField<Metrics>? = null
-        private var object_: JsonField<Object>? = null
+        private var object_: JsonValue = JsonValue.from("fine_tuning.job.checkpoint")
         private var stepNumber: JsonField<Long>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -184,10 +182,7 @@ private constructor(
         fun metrics(metrics: JsonField<Metrics>) = apply { this.metrics = metrics }
 
         /** The object type, which is always "fine_tuning.job.checkpoint". */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always "fine_tuning.job.checkpoint". */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /** The step number that the checkpoint was created at. */
         fun stepNumber(stepNumber: Long) = stepNumber(JsonField.of(stepNumber))
@@ -221,7 +216,7 @@ private constructor(
                 checkRequired("fineTunedModelCheckpoint", fineTunedModelCheckpoint),
                 checkRequired("fineTuningJobId", fineTuningJobId),
                 checkRequired("metrics", metrics),
-                checkRequired("object_", object_),
+                object_,
                 checkRequired("stepNumber", stepNumber),
                 additionalProperties.toImmutable(),
             )
@@ -437,58 +432,6 @@ private constructor(
 
         override fun toString() =
             "Metrics{fullValidLoss=$fullValidLoss, fullValidMeanTokenAccuracy=$fullValidMeanTokenAccuracy, step=$step, trainLoss=$trainLoss, trainMeanTokenAccuracy=$trainMeanTokenAccuracy, validLoss=$validLoss, validMeanTokenAccuracy=$validMeanTokenAccuracy, additionalProperties=$additionalProperties}"
-    }
-
-    /** The object type, which is always "fine_tuning.job.checkpoint". */
-    class Object
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val FINE_TUNING_JOB_CHECKPOINT = of("fine_tuning.job.checkpoint")
-
-            @JvmStatic fun of(value: String) = Object(JsonField.of(value))
-        }
-
-        enum class Known {
-            FINE_TUNING_JOB_CHECKPOINT,
-        }
-
-        enum class Value {
-            FINE_TUNING_JOB_CHECKPOINT,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                FINE_TUNING_JOB_CHECKPOINT -> Value.FINE_TUNING_JOB_CHECKPOINT
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                FINE_TUNING_JOB_CHECKPOINT -> Known.FINE_TUNING_JOB_CHECKPOINT
-                else -> throw OpenAIInvalidDataException("Unknown Object: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

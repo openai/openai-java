@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -27,9 +26,7 @@ private constructor(
     @ExcludeMissing
     private val embedding: JsonField<List<Double>> = JsonMissing.of(),
     @JsonProperty("index") @ExcludeMissing private val index: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
@@ -43,7 +40,7 @@ private constructor(
     fun index(): Long = index.getRequired("index")
 
     /** The object type, which is always "embedding". */
-    fun object_(): Object = object_.getRequired("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * The embedding vector, which is a list of floats. The length of vector depends on the model as
@@ -53,9 +50,6 @@ private constructor(
 
     /** The index of the embedding in the list of embeddings. */
     @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
-
-    /** The object type, which is always "embedding". */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -70,7 +64,11 @@ private constructor(
 
         embedding()
         index()
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("embedding")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         validated = true
     }
 
@@ -85,7 +83,7 @@ private constructor(
 
         private var embedding: JsonField<MutableList<Double>>? = null
         private var index: JsonField<Long>? = null
-        private var object_: JsonField<Object>? = null
+        private var object_: JsonValue = JsonValue.from("embedding")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -137,10 +135,7 @@ private constructor(
         fun index(index: JsonField<Long>) = apply { this.index = index }
 
         /** The object type, which is always "embedding". */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always "embedding". */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -165,61 +160,9 @@ private constructor(
             Embedding(
                 checkRequired("embedding", embedding).map { it.toImmutable() },
                 checkRequired("index", index),
-                checkRequired("object_", object_),
+                object_,
                 additionalProperties.toImmutable(),
             )
-    }
-
-    /** The object type, which is always "embedding". */
-    class Object
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val EMBEDDING = of("embedding")
-
-            @JvmStatic fun of(value: String) = Object(JsonField.of(value))
-        }
-
-        enum class Known {
-            EMBEDDING,
-        }
-
-        enum class Value {
-            EMBEDDING,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                EMBEDDING -> Value.EMBEDDING
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                EMBEDDING -> Known.EMBEDDING
-                else -> throw OpenAIInvalidDataException("Unknown Object: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

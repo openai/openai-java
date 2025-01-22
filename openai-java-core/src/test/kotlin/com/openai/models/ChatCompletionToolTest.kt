@@ -24,7 +24,6 @@ class ChatCompletionToolTest {
                         .strict(true)
                         .build()
                 )
-                .type(ChatCompletionTool.Type.FUNCTION)
                 .build()
         assertThat(chatCompletionTool).isNotNull
         assertThat(chatCompletionTool.function())
@@ -40,6 +39,5 @@ class ChatCompletionToolTest {
                     .strict(true)
                     .build()
             )
-        assertThat(chatCompletionTool.type()).isEqualTo(ChatCompletionTool.Type.FUNCTION)
     }
 }

@@ -32,7 +32,7 @@ import java.util.Optional
 @JsonSerialize(using = AssistantToolChoiceOption.Serializer::class)
 class AssistantToolChoiceOption
 private constructor(
-    private val behavior: Behavior? = null,
+    private val auto: Auto? = null,
     private val assistantToolChoice: AssistantToolChoice? = null,
     private val _json: JsonValue? = null,
 ) {
@@ -42,13 +42,13 @@ private constructor(
      * the model can pick between generating a message or calling one or more tools. `required`
      * means the model must call one or more tools before responding to the user.
      */
-    fun behavior(): Optional<Behavior> = Optional.ofNullable(behavior)
+    fun auto(): Optional<Auto> = Optional.ofNullable(auto)
 
     /** Specifies a tool the model should use. Use to force the model to call a specific tool. */
     fun assistantToolChoice(): Optional<AssistantToolChoice> =
         Optional.ofNullable(assistantToolChoice)
 
-    fun isBehavior(): Boolean = behavior != null
+    fun isAuto(): Boolean = auto != null
 
     fun isAssistantToolChoice(): Boolean = assistantToolChoice != null
 
@@ -57,7 +57,7 @@ private constructor(
      * the model can pick between generating a message or calling one or more tools. `required`
      * means the model must call one or more tools before responding to the user.
      */
-    fun asBehavior(): Behavior = behavior.getOrThrow("behavior")
+    fun asAuto(): Auto = auto.getOrThrow("auto")
 
     /** Specifies a tool the model should use. Use to force the model to call a specific tool. */
     fun asAssistantToolChoice(): AssistantToolChoice =
@@ -67,7 +67,7 @@ private constructor(
 
     fun <T> accept(visitor: Visitor<T>): T {
         return when {
-            behavior != null -> visitor.visitBehavior(behavior)
+            auto != null -> visitor.visitAuto(auto)
             assistantToolChoice != null -> visitor.visitAssistantToolChoice(assistantToolChoice)
             else -> visitor.unknown(_json)
         }
@@ -82,7 +82,7 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
-                override fun visitBehavior(behavior: Behavior) {}
+                override fun visitAuto(auto: Auto) {}
 
                 override fun visitAssistantToolChoice(assistantToolChoice: AssistantToolChoice) {
                     assistantToolChoice.validate()
@@ -97,14 +97,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is AssistantToolChoiceOption && behavior == other.behavior && assistantToolChoice == other.assistantToolChoice /* spotless:on */
+        return /* spotless:off */ other is AssistantToolChoiceOption && auto == other.auto && assistantToolChoice == other.assistantToolChoice /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(behavior, assistantToolChoice) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, assistantToolChoice) /* spotless:on */
 
     override fun toString(): String =
         when {
-            behavior != null -> "AssistantToolChoiceOption{behavior=$behavior}"
+            auto != null -> "AssistantToolChoiceOption{auto=$auto}"
             assistantToolChoice != null ->
                 "AssistantToolChoiceOption{assistantToolChoice=$assistantToolChoice}"
             _json != null -> "AssistantToolChoiceOption{_unknown=$_json}"
@@ -118,8 +118,7 @@ private constructor(
          * means the model can pick between generating a message or calling one or more tools.
          * `required` means the model must call one or more tools before responding to the user.
          */
-        @JvmStatic
-        fun ofBehavior(behavior: Behavior) = AssistantToolChoiceOption(behavior = behavior)
+        @JvmStatic fun ofAuto(auto: Auto) = AssistantToolChoiceOption(auto = auto)
 
         /**
          * Specifies a tool the model should use. Use to force the model to call a specific tool.
@@ -136,7 +135,7 @@ private constructor(
          * means the model can pick between generating a message or calling one or more tools.
          * `required` means the model must call one or more tools before responding to the user.
          */
-        fun visitBehavior(behavior: Behavior): T
+        fun visitAuto(auto: Auto): T
 
         /**
          * Specifies a tool the model should use. Use to force the model to call a specific tool.
@@ -154,8 +153,8 @@ private constructor(
         override fun ObjectCodec.deserialize(node: JsonNode): AssistantToolChoiceOption {
             val json = JsonValue.fromJsonNode(node)
 
-            tryDeserialize(node, jacksonTypeRef<Behavior>())?.let {
-                return AssistantToolChoiceOption(behavior = it, _json = json)
+            tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
+                return AssistantToolChoiceOption(auto = it, _json = json)
             }
             tryDeserialize(node, jacksonTypeRef<AssistantToolChoice>()) { it.validate() }
                 ?.let {
@@ -174,7 +173,7 @@ private constructor(
             provider: SerializerProvider
         ) {
             when {
-                value.behavior != null -> generator.writeObject(value.behavior)
+                value.auto != null -> generator.writeObject(value.auto)
                 value.assistantToolChoice != null ->
                     generator.writeObject(value.assistantToolChoice)
                 value._json != null -> generator.writeObject(value._json)
@@ -188,7 +187,7 @@ private constructor(
      * the model can pick between generating a message or calling one or more tools. `required`
      * means the model must call one or more tools before responding to the user.
      */
-    class Behavior
+    class Auto
     @JsonCreator
     private constructor(
         private val value: JsonField<String>,
@@ -204,7 +203,7 @@ private constructor(
 
             @JvmField val REQUIRED = of("required")
 
-            @JvmStatic fun of(value: String) = Behavior(JsonField.of(value))
+            @JvmStatic fun of(value: String) = Auto(JsonField.of(value))
         }
 
         enum class Known {
@@ -233,7 +232,7 @@ private constructor(
                 NONE -> Known.NONE
                 AUTO -> Known.AUTO
                 REQUIRED -> Known.REQUIRED
-                else -> throw OpenAIInvalidDataException("Unknown Behavior: $value")
+                else -> throw OpenAIInvalidDataException("Unknown Auto: $value")
             }
 
         fun asString(): String = _value().asStringOrThrow()
@@ -243,7 +242,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Behavior && value == other.value /* spotless:on */
+            return /* spotless:off */ other is Auto && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()

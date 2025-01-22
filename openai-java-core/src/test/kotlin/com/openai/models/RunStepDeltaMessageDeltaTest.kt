@@ -11,7 +11,6 @@ class RunStepDeltaMessageDeltaTest {
     fun createRunStepDeltaMessageDelta() {
         val runStepDeltaMessageDelta =
             RunStepDeltaMessageDelta.builder()
-                .type(RunStepDeltaMessageDelta.Type.MESSAGE_CREATION)
                 .messageCreation(
                     RunStepDeltaMessageDelta.MessageCreation.builder()
                         .messageId("message_id")
@@ -19,8 +18,6 @@ class RunStepDeltaMessageDeltaTest {
                 )
                 .build()
         assertThat(runStepDeltaMessageDelta).isNotNull
-        assertThat(runStepDeltaMessageDelta.type())
-            .isEqualTo(RunStepDeltaMessageDelta.Type.MESSAGE_CREATION)
         assertThat(runStepDeltaMessageDelta.messageCreation())
             .contains(
                 RunStepDeltaMessageDelta.MessageCreation.builder().messageId("message_id").build()

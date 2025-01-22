@@ -17,7 +17,6 @@ class FileCitationAnnotationTest {
                 )
                 .startIndex(0L)
                 .text("text")
-                .type(FileCitationAnnotation.Type.FILE_CITATION)
                 .build()
         assertThat(fileCitationAnnotation).isNotNull
         assertThat(fileCitationAnnotation.endIndex()).isEqualTo(0L)
@@ -25,7 +24,5 @@ class FileCitationAnnotationTest {
             .isEqualTo(FileCitationAnnotation.FileCitation.builder().fileId("file_id").build())
         assertThat(fileCitationAnnotation.startIndex()).isEqualTo(0L)
         assertThat(fileCitationAnnotation.text()).isEqualTo("text")
-        assertThat(fileCitationAnnotation.type())
-            .isEqualTo(FileCitationAnnotation.Type.FILE_CITATION)
     }
 }

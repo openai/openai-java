@@ -23,13 +23,11 @@ class TextContentBlockTest {
                                 )
                                 .startIndex(0L)
                                 .text("text")
-                                .type(FileCitationAnnotation.Type.FILE_CITATION)
                                 .build()
                         )
                         .value("value")
                         .build()
                 )
-                .type(TextContentBlock.Type.TEXT)
                 .build()
         assertThat(textContentBlock).isNotNull
         assertThat(textContentBlock.text())
@@ -45,12 +43,10 @@ class TextContentBlockTest {
                             )
                             .startIndex(0L)
                             .text("text")
-                            .type(FileCitationAnnotation.Type.FILE_CITATION)
                             .build()
                     )
                     .value("value")
                     .build()
             )
-        assertThat(textContentBlock.type()).isEqualTo(TextContentBlock.Type.TEXT)
     }
 }

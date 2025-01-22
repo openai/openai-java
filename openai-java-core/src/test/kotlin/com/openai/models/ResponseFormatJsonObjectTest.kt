@@ -9,12 +9,7 @@ class ResponseFormatJsonObjectTest {
 
     @Test
     fun createResponseFormatJsonObject() {
-        val responseFormatJsonObject =
-            ResponseFormatJsonObject.builder()
-                .type(ResponseFormatJsonObject.Type.JSON_OBJECT)
-                .build()
+        val responseFormatJsonObject = ResponseFormatJsonObject.builder().build()
         assertThat(responseFormatJsonObject).isNotNull
-        assertThat(responseFormatJsonObject.type())
-            .isEqualTo(ResponseFormatJsonObject.Type.JSON_OBJECT)
     }
 }

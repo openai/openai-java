@@ -6,13 +6,11 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
-import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -24,7 +22,7 @@ import java.util.Optional
 class ToolCallDeltaObject
 @JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
     @JsonProperty("tool_calls")
     @ExcludeMissing
     private val toolCalls: JsonField<List<ToolCallDelta>> = JsonMissing.of(),
@@ -32,7 +30,7 @@ private constructor(
 ) {
 
     /** Always `tool_calls`. */
-    fun type(): Type = type.getRequired("type")
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
      * An array of tool calls the run step was involved in. These can be associated with one of
@@ -40,9 +38,6 @@ private constructor(
      */
     fun toolCalls(): Optional<List<ToolCallDelta>> =
         Optional.ofNullable(toolCalls.getNullable("tool_calls"))
-
-    /** Always `tool_calls`. */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     /**
      * An array of tool calls the run step was involved in. These can be associated with one of
@@ -63,7 +58,11 @@ private constructor(
             return@apply
         }
 
-        type()
+        _type().let {
+            if (it != JsonValue.from("tool_calls")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
         toolCalls().ifPresent { it.forEach { it.validate() } }
         validated = true
     }
@@ -77,7 +76,7 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type>? = null
+        private var type: JsonValue = JsonValue.from("tool_calls")
         private var toolCalls: JsonField<MutableList<ToolCallDelta>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -89,10 +88,7 @@ private constructor(
         }
 
         /** Always `tool_calls`. */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /** Always `tool_calls`. */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
+        fun type(type: JsonValue) = apply { this.type = type }
 
         /**
          * An array of tool calls the run step was involved in. These can be associated with one of
@@ -164,62 +160,10 @@ private constructor(
 
         fun build(): ToolCallDeltaObject =
             ToolCallDeltaObject(
-                checkRequired("type", type),
+                type,
                 (toolCalls ?: JsonMissing.of()).map { it.toImmutable() },
                 additionalProperties.toImmutable(),
             )
-    }
-
-    /** Always `tool_calls`. */
-    class Type
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val TOOL_CALLS = of("tool_calls")
-
-            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-        }
-
-        enum class Known {
-            TOOL_CALLS,
-        }
-
-        enum class Value {
-            TOOL_CALLS,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                TOOL_CALLS -> Value.TOOL_CALLS
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                TOOL_CALLS -> Known.TOOL_CALLS
-                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

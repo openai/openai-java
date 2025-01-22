@@ -30,22 +30,13 @@ class JobServiceTest {
                     .trainingFile("file-abc123")
                     .hyperparameters(
                         FineTuningJobCreateParams.Hyperparameters.builder()
-                            .batchSize(
-                                FineTuningJobCreateParams.Hyperparameters.BatchSize.Behavior.AUTO
-                            )
-                            .learningRateMultiplier(
-                                FineTuningJobCreateParams.Hyperparameters.LearningRateMultiplier
-                                    .Behavior
-                                    .AUTO
-                            )
-                            .nEpochs(
-                                FineTuningJobCreateParams.Hyperparameters.NEpochs.Behavior.AUTO
-                            )
+                            .batchSizeAuto()
+                            .learningRateMultiplierAuto()
+                            .nEpochsAuto()
                             .build()
                     )
                     .addIntegration(
                         FineTuningJobCreateParams.Integration.builder()
-                            .type(FineTuningJobCreateParams.Integration.Type.WANDB)
                             .wandb(
                                 FineTuningJobCreateParams.Integration.Wandb.builder()
                                     .project("my-wandb-project")
@@ -63,30 +54,10 @@ class JobServiceTest {
                                     .hyperparameters(
                                         FineTuningJobCreateParams.Method.Dpo.Hyperparameters
                                             .builder()
-                                            .batchSize(
-                                                FineTuningJobCreateParams.Method.Dpo.Hyperparameters
-                                                    .BatchSize
-                                                    .Auto
-                                                    .AUTO
-                                            )
-                                            .beta(
-                                                FineTuningJobCreateParams.Method.Dpo.Hyperparameters
-                                                    .Beta
-                                                    .Auto
-                                                    .AUTO
-                                            )
-                                            .learningRateMultiplier(
-                                                FineTuningJobCreateParams.Method.Dpo.Hyperparameters
-                                                    .LearningRateMultiplier
-                                                    .Auto
-                                                    .AUTO
-                                            )
-                                            .nEpochs(
-                                                FineTuningJobCreateParams.Method.Dpo.Hyperparameters
-                                                    .NEpochs
-                                                    .Auto
-                                                    .AUTO
-                                            )
+                                            .batchSizeAuto()
+                                            .betaAuto()
+                                            .learningRateMultiplierAuto()
+                                            .nEpochsAuto()
                                             .build()
                                     )
                                     .build()
@@ -96,27 +67,9 @@ class JobServiceTest {
                                     .hyperparameters(
                                         FineTuningJobCreateParams.Method.Supervised.Hyperparameters
                                             .builder()
-                                            .batchSize(
-                                                FineTuningJobCreateParams.Method.Supervised
-                                                    .Hyperparameters
-                                                    .BatchSize
-                                                    .Auto
-                                                    .AUTO
-                                            )
-                                            .learningRateMultiplier(
-                                                FineTuningJobCreateParams.Method.Supervised
-                                                    .Hyperparameters
-                                                    .LearningRateMultiplier
-                                                    .Auto
-                                                    .AUTO
-                                            )
-                                            .nEpochs(
-                                                FineTuningJobCreateParams.Method.Supervised
-                                                    .Hyperparameters
-                                                    .NEpochs
-                                                    .Auto
-                                                    .AUTO
-                                            )
+                                            .batchSizeAuto()
+                                            .learningRateMultiplierAuto()
+                                            .nEpochsAuto()
                                             .build()
                                     )
                                     .build()

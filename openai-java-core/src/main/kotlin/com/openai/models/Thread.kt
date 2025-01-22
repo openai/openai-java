@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -32,9 +31,7 @@ private constructor(
     @ExcludeMissing
     private val createdAt: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonValue = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonProperty("tool_resources")
     @ExcludeMissing
     private val toolResources: JsonField<ToolResources> = JsonMissing.of(),
@@ -55,7 +52,7 @@ private constructor(
     @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
 
     /** The object type, which is always `thread`. */
-    fun object_(): Object = object_.getRequired("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * A set of resources that are made available to the assistant's tools in this thread. The
@@ -70,9 +67,6 @@ private constructor(
 
     /** The Unix timestamp (in seconds) for when the thread was created. */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
-
-    /** The object type, which is always `thread`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /**
      * A set of resources that are made available to the assistant's tools in this thread. The
@@ -96,7 +90,11 @@ private constructor(
 
         id()
         createdAt()
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("thread")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         toolResources().ifPresent { it.validate() }
         validated = true
     }
@@ -113,7 +111,7 @@ private constructor(
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
         private var metadata: JsonValue? = null
-        private var object_: JsonField<Object>? = null
+        private var object_: JsonValue = JsonValue.from("thread")
         private var toolResources: JsonField<ToolResources>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -147,10 +145,7 @@ private constructor(
         fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
         /** The object type, which is always `thread`. */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always `thread`. */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /**
          * A set of resources that are made available to the assistant's tools in this thread. The
@@ -204,62 +199,10 @@ private constructor(
                 checkRequired("id", id),
                 checkRequired("createdAt", createdAt),
                 checkRequired("metadata", metadata),
-                checkRequired("object_", object_),
+                object_,
                 checkRequired("toolResources", toolResources),
                 additionalProperties.toImmutable(),
             )
-    }
-
-    /** The object type, which is always `thread`. */
-    class Object
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val THREAD = of("thread")
-
-            @JvmStatic fun of(value: String) = Object(JsonField.of(value))
-        }
-
-        enum class Known {
-            THREAD,
-        }
-
-        enum class Value {
-            THREAD,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                THREAD -> Value.THREAD
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                THREAD -> Known.THREAD
-                else -> throw OpenAIInvalidDataException("Unknown Object: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     /**

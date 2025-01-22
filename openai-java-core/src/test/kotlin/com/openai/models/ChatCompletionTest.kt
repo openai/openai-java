@@ -52,7 +52,6 @@ class ChatCompletionTest {
                             ChatCompletionMessage.builder()
                                 .content("content")
                                 .refusal("refusal")
-                                .role(ChatCompletionMessage.Role.ASSISTANT)
                                 .audio(
                                     ChatCompletionAudio.builder()
                                         .id("id")
@@ -76,7 +75,6 @@ class ChatCompletionTest {
                                                 .name("name")
                                                 .build()
                                         )
-                                        .type(ChatCompletionMessageToolCall.Type.FUNCTION)
                                         .build()
                                 )
                                 .build()
@@ -85,7 +83,6 @@ class ChatCompletionTest {
                 )
                 .created(0L)
                 .model("model")
-                .object_(ChatCompletion.Object.CHAT_COMPLETION)
                 .serviceTier(ChatCompletion.ServiceTier.SCALE)
                 .systemFingerprint("system_fingerprint")
                 .usage(
@@ -153,7 +150,6 @@ class ChatCompletionTest {
                         ChatCompletionMessage.builder()
                             .content("content")
                             .refusal("refusal")
-                            .role(ChatCompletionMessage.Role.ASSISTANT)
                             .audio(
                                 ChatCompletionAudio.builder()
                                     .id("id")
@@ -177,7 +173,6 @@ class ChatCompletionTest {
                                             .name("name")
                                             .build()
                                     )
-                                    .type(ChatCompletionMessageToolCall.Type.FUNCTION)
                                     .build()
                             )
                             .build()
@@ -186,7 +181,6 @@ class ChatCompletionTest {
             )
         assertThat(chatCompletion.created()).isEqualTo(0L)
         assertThat(chatCompletion.model()).isEqualTo("model")
-        assertThat(chatCompletion.object_()).isEqualTo(ChatCompletion.Object.CHAT_COMPLETION)
         assertThat(chatCompletion.serviceTier()).contains(ChatCompletion.ServiceTier.SCALE)
         assertThat(chatCompletion.systemFingerprint()).contains("system_fingerprint")
         assertThat(chatCompletion.usage())

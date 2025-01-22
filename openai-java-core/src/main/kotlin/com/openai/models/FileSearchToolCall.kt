@@ -27,7 +27,7 @@ private constructor(
     @JsonProperty("file_search")
     @ExcludeMissing
     private val fileSearch: JsonField<FileSearch> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
@@ -40,7 +40,7 @@ private constructor(
     /**
      * The type of tool call. This is always going to be `file_search` for this type of tool call.
      */
-    fun type(): Type = type.getRequired("type")
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /** The ID of the tool call object. */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
@@ -49,11 +49,6 @@ private constructor(
     @JsonProperty("file_search")
     @ExcludeMissing
     fun _fileSearch(): JsonField<FileSearch> = fileSearch
-
-    /**
-     * The type of tool call. This is always going to be `file_search` for this type of tool call.
-     */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -68,7 +63,11 @@ private constructor(
 
         id()
         fileSearch().validate()
-        type()
+        _type().let {
+            if (it != JsonValue.from("file_search")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
         validated = true
     }
 
@@ -83,7 +82,7 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var fileSearch: JsonField<FileSearch>? = null
-        private var type: JsonField<Type>? = null
+        private var type: JsonValue = JsonValue.from("file_search")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -110,13 +109,7 @@ private constructor(
          * The type of tool call. This is always going to be `file_search` for this type of tool
          * call.
          */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /**
-         * The type of tool call. This is always going to be `file_search` for this type of tool
-         * call.
-         */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
+        fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -141,7 +134,7 @@ private constructor(
             FileSearchToolCall(
                 checkRequired("id", id),
                 checkRequired("fileSearch", fileSearch),
-                checkRequired("type", type),
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -277,7 +270,7 @@ private constructor(
         private constructor(
             @JsonProperty("ranker")
             @ExcludeMissing
-            private val ranker: JsonField<Ranker> = JsonMissing.of(),
+            private val ranker: JsonValue = JsonMissing.of(),
             @JsonProperty("score_threshold")
             @ExcludeMissing
             private val scoreThreshold: JsonField<Double> = JsonMissing.of(),
@@ -286,16 +279,13 @@ private constructor(
         ) {
 
             /** The ranker used for the file search. */
-            fun ranker(): Ranker = ranker.getRequired("ranker")
+            @JsonProperty("ranker") @ExcludeMissing fun _ranker(): JsonValue = ranker
 
             /**
              * The score threshold for the file search. All values must be a floating point number
              * between 0 and 1.
              */
             fun scoreThreshold(): Double = scoreThreshold.getRequired("score_threshold")
-
-            /** The ranker used for the file search. */
-            @JsonProperty("ranker") @ExcludeMissing fun _ranker(): JsonField<Ranker> = ranker
 
             /**
              * The score threshold for the file search. All values must be a floating point number
@@ -316,7 +306,11 @@ private constructor(
                     return@apply
                 }
 
-                ranker()
+                _ranker().let {
+                    if (it != JsonValue.from("default_2024_08_21")) {
+                        throw OpenAIInvalidDataException("'ranker' is invalid, received $it")
+                    }
+                }
                 scoreThreshold()
                 validated = true
             }
@@ -330,7 +324,7 @@ private constructor(
 
             class Builder {
 
-                private var ranker: JsonField<Ranker>? = null
+                private var ranker: JsonValue = JsonValue.from("default_2024_08_21")
                 private var scoreThreshold: JsonField<Double>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -342,10 +336,7 @@ private constructor(
                 }
 
                 /** The ranker used for the file search. */
-                fun ranker(ranker: Ranker) = ranker(JsonField.of(ranker))
-
-                /** The ranker used for the file search. */
-                fun ranker(ranker: JsonField<Ranker>) = apply { this.ranker = ranker }
+                fun ranker(ranker: JsonValue) = apply { this.ranker = ranker }
 
                 /**
                  * The score threshold for the file search. All values must be a floating point
@@ -386,62 +377,10 @@ private constructor(
 
                 fun build(): RankingOptions =
                     RankingOptions(
-                        checkRequired("ranker", ranker),
+                        ranker,
                         checkRequired("scoreThreshold", scoreThreshold),
                         additionalProperties.toImmutable(),
                     )
-            }
-
-            /** The ranker used for the file search. */
-            class Ranker
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
-
-                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-                companion object {
-
-                    @JvmField val DEFAULT_2024_08_21 = of("default_2024_08_21")
-
-                    @JvmStatic fun of(value: String) = Ranker(JsonField.of(value))
-                }
-
-                enum class Known {
-                    DEFAULT_2024_08_21,
-                }
-
-                enum class Value {
-                    DEFAULT_2024_08_21,
-                    _UNKNOWN,
-                }
-
-                fun value(): Value =
-                    when (this) {
-                        DEFAULT_2024_08_21 -> Value.DEFAULT_2024_08_21
-                        else -> Value._UNKNOWN
-                    }
-
-                fun known(): Known =
-                    when (this) {
-                        DEFAULT_2024_08_21 -> Known.DEFAULT_2024_08_21
-                        else -> throw OpenAIInvalidDataException("Unknown Ranker: $value")
-                    }
-
-                fun asString(): String = _value().asStringOrThrow()
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return /* spotless:off */ other is Ranker && value == other.value /* spotless:on */
-                }
-
-                override fun hashCode() = value.hashCode()
-
-                override fun toString() = value.toString()
             }
 
             override fun equals(other: Any?): Boolean {
@@ -858,60 +797,6 @@ private constructor(
 
         override fun toString() =
             "FileSearch{rankingOptions=$rankingOptions, results=$results, additionalProperties=$additionalProperties}"
-    }
-
-    /**
-     * The type of tool call. This is always going to be `file_search` for this type of tool call.
-     */
-    class Type
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val FILE_SEARCH = of("file_search")
-
-            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-        }
-
-        enum class Known {
-            FILE_SEARCH,
-        }
-
-        enum class Value {
-            FILE_SEARCH,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                FILE_SEARCH -> Value.FILE_SEARCH
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                FILE_SEARCH -> Known.FILE_SEARCH
-                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

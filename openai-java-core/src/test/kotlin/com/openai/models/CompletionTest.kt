@@ -34,7 +34,6 @@ class CompletionTest {
                 )
                 .created(0L)
                 .model("model")
-                .object_(Completion.Object.TEXT_COMPLETION)
                 .systemFingerprint("system_fingerprint")
                 .usage(
                     CompletionUsage.builder()
@@ -82,7 +81,6 @@ class CompletionTest {
             )
         assertThat(completion.created()).isEqualTo(0L)
         assertThat(completion.model()).isEqualTo("model")
-        assertThat(completion.object_()).isEqualTo(Completion.Object.TEXT_COMPLETION)
         assertThat(completion.systemFingerprint()).contains("system_fingerprint")
         assertThat(completion.usage())
             .contains(

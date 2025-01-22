@@ -15,7 +15,6 @@ class FilePathAnnotationTest {
                 .filePath(FilePathAnnotation.FilePath.builder().fileId("file_id").build())
                 .startIndex(0L)
                 .text("text")
-                .type(FilePathAnnotation.Type.FILE_PATH)
                 .build()
         assertThat(filePathAnnotation).isNotNull
         assertThat(filePathAnnotation.endIndex()).isEqualTo(0L)
@@ -23,6 +22,5 @@ class FilePathAnnotationTest {
             .isEqualTo(FilePathAnnotation.FilePath.builder().fileId("file_id").build())
         assertThat(filePathAnnotation.startIndex()).isEqualTo(0L)
         assertThat(filePathAnnotation.text()).isEqualTo("text")
-        assertThat(filePathAnnotation.type()).isEqualTo(FilePathAnnotation.Type.FILE_PATH)
     }
 }

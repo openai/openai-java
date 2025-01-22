@@ -17,7 +17,6 @@ class ThreadStreamEventTest {
                         .id("id")
                         .createdAt(0L)
                         .metadata(JsonValue.from(mapOf<String, Any>()))
-                        .object_(Thread.Object.THREAD)
                         .toolResources(
                             Thread.ToolResources.builder()
                                 .codeInterpreter(
@@ -34,7 +33,6 @@ class ThreadStreamEventTest {
                         )
                         .build()
                 )
-                .event(ThreadStreamEvent.Event.THREAD_CREATED)
                 .enabled(true)
                 .build()
         assertThat(threadStreamEvent).isNotNull
@@ -44,7 +42,6 @@ class ThreadStreamEventTest {
                     .id("id")
                     .createdAt(0L)
                     .metadata(JsonValue.from(mapOf<String, Any>()))
-                    .object_(Thread.Object.THREAD)
                     .toolResources(
                         Thread.ToolResources.builder()
                             .codeInterpreter(
@@ -61,7 +58,6 @@ class ThreadStreamEventTest {
                     )
                     .build()
             )
-        assertThat(threadStreamEvent.event()).isEqualTo(ThreadStreamEvent.Event.THREAD_CREATED)
         assertThat(threadStreamEvent.enabled()).contains(true)
     }
 }

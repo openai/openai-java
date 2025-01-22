@@ -1005,9 +1005,6 @@ constructor(
                 fun addTool(codeInterpreterTool: CodeInterpreterTool) =
                     addTool(Tool.ofCodeInterpreterTool(codeInterpreterTool))
 
-                /** The tools to add this file to. */
-                fun addTool(fileSearch: Tool.FileSearch) = addTool(Tool.ofFileSearch(fileSearch))
-
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
                     putAllAdditionalProperties(additionalProperties)
@@ -1043,14 +1040,14 @@ constructor(
             class Tool
             private constructor(
                 private val codeInterpreterTool: CodeInterpreterTool? = null,
-                private val fileSearch: FileSearch? = null,
+                private val fileSearch: JsonValue? = null,
                 private val _json: JsonValue? = null,
             ) {
 
                 fun codeInterpreterTool(): Optional<CodeInterpreterTool> =
                     Optional.ofNullable(codeInterpreterTool)
 
-                fun fileSearch(): Optional<FileSearch> = Optional.ofNullable(fileSearch)
+                fun fileSearch(): Optional<JsonValue> = Optional.ofNullable(fileSearch)
 
                 fun isCodeInterpreterTool(): Boolean = codeInterpreterTool != null
 
@@ -1059,7 +1056,7 @@ constructor(
                 fun asCodeInterpreterTool(): CodeInterpreterTool =
                     codeInterpreterTool.getOrThrow("codeInterpreterTool")
 
-                fun asFileSearch(): FileSearch = fileSearch.getOrThrow("fileSearch")
+                fun asFileSearch(): JsonValue = fileSearch.getOrThrow("fileSearch")
 
                 fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -1087,8 +1084,14 @@ constructor(
                                 codeInterpreterTool.validate()
                             }
 
-                            override fun visitFileSearch(fileSearch: FileSearch) {
-                                fileSearch.validate()
+                            override fun visitFileSearch(fileSearch: JsonValue) {
+                                fileSearch.let {
+                                    if (it != JsonValue.from(mapOf("type" to "file_search"))) {
+                                        throw OpenAIInvalidDataException(
+                                            "'fileSearch' is invalid, received $it"
+                                        )
+                                    }
+                                }
                             }
                         }
                     )
@@ -1121,14 +1124,15 @@ constructor(
                         Tool(codeInterpreterTool = codeInterpreterTool)
 
                     @JvmStatic
-                    fun ofFileSearch(fileSearch: FileSearch) = Tool(fileSearch = fileSearch)
+                    fun ofFileSearch() =
+                        Tool(fileSearch = JsonValue.from(mapOf("type" to "file_search")))
                 }
 
                 interface Visitor<out T> {
 
                     fun visitCodeInterpreterTool(codeInterpreterTool: CodeInterpreterTool): T
 
-                    fun visitFileSearch(fileSearch: FileSearch): T
+                    fun visitFileSearch(fileSearch: JsonValue): T
 
                     fun unknown(json: JsonValue?): T {
                         throw OpenAIInvalidDataException("Unknown Tool: $json")
@@ -1151,7 +1155,17 @@ constructor(
                                     }
                             }
                             "file_search" -> {
-                                tryDeserialize(node, jacksonTypeRef<FileSearch>()) { it.validate() }
+                                tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
+                                        it.let {
+                                            if (
+                                                it != JsonValue.from(mapOf("type" to "file_search"))
+                                            ) {
+                                                throw OpenAIInvalidDataException(
+                                                    "'fileSearch' is invalid, received $it"
+                                                )
+                                            }
+                                        }
+                                    }
                                     ?.let {
                                         return Tool(fileSearch = it, _json = json)
                                     }
@@ -1177,163 +1191,6 @@ constructor(
                             else -> throw IllegalStateException("Invalid Tool")
                         }
                     }
-                }
-
-                @NoAutoDetect
-                class FileSearch
-                @JsonCreator
-                private constructor(
-                    @JsonProperty("type")
-                    @ExcludeMissing
-                    private val type: JsonField<Type> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-                ) {
-
-                    /** The type of tool being defined: `file_search` */
-                    fun type(): Type = type.getRequired("type")
-
-                    /** The type of tool being defined: `file_search` */
-                    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
-
-                    @JsonAnyGetter
-                    @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): FileSearch = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        type()
-                        validated = true
-                    }
-
-                    fun toBuilder() = Builder().from(this)
-
-                    companion object {
-
-                        @JvmStatic fun builder() = Builder()
-                    }
-
-                    class Builder {
-
-                        private var type: JsonField<Type>? = null
-                        private var additionalProperties: MutableMap<String, JsonValue> =
-                            mutableMapOf()
-
-                        @JvmSynthetic
-                        internal fun from(fileSearch: FileSearch) = apply {
-                            type = fileSearch.type
-                            additionalProperties = fileSearch.additionalProperties.toMutableMap()
-                        }
-
-                        /** The type of tool being defined: `file_search` */
-                        fun type(type: Type) = type(JsonField.of(type))
-
-                        /** The type of tool being defined: `file_search` */
-                        fun type(type: JsonField<Type>) = apply { this.type = type }
-
-                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
-                            apply {
-                                this.additionalProperties.clear()
-                                putAllAdditionalProperties(additionalProperties)
-                            }
-
-                        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                            additionalProperties.put(key, value)
-                        }
-
-                        fun putAllAdditionalProperties(
-                            additionalProperties: Map<String, JsonValue>
-                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
-
-                        fun removeAdditionalProperty(key: String) = apply {
-                            additionalProperties.remove(key)
-                        }
-
-                        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                            keys.forEach(::removeAdditionalProperty)
-                        }
-
-                        fun build(): FileSearch =
-                            FileSearch(
-                                checkRequired("type", type),
-                                additionalProperties.toImmutable()
-                            )
-                    }
-
-                    /** The type of tool being defined: `file_search` */
-                    class Type
-                    @JsonCreator
-                    private constructor(
-                        private val value: JsonField<String>,
-                    ) : Enum {
-
-                        @com.fasterxml.jackson.annotation.JsonValue
-                        fun _value(): JsonField<String> = value
-
-                        companion object {
-
-                            @JvmField val FILE_SEARCH = of("file_search")
-
-                            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                        }
-
-                        enum class Known {
-                            FILE_SEARCH,
-                        }
-
-                        enum class Value {
-                            FILE_SEARCH,
-                            _UNKNOWN,
-                        }
-
-                        fun value(): Value =
-                            when (this) {
-                                FILE_SEARCH -> Value.FILE_SEARCH
-                                else -> Value._UNKNOWN
-                            }
-
-                        fun known(): Known =
-                            when (this) {
-                                FILE_SEARCH -> Known.FILE_SEARCH
-                                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-                            }
-
-                        fun asString(): String = _value().asStringOrThrow()
-
-                        override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
-
-                            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                        }
-
-                        override fun hashCode() = value.hashCode()
-
-                        override fun toString() = value.toString()
-                    }
-
-                    override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
-
-                        return /* spotless:off */ other is FileSearch && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
-                    }
-
-                    /* spotless:off */
-                    private val hashCode: Int by lazy { Objects.hash(type, additionalProperties) }
-                    /* spotless:on */
-
-                    override fun hashCode(): Int = hashCode
-
-                    override fun toString() =
-                        "FileSearch{type=$type, additionalProperties=$additionalProperties}"
                 }
             }
 

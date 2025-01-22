@@ -17,11 +17,7 @@ class BetaThreadMessageCreateParamsTest {
             .addAttachment(
                 BetaThreadMessageCreateParams.Attachment.builder()
                     .fileId("file_id")
-                    .addTool(
-                        CodeInterpreterTool.builder()
-                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                            .build()
-                    )
+                    .addTool(CodeInterpreterTool.builder().build())
                     .build()
             )
             .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -38,11 +34,7 @@ class BetaThreadMessageCreateParamsTest {
                 .addAttachment(
                     BetaThreadMessageCreateParams.Attachment.builder()
                         .fileId("file_id")
-                        .addTool(
-                            CodeInterpreterTool.builder()
-                                .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                .build()
-                        )
+                        .addTool(CodeInterpreterTool.builder().build())
                         .build()
                 )
                 .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -57,11 +49,7 @@ class BetaThreadMessageCreateParamsTest {
                 listOf(
                     BetaThreadMessageCreateParams.Attachment.builder()
                         .fileId("file_id")
-                        .addTool(
-                            CodeInterpreterTool.builder()
-                                .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                .build()
-                        )
+                        .addTool(CodeInterpreterTool.builder().build())
                         .build()
                 )
             )

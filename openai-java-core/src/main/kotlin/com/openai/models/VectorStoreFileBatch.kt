@@ -30,9 +30,7 @@ private constructor(
     @JsonProperty("file_counts")
     @ExcludeMissing
     private val fileCounts: JsonField<FileCounts> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonProperty("status")
     @ExcludeMissing
     private val status: JsonField<Status> = JsonMissing.of(),
@@ -51,7 +49,7 @@ private constructor(
     fun fileCounts(): FileCounts = fileCounts.getRequired("file_counts")
 
     /** The object type, which is always `vector_store.file_batch`. */
-    fun object_(): Object = object_.getRequired("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * The status of the vector store files batch, which can be either `in_progress`, `completed`,
@@ -75,9 +73,6 @@ private constructor(
     @JsonProperty("file_counts")
     @ExcludeMissing
     fun _fileCounts(): JsonField<FileCounts> = fileCounts
-
-    /** The object type, which is always `vector_store.file_batch`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /**
      * The status of the vector store files batch, which can be either `in_progress`, `completed`,
@@ -108,7 +103,11 @@ private constructor(
         id()
         createdAt()
         fileCounts().validate()
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("vector_store.files_batch")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         status()
         vectorStoreId()
         validated = true
@@ -126,7 +125,7 @@ private constructor(
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
         private var fileCounts: JsonField<FileCounts>? = null
-        private var object_: JsonField<Object>? = null
+        private var object_: JsonValue = JsonValue.from("vector_store.files_batch")
         private var status: JsonField<Status>? = null
         private var vectorStoreId: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -159,10 +158,7 @@ private constructor(
         fun fileCounts(fileCounts: JsonField<FileCounts>) = apply { this.fileCounts = fileCounts }
 
         /** The object type, which is always `vector_store.file_batch`. */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always `vector_store.file_batch`. */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /**
          * The status of the vector store files batch, which can be either `in_progress`,
@@ -216,7 +212,7 @@ private constructor(
                 checkRequired("id", id),
                 checkRequired("createdAt", createdAt),
                 checkRequired("fileCounts", fileCounts),
-                checkRequired("object_", object_),
+                object_,
                 checkRequired("status", status),
                 checkRequired("vectorStoreId", vectorStoreId),
                 additionalProperties.toImmutable(),
@@ -397,58 +393,6 @@ private constructor(
 
         override fun toString() =
             "FileCounts{cancelled=$cancelled, completed=$completed, failed=$failed, inProgress=$inProgress, total=$total, additionalProperties=$additionalProperties}"
-    }
-
-    /** The object type, which is always `vector_store.file_batch`. */
-    class Object
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val VECTOR_STORE_FILES_BATCH = of("vector_store.files_batch")
-
-            @JvmStatic fun of(value: String) = Object(JsonField.of(value))
-        }
-
-        enum class Known {
-            VECTOR_STORE_FILES_BATCH,
-        }
-
-        enum class Value {
-            VECTOR_STORE_FILES_BATCH,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                VECTOR_STORE_FILES_BATCH -> Value.VECTOR_STORE_FILES_BATCH
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                VECTOR_STORE_FILES_BATCH -> Known.VECTOR_STORE_FILES_BATCH
-                else -> throw OpenAIInvalidDataException("Unknown Object: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     /**

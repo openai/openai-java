@@ -16,7 +16,6 @@ class ModerationImageUrlInputTest {
                         .url("https://example.com/image.jpg")
                         .build()
                 )
-                .type(ModerationImageUrlInput.Type.IMAGE_URL)
                 .build()
         assertThat(moderationImageUrlInput).isNotNull
         assertThat(moderationImageUrlInput.imageUrl())
@@ -25,6 +24,5 @@ class ModerationImageUrlInputTest {
                     .url("https://example.com/image.jpg")
                     .build()
             )
-        assertThat(moderationImageUrlInput.type()).isEqualTo(ModerationImageUrlInput.Type.IMAGE_URL)
     }
 }

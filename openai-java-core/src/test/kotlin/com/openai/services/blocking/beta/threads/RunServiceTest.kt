@@ -5,7 +5,6 @@ package com.openai.services.blocking.beta.threads
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
-import com.openai.models.AssistantResponseFormatOption
 import com.openai.models.AssistantToolChoiceOption
 import com.openai.models.BetaThreadRunCancelParams
 import com.openai.models.BetaThreadRunCreateParams
@@ -44,11 +43,7 @@ class RunServiceTest {
                             .addAttachment(
                                 BetaThreadRunCreateParams.AdditionalMessage.Attachment.builder()
                                     .fileId("file_id")
-                                    .addTool(
-                                        CodeInterpreterTool.builder()
-                                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                            .build()
-                                    )
+                                    .addTool(CodeInterpreterTool.builder().build())
                                     .build()
                             )
                             .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -60,14 +55,10 @@ class RunServiceTest {
                     .metadata(JsonValue.from(mapOf<String, Any>()))
                     .model(ChatModel.GPT_4O)
                     .parallelToolCalls(true)
-                    .responseFormat(AssistantResponseFormatOption.Behavior.AUTO)
+                    .responseFormatAuto()
                     .temperature(1.0)
-                    .toolChoice(AssistantToolChoiceOption.Behavior.NONE)
-                    .addTool(
-                        CodeInterpreterTool.builder()
-                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                            .build()
-                    )
+                    .toolChoice(AssistantToolChoiceOption.Auto.NONE)
+                    .addTool(CodeInterpreterTool.builder().build())
                     .topP(1.0)
                     .truncationStrategy(
                         BetaThreadRunCreateParams.TruncationStrategy.builder()
@@ -104,11 +95,7 @@ class RunServiceTest {
                             .addAttachment(
                                 BetaThreadRunCreateParams.AdditionalMessage.Attachment.builder()
                                     .fileId("file_id")
-                                    .addTool(
-                                        CodeInterpreterTool.builder()
-                                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                            .build()
-                                    )
+                                    .addTool(CodeInterpreterTool.builder().build())
                                     .build()
                             )
                             .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -120,14 +107,10 @@ class RunServiceTest {
                     .metadata(JsonValue.from(mapOf<String, Any>()))
                     .model(ChatModel.GPT_4O)
                     .parallelToolCalls(true)
-                    .responseFormat(AssistantResponseFormatOption.Behavior.AUTO)
+                    .responseFormatAuto()
                     .temperature(1.0)
-                    .toolChoice(AssistantToolChoiceOption.Behavior.NONE)
-                    .addTool(
-                        CodeInterpreterTool.builder()
-                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                            .build()
-                    )
+                    .toolChoice(AssistantToolChoiceOption.Auto.NONE)
+                    .addTool(CodeInterpreterTool.builder().build())
                     .topP(1.0)
                     .truncationStrategy(
                         BetaThreadRunCreateParams.TruncationStrategy.builder()

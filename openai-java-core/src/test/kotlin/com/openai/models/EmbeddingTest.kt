@@ -9,15 +9,9 @@ class EmbeddingTest {
 
     @Test
     fun createEmbedding() {
-        val embedding =
-            Embedding.builder()
-                .addEmbedding(0.0)
-                .index(0L)
-                .object_(Embedding.Object.EMBEDDING)
-                .build()
+        val embedding = Embedding.builder().addEmbedding(0.0).index(0L).build()
         assertThat(embedding).isNotNull
         assertThat(embedding.embedding()).containsExactly(0.0)
         assertThat(embedding.index()).isEqualTo(0L)
-        assertThat(embedding.object_()).isEqualTo(Embedding.Object.EMBEDDING)
     }
 }

@@ -51,9 +51,7 @@ private constructor(
     @ExcludeMissing
     private val hyperparameters: JsonField<Hyperparameters> = JsonMissing.of(),
     @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonProperty("organization_id")
     @ExcludeMissing
     private val organizationId: JsonField<String> = JsonMissing.of(),
@@ -121,7 +119,7 @@ private constructor(
     fun model(): String = model.getRequired("model")
 
     /** The object type, which is always "fine_tuning.job". */
-    fun object_(): Object = object_.getRequired("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /** The organization that owns the fine-tuning job. */
     fun organizationId(): String = organizationId.getRequired("organization_id")
@@ -212,9 +210,6 @@ private constructor(
     /** The base model that is being fine-tuned. */
     @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
 
-    /** The object type, which is always "fine_tuning.job". */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
-
     /** The organization that owns the fine-tuning job. */
     @JsonProperty("organization_id")
     @ExcludeMissing
@@ -295,7 +290,11 @@ private constructor(
         finishedAt()
         hyperparameters().validate()
         model()
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("fine_tuning.job")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         organizationId()
         resultFiles()
         seed()
@@ -325,7 +324,7 @@ private constructor(
         private var finishedAt: JsonField<Long>? = null
         private var hyperparameters: JsonField<Hyperparameters>? = null
         private var model: JsonField<String>? = null
-        private var object_: JsonField<Object>? = null
+        private var object_: JsonValue = JsonValue.from("fine_tuning.job")
         private var organizationId: JsonField<String>? = null
         private var resultFiles: JsonField<MutableList<String>>? = null
         private var seed: JsonField<Long>? = null
@@ -461,10 +460,7 @@ private constructor(
         fun model(model: JsonField<String>) = apply { this.model = model }
 
         /** The object type, which is always "fine_tuning.job". */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always "fine_tuning.job". */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /** The organization that owns the fine-tuning job. */
         fun organizationId(organizationId: String) = organizationId(JsonField.of(organizationId))
@@ -681,7 +677,7 @@ private constructor(
                 checkRequired("finishedAt", finishedAt),
                 checkRequired("hyperparameters", hyperparameters),
                 checkRequired("model", model),
-                checkRequired("object_", object_),
+                object_,
                 checkRequired("organizationId", organizationId),
                 checkRequired("resultFiles", resultFiles).map { it.toImmutable() },
                 checkRequired("seed", seed),
@@ -974,7 +970,7 @@ private constructor(
              * Number of examples in each batch. A larger batch size means that model parameters are
              * updated less frequently, but with lower variance.
              */
-            fun batchSize(auto: BatchSize.Auto) = batchSize(BatchSize.ofAuto(auto))
+            fun batchSizeAuto() = batchSize(BatchSize.ofAuto())
 
             /**
              * Number of examples in each batch. A larger batch size means that model parameters are
@@ -1002,8 +998,8 @@ private constructor(
              * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
              * overfitting.
              */
-            fun learningRateMultiplier(auto: LearningRateMultiplier.Auto) =
-                learningRateMultiplier(LearningRateMultiplier.ofAuto(auto))
+            fun learningRateMultiplierAuto() =
+                learningRateMultiplier(LearningRateMultiplier.ofAuto())
 
             /**
              * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
@@ -1028,7 +1024,7 @@ private constructor(
              * The number of epochs to train the model for. An epoch refers to one full cycle
              * through the training dataset.
              */
-            fun nEpochs(behavior: NEpochs.Behavior) = nEpochs(NEpochs.ofBehavior(behavior))
+            fun nEpochsAuto() = nEpochs(NEpochs.ofAuto())
 
             /**
              * The number of epochs to train the model for. An epoch refers to one full cycle
@@ -1072,12 +1068,12 @@ private constructor(
         @JsonSerialize(using = BatchSize.Serializer::class)
         class BatchSize
         private constructor(
-            private val auto: Auto? = null,
+            private val auto: JsonValue? = null,
             private val manual: Long? = null,
             private val _json: JsonValue? = null,
         ) {
 
-            fun auto(): Optional<Auto> = Optional.ofNullable(auto)
+            fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
 
             fun manual(): Optional<Long> = Optional.ofNullable(manual)
 
@@ -1085,7 +1081,7 @@ private constructor(
 
             fun isManual(): Boolean = manual != null
 
-            fun asAuto(): Auto = auto.getOrThrow("auto")
+            fun asAuto(): JsonValue = auto.getOrThrow("auto")
 
             fun asManual(): Long = manual.getOrThrow("manual")
 
@@ -1108,7 +1104,15 @@ private constructor(
 
                 accept(
                     object : Visitor<Unit> {
-                        override fun visitAuto(auto: Auto) {}
+                        override fun visitAuto(auto: JsonValue) {
+                            auto.let {
+                                if (it != JsonValue.from("auto")) {
+                                    throw OpenAIInvalidDataException(
+                                        "'auto' is invalid, received $it"
+                                    )
+                                }
+                            }
+                        }
 
                         override fun visitManual(manual: Long) {}
                     }
@@ -1136,14 +1140,14 @@ private constructor(
 
             companion object {
 
-                @JvmStatic fun ofAuto(auto: Auto) = BatchSize(auto = auto)
+                @JvmStatic fun ofAuto() = BatchSize(auto = JsonValue.from("auto"))
 
                 @JvmStatic fun ofManual(manual: Long) = BatchSize(manual = manual)
             }
 
             interface Visitor<out T> {
 
-                fun visitAuto(auto: Auto): T
+                fun visitAuto(auto: JsonValue): T
 
                 fun visitManual(manual: Long): T
 
@@ -1157,9 +1161,18 @@ private constructor(
                 override fun ObjectCodec.deserialize(node: JsonNode): BatchSize {
                     val json = JsonValue.fromJsonNode(node)
 
-                    tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
-                        return BatchSize(auto = it, _json = json)
-                    }
+                    tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
+                            it.let {
+                                if (it != JsonValue.from("auto")) {
+                                    throw OpenAIInvalidDataException(
+                                        "'auto' is invalid, received $it"
+                                    )
+                                }
+                            }
+                        }
+                        ?.let {
+                            return BatchSize(auto = it, _json = json)
+                        }
                     tryDeserialize(node, jacksonTypeRef<Long>())?.let {
                         return BatchSize(manual = it, _json = json)
                     }
@@ -1183,57 +1196,6 @@ private constructor(
                     }
                 }
             }
-
-            class Auto
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
-
-                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-                companion object {
-
-                    @JvmField val AUTO = of("auto")
-
-                    @JvmStatic fun of(value: String) = Auto(JsonField.of(value))
-                }
-
-                enum class Known {
-                    AUTO,
-                }
-
-                enum class Value {
-                    AUTO,
-                    _UNKNOWN,
-                }
-
-                fun value(): Value =
-                    when (this) {
-                        AUTO -> Value.AUTO
-                        else -> Value._UNKNOWN
-                    }
-
-                fun known(): Known =
-                    when (this) {
-                        AUTO -> Known.AUTO
-                        else -> throw OpenAIInvalidDataException("Unknown Auto: $value")
-                    }
-
-                fun asString(): String = _value().asStringOrThrow()
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return /* spotless:off */ other is Auto && value == other.value /* spotless:on */
-                }
-
-                override fun hashCode() = value.hashCode()
-
-                override fun toString() = value.toString()
-            }
         }
 
         /**
@@ -1244,12 +1206,12 @@ private constructor(
         @JsonSerialize(using = LearningRateMultiplier.Serializer::class)
         class LearningRateMultiplier
         private constructor(
-            private val auto: Auto? = null,
+            private val auto: JsonValue? = null,
             private val number: Double? = null,
             private val _json: JsonValue? = null,
         ) {
 
-            fun auto(): Optional<Auto> = Optional.ofNullable(auto)
+            fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
 
             fun number(): Optional<Double> = Optional.ofNullable(number)
 
@@ -1257,7 +1219,7 @@ private constructor(
 
             fun isNumber(): Boolean = number != null
 
-            fun asAuto(): Auto = auto.getOrThrow("auto")
+            fun asAuto(): JsonValue = auto.getOrThrow("auto")
 
             fun asNumber(): Double = number.getOrThrow("number")
 
@@ -1280,7 +1242,15 @@ private constructor(
 
                 accept(
                     object : Visitor<Unit> {
-                        override fun visitAuto(auto: Auto) {}
+                        override fun visitAuto(auto: JsonValue) {
+                            auto.let {
+                                if (it != JsonValue.from("auto")) {
+                                    throw OpenAIInvalidDataException(
+                                        "'auto' is invalid, received $it"
+                                    )
+                                }
+                            }
+                        }
 
                         override fun visitNumber(number: Double) {}
                     }
@@ -1308,14 +1278,14 @@ private constructor(
 
             companion object {
 
-                @JvmStatic fun ofAuto(auto: Auto) = LearningRateMultiplier(auto = auto)
+                @JvmStatic fun ofAuto() = LearningRateMultiplier(auto = JsonValue.from("auto"))
 
                 @JvmStatic fun ofNumber(number: Double) = LearningRateMultiplier(number = number)
             }
 
             interface Visitor<out T> {
 
-                fun visitAuto(auto: Auto): T
+                fun visitAuto(auto: JsonValue): T
 
                 fun visitNumber(number: Double): T
 
@@ -1330,9 +1300,18 @@ private constructor(
                 override fun ObjectCodec.deserialize(node: JsonNode): LearningRateMultiplier {
                     val json = JsonValue.fromJsonNode(node)
 
-                    tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
-                        return LearningRateMultiplier(auto = it, _json = json)
-                    }
+                    tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
+                            it.let {
+                                if (it != JsonValue.from("auto")) {
+                                    throw OpenAIInvalidDataException(
+                                        "'auto' is invalid, received $it"
+                                    )
+                                }
+                            }
+                        }
+                        ?.let {
+                            return LearningRateMultiplier(auto = it, _json = json)
+                        }
                     tryDeserialize(node, jacksonTypeRef<Double>())?.let {
                         return LearningRateMultiplier(number = it, _json = json)
                     }
@@ -1357,57 +1336,6 @@ private constructor(
                     }
                 }
             }
-
-            class Auto
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
-
-                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-                companion object {
-
-                    @JvmField val AUTO = of("auto")
-
-                    @JvmStatic fun of(value: String) = Auto(JsonField.of(value))
-                }
-
-                enum class Known {
-                    AUTO,
-                }
-
-                enum class Value {
-                    AUTO,
-                    _UNKNOWN,
-                }
-
-                fun value(): Value =
-                    when (this) {
-                        AUTO -> Value.AUTO
-                        else -> Value._UNKNOWN
-                    }
-
-                fun known(): Known =
-                    when (this) {
-                        AUTO -> Known.AUTO
-                        else -> throw OpenAIInvalidDataException("Unknown Auto: $value")
-                    }
-
-                fun asString(): String = _value().asStringOrThrow()
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return /* spotless:off */ other is Auto && value == other.value /* spotless:on */
-                }
-
-                override fun hashCode() = value.hashCode()
-
-                override fun toString() = value.toString()
-            }
         }
 
         /**
@@ -1418,20 +1346,20 @@ private constructor(
         @JsonSerialize(using = NEpochs.Serializer::class)
         class NEpochs
         private constructor(
-            private val behavior: Behavior? = null,
+            private val auto: JsonValue? = null,
             private val integer: Long? = null,
             private val _json: JsonValue? = null,
         ) {
 
-            fun behavior(): Optional<Behavior> = Optional.ofNullable(behavior)
+            fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
 
             fun integer(): Optional<Long> = Optional.ofNullable(integer)
 
-            fun isBehavior(): Boolean = behavior != null
+            fun isAuto(): Boolean = auto != null
 
             fun isInteger(): Boolean = integer != null
 
-            fun asBehavior(): Behavior = behavior.getOrThrow("behavior")
+            fun asAuto(): JsonValue = auto.getOrThrow("auto")
 
             fun asInteger(): Long = integer.getOrThrow("integer")
 
@@ -1439,7 +1367,7 @@ private constructor(
 
             fun <T> accept(visitor: Visitor<T>): T {
                 return when {
-                    behavior != null -> visitor.visitBehavior(behavior)
+                    auto != null -> visitor.visitAuto(auto)
                     integer != null -> visitor.visitInteger(integer)
                     else -> visitor.unknown(_json)
                 }
@@ -1454,7 +1382,15 @@ private constructor(
 
                 accept(
                     object : Visitor<Unit> {
-                        override fun visitBehavior(behavior: Behavior) {}
+                        override fun visitAuto(auto: JsonValue) {
+                            auto.let {
+                                if (it != JsonValue.from("auto")) {
+                                    throw OpenAIInvalidDataException(
+                                        "'auto' is invalid, received $it"
+                                    )
+                                }
+                            }
+                        }
 
                         override fun visitInteger(integer: Long) {}
                     }
@@ -1467,14 +1403,14 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is NEpochs && behavior == other.behavior && integer == other.integer /* spotless:on */
+                return /* spotless:off */ other is NEpochs && auto == other.auto && integer == other.integer /* spotless:on */
             }
 
-            override fun hashCode(): Int = /* spotless:off */ Objects.hash(behavior, integer) /* spotless:on */
+            override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, integer) /* spotless:on */
 
             override fun toString(): String =
                 when {
-                    behavior != null -> "NEpochs{behavior=$behavior}"
+                    auto != null -> "NEpochs{auto=$auto}"
                     integer != null -> "NEpochs{integer=$integer}"
                     _json != null -> "NEpochs{_unknown=$_json}"
                     else -> throw IllegalStateException("Invalid NEpochs")
@@ -1482,14 +1418,14 @@ private constructor(
 
             companion object {
 
-                @JvmStatic fun ofBehavior(behavior: Behavior) = NEpochs(behavior = behavior)
+                @JvmStatic fun ofAuto() = NEpochs(auto = JsonValue.from("auto"))
 
                 @JvmStatic fun ofInteger(integer: Long) = NEpochs(integer = integer)
             }
 
             interface Visitor<out T> {
 
-                fun visitBehavior(behavior: Behavior): T
+                fun visitAuto(auto: JsonValue): T
 
                 fun visitInteger(integer: Long): T
 
@@ -1503,9 +1439,18 @@ private constructor(
                 override fun ObjectCodec.deserialize(node: JsonNode): NEpochs {
                     val json = JsonValue.fromJsonNode(node)
 
-                    tryDeserialize(node, jacksonTypeRef<Behavior>())?.let {
-                        return NEpochs(behavior = it, _json = json)
-                    }
+                    tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
+                            it.let {
+                                if (it != JsonValue.from("auto")) {
+                                    throw OpenAIInvalidDataException(
+                                        "'auto' is invalid, received $it"
+                                    )
+                                }
+                            }
+                        }
+                        ?.let {
+                            return NEpochs(auto = it, _json = json)
+                        }
                     tryDeserialize(node, jacksonTypeRef<Long>())?.let {
                         return NEpochs(integer = it, _json = json)
                     }
@@ -1522,63 +1467,12 @@ private constructor(
                     provider: SerializerProvider
                 ) {
                     when {
-                        value.behavior != null -> generator.writeObject(value.behavior)
+                        value.auto != null -> generator.writeObject(value.auto)
                         value.integer != null -> generator.writeObject(value.integer)
                         value._json != null -> generator.writeObject(value._json)
                         else -> throw IllegalStateException("Invalid NEpochs")
                     }
                 }
-            }
-
-            class Behavior
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
-
-                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-                companion object {
-
-                    @JvmField val AUTO = of("auto")
-
-                    @JvmStatic fun of(value: String) = Behavior(JsonField.of(value))
-                }
-
-                enum class Known {
-                    AUTO,
-                }
-
-                enum class Value {
-                    AUTO,
-                    _UNKNOWN,
-                }
-
-                fun value(): Value =
-                    when (this) {
-                        AUTO -> Value.AUTO
-                        else -> Value._UNKNOWN
-                    }
-
-                fun known(): Known =
-                    when (this) {
-                        AUTO -> Known.AUTO
-                        else -> throw OpenAIInvalidDataException("Unknown Behavior: $value")
-                    }
-
-                fun asString(): String = _value().asStringOrThrow()
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return /* spotless:off */ other is Behavior && value == other.value /* spotless:on */
-                }
-
-                override fun hashCode() = value.hashCode()
-
-                override fun toString() = value.toString()
             }
         }
 
@@ -1598,58 +1492,6 @@ private constructor(
 
         override fun toString() =
             "Hyperparameters{batchSize=$batchSize, learningRateMultiplier=$learningRateMultiplier, nEpochs=$nEpochs, additionalProperties=$additionalProperties}"
-    }
-
-    /** The object type, which is always "fine_tuning.job". */
-    class Object
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val FINE_TUNING_JOB = of("fine_tuning.job")
-
-            @JvmStatic fun of(value: String) = Object(JsonField.of(value))
-        }
-
-        enum class Known {
-            FINE_TUNING_JOB,
-        }
-
-        enum class Value {
-            FINE_TUNING_JOB,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                FINE_TUNING_JOB -> Value.FINE_TUNING_JOB
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                FINE_TUNING_JOB -> Known.FINE_TUNING_JOB
-                else -> throw OpenAIInvalidDataException("Unknown Object: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     /**
@@ -2090,7 +1932,7 @@ private constructor(
                      * Number of examples in each batch. A larger batch size means that model
                      * parameters are updated less frequently, but with lower variance.
                      */
-                    fun batchSize(auto: BatchSize.Auto) = batchSize(BatchSize.ofAuto(auto))
+                    fun batchSizeAuto() = batchSize(BatchSize.ofAuto())
 
                     /**
                      * Number of examples in each batch. A larger batch size means that model
@@ -2114,7 +1956,7 @@ private constructor(
                      * The beta value for the DPO method. A higher beta value will increase the
                      * weight of the penalty between the policy and reference model.
                      */
-                    fun beta(auto: Beta.Auto) = beta(Beta.ofAuto(auto))
+                    fun betaAuto() = beta(Beta.ofAuto())
 
                     /**
                      * The beta value for the DPO method. A higher beta value will increase the
@@ -2141,8 +1983,8 @@ private constructor(
                      * Scaling factor for the learning rate. A smaller learning rate may be useful
                      * to avoid overfitting.
                      */
-                    fun learningRateMultiplier(auto: LearningRateMultiplier.Auto) =
-                        learningRateMultiplier(LearningRateMultiplier.ofAuto(auto))
+                    fun learningRateMultiplierAuto() =
+                        learningRateMultiplier(LearningRateMultiplier.ofAuto())
 
                     /**
                      * Scaling factor for the learning rate. A smaller learning rate may be useful
@@ -2167,7 +2009,7 @@ private constructor(
                      * The number of epochs to train the model for. An epoch refers to one full
                      * cycle through the training dataset.
                      */
-                    fun nEpochs(auto: NEpochs.Auto) = nEpochs(NEpochs.ofAuto(auto))
+                    fun nEpochsAuto() = nEpochs(NEpochs.ofAuto())
 
                     /**
                      * The number of epochs to train the model for. An epoch refers to one full
@@ -2215,12 +2057,12 @@ private constructor(
                 @JsonSerialize(using = BatchSize.Serializer::class)
                 class BatchSize
                 private constructor(
-                    private val auto: Auto? = null,
+                    private val auto: JsonValue? = null,
                     private val manual: Long? = null,
                     private val _json: JsonValue? = null,
                 ) {
 
-                    fun auto(): Optional<Auto> = Optional.ofNullable(auto)
+                    fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
 
                     fun manual(): Optional<Long> = Optional.ofNullable(manual)
 
@@ -2228,7 +2070,7 @@ private constructor(
 
                     fun isManual(): Boolean = manual != null
 
-                    fun asAuto(): Auto = auto.getOrThrow("auto")
+                    fun asAuto(): JsonValue = auto.getOrThrow("auto")
 
                     fun asManual(): Long = manual.getOrThrow("manual")
 
@@ -2251,7 +2093,15 @@ private constructor(
 
                         accept(
                             object : Visitor<Unit> {
-                                override fun visitAuto(auto: Auto) {}
+                                override fun visitAuto(auto: JsonValue) {
+                                    auto.let {
+                                        if (it != JsonValue.from("auto")) {
+                                            throw OpenAIInvalidDataException(
+                                                "'auto' is invalid, received $it"
+                                            )
+                                        }
+                                    }
+                                }
 
                                 override fun visitManual(manual: Long) {}
                             }
@@ -2279,14 +2129,14 @@ private constructor(
 
                     companion object {
 
-                        @JvmStatic fun ofAuto(auto: Auto) = BatchSize(auto = auto)
+                        @JvmStatic fun ofAuto() = BatchSize(auto = JsonValue.from("auto"))
 
                         @JvmStatic fun ofManual(manual: Long) = BatchSize(manual = manual)
                     }
 
                     interface Visitor<out T> {
 
-                        fun visitAuto(auto: Auto): T
+                        fun visitAuto(auto: JsonValue): T
 
                         fun visitManual(manual: Long): T
 
@@ -2300,9 +2150,18 @@ private constructor(
                         override fun ObjectCodec.deserialize(node: JsonNode): BatchSize {
                             val json = JsonValue.fromJsonNode(node)
 
-                            tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
-                                return BatchSize(auto = it, _json = json)
-                            }
+                            tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
+                                    it.let {
+                                        if (it != JsonValue.from("auto")) {
+                                            throw OpenAIInvalidDataException(
+                                                "'auto' is invalid, received $it"
+                                            )
+                                        }
+                                    }
+                                }
+                                ?.let {
+                                    return BatchSize(auto = it, _json = json)
+                                }
                             tryDeserialize(node, jacksonTypeRef<Long>())?.let {
                                 return BatchSize(manual = it, _json = json)
                             }
@@ -2326,58 +2185,6 @@ private constructor(
                             }
                         }
                     }
-
-                    class Auto
-                    @JsonCreator
-                    private constructor(
-                        private val value: JsonField<String>,
-                    ) : Enum {
-
-                        @com.fasterxml.jackson.annotation.JsonValue
-                        fun _value(): JsonField<String> = value
-
-                        companion object {
-
-                            @JvmField val AUTO = of("auto")
-
-                            @JvmStatic fun of(value: String) = Auto(JsonField.of(value))
-                        }
-
-                        enum class Known {
-                            AUTO,
-                        }
-
-                        enum class Value {
-                            AUTO,
-                            _UNKNOWN,
-                        }
-
-                        fun value(): Value =
-                            when (this) {
-                                AUTO -> Value.AUTO
-                                else -> Value._UNKNOWN
-                            }
-
-                        fun known(): Known =
-                            when (this) {
-                                AUTO -> Known.AUTO
-                                else -> throw OpenAIInvalidDataException("Unknown Auto: $value")
-                            }
-
-                        fun asString(): String = _value().asStringOrThrow()
-
-                        override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
-
-                            return /* spotless:off */ other is Auto && value == other.value /* spotless:on */
-                        }
-
-                        override fun hashCode() = value.hashCode()
-
-                        override fun toString() = value.toString()
-                    }
                 }
 
                 /**
@@ -2388,12 +2195,12 @@ private constructor(
                 @JsonSerialize(using = Beta.Serializer::class)
                 class Beta
                 private constructor(
-                    private val auto: Auto? = null,
+                    private val auto: JsonValue? = null,
                     private val manual: Double? = null,
                     private val _json: JsonValue? = null,
                 ) {
 
-                    fun auto(): Optional<Auto> = Optional.ofNullable(auto)
+                    fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
 
                     fun manual(): Optional<Double> = Optional.ofNullable(manual)
 
@@ -2401,7 +2208,7 @@ private constructor(
 
                     fun isManual(): Boolean = manual != null
 
-                    fun asAuto(): Auto = auto.getOrThrow("auto")
+                    fun asAuto(): JsonValue = auto.getOrThrow("auto")
 
                     fun asManual(): Double = manual.getOrThrow("manual")
 
@@ -2424,7 +2231,15 @@ private constructor(
 
                         accept(
                             object : Visitor<Unit> {
-                                override fun visitAuto(auto: Auto) {}
+                                override fun visitAuto(auto: JsonValue) {
+                                    auto.let {
+                                        if (it != JsonValue.from("auto")) {
+                                            throw OpenAIInvalidDataException(
+                                                "'auto' is invalid, received $it"
+                                            )
+                                        }
+                                    }
+                                }
 
                                 override fun visitManual(manual: Double) {}
                             }
@@ -2452,14 +2267,14 @@ private constructor(
 
                     companion object {
 
-                        @JvmStatic fun ofAuto(auto: Auto) = Beta(auto = auto)
+                        @JvmStatic fun ofAuto() = Beta(auto = JsonValue.from("auto"))
 
                         @JvmStatic fun ofManual(manual: Double) = Beta(manual = manual)
                     }
 
                     interface Visitor<out T> {
 
-                        fun visitAuto(auto: Auto): T
+                        fun visitAuto(auto: JsonValue): T
 
                         fun visitManual(manual: Double): T
 
@@ -2473,9 +2288,18 @@ private constructor(
                         override fun ObjectCodec.deserialize(node: JsonNode): Beta {
                             val json = JsonValue.fromJsonNode(node)
 
-                            tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
-                                return Beta(auto = it, _json = json)
-                            }
+                            tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
+                                    it.let {
+                                        if (it != JsonValue.from("auto")) {
+                                            throw OpenAIInvalidDataException(
+                                                "'auto' is invalid, received $it"
+                                            )
+                                        }
+                                    }
+                                }
+                                ?.let {
+                                    return Beta(auto = it, _json = json)
+                                }
                             tryDeserialize(node, jacksonTypeRef<Double>())?.let {
                                 return Beta(manual = it, _json = json)
                             }
@@ -2499,58 +2323,6 @@ private constructor(
                             }
                         }
                     }
-
-                    class Auto
-                    @JsonCreator
-                    private constructor(
-                        private val value: JsonField<String>,
-                    ) : Enum {
-
-                        @com.fasterxml.jackson.annotation.JsonValue
-                        fun _value(): JsonField<String> = value
-
-                        companion object {
-
-                            @JvmField val AUTO = of("auto")
-
-                            @JvmStatic fun of(value: String) = Auto(JsonField.of(value))
-                        }
-
-                        enum class Known {
-                            AUTO,
-                        }
-
-                        enum class Value {
-                            AUTO,
-                            _UNKNOWN,
-                        }
-
-                        fun value(): Value =
-                            when (this) {
-                                AUTO -> Value.AUTO
-                                else -> Value._UNKNOWN
-                            }
-
-                        fun known(): Known =
-                            when (this) {
-                                AUTO -> Known.AUTO
-                                else -> throw OpenAIInvalidDataException("Unknown Auto: $value")
-                            }
-
-                        fun asString(): String = _value().asStringOrThrow()
-
-                        override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
-
-                            return /* spotless:off */ other is Auto && value == other.value /* spotless:on */
-                        }
-
-                        override fun hashCode() = value.hashCode()
-
-                        override fun toString() = value.toString()
-                    }
                 }
 
                 /**
@@ -2561,12 +2333,12 @@ private constructor(
                 @JsonSerialize(using = LearningRateMultiplier.Serializer::class)
                 class LearningRateMultiplier
                 private constructor(
-                    private val auto: Auto? = null,
+                    private val auto: JsonValue? = null,
                     private val manual: Double? = null,
                     private val _json: JsonValue? = null,
                 ) {
 
-                    fun auto(): Optional<Auto> = Optional.ofNullable(auto)
+                    fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
 
                     fun manual(): Optional<Double> = Optional.ofNullable(manual)
 
@@ -2574,7 +2346,7 @@ private constructor(
 
                     fun isManual(): Boolean = manual != null
 
-                    fun asAuto(): Auto = auto.getOrThrow("auto")
+                    fun asAuto(): JsonValue = auto.getOrThrow("auto")
 
                     fun asManual(): Double = manual.getOrThrow("manual")
 
@@ -2597,7 +2369,15 @@ private constructor(
 
                         accept(
                             object : Visitor<Unit> {
-                                override fun visitAuto(auto: Auto) {}
+                                override fun visitAuto(auto: JsonValue) {
+                                    auto.let {
+                                        if (it != JsonValue.from("auto")) {
+                                            throw OpenAIInvalidDataException(
+                                                "'auto' is invalid, received $it"
+                                            )
+                                        }
+                                    }
+                                }
 
                                 override fun visitManual(manual: Double) {}
                             }
@@ -2625,7 +2405,8 @@ private constructor(
 
                     companion object {
 
-                        @JvmStatic fun ofAuto(auto: Auto) = LearningRateMultiplier(auto = auto)
+                        @JvmStatic
+                        fun ofAuto() = LearningRateMultiplier(auto = JsonValue.from("auto"))
 
                         @JvmStatic
                         fun ofManual(manual: Double) = LearningRateMultiplier(manual = manual)
@@ -2633,7 +2414,7 @@ private constructor(
 
                     interface Visitor<out T> {
 
-                        fun visitAuto(auto: Auto): T
+                        fun visitAuto(auto: JsonValue): T
 
                         fun visitManual(manual: Double): T
 
@@ -2652,9 +2433,18 @@ private constructor(
                         ): LearningRateMultiplier {
                             val json = JsonValue.fromJsonNode(node)
 
-                            tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
-                                return LearningRateMultiplier(auto = it, _json = json)
-                            }
+                            tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
+                                    it.let {
+                                        if (it != JsonValue.from("auto")) {
+                                            throw OpenAIInvalidDataException(
+                                                "'auto' is invalid, received $it"
+                                            )
+                                        }
+                                    }
+                                }
+                                ?.let {
+                                    return LearningRateMultiplier(auto = it, _json = json)
+                                }
                             tryDeserialize(node, jacksonTypeRef<Double>())?.let {
                                 return LearningRateMultiplier(manual = it, _json = json)
                             }
@@ -2680,58 +2470,6 @@ private constructor(
                             }
                         }
                     }
-
-                    class Auto
-                    @JsonCreator
-                    private constructor(
-                        private val value: JsonField<String>,
-                    ) : Enum {
-
-                        @com.fasterxml.jackson.annotation.JsonValue
-                        fun _value(): JsonField<String> = value
-
-                        companion object {
-
-                            @JvmField val AUTO = of("auto")
-
-                            @JvmStatic fun of(value: String) = Auto(JsonField.of(value))
-                        }
-
-                        enum class Known {
-                            AUTO,
-                        }
-
-                        enum class Value {
-                            AUTO,
-                            _UNKNOWN,
-                        }
-
-                        fun value(): Value =
-                            when (this) {
-                                AUTO -> Value.AUTO
-                                else -> Value._UNKNOWN
-                            }
-
-                        fun known(): Known =
-                            when (this) {
-                                AUTO -> Known.AUTO
-                                else -> throw OpenAIInvalidDataException("Unknown Auto: $value")
-                            }
-
-                        fun asString(): String = _value().asStringOrThrow()
-
-                        override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
-
-                            return /* spotless:off */ other is Auto && value == other.value /* spotless:on */
-                        }
-
-                        override fun hashCode() = value.hashCode()
-
-                        override fun toString() = value.toString()
-                    }
                 }
 
                 /**
@@ -2742,12 +2480,12 @@ private constructor(
                 @JsonSerialize(using = NEpochs.Serializer::class)
                 class NEpochs
                 private constructor(
-                    private val auto: Auto? = null,
+                    private val auto: JsonValue? = null,
                     private val manual: Long? = null,
                     private val _json: JsonValue? = null,
                 ) {
 
-                    fun auto(): Optional<Auto> = Optional.ofNullable(auto)
+                    fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
 
                     fun manual(): Optional<Long> = Optional.ofNullable(manual)
 
@@ -2755,7 +2493,7 @@ private constructor(
 
                     fun isManual(): Boolean = manual != null
 
-                    fun asAuto(): Auto = auto.getOrThrow("auto")
+                    fun asAuto(): JsonValue = auto.getOrThrow("auto")
 
                     fun asManual(): Long = manual.getOrThrow("manual")
 
@@ -2778,7 +2516,15 @@ private constructor(
 
                         accept(
                             object : Visitor<Unit> {
-                                override fun visitAuto(auto: Auto) {}
+                                override fun visitAuto(auto: JsonValue) {
+                                    auto.let {
+                                        if (it != JsonValue.from("auto")) {
+                                            throw OpenAIInvalidDataException(
+                                                "'auto' is invalid, received $it"
+                                            )
+                                        }
+                                    }
+                                }
 
                                 override fun visitManual(manual: Long) {}
                             }
@@ -2806,14 +2552,14 @@ private constructor(
 
                     companion object {
 
-                        @JvmStatic fun ofAuto(auto: Auto) = NEpochs(auto = auto)
+                        @JvmStatic fun ofAuto() = NEpochs(auto = JsonValue.from("auto"))
 
                         @JvmStatic fun ofManual(manual: Long) = NEpochs(manual = manual)
                     }
 
                     interface Visitor<out T> {
 
-                        fun visitAuto(auto: Auto): T
+                        fun visitAuto(auto: JsonValue): T
 
                         fun visitManual(manual: Long): T
 
@@ -2827,9 +2573,18 @@ private constructor(
                         override fun ObjectCodec.deserialize(node: JsonNode): NEpochs {
                             val json = JsonValue.fromJsonNode(node)
 
-                            tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
-                                return NEpochs(auto = it, _json = json)
-                            }
+                            tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
+                                    it.let {
+                                        if (it != JsonValue.from("auto")) {
+                                            throw OpenAIInvalidDataException(
+                                                "'auto' is invalid, received $it"
+                                            )
+                                        }
+                                    }
+                                }
+                                ?.let {
+                                    return NEpochs(auto = it, _json = json)
+                                }
                             tryDeserialize(node, jacksonTypeRef<Long>())?.let {
                                 return NEpochs(manual = it, _json = json)
                             }
@@ -2852,58 +2607,6 @@ private constructor(
                                 else -> throw IllegalStateException("Invalid NEpochs")
                             }
                         }
-                    }
-
-                    class Auto
-                    @JsonCreator
-                    private constructor(
-                        private val value: JsonField<String>,
-                    ) : Enum {
-
-                        @com.fasterxml.jackson.annotation.JsonValue
-                        fun _value(): JsonField<String> = value
-
-                        companion object {
-
-                            @JvmField val AUTO = of("auto")
-
-                            @JvmStatic fun of(value: String) = Auto(JsonField.of(value))
-                        }
-
-                        enum class Known {
-                            AUTO,
-                        }
-
-                        enum class Value {
-                            AUTO,
-                            _UNKNOWN,
-                        }
-
-                        fun value(): Value =
-                            when (this) {
-                                AUTO -> Value.AUTO
-                                else -> Value._UNKNOWN
-                            }
-
-                        fun known(): Known =
-                            when (this) {
-                                AUTO -> Known.AUTO
-                                else -> throw OpenAIInvalidDataException("Unknown Auto: $value")
-                            }
-
-                        fun asString(): String = _value().asStringOrThrow()
-
-                        override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
-
-                            return /* spotless:off */ other is Auto && value == other.value /* spotless:on */
-                        }
-
-                        override fun hashCode() = value.hashCode()
-
-                        override fun toString() = value.toString()
                     }
                 }
 
@@ -3157,7 +2860,7 @@ private constructor(
                      * Number of examples in each batch. A larger batch size means that model
                      * parameters are updated less frequently, but with lower variance.
                      */
-                    fun batchSize(auto: BatchSize.Auto) = batchSize(BatchSize.ofAuto(auto))
+                    fun batchSizeAuto() = batchSize(BatchSize.ofAuto())
 
                     /**
                      * Number of examples in each batch. A larger batch size means that model
@@ -3184,8 +2887,8 @@ private constructor(
                      * Scaling factor for the learning rate. A smaller learning rate may be useful
                      * to avoid overfitting.
                      */
-                    fun learningRateMultiplier(auto: LearningRateMultiplier.Auto) =
-                        learningRateMultiplier(LearningRateMultiplier.ofAuto(auto))
+                    fun learningRateMultiplierAuto() =
+                        learningRateMultiplier(LearningRateMultiplier.ofAuto())
 
                     /**
                      * Scaling factor for the learning rate. A smaller learning rate may be useful
@@ -3210,7 +2913,7 @@ private constructor(
                      * The number of epochs to train the model for. An epoch refers to one full
                      * cycle through the training dataset.
                      */
-                    fun nEpochs(auto: NEpochs.Auto) = nEpochs(NEpochs.ofAuto(auto))
+                    fun nEpochsAuto() = nEpochs(NEpochs.ofAuto())
 
                     /**
                      * The number of epochs to train the model for. An epoch refers to one full
@@ -3257,12 +2960,12 @@ private constructor(
                 @JsonSerialize(using = BatchSize.Serializer::class)
                 class BatchSize
                 private constructor(
-                    private val auto: Auto? = null,
+                    private val auto: JsonValue? = null,
                     private val manual: Long? = null,
                     private val _json: JsonValue? = null,
                 ) {
 
-                    fun auto(): Optional<Auto> = Optional.ofNullable(auto)
+                    fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
 
                     fun manual(): Optional<Long> = Optional.ofNullable(manual)
 
@@ -3270,7 +2973,7 @@ private constructor(
 
                     fun isManual(): Boolean = manual != null
 
-                    fun asAuto(): Auto = auto.getOrThrow("auto")
+                    fun asAuto(): JsonValue = auto.getOrThrow("auto")
 
                     fun asManual(): Long = manual.getOrThrow("manual")
 
@@ -3293,7 +2996,15 @@ private constructor(
 
                         accept(
                             object : Visitor<Unit> {
-                                override fun visitAuto(auto: Auto) {}
+                                override fun visitAuto(auto: JsonValue) {
+                                    auto.let {
+                                        if (it != JsonValue.from("auto")) {
+                                            throw OpenAIInvalidDataException(
+                                                "'auto' is invalid, received $it"
+                                            )
+                                        }
+                                    }
+                                }
 
                                 override fun visitManual(manual: Long) {}
                             }
@@ -3321,14 +3032,14 @@ private constructor(
 
                     companion object {
 
-                        @JvmStatic fun ofAuto(auto: Auto) = BatchSize(auto = auto)
+                        @JvmStatic fun ofAuto() = BatchSize(auto = JsonValue.from("auto"))
 
                         @JvmStatic fun ofManual(manual: Long) = BatchSize(manual = manual)
                     }
 
                     interface Visitor<out T> {
 
-                        fun visitAuto(auto: Auto): T
+                        fun visitAuto(auto: JsonValue): T
 
                         fun visitManual(manual: Long): T
 
@@ -3342,9 +3053,18 @@ private constructor(
                         override fun ObjectCodec.deserialize(node: JsonNode): BatchSize {
                             val json = JsonValue.fromJsonNode(node)
 
-                            tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
-                                return BatchSize(auto = it, _json = json)
-                            }
+                            tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
+                                    it.let {
+                                        if (it != JsonValue.from("auto")) {
+                                            throw OpenAIInvalidDataException(
+                                                "'auto' is invalid, received $it"
+                                            )
+                                        }
+                                    }
+                                }
+                                ?.let {
+                                    return BatchSize(auto = it, _json = json)
+                                }
                             tryDeserialize(node, jacksonTypeRef<Long>())?.let {
                                 return BatchSize(manual = it, _json = json)
                             }
@@ -3368,58 +3088,6 @@ private constructor(
                             }
                         }
                     }
-
-                    class Auto
-                    @JsonCreator
-                    private constructor(
-                        private val value: JsonField<String>,
-                    ) : Enum {
-
-                        @com.fasterxml.jackson.annotation.JsonValue
-                        fun _value(): JsonField<String> = value
-
-                        companion object {
-
-                            @JvmField val AUTO = of("auto")
-
-                            @JvmStatic fun of(value: String) = Auto(JsonField.of(value))
-                        }
-
-                        enum class Known {
-                            AUTO,
-                        }
-
-                        enum class Value {
-                            AUTO,
-                            _UNKNOWN,
-                        }
-
-                        fun value(): Value =
-                            when (this) {
-                                AUTO -> Value.AUTO
-                                else -> Value._UNKNOWN
-                            }
-
-                        fun known(): Known =
-                            when (this) {
-                                AUTO -> Known.AUTO
-                                else -> throw OpenAIInvalidDataException("Unknown Auto: $value")
-                            }
-
-                        fun asString(): String = _value().asStringOrThrow()
-
-                        override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
-
-                            return /* spotless:off */ other is Auto && value == other.value /* spotless:on */
-                        }
-
-                        override fun hashCode() = value.hashCode()
-
-                        override fun toString() = value.toString()
-                    }
                 }
 
                 /**
@@ -3430,12 +3098,12 @@ private constructor(
                 @JsonSerialize(using = LearningRateMultiplier.Serializer::class)
                 class LearningRateMultiplier
                 private constructor(
-                    private val auto: Auto? = null,
+                    private val auto: JsonValue? = null,
                     private val manual: Double? = null,
                     private val _json: JsonValue? = null,
                 ) {
 
-                    fun auto(): Optional<Auto> = Optional.ofNullable(auto)
+                    fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
 
                     fun manual(): Optional<Double> = Optional.ofNullable(manual)
 
@@ -3443,7 +3111,7 @@ private constructor(
 
                     fun isManual(): Boolean = manual != null
 
-                    fun asAuto(): Auto = auto.getOrThrow("auto")
+                    fun asAuto(): JsonValue = auto.getOrThrow("auto")
 
                     fun asManual(): Double = manual.getOrThrow("manual")
 
@@ -3466,7 +3134,15 @@ private constructor(
 
                         accept(
                             object : Visitor<Unit> {
-                                override fun visitAuto(auto: Auto) {}
+                                override fun visitAuto(auto: JsonValue) {
+                                    auto.let {
+                                        if (it != JsonValue.from("auto")) {
+                                            throw OpenAIInvalidDataException(
+                                                "'auto' is invalid, received $it"
+                                            )
+                                        }
+                                    }
+                                }
 
                                 override fun visitManual(manual: Double) {}
                             }
@@ -3494,7 +3170,8 @@ private constructor(
 
                     companion object {
 
-                        @JvmStatic fun ofAuto(auto: Auto) = LearningRateMultiplier(auto = auto)
+                        @JvmStatic
+                        fun ofAuto() = LearningRateMultiplier(auto = JsonValue.from("auto"))
 
                         @JvmStatic
                         fun ofManual(manual: Double) = LearningRateMultiplier(manual = manual)
@@ -3502,7 +3179,7 @@ private constructor(
 
                     interface Visitor<out T> {
 
-                        fun visitAuto(auto: Auto): T
+                        fun visitAuto(auto: JsonValue): T
 
                         fun visitManual(manual: Double): T
 
@@ -3521,9 +3198,18 @@ private constructor(
                         ): LearningRateMultiplier {
                             val json = JsonValue.fromJsonNode(node)
 
-                            tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
-                                return LearningRateMultiplier(auto = it, _json = json)
-                            }
+                            tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
+                                    it.let {
+                                        if (it != JsonValue.from("auto")) {
+                                            throw OpenAIInvalidDataException(
+                                                "'auto' is invalid, received $it"
+                                            )
+                                        }
+                                    }
+                                }
+                                ?.let {
+                                    return LearningRateMultiplier(auto = it, _json = json)
+                                }
                             tryDeserialize(node, jacksonTypeRef<Double>())?.let {
                                 return LearningRateMultiplier(manual = it, _json = json)
                             }
@@ -3549,58 +3235,6 @@ private constructor(
                             }
                         }
                     }
-
-                    class Auto
-                    @JsonCreator
-                    private constructor(
-                        private val value: JsonField<String>,
-                    ) : Enum {
-
-                        @com.fasterxml.jackson.annotation.JsonValue
-                        fun _value(): JsonField<String> = value
-
-                        companion object {
-
-                            @JvmField val AUTO = of("auto")
-
-                            @JvmStatic fun of(value: String) = Auto(JsonField.of(value))
-                        }
-
-                        enum class Known {
-                            AUTO,
-                        }
-
-                        enum class Value {
-                            AUTO,
-                            _UNKNOWN,
-                        }
-
-                        fun value(): Value =
-                            when (this) {
-                                AUTO -> Value.AUTO
-                                else -> Value._UNKNOWN
-                            }
-
-                        fun known(): Known =
-                            when (this) {
-                                AUTO -> Known.AUTO
-                                else -> throw OpenAIInvalidDataException("Unknown Auto: $value")
-                            }
-
-                        fun asString(): String = _value().asStringOrThrow()
-
-                        override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
-
-                            return /* spotless:off */ other is Auto && value == other.value /* spotless:on */
-                        }
-
-                        override fun hashCode() = value.hashCode()
-
-                        override fun toString() = value.toString()
-                    }
                 }
 
                 /**
@@ -3611,12 +3245,12 @@ private constructor(
                 @JsonSerialize(using = NEpochs.Serializer::class)
                 class NEpochs
                 private constructor(
-                    private val auto: Auto? = null,
+                    private val auto: JsonValue? = null,
                     private val manual: Long? = null,
                     private val _json: JsonValue? = null,
                 ) {
 
-                    fun auto(): Optional<Auto> = Optional.ofNullable(auto)
+                    fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
 
                     fun manual(): Optional<Long> = Optional.ofNullable(manual)
 
@@ -3624,7 +3258,7 @@ private constructor(
 
                     fun isManual(): Boolean = manual != null
 
-                    fun asAuto(): Auto = auto.getOrThrow("auto")
+                    fun asAuto(): JsonValue = auto.getOrThrow("auto")
 
                     fun asManual(): Long = manual.getOrThrow("manual")
 
@@ -3647,7 +3281,15 @@ private constructor(
 
                         accept(
                             object : Visitor<Unit> {
-                                override fun visitAuto(auto: Auto) {}
+                                override fun visitAuto(auto: JsonValue) {
+                                    auto.let {
+                                        if (it != JsonValue.from("auto")) {
+                                            throw OpenAIInvalidDataException(
+                                                "'auto' is invalid, received $it"
+                                            )
+                                        }
+                                    }
+                                }
 
                                 override fun visitManual(manual: Long) {}
                             }
@@ -3675,14 +3317,14 @@ private constructor(
 
                     companion object {
 
-                        @JvmStatic fun ofAuto(auto: Auto) = NEpochs(auto = auto)
+                        @JvmStatic fun ofAuto() = NEpochs(auto = JsonValue.from("auto"))
 
                         @JvmStatic fun ofManual(manual: Long) = NEpochs(manual = manual)
                     }
 
                     interface Visitor<out T> {
 
-                        fun visitAuto(auto: Auto): T
+                        fun visitAuto(auto: JsonValue): T
 
                         fun visitManual(manual: Long): T
 
@@ -3696,9 +3338,18 @@ private constructor(
                         override fun ObjectCodec.deserialize(node: JsonNode): NEpochs {
                             val json = JsonValue.fromJsonNode(node)
 
-                            tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
-                                return NEpochs(auto = it, _json = json)
-                            }
+                            tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
+                                    it.let {
+                                        if (it != JsonValue.from("auto")) {
+                                            throw OpenAIInvalidDataException(
+                                                "'auto' is invalid, received $it"
+                                            )
+                                        }
+                                    }
+                                }
+                                ?.let {
+                                    return NEpochs(auto = it, _json = json)
+                                }
                             tryDeserialize(node, jacksonTypeRef<Long>())?.let {
                                 return NEpochs(manual = it, _json = json)
                             }
@@ -3721,58 +3372,6 @@ private constructor(
                                 else -> throw IllegalStateException("Invalid NEpochs")
                             }
                         }
-                    }
-
-                    class Auto
-                    @JsonCreator
-                    private constructor(
-                        private val value: JsonField<String>,
-                    ) : Enum {
-
-                        @com.fasterxml.jackson.annotation.JsonValue
-                        fun _value(): JsonField<String> = value
-
-                        companion object {
-
-                            @JvmField val AUTO = of("auto")
-
-                            @JvmStatic fun of(value: String) = Auto(JsonField.of(value))
-                        }
-
-                        enum class Known {
-                            AUTO,
-                        }
-
-                        enum class Value {
-                            AUTO,
-                            _UNKNOWN,
-                        }
-
-                        fun value(): Value =
-                            when (this) {
-                                AUTO -> Value.AUTO
-                                else -> Value._UNKNOWN
-                            }
-
-                        fun known(): Known =
-                            when (this) {
-                                AUTO -> Known.AUTO
-                                else -> throw OpenAIInvalidDataException("Unknown Auto: $value")
-                            }
-
-                        fun asString(): String = _value().asStringOrThrow()
-
-                        override fun equals(other: Any?): Boolean {
-                            if (this === other) {
-                                return true
-                            }
-
-                            return /* spotless:off */ other is Auto && value == other.value /* spotless:on */
-                        }
-
-                        override fun hashCode() = value.hashCode()
-
-                        override fun toString() = value.toString()
                     }
                 }
 

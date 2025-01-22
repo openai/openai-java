@@ -18,15 +18,10 @@ class CodeInterpreterToolCallTest {
                         .addOutput(
                             CodeInterpreterToolCall.CodeInterpreter.Output.LogsOutput.builder()
                                 .logs("logs")
-                                .type(
-                                    CodeInterpreterToolCall.CodeInterpreter.Output.LogsOutput.Type
-                                        .LOGS
-                                )
                                 .build()
                         )
                         .build()
                 )
-                .type(CodeInterpreterToolCall.Type.CODE_INTERPRETER)
                 .build()
         assertThat(codeInterpreterToolCall).isNotNull
         assertThat(codeInterpreterToolCall.id()).isEqualTo("id")
@@ -37,14 +32,9 @@ class CodeInterpreterToolCallTest {
                     .addOutput(
                         CodeInterpreterToolCall.CodeInterpreter.Output.LogsOutput.builder()
                             .logs("logs")
-                            .type(
-                                CodeInterpreterToolCall.CodeInterpreter.Output.LogsOutput.Type.LOGS
-                            )
                             .build()
                     )
                     .build()
             )
-        assertThat(codeInterpreterToolCall.type())
-            .isEqualTo(CodeInterpreterToolCall.Type.CODE_INTERPRETER)
     }
 }

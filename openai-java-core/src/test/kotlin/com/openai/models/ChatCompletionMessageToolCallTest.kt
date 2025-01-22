@@ -18,7 +18,6 @@ class ChatCompletionMessageToolCallTest {
                         .name("name")
                         .build()
                 )
-                .type(ChatCompletionMessageToolCall.Type.FUNCTION)
                 .build()
         assertThat(chatCompletionMessageToolCall).isNotNull
         assertThat(chatCompletionMessageToolCall.id()).isEqualTo("id")
@@ -29,7 +28,5 @@ class ChatCompletionMessageToolCallTest {
                     .name("name")
                     .build()
             )
-        assertThat(chatCompletionMessageToolCall.type())
-            .isEqualTo(ChatCompletionMessageToolCall.Type.FUNCTION)
     }
 }

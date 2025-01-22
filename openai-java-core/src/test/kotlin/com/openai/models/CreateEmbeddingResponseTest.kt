@@ -11,30 +11,16 @@ class CreateEmbeddingResponseTest {
     fun createCreateEmbeddingResponse() {
         val createEmbeddingResponse =
             CreateEmbeddingResponse.builder()
-                .addData(
-                    Embedding.builder()
-                        .addEmbedding(0.0)
-                        .index(0L)
-                        .object_(Embedding.Object.EMBEDDING)
-                        .build()
-                )
+                .addData(Embedding.builder().addEmbedding(0.0).index(0L).build())
                 .model("model")
-                .object_(CreateEmbeddingResponse.Object.LIST)
                 .usage(
                     CreateEmbeddingResponse.Usage.builder().promptTokens(0L).totalTokens(0L).build()
                 )
                 .build()
         assertThat(createEmbeddingResponse).isNotNull
         assertThat(createEmbeddingResponse.data())
-            .containsExactly(
-                Embedding.builder()
-                    .addEmbedding(0.0)
-                    .index(0L)
-                    .object_(Embedding.Object.EMBEDDING)
-                    .build()
-            )
+            .containsExactly(Embedding.builder().addEmbedding(0.0).index(0L).build())
         assertThat(createEmbeddingResponse.model()).isEqualTo("model")
-        assertThat(createEmbeddingResponse.object_()).isEqualTo(CreateEmbeddingResponse.Object.LIST)
         assertThat(createEmbeddingResponse.usage())
             .isEqualTo(
                 CreateEmbeddingResponse.Usage.builder().promptTokens(0L).totalTokens(0L).build()

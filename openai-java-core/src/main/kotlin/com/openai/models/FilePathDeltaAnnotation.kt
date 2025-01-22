@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -28,7 +27,7 @@ class FilePathDeltaAnnotation
 @JsonCreator
 private constructor(
     @JsonProperty("index") @ExcludeMissing private val index: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
     @JsonProperty("end_index")
     @ExcludeMissing
     private val endIndex: JsonField<Long> = JsonMissing.of(),
@@ -46,7 +45,7 @@ private constructor(
     fun index(): Long = index.getRequired("index")
 
     /** Always `file_path`. */
-    fun type(): Type = type.getRequired("type")
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     fun endIndex(): Optional<Long> = Optional.ofNullable(endIndex.getNullable("end_index"))
 
@@ -59,9 +58,6 @@ private constructor(
 
     /** The index of the annotation in the text content part. */
     @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
-
-    /** Always `file_path`. */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonProperty("end_index") @ExcludeMissing fun _endIndex(): JsonField<Long> = endIndex
 
@@ -84,7 +80,11 @@ private constructor(
         }
 
         index()
-        type()
+        _type().let {
+            if (it != JsonValue.from("file_path")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
         endIndex()
         filePath().ifPresent { it.validate() }
         startIndex()
@@ -102,7 +102,7 @@ private constructor(
     class Builder {
 
         private var index: JsonField<Long>? = null
-        private var type: JsonField<Type>? = null
+        private var type: JsonValue = JsonValue.from("file_path")
         private var endIndex: JsonField<Long> = JsonMissing.of()
         private var filePath: JsonField<FilePath> = JsonMissing.of()
         private var startIndex: JsonField<Long> = JsonMissing.of()
@@ -127,10 +127,7 @@ private constructor(
         fun index(index: JsonField<Long>) = apply { this.index = index }
 
         /** Always `file_path`. */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /** Always `file_path`. */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
+        fun type(type: JsonValue) = apply { this.type = type }
 
         fun endIndex(endIndex: Long) = endIndex(JsonField.of(endIndex))
 
@@ -172,65 +169,13 @@ private constructor(
         fun build(): FilePathDeltaAnnotation =
             FilePathDeltaAnnotation(
                 checkRequired("index", index),
-                checkRequired("type", type),
+                type,
                 endIndex,
                 filePath,
                 startIndex,
                 text,
                 additionalProperties.toImmutable(),
             )
-    }
-
-    /** Always `file_path`. */
-    class Type
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val FILE_PATH = of("file_path")
-
-            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-        }
-
-        enum class Known {
-            FILE_PATH,
-        }
-
-        enum class Value {
-            FILE_PATH,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                FILE_PATH -> Value.FILE_PATH
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                FILE_PATH -> Known.FILE_PATH
-                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     @NoAutoDetect

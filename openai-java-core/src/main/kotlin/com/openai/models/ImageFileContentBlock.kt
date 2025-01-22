@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -29,19 +28,16 @@ private constructor(
     @JsonProperty("image_file")
     @ExcludeMissing
     private val imageFile: JsonField<ImageFile> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     fun imageFile(): ImageFile = imageFile.getRequired("image_file")
 
     /** Always `image_file`. */
-    fun type(): Type = type.getRequired("type")
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     @JsonProperty("image_file") @ExcludeMissing fun _imageFile(): JsonField<ImageFile> = imageFile
-
-    /** Always `image_file`. */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -55,7 +51,11 @@ private constructor(
         }
 
         imageFile().validate()
-        type()
+        _type().let {
+            if (it != JsonValue.from("image_file")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
         validated = true
     }
 
@@ -69,7 +69,7 @@ private constructor(
     class Builder {
 
         private var imageFile: JsonField<ImageFile>? = null
-        private var type: JsonField<Type>? = null
+        private var type: JsonValue = JsonValue.from("image_file")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -84,10 +84,7 @@ private constructor(
         fun imageFile(imageFile: JsonField<ImageFile>) = apply { this.imageFile = imageFile }
 
         /** Always `image_file`. */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /** Always `image_file`. */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
+        fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -111,61 +108,9 @@ private constructor(
         fun build(): ImageFileContentBlock =
             ImageFileContentBlock(
                 checkRequired("imageFile", imageFile),
-                checkRequired("type", type),
+                type,
                 additionalProperties.toImmutable(),
             )
-    }
-
-    /** Always `image_file`. */
-    class Type
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val IMAGE_FILE = of("image_file")
-
-            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-        }
-
-        enum class Known {
-            IMAGE_FILE,
-        }
-
-        enum class Value {
-            IMAGE_FILE,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                IMAGE_FILE -> Value.IMAGE_FILE
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                IMAGE_FILE -> Known.IMAGE_FILE
-                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

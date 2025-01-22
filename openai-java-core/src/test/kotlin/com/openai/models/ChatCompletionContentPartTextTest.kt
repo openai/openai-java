@@ -10,13 +10,8 @@ class ChatCompletionContentPartTextTest {
     @Test
     fun createChatCompletionContentPartText() {
         val chatCompletionContentPartText =
-            ChatCompletionContentPartText.builder()
-                .text("text")
-                .type(ChatCompletionContentPartText.Type.TEXT)
-                .build()
+            ChatCompletionContentPartText.builder().text("text").build()
         assertThat(chatCompletionContentPartText).isNotNull
         assertThat(chatCompletionContentPartText.text()).isEqualTo("text")
-        assertThat(chatCompletionContentPartText.type())
-            .isEqualTo(ChatCompletionContentPartText.Type.TEXT)
     }
 }

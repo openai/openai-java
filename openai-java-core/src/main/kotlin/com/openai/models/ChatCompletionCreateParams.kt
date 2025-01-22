@@ -230,8 +230,6 @@ constructor(
      * - If set to 'default', the request will be processed using the default service tier with a
      *   lower uptime SLA and no latency guarentee.
      * - When not set, the default behavior is 'auto'.
-     *
-     * When this parameter is set, the response body will include the `service_tier` utilized.
      */
     fun serviceTier(): Optional<ServiceTier> = body.serviceTier()
 
@@ -477,8 +475,6 @@ constructor(
      * - If set to 'default', the request will be processed using the default service tier with a
      *   lower uptime SLA and no latency guarentee.
      * - When not set, the default behavior is 'auto'.
-     *
-     * When this parameter is set, the response body will include the `service_tier` utilized.
      */
     fun _serviceTier(): JsonField<ServiceTier> = body._serviceTier()
 
@@ -841,8 +837,6 @@ constructor(
          * - If set to 'default', the request will be processed using the default service tier with
          *   a lower uptime SLA and no latency guarentee.
          * - When not set, the default behavior is 'auto'.
-         *
-         * When this parameter is set, the response body will include the `service_tier` utilized.
          */
         fun serviceTier(): Optional<ServiceTier> =
             Optional.ofNullable(serviceTier.getNullable("service_tier"))
@@ -1127,8 +1121,6 @@ constructor(
          * - If set to 'default', the request will be processed using the default service tier with
          *   a lower uptime SLA and no latency guarentee.
          * - When not set, the default behavior is 'auto'.
-         *
-         * When this parameter is set, the response body will include the `service_tier` utilized.
          */
         @JsonProperty("service_tier")
         @ExcludeMissing
@@ -1563,8 +1555,7 @@ constructor(
              * `none` means the model will not call a function and instead generates a message.
              * `auto` means the model can pick between generating a message or calling a function.
              */
-            fun functionCall(behavior: FunctionCall.Behavior) =
-                functionCall(FunctionCall.ofBehavior(behavior))
+            fun functionCall(auto: FunctionCall.Auto) = functionCall(FunctionCall.ofAuto(auto))
 
             /**
              * Specifying a particular function via `{"name": "my_function"}` forces the model to
@@ -2117,9 +2108,6 @@ constructor(
              * - If set to 'default', the request will be processed using the default service tier
              *   with a lower uptime SLA and no latency guarentee.
              * - When not set, the default behavior is 'auto'.
-             *
-             * When this parameter is set, the response body will include the `service_tier`
-             * utilized.
              */
             fun serviceTier(serviceTier: ServiceTier?) =
                 serviceTier(JsonField.ofNullable(serviceTier))
@@ -2135,9 +2123,6 @@ constructor(
              * - If set to 'default', the request will be processed using the default service tier
              *   with a lower uptime SLA and no latency guarentee.
              * - When not set, the default behavior is 'auto'.
-             *
-             * When this parameter is set, the response body will include the `service_tier`
-             * utilized.
              */
             fun serviceTier(serviceTier: Optional<ServiceTier>) =
                 serviceTier(serviceTier.orElse(null))
@@ -2153,9 +2138,6 @@ constructor(
              * - If set to 'default', the request will be processed using the default service tier
              *   with a lower uptime SLA and no latency guarentee.
              * - When not set, the default behavior is 'auto'.
-             *
-             * When this parameter is set, the response body will include the `service_tier`
-             * utilized.
              */
             fun serviceTier(serviceTier: JsonField<ServiceTier>) = apply {
                 this.serviceTier = serviceTier
@@ -2279,8 +2261,8 @@ constructor(
              * means the model can pick between generating a message or calling one or more tools.
              * `required` means the model must call one or more tools.
              */
-            fun toolChoice(behavior: ChatCompletionToolChoiceOption.Behavior) =
-                toolChoice(ChatCompletionToolChoiceOption.ofBehavior(behavior))
+            fun toolChoice(auto: ChatCompletionToolChoiceOption.Auto) =
+                toolChoice(ChatCompletionToolChoiceOption.ofAuto(auto))
 
             /**
              * Specifies a tool the model should use. Use to force the model to call a specific
@@ -2709,7 +2691,7 @@ constructor(
          * `none` means the model will not call a function and instead generates a message. `auto`
          * means the model can pick between generating a message or calling a function.
          */
-        fun functionCall(behavior: FunctionCall.Behavior) = apply { body.functionCall(behavior) }
+        fun functionCall(auto: FunctionCall.Auto) = apply { body.functionCall(auto) }
 
         /**
          * Specifying a particular function via `{"name": "my_function"}` forces the model to call
@@ -3232,8 +3214,6 @@ constructor(
          * - If set to 'default', the request will be processed using the default service tier with
          *   a lower uptime SLA and no latency guarentee.
          * - When not set, the default behavior is 'auto'.
-         *
-         * When this parameter is set, the response body will include the `service_tier` utilized.
          */
         fun serviceTier(serviceTier: ServiceTier?) = apply { body.serviceTier(serviceTier) }
 
@@ -3248,8 +3228,6 @@ constructor(
          * - If set to 'default', the request will be processed using the default service tier with
          *   a lower uptime SLA and no latency guarentee.
          * - When not set, the default behavior is 'auto'.
-         *
-         * When this parameter is set, the response body will include the `service_tier` utilized.
          */
         fun serviceTier(serviceTier: Optional<ServiceTier>) = serviceTier(serviceTier.orElse(null))
 
@@ -3264,8 +3242,6 @@ constructor(
          * - If set to 'default', the request will be processed using the default service tier with
          *   a lower uptime SLA and no latency guarentee.
          * - When not set, the default behavior is 'auto'.
-         *
-         * When this parameter is set, the response body will include the `service_tier` utilized.
          */
         fun serviceTier(serviceTier: JsonField<ServiceTier>) = apply {
             body.serviceTier(serviceTier)
@@ -3389,9 +3365,7 @@ constructor(
          * means the model can pick between generating a message or calling one or more tools.
          * `required` means the model must call one or more tools.
          */
-        fun toolChoice(behavior: ChatCompletionToolChoiceOption.Behavior) = apply {
-            body.toolChoice(behavior)
-        }
+        fun toolChoice(auto: ChatCompletionToolChoiceOption.Auto) = apply { body.toolChoice(auto) }
 
         /**
          * Specifies a tool the model should use. Use to force the model to call a specific
@@ -3648,7 +3622,7 @@ constructor(
     @JsonSerialize(using = FunctionCall.Serializer::class)
     class FunctionCall
     private constructor(
-        private val behavior: Behavior? = null,
+        private val auto: Auto? = null,
         private val functionCallOption: ChatCompletionFunctionCallOption? = null,
         private val _json: JsonValue? = null,
     ) {
@@ -3657,7 +3631,7 @@ constructor(
          * `none` means the model will not call a function and instead generates a message. `auto`
          * means the model can pick between generating a message or calling a function.
          */
-        fun behavior(): Optional<Behavior> = Optional.ofNullable(behavior)
+        fun auto(): Optional<Auto> = Optional.ofNullable(auto)
 
         /**
          * Specifying a particular function via `{"name": "my_function"}` forces the model to call
@@ -3666,7 +3640,7 @@ constructor(
         fun functionCallOption(): Optional<ChatCompletionFunctionCallOption> =
             Optional.ofNullable(functionCallOption)
 
-        fun isBehavior(): Boolean = behavior != null
+        fun isAuto(): Boolean = auto != null
 
         fun isFunctionCallOption(): Boolean = functionCallOption != null
 
@@ -3674,7 +3648,7 @@ constructor(
          * `none` means the model will not call a function and instead generates a message. `auto`
          * means the model can pick between generating a message or calling a function.
          */
-        fun asBehavior(): Behavior = behavior.getOrThrow("behavior")
+        fun asAuto(): Auto = auto.getOrThrow("auto")
 
         /**
          * Specifying a particular function via `{"name": "my_function"}` forces the model to call
@@ -3687,7 +3661,7 @@ constructor(
 
         fun <T> accept(visitor: Visitor<T>): T {
             return when {
-                behavior != null -> visitor.visitBehavior(behavior)
+                auto != null -> visitor.visitAuto(auto)
                 functionCallOption != null -> visitor.visitFunctionCallOption(functionCallOption)
                 else -> visitor.unknown(_json)
             }
@@ -3702,7 +3676,7 @@ constructor(
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitBehavior(behavior: Behavior) {}
+                    override fun visitAuto(auto: Auto) {}
 
                     override fun visitFunctionCallOption(
                         functionCallOption: ChatCompletionFunctionCallOption
@@ -3719,14 +3693,14 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is FunctionCall && behavior == other.behavior && functionCallOption == other.functionCallOption /* spotless:on */
+            return /* spotless:off */ other is FunctionCall && auto == other.auto && functionCallOption == other.functionCallOption /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(behavior, functionCallOption) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, functionCallOption) /* spotless:on */
 
         override fun toString(): String =
             when {
-                behavior != null -> "FunctionCall{behavior=$behavior}"
+                auto != null -> "FunctionCall{auto=$auto}"
                 functionCallOption != null -> "FunctionCall{functionCallOption=$functionCallOption}"
                 _json != null -> "FunctionCall{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid FunctionCall")
@@ -3738,7 +3712,7 @@ constructor(
              * `none` means the model will not call a function and instead generates a message.
              * `auto` means the model can pick between generating a message or calling a function.
              */
-            @JvmStatic fun ofBehavior(behavior: Behavior) = FunctionCall(behavior = behavior)
+            @JvmStatic fun ofAuto(auto: Auto) = FunctionCall(auto = auto)
 
             /**
              * Specifying a particular function via `{"name": "my_function"}` forces the model to
@@ -3755,7 +3729,7 @@ constructor(
              * `none` means the model will not call a function and instead generates a message.
              * `auto` means the model can pick between generating a message or calling a function.
              */
-            fun visitBehavior(behavior: Behavior): T
+            fun visitAuto(auto: Auto): T
 
             /**
              * Specifying a particular function via `{"name": "my_function"}` forces the model to
@@ -3773,8 +3747,8 @@ constructor(
             override fun ObjectCodec.deserialize(node: JsonNode): FunctionCall {
                 val json = JsonValue.fromJsonNode(node)
 
-                tryDeserialize(node, jacksonTypeRef<Behavior>())?.let {
-                    return FunctionCall(behavior = it, _json = json)
+                tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
+                    return FunctionCall(auto = it, _json = json)
                 }
                 tryDeserialize(node, jacksonTypeRef<ChatCompletionFunctionCallOption>()) {
                         it.validate()
@@ -3795,7 +3769,7 @@ constructor(
                 provider: SerializerProvider
             ) {
                 when {
-                    value.behavior != null -> generator.writeObject(value.behavior)
+                    value.auto != null -> generator.writeObject(value.auto)
                     value.functionCallOption != null ->
                         generator.writeObject(value.functionCallOption)
                     value._json != null -> generator.writeObject(value._json)
@@ -3808,7 +3782,7 @@ constructor(
          * `none` means the model will not call a function and instead generates a message. `auto`
          * means the model can pick between generating a message or calling a function.
          */
-        class Behavior
+        class Auto
         @JsonCreator
         private constructor(
             private val value: JsonField<String>,
@@ -3822,7 +3796,7 @@ constructor(
 
                 @JvmField val AUTO = of("auto")
 
-                @JvmStatic fun of(value: String) = Behavior(JsonField.of(value))
+                @JvmStatic fun of(value: String) = Auto(JsonField.of(value))
             }
 
             enum class Known {
@@ -3847,7 +3821,7 @@ constructor(
                 when (this) {
                     NONE -> Known.NONE
                     AUTO -> Known.AUTO
-                    else -> throw OpenAIInvalidDataException("Unknown Behavior: $value")
+                    else -> throw OpenAIInvalidDataException("Unknown Auto: $value")
                 }
 
             fun asString(): String = _value().asStringOrThrow()
@@ -3857,7 +3831,7 @@ constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Behavior && value == other.value /* spotless:on */
+                return /* spotless:off */ other is Auto && value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -4430,8 +4404,6 @@ constructor(
      * - If set to 'default', the request will be processed using the default service tier with a
      *   lower uptime SLA and no latency guarentee.
      * - When not set, the default behavior is 'auto'.
-     *
-     * When this parameter is set, the response body will include the `service_tier` utilized.
      */
     class ServiceTier
     @JsonCreator

@@ -5,7 +5,6 @@ package com.openai.services.blocking.beta
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
-import com.openai.models.AssistantResponseFormatOption
 import com.openai.models.AutoFileChunkingStrategyParam
 import com.openai.models.BetaAssistantCreateParams
 import com.openai.models.BetaAssistantDeleteParams
@@ -36,7 +35,7 @@ class AssistantServiceTest {
                     .instructions("instructions")
                     .metadata(JsonValue.from(mapOf<String, Any>()))
                     .name("name")
-                    .responseFormat(AssistantResponseFormatOption.Behavior.AUTO)
+                    .responseFormatAuto()
                     .temperature(1.0)
                     .toolResources(
                         BetaAssistantCreateParams.ToolResources.builder()
@@ -53,9 +52,7 @@ class AssistantServiceTest {
                                             .VectorStore
                                             .builder()
                                             .chunkingStrategy(
-                                                AutoFileChunkingStrategyParam.builder()
-                                                    .type(AutoFileChunkingStrategyParam.Type.AUTO)
-                                                    .build()
+                                                AutoFileChunkingStrategyParam.builder().build()
                                             )
                                             .addFileId("string")
                                             .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -65,11 +62,7 @@ class AssistantServiceTest {
                             )
                             .build()
                     )
-                    .addTool(
-                        CodeInterpreterTool.builder()
-                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                            .build()
-                    )
+                    .addTool(CodeInterpreterTool.builder().build())
                     .topP(1.0)
                     .build()
             )
@@ -110,7 +103,7 @@ class AssistantServiceTest {
                     .metadata(JsonValue.from(mapOf<String, Any>()))
                     .model("model")
                     .name("name")
-                    .responseFormat(AssistantResponseFormatOption.Behavior.AUTO)
+                    .responseFormatAuto()
                     .temperature(1.0)
                     .toolResources(
                         BetaAssistantUpdateParams.ToolResources.builder()
@@ -126,11 +119,7 @@ class AssistantServiceTest {
                             )
                             .build()
                     )
-                    .addTool(
-                        CodeInterpreterTool.builder()
-                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                            .build()
-                    )
+                    .addTool(CodeInterpreterTool.builder().build())
                     .topP(1.0)
                     .build()
             )

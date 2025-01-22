@@ -11,7 +11,6 @@ class FineTuningJobWandbIntegrationObjectTest {
     fun createFineTuningJobWandbIntegrationObject() {
         val fineTuningJobWandbIntegrationObject =
             FineTuningJobWandbIntegrationObject.builder()
-                .type(FineTuningJobWandbIntegrationObject.Type.WANDB)
                 .wandb(
                     FineTuningJobWandbIntegration.builder()
                         .project("my-wandb-project")
@@ -22,8 +21,6 @@ class FineTuningJobWandbIntegrationObjectTest {
                 )
                 .build()
         assertThat(fineTuningJobWandbIntegrationObject).isNotNull
-        assertThat(fineTuningJobWandbIntegrationObject.type())
-            .isEqualTo(FineTuningJobWandbIntegrationObject.Type.WANDB)
         assertThat(fineTuningJobWandbIntegrationObject.wandb())
             .isEqualTo(
                 FineTuningJobWandbIntegration.builder()

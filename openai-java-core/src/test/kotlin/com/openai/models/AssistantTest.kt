@@ -19,13 +19,8 @@ class AssistantTest {
                 .metadata(JsonValue.from(mapOf<String, Any>()))
                 .model("model")
                 .name("name")
-                .object_(Assistant.Object.ASSISTANT)
-                .addTool(
-                    CodeInterpreterTool.builder()
-                        .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                        .build()
-                )
-                .responseFormat(AssistantResponseFormatOption.Behavior.AUTO)
+                .addTool(CodeInterpreterTool.builder().build())
+                .responseFormatAuto()
                 .temperature(1.0)
                 .toolResources(
                     Assistant.ToolResources.builder()
@@ -51,21 +46,11 @@ class AssistantTest {
         assertThat(assistant._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(assistant.model()).isEqualTo("model")
         assertThat(assistant.name()).contains("name")
-        assertThat(assistant.object_()).isEqualTo(Assistant.Object.ASSISTANT)
         assertThat(assistant.tools())
             .containsExactly(
-                AssistantTool.ofCodeInterpreterTool(
-                    CodeInterpreterTool.builder()
-                        .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                        .build()
-                )
+                AssistantTool.ofCodeInterpreterTool(CodeInterpreterTool.builder().build())
             )
-        assertThat(assistant.responseFormat())
-            .contains(
-                AssistantResponseFormatOption.ofBehavior(
-                    AssistantResponseFormatOption.Behavior.AUTO
-                )
-            )
+        assertThat(assistant.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
         assertThat(assistant.temperature()).contains(1.0)
         assertThat(assistant.toolResources())
             .contains(

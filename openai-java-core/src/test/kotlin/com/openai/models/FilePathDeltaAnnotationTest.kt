@@ -12,7 +12,6 @@ class FilePathDeltaAnnotationTest {
         val filePathDeltaAnnotation =
             FilePathDeltaAnnotation.builder()
                 .index(0L)
-                .type(FilePathDeltaAnnotation.Type.FILE_PATH)
                 .endIndex(0L)
                 .filePath(FilePathDeltaAnnotation.FilePath.builder().fileId("file_id").build())
                 .startIndex(0L)
@@ -20,7 +19,6 @@ class FilePathDeltaAnnotationTest {
                 .build()
         assertThat(filePathDeltaAnnotation).isNotNull
         assertThat(filePathDeltaAnnotation.index()).isEqualTo(0L)
-        assertThat(filePathDeltaAnnotation.type()).isEqualTo(FilePathDeltaAnnotation.Type.FILE_PATH)
         assertThat(filePathDeltaAnnotation.endIndex()).contains(0L)
         assertThat(filePathDeltaAnnotation.filePath())
             .contains(FilePathDeltaAnnotation.FilePath.builder().fileId("file_id").build())
