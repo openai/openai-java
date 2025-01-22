@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -37,9 +36,7 @@ private constructor(
     @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonValue = JsonMissing.of(),
     @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
     @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonProperty("tools")
     @ExcludeMissing
     private val tools: JsonField<List<AssistantTool>> = JsonMissing.of(),
@@ -91,7 +88,7 @@ private constructor(
     fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
 
     /** The object type, which is always `assistant`. */
-    fun object_(): Object = object_.getRequired("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant.
@@ -173,9 +170,6 @@ private constructor(
     /** The name of the assistant. The maximum length is 256 characters. */
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
-    /** The object type, which is always `assistant`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
-
     /**
      * A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant.
      * Tools can be of types `code_interpreter`, `file_search`, or `function`.
@@ -247,7 +241,11 @@ private constructor(
         instructions()
         model()
         name()
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("assistant")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         tools().forEach { it.validate() }
         responseFormat().ifPresent { it.validate() }
         temperature()
@@ -272,7 +270,7 @@ private constructor(
         private var metadata: JsonValue? = null
         private var model: JsonField<String>? = null
         private var name: JsonField<String>? = null
-        private var object_: JsonField<Object>? = null
+        private var object_: JsonValue = JsonValue.from("assistant")
         private var tools: JsonField<MutableList<AssistantTool>>? = null
         private var responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of()
         private var temperature: JsonField<Double> = JsonMissing.of()
@@ -372,10 +370,7 @@ private constructor(
         fun name(name: JsonField<String>) = apply { this.name = name }
 
         /** The object type, which is always `assistant`. */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always `assistant`. */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /**
          * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
@@ -500,8 +495,7 @@ private constructor(
         }
 
         /** `auto` is the default value */
-        fun responseFormat(behavior: AssistantResponseFormatOption.Behavior) =
-            responseFormat(AssistantResponseFormatOption.ofBehavior(behavior))
+        fun responseFormatAuto() = responseFormat(AssistantResponseFormatOption.ofAuto())
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -696,7 +690,7 @@ private constructor(
                 checkRequired("metadata", metadata),
                 checkRequired("model", model),
                 checkRequired("name", name),
-                checkRequired("object_", object_),
+                object_,
                 checkRequired("tools", tools).map { it.toImmutable() },
                 responseFormat,
                 temperature,
@@ -704,58 +698,6 @@ private constructor(
                 topP,
                 additionalProperties.toImmutable(),
             )
-    }
-
-    /** The object type, which is always `assistant`. */
-    class Object
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val ASSISTANT = of("assistant")
-
-            @JvmStatic fun of(value: String) = Object(JsonField.of(value))
-        }
-
-        enum class Known {
-            ASSISTANT,
-        }
-
-        enum class Value {
-            ASSISTANT,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                ASSISTANT -> Value.ASSISTANT
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                ASSISTANT -> Known.ASSISTANT
-                else -> throw OpenAIInvalidDataException("Unknown Object: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     /**

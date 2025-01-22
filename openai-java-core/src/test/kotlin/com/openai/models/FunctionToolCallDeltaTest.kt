@@ -12,7 +12,6 @@ class FunctionToolCallDeltaTest {
         val functionToolCallDelta =
             FunctionToolCallDelta.builder()
                 .index(0L)
-                .type(FunctionToolCallDelta.Type.FUNCTION)
                 .id("id")
                 .function(
                     FunctionToolCallDelta.Function.builder()
@@ -24,7 +23,6 @@ class FunctionToolCallDeltaTest {
                 .build()
         assertThat(functionToolCallDelta).isNotNull
         assertThat(functionToolCallDelta.index()).isEqualTo(0L)
-        assertThat(functionToolCallDelta.type()).isEqualTo(FunctionToolCallDelta.Type.FUNCTION)
         assertThat(functionToolCallDelta.id()).contains("id")
         assertThat(functionToolCallDelta.function())
             .contains(

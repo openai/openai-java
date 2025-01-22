@@ -36,9 +36,7 @@ private constructor(
     private val lastActiveAt: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonValue = JsonMissing.of(),
     @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonProperty("status")
     @ExcludeMissing
     private val status: JsonField<Status> = JsonMissing.of(),
@@ -77,7 +75,7 @@ private constructor(
     fun name(): String = name.getRequired("name")
 
     /** The object type, which is always `vector_store`. */
-    fun object_(): Object = object_.getRequired("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * The status of the vector store, which can be either `expired`, `in_progress`, or `completed`.
@@ -113,9 +111,6 @@ private constructor(
     /** The name of the vector store. */
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
-    /** The object type, which is always `vector_store`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
-
     /**
      * The status of the vector store, which can be either `expired`, `in_progress`, or `completed`.
      * A status of `completed` indicates that the vector store is ready for use.
@@ -149,7 +144,11 @@ private constructor(
         fileCounts().validate()
         lastActiveAt()
         name()
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("vector_store")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         status()
         usageBytes()
         expiresAfter().ifPresent { it.validate() }
@@ -172,7 +171,7 @@ private constructor(
         private var lastActiveAt: JsonField<Long>? = null
         private var metadata: JsonValue? = null
         private var name: JsonField<String>? = null
-        private var object_: JsonField<Object>? = null
+        private var object_: JsonValue = JsonValue.from("vector_store")
         private var status: JsonField<Status>? = null
         private var usageBytes: JsonField<Long>? = null
         private var expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of()
@@ -239,10 +238,7 @@ private constructor(
         fun name(name: JsonField<String>) = apply { this.name = name }
 
         /** The object type, which is always `vector_store`. */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always `vector_store`. */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /**
          * The status of the vector store, which can be either `expired`, `in_progress`, or
@@ -310,7 +306,7 @@ private constructor(
                 checkRequired("lastActiveAt", lastActiveAt),
                 checkRequired("metadata", metadata),
                 checkRequired("name", name),
-                checkRequired("object_", object_),
+                object_,
                 checkRequired("status", status),
                 checkRequired("usageBytes", usageBytes),
                 expiresAfter,
@@ -495,58 +491,6 @@ private constructor(
             "FileCounts{cancelled=$cancelled, completed=$completed, failed=$failed, inProgress=$inProgress, total=$total, additionalProperties=$additionalProperties}"
     }
 
-    /** The object type, which is always `vector_store`. */
-    class Object
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val VECTOR_STORE = of("vector_store")
-
-            @JvmStatic fun of(value: String) = Object(JsonField.of(value))
-        }
-
-        enum class Known {
-            VECTOR_STORE,
-        }
-
-        enum class Value {
-            VECTOR_STORE,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                VECTOR_STORE -> Value.VECTOR_STORE
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                VECTOR_STORE -> Known.VECTOR_STORE
-                else -> throw OpenAIInvalidDataException("Unknown Object: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-    }
-
     /**
      * The status of the vector store, which can be either `expired`, `in_progress`, or `completed`.
      * A status of `completed` indicates that the vector store is ready for use.
@@ -619,9 +563,7 @@ private constructor(
     class ExpiresAfter
     @JsonCreator
     private constructor(
-        @JsonProperty("anchor")
-        @ExcludeMissing
-        private val anchor: JsonField<Anchor> = JsonMissing.of(),
+        @JsonProperty("anchor") @ExcludeMissing private val anchor: JsonValue = JsonMissing.of(),
         @JsonProperty("days") @ExcludeMissing private val days: JsonField<Long> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
@@ -631,16 +573,10 @@ private constructor(
          * Anchor timestamp after which the expiration policy applies. Supported anchors:
          * `last_active_at`.
          */
-        fun anchor(): Anchor = anchor.getRequired("anchor")
+        @JsonProperty("anchor") @ExcludeMissing fun _anchor(): JsonValue = anchor
 
         /** The number of days after the anchor time that the vector store will expire. */
         fun days(): Long = days.getRequired("days")
-
-        /**
-         * Anchor timestamp after which the expiration policy applies. Supported anchors:
-         * `last_active_at`.
-         */
-        @JsonProperty("anchor") @ExcludeMissing fun _anchor(): JsonField<Anchor> = anchor
 
         /** The number of days after the anchor time that the vector store will expire. */
         @JsonProperty("days") @ExcludeMissing fun _days(): JsonField<Long> = days
@@ -656,7 +592,11 @@ private constructor(
                 return@apply
             }
 
-            anchor()
+            _anchor().let {
+                if (it != JsonValue.from("last_active_at")) {
+                    throw OpenAIInvalidDataException("'anchor' is invalid, received $it")
+                }
+            }
             days()
             validated = true
         }
@@ -670,7 +610,7 @@ private constructor(
 
         class Builder {
 
-            private var anchor: JsonField<Anchor>? = null
+            private var anchor: JsonValue = JsonValue.from("last_active_at")
             private var days: JsonField<Long>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -685,13 +625,7 @@ private constructor(
              * Anchor timestamp after which the expiration policy applies. Supported anchors:
              * `last_active_at`.
              */
-            fun anchor(anchor: Anchor) = anchor(JsonField.of(anchor))
-
-            /**
-             * Anchor timestamp after which the expiration policy applies. Supported anchors:
-             * `last_active_at`.
-             */
-            fun anchor(anchor: JsonField<Anchor>) = apply { this.anchor = anchor }
+            fun anchor(anchor: JsonValue) = apply { this.anchor = anchor }
 
             /** The number of days after the anchor time that the vector store will expire. */
             fun days(days: Long) = days(JsonField.of(days))
@@ -720,65 +654,10 @@ private constructor(
 
             fun build(): ExpiresAfter =
                 ExpiresAfter(
-                    checkRequired("anchor", anchor),
+                    anchor,
                     checkRequired("days", days),
                     additionalProperties.toImmutable(),
                 )
-        }
-
-        /**
-         * Anchor timestamp after which the expiration policy applies. Supported anchors:
-         * `last_active_at`.
-         */
-        class Anchor
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val LAST_ACTIVE_AT = of("last_active_at")
-
-                @JvmStatic fun of(value: String) = Anchor(JsonField.of(value))
-            }
-
-            enum class Known {
-                LAST_ACTIVE_AT,
-            }
-
-            enum class Value {
-                LAST_ACTIVE_AT,
-                _UNKNOWN,
-            }
-
-            fun value(): Value =
-                when (this) {
-                    LAST_ACTIVE_AT -> Value.LAST_ACTIVE_AT
-                    else -> Value._UNKNOWN
-                }
-
-            fun known(): Known =
-                when (this) {
-                    LAST_ACTIVE_AT -> Known.LAST_ACTIVE_AT
-                    else -> throw OpenAIInvalidDataException("Unknown Anchor: $value")
-                }
-
-            fun asString(): String = _value().asStringOrThrow()
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Anchor && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
         }
 
         override fun equals(other: Any?): Boolean {

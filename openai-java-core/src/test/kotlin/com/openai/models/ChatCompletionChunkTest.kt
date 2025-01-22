@@ -81,7 +81,6 @@ class ChatCompletionChunkTest {
                 )
                 .created(0L)
                 .model("model")
-                .object_(ChatCompletionChunk.Object.CHAT_COMPLETION_CHUNK)
                 .serviceTier(ChatCompletionChunk.ServiceTier.SCALE)
                 .systemFingerprint("system_fingerprint")
                 .usage(
@@ -175,8 +174,6 @@ class ChatCompletionChunkTest {
             )
         assertThat(chatCompletionChunk.created()).isEqualTo(0L)
         assertThat(chatCompletionChunk.model()).isEqualTo("model")
-        assertThat(chatCompletionChunk.object_())
-            .isEqualTo(ChatCompletionChunk.Object.CHAT_COMPLETION_CHUNK)
         assertThat(chatCompletionChunk.serviceTier())
             .contains(ChatCompletionChunk.ServiceTier.SCALE)
         assertThat(chatCompletionChunk.systemFingerprint()).contains("system_fingerprint")

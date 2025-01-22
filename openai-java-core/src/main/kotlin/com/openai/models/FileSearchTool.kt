@@ -23,7 +23,7 @@ import java.util.Optional
 class FileSearchTool
 @JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
     @JsonProperty("file_search")
     @ExcludeMissing
     private val fileSearch: JsonField<FileSearch> = JsonMissing.of(),
@@ -31,14 +31,11 @@ private constructor(
 ) {
 
     /** The type of tool being defined: `file_search` */
-    fun type(): Type = type.getRequired("type")
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /** Overrides for the file search tool. */
     fun fileSearch(): Optional<FileSearch> =
         Optional.ofNullable(fileSearch.getNullable("file_search"))
-
-    /** The type of tool being defined: `file_search` */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     /** Overrides for the file search tool. */
     @JsonProperty("file_search")
@@ -56,7 +53,11 @@ private constructor(
             return@apply
         }
 
-        type()
+        _type().let {
+            if (it != JsonValue.from("file_search")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
         fileSearch().ifPresent { it.validate() }
         validated = true
     }
@@ -70,7 +71,7 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type>? = null
+        private var type: JsonValue = JsonValue.from("file_search")
         private var fileSearch: JsonField<FileSearch> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -82,10 +83,7 @@ private constructor(
         }
 
         /** The type of tool being defined: `file_search` */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /** The type of tool being defined: `file_search` */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
+        fun type(type: JsonValue) = apply { this.type = type }
 
         /** Overrides for the file search tool. */
         fun fileSearch(fileSearch: FileSearch) = fileSearch(JsonField.of(fileSearch))
@@ -114,62 +112,10 @@ private constructor(
 
         fun build(): FileSearchTool =
             FileSearchTool(
-                checkRequired("type", type),
+                type,
                 fileSearch,
                 additionalProperties.toImmutable(),
             )
-    }
-
-    /** The type of tool being defined: `file_search` */
-    class Type
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val FILE_SEARCH = of("file_search")
-
-            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-        }
-
-        enum class Known {
-            FILE_SEARCH,
-        }
-
-        enum class Value {
-            FILE_SEARCH,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                FILE_SEARCH -> Value.FILE_SEARCH
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                FILE_SEARCH -> Known.FILE_SEARCH
-                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     /** Overrides for the file search tool. */

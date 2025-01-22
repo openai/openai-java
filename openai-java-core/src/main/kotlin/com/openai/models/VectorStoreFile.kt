@@ -31,9 +31,7 @@ private constructor(
     @JsonProperty("last_error")
     @ExcludeMissing
     private val lastError: JsonField<LastError> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonProperty("status")
     @ExcludeMissing
     private val status: JsonField<Status> = JsonMissing.of(),
@@ -61,7 +59,7 @@ private constructor(
     fun lastError(): Optional<LastError> = Optional.ofNullable(lastError.getNullable("last_error"))
 
     /** The object type, which is always `vector_store.file`. */
-    fun object_(): Object = object_.getRequired("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * The status of the vector store file, which can be either `in_progress`, `completed`,
@@ -97,9 +95,6 @@ private constructor(
      * The last error associated with this vector store file. Will be `null` if there are no errors.
      */
     @JsonProperty("last_error") @ExcludeMissing fun _lastError(): JsonField<LastError> = lastError
-
-    /** The object type, which is always `vector_store.file`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /**
      * The status of the vector store file, which can be either `in_progress`, `completed`,
@@ -142,7 +137,11 @@ private constructor(
         id()
         createdAt()
         lastError().ifPresent { it.validate() }
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("vector_store.file")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         status()
         usageBytes()
         vectorStoreId()
@@ -162,7 +161,7 @@ private constructor(
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
         private var lastError: JsonField<LastError>? = null
-        private var object_: JsonField<Object>? = null
+        private var object_: JsonValue = JsonValue.from("vector_store.file")
         private var status: JsonField<Status>? = null
         private var usageBytes: JsonField<Long>? = null
         private var vectorStoreId: JsonField<String>? = null
@@ -213,10 +212,7 @@ private constructor(
         fun lastError(lastError: JsonField<LastError>) = apply { this.lastError = lastError }
 
         /** The object type, which is always `vector_store.file`. */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always `vector_store.file`. */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /**
          * The status of the vector store file, which can be either `in_progress`, `completed`,
@@ -312,7 +308,7 @@ private constructor(
                 checkRequired("id", id),
                 checkRequired("createdAt", createdAt),
                 checkRequired("lastError", lastError),
-                checkRequired("object_", object_),
+                object_,
                 checkRequired("status", status),
                 checkRequired("usageBytes", usageBytes),
                 checkRequired("vectorStoreId", vectorStoreId),
@@ -503,58 +499,6 @@ private constructor(
 
         override fun toString() =
             "LastError{code=$code, message=$message, additionalProperties=$additionalProperties}"
-    }
-
-    /** The object type, which is always `vector_store.file`. */
-    class Object
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val VECTOR_STORE_FILE = of("vector_store.file")
-
-            @JvmStatic fun of(value: String) = Object(JsonField.of(value))
-        }
-
-        enum class Known {
-            VECTOR_STORE_FILE,
-        }
-
-        enum class Value {
-            VECTOR_STORE_FILE,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                VECTOR_STORE_FILE -> Value.VECTOR_STORE_FILE
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                VECTOR_STORE_FILE -> Known.VECTOR_STORE_FILE
-                else -> throw OpenAIInvalidDataException("Unknown Object: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     /**

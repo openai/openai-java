@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -28,7 +27,7 @@ class ThreadStreamEvent
 @JsonCreator
 private constructor(
     @JsonProperty("data") @ExcludeMissing private val data: JsonField<Thread> = JsonMissing.of(),
-    @JsonProperty("event") @ExcludeMissing private val event: JsonField<Event> = JsonMissing.of(),
+    @JsonProperty("event") @ExcludeMissing private val event: JsonValue = JsonMissing.of(),
     @JsonProperty("enabled")
     @ExcludeMissing
     private val enabled: JsonField<Boolean> = JsonMissing.of(),
@@ -41,7 +40,7 @@ private constructor(
      */
     fun data(): Thread = data.getRequired("data")
 
-    fun event(): Event = event.getRequired("event")
+    @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
     /** Whether to enable input audio transcription. */
     fun enabled(): Optional<Boolean> = Optional.ofNullable(enabled.getNullable("enabled"))
@@ -51,8 +50,6 @@ private constructor(
      * [messages](https://platform.openai.com/docs/api-reference/messages).
      */
     @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Thread> = data
-
-    @JsonProperty("event") @ExcludeMissing fun _event(): JsonField<Event> = event
 
     /** Whether to enable input audio transcription. */
     @JsonProperty("enabled") @ExcludeMissing fun _enabled(): JsonField<Boolean> = enabled
@@ -69,7 +66,11 @@ private constructor(
         }
 
         data().validate()
-        event()
+        _event().let {
+            if (it != JsonValue.from("thread.created")) {
+                throw OpenAIInvalidDataException("'event' is invalid, received $it")
+            }
+        }
         enabled()
         validated = true
     }
@@ -84,7 +85,7 @@ private constructor(
     class Builder {
 
         private var data: JsonField<Thread>? = null
-        private var event: JsonField<Event>? = null
+        private var event: JsonValue = JsonValue.from("thread.created")
         private var enabled: JsonField<Boolean> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -108,9 +109,7 @@ private constructor(
          */
         fun data(data: JsonField<Thread>) = apply { this.data = data }
 
-        fun event(event: Event) = event(JsonField.of(event))
-
-        fun event(event: JsonField<Event>) = apply { this.event = event }
+        fun event(event: JsonValue) = apply { this.event = event }
 
         /** Whether to enable input audio transcription. */
         fun enabled(enabled: Boolean) = enabled(JsonField.of(enabled))
@@ -140,61 +139,10 @@ private constructor(
         fun build(): ThreadStreamEvent =
             ThreadStreamEvent(
                 checkRequired("data", data),
-                checkRequired("event", event),
+                event,
                 enabled,
                 additionalProperties.toImmutable(),
             )
-    }
-
-    class Event
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val THREAD_CREATED = of("thread.created")
-
-            @JvmStatic fun of(value: String) = Event(JsonField.of(value))
-        }
-
-        enum class Known {
-            THREAD_CREATED,
-        }
-
-        enum class Value {
-            THREAD_CREATED,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                THREAD_CREATED -> Value.THREAD_CREATED
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                THREAD_CREATED -> Known.THREAD_CREATED
-                else -> throw OpenAIInvalidDataException("Unknown Event: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Event && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

@@ -11,7 +11,6 @@ class FileSearchToolTest {
     fun createFileSearchTool() {
         val fileSearchTool =
             FileSearchTool.builder()
-                .type(FileSearchTool.Type.FILE_SEARCH)
                 .fileSearch(
                     FileSearchTool.FileSearch.builder()
                         .maxNumResults(1L)
@@ -25,7 +24,6 @@ class FileSearchToolTest {
                 )
                 .build()
         assertThat(fileSearchTool).isNotNull
-        assertThat(fileSearchTool.type()).isEqualTo(FileSearchTool.Type.FILE_SEARCH)
         assertThat(fileSearchTool.fileSearch())
             .contains(
                 FileSearchTool.FileSearch.builder()

@@ -14,7 +14,6 @@ class MessageDeltaTest {
                 .addContent(
                     ImageFileDeltaBlock.builder()
                         .index(0L)
-                        .type(ImageFileDeltaBlock.Type.IMAGE_FILE)
                         .imageFile(
                             ImageFileDelta.builder()
                                 .detail(ImageFileDelta.Detail.AUTO)
@@ -31,7 +30,6 @@ class MessageDeltaTest {
                 MessageContentDelta.ofImageFileDeltaBlock(
                     ImageFileDeltaBlock.builder()
                         .index(0L)
-                        .type(ImageFileDeltaBlock.Type.IMAGE_FILE)
                         .imageFile(
                             ImageFileDelta.builder()
                                 .detail(ImageFileDelta.Detail.AUTO)

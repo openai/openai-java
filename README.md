@@ -96,7 +96,6 @@ import com.openai.models.ChatModel;
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .addMessage(ChatCompletionUserMessageParam.builder()
-        .role(ChatCompletionUserMessageParam.Role.USER)
         .content("Say this is a test")
         .build())
     .model(ChatModel.O1)

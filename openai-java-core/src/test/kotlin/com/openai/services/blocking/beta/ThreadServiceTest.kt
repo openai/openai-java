@@ -5,7 +5,6 @@ package com.openai.services.blocking.beta
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
-import com.openai.models.AssistantResponseFormatOption
 import com.openai.models.AssistantToolChoiceOption
 import com.openai.models.AutoFileChunkingStrategyParam
 import com.openai.models.BetaThreadCreateAndRunParams
@@ -39,11 +38,7 @@ class ThreadServiceTest {
                             .addAttachment(
                                 BetaThreadCreateParams.Message.Attachment.builder()
                                     .fileId("file_id")
-                                    .addTool(
-                                        CodeInterpreterTool.builder()
-                                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                            .build()
-                                    )
+                                    .addTool(CodeInterpreterTool.builder().build())
                                     .build()
                             )
                             .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -64,9 +59,7 @@ class ThreadServiceTest {
                                         BetaThreadCreateParams.ToolResources.FileSearch.VectorStore
                                             .builder()
                                             .chunkingStrategy(
-                                                AutoFileChunkingStrategyParam.builder()
-                                                    .type(AutoFileChunkingStrategyParam.Type.AUTO)
-                                                    .build()
+                                                AutoFileChunkingStrategyParam.builder().build()
                                             )
                                             .addFileId("string")
                                             .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -161,7 +154,7 @@ class ThreadServiceTest {
                     .metadata(JsonValue.from(mapOf<String, Any>()))
                     .model(ChatModel.GPT_4O)
                     .parallelToolCalls(true)
-                    .responseFormat(AssistantResponseFormatOption.Behavior.AUTO)
+                    .responseFormatAuto()
                     .temperature(1.0)
                     .thread(
                         BetaThreadCreateAndRunParams.Thread.builder()
@@ -173,11 +166,7 @@ class ThreadServiceTest {
                                         BetaThreadCreateAndRunParams.Thread.Message.Attachment
                                             .builder()
                                             .fileId("file_id")
-                                            .addTool(
-                                                CodeInterpreterTool.builder()
-                                                    .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                                    .build()
-                                            )
+                                            .addTool(CodeInterpreterTool.builder().build())
                                             .build()
                                     )
                                     .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -204,10 +193,6 @@ class ThreadServiceTest {
                                                     .builder()
                                                     .chunkingStrategy(
                                                         AutoFileChunkingStrategyParam.builder()
-                                                            .type(
-                                                                AutoFileChunkingStrategyParam.Type
-                                                                    .AUTO
-                                                            )
                                                             .build()
                                                     )
                                                     .addFileId("string")
@@ -220,7 +205,7 @@ class ThreadServiceTest {
                             )
                             .build()
                     )
-                    .toolChoice(AssistantToolChoiceOption.Behavior.NONE)
+                    .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                     .toolResources(
                         BetaThreadCreateAndRunParams.ToolResources.builder()
                             .codeInterpreter(
@@ -235,11 +220,7 @@ class ThreadServiceTest {
                             )
                             .build()
                     )
-                    .addTool(
-                        CodeInterpreterTool.builder()
-                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                            .build()
-                    )
+                    .addTool(CodeInterpreterTool.builder().build())
                     .topP(1.0)
                     .truncationStrategy(
                         BetaThreadCreateAndRunParams.TruncationStrategy.builder()
@@ -272,7 +253,7 @@ class ThreadServiceTest {
                     .metadata(JsonValue.from(mapOf<String, Any>()))
                     .model(ChatModel.GPT_4O)
                     .parallelToolCalls(true)
-                    .responseFormat(AssistantResponseFormatOption.Behavior.AUTO)
+                    .responseFormatAuto()
                     .temperature(1.0)
                     .thread(
                         BetaThreadCreateAndRunParams.Thread.builder()
@@ -284,11 +265,7 @@ class ThreadServiceTest {
                                         BetaThreadCreateAndRunParams.Thread.Message.Attachment
                                             .builder()
                                             .fileId("file_id")
-                                            .addTool(
-                                                CodeInterpreterTool.builder()
-                                                    .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                                    .build()
-                                            )
+                                            .addTool(CodeInterpreterTool.builder().build())
                                             .build()
                                     )
                                     .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -315,10 +292,6 @@ class ThreadServiceTest {
                                                     .builder()
                                                     .chunkingStrategy(
                                                         AutoFileChunkingStrategyParam.builder()
-                                                            .type(
-                                                                AutoFileChunkingStrategyParam.Type
-                                                                    .AUTO
-                                                            )
                                                             .build()
                                                     )
                                                     .addFileId("string")
@@ -331,7 +304,7 @@ class ThreadServiceTest {
                             )
                             .build()
                     )
-                    .toolChoice(AssistantToolChoiceOption.Behavior.NONE)
+                    .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                     .toolResources(
                         BetaThreadCreateAndRunParams.ToolResources.builder()
                             .codeInterpreter(
@@ -346,11 +319,7 @@ class ThreadServiceTest {
                             )
                             .build()
                     )
-                    .addTool(
-                        CodeInterpreterTool.builder()
-                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                            .build()
-                    )
+                    .addTool(CodeInterpreterTool.builder().build())
                     .topP(1.0)
                     .truncationStrategy(
                         BetaThreadCreateAndRunParams.TruncationStrategy.builder()

@@ -26,15 +26,9 @@ class VectorStoreTest {
                 .lastActiveAt(0L)
                 .metadata(JsonValue.from(mapOf<String, Any>()))
                 .name("name")
-                .object_(VectorStore.Object.VECTOR_STORE)
                 .status(VectorStore.Status.EXPIRED)
                 .usageBytes(0L)
-                .expiresAfter(
-                    VectorStore.ExpiresAfter.builder()
-                        .anchor(VectorStore.ExpiresAfter.Anchor.LAST_ACTIVE_AT)
-                        .days(1L)
-                        .build()
-                )
+                .expiresAfter(VectorStore.ExpiresAfter.builder().days(1L).build())
                 .expiresAt(0L)
                 .build()
         assertThat(vectorStore).isNotNull
@@ -53,16 +47,10 @@ class VectorStoreTest {
         assertThat(vectorStore.lastActiveAt()).contains(0L)
         assertThat(vectorStore._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(vectorStore.name()).isEqualTo("name")
-        assertThat(vectorStore.object_()).isEqualTo(VectorStore.Object.VECTOR_STORE)
         assertThat(vectorStore.status()).isEqualTo(VectorStore.Status.EXPIRED)
         assertThat(vectorStore.usageBytes()).isEqualTo(0L)
         assertThat(vectorStore.expiresAfter())
-            .contains(
-                VectorStore.ExpiresAfter.builder()
-                    .anchor(VectorStore.ExpiresAfter.Anchor.LAST_ACTIVE_AT)
-                    .days(1L)
-                    .build()
-            )
+            .contains(VectorStore.ExpiresAfter.builder().days(1L).build())
         assertThat(vectorStore.expiresAt()).contains(0L)
     }
 }

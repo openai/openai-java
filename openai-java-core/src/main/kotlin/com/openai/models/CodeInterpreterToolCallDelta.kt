@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -36,7 +35,7 @@ class CodeInterpreterToolCallDelta
 @JsonCreator
 private constructor(
     @JsonProperty("index") @ExcludeMissing private val index: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
     @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
     @JsonProperty("code_interpreter")
     @ExcludeMissing
@@ -51,7 +50,7 @@ private constructor(
      * The type of tool call. This is always going to be `code_interpreter` for this type of tool
      * call.
      */
-    fun type(): Type = type.getRequired("type")
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /** The ID of the tool call. */
     fun id(): Optional<String> = Optional.ofNullable(id.getNullable("id"))
@@ -62,12 +61,6 @@ private constructor(
 
     /** The index of the tool call in the tool calls array. */
     @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
-
-    /**
-     * The type of tool call. This is always going to be `code_interpreter` for this type of tool
-     * call.
-     */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     /** The ID of the tool call. */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
@@ -89,7 +82,11 @@ private constructor(
         }
 
         index()
-        type()
+        _type().let {
+            if (it != JsonValue.from("code_interpreter")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
         id()
         codeInterpreter().ifPresent { it.validate() }
         validated = true
@@ -105,7 +102,7 @@ private constructor(
     class Builder {
 
         private var index: JsonField<Long>? = null
-        private var type: JsonField<Type>? = null
+        private var type: JsonValue = JsonValue.from("code_interpreter")
         private var id: JsonField<String> = JsonMissing.of()
         private var codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -129,13 +126,7 @@ private constructor(
          * The type of tool call. This is always going to be `code_interpreter` for this type of
          * tool call.
          */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /**
-         * The type of tool call. This is always going to be `code_interpreter` for this type of
-         * tool call.
-         */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
+        fun type(type: JsonValue) = apply { this.type = type }
 
         /** The ID of the tool call. */
         fun id(id: String) = id(JsonField.of(id))
@@ -174,66 +165,11 @@ private constructor(
         fun build(): CodeInterpreterToolCallDelta =
             CodeInterpreterToolCallDelta(
                 checkRequired("index", index),
-                checkRequired("type", type),
+                type,
                 id,
                 codeInterpreter,
                 additionalProperties.toImmutable(),
             )
-    }
-
-    /**
-     * The type of tool call. This is always going to be `code_interpreter` for this type of tool
-     * call.
-     */
-    class Type
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val CODE_INTERPRETER = of("code_interpreter")
-
-            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-        }
-
-        enum class Known {
-            CODE_INTERPRETER,
-        }
-
-        enum class Value {
-            CODE_INTERPRETER,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                CODE_INTERPRETER -> Value.CODE_INTERPRETER
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                CODE_INTERPRETER -> Known.CODE_INTERPRETER
-                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     /** The Code Interpreter tool call definition. */

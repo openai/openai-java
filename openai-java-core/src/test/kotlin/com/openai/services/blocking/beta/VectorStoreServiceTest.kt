@@ -28,16 +28,9 @@ class VectorStoreServiceTest {
         val vectorStore =
             vectorStoreService.create(
                 BetaVectorStoreCreateParams.builder()
-                    .chunkingStrategy(
-                        AutoFileChunkingStrategyParam.builder()
-                            .type(AutoFileChunkingStrategyParam.Type.AUTO)
-                            .build()
-                    )
+                    .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
                     .expiresAfter(
-                        BetaVectorStoreCreateParams.ExpiresAfter.builder()
-                            .anchor(BetaVectorStoreCreateParams.ExpiresAfter.Anchor.LAST_ACTIVE_AT)
-                            .days(1L)
-                            .build()
+                        BetaVectorStoreCreateParams.ExpiresAfter.builder().days(1L).build()
                     )
                     .addFileId("string")
                     .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -77,10 +70,7 @@ class VectorStoreServiceTest {
                 BetaVectorStoreUpdateParams.builder()
                     .vectorStoreId("vector_store_id")
                     .expiresAfter(
-                        BetaVectorStoreUpdateParams.ExpiresAfter.builder()
-                            .anchor(BetaVectorStoreUpdateParams.ExpiresAfter.Anchor.LAST_ACTIVE_AT)
-                            .days(1L)
-                            .build()
+                        BetaVectorStoreUpdateParams.ExpiresAfter.builder().days(1L).build()
                     )
                     .metadata(JsonValue.from(mapOf<String, Any>()))
                     .name("name")

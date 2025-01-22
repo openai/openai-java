@@ -16,7 +16,6 @@ class FineTuningJobEventTest {
                 .createdAt(0L)
                 .level(FineTuningJobEvent.Level.INFO)
                 .message("message")
-                .object_(FineTuningJobEvent.Object.FINE_TUNING_JOB_EVENT)
                 .data(JsonValue.from(mapOf<String, Any>()))
                 .type(FineTuningJobEvent.Type.MESSAGE)
                 .build()
@@ -25,8 +24,6 @@ class FineTuningJobEventTest {
         assertThat(fineTuningJobEvent.createdAt()).isEqualTo(0L)
         assertThat(fineTuningJobEvent.level()).isEqualTo(FineTuningJobEvent.Level.INFO)
         assertThat(fineTuningJobEvent.message()).isEqualTo("message")
-        assertThat(fineTuningJobEvent.object_())
-            .isEqualTo(FineTuningJobEvent.Object.FINE_TUNING_JOB_EVENT)
         assertThat(fineTuningJobEvent._data()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(fineTuningJobEvent.type()).contains(FineTuningJobEvent.Type.MESSAGE)
     }

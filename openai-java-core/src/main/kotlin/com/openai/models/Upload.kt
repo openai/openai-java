@@ -35,9 +35,7 @@ private constructor(
     @JsonProperty("filename")
     @ExcludeMissing
     private val filename: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonProperty("purpose")
     @ExcludeMissing
     private val purpose: JsonField<String> = JsonMissing.of(),
@@ -66,7 +64,7 @@ private constructor(
     fun filename(): String = filename.getRequired("filename")
 
     /** The object type, which is always "upload". */
-    fun object_(): Object = object_.getRequired("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * The intended purpose of the file.
@@ -95,9 +93,6 @@ private constructor(
 
     /** The name of the file to be uploaded. */
     @JsonProperty("filename") @ExcludeMissing fun _filename(): JsonField<String> = filename
-
-    /** The object type, which is always "upload". */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /**
      * The intended purpose of the file.
@@ -128,7 +123,11 @@ private constructor(
         createdAt()
         expiresAt()
         filename()
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("upload")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         purpose()
         status()
         file().ifPresent { it.validate() }
@@ -149,7 +148,7 @@ private constructor(
         private var createdAt: JsonField<Long>? = null
         private var expiresAt: JsonField<Long>? = null
         private var filename: JsonField<String>? = null
-        private var object_: JsonField<Object>? = null
+        private var object_: JsonValue = JsonValue.from("upload")
         private var purpose: JsonField<String>? = null
         private var status: JsonField<Status>? = null
         private var file: JsonField<FileObject> = JsonMissing.of()
@@ -200,10 +199,7 @@ private constructor(
         fun filename(filename: JsonField<String>) = apply { this.filename = filename }
 
         /** The object type, which is always "upload". */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always "upload". */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /**
          * The intended purpose of the file.
@@ -260,64 +256,12 @@ private constructor(
                 checkRequired("createdAt", createdAt),
                 checkRequired("expiresAt", expiresAt),
                 checkRequired("filename", filename),
-                checkRequired("object_", object_),
+                object_,
                 checkRequired("purpose", purpose),
                 checkRequired("status", status),
                 file,
                 additionalProperties.toImmutable(),
             )
-    }
-
-    /** The object type, which is always "upload". */
-    class Object
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val UPLOAD = of("upload")
-
-            @JvmStatic fun of(value: String) = Object(JsonField.of(value))
-        }
-
-        enum class Known {
-            UPLOAD,
-        }
-
-        enum class Value {
-            UPLOAD,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                UPLOAD -> Value.UPLOAD
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                UPLOAD -> Known.UPLOAD
-                else -> throw OpenAIInvalidDataException("Unknown Object: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     /** The status of the Upload. */

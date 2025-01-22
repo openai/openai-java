@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -26,9 +25,7 @@ private constructor(
     @ExcludeMissing
     private val data: JsonField<List<Embedding>> = JsonMissing.of(),
     @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonProperty("usage") @ExcludeMissing private val usage: JsonField<Usage> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
@@ -40,7 +37,7 @@ private constructor(
     fun model(): String = model.getRequired("model")
 
     /** The object type, which is always "list". */
-    fun object_(): Object = object_.getRequired("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /** The usage information for the request. */
     fun usage(): Usage = usage.getRequired("usage")
@@ -50,9 +47,6 @@ private constructor(
 
     /** The name of the model used to generate the embedding. */
     @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
-
-    /** The object type, which is always "list". */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /** The usage information for the request. */
     @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<Usage> = usage
@@ -70,7 +64,11 @@ private constructor(
 
         data().forEach { it.validate() }
         model()
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("list")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         usage().validate()
         validated = true
     }
@@ -86,7 +84,7 @@ private constructor(
 
         private var data: JsonField<MutableList<Embedding>>? = null
         private var model: JsonField<String>? = null
-        private var object_: JsonField<Object>? = null
+        private var object_: JsonValue = JsonValue.from("list")
         private var usage: JsonField<Usage>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -128,10 +126,7 @@ private constructor(
         fun model(model: JsonField<String>) = apply { this.model = model }
 
         /** The object type, which is always "list". */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always "list". */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /** The usage information for the request. */
         fun usage(usage: Usage) = usage(JsonField.of(usage))
@@ -162,62 +157,10 @@ private constructor(
             CreateEmbeddingResponse(
                 checkRequired("data", data).map { it.toImmutable() },
                 checkRequired("model", model),
-                checkRequired("object_", object_),
+                object_,
                 checkRequired("usage", usage),
                 additionalProperties.toImmutable(),
             )
-    }
-
-    /** The object type, which is always "list". */
-    class Object
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val LIST = of("list")
-
-            @JvmStatic fun of(value: String) = Object(JsonField.of(value))
-        }
-
-        enum class Known {
-            LIST,
-        }
-
-        enum class Value {
-            LIST,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                LIST -> Value.LIST
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                LIST -> Known.LIST
-                else -> throw OpenAIInvalidDataException("Unknown Object: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     /** The usage information for the request. */

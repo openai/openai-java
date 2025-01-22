@@ -32,9 +32,7 @@ private constructor(
     @ExcludeMissing
     private val created: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonProperty("service_tier")
     @ExcludeMissing
     private val serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
@@ -60,12 +58,9 @@ private constructor(
     fun model(): String = model.getRequired("model")
 
     /** The object type, which is always `chat.completion`. */
-    fun object_(): Object = object_.getRequired("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
-    /**
-     * The service tier used for processing the request. This field is only included if the
-     * `service_tier` parameter is specified in the request.
-     */
+    /** The service tier used for processing the request. */
     fun serviceTier(): Optional<ServiceTier> =
         Optional.ofNullable(serviceTier.getNullable("service_tier"))
 
@@ -93,13 +88,7 @@ private constructor(
     /** The model used for the chat completion. */
     @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
 
-    /** The object type, which is always `chat.completion`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
-
-    /**
-     * The service tier used for processing the request. This field is only included if the
-     * `service_tier` parameter is specified in the request.
-     */
+    /** The service tier used for processing the request. */
     @JsonProperty("service_tier")
     @ExcludeMissing
     fun _serviceTier(): JsonField<ServiceTier> = serviceTier
@@ -132,7 +121,11 @@ private constructor(
         choices().forEach { it.validate() }
         created()
         model()
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("chat.completion")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         serviceTier()
         systemFingerprint()
         usage().ifPresent { it.validate() }
@@ -152,7 +145,7 @@ private constructor(
         private var choices: JsonField<MutableList<Choice>>? = null
         private var created: JsonField<Long>? = null
         private var model: JsonField<String>? = null
-        private var object_: JsonField<Object>? = null
+        private var object_: JsonValue = JsonValue.from("chat.completion")
         private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
         private var systemFingerprint: JsonField<String> = JsonMissing.of()
         private var usage: JsonField<CompletionUsage> = JsonMissing.of()
@@ -212,27 +205,15 @@ private constructor(
         fun model(model: JsonField<String>) = apply { this.model = model }
 
         /** The object type, which is always `chat.completion`. */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
-        /** The object type, which is always `chat.completion`. */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
-
-        /**
-         * The service tier used for processing the request. This field is only included if the
-         * `service_tier` parameter is specified in the request.
-         */
+        /** The service tier used for processing the request. */
         fun serviceTier(serviceTier: ServiceTier?) = serviceTier(JsonField.ofNullable(serviceTier))
 
-        /**
-         * The service tier used for processing the request. This field is only included if the
-         * `service_tier` parameter is specified in the request.
-         */
+        /** The service tier used for processing the request. */
         fun serviceTier(serviceTier: Optional<ServiceTier>) = serviceTier(serviceTier.orElse(null))
 
-        /**
-         * The service tier used for processing the request. This field is only included if the
-         * `service_tier` parameter is specified in the request.
-         */
+        /** The service tier used for processing the request. */
         fun serviceTier(serviceTier: JsonField<ServiceTier>) = apply {
             this.serviceTier = serviceTier
         }
@@ -287,7 +268,7 @@ private constructor(
                 checkRequired("choices", choices).map { it.toImmutable() },
                 checkRequired("created", created),
                 checkRequired("model", model),
-                checkRequired("object_", object_),
+                object_,
                 serviceTier,
                 systemFingerprint,
                 usage,
@@ -740,62 +721,7 @@ private constructor(
             "Choice{finishReason=$finishReason, index=$index, logprobs=$logprobs, message=$message, additionalProperties=$additionalProperties}"
     }
 
-    /** The object type, which is always `chat.completion`. */
-    class Object
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val CHAT_COMPLETION = of("chat.completion")
-
-            @JvmStatic fun of(value: String) = Object(JsonField.of(value))
-        }
-
-        enum class Known {
-            CHAT_COMPLETION,
-        }
-
-        enum class Value {
-            CHAT_COMPLETION,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                CHAT_COMPLETION -> Value.CHAT_COMPLETION
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                CHAT_COMPLETION -> Known.CHAT_COMPLETION
-                else -> throw OpenAIInvalidDataException("Unknown Object: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-    }
-
-    /**
-     * The service tier used for processing the request. This field is only included if the
-     * `service_tier` parameter is specified in the request.
-     */
+    /** The service tier used for processing the request. */
     class ServiceTier
     @JsonCreator
     private constructor(

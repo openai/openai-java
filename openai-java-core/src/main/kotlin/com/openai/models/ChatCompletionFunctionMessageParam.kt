@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -28,7 +27,7 @@ private constructor(
     @ExcludeMissing
     private val content: JsonField<String> = JsonMissing.of(),
     @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("role") @ExcludeMissing private val role: JsonField<Role> = JsonMissing.of(),
+    @JsonProperty("role") @ExcludeMissing private val role: JsonValue = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
@@ -39,16 +38,13 @@ private constructor(
     fun name(): String = name.getRequired("name")
 
     /** The role of the messages author, in this case `function`. */
-    fun role(): Role = role.getRequired("role")
+    @JsonProperty("role") @ExcludeMissing fun _role(): JsonValue = role
 
     /** The contents of the function message. */
     @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<String> = content
 
     /** The name of the function to call. */
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
-
-    /** The role of the messages author, in this case `function`. */
-    @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -63,7 +59,11 @@ private constructor(
 
         content()
         name()
-        role()
+        _role().let {
+            if (it != JsonValue.from("function")) {
+                throw OpenAIInvalidDataException("'role' is invalid, received $it")
+            }
+        }
         validated = true
     }
 
@@ -78,7 +78,7 @@ private constructor(
 
         private var content: JsonField<String>? = null
         private var name: JsonField<String>? = null
-        private var role: JsonField<Role>? = null
+        private var role: JsonValue = JsonValue.from("function")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -107,10 +107,7 @@ private constructor(
         fun name(name: JsonField<String>) = apply { this.name = name }
 
         /** The role of the messages author, in this case `function`. */
-        fun role(role: Role) = role(JsonField.of(role))
-
-        /** The role of the messages author, in this case `function`. */
-        fun role(role: JsonField<Role>) = apply { this.role = role }
+        fun role(role: JsonValue) = apply { this.role = role }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -135,61 +132,9 @@ private constructor(
             ChatCompletionFunctionMessageParam(
                 checkRequired("content", content),
                 checkRequired("name", name),
-                checkRequired("role", role),
+                role,
                 additionalProperties.toImmutable(),
             )
-    }
-
-    /** The role of the messages author, in this case `function`. */
-    class Role
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val FUNCTION = of("function")
-
-            @JvmStatic fun of(value: String) = Role(JsonField.of(value))
-        }
-
-        enum class Known {
-            FUNCTION,
-        }
-
-        enum class Value {
-            FUNCTION,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                FUNCTION -> Value.FUNCTION
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                FUNCTION -> Known.FUNCTION
-                else -> throw OpenAIInvalidDataException("Unknown Role: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Role && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

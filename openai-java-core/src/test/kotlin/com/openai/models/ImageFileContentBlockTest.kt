@@ -14,11 +14,9 @@ class ImageFileContentBlockTest {
                 .imageFile(
                     ImageFile.builder().fileId("file_id").detail(ImageFile.Detail.AUTO).build()
                 )
-                .type(ImageFileContentBlock.Type.IMAGE_FILE)
                 .build()
         assertThat(imageFileContentBlock).isNotNull
         assertThat(imageFileContentBlock.imageFile())
             .isEqualTo(ImageFile.builder().fileId("file_id").detail(ImageFile.Detail.AUTO).build())
-        assertThat(imageFileContentBlock.type()).isEqualTo(ImageFileContentBlock.Type.IMAGE_FILE)
     }
 }

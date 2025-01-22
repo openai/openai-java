@@ -6,13 +6,10 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
-import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
-import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -22,15 +19,12 @@ import java.util.Objects
 class ResponseFormatJsonObject
 @JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     /** The type of response format being defined: `json_object` */
-    fun type(): Type = type.getRequired("type")
-
-    /** The type of response format being defined: `json_object` */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -43,7 +37,11 @@ private constructor(
             return@apply
         }
 
-        type()
+        _type().let {
+            if (it != JsonValue.from("json_object")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
         validated = true
     }
 
@@ -56,7 +54,7 @@ private constructor(
 
     class Builder {
 
-        private var type: JsonField<Type>? = null
+        private var type: JsonValue = JsonValue.from("json_object")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -66,10 +64,7 @@ private constructor(
         }
 
         /** The type of response format being defined: `json_object` */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /** The type of response format being defined: `json_object` */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
+        fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -91,62 +86,7 @@ private constructor(
         }
 
         fun build(): ResponseFormatJsonObject =
-            ResponseFormatJsonObject(
-                checkRequired("type", type),
-                additionalProperties.toImmutable()
-            )
-    }
-
-    /** The type of response format being defined: `json_object` */
-    class Type
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val JSON_OBJECT = of("json_object")
-
-            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-        }
-
-        enum class Known {
-            JSON_OBJECT,
-        }
-
-        enum class Value {
-            JSON_OBJECT,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                JSON_OBJECT -> Value.JSON_OBJECT
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                JSON_OBJECT -> Known.JSON_OBJECT
-                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
+            ResponseFormatJsonObject(type, additionalProperties.toImmutable())
     }
 
     override fun equals(other: Any?): Boolean {

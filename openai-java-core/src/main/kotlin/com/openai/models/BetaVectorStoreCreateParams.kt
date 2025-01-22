@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -561,9 +560,7 @@ constructor(
     class ExpiresAfter
     @JsonCreator
     private constructor(
-        @JsonProperty("anchor")
-        @ExcludeMissing
-        private val anchor: JsonField<Anchor> = JsonMissing.of(),
+        @JsonProperty("anchor") @ExcludeMissing private val anchor: JsonValue = JsonMissing.of(),
         @JsonProperty("days") @ExcludeMissing private val days: JsonField<Long> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
@@ -573,16 +570,10 @@ constructor(
          * Anchor timestamp after which the expiration policy applies. Supported anchors:
          * `last_active_at`.
          */
-        fun anchor(): Anchor = anchor.getRequired("anchor")
+        @JsonProperty("anchor") @ExcludeMissing fun _anchor(): JsonValue = anchor
 
         /** The number of days after the anchor time that the vector store will expire. */
         fun days(): Long = days.getRequired("days")
-
-        /**
-         * Anchor timestamp after which the expiration policy applies. Supported anchors:
-         * `last_active_at`.
-         */
-        @JsonProperty("anchor") @ExcludeMissing fun _anchor(): JsonField<Anchor> = anchor
 
         /** The number of days after the anchor time that the vector store will expire. */
         @JsonProperty("days") @ExcludeMissing fun _days(): JsonField<Long> = days
@@ -598,7 +589,11 @@ constructor(
                 return@apply
             }
 
-            anchor()
+            _anchor().let {
+                if (it != JsonValue.from("last_active_at")) {
+                    throw OpenAIInvalidDataException("'anchor' is invalid, received $it")
+                }
+            }
             days()
             validated = true
         }
@@ -612,7 +607,7 @@ constructor(
 
         class Builder {
 
-            private var anchor: JsonField<Anchor>? = null
+            private var anchor: JsonValue = JsonValue.from("last_active_at")
             private var days: JsonField<Long>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -627,13 +622,7 @@ constructor(
              * Anchor timestamp after which the expiration policy applies. Supported anchors:
              * `last_active_at`.
              */
-            fun anchor(anchor: Anchor) = anchor(JsonField.of(anchor))
-
-            /**
-             * Anchor timestamp after which the expiration policy applies. Supported anchors:
-             * `last_active_at`.
-             */
-            fun anchor(anchor: JsonField<Anchor>) = apply { this.anchor = anchor }
+            fun anchor(anchor: JsonValue) = apply { this.anchor = anchor }
 
             /** The number of days after the anchor time that the vector store will expire. */
             fun days(days: Long) = days(JsonField.of(days))
@@ -662,65 +651,10 @@ constructor(
 
             fun build(): ExpiresAfter =
                 ExpiresAfter(
-                    checkRequired("anchor", anchor),
+                    anchor,
                     checkRequired("days", days),
                     additionalProperties.toImmutable(),
                 )
-        }
-
-        /**
-         * Anchor timestamp after which the expiration policy applies. Supported anchors:
-         * `last_active_at`.
-         */
-        class Anchor
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val LAST_ACTIVE_AT = of("last_active_at")
-
-                @JvmStatic fun of(value: String) = Anchor(JsonField.of(value))
-            }
-
-            enum class Known {
-                LAST_ACTIVE_AT,
-            }
-
-            enum class Value {
-                LAST_ACTIVE_AT,
-                _UNKNOWN,
-            }
-
-            fun value(): Value =
-                when (this) {
-                    LAST_ACTIVE_AT -> Value.LAST_ACTIVE_AT
-                    else -> Value._UNKNOWN
-                }
-
-            fun known(): Known =
-                when (this) {
-                    LAST_ACTIVE_AT -> Known.LAST_ACTIVE_AT
-                    else -> throw OpenAIInvalidDataException("Unknown Anchor: $value")
-                }
-
-            fun asString(): String = _value().asStringOrThrow()
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Anchor && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
         }
 
         override fun equals(other: Any?): Boolean {

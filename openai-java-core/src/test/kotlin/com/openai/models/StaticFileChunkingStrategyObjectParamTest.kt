@@ -17,7 +17,6 @@ class StaticFileChunkingStrategyObjectParamTest {
                         .maxChunkSizeTokens(100L)
                         .build()
                 )
-                .type(StaticFileChunkingStrategyObjectParam.Type.STATIC)
                 .build()
         assertThat(staticFileChunkingStrategyObjectParam).isNotNull
         assertThat(staticFileChunkingStrategyObjectParam.static_())
@@ -27,7 +26,5 @@ class StaticFileChunkingStrategyObjectParamTest {
                     .maxChunkSizeTokens(100L)
                     .build()
             )
-        assertThat(staticFileChunkingStrategyObjectParam.type())
-            .isEqualTo(StaticFileChunkingStrategyObjectParam.Type.STATIC)
     }
 }

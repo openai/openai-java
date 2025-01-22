@@ -10,16 +10,10 @@ class ChatCompletionDeveloperMessageParamTest {
     @Test
     fun createChatCompletionDeveloperMessageParam() {
         val chatCompletionDeveloperMessageParam =
-            ChatCompletionDeveloperMessageParam.builder()
-                .content("string")
-                .role(ChatCompletionDeveloperMessageParam.Role.DEVELOPER)
-                .name("name")
-                .build()
+            ChatCompletionDeveloperMessageParam.builder().content("string").name("name").build()
         assertThat(chatCompletionDeveloperMessageParam).isNotNull
         assertThat(chatCompletionDeveloperMessageParam.content())
             .isEqualTo(ChatCompletionDeveloperMessageParam.Content.ofTextContent("string"))
-        assertThat(chatCompletionDeveloperMessageParam.role())
-            .isEqualTo(ChatCompletionDeveloperMessageParam.Role.DEVELOPER)
         assertThat(chatCompletionDeveloperMessageParam.name()).contains("name")
     }
 }

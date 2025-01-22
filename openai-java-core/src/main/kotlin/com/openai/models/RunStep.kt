@@ -58,9 +58,7 @@ private constructor(
     @ExcludeMissing
     private val lastError: JsonField<LastError> = JsonMissing.of(),
     @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonValue = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonProperty("run_id") @ExcludeMissing private val runId: JsonField<String> = JsonMissing.of(),
     @JsonProperty("status")
     @ExcludeMissing
@@ -114,7 +112,7 @@ private constructor(
     @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
 
     /** The object type, which is always `thread.run.step`. */
-    fun object_(): Object = object_.getRequired("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) that this run step
@@ -177,9 +175,6 @@ private constructor(
     /** The last error associated with this run step. Will be `null` if there are no errors. */
     @JsonProperty("last_error") @ExcludeMissing fun _lastError(): JsonField<LastError> = lastError
 
-    /** The object type, which is always `thread.run.step`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
-
     /**
      * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) that this run step
      * is a part of.
@@ -230,7 +225,11 @@ private constructor(
         expiredAt()
         failedAt()
         lastError().ifPresent { it.validate() }
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("thread.run.step")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         runId()
         status()
         stepDetails().validate()
@@ -258,7 +257,7 @@ private constructor(
         private var failedAt: JsonField<Long>? = null
         private var lastError: JsonField<LastError>? = null
         private var metadata: JsonValue? = null
-        private var object_: JsonField<Object>? = null
+        private var object_: JsonValue = JsonValue.from("thread.run.step")
         private var runId: JsonField<String>? = null
         private var status: JsonField<Status>? = null
         private var stepDetails: JsonField<StepDetails>? = null
@@ -395,10 +394,7 @@ private constructor(
         fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
         /** The object type, which is always `thread.run.step`. */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always `thread.run.step`. */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /**
          * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) that this run
@@ -506,7 +502,7 @@ private constructor(
                 checkRequired("failedAt", failedAt),
                 checkRequired("lastError", lastError),
                 checkRequired("metadata", metadata),
-                checkRequired("object_", object_),
+                object_,
                 checkRequired("runId", runId),
                 checkRequired("status", status),
                 checkRequired("stepDetails", stepDetails),
@@ -691,58 +687,6 @@ private constructor(
 
         override fun toString() =
             "LastError{code=$code, message=$message, additionalProperties=$additionalProperties}"
-    }
-
-    /** The object type, which is always `thread.run.step`. */
-    class Object
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val THREAD_RUN_STEP = of("thread.run.step")
-
-            @JvmStatic fun of(value: String) = Object(JsonField.of(value))
-        }
-
-        enum class Known {
-            THREAD_RUN_STEP,
-        }
-
-        enum class Value {
-            THREAD_RUN_STEP,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                THREAD_RUN_STEP -> Value.THREAD_RUN_STEP
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                THREAD_RUN_STEP -> Known.THREAD_RUN_STEP
-                else -> throw OpenAIInvalidDataException("Unknown Object: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     /**

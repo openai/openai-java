@@ -22,7 +22,6 @@ class VectorStoreFileBatchTest {
                         .total(0L)
                         .build()
                 )
-                .object_(VectorStoreFileBatch.Object.VECTOR_STORE_FILES_BATCH)
                 .status(VectorStoreFileBatch.Status.IN_PROGRESS)
                 .vectorStoreId("vector_store_id")
                 .build()
@@ -39,8 +38,6 @@ class VectorStoreFileBatchTest {
                     .total(0L)
                     .build()
             )
-        assertThat(vectorStoreFileBatch.object_())
-            .isEqualTo(VectorStoreFileBatch.Object.VECTOR_STORE_FILES_BATCH)
         assertThat(vectorStoreFileBatch.status()).isEqualTo(VectorStoreFileBatch.Status.IN_PROGRESS)
         assertThat(vectorStoreFileBatch.vectorStoreId()).isEqualTo("vector_store_id")
     }

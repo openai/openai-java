@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -36,7 +35,7 @@ private constructor(
     @JsonProperty("content")
     @ExcludeMissing
     private val content: JsonField<Content> = JsonMissing.of(),
-    @JsonProperty("role") @ExcludeMissing private val role: JsonField<Role> = JsonMissing.of(),
+    @JsonProperty("role") @ExcludeMissing private val role: JsonValue = JsonMissing.of(),
     @JsonProperty("tool_call_id")
     @ExcludeMissing
     private val toolCallId: JsonField<String> = JsonMissing.of(),
@@ -47,16 +46,13 @@ private constructor(
     fun content(): Content = content.getRequired("content")
 
     /** The role of the messages author, in this case `tool`. */
-    fun role(): Role = role.getRequired("role")
+    @JsonProperty("role") @ExcludeMissing fun _role(): JsonValue = role
 
     /** Tool call that this message is responding to. */
     fun toolCallId(): String = toolCallId.getRequired("tool_call_id")
 
     /** The contents of the tool message. */
     @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<Content> = content
-
-    /** The role of the messages author, in this case `tool`. */
-    @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
 
     /** Tool call that this message is responding to. */
     @JsonProperty("tool_call_id") @ExcludeMissing fun _toolCallId(): JsonField<String> = toolCallId
@@ -73,7 +69,11 @@ private constructor(
         }
 
         content().validate()
-        role()
+        _role().let {
+            if (it != JsonValue.from("tool")) {
+                throw OpenAIInvalidDataException("'role' is invalid, received $it")
+            }
+        }
         toolCallId()
         validated = true
     }
@@ -88,7 +88,7 @@ private constructor(
     class Builder {
 
         private var content: JsonField<Content>? = null
-        private var role: JsonField<Role>? = null
+        private var role: JsonValue = JsonValue.from("tool")
         private var toolCallId: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -118,10 +118,7 @@ private constructor(
             content(Content.ofArrayOfContentParts(arrayOfContentParts))
 
         /** The role of the messages author, in this case `tool`. */
-        fun role(role: Role) = role(JsonField.of(role))
-
-        /** The role of the messages author, in this case `tool`. */
-        fun role(role: JsonField<Role>) = apply { this.role = role }
+        fun role(role: JsonValue) = apply { this.role = role }
 
         /** Tool call that this message is responding to. */
         fun toolCallId(toolCallId: String) = toolCallId(JsonField.of(toolCallId))
@@ -151,7 +148,7 @@ private constructor(
         fun build(): ChatCompletionToolMessageParam =
             ChatCompletionToolMessageParam(
                 checkRequired("content", content),
-                checkRequired("role", role),
+                role,
                 checkRequired("toolCallId", toolCallId),
                 additionalProperties.toImmutable(),
             )
@@ -307,58 +304,6 @@ private constructor(
                 }
             }
         }
-    }
-
-    /** The role of the messages author, in this case `tool`. */
-    class Role
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val TOOL = of("tool")
-
-            @JvmStatic fun of(value: String) = Role(JsonField.of(value))
-        }
-
-        enum class Known {
-            TOOL,
-        }
-
-        enum class Value {
-            TOOL,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                TOOL -> Value.TOOL
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                TOOL -> Known.TOOL
-                else -> throw OpenAIInvalidDataException("Unknown Role: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Role && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

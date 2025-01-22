@@ -32,9 +32,7 @@ private constructor(
     @JsonProperty("message")
     @ExcludeMissing
     private val message: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonProperty("data") @ExcludeMissing private val data: JsonValue = JsonMissing.of(),
     @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
@@ -53,7 +51,7 @@ private constructor(
     fun message(): String = message.getRequired("message")
 
     /** The object type, which is always "fine_tuning.job.event". */
-    fun object_(): Object = object_.getRequired("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /** The data associated with the event. */
     @JsonProperty("data") @ExcludeMissing fun _data(): JsonValue = data
@@ -73,9 +71,6 @@ private constructor(
     /** The message of the event. */
     @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
-    /** The object type, which is always "fine_tuning.job.event". */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
-
     /** The type of event. */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
@@ -94,7 +89,11 @@ private constructor(
         createdAt()
         level()
         message()
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("fine_tuning.job.event")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         type()
         validated = true
     }
@@ -112,7 +111,7 @@ private constructor(
         private var createdAt: JsonField<Long>? = null
         private var level: JsonField<Level>? = null
         private var message: JsonField<String>? = null
-        private var object_: JsonField<Object>? = null
+        private var object_: JsonValue = JsonValue.from("fine_tuning.job.event")
         private var data: JsonValue = JsonMissing.of()
         private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -154,10 +153,7 @@ private constructor(
         fun message(message: JsonField<String>) = apply { this.message = message }
 
         /** The object type, which is always "fine_tuning.job.event". */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always "fine_tuning.job.event". */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /** The data associated with the event. */
         fun data(data: JsonValue) = apply { this.data = data }
@@ -193,7 +189,7 @@ private constructor(
                 checkRequired("createdAt", createdAt),
                 checkRequired("level", level),
                 checkRequired("message", message),
-                checkRequired("object_", object_),
+                object_,
                 data,
                 type,
                 additionalProperties.toImmutable(),
@@ -257,58 +253,6 @@ private constructor(
             }
 
             return /* spotless:off */ other is Level && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-    }
-
-    /** The object type, which is always "fine_tuning.job.event". */
-    class Object
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val FINE_TUNING_JOB_EVENT = of("fine_tuning.job.event")
-
-            @JvmStatic fun of(value: String) = Object(JsonField.of(value))
-        }
-
-        enum class Known {
-            FINE_TUNING_JOB_EVENT,
-        }
-
-        enum class Value {
-            FINE_TUNING_JOB_EVENT,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                FINE_TUNING_JOB_EVENT -> Value.FINE_TUNING_JOB_EVENT
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                FINE_TUNING_JOB_EVENT -> Known.FINE_TUNING_JOB_EVENT
-                else -> throw OpenAIInvalidDataException("Unknown Object: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()

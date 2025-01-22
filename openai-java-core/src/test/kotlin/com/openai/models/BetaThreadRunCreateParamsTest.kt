@@ -23,11 +23,7 @@ class BetaThreadRunCreateParamsTest {
                     .addAttachment(
                         BetaThreadRunCreateParams.AdditionalMessage.Attachment.builder()
                             .fileId("file_id")
-                            .addTool(
-                                CodeInterpreterTool.builder()
-                                    .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                    .build()
-                            )
+                            .addTool(CodeInterpreterTool.builder().build())
                             .build()
                     )
                     .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -39,14 +35,10 @@ class BetaThreadRunCreateParamsTest {
             .metadata(JsonValue.from(mapOf<String, Any>()))
             .model(ChatModel.GPT_4O)
             .parallelToolCalls(true)
-            .responseFormat(AssistantResponseFormatOption.Behavior.AUTO)
+            .responseFormatAuto()
             .temperature(1.0)
-            .toolChoice(AssistantToolChoiceOption.Behavior.NONE)
-            .addTool(
-                CodeInterpreterTool.builder()
-                    .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                    .build()
-            )
+            .toolChoice(AssistantToolChoiceOption.Auto.NONE)
+            .addTool(CodeInterpreterTool.builder().build())
             .topP(1.0)
             .truncationStrategy(
                 BetaThreadRunCreateParams.TruncationStrategy.builder()
@@ -72,11 +64,7 @@ class BetaThreadRunCreateParamsTest {
                         .addAttachment(
                             BetaThreadRunCreateParams.AdditionalMessage.Attachment.builder()
                                 .fileId("file_id")
-                                .addTool(
-                                    CodeInterpreterTool.builder()
-                                        .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                        .build()
-                                )
+                                .addTool(CodeInterpreterTool.builder().build())
                                 .build()
                         )
                         .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -88,14 +76,10 @@ class BetaThreadRunCreateParamsTest {
                 .metadata(JsonValue.from(mapOf<String, Any>()))
                 .model(ChatModel.GPT_4O)
                 .parallelToolCalls(true)
-                .responseFormat(AssistantResponseFormatOption.Behavior.AUTO)
+                .responseFormatAuto()
                 .temperature(1.0)
-                .toolChoice(AssistantToolChoiceOption.Behavior.NONE)
-                .addTool(
-                    CodeInterpreterTool.builder()
-                        .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                        .build()
-                )
+                .toolChoice(AssistantToolChoiceOption.Auto.NONE)
+                .addTool(CodeInterpreterTool.builder().build())
                 .topP(1.0)
                 .truncationStrategy(
                     BetaThreadRunCreateParams.TruncationStrategy.builder()
@@ -138,11 +122,7 @@ class BetaThreadRunCreateParamsTest {
                         .addAttachment(
                             BetaThreadRunCreateParams.AdditionalMessage.Attachment.builder()
                                 .fileId("file_id")
-                                .addTool(
-                                    CodeInterpreterTool.builder()
-                                        .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                        .build()
-                                )
+                                .addTool(CodeInterpreterTool.builder().build())
                                 .build()
                         )
                         .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -154,14 +134,10 @@ class BetaThreadRunCreateParamsTest {
                 .metadata(JsonValue.from(mapOf<String, Any>()))
                 .model(ChatModel.GPT_4O)
                 .parallelToolCalls(true)
-                .responseFormat(AssistantResponseFormatOption.Behavior.AUTO)
+                .responseFormatAuto()
                 .temperature(1.0)
-                .toolChoice(AssistantToolChoiceOption.Behavior.NONE)
-                .addTool(
-                    CodeInterpreterTool.builder()
-                        .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                        .build()
-                )
+                .toolChoice(AssistantToolChoiceOption.Auto.NONE)
+                .addTool(CodeInterpreterTool.builder().build())
                 .topP(1.0)
                 .truncationStrategy(
                     BetaThreadRunCreateParams.TruncationStrategy.builder()
@@ -183,11 +159,7 @@ class BetaThreadRunCreateParamsTest {
                         .addAttachment(
                             BetaThreadRunCreateParams.AdditionalMessage.Attachment.builder()
                                 .fileId("file_id")
-                                .addTool(
-                                    CodeInterpreterTool.builder()
-                                        .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                                        .build()
-                                )
+                                .addTool(CodeInterpreterTool.builder().build())
                                 .build()
                         )
                         .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -200,24 +172,13 @@ class BetaThreadRunCreateParamsTest {
         assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(body.model()).contains(ChatModel.GPT_4O)
         assertThat(body.parallelToolCalls()).contains(true)
-        assertThat(body.responseFormat())
-            .contains(
-                AssistantResponseFormatOption.ofBehavior(
-                    AssistantResponseFormatOption.Behavior.AUTO
-                )
-            )
+        assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
         assertThat(body.temperature()).contains(1.0)
         assertThat(body.toolChoice())
-            .contains(AssistantToolChoiceOption.ofBehavior(AssistantToolChoiceOption.Behavior.NONE))
+            .contains(AssistantToolChoiceOption.ofAuto(AssistantToolChoiceOption.Auto.NONE))
         assertThat(body.tools())
             .contains(
-                listOf(
-                    AssistantTool.ofCodeInterpreterTool(
-                        CodeInterpreterTool.builder()
-                            .type(CodeInterpreterTool.Type.CODE_INTERPRETER)
-                            .build()
-                    )
-                )
+                listOf(AssistantTool.ofCodeInterpreterTool(CodeInterpreterTool.builder().build()))
             )
         assertThat(body.topP()).contains(1.0)
         assertThat(body.truncationStrategy())

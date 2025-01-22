@@ -9,15 +9,9 @@ class CodeInterpreterLogsTest {
 
     @Test
     fun createCodeInterpreterLogs() {
-        val codeInterpreterLogs =
-            CodeInterpreterLogs.builder()
-                .index(0L)
-                .type(CodeInterpreterLogs.Type.LOGS)
-                .logs("logs")
-                .build()
+        val codeInterpreterLogs = CodeInterpreterLogs.builder().index(0L).logs("logs").build()
         assertThat(codeInterpreterLogs).isNotNull
         assertThat(codeInterpreterLogs.index()).isEqualTo(0L)
-        assertThat(codeInterpreterLogs.type()).isEqualTo(CodeInterpreterLogs.Type.LOGS)
         assertThat(codeInterpreterLogs.logs()).contains("logs")
     }
 }

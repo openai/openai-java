@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -26,9 +25,7 @@ private constructor(
     @JsonProperty("deleted")
     @ExcludeMissing
     private val deleted: JsonField<Boolean> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
@@ -36,13 +33,11 @@ private constructor(
 
     fun deleted(): Boolean = deleted.getRequired("deleted")
 
-    fun object_(): Object = object_.getRequired("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     @JsonProperty("deleted") @ExcludeMissing fun _deleted(): JsonField<Boolean> = deleted
-
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -57,7 +52,11 @@ private constructor(
 
         id()
         deleted()
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("thread.message.deleted")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         validated = true
     }
 
@@ -72,7 +71,7 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var deleted: JsonField<Boolean>? = null
-        private var object_: JsonField<Object>? = null
+        private var object_: JsonValue = JsonValue.from("thread.message.deleted")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -91,9 +90,7 @@ private constructor(
 
         fun deleted(deleted: JsonField<Boolean>) = apply { this.deleted = deleted }
 
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -118,60 +115,9 @@ private constructor(
             MessageDeleted(
                 checkRequired("id", id),
                 checkRequired("deleted", deleted),
-                checkRequired("object_", object_),
+                object_,
                 additionalProperties.toImmutable(),
             )
-    }
-
-    class Object
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val THREAD_MESSAGE_DELETED = of("thread.message.deleted")
-
-            @JvmStatic fun of(value: String) = Object(JsonField.of(value))
-        }
-
-        enum class Known {
-            THREAD_MESSAGE_DELETED,
-        }
-
-        enum class Value {
-            THREAD_MESSAGE_DELETED,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                THREAD_MESSAGE_DELETED -> Value.THREAD_MESSAGE_DELETED
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                THREAD_MESSAGE_DELETED -> Known.THREAD_MESSAGE_DELETED
-                else -> throw OpenAIInvalidDataException("Unknown Object: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

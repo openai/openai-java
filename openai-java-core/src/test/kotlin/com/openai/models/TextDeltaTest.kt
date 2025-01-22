@@ -14,7 +14,6 @@ class TextDeltaTest {
                 .addAnnotation(
                     FileCitationDeltaAnnotation.builder()
                         .index(0L)
-                        .type(FileCitationDeltaAnnotation.Type.FILE_CITATION)
                         .endIndex(0L)
                         .fileCitation(
                             FileCitationDeltaAnnotation.FileCitation.builder()
@@ -34,7 +33,6 @@ class TextDeltaTest {
                 AnnotationDelta.ofFileCitationDeltaAnnotation(
                     FileCitationDeltaAnnotation.builder()
                         .index(0L)
-                        .type(FileCitationDeltaAnnotation.Type.FILE_CITATION)
                         .endIndex(0L)
                         .fileCitation(
                             FileCitationDeltaAnnotation.FileCitation.builder()

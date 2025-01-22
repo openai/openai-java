@@ -17,7 +17,6 @@ class ChatCompletionContentPartInputAudioTest {
                         .format(ChatCompletionContentPartInputAudio.InputAudio.Format.WAV)
                         .build()
                 )
-                .type(ChatCompletionContentPartInputAudio.Type.INPUT_AUDIO)
                 .build()
         assertThat(chatCompletionContentPartInputAudio).isNotNull
         assertThat(chatCompletionContentPartInputAudio.inputAudio())
@@ -27,7 +26,5 @@ class ChatCompletionContentPartInputAudioTest {
                     .format(ChatCompletionContentPartInputAudio.InputAudio.Format.WAV)
                     .build()
             )
-        assertThat(chatCompletionContentPartInputAudio.type())
-            .isEqualTo(ChatCompletionContentPartInputAudio.Type.INPUT_AUDIO)
     }
 }

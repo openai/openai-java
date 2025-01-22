@@ -32,9 +32,7 @@ private constructor(
     @JsonProperty("filename")
     @ExcludeMissing
     private val filename: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonProperty("purpose")
     @ExcludeMissing
     private val purpose: JsonField<Purpose> = JsonMissing.of(),
@@ -60,7 +58,7 @@ private constructor(
     fun filename(): String = filename.getRequired("filename")
 
     /** The object type, which is always `file`. */
-    fun object_(): Object = object_.getRequired("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * The intended purpose of the file. Supported values are `assistants`, `assistants_output`,
@@ -93,9 +91,6 @@ private constructor(
 
     /** The name of the file. */
     @JsonProperty("filename") @ExcludeMissing fun _filename(): JsonField<String> = filename
-
-    /** The object type, which is always `file`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /**
      * The intended purpose of the file. Supported values are `assistants`, `assistants_output`,
@@ -136,7 +131,11 @@ private constructor(
         bytes()
         createdAt()
         filename()
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("file")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         purpose()
         status()
         statusDetails()
@@ -156,7 +155,7 @@ private constructor(
         private var bytes: JsonField<Long>? = null
         private var createdAt: JsonField<Long>? = null
         private var filename: JsonField<String>? = null
-        private var object_: JsonField<Object>? = null
+        private var object_: JsonValue = JsonValue.from("file")
         private var purpose: JsonField<Purpose>? = null
         private var status: JsonField<Status>? = null
         private var statusDetails: JsonField<String> = JsonMissing.of()
@@ -200,10 +199,7 @@ private constructor(
         fun filename(filename: JsonField<String>) = apply { this.filename = filename }
 
         /** The object type, which is always `file`. */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always `file`. */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /**
          * The intended purpose of the file. Supported values are `assistants`, `assistants_output`,
@@ -271,64 +267,12 @@ private constructor(
                 checkRequired("bytes", bytes),
                 checkRequired("createdAt", createdAt),
                 checkRequired("filename", filename),
-                checkRequired("object_", object_),
+                object_,
                 checkRequired("purpose", purpose),
                 checkRequired("status", status),
                 statusDetails,
                 additionalProperties.toImmutable(),
             )
-    }
-
-    /** The object type, which is always `file`. */
-    class Object
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val FILE = of("file")
-
-            @JvmStatic fun of(value: String) = Object(JsonField.of(value))
-        }
-
-        enum class Known {
-            FILE,
-        }
-
-        enum class Value {
-            FILE,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                FILE -> Value.FILE
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                FILE -> Known.FILE
-                else -> throw OpenAIInvalidDataException("Unknown Object: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     /**

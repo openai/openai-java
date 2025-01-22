@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -35,9 +34,7 @@ private constructor(
     @ExcludeMissing
     private val created: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonProperty("system_fingerprint")
     @ExcludeMissing
     private val systemFingerprint: JsonField<String> = JsonMissing.of(),
@@ -60,7 +57,7 @@ private constructor(
     fun model(): String = model.getRequired("model")
 
     /** The object type, which is always "text_completion" */
-    fun object_(): Object = object_.getRequired("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * This fingerprint represents the backend configuration that the model runs with.
@@ -87,9 +84,6 @@ private constructor(
 
     /** The model used for completion. */
     @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
-
-    /** The object type, which is always "text_completion" */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
 
     /**
      * This fingerprint represents the backend configuration that the model runs with.
@@ -119,7 +113,11 @@ private constructor(
         choices().forEach { it.validate() }
         created()
         model()
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("text_completion")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         systemFingerprint()
         usage().ifPresent { it.validate() }
         validated = true
@@ -138,7 +136,7 @@ private constructor(
         private var choices: JsonField<MutableList<CompletionChoice>>? = null
         private var created: JsonField<Long>? = null
         private var model: JsonField<String>? = null
-        private var object_: JsonField<Object>? = null
+        private var object_: JsonValue = JsonValue.from("text_completion")
         private var systemFingerprint: JsonField<String> = JsonMissing.of()
         private var usage: JsonField<CompletionUsage> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -196,10 +194,7 @@ private constructor(
         fun model(model: JsonField<String>) = apply { this.model = model }
 
         /** The object type, which is always "text_completion" */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always "text_completion" */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /**
          * This fingerprint represents the backend configuration that the model runs with.
@@ -251,63 +246,11 @@ private constructor(
                 checkRequired("choices", choices).map { it.toImmutable() },
                 checkRequired("created", created),
                 checkRequired("model", model),
-                checkRequired("object_", object_),
+                object_,
                 systemFingerprint,
                 usage,
                 additionalProperties.toImmutable(),
             )
-    }
-
-    /** The object type, which is always "text_completion" */
-    class Object
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val TEXT_COMPLETION = of("text_completion")
-
-            @JvmStatic fun of(value: String) = Object(JsonField.of(value))
-        }
-
-        enum class Known {
-            TEXT_COMPLETION,
-        }
-
-        enum class Value {
-            TEXT_COMPLETION,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                TEXT_COMPLETION -> Value.TEXT_COMPLETION
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                TEXT_COMPLETION -> Known.TEXT_COMPLETION
-                else -> throw OpenAIInvalidDataException("Unknown Object: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

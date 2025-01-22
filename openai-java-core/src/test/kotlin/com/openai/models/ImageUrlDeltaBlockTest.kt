@@ -12,14 +12,12 @@ class ImageUrlDeltaBlockTest {
         val imageUrlDeltaBlock =
             ImageUrlDeltaBlock.builder()
                 .index(0L)
-                .type(ImageUrlDeltaBlock.Type.IMAGE_URL)
                 .imageUrl(
                     ImageUrlDelta.builder().detail(ImageUrlDelta.Detail.AUTO).url("url").build()
                 )
                 .build()
         assertThat(imageUrlDeltaBlock).isNotNull
         assertThat(imageUrlDeltaBlock.index()).isEqualTo(0L)
-        assertThat(imageUrlDeltaBlock.type()).isEqualTo(ImageUrlDeltaBlock.Type.IMAGE_URL)
         assertThat(imageUrlDeltaBlock.imageUrl())
             .contains(ImageUrlDelta.builder().detail(ImageUrlDelta.Detail.AUTO).url("url").build())
     }

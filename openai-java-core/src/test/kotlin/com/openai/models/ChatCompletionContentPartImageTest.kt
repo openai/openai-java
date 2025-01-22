@@ -17,7 +17,6 @@ class ChatCompletionContentPartImageTest {
                         .detail(ChatCompletionContentPartImage.ImageUrl.Detail.AUTO)
                         .build()
                 )
-                .type(ChatCompletionContentPartImage.Type.IMAGE_URL)
                 .build()
         assertThat(chatCompletionContentPartImage).isNotNull
         assertThat(chatCompletionContentPartImage.imageUrl())
@@ -27,7 +26,5 @@ class ChatCompletionContentPartImageTest {
                     .detail(ChatCompletionContentPartImage.ImageUrl.Detail.AUTO)
                     .build()
             )
-        assertThat(chatCompletionContentPartImage.type())
-            .isEqualTo(ChatCompletionContentPartImage.Type.IMAGE_URL)
     }
 }

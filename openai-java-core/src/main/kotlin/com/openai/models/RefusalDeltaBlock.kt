@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -25,7 +24,7 @@ class RefusalDeltaBlock
 @JsonCreator
 private constructor(
     @JsonProperty("index") @ExcludeMissing private val index: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
     @JsonProperty("refusal")
     @ExcludeMissing
     private val refusal: JsonField<String> = JsonMissing.of(),
@@ -36,15 +35,12 @@ private constructor(
     fun index(): Long = index.getRequired("index")
 
     /** Always `refusal`. */
-    fun type(): Type = type.getRequired("type")
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     fun refusal(): Optional<String> = Optional.ofNullable(refusal.getNullable("refusal"))
 
     /** The index of the refusal part in the message. */
     @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
-
-    /** Always `refusal`. */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonProperty("refusal") @ExcludeMissing fun _refusal(): JsonField<String> = refusal
 
@@ -60,7 +56,11 @@ private constructor(
         }
 
         index()
-        type()
+        _type().let {
+            if (it != JsonValue.from("refusal")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
         refusal()
         validated = true
     }
@@ -75,7 +75,7 @@ private constructor(
     class Builder {
 
         private var index: JsonField<Long>? = null
-        private var type: JsonField<Type>? = null
+        private var type: JsonValue = JsonValue.from("refusal")
         private var refusal: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -94,10 +94,7 @@ private constructor(
         fun index(index: JsonField<Long>) = apply { this.index = index }
 
         /** Always `refusal`. */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /** Always `refusal`. */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
+        fun type(type: JsonValue) = apply { this.type = type }
 
         fun refusal(refusal: String) = refusal(JsonField.of(refusal))
 
@@ -125,62 +122,10 @@ private constructor(
         fun build(): RefusalDeltaBlock =
             RefusalDeltaBlock(
                 checkRequired("index", index),
-                checkRequired("type", type),
+                type,
                 refusal,
                 additionalProperties.toImmutable(),
             )
-    }
-
-    /** Always `refusal`. */
-    class Type
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val REFUSAL = of("refusal")
-
-            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-        }
-
-        enum class Known {
-            REFUSAL,
-        }
-
-        enum class Value {
-            REFUSAL,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                REFUSAL -> Value.REFUSAL
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                REFUSAL -> Known.REFUSAL
-                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

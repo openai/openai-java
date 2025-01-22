@@ -9,12 +9,7 @@ class OtherFileChunkingStrategyObjectTest {
 
     @Test
     fun createOtherFileChunkingStrategyObject() {
-        val otherFileChunkingStrategyObject =
-            OtherFileChunkingStrategyObject.builder()
-                .type(OtherFileChunkingStrategyObject.Type.OTHER)
-                .build()
+        val otherFileChunkingStrategyObject = OtherFileChunkingStrategyObject.builder().build()
         assertThat(otherFileChunkingStrategyObject).isNotNull
-        assertThat(otherFileChunkingStrategyObject.type())
-            .isEqualTo(OtherFileChunkingStrategyObject.Type.OTHER)
     }
 }

@@ -17,13 +17,11 @@ class ImageUrlContentBlockTest {
                         .detail(ImageUrl.Detail.AUTO)
                         .build()
                 )
-                .type(ImageUrlContentBlock.Type.IMAGE_URL)
                 .build()
         assertThat(imageUrlContentBlock).isNotNull
         assertThat(imageUrlContentBlock.imageUrl())
             .isEqualTo(
                 ImageUrl.builder().url("https://example.com").detail(ImageUrl.Detail.AUTO).build()
             )
-        assertThat(imageUrlContentBlock.type()).isEqualTo(ImageUrlContentBlock.Type.IMAGE_URL)
     }
 }

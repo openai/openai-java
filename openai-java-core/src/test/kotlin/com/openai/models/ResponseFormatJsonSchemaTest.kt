@@ -24,7 +24,6 @@ class ResponseFormatJsonSchemaTest {
                         .strict(true)
                         .build()
                 )
-                .type(ResponseFormatJsonSchema.Type.JSON_SCHEMA)
                 .build()
         assertThat(responseFormatJsonSchema).isNotNull
         assertThat(responseFormatJsonSchema.jsonSchema())
@@ -40,7 +39,5 @@ class ResponseFormatJsonSchemaTest {
                     .strict(true)
                     .build()
             )
-        assertThat(responseFormatJsonSchema.type())
-            .isEqualTo(ResponseFormatJsonSchema.Type.JSON_SCHEMA)
     }
 }

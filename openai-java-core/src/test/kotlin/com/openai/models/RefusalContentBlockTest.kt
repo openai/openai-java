@@ -9,13 +9,8 @@ class RefusalContentBlockTest {
 
     @Test
     fun createRefusalContentBlock() {
-        val refusalContentBlock =
-            RefusalContentBlock.builder()
-                .refusal("refusal")
-                .type(RefusalContentBlock.Type.REFUSAL)
-                .build()
+        val refusalContentBlock = RefusalContentBlock.builder().refusal("refusal").build()
         assertThat(refusalContentBlock).isNotNull
         assertThat(refusalContentBlock.refusal()).isEqualTo("refusal")
-        assertThat(refusalContentBlock.type()).isEqualTo(RefusalContentBlock.Type.REFUSAL)
     }
 }

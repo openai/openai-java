@@ -59,9 +59,7 @@ private constructor(
     @ExcludeMissing
     private val incompleteDetails: JsonField<IncompleteDetails> = JsonMissing.of(),
     @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonValue = JsonMissing.of(),
-    @JsonProperty("object")
-    @ExcludeMissing
-    private val object_: JsonField<Object> = JsonMissing.of(),
+    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonProperty("role") @ExcludeMissing private val role: JsonField<Role> = JsonMissing.of(),
     @JsonProperty("run_id") @ExcludeMissing private val runId: JsonField<String> = JsonMissing.of(),
     @JsonProperty("status")
@@ -113,7 +111,7 @@ private constructor(
     @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
 
     /** The object type, which is always `thread.message`. */
-    fun object_(): Object = object_.getRequired("object")
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /** The entity that produced the message. One of `user` or `assistant`. */
     fun role(): Role = role.getRequired("role")
@@ -174,9 +172,6 @@ private constructor(
     @ExcludeMissing
     fun _incompleteDetails(): JsonField<IncompleteDetails> = incompleteDetails
 
-    /** The object type, which is always `thread.message`. */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
-
     /** The entity that produced the message. One of `user` or `assistant`. */
     @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
 
@@ -217,7 +212,11 @@ private constructor(
         createdAt()
         incompleteAt()
         incompleteDetails().ifPresent { it.validate() }
-        object_()
+        _object_().let {
+            if (it != JsonValue.from("thread.message")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
         role()
         runId()
         status()
@@ -243,7 +242,7 @@ private constructor(
         private var incompleteAt: JsonField<Long>? = null
         private var incompleteDetails: JsonField<IncompleteDetails>? = null
         private var metadata: JsonValue? = null
-        private var object_: JsonField<Object>? = null
+        private var object_: JsonValue = JsonValue.from("thread.message")
         private var role: JsonField<Role>? = null
         private var runId: JsonField<String>? = null
         private var status: JsonField<Status>? = null
@@ -419,10 +418,7 @@ private constructor(
         fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
         /** The object type, which is always `thread.message`. */
-        fun object_(object_: Object) = object_(JsonField.of(object_))
-
-        /** The object type, which is always `thread.message`. */
-        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+        fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /** The entity that produced the message. One of `user` or `assistant`. */
         fun role(role: Role) = role(JsonField.of(role))
@@ -505,7 +501,7 @@ private constructor(
                 checkRequired("incompleteAt", incompleteAt),
                 checkRequired("incompleteDetails", incompleteDetails),
                 checkRequired("metadata", metadata),
-                checkRequired("object_", object_),
+                object_,
                 checkRequired("role", role),
                 checkRequired("runId", runId),
                 checkRequired("status", status),
@@ -608,10 +604,6 @@ private constructor(
             fun addTool(codeInterpreterTool: CodeInterpreterTool) =
                 addTool(Tool.ofCodeInterpreterTool(codeInterpreterTool))
 
-            /** The tools to add this file to. */
-            fun addTool(assistantToolsFileSearchTypeOnly: Tool.AssistantToolsFileSearchTypeOnly) =
-                addTool(Tool.ofAssistantToolsFileSearchTypeOnly(assistantToolsFileSearchTypeOnly))
-
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -644,14 +636,14 @@ private constructor(
         class Tool
         private constructor(
             private val codeInterpreterTool: CodeInterpreterTool? = null,
-            private val assistantToolsFileSearchTypeOnly: AssistantToolsFileSearchTypeOnly? = null,
+            private val assistantToolsFileSearchTypeOnly: JsonValue? = null,
             private val _json: JsonValue? = null,
         ) {
 
             fun codeInterpreterTool(): Optional<CodeInterpreterTool> =
                 Optional.ofNullable(codeInterpreterTool)
 
-            fun assistantToolsFileSearchTypeOnly(): Optional<AssistantToolsFileSearchTypeOnly> =
+            fun assistantToolsFileSearchTypeOnly(): Optional<JsonValue> =
                 Optional.ofNullable(assistantToolsFileSearchTypeOnly)
 
             fun isCodeInterpreterTool(): Boolean = codeInterpreterTool != null
@@ -662,7 +654,7 @@ private constructor(
             fun asCodeInterpreterTool(): CodeInterpreterTool =
                 codeInterpreterTool.getOrThrow("codeInterpreterTool")
 
-            fun asAssistantToolsFileSearchTypeOnly(): AssistantToolsFileSearchTypeOnly =
+            fun asAssistantToolsFileSearchTypeOnly(): JsonValue =
                 assistantToolsFileSearchTypeOnly.getOrThrow("assistantToolsFileSearchTypeOnly")
 
             fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
@@ -695,9 +687,15 @@ private constructor(
                         }
 
                         override fun visitAssistantToolsFileSearchTypeOnly(
-                            assistantToolsFileSearchTypeOnly: AssistantToolsFileSearchTypeOnly
+                            assistantToolsFileSearchTypeOnly: JsonValue
                         ) {
-                            assistantToolsFileSearchTypeOnly.validate()
+                            assistantToolsFileSearchTypeOnly.let {
+                                if (it != JsonValue.from(mapOf("type" to "file_search"))) {
+                                    throw OpenAIInvalidDataException(
+                                        "'assistantToolsFileSearchTypeOnly' is invalid, received $it"
+                                    )
+                                }
+                            }
                         }
                     }
                 )
@@ -730,9 +728,11 @@ private constructor(
                     Tool(codeInterpreterTool = codeInterpreterTool)
 
                 @JvmStatic
-                fun ofAssistantToolsFileSearchTypeOnly(
-                    assistantToolsFileSearchTypeOnly: AssistantToolsFileSearchTypeOnly
-                ) = Tool(assistantToolsFileSearchTypeOnly = assistantToolsFileSearchTypeOnly)
+                fun ofAssistantToolsFileSearchTypeOnly() =
+                    Tool(
+                        assistantToolsFileSearchTypeOnly =
+                            JsonValue.from(mapOf("type" to "file_search"))
+                    )
             }
 
             interface Visitor<out T> {
@@ -740,7 +740,7 @@ private constructor(
                 fun visitCodeInterpreterTool(codeInterpreterTool: CodeInterpreterTool): T
 
                 fun visitAssistantToolsFileSearchTypeOnly(
-                    assistantToolsFileSearchTypeOnly: AssistantToolsFileSearchTypeOnly
+                    assistantToolsFileSearchTypeOnly: JsonValue
                 ): T
 
                 fun unknown(json: JsonValue?): T {
@@ -757,8 +757,14 @@ private constructor(
                         ?.let {
                             return Tool(codeInterpreterTool = it, _json = json)
                         }
-                    tryDeserialize(node, jacksonTypeRef<AssistantToolsFileSearchTypeOnly>()) {
-                            it.validate()
+                    tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
+                            it.let {
+                                if (it != JsonValue.from(mapOf("type" to "file_search"))) {
+                                    throw OpenAIInvalidDataException(
+                                        "'assistantToolsFileSearchTypeOnly' is invalid, received $it"
+                                    )
+                                }
+                            }
                         }
                         ?.let {
                             return Tool(assistantToolsFileSearchTypeOnly = it, _json = json)
@@ -784,165 +790,6 @@ private constructor(
                         else -> throw IllegalStateException("Invalid Tool")
                     }
                 }
-            }
-
-            @NoAutoDetect
-            class AssistantToolsFileSearchTypeOnly
-            @JsonCreator
-            private constructor(
-                @JsonProperty("type")
-                @ExcludeMissing
-                private val type: JsonField<Type> = JsonMissing.of(),
-                @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-            ) {
-
-                /** The type of tool being defined: `file_search` */
-                fun type(): Type = type.getRequired("type")
-
-                /** The type of tool being defined: `file_search` */
-                @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
-
-                @JsonAnyGetter
-                @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): AssistantToolsFileSearchTypeOnly = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    type()
-                    validated = true
-                }
-
-                fun toBuilder() = Builder().from(this)
-
-                companion object {
-
-                    @JvmStatic fun builder() = Builder()
-                }
-
-                class Builder {
-
-                    private var type: JsonField<Type>? = null
-                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                    @JvmSynthetic
-                    internal fun from(
-                        assistantToolsFileSearchTypeOnly: AssistantToolsFileSearchTypeOnly
-                    ) = apply {
-                        type = assistantToolsFileSearchTypeOnly.type
-                        additionalProperties =
-                            assistantToolsFileSearchTypeOnly.additionalProperties.toMutableMap()
-                    }
-
-                    /** The type of tool being defined: `file_search` */
-                    fun type(type: Type) = type(JsonField.of(type))
-
-                    /** The type of tool being defined: `file_search` */
-                    fun type(type: JsonField<Type>) = apply { this.type = type }
-
-                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                        this.additionalProperties.clear()
-                        putAllAdditionalProperties(additionalProperties)
-                    }
-
-                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                        additionalProperties.put(key, value)
-                    }
-
-                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                        apply {
-                            this.additionalProperties.putAll(additionalProperties)
-                        }
-
-                    fun removeAdditionalProperty(key: String) = apply {
-                        additionalProperties.remove(key)
-                    }
-
-                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                        keys.forEach(::removeAdditionalProperty)
-                    }
-
-                    fun build(): AssistantToolsFileSearchTypeOnly =
-                        AssistantToolsFileSearchTypeOnly(
-                            checkRequired("type", type),
-                            additionalProperties.toImmutable()
-                        )
-                }
-
-                /** The type of tool being defined: `file_search` */
-                class Type
-                @JsonCreator
-                private constructor(
-                    private val value: JsonField<String>,
-                ) : Enum {
-
-                    @com.fasterxml.jackson.annotation.JsonValue
-                    fun _value(): JsonField<String> = value
-
-                    companion object {
-
-                        @JvmField val FILE_SEARCH = of("file_search")
-
-                        @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-                    }
-
-                    enum class Known {
-                        FILE_SEARCH,
-                    }
-
-                    enum class Value {
-                        FILE_SEARCH,
-                        _UNKNOWN,
-                    }
-
-                    fun value(): Value =
-                        when (this) {
-                            FILE_SEARCH -> Value.FILE_SEARCH
-                            else -> Value._UNKNOWN
-                        }
-
-                    fun known(): Known =
-                        when (this) {
-                            FILE_SEARCH -> Known.FILE_SEARCH
-                            else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-                        }
-
-                    fun asString(): String = _value().asStringOrThrow()
-
-                    override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
-
-                        return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-                    }
-
-                    override fun hashCode() = value.hashCode()
-
-                    override fun toString() = value.toString()
-                }
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return /* spotless:off */ other is AssistantToolsFileSearchTypeOnly && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
-                }
-
-                /* spotless:off */
-                private val hashCode: Int by lazy { Objects.hash(type, additionalProperties) }
-                /* spotless:on */
-
-                override fun hashCode(): Int = hashCode
-
-                override fun toString() =
-                    "AssistantToolsFileSearchTypeOnly{type=$type, additionalProperties=$additionalProperties}"
             }
         }
 
@@ -1139,58 +986,6 @@ private constructor(
 
         override fun toString() =
             "IncompleteDetails{reason=$reason, additionalProperties=$additionalProperties}"
-    }
-
-    /** The object type, which is always `thread.message`. */
-    class Object
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val THREAD_MESSAGE = of("thread.message")
-
-            @JvmStatic fun of(value: String) = Object(JsonField.of(value))
-        }
-
-        enum class Known {
-            THREAD_MESSAGE,
-        }
-
-        enum class Value {
-            THREAD_MESSAGE,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                THREAD_MESSAGE -> Value.THREAD_MESSAGE
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                THREAD_MESSAGE -> Known.THREAD_MESSAGE
-                else -> throw OpenAIInvalidDataException("Unknown Object: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     /** The entity that produced the message. One of `user` or `assistant`. */

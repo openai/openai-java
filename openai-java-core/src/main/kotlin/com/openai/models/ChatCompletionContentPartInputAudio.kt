@@ -26,21 +26,18 @@ private constructor(
     @JsonProperty("input_audio")
     @ExcludeMissing
     private val inputAudio: JsonField<InputAudio> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
     fun inputAudio(): InputAudio = inputAudio.getRequired("input_audio")
 
     /** The type of the content part. Always `input_audio`. */
-    fun type(): Type = type.getRequired("type")
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     @JsonProperty("input_audio")
     @ExcludeMissing
     fun _inputAudio(): JsonField<InputAudio> = inputAudio
-
-    /** The type of the content part. Always `input_audio`. */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
     @ExcludeMissing
@@ -54,7 +51,11 @@ private constructor(
         }
 
         inputAudio().validate()
-        type()
+        _type().let {
+            if (it != JsonValue.from("input_audio")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
         validated = true
     }
 
@@ -68,7 +69,7 @@ private constructor(
     class Builder {
 
         private var inputAudio: JsonField<InputAudio>? = null
-        private var type: JsonField<Type>? = null
+        private var type: JsonValue = JsonValue.from("input_audio")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -86,10 +87,7 @@ private constructor(
         fun inputAudio(inputAudio: JsonField<InputAudio>) = apply { this.inputAudio = inputAudio }
 
         /** The type of the content part. Always `input_audio`. */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /** The type of the content part. Always `input_audio`. */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
+        fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -113,7 +111,7 @@ private constructor(
         fun build(): ChatCompletionContentPartInputAudio =
             ChatCompletionContentPartInputAudio(
                 checkRequired("inputAudio", inputAudio),
-                checkRequired("type", type),
+                type,
                 additionalProperties.toImmutable(),
             )
     }
@@ -293,58 +291,6 @@ private constructor(
 
         override fun toString() =
             "InputAudio{data=$data, format=$format, additionalProperties=$additionalProperties}"
-    }
-
-    /** The type of the content part. Always `input_audio`. */
-    class Type
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val INPUT_AUDIO = of("input_audio")
-
-            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-        }
-
-        enum class Known {
-            INPUT_AUDIO,
-        }
-
-        enum class Value {
-            INPUT_AUDIO,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                INPUT_AUDIO -> Value.INPUT_AUDIO
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                INPUT_AUDIO -> Known.INPUT_AUDIO
-                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-            }
-
-        fun asString(): String = _value().asStringOrThrow()
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

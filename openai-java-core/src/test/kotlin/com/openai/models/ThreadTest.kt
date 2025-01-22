@@ -15,7 +15,6 @@ class ThreadTest {
                 .id("id")
                 .createdAt(0L)
                 .metadata(JsonValue.from(mapOf<String, Any>()))
-                .object_(Thread.Object.THREAD)
                 .toolResources(
                     Thread.ToolResources.builder()
                         .codeInterpreter(
@@ -35,7 +34,6 @@ class ThreadTest {
         assertThat(thread.id()).isEqualTo("id")
         assertThat(thread.createdAt()).isEqualTo(0L)
         assertThat(thread._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
-        assertThat(thread.object_()).isEqualTo(Thread.Object.THREAD)
         assertThat(thread.toolResources())
             .contains(
                 Thread.ToolResources.builder()
