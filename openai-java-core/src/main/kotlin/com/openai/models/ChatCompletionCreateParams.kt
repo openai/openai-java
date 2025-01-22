@@ -1413,6 +1413,10 @@ constructor(
                     )
                 )
 
+            /** Messages sent by the model in response to user messages. */
+            fun addMessage(chatCompletionAssistantMessageParam: ChatCompletionMessage) =
+                addMessage(chatCompletionAssistantMessageParam.toParam())
+
             /**
              * A list of messages comprising the conversation so far. Depending on the
              * [model](https://platform.openai.com/docs/models) you use, different message types
@@ -2557,6 +2561,11 @@ constructor(
             apply {
                 body.addMessage(chatCompletionAssistantMessageParam)
             }
+
+        /** Messages sent by the model in response to user messages. */
+        fun addMessage(chatCompletionAssistantMessageParam: ChatCompletionMessage) = apply {
+            body.addMessage(chatCompletionAssistantMessageParam)
+        }
 
         /**
          * A list of messages comprising the conversation so far. Depending on the
