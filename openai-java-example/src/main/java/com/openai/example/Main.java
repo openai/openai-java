@@ -15,7 +15,6 @@ public final class Main {
                 .maxTokens(1024)
                 .addMessage(ChatCompletionMessageParam.ofChatCompletionUserMessageParam(
                         ChatCompletionUserMessageParam.builder()
-                                .role(ChatCompletionUserMessageParam.Role.USER)
                                 .content(ChatCompletionUserMessageParam.Content.ofTextContent(
                                         "Tell me a story about building the best SDK!"))
                                 .build()))

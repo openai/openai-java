@@ -39,7 +39,6 @@ public final class AzureEntraIDExample {
         ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                 .addMessage(ChatCompletionMessageParam.ofChatCompletionUserMessageParam(
                         ChatCompletionUserMessageParam.builder()
-                                .role(ChatCompletionUserMessageParam.Role.USER)
                                 .content(ChatCompletionUserMessageParam.Content.ofTextContent("Who won the world series in 2020?"))
                                 .build()))
                 .model("gpt-4o")
