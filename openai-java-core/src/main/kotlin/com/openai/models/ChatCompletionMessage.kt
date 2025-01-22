@@ -103,6 +103,29 @@ private constructor(
     @ExcludeMissing
     fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
+    fun toParam(): ChatCompletionAssistantMessageParam =
+        ChatCompletionAssistantMessageParam.builder()
+            .role(_role().map { ChatCompletionAssistantMessageParam.Role.of(it.toString()) })
+            .audio(
+                _audio().map {
+                    ChatCompletionAssistantMessageParam.Audio.builder().id(it._id()).build()
+                }
+            )
+            .content(
+                _content().map { ChatCompletionAssistantMessageParam.Content.ofTextContent(it) }
+            )
+            .functionCall(
+                _functionCall().map {
+                    ChatCompletionAssistantMessageParam.FunctionCall.builder()
+                        .arguments(it._arguments())
+                        .name(it._name())
+                        .build()
+                }
+            )
+            .refusal(_refusal())
+            .toolCalls(_toolCalls())
+            .build()
+
     private var validated: Boolean = false
 
     fun validate(): ChatCompletionMessage = apply {
