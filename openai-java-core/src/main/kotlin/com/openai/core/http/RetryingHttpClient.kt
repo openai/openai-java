@@ -1,6 +1,7 @@
 package com.openai.core.http
 
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.errors.OpenAIIoException
 import java.io.IOException
 import java.time.Clock
@@ -259,7 +260,7 @@ private constructor(
 
         fun build(): HttpClient =
             RetryingHttpClient(
-                checkNotNull(httpClient) { "`httpClient` is required but was not set" },
+                checkRequired("httpClient", httpClient),
                 clock,
                 maxRetries,
                 idempotencyHeader,
