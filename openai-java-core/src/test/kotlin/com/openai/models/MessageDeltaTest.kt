@@ -27,7 +27,7 @@ class MessageDeltaTest {
         assertThat(messageDelta).isNotNull
         assertThat(messageDelta.content().get())
             .containsExactly(
-                MessageContentDelta.ofImageFileDeltaBlock(
+                MessageContentDelta.ofImageFile(
                     ImageFileDeltaBlock.builder()
                         .index(0L)
                         .imageFile(

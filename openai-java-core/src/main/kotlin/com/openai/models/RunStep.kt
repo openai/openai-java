@@ -429,12 +429,12 @@ private constructor(
         }
 
         /** Details of the message creation by the run step. */
-        fun stepDetails(messageCreationStepDetails: MessageCreationStepDetails) =
-            stepDetails(StepDetails.ofMessageCreationStepDetails(messageCreationStepDetails))
+        fun stepDetails(messageCreation: MessageCreationStepDetails) =
+            stepDetails(StepDetails.ofMessageCreation(messageCreation))
 
         /** Details of the tool call. */
-        fun stepDetails(toolCallsStepDetails: ToolCallsStepDetails) =
-            stepDetails(StepDetails.ofToolCallsStepDetails(toolCallsStepDetails))
+        fun stepDetails(toolCalls: ToolCallsStepDetails) =
+            stepDetails(StepDetails.ofToolCalls(toolCalls))
 
         /**
          * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was
@@ -773,39 +773,35 @@ private constructor(
     @JsonSerialize(using = StepDetails.Serializer::class)
     class StepDetails
     private constructor(
-        private val messageCreationStepDetails: MessageCreationStepDetails? = null,
-        private val toolCallsStepDetails: ToolCallsStepDetails? = null,
+        private val messageCreation: MessageCreationStepDetails? = null,
+        private val toolCalls: ToolCallsStepDetails? = null,
         private val _json: JsonValue? = null,
     ) {
 
         /** Details of the message creation by the run step. */
-        fun messageCreationStepDetails(): Optional<MessageCreationStepDetails> =
-            Optional.ofNullable(messageCreationStepDetails)
+        fun messageCreation(): Optional<MessageCreationStepDetails> =
+            Optional.ofNullable(messageCreation)
 
         /** Details of the tool call. */
-        fun toolCallsStepDetails(): Optional<ToolCallsStepDetails> =
-            Optional.ofNullable(toolCallsStepDetails)
+        fun toolCalls(): Optional<ToolCallsStepDetails> = Optional.ofNullable(toolCalls)
 
-        fun isMessageCreationStepDetails(): Boolean = messageCreationStepDetails != null
+        fun isMessageCreation(): Boolean = messageCreation != null
 
-        fun isToolCallsStepDetails(): Boolean = toolCallsStepDetails != null
+        fun isToolCalls(): Boolean = toolCalls != null
 
         /** Details of the message creation by the run step. */
-        fun asMessageCreationStepDetails(): MessageCreationStepDetails =
-            messageCreationStepDetails.getOrThrow("messageCreationStepDetails")
+        fun asMessageCreation(): MessageCreationStepDetails =
+            messageCreation.getOrThrow("messageCreation")
 
         /** Details of the tool call. */
-        fun asToolCallsStepDetails(): ToolCallsStepDetails =
-            toolCallsStepDetails.getOrThrow("toolCallsStepDetails")
+        fun asToolCalls(): ToolCallsStepDetails = toolCalls.getOrThrow("toolCalls")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
         fun <T> accept(visitor: Visitor<T>): T {
             return when {
-                messageCreationStepDetails != null ->
-                    visitor.visitMessageCreationStepDetails(messageCreationStepDetails)
-                toolCallsStepDetails != null ->
-                    visitor.visitToolCallsStepDetails(toolCallsStepDetails)
+                messageCreation != null -> visitor.visitMessageCreation(messageCreation)
+                toolCalls != null -> visitor.visitToolCalls(toolCalls)
                 else -> visitor.unknown(_json)
             }
         }
@@ -819,16 +815,12 @@ private constructor(
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitMessageCreationStepDetails(
-                        messageCreationStepDetails: MessageCreationStepDetails
-                    ) {
-                        messageCreationStepDetails.validate()
+                    override fun visitMessageCreation(messageCreation: MessageCreationStepDetails) {
+                        messageCreation.validate()
                     }
 
-                    override fun visitToolCallsStepDetails(
-                        toolCallsStepDetails: ToolCallsStepDetails
-                    ) {
-                        toolCallsStepDetails.validate()
+                    override fun visitToolCalls(toolCalls: ToolCallsStepDetails) {
+                        toolCalls.validate()
                     }
                 }
             )
@@ -840,17 +832,15 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is StepDetails && messageCreationStepDetails == other.messageCreationStepDetails && toolCallsStepDetails == other.toolCallsStepDetails /* spotless:on */
+            return /* spotless:off */ other is StepDetails && messageCreation == other.messageCreation && toolCalls == other.toolCalls /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(messageCreationStepDetails, toolCallsStepDetails) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(messageCreation, toolCalls) /* spotless:on */
 
         override fun toString(): String =
             when {
-                messageCreationStepDetails != null ->
-                    "StepDetails{messageCreationStepDetails=$messageCreationStepDetails}"
-                toolCallsStepDetails != null ->
-                    "StepDetails{toolCallsStepDetails=$toolCallsStepDetails}"
+                messageCreation != null -> "StepDetails{messageCreation=$messageCreation}"
+                toolCalls != null -> "StepDetails{toolCalls=$toolCalls}"
                 _json != null -> "StepDetails{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid StepDetails")
             }
@@ -859,25 +849,21 @@ private constructor(
 
             /** Details of the message creation by the run step. */
             @JvmStatic
-            fun ofMessageCreationStepDetails(
-                messageCreationStepDetails: MessageCreationStepDetails
-            ) = StepDetails(messageCreationStepDetails = messageCreationStepDetails)
+            fun ofMessageCreation(messageCreation: MessageCreationStepDetails) =
+                StepDetails(messageCreation = messageCreation)
 
             /** Details of the tool call. */
             @JvmStatic
-            fun ofToolCallsStepDetails(toolCallsStepDetails: ToolCallsStepDetails) =
-                StepDetails(toolCallsStepDetails = toolCallsStepDetails)
+            fun ofToolCalls(toolCalls: ToolCallsStepDetails) = StepDetails(toolCalls = toolCalls)
         }
 
         interface Visitor<out T> {
 
             /** Details of the message creation by the run step. */
-            fun visitMessageCreationStepDetails(
-                messageCreationStepDetails: MessageCreationStepDetails
-            ): T
+            fun visitMessageCreation(messageCreation: MessageCreationStepDetails): T
 
             /** Details of the tool call. */
-            fun visitToolCallsStepDetails(toolCallsStepDetails: ToolCallsStepDetails): T
+            fun visitToolCalls(toolCalls: ToolCallsStepDetails): T
 
             fun unknown(json: JsonValue?): T {
                 throw OpenAIInvalidDataException("Unknown StepDetails: $json")
@@ -896,7 +882,7 @@ private constructor(
                                 it.validate()
                             }
                             ?.let {
-                                return StepDetails(messageCreationStepDetails = it, _json = json)
+                                return StepDetails(messageCreation = it, _json = json)
                             }
                     }
                     "tool_calls" -> {
@@ -904,7 +890,7 @@ private constructor(
                                 it.validate()
                             }
                             ?.let {
-                                return StepDetails(toolCallsStepDetails = it, _json = json)
+                                return StepDetails(toolCalls = it, _json = json)
                             }
                     }
                 }
@@ -921,10 +907,8 @@ private constructor(
                 provider: SerializerProvider
             ) {
                 when {
-                    value.messageCreationStepDetails != null ->
-                        generator.writeObject(value.messageCreationStepDetails)
-                    value.toolCallsStepDetails != null ->
-                        generator.writeObject(value.toolCallsStepDetails)
+                    value.messageCreation != null -> generator.writeObject(value.messageCreation)
+                    value.toolCalls != null -> generator.writeObject(value.toolCalls)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid StepDetails")
                 }

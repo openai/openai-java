@@ -1364,50 +1364,29 @@ constructor(
              * sent by the user. With o1 models and newer, `developer` messages replace the previous
              * `system` messages.
              */
-            fun addMessage(
-                chatCompletionDeveloperMessageParam: ChatCompletionDeveloperMessageParam
-            ) =
-                addMessage(
-                    ChatCompletionMessageParam.ofChatCompletionDeveloperMessageParam(
-                        chatCompletionDeveloperMessageParam
-                    )
-                )
+            fun addMessage(developer: ChatCompletionDeveloperMessageParam) =
+                addMessage(ChatCompletionMessageParam.ofDeveloper(developer))
 
             /**
              * Developer-provided instructions that the model should follow, regardless of messages
              * sent by the user. With o1 models and newer, use `developer` messages for this purpose
              * instead.
              */
-            fun addMessage(chatCompletionSystemMessageParam: ChatCompletionSystemMessageParam) =
-                addMessage(
-                    ChatCompletionMessageParam.ofChatCompletionSystemMessageParam(
-                        chatCompletionSystemMessageParam
-                    )
-                )
+            fun addMessage(system: ChatCompletionSystemMessageParam) =
+                addMessage(ChatCompletionMessageParam.ofSystem(system))
 
             /**
              * Messages sent by an end user, containing prompts or additional context information.
              */
-            fun addMessage(chatCompletionUserMessageParam: ChatCompletionUserMessageParam) =
-                addMessage(
-                    ChatCompletionMessageParam.ofChatCompletionUserMessageParam(
-                        chatCompletionUserMessageParam
-                    )
-                )
+            fun addMessage(user: ChatCompletionUserMessageParam) =
+                addMessage(ChatCompletionMessageParam.ofUser(user))
 
             /** Messages sent by the model in response to user messages. */
-            fun addMessage(
-                chatCompletionAssistantMessageParam: ChatCompletionAssistantMessageParam
-            ) =
-                addMessage(
-                    ChatCompletionMessageParam.ofChatCompletionAssistantMessageParam(
-                        chatCompletionAssistantMessageParam
-                    )
-                )
+            fun addMessage(assistant: ChatCompletionAssistantMessageParam) =
+                addMessage(ChatCompletionMessageParam.ofAssistant(assistant))
 
             /** Messages sent by the model in response to user messages. */
-            fun addMessage(chatCompletionAssistantMessageParam: ChatCompletionMessage) =
-                addMessage(chatCompletionAssistantMessageParam.toParam())
+            fun addMessage(assistant: ChatCompletionMessage) = addMessage(assistant.toParam())
 
             /**
              * A list of messages comprising the conversation so far. Depending on the
@@ -1417,12 +1396,8 @@ constructor(
              * [images](https://platform.openai.com/docs/guides/vision), and
              * [audio](https://platform.openai.com/docs/guides/audio).
              */
-            fun addMessage(chatCompletionToolMessageParam: ChatCompletionToolMessageParam) =
-                addMessage(
-                    ChatCompletionMessageParam.ofChatCompletionToolMessageParam(
-                        chatCompletionToolMessageParam
-                    )
-                )
+            fun addMessage(tool: ChatCompletionToolMessageParam) =
+                addMessage(ChatCompletionMessageParam.ofTool(tool))
 
             /**
              * A list of messages comprising the conversation so far. Depending on the
@@ -1433,12 +1408,8 @@ constructor(
              * [audio](https://platform.openai.com/docs/guides/audio).
              */
             @Deprecated("deprecated")
-            fun addMessage(chatCompletionFunctionMessageParam: ChatCompletionFunctionMessageParam) =
-                addMessage(
-                    ChatCompletionMessageParam.ofChatCompletionFunctionMessageParam(
-                        chatCompletionFunctionMessageParam
-                    )
-                )
+            fun addMessage(function: ChatCompletionFunctionMessageParam) =
+                addMessage(ChatCompletionMessageParam.ofFunction(function))
 
             /**
              * ID of the model to use. See the
@@ -2019,8 +1990,8 @@ constructor(
              * may be partially cut off if `finish_reason="length"`, which indicates the generation
              * exceeded `max_tokens` or the conversation exceeded the max context length.
              */
-            fun responseFormat(responseFormatText: ResponseFormatText) =
-                responseFormat(ResponseFormat.ofResponseFormatText(responseFormatText))
+            fun responseFormat(text: ResponseFormatText) =
+                responseFormat(ResponseFormat.ofText(text))
 
             /**
              * An object specifying the format that the model must output.
@@ -2040,8 +2011,8 @@ constructor(
              * may be partially cut off if `finish_reason="length"`, which indicates the generation
              * exceeded `max_tokens` or the conversation exceeded the max context length.
              */
-            fun responseFormat(responseFormatJsonObject: ResponseFormatJsonObject) =
-                responseFormat(ResponseFormat.ofResponseFormatJsonObject(responseFormatJsonObject))
+            fun responseFormat(jsonObject: ResponseFormatJsonObject) =
+                responseFormat(ResponseFormat.ofJsonObject(jsonObject))
 
             /**
              * An object specifying the format that the model must output.
@@ -2061,8 +2032,8 @@ constructor(
              * may be partially cut off if `finish_reason="length"`, which indicates the generation
              * exceeded `max_tokens` or the conversation exceeded the max context length.
              */
-            fun responseFormat(responseFormatJsonSchema: ResponseFormatJsonSchema) =
-                responseFormat(ResponseFormat.ofResponseFormatJsonSchema(responseFormatJsonSchema))
+            fun responseFormat(jsonSchema: ResponseFormatJsonSchema) =
+                responseFormat(ResponseFormat.ofJsonSchema(jsonSchema))
 
             /**
              * This feature is in Beta. If specified, our system will make a best effort to sample
@@ -2268,12 +2239,8 @@ constructor(
              * Specifies a tool the model should use. Use to force the model to call a specific
              * function.
              */
-            fun toolChoice(chatCompletionNamedToolChoice: ChatCompletionNamedToolChoice) =
-                toolChoice(
-                    ChatCompletionToolChoiceOption.ofChatCompletionNamedToolChoice(
-                        chatCompletionNamedToolChoice
-                    )
-                )
+            fun toolChoice(namedToolChoice: ChatCompletionNamedToolChoice) =
+                toolChoice(ChatCompletionToolChoiceOption.ofNamedToolChoice(namedToolChoice))
 
             /**
              * A list of tools the model may call. Currently, only functions are supported as a
@@ -2520,34 +2487,26 @@ constructor(
          * by the user. With o1 models and newer, `developer` messages replace the previous `system`
          * messages.
          */
-        fun addMessage(chatCompletionDeveloperMessageParam: ChatCompletionDeveloperMessageParam) =
-            apply {
-                body.addMessage(chatCompletionDeveloperMessageParam)
-            }
+        fun addMessage(developer: ChatCompletionDeveloperMessageParam) = apply {
+            body.addMessage(developer)
+        }
 
         /**
          * Developer-provided instructions that the model should follow, regardless of messages sent
          * by the user. With o1 models and newer, use `developer` messages for this purpose instead.
          */
-        fun addMessage(chatCompletionSystemMessageParam: ChatCompletionSystemMessageParam) = apply {
-            body.addMessage(chatCompletionSystemMessageParam)
-        }
+        fun addMessage(system: ChatCompletionSystemMessageParam) = apply { body.addMessage(system) }
 
         /** Messages sent by an end user, containing prompts or additional context information. */
-        fun addMessage(chatCompletionUserMessageParam: ChatCompletionUserMessageParam) = apply {
-            body.addMessage(chatCompletionUserMessageParam)
+        fun addMessage(user: ChatCompletionUserMessageParam) = apply { body.addMessage(user) }
+
+        /** Messages sent by the model in response to user messages. */
+        fun addMessage(assistant: ChatCompletionAssistantMessageParam) = apply {
+            body.addMessage(assistant)
         }
 
         /** Messages sent by the model in response to user messages. */
-        fun addMessage(chatCompletionAssistantMessageParam: ChatCompletionAssistantMessageParam) =
-            apply {
-                body.addMessage(chatCompletionAssistantMessageParam)
-            }
-
-        /** Messages sent by the model in response to user messages. */
-        fun addMessage(chatCompletionAssistantMessageParam: ChatCompletionMessage) = apply {
-            body.addMessage(chatCompletionAssistantMessageParam)
-        }
+        fun addMessage(assistant: ChatCompletionMessage) = apply { body.addMessage(assistant) }
 
         /**
          * A list of messages comprising the conversation so far. Depending on the
@@ -2557,9 +2516,7 @@ constructor(
          * [images](https://platform.openai.com/docs/guides/vision), and
          * [audio](https://platform.openai.com/docs/guides/audio).
          */
-        fun addMessage(chatCompletionToolMessageParam: ChatCompletionToolMessageParam) = apply {
-            body.addMessage(chatCompletionToolMessageParam)
-        }
+        fun addMessage(tool: ChatCompletionToolMessageParam) = apply { body.addMessage(tool) }
 
         /**
          * A list of messages comprising the conversation so far. Depending on the
@@ -2570,10 +2527,9 @@ constructor(
          * [audio](https://platform.openai.com/docs/guides/audio).
          */
         @Deprecated("deprecated")
-        fun addMessage(chatCompletionFunctionMessageParam: ChatCompletionFunctionMessageParam) =
-            apply {
-                body.addMessage(chatCompletionFunctionMessageParam)
-            }
+        fun addMessage(function: ChatCompletionFunctionMessageParam) = apply {
+            body.addMessage(function)
+        }
 
         /**
          * ID of the model to use. See the
@@ -3124,8 +3080,27 @@ constructor(
          * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
          * `max_tokens` or the conversation exceeded the max context length.
          */
-        fun responseFormat(responseFormatText: ResponseFormatText) = apply {
-            body.responseFormat(responseFormatText)
+        fun responseFormat(text: ResponseFormatText) = apply { body.responseFormat(text) }
+
+        /**
+         * An object specifying the format that the model must output.
+         *
+         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
+         * which ensures the model will match your supplied JSON schema. Learn more in the
+         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         *
+         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
+         * model generates is valid JSON.
+         *
+         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
+         * yourself via a system or user message. Without this, the model may generate an unending
+         * stream of whitespace until the generation reaches the token limit, resulting in a
+         * long-running and seemingly "stuck" request. Also note that the message content may be
+         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
+         * `max_tokens` or the conversation exceeded the max context length.
+         */
+        fun responseFormat(jsonObject: ResponseFormatJsonObject) = apply {
+            body.responseFormat(jsonObject)
         }
 
         /**
@@ -3145,29 +3120,8 @@ constructor(
          * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
          * `max_tokens` or the conversation exceeded the max context length.
          */
-        fun responseFormat(responseFormatJsonObject: ResponseFormatJsonObject) = apply {
-            body.responseFormat(responseFormatJsonObject)
-        }
-
-        /**
-         * An object specifying the format that the model must output.
-         *
-         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
-         * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-         *
-         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
-         * model generates is valid JSON.
-         *
-         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
-         * yourself via a system or user message. Without this, the model may generate an unending
-         * stream of whitespace until the generation reaches the token limit, resulting in a
-         * long-running and seemingly "stuck" request. Also note that the message content may be
-         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
-         * `max_tokens` or the conversation exceeded the max context length.
-         */
-        fun responseFormat(responseFormatJsonSchema: ResponseFormatJsonSchema) = apply {
-            body.responseFormat(responseFormatJsonSchema)
+        fun responseFormat(jsonSchema: ResponseFormatJsonSchema) = apply {
+            body.responseFormat(jsonSchema)
         }
 
         /**
@@ -3371,8 +3325,8 @@ constructor(
          * Specifies a tool the model should use. Use to force the model to call a specific
          * function.
          */
-        fun toolChoice(chatCompletionNamedToolChoice: ChatCompletionNamedToolChoice) = apply {
-            body.toolChoice(chatCompletionNamedToolChoice)
+        fun toolChoice(namedToolChoice: ChatCompletionNamedToolChoice) = apply {
+            body.toolChoice(namedToolChoice)
         }
 
         /**
@@ -4229,45 +4183,37 @@ constructor(
     @JsonSerialize(using = ResponseFormat.Serializer::class)
     class ResponseFormat
     private constructor(
-        private val responseFormatText: ResponseFormatText? = null,
-        private val responseFormatJsonObject: ResponseFormatJsonObject? = null,
-        private val responseFormatJsonSchema: ResponseFormatJsonSchema? = null,
+        private val text: ResponseFormatText? = null,
+        private val jsonObject: ResponseFormatJsonObject? = null,
+        private val jsonSchema: ResponseFormatJsonSchema? = null,
         private val _json: JsonValue? = null,
     ) {
 
-        fun responseFormatText(): Optional<ResponseFormatText> =
-            Optional.ofNullable(responseFormatText)
+        fun text(): Optional<ResponseFormatText> = Optional.ofNullable(text)
 
-        fun responseFormatJsonObject(): Optional<ResponseFormatJsonObject> =
-            Optional.ofNullable(responseFormatJsonObject)
+        fun jsonObject(): Optional<ResponseFormatJsonObject> = Optional.ofNullable(jsonObject)
 
-        fun responseFormatJsonSchema(): Optional<ResponseFormatJsonSchema> =
-            Optional.ofNullable(responseFormatJsonSchema)
+        fun jsonSchema(): Optional<ResponseFormatJsonSchema> = Optional.ofNullable(jsonSchema)
 
-        fun isResponseFormatText(): Boolean = responseFormatText != null
+        fun isText(): Boolean = text != null
 
-        fun isResponseFormatJsonObject(): Boolean = responseFormatJsonObject != null
+        fun isJsonObject(): Boolean = jsonObject != null
 
-        fun isResponseFormatJsonSchema(): Boolean = responseFormatJsonSchema != null
+        fun isJsonSchema(): Boolean = jsonSchema != null
 
-        fun asResponseFormatText(): ResponseFormatText =
-            responseFormatText.getOrThrow("responseFormatText")
+        fun asText(): ResponseFormatText = text.getOrThrow("text")
 
-        fun asResponseFormatJsonObject(): ResponseFormatJsonObject =
-            responseFormatJsonObject.getOrThrow("responseFormatJsonObject")
+        fun asJsonObject(): ResponseFormatJsonObject = jsonObject.getOrThrow("jsonObject")
 
-        fun asResponseFormatJsonSchema(): ResponseFormatJsonSchema =
-            responseFormatJsonSchema.getOrThrow("responseFormatJsonSchema")
+        fun asJsonSchema(): ResponseFormatJsonSchema = jsonSchema.getOrThrow("jsonSchema")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
         fun <T> accept(visitor: Visitor<T>): T {
             return when {
-                responseFormatText != null -> visitor.visitResponseFormatText(responseFormatText)
-                responseFormatJsonObject != null ->
-                    visitor.visitResponseFormatJsonObject(responseFormatJsonObject)
-                responseFormatJsonSchema != null ->
-                    visitor.visitResponseFormatJsonSchema(responseFormatJsonSchema)
+                text != null -> visitor.visitText(text)
+                jsonObject != null -> visitor.visitJsonObject(jsonObject)
+                jsonSchema != null -> visitor.visitJsonSchema(jsonSchema)
                 else -> visitor.unknown(_json)
             }
         }
@@ -4281,20 +4227,16 @@ constructor(
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitResponseFormatText(responseFormatText: ResponseFormatText) {
-                        responseFormatText.validate()
+                    override fun visitText(text: ResponseFormatText) {
+                        text.validate()
                     }
 
-                    override fun visitResponseFormatJsonObject(
-                        responseFormatJsonObject: ResponseFormatJsonObject
-                    ) {
-                        responseFormatJsonObject.validate()
+                    override fun visitJsonObject(jsonObject: ResponseFormatJsonObject) {
+                        jsonObject.validate()
                     }
 
-                    override fun visitResponseFormatJsonSchema(
-                        responseFormatJsonSchema: ResponseFormatJsonSchema
-                    ) {
-                        responseFormatJsonSchema.validate()
+                    override fun visitJsonSchema(jsonSchema: ResponseFormatJsonSchema) {
+                        jsonSchema.validate()
                     }
                 }
             )
@@ -4306,45 +4248,40 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ResponseFormat && responseFormatText == other.responseFormatText && responseFormatJsonObject == other.responseFormatJsonObject && responseFormatJsonSchema == other.responseFormatJsonSchema /* spotless:on */
+            return /* spotless:off */ other is ResponseFormat && text == other.text && jsonObject == other.jsonObject && jsonSchema == other.jsonSchema /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(responseFormatText, responseFormatJsonObject, responseFormatJsonSchema) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(text, jsonObject, jsonSchema) /* spotless:on */
 
         override fun toString(): String =
             when {
-                responseFormatText != null ->
-                    "ResponseFormat{responseFormatText=$responseFormatText}"
-                responseFormatJsonObject != null ->
-                    "ResponseFormat{responseFormatJsonObject=$responseFormatJsonObject}"
-                responseFormatJsonSchema != null ->
-                    "ResponseFormat{responseFormatJsonSchema=$responseFormatJsonSchema}"
+                text != null -> "ResponseFormat{text=$text}"
+                jsonObject != null -> "ResponseFormat{jsonObject=$jsonObject}"
+                jsonSchema != null -> "ResponseFormat{jsonSchema=$jsonSchema}"
                 _json != null -> "ResponseFormat{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid ResponseFormat")
             }
 
         companion object {
 
-            @JvmStatic
-            fun ofResponseFormatText(responseFormatText: ResponseFormatText) =
-                ResponseFormat(responseFormatText = responseFormatText)
+            @JvmStatic fun ofText(text: ResponseFormatText) = ResponseFormat(text = text)
 
             @JvmStatic
-            fun ofResponseFormatJsonObject(responseFormatJsonObject: ResponseFormatJsonObject) =
-                ResponseFormat(responseFormatJsonObject = responseFormatJsonObject)
+            fun ofJsonObject(jsonObject: ResponseFormatJsonObject) =
+                ResponseFormat(jsonObject = jsonObject)
 
             @JvmStatic
-            fun ofResponseFormatJsonSchema(responseFormatJsonSchema: ResponseFormatJsonSchema) =
-                ResponseFormat(responseFormatJsonSchema = responseFormatJsonSchema)
+            fun ofJsonSchema(jsonSchema: ResponseFormatJsonSchema) =
+                ResponseFormat(jsonSchema = jsonSchema)
         }
 
         interface Visitor<out T> {
 
-            fun visitResponseFormatText(responseFormatText: ResponseFormatText): T
+            fun visitText(text: ResponseFormatText): T
 
-            fun visitResponseFormatJsonObject(responseFormatJsonObject: ResponseFormatJsonObject): T
+            fun visitJsonObject(jsonObject: ResponseFormatJsonObject): T
 
-            fun visitResponseFormatJsonSchema(responseFormatJsonSchema: ResponseFormatJsonSchema): T
+            fun visitJsonSchema(jsonSchema: ResponseFormatJsonSchema): T
 
             fun unknown(json: JsonValue?): T {
                 throw OpenAIInvalidDataException("Unknown ResponseFormat: $json")
@@ -4358,15 +4295,15 @@ constructor(
 
                 tryDeserialize(node, jacksonTypeRef<ResponseFormatText>()) { it.validate() }
                     ?.let {
-                        return ResponseFormat(responseFormatText = it, _json = json)
+                        return ResponseFormat(text = it, _json = json)
                     }
                 tryDeserialize(node, jacksonTypeRef<ResponseFormatJsonObject>()) { it.validate() }
                     ?.let {
-                        return ResponseFormat(responseFormatJsonObject = it, _json = json)
+                        return ResponseFormat(jsonObject = it, _json = json)
                     }
                 tryDeserialize(node, jacksonTypeRef<ResponseFormatJsonSchema>()) { it.validate() }
                     ?.let {
-                        return ResponseFormat(responseFormatJsonSchema = it, _json = json)
+                        return ResponseFormat(jsonSchema = it, _json = json)
                     }
 
                 return ResponseFormat(_json = json)
@@ -4381,12 +4318,9 @@ constructor(
                 provider: SerializerProvider
             ) {
                 when {
-                    value.responseFormatText != null ->
-                        generator.writeObject(value.responseFormatText)
-                    value.responseFormatJsonObject != null ->
-                        generator.writeObject(value.responseFormatJsonObject)
-                    value.responseFormatJsonSchema != null ->
-                        generator.writeObject(value.responseFormatJsonSchema)
+                    value.text != null -> generator.writeObject(value.text)
+                    value.jsonObject != null -> generator.writeObject(value.jsonObject)
+                    value.jsonSchema != null -> generator.writeObject(value.jsonSchema)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid ResponseFormat")
                 }

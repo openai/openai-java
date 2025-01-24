@@ -26,7 +26,7 @@ class TextTest {
         assertThat(text).isNotNull
         assertThat(text.annotations())
             .containsExactly(
-                Annotation.ofFileCitationAnnotation(
+                Annotation.ofFileCitation(
                     FileCitationAnnotation.builder()
                         .endIndex(0L)
                         .fileCitation(

@@ -770,22 +770,21 @@ constructor(
              * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
              * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
              */
-            fun addTool(codeInterpreterTool: CodeInterpreterTool) =
-                addTool(AssistantTool.ofCodeInterpreterTool(codeInterpreterTool))
+            fun addTool(codeInterpreter: CodeInterpreterTool) =
+                addTool(AssistantTool.ofCodeInterpreter(codeInterpreter))
 
             /**
              * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
              * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
              */
-            fun addTool(fileSearchTool: FileSearchTool) =
-                addTool(AssistantTool.ofFileSearchTool(fileSearchTool))
+            fun addTool(fileSearch: FileSearchTool) =
+                addTool(AssistantTool.ofFileSearch(fileSearch))
 
             /**
              * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
              * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
              */
-            fun addTool(functionTool: FunctionTool) =
-                addTool(AssistantTool.ofFunctionTool(functionTool))
+            fun addTool(function: FunctionTool) = addTool(AssistantTool.ofFunction(function))
 
             /**
              * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -1187,21 +1186,19 @@ constructor(
          * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
          * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
          */
-        fun addTool(codeInterpreterTool: CodeInterpreterTool) = apply {
-            body.addTool(codeInterpreterTool)
-        }
+        fun addTool(codeInterpreter: CodeInterpreterTool) = apply { body.addTool(codeInterpreter) }
 
         /**
          * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
          * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
          */
-        fun addTool(fileSearchTool: FileSearchTool) = apply { body.addTool(fileSearchTool) }
+        fun addTool(fileSearch: FileSearchTool) = apply { body.addTool(fileSearch) }
 
         /**
          * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
          * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
          */
-        fun addTool(functionTool: FunctionTool) = apply { body.addTool(functionTool) }
+        fun addTool(function: FunctionTool) = apply { body.addTool(function) }
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model

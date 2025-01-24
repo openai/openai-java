@@ -29,7 +29,7 @@ class ToolCallDeltaObjectTest {
         assertThat(toolCallDeltaObject).isNotNull
         assertThat(toolCallDeltaObject.toolCalls().get())
             .containsExactly(
-                ToolCallDelta.ofCodeInterpreterToolCallDelta(
+                ToolCallDelta.ofCodeInterpreter(
                     CodeInterpreterToolCallDelta.builder()
                         .index(0L)
                         .id("id")

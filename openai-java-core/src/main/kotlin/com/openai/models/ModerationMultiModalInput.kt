@@ -23,38 +23,33 @@ import kotlin.jvm.optionals.getOrNull
 @JsonSerialize(using = ModerationMultiModalInput.Serializer::class)
 class ModerationMultiModalInput
 private constructor(
-    private val moderationImageUrlInput: ModerationImageUrlInput? = null,
-    private val moderationTextInput: ModerationTextInput? = null,
+    private val imageUrl: ModerationImageUrlInput? = null,
+    private val text: ModerationTextInput? = null,
     private val _json: JsonValue? = null,
 ) {
 
     /** An object describing an image to classify. */
-    fun moderationImageUrlInput(): Optional<ModerationImageUrlInput> =
-        Optional.ofNullable(moderationImageUrlInput)
+    fun imageUrl(): Optional<ModerationImageUrlInput> = Optional.ofNullable(imageUrl)
 
     /** An object describing text to classify. */
-    fun moderationTextInput(): Optional<ModerationTextInput> =
-        Optional.ofNullable(moderationTextInput)
+    fun text(): Optional<ModerationTextInput> = Optional.ofNullable(text)
 
-    fun isModerationImageUrlInput(): Boolean = moderationImageUrlInput != null
+    fun isImageUrl(): Boolean = imageUrl != null
 
-    fun isModerationTextInput(): Boolean = moderationTextInput != null
+    fun isText(): Boolean = text != null
 
     /** An object describing an image to classify. */
-    fun asModerationImageUrlInput(): ModerationImageUrlInput =
-        moderationImageUrlInput.getOrThrow("moderationImageUrlInput")
+    fun asImageUrl(): ModerationImageUrlInput = imageUrl.getOrThrow("imageUrl")
 
     /** An object describing text to classify. */
-    fun asModerationTextInput(): ModerationTextInput =
-        moderationTextInput.getOrThrow("moderationTextInput")
+    fun asText(): ModerationTextInput = text.getOrThrow("text")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T {
         return when {
-            moderationImageUrlInput != null ->
-                visitor.visitModerationImageUrlInput(moderationImageUrlInput)
-            moderationTextInput != null -> visitor.visitModerationTextInput(moderationTextInput)
+            imageUrl != null -> visitor.visitImageUrl(imageUrl)
+            text != null -> visitor.visitText(text)
             else -> visitor.unknown(_json)
         }
     }
@@ -68,14 +63,12 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
-                override fun visitModerationImageUrlInput(
-                    moderationImageUrlInput: ModerationImageUrlInput
-                ) {
-                    moderationImageUrlInput.validate()
+                override fun visitImageUrl(imageUrl: ModerationImageUrlInput) {
+                    imageUrl.validate()
                 }
 
-                override fun visitModerationTextInput(moderationTextInput: ModerationTextInput) {
-                    moderationTextInput.validate()
+                override fun visitText(text: ModerationTextInput) {
+                    text.validate()
                 }
             }
         )
@@ -87,17 +80,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ModerationMultiModalInput && moderationImageUrlInput == other.moderationImageUrlInput && moderationTextInput == other.moderationTextInput /* spotless:on */
+        return /* spotless:off */ other is ModerationMultiModalInput && imageUrl == other.imageUrl && text == other.text /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(moderationImageUrlInput, moderationTextInput) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(imageUrl, text) /* spotless:on */
 
     override fun toString(): String =
         when {
-            moderationImageUrlInput != null ->
-                "ModerationMultiModalInput{moderationImageUrlInput=$moderationImageUrlInput}"
-            moderationTextInput != null ->
-                "ModerationMultiModalInput{moderationTextInput=$moderationTextInput}"
+            imageUrl != null -> "ModerationMultiModalInput{imageUrl=$imageUrl}"
+            text != null -> "ModerationMultiModalInput{text=$text}"
             _json != null -> "ModerationMultiModalInput{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ModerationMultiModalInput")
         }
@@ -106,22 +97,20 @@ private constructor(
 
         /** An object describing an image to classify. */
         @JvmStatic
-        fun ofModerationImageUrlInput(moderationImageUrlInput: ModerationImageUrlInput) =
-            ModerationMultiModalInput(moderationImageUrlInput = moderationImageUrlInput)
+        fun ofImageUrl(imageUrl: ModerationImageUrlInput) =
+            ModerationMultiModalInput(imageUrl = imageUrl)
 
         /** An object describing text to classify. */
-        @JvmStatic
-        fun ofModerationTextInput(moderationTextInput: ModerationTextInput) =
-            ModerationMultiModalInput(moderationTextInput = moderationTextInput)
+        @JvmStatic fun ofText(text: ModerationTextInput) = ModerationMultiModalInput(text = text)
     }
 
     interface Visitor<out T> {
 
         /** An object describing an image to classify. */
-        fun visitModerationImageUrlInput(moderationImageUrlInput: ModerationImageUrlInput): T
+        fun visitImageUrl(imageUrl: ModerationImageUrlInput): T
 
         /** An object describing text to classify. */
-        fun visitModerationTextInput(moderationTextInput: ModerationTextInput): T
+        fun visitText(text: ModerationTextInput): T
 
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown ModerationMultiModalInput: $json")
@@ -141,16 +130,13 @@ private constructor(
                             it.validate()
                         }
                         ?.let {
-                            return ModerationMultiModalInput(
-                                moderationImageUrlInput = it,
-                                _json = json
-                            )
+                            return ModerationMultiModalInput(imageUrl = it, _json = json)
                         }
                 }
                 "text" -> {
                     tryDeserialize(node, jacksonTypeRef<ModerationTextInput>()) { it.validate() }
                         ?.let {
-                            return ModerationMultiModalInput(moderationTextInput = it, _json = json)
+                            return ModerationMultiModalInput(text = it, _json = json)
                         }
                 }
             }
@@ -167,10 +153,8 @@ private constructor(
             provider: SerializerProvider
         ) {
             when {
-                value.moderationImageUrlInput != null ->
-                    generator.writeObject(value.moderationImageUrlInput)
-                value.moderationTextInput != null ->
-                    generator.writeObject(value.moderationTextInput)
+                value.imageUrl != null -> generator.writeObject(value.imageUrl)
+                value.text != null -> generator.writeObject(value.text)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid ModerationMultiModalInput")
             }

@@ -218,25 +218,15 @@ constructor(
              * The default strategy. This strategy currently uses a `max_chunk_size_tokens` of `800`
              * and `chunk_overlap_tokens` of `400`.
              */
-            fun chunkingStrategy(autoFileChunkingStrategyParam: AutoFileChunkingStrategyParam) =
-                chunkingStrategy(
-                    FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
-                        autoFileChunkingStrategyParam
-                    )
-                )
+            fun chunkingStrategy(auto: AutoFileChunkingStrategyParam) =
+                chunkingStrategy(FileChunkingStrategyParam.ofAuto(auto))
 
             /**
              * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
              * strategy. Only applicable if `file_ids` is non-empty.
              */
-            fun chunkingStrategy(
-                staticFileChunkingStrategyObjectParam: StaticFileChunkingStrategyObjectParam
-            ) =
-                chunkingStrategy(
-                    FileChunkingStrategyParam.ofStaticFileChunkingStrategyObjectParam(
-                        staticFileChunkingStrategyObjectParam
-                    )
-                )
+            fun chunkingStrategy(static_: StaticFileChunkingStrategyObjectParam) =
+                chunkingStrategy(FileChunkingStrategyParam.ofStatic(static_))
 
             /** The expiration policy for a vector store. */
             fun expiresAfter(expiresAfter: ExpiresAfter) = expiresAfter(JsonField.of(expiresAfter))
@@ -379,17 +369,17 @@ constructor(
          * The default strategy. This strategy currently uses a `max_chunk_size_tokens` of `800` and
          * `chunk_overlap_tokens` of `400`.
          */
-        fun chunkingStrategy(autoFileChunkingStrategyParam: AutoFileChunkingStrategyParam) = apply {
-            body.chunkingStrategy(autoFileChunkingStrategyParam)
+        fun chunkingStrategy(auto: AutoFileChunkingStrategyParam) = apply {
+            body.chunkingStrategy(auto)
         }
 
         /**
          * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
          * strategy. Only applicable if `file_ids` is non-empty.
          */
-        fun chunkingStrategy(
-            staticFileChunkingStrategyObjectParam: StaticFileChunkingStrategyObjectParam
-        ) = apply { body.chunkingStrategy(staticFileChunkingStrategyObjectParam) }
+        fun chunkingStrategy(static_: StaticFileChunkingStrategyObjectParam) = apply {
+            body.chunkingStrategy(static_)
+        }
 
         /** The expiration policy for a vector store. */
         fun expiresAfter(expiresAfter: ExpiresAfter) = apply { body.expiresAfter(expiresAfter) }

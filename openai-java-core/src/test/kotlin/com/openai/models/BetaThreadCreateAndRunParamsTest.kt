@@ -252,7 +252,7 @@ class BetaThreadCreateAndRunParamsTest {
         assertThat(body.tools())
             .contains(
                 listOf(
-                    BetaThreadCreateAndRunParams.Tool.ofCodeInterpreterTool(
+                    BetaThreadCreateAndRunParams.Tool.ofCodeInterpreter(
                         CodeInterpreterTool.builder().build()
                     )
                 )

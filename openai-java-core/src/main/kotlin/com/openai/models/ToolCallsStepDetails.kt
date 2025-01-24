@@ -118,22 +118,21 @@ private constructor(
         }
 
         /** Details of the Code Interpreter tool call the run step was involved in. */
-        fun addToolCall(codeInterpreterToolCall: CodeInterpreterToolCall) =
-            addToolCall(ToolCall.ofCodeInterpreterToolCall(codeInterpreterToolCall))
+        fun addToolCall(codeInterpreter: CodeInterpreterToolCall) =
+            addToolCall(ToolCall.ofCodeInterpreter(codeInterpreter))
 
         /**
          * An array of tool calls the run step was involved in. These can be associated with one of
          * three types of tools: `code_interpreter`, `file_search`, or `function`.
          */
-        fun addToolCall(fileSearchToolCall: FileSearchToolCall) =
-            addToolCall(ToolCall.ofFileSearchToolCall(fileSearchToolCall))
+        fun addToolCall(fileSearch: FileSearchToolCall) =
+            addToolCall(ToolCall.ofFileSearch(fileSearch))
 
         /**
          * An array of tool calls the run step was involved in. These can be associated with one of
          * three types of tools: `code_interpreter`, `file_search`, or `function`.
          */
-        fun addToolCall(functionToolCall: FunctionToolCall) =
-            addToolCall(ToolCall.ofFunctionToolCall(functionToolCall))
+        fun addToolCall(function: FunctionToolCall) = addToolCall(ToolCall.ofFunction(function))
 
         /** Always `tool_calls`. */
         fun type(type: JsonValue) = apply { this.type = type }

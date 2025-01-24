@@ -90,12 +90,12 @@ private constructor(
         }
 
         /** Details of the message creation by the run step. */
-        fun stepDetails(runStepDeltaMessageDelta: RunStepDeltaMessageDelta) =
-            stepDetails(StepDetails.ofRunStepDeltaMessageDelta(runStepDeltaMessageDelta))
+        fun stepDetails(messageCreation: RunStepDeltaMessageDelta) =
+            stepDetails(StepDetails.ofMessageCreation(messageCreation))
 
         /** Details of the tool call. */
-        fun stepDetails(toolCallDeltaObject: ToolCallDeltaObject) =
-            stepDetails(StepDetails.ofToolCallDeltaObject(toolCallDeltaObject))
+        fun stepDetails(toolCalls: ToolCallDeltaObject) =
+            stepDetails(StepDetails.ofToolCalls(toolCalls))
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -124,38 +124,35 @@ private constructor(
     @JsonSerialize(using = StepDetails.Serializer::class)
     class StepDetails
     private constructor(
-        private val runStepDeltaMessageDelta: RunStepDeltaMessageDelta? = null,
-        private val toolCallDeltaObject: ToolCallDeltaObject? = null,
+        private val messageCreation: RunStepDeltaMessageDelta? = null,
+        private val toolCalls: ToolCallDeltaObject? = null,
         private val _json: JsonValue? = null,
     ) {
 
         /** Details of the message creation by the run step. */
-        fun runStepDeltaMessageDelta(): Optional<RunStepDeltaMessageDelta> =
-            Optional.ofNullable(runStepDeltaMessageDelta)
+        fun messageCreation(): Optional<RunStepDeltaMessageDelta> =
+            Optional.ofNullable(messageCreation)
 
         /** Details of the tool call. */
-        fun toolCallDeltaObject(): Optional<ToolCallDeltaObject> =
-            Optional.ofNullable(toolCallDeltaObject)
+        fun toolCalls(): Optional<ToolCallDeltaObject> = Optional.ofNullable(toolCalls)
 
-        fun isRunStepDeltaMessageDelta(): Boolean = runStepDeltaMessageDelta != null
+        fun isMessageCreation(): Boolean = messageCreation != null
 
-        fun isToolCallDeltaObject(): Boolean = toolCallDeltaObject != null
+        fun isToolCalls(): Boolean = toolCalls != null
 
         /** Details of the message creation by the run step. */
-        fun asRunStepDeltaMessageDelta(): RunStepDeltaMessageDelta =
-            runStepDeltaMessageDelta.getOrThrow("runStepDeltaMessageDelta")
+        fun asMessageCreation(): RunStepDeltaMessageDelta =
+            messageCreation.getOrThrow("messageCreation")
 
         /** Details of the tool call. */
-        fun asToolCallDeltaObject(): ToolCallDeltaObject =
-            toolCallDeltaObject.getOrThrow("toolCallDeltaObject")
+        fun asToolCalls(): ToolCallDeltaObject = toolCalls.getOrThrow("toolCalls")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
         fun <T> accept(visitor: Visitor<T>): T {
             return when {
-                runStepDeltaMessageDelta != null ->
-                    visitor.visitRunStepDeltaMessageDelta(runStepDeltaMessageDelta)
-                toolCallDeltaObject != null -> visitor.visitToolCallDeltaObject(toolCallDeltaObject)
+                messageCreation != null -> visitor.visitMessageCreation(messageCreation)
+                toolCalls != null -> visitor.visitToolCalls(toolCalls)
                 else -> visitor.unknown(_json)
             }
         }
@@ -169,16 +166,12 @@ private constructor(
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitRunStepDeltaMessageDelta(
-                        runStepDeltaMessageDelta: RunStepDeltaMessageDelta
-                    ) {
-                        runStepDeltaMessageDelta.validate()
+                    override fun visitMessageCreation(messageCreation: RunStepDeltaMessageDelta) {
+                        messageCreation.validate()
                     }
 
-                    override fun visitToolCallDeltaObject(
-                        toolCallDeltaObject: ToolCallDeltaObject
-                    ) {
-                        toolCallDeltaObject.validate()
+                    override fun visitToolCalls(toolCalls: ToolCallDeltaObject) {
+                        toolCalls.validate()
                     }
                 }
             )
@@ -190,17 +183,15 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is StepDetails && runStepDeltaMessageDelta == other.runStepDeltaMessageDelta && toolCallDeltaObject == other.toolCallDeltaObject /* spotless:on */
+            return /* spotless:off */ other is StepDetails && messageCreation == other.messageCreation && toolCalls == other.toolCalls /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(runStepDeltaMessageDelta, toolCallDeltaObject) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(messageCreation, toolCalls) /* spotless:on */
 
         override fun toString(): String =
             when {
-                runStepDeltaMessageDelta != null ->
-                    "StepDetails{runStepDeltaMessageDelta=$runStepDeltaMessageDelta}"
-                toolCallDeltaObject != null ->
-                    "StepDetails{toolCallDeltaObject=$toolCallDeltaObject}"
+                messageCreation != null -> "StepDetails{messageCreation=$messageCreation}"
+                toolCalls != null -> "StepDetails{toolCalls=$toolCalls}"
                 _json != null -> "StepDetails{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid StepDetails")
             }
@@ -209,22 +200,21 @@ private constructor(
 
             /** Details of the message creation by the run step. */
             @JvmStatic
-            fun ofRunStepDeltaMessageDelta(runStepDeltaMessageDelta: RunStepDeltaMessageDelta) =
-                StepDetails(runStepDeltaMessageDelta = runStepDeltaMessageDelta)
+            fun ofMessageCreation(messageCreation: RunStepDeltaMessageDelta) =
+                StepDetails(messageCreation = messageCreation)
 
             /** Details of the tool call. */
             @JvmStatic
-            fun ofToolCallDeltaObject(toolCallDeltaObject: ToolCallDeltaObject) =
-                StepDetails(toolCallDeltaObject = toolCallDeltaObject)
+            fun ofToolCalls(toolCalls: ToolCallDeltaObject) = StepDetails(toolCalls = toolCalls)
         }
 
         interface Visitor<out T> {
 
             /** Details of the message creation by the run step. */
-            fun visitRunStepDeltaMessageDelta(runStepDeltaMessageDelta: RunStepDeltaMessageDelta): T
+            fun visitMessageCreation(messageCreation: RunStepDeltaMessageDelta): T
 
             /** Details of the tool call. */
-            fun visitToolCallDeltaObject(toolCallDeltaObject: ToolCallDeltaObject): T
+            fun visitToolCalls(toolCalls: ToolCallDeltaObject): T
 
             fun unknown(json: JsonValue?): T {
                 throw OpenAIInvalidDataException("Unknown StepDetails: $json")
@@ -243,7 +233,7 @@ private constructor(
                                 it.validate()
                             }
                             ?.let {
-                                return StepDetails(runStepDeltaMessageDelta = it, _json = json)
+                                return StepDetails(messageCreation = it, _json = json)
                             }
                     }
                     "tool_calls" -> {
@@ -251,7 +241,7 @@ private constructor(
                                 it.validate()
                             }
                             ?.let {
-                                return StepDetails(toolCallDeltaObject = it, _json = json)
+                                return StepDetails(toolCalls = it, _json = json)
                             }
                     }
                 }
@@ -268,10 +258,8 @@ private constructor(
                 provider: SerializerProvider
             ) {
                 when {
-                    value.runStepDeltaMessageDelta != null ->
-                        generator.writeObject(value.runStepDeltaMessageDelta)
-                    value.toolCallDeltaObject != null ->
-                        generator.writeObject(value.toolCallDeltaObject)
+                    value.messageCreation != null -> generator.writeObject(value.messageCreation)
+                    value.toolCalls != null -> generator.writeObject(value.toolCalls)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid StepDetails")
                 }

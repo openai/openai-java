@@ -99,15 +99,15 @@ private constructor(
          * associated with the assistant or the message. Generated when the assistant uses the
          * "file_search" tool to search files.
          */
-        fun addAnnotation(fileCitationAnnotation: FileCitationAnnotation) =
-            addAnnotation(Annotation.ofFileCitationAnnotation(fileCitationAnnotation))
+        fun addAnnotation(fileCitation: FileCitationAnnotation) =
+            addAnnotation(Annotation.ofFileCitation(fileCitation))
 
         /**
          * A URL for the file that's generated when the assistant used the `code_interpreter` tool
          * to generate a file.
          */
-        fun addAnnotation(filePathAnnotation: FilePathAnnotation) =
-            addAnnotation(Annotation.ofFilePathAnnotation(filePathAnnotation))
+        fun addAnnotation(filePath: FilePathAnnotation) =
+            addAnnotation(Annotation.ofFilePath(filePath))
 
         /** The data that makes up the text. */
         fun value(value: String) = value(JsonField.of(value))

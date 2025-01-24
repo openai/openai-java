@@ -768,22 +768,21 @@ constructor(
              * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
              * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
              */
-            fun addTool(codeInterpreterTool: CodeInterpreterTool) =
-                addTool(AssistantTool.ofCodeInterpreterTool(codeInterpreterTool))
+            fun addTool(codeInterpreter: CodeInterpreterTool) =
+                addTool(AssistantTool.ofCodeInterpreter(codeInterpreter))
 
             /**
              * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
              * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
              */
-            fun addTool(fileSearchTool: FileSearchTool) =
-                addTool(AssistantTool.ofFileSearchTool(fileSearchTool))
+            fun addTool(fileSearch: FileSearchTool) =
+                addTool(AssistantTool.ofFileSearch(fileSearch))
 
             /**
              * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
              * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
              */
-            fun addTool(functionTool: FunctionTool) =
-                addTool(AssistantTool.ofFunctionTool(functionTool))
+            fun addTool(function: FunctionTool) = addTool(AssistantTool.ofFunction(function))
 
             /**
              * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -1189,21 +1188,19 @@ constructor(
          * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
          * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
          */
-        fun addTool(codeInterpreterTool: CodeInterpreterTool) = apply {
-            body.addTool(codeInterpreterTool)
-        }
+        fun addTool(codeInterpreter: CodeInterpreterTool) = apply { body.addTool(codeInterpreter) }
 
         /**
          * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
          * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
          */
-        fun addTool(fileSearchTool: FileSearchTool) = apply { body.addTool(fileSearchTool) }
+        fun addTool(fileSearch: FileSearchTool) = apply { body.addTool(fileSearch) }
 
         /**
          * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
          * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
          */
-        fun addTool(functionTool: FunctionTool) = apply { body.addTool(functionTool) }
+        fun addTool(function: FunctionTool) = apply { body.addTool(function) }
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -1927,27 +1924,15 @@ constructor(
                      * The default strategy. This strategy currently uses a `max_chunk_size_tokens`
                      * of `800` and `chunk_overlap_tokens` of `400`.
                      */
-                    fun chunkingStrategy(
-                        autoFileChunkingStrategyParam: AutoFileChunkingStrategyParam
-                    ) =
-                        chunkingStrategy(
-                            FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
-                                autoFileChunkingStrategyParam
-                            )
-                        )
+                    fun chunkingStrategy(auto: AutoFileChunkingStrategyParam) =
+                        chunkingStrategy(FileChunkingStrategyParam.ofAuto(auto))
 
                     /**
                      * The chunking strategy used to chunk the file(s). If not set, will use the
                      * `auto` strategy. Only applicable if `file_ids` is non-empty.
                      */
-                    fun chunkingStrategy(
-                        staticFileChunkingStrategyObjectParam: StaticFileChunkingStrategyObjectParam
-                    ) =
-                        chunkingStrategy(
-                            FileChunkingStrategyParam.ofStaticFileChunkingStrategyObjectParam(
-                                staticFileChunkingStrategyObjectParam
-                            )
-                        )
+                    fun chunkingStrategy(static_: StaticFileChunkingStrategyObjectParam) =
+                        chunkingStrategy(FileChunkingStrategyParam.ofStatic(static_))
 
                     /**
                      * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to

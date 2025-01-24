@@ -27,8 +27,8 @@ import kotlin.jvm.optionals.getOrNull
 @JsonSerialize(using = Annotation.Serializer::class)
 class Annotation
 private constructor(
-    private val fileCitationAnnotation: FileCitationAnnotation? = null,
-    private val filePathAnnotation: FilePathAnnotation? = null,
+    private val fileCitation: FileCitationAnnotation? = null,
+    private val filePath: FilePathAnnotation? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -37,41 +37,37 @@ private constructor(
      * with the assistant or the message. Generated when the assistant uses the "file_search" tool
      * to search files.
      */
-    fun fileCitationAnnotation(): Optional<FileCitationAnnotation> =
-        Optional.ofNullable(fileCitationAnnotation)
+    fun fileCitation(): Optional<FileCitationAnnotation> = Optional.ofNullable(fileCitation)
 
     /**
      * A URL for the file that's generated when the assistant used the `code_interpreter` tool to
      * generate a file.
      */
-    fun filePathAnnotation(): Optional<FilePathAnnotation> = Optional.ofNullable(filePathAnnotation)
+    fun filePath(): Optional<FilePathAnnotation> = Optional.ofNullable(filePath)
 
-    fun isFileCitationAnnotation(): Boolean = fileCitationAnnotation != null
+    fun isFileCitation(): Boolean = fileCitation != null
 
-    fun isFilePathAnnotation(): Boolean = filePathAnnotation != null
+    fun isFilePath(): Boolean = filePath != null
 
     /**
      * A citation within the message that points to a specific quote from a specific File associated
      * with the assistant or the message. Generated when the assistant uses the "file_search" tool
      * to search files.
      */
-    fun asFileCitationAnnotation(): FileCitationAnnotation =
-        fileCitationAnnotation.getOrThrow("fileCitationAnnotation")
+    fun asFileCitation(): FileCitationAnnotation = fileCitation.getOrThrow("fileCitation")
 
     /**
      * A URL for the file that's generated when the assistant used the `code_interpreter` tool to
      * generate a file.
      */
-    fun asFilePathAnnotation(): FilePathAnnotation =
-        filePathAnnotation.getOrThrow("filePathAnnotation")
+    fun asFilePath(): FilePathAnnotation = filePath.getOrThrow("filePath")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T {
         return when {
-            fileCitationAnnotation != null ->
-                visitor.visitFileCitationAnnotation(fileCitationAnnotation)
-            filePathAnnotation != null -> visitor.visitFilePathAnnotation(filePathAnnotation)
+            fileCitation != null -> visitor.visitFileCitation(fileCitation)
+            filePath != null -> visitor.visitFilePath(filePath)
             else -> visitor.unknown(_json)
         }
     }
@@ -85,14 +81,12 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
-                override fun visitFileCitationAnnotation(
-                    fileCitationAnnotation: FileCitationAnnotation
-                ) {
-                    fileCitationAnnotation.validate()
+                override fun visitFileCitation(fileCitation: FileCitationAnnotation) {
+                    fileCitation.validate()
                 }
 
-                override fun visitFilePathAnnotation(filePathAnnotation: FilePathAnnotation) {
-                    filePathAnnotation.validate()
+                override fun visitFilePath(filePath: FilePathAnnotation) {
+                    filePath.validate()
                 }
             }
         )
@@ -104,16 +98,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Annotation && fileCitationAnnotation == other.fileCitationAnnotation && filePathAnnotation == other.filePathAnnotation /* spotless:on */
+        return /* spotless:off */ other is Annotation && fileCitation == other.fileCitation && filePath == other.filePath /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fileCitationAnnotation, filePathAnnotation) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fileCitation, filePath) /* spotless:on */
 
     override fun toString(): String =
         when {
-            fileCitationAnnotation != null ->
-                "Annotation{fileCitationAnnotation=$fileCitationAnnotation}"
-            filePathAnnotation != null -> "Annotation{filePathAnnotation=$filePathAnnotation}"
+            fileCitation != null -> "Annotation{fileCitation=$fileCitation}"
+            filePath != null -> "Annotation{filePath=$filePath}"
             _json != null -> "Annotation{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid Annotation")
         }
@@ -126,16 +119,14 @@ private constructor(
          * "file_search" tool to search files.
          */
         @JvmStatic
-        fun ofFileCitationAnnotation(fileCitationAnnotation: FileCitationAnnotation) =
-            Annotation(fileCitationAnnotation = fileCitationAnnotation)
+        fun ofFileCitation(fileCitation: FileCitationAnnotation) =
+            Annotation(fileCitation = fileCitation)
 
         /**
          * A URL for the file that's generated when the assistant used the `code_interpreter` tool
          * to generate a file.
          */
-        @JvmStatic
-        fun ofFilePathAnnotation(filePathAnnotation: FilePathAnnotation) =
-            Annotation(filePathAnnotation = filePathAnnotation)
+        @JvmStatic fun ofFilePath(filePath: FilePathAnnotation) = Annotation(filePath = filePath)
     }
 
     interface Visitor<out T> {
@@ -145,13 +136,13 @@ private constructor(
          * associated with the assistant or the message. Generated when the assistant uses the
          * "file_search" tool to search files.
          */
-        fun visitFileCitationAnnotation(fileCitationAnnotation: FileCitationAnnotation): T
+        fun visitFileCitation(fileCitation: FileCitationAnnotation): T
 
         /**
          * A URL for the file that's generated when the assistant used the `code_interpreter` tool
          * to generate a file.
          */
-        fun visitFilePathAnnotation(filePathAnnotation: FilePathAnnotation): T
+        fun visitFilePath(filePath: FilePathAnnotation): T
 
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown Annotation: $json")
@@ -168,13 +159,13 @@ private constructor(
                 "file_citation" -> {
                     tryDeserialize(node, jacksonTypeRef<FileCitationAnnotation>()) { it.validate() }
                         ?.let {
-                            return Annotation(fileCitationAnnotation = it, _json = json)
+                            return Annotation(fileCitation = it, _json = json)
                         }
                 }
                 "file_path" -> {
                     tryDeserialize(node, jacksonTypeRef<FilePathAnnotation>()) { it.validate() }
                         ?.let {
-                            return Annotation(filePathAnnotation = it, _json = json)
+                            return Annotation(filePath = it, _json = json)
                         }
                 }
             }
@@ -191,9 +182,8 @@ private constructor(
             provider: SerializerProvider
         ) {
             when {
-                value.fileCitationAnnotation != null ->
-                    generator.writeObject(value.fileCitationAnnotation)
-                value.filePathAnnotation != null -> generator.writeObject(value.filePathAnnotation)
+                value.fileCitation != null -> generator.writeObject(value.fileCitation)
+                value.filePath != null -> generator.writeObject(value.filePath)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid Annotation")
             }
