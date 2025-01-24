@@ -26,12 +26,12 @@ import kotlin.jvm.optionals.getOrNull
 @JsonSerialize(using = ChatCompletionMessageParam.Serializer::class)
 class ChatCompletionMessageParam
 private constructor(
-    private val chatCompletionDeveloperMessageParam: ChatCompletionDeveloperMessageParam? = null,
-    private val chatCompletionSystemMessageParam: ChatCompletionSystemMessageParam? = null,
-    private val chatCompletionUserMessageParam: ChatCompletionUserMessageParam? = null,
-    private val chatCompletionAssistantMessageParam: ChatCompletionAssistantMessageParam? = null,
-    private val chatCompletionToolMessageParam: ChatCompletionToolMessageParam? = null,
-    private val chatCompletionFunctionMessageParam: ChatCompletionFunctionMessageParam? = null,
+    private val developer: ChatCompletionDeveloperMessageParam? = null,
+    private val system: ChatCompletionSystemMessageParam? = null,
+    private val user: ChatCompletionUserMessageParam? = null,
+    private val assistant: ChatCompletionAssistantMessageParam? = null,
+    private val tool: ChatCompletionToolMessageParam? = null,
+    private val function: ChatCompletionFunctionMessageParam? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -40,96 +40,71 @@ private constructor(
      * the user. With o1 models and newer, `developer` messages replace the previous `system`
      * messages.
      */
-    fun chatCompletionDeveloperMessageParam(): Optional<ChatCompletionDeveloperMessageParam> =
-        Optional.ofNullable(chatCompletionDeveloperMessageParam)
+    fun developer(): Optional<ChatCompletionDeveloperMessageParam> = Optional.ofNullable(developer)
 
     /**
      * Developer-provided instructions that the model should follow, regardless of messages sent by
      * the user. With o1 models and newer, use `developer` messages for this purpose instead.
      */
-    fun chatCompletionSystemMessageParam(): Optional<ChatCompletionSystemMessageParam> =
-        Optional.ofNullable(chatCompletionSystemMessageParam)
+    fun system(): Optional<ChatCompletionSystemMessageParam> = Optional.ofNullable(system)
 
     /** Messages sent by an end user, containing prompts or additional context information. */
-    fun chatCompletionUserMessageParam(): Optional<ChatCompletionUserMessageParam> =
-        Optional.ofNullable(chatCompletionUserMessageParam)
+    fun user(): Optional<ChatCompletionUserMessageParam> = Optional.ofNullable(user)
 
     /** Messages sent by the model in response to user messages. */
-    fun chatCompletionAssistantMessageParam(): Optional<ChatCompletionAssistantMessageParam> =
-        Optional.ofNullable(chatCompletionAssistantMessageParam)
+    fun assistant(): Optional<ChatCompletionAssistantMessageParam> = Optional.ofNullable(assistant)
 
-    fun chatCompletionToolMessageParam(): Optional<ChatCompletionToolMessageParam> =
-        Optional.ofNullable(chatCompletionToolMessageParam)
+    fun tool(): Optional<ChatCompletionToolMessageParam> = Optional.ofNullable(tool)
 
     @Deprecated("deprecated")
-    fun chatCompletionFunctionMessageParam(): Optional<ChatCompletionFunctionMessageParam> =
-        Optional.ofNullable(chatCompletionFunctionMessageParam)
+    fun function(): Optional<ChatCompletionFunctionMessageParam> = Optional.ofNullable(function)
 
-    fun isChatCompletionDeveloperMessageParam(): Boolean =
-        chatCompletionDeveloperMessageParam != null
+    fun isDeveloper(): Boolean = developer != null
 
-    fun isChatCompletionSystemMessageParam(): Boolean = chatCompletionSystemMessageParam != null
+    fun isSystem(): Boolean = system != null
 
-    fun isChatCompletionUserMessageParam(): Boolean = chatCompletionUserMessageParam != null
+    fun isUser(): Boolean = user != null
 
-    fun isChatCompletionAssistantMessageParam(): Boolean =
-        chatCompletionAssistantMessageParam != null
+    fun isAssistant(): Boolean = assistant != null
 
-    fun isChatCompletionToolMessageParam(): Boolean = chatCompletionToolMessageParam != null
+    fun isTool(): Boolean = tool != null
 
-    @Deprecated("deprecated")
-    fun isChatCompletionFunctionMessageParam(): Boolean = chatCompletionFunctionMessageParam != null
+    @Deprecated("deprecated") fun isFunction(): Boolean = function != null
 
     /**
      * Developer-provided instructions that the model should follow, regardless of messages sent by
      * the user. With o1 models and newer, `developer` messages replace the previous `system`
      * messages.
      */
-    fun asChatCompletionDeveloperMessageParam(): ChatCompletionDeveloperMessageParam =
-        chatCompletionDeveloperMessageParam.getOrThrow("chatCompletionDeveloperMessageParam")
+    fun asDeveloper(): ChatCompletionDeveloperMessageParam = developer.getOrThrow("developer")
 
     /**
      * Developer-provided instructions that the model should follow, regardless of messages sent by
      * the user. With o1 models and newer, use `developer` messages for this purpose instead.
      */
-    fun asChatCompletionSystemMessageParam(): ChatCompletionSystemMessageParam =
-        chatCompletionSystemMessageParam.getOrThrow("chatCompletionSystemMessageParam")
+    fun asSystem(): ChatCompletionSystemMessageParam = system.getOrThrow("system")
 
     /** Messages sent by an end user, containing prompts or additional context information. */
-    fun asChatCompletionUserMessageParam(): ChatCompletionUserMessageParam =
-        chatCompletionUserMessageParam.getOrThrow("chatCompletionUserMessageParam")
+    fun asUser(): ChatCompletionUserMessageParam = user.getOrThrow("user")
 
     /** Messages sent by the model in response to user messages. */
-    fun asChatCompletionAssistantMessageParam(): ChatCompletionAssistantMessageParam =
-        chatCompletionAssistantMessageParam.getOrThrow("chatCompletionAssistantMessageParam")
+    fun asAssistant(): ChatCompletionAssistantMessageParam = assistant.getOrThrow("assistant")
 
-    fun asChatCompletionToolMessageParam(): ChatCompletionToolMessageParam =
-        chatCompletionToolMessageParam.getOrThrow("chatCompletionToolMessageParam")
+    fun asTool(): ChatCompletionToolMessageParam = tool.getOrThrow("tool")
 
     @Deprecated("deprecated")
-    fun asChatCompletionFunctionMessageParam(): ChatCompletionFunctionMessageParam =
-        chatCompletionFunctionMessageParam.getOrThrow("chatCompletionFunctionMessageParam")
+    fun asFunction(): ChatCompletionFunctionMessageParam = function.getOrThrow("function")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T {
         return when {
-            chatCompletionDeveloperMessageParam != null ->
-                visitor.visitChatCompletionDeveloperMessageParam(
-                    chatCompletionDeveloperMessageParam
-                )
-            chatCompletionSystemMessageParam != null ->
-                visitor.visitChatCompletionSystemMessageParam(chatCompletionSystemMessageParam)
-            chatCompletionUserMessageParam != null ->
-                visitor.visitChatCompletionUserMessageParam(chatCompletionUserMessageParam)
-            chatCompletionAssistantMessageParam != null ->
-                visitor.visitChatCompletionAssistantMessageParam(
-                    chatCompletionAssistantMessageParam
-                )
-            chatCompletionToolMessageParam != null ->
-                visitor.visitChatCompletionToolMessageParam(chatCompletionToolMessageParam)
-            chatCompletionFunctionMessageParam != null ->
-                visitor.visitChatCompletionFunctionMessageParam(chatCompletionFunctionMessageParam)
+            developer != null -> visitor.visitDeveloper(developer)
+            system != null -> visitor.visitSystem(system)
+            user != null -> visitor.visitUser(user)
+            assistant != null -> visitor.visitAssistant(assistant)
+            tool != null -> visitor.visitTool(tool)
+            function != null -> visitor.visitFunction(function)
             else -> visitor.unknown(_json)
         }
     }
@@ -143,40 +118,28 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
-                override fun visitChatCompletionDeveloperMessageParam(
-                    chatCompletionDeveloperMessageParam: ChatCompletionDeveloperMessageParam
-                ) {
-                    chatCompletionDeveloperMessageParam.validate()
+                override fun visitDeveloper(developer: ChatCompletionDeveloperMessageParam) {
+                    developer.validate()
                 }
 
-                override fun visitChatCompletionSystemMessageParam(
-                    chatCompletionSystemMessageParam: ChatCompletionSystemMessageParam
-                ) {
-                    chatCompletionSystemMessageParam.validate()
+                override fun visitSystem(system: ChatCompletionSystemMessageParam) {
+                    system.validate()
                 }
 
-                override fun visitChatCompletionUserMessageParam(
-                    chatCompletionUserMessageParam: ChatCompletionUserMessageParam
-                ) {
-                    chatCompletionUserMessageParam.validate()
+                override fun visitUser(user: ChatCompletionUserMessageParam) {
+                    user.validate()
                 }
 
-                override fun visitChatCompletionAssistantMessageParam(
-                    chatCompletionAssistantMessageParam: ChatCompletionAssistantMessageParam
-                ) {
-                    chatCompletionAssistantMessageParam.validate()
+                override fun visitAssistant(assistant: ChatCompletionAssistantMessageParam) {
+                    assistant.validate()
                 }
 
-                override fun visitChatCompletionToolMessageParam(
-                    chatCompletionToolMessageParam: ChatCompletionToolMessageParam
-                ) {
-                    chatCompletionToolMessageParam.validate()
+                override fun visitTool(tool: ChatCompletionToolMessageParam) {
+                    tool.validate()
                 }
 
-                override fun visitChatCompletionFunctionMessageParam(
-                    chatCompletionFunctionMessageParam: ChatCompletionFunctionMessageParam
-                ) {
-                    chatCompletionFunctionMessageParam.validate()
+                override fun visitFunction(function: ChatCompletionFunctionMessageParam) {
+                    function.validate()
                 }
             }
         )
@@ -188,25 +151,19 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionMessageParam && chatCompletionDeveloperMessageParam == other.chatCompletionDeveloperMessageParam && chatCompletionSystemMessageParam == other.chatCompletionSystemMessageParam && chatCompletionUserMessageParam == other.chatCompletionUserMessageParam && chatCompletionAssistantMessageParam == other.chatCompletionAssistantMessageParam && chatCompletionToolMessageParam == other.chatCompletionToolMessageParam && chatCompletionFunctionMessageParam == other.chatCompletionFunctionMessageParam /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionMessageParam && developer == other.developer && system == other.system && user == other.user && assistant == other.assistant && tool == other.tool && function == other.function /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(chatCompletionDeveloperMessageParam, chatCompletionSystemMessageParam, chatCompletionUserMessageParam, chatCompletionAssistantMessageParam, chatCompletionToolMessageParam, chatCompletionFunctionMessageParam) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(developer, system, user, assistant, tool, function) /* spotless:on */
 
     override fun toString(): String =
         when {
-            chatCompletionDeveloperMessageParam != null ->
-                "ChatCompletionMessageParam{chatCompletionDeveloperMessageParam=$chatCompletionDeveloperMessageParam}"
-            chatCompletionSystemMessageParam != null ->
-                "ChatCompletionMessageParam{chatCompletionSystemMessageParam=$chatCompletionSystemMessageParam}"
-            chatCompletionUserMessageParam != null ->
-                "ChatCompletionMessageParam{chatCompletionUserMessageParam=$chatCompletionUserMessageParam}"
-            chatCompletionAssistantMessageParam != null ->
-                "ChatCompletionMessageParam{chatCompletionAssistantMessageParam=$chatCompletionAssistantMessageParam}"
-            chatCompletionToolMessageParam != null ->
-                "ChatCompletionMessageParam{chatCompletionToolMessageParam=$chatCompletionToolMessageParam}"
-            chatCompletionFunctionMessageParam != null ->
-                "ChatCompletionMessageParam{chatCompletionFunctionMessageParam=$chatCompletionFunctionMessageParam}"
+            developer != null -> "ChatCompletionMessageParam{developer=$developer}"
+            system != null -> "ChatCompletionMessageParam{system=$system}"
+            user != null -> "ChatCompletionMessageParam{user=$user}"
+            assistant != null -> "ChatCompletionMessageParam{assistant=$assistant}"
+            tool != null -> "ChatCompletionMessageParam{tool=$tool}"
+            function != null -> "ChatCompletionMessageParam{function=$function}"
             _json != null -> "ChatCompletionMessageParam{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ChatCompletionMessageParam")
         }
@@ -219,59 +176,33 @@ private constructor(
          * messages.
          */
         @JvmStatic
-        fun ofChatCompletionDeveloperMessageParam(
-            chatCompletionDeveloperMessageParam: ChatCompletionDeveloperMessageParam
-        ) =
-            ChatCompletionMessageParam(
-                chatCompletionDeveloperMessageParam = chatCompletionDeveloperMessageParam
-            )
+        fun ofDeveloper(developer: ChatCompletionDeveloperMessageParam) =
+            ChatCompletionMessageParam(developer = developer)
 
         /**
          * Developer-provided instructions that the model should follow, regardless of messages sent
          * by the user. With o1 models and newer, use `developer` messages for this purpose instead.
          */
         @JvmStatic
-        fun ofChatCompletionSystemMessageParam(
-            chatCompletionSystemMessageParam: ChatCompletionSystemMessageParam
-        ) =
-            ChatCompletionMessageParam(
-                chatCompletionSystemMessageParam = chatCompletionSystemMessageParam
-            )
+        fun ofSystem(system: ChatCompletionSystemMessageParam) =
+            ChatCompletionMessageParam(system = system)
 
         /** Messages sent by an end user, containing prompts or additional context information. */
         @JvmStatic
-        fun ofChatCompletionUserMessageParam(
-            chatCompletionUserMessageParam: ChatCompletionUserMessageParam
-        ) =
-            ChatCompletionMessageParam(
-                chatCompletionUserMessageParam = chatCompletionUserMessageParam
-            )
+        fun ofUser(user: ChatCompletionUserMessageParam) = ChatCompletionMessageParam(user = user)
 
         /** Messages sent by the model in response to user messages. */
         @JvmStatic
-        fun ofChatCompletionAssistantMessageParam(
-            chatCompletionAssistantMessageParam: ChatCompletionAssistantMessageParam
-        ) =
-            ChatCompletionMessageParam(
-                chatCompletionAssistantMessageParam = chatCompletionAssistantMessageParam
-            )
+        fun ofAssistant(assistant: ChatCompletionAssistantMessageParam) =
+            ChatCompletionMessageParam(assistant = assistant)
 
         @JvmStatic
-        fun ofChatCompletionToolMessageParam(
-            chatCompletionToolMessageParam: ChatCompletionToolMessageParam
-        ) =
-            ChatCompletionMessageParam(
-                chatCompletionToolMessageParam = chatCompletionToolMessageParam
-            )
+        fun ofTool(tool: ChatCompletionToolMessageParam) = ChatCompletionMessageParam(tool = tool)
 
         @Deprecated("deprecated")
         @JvmStatic
-        fun ofChatCompletionFunctionMessageParam(
-            chatCompletionFunctionMessageParam: ChatCompletionFunctionMessageParam
-        ) =
-            ChatCompletionMessageParam(
-                chatCompletionFunctionMessageParam = chatCompletionFunctionMessageParam
-            )
+        fun ofFunction(function: ChatCompletionFunctionMessageParam) =
+            ChatCompletionMessageParam(function = function)
     }
 
     interface Visitor<out T> {
@@ -281,36 +212,23 @@ private constructor(
          * by the user. With o1 models and newer, `developer` messages replace the previous `system`
          * messages.
          */
-        fun visitChatCompletionDeveloperMessageParam(
-            chatCompletionDeveloperMessageParam: ChatCompletionDeveloperMessageParam
-        ): T
+        fun visitDeveloper(developer: ChatCompletionDeveloperMessageParam): T
 
         /**
          * Developer-provided instructions that the model should follow, regardless of messages sent
          * by the user. With o1 models and newer, use `developer` messages for this purpose instead.
          */
-        fun visitChatCompletionSystemMessageParam(
-            chatCompletionSystemMessageParam: ChatCompletionSystemMessageParam
-        ): T
+        fun visitSystem(system: ChatCompletionSystemMessageParam): T
 
         /** Messages sent by an end user, containing prompts or additional context information. */
-        fun visitChatCompletionUserMessageParam(
-            chatCompletionUserMessageParam: ChatCompletionUserMessageParam
-        ): T
+        fun visitUser(user: ChatCompletionUserMessageParam): T
 
         /** Messages sent by the model in response to user messages. */
-        fun visitChatCompletionAssistantMessageParam(
-            chatCompletionAssistantMessageParam: ChatCompletionAssistantMessageParam
-        ): T
+        fun visitAssistant(assistant: ChatCompletionAssistantMessageParam): T
 
-        fun visitChatCompletionToolMessageParam(
-            chatCompletionToolMessageParam: ChatCompletionToolMessageParam
-        ): T
+        fun visitTool(tool: ChatCompletionToolMessageParam): T
 
-        @Deprecated("deprecated")
-        fun visitChatCompletionFunctionMessageParam(
-            chatCompletionFunctionMessageParam: ChatCompletionFunctionMessageParam
-        ): T
+        @Deprecated("deprecated") fun visitFunction(function: ChatCompletionFunctionMessageParam): T
 
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown ChatCompletionMessageParam: $json")
@@ -330,10 +248,7 @@ private constructor(
                             it.validate()
                         }
                         ?.let {
-                            return ChatCompletionMessageParam(
-                                chatCompletionDeveloperMessageParam = it,
-                                _json = json
-                            )
+                            return ChatCompletionMessageParam(developer = it, _json = json)
                         }
                 }
                 "system" -> {
@@ -341,10 +256,7 @@ private constructor(
                             it.validate()
                         }
                         ?.let {
-                            return ChatCompletionMessageParam(
-                                chatCompletionSystemMessageParam = it,
-                                _json = json
-                            )
+                            return ChatCompletionMessageParam(system = it, _json = json)
                         }
                 }
                 "user" -> {
@@ -352,10 +264,7 @@ private constructor(
                             it.validate()
                         }
                         ?.let {
-                            return ChatCompletionMessageParam(
-                                chatCompletionUserMessageParam = it,
-                                _json = json
-                            )
+                            return ChatCompletionMessageParam(user = it, _json = json)
                         }
                 }
                 "assistant" -> {
@@ -363,10 +272,7 @@ private constructor(
                             it.validate()
                         }
                         ?.let {
-                            return ChatCompletionMessageParam(
-                                chatCompletionAssistantMessageParam = it,
-                                _json = json
-                            )
+                            return ChatCompletionMessageParam(assistant = it, _json = json)
                         }
                 }
                 "tool" -> {
@@ -374,10 +280,7 @@ private constructor(
                             it.validate()
                         }
                         ?.let {
-                            return ChatCompletionMessageParam(
-                                chatCompletionToolMessageParam = it,
-                                _json = json
-                            )
+                            return ChatCompletionMessageParam(tool = it, _json = json)
                         }
                 }
                 "function" -> {
@@ -385,10 +288,7 @@ private constructor(
                             it.validate()
                         }
                         ?.let {
-                            return ChatCompletionMessageParam(
-                                chatCompletionFunctionMessageParam = it,
-                                _json = json
-                            )
+                            return ChatCompletionMessageParam(function = it, _json = json)
                         }
                 }
             }
@@ -406,18 +306,12 @@ private constructor(
             provider: SerializerProvider
         ) {
             when {
-                value.chatCompletionDeveloperMessageParam != null ->
-                    generator.writeObject(value.chatCompletionDeveloperMessageParam)
-                value.chatCompletionSystemMessageParam != null ->
-                    generator.writeObject(value.chatCompletionSystemMessageParam)
-                value.chatCompletionUserMessageParam != null ->
-                    generator.writeObject(value.chatCompletionUserMessageParam)
-                value.chatCompletionAssistantMessageParam != null ->
-                    generator.writeObject(value.chatCompletionAssistantMessageParam)
-                value.chatCompletionToolMessageParam != null ->
-                    generator.writeObject(value.chatCompletionToolMessageParam)
-                value.chatCompletionFunctionMessageParam != null ->
-                    generator.writeObject(value.chatCompletionFunctionMessageParam)
+                value.developer != null -> generator.writeObject(value.developer)
+                value.system != null -> generator.writeObject(value.system)
+                value.user != null -> generator.writeObject(value.user)
+                value.assistant != null -> generator.writeObject(value.assistant)
+                value.tool != null -> generator.writeObject(value.tool)
+                value.function != null -> generator.writeObject(value.function)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid ChatCompletionMessageParam")
             }

@@ -24,7 +24,7 @@ class RunStepDeltaTest {
         assertThat(runStepDelta).isNotNull
         assertThat(runStepDelta.stepDetails())
             .contains(
-                RunStepDelta.StepDetails.ofRunStepDeltaMessageDelta(
+                RunStepDelta.StepDetails.ofMessageCreation(
                     RunStepDeltaMessageDelta.builder()
                         .messageCreation(
                             RunStepDeltaMessageDelta.MessageCreation.builder()

@@ -93,7 +93,7 @@ class BetaAssistantUpdateParamsTest {
             )
         assertThat(body.tools())
             .contains(
-                listOf(AssistantTool.ofCodeInterpreterTool(CodeInterpreterTool.builder().build()))
+                listOf(AssistantTool.ofCodeInterpreter(CodeInterpreterTool.builder().build()))
             )
         assertThat(body.topP()).contains(1.0)
     }

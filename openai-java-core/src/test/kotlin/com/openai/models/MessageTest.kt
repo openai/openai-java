@@ -57,7 +57,7 @@ class MessageTest {
         assertThat(message.completedAt()).contains(0L)
         assertThat(message.content())
             .containsExactly(
-                MessageContent.ofImageFileContentBlock(
+                MessageContent.ofImageFile(
                     ImageFileContentBlock.builder()
                         .imageFile(
                             ImageFile.builder()

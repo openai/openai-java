@@ -41,8 +41,7 @@ class BetaThreadMessageCreateParamsTest {
                 .build()
         val body = params.getBody()
         assertThat(body).isNotNull
-        assertThat(body.content())
-            .isEqualTo(BetaThreadMessageCreateParams.Content.ofTextContent("string"))
+        assertThat(body.content()).isEqualTo(BetaThreadMessageCreateParams.Content.ofText("string"))
         assertThat(body.role()).isEqualTo(BetaThreadMessageCreateParams.Role.USER)
         assertThat(body.attachments())
             .contains(
@@ -66,8 +65,7 @@ class BetaThreadMessageCreateParamsTest {
                 .build()
         val body = params.getBody()
         assertThat(body).isNotNull
-        assertThat(body.content())
-            .isEqualTo(BetaThreadMessageCreateParams.Content.ofTextContent("string"))
+        assertThat(body.content()).isEqualTo(BetaThreadMessageCreateParams.Content.ofText("string"))
         assertThat(body.role()).isEqualTo(BetaThreadMessageCreateParams.Role.USER)
     }
 

@@ -266,23 +266,15 @@ private constructor(
         }
 
         /** The strategy used to chunk the file. */
-        fun chunkingStrategy(staticFileChunkingStrategyObject: StaticFileChunkingStrategyObject) =
-            chunkingStrategy(
-                FileChunkingStrategy.ofStaticFileChunkingStrategyObject(
-                    staticFileChunkingStrategyObject
-                )
-            )
+        fun chunkingStrategy(static_: StaticFileChunkingStrategyObject) =
+            chunkingStrategy(FileChunkingStrategy.ofStatic(static_))
 
         /**
          * This is returned when the chunking strategy is unknown. Typically, this is because the
          * file was indexed before the `chunking_strategy` concept was introduced in the API.
          */
-        fun chunkingStrategy(otherFileChunkingStrategyObject: OtherFileChunkingStrategyObject) =
-            chunkingStrategy(
-                FileChunkingStrategy.ofOtherFileChunkingStrategyObject(
-                    otherFileChunkingStrategyObject
-                )
-            )
+        fun chunkingStrategy(other: OtherFileChunkingStrategyObject) =
+            chunkingStrategy(FileChunkingStrategy.ofOther(other))
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()

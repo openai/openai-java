@@ -100,17 +100,15 @@ private constructor(
          * associated with the assistant or the message. Generated when the assistant uses the
          * "file_search" tool to search files.
          */
-        fun addAnnotation(fileCitationDeltaAnnotation: FileCitationDeltaAnnotation) =
-            addAnnotation(
-                AnnotationDelta.ofFileCitationDeltaAnnotation(fileCitationDeltaAnnotation)
-            )
+        fun addAnnotation(fileCitation: FileCitationDeltaAnnotation) =
+            addAnnotation(AnnotationDelta.ofFileCitation(fileCitation))
 
         /**
          * A URL for the file that's generated when the assistant used the `code_interpreter` tool
          * to generate a file.
          */
-        fun addAnnotation(filePathDeltaAnnotation: FilePathDeltaAnnotation) =
-            addAnnotation(AnnotationDelta.ofFilePathDeltaAnnotation(filePathDeltaAnnotation))
+        fun addAnnotation(filePath: FilePathDeltaAnnotation) =
+            addAnnotation(AnnotationDelta.ofFilePath(filePath))
 
         /** The data that makes up the text. */
         fun value(value: String) = value(JsonField.of(value))

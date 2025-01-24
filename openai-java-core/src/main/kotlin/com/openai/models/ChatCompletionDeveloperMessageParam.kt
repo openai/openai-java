@@ -118,7 +118,7 @@ private constructor(
         fun content(content: JsonField<Content>) = apply { this.content = content }
 
         /** The contents of the developer message. */
-        fun content(textContent: String) = content(Content.ofTextContent(textContent))
+        fun content(text: String) = content(Content.ofText(text))
 
         /**
          * An array of content parts with a defined type. For developer messages, only type `text`
@@ -175,13 +175,13 @@ private constructor(
     @JsonSerialize(using = Content.Serializer::class)
     class Content
     private constructor(
-        private val textContent: String? = null,
+        private val text: String? = null,
         private val arrayOfContentParts: List<ChatCompletionContentPartText>? = null,
         private val _json: JsonValue? = null,
     ) {
 
         /** The contents of the developer message. */
-        fun textContent(): Optional<String> = Optional.ofNullable(textContent)
+        fun text(): Optional<String> = Optional.ofNullable(text)
 
         /**
          * An array of content parts with a defined type. For developer messages, only type `text`
@@ -190,12 +190,12 @@ private constructor(
         fun arrayOfContentParts(): Optional<List<ChatCompletionContentPartText>> =
             Optional.ofNullable(arrayOfContentParts)
 
-        fun isTextContent(): Boolean = textContent != null
+        fun isText(): Boolean = text != null
 
         fun isArrayOfContentParts(): Boolean = arrayOfContentParts != null
 
         /** The contents of the developer message. */
-        fun asTextContent(): String = textContent.getOrThrow("textContent")
+        fun asText(): String = text.getOrThrow("text")
 
         /**
          * An array of content parts with a defined type. For developer messages, only type `text`
@@ -208,7 +208,7 @@ private constructor(
 
         fun <T> accept(visitor: Visitor<T>): T {
             return when {
-                textContent != null -> visitor.visitTextContent(textContent)
+                text != null -> visitor.visitText(text)
                 arrayOfContentParts != null -> visitor.visitArrayOfContentParts(arrayOfContentParts)
                 else -> visitor.unknown(_json)
             }
@@ -223,7 +223,7 @@ private constructor(
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitTextContent(textContent: String) {}
+                    override fun visitText(text: String) {}
 
                     override fun visitArrayOfContentParts(
                         arrayOfContentParts: List<ChatCompletionContentPartText>
@@ -240,14 +240,14 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Content && textContent == other.textContent && arrayOfContentParts == other.arrayOfContentParts /* spotless:on */
+            return /* spotless:off */ other is Content && text == other.text && arrayOfContentParts == other.arrayOfContentParts /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(textContent, arrayOfContentParts) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(text, arrayOfContentParts) /* spotless:on */
 
         override fun toString(): String =
             when {
-                textContent != null -> "Content{textContent=$textContent}"
+                text != null -> "Content{text=$text}"
                 arrayOfContentParts != null -> "Content{arrayOfContentParts=$arrayOfContentParts}"
                 _json != null -> "Content{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Content")
@@ -256,7 +256,7 @@ private constructor(
         companion object {
 
             /** The contents of the developer message. */
-            @JvmStatic fun ofTextContent(textContent: String) = Content(textContent = textContent)
+            @JvmStatic fun ofText(text: String) = Content(text = text)
 
             /**
              * An array of content parts with a defined type. For developer messages, only type
@@ -270,7 +270,7 @@ private constructor(
         interface Visitor<out T> {
 
             /** The contents of the developer message. */
-            fun visitTextContent(textContent: String): T
+            fun visitText(text: String): T
 
             /**
              * An array of content parts with a defined type. For developer messages, only type
@@ -291,7 +291,7 @@ private constructor(
                 val json = JsonValue.fromJsonNode(node)
 
                 tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                    return Content(textContent = it, _json = json)
+                    return Content(text = it, _json = json)
                 }
                 tryDeserialize(node, jacksonTypeRef<List<ChatCompletionContentPartText>>()) {
                         it.forEach { it.validate() }
@@ -312,7 +312,7 @@ private constructor(
                 provider: SerializerProvider
             ) {
                 when {
-                    value.textContent != null -> generator.writeObject(value.textContent)
+                    value.text != null -> generator.writeObject(value.text)
                     value.arrayOfContentParts != null ->
                         generator.writeObject(value.arrayOfContentParts)
                     value._json != null -> generator.writeObject(value._json)

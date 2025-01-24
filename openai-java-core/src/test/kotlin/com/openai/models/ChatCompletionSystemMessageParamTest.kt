@@ -13,7 +13,7 @@ class ChatCompletionSystemMessageParamTest {
             ChatCompletionSystemMessageParam.builder().content("string").name("name").build()
         assertThat(chatCompletionSystemMessageParam).isNotNull
         assertThat(chatCompletionSystemMessageParam.content())
-            .isEqualTo(ChatCompletionSystemMessageParam.Content.ofTextContent("string"))
+            .isEqualTo(ChatCompletionSystemMessageParam.Content.ofText("string"))
         assertThat(chatCompletionSystemMessageParam.name()).contains("name")
     }
 }

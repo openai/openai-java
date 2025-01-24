@@ -106,9 +106,7 @@ private constructor(
                     ChatCompletionAssistantMessageParam.Audio.builder().id(it._id()).build()
                 }
             )
-            .content(
-                _content().map { ChatCompletionAssistantMessageParam.Content.ofTextContent(it) }
-            )
+            .content(_content().map { ChatCompletionAssistantMessageParam.Content.ofText(it) })
             .functionCall(
                 _functionCall().map {
                     ChatCompletionAssistantMessageParam.FunctionCall.builder()

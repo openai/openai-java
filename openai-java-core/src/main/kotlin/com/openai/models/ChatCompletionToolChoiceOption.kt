@@ -34,7 +34,7 @@ import java.util.Optional
 class ChatCompletionToolChoiceOption
 private constructor(
     private val auto: Auto? = null,
-    private val chatCompletionNamedToolChoice: ChatCompletionNamedToolChoice? = null,
+    private val namedToolChoice: ChatCompletionNamedToolChoice? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -48,12 +48,12 @@ private constructor(
     /**
      * Specifies a tool the model should use. Use to force the model to call a specific function.
      */
-    fun chatCompletionNamedToolChoice(): Optional<ChatCompletionNamedToolChoice> =
-        Optional.ofNullable(chatCompletionNamedToolChoice)
+    fun namedToolChoice(): Optional<ChatCompletionNamedToolChoice> =
+        Optional.ofNullable(namedToolChoice)
 
     fun isAuto(): Boolean = auto != null
 
-    fun isChatCompletionNamedToolChoice(): Boolean = chatCompletionNamedToolChoice != null
+    fun isNamedToolChoice(): Boolean = namedToolChoice != null
 
     /**
      * `none` means the model will not call any tool and instead generates a message. `auto` means
@@ -65,16 +65,15 @@ private constructor(
     /**
      * Specifies a tool the model should use. Use to force the model to call a specific function.
      */
-    fun asChatCompletionNamedToolChoice(): ChatCompletionNamedToolChoice =
-        chatCompletionNamedToolChoice.getOrThrow("chatCompletionNamedToolChoice")
+    fun asNamedToolChoice(): ChatCompletionNamedToolChoice =
+        namedToolChoice.getOrThrow("namedToolChoice")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T {
         return when {
             auto != null -> visitor.visitAuto(auto)
-            chatCompletionNamedToolChoice != null ->
-                visitor.visitChatCompletionNamedToolChoice(chatCompletionNamedToolChoice)
+            namedToolChoice != null -> visitor.visitNamedToolChoice(namedToolChoice)
             else -> visitor.unknown(_json)
         }
     }
@@ -90,10 +89,8 @@ private constructor(
             object : Visitor<Unit> {
                 override fun visitAuto(auto: Auto) {}
 
-                override fun visitChatCompletionNamedToolChoice(
-                    chatCompletionNamedToolChoice: ChatCompletionNamedToolChoice
-                ) {
-                    chatCompletionNamedToolChoice.validate()
+                override fun visitNamedToolChoice(namedToolChoice: ChatCompletionNamedToolChoice) {
+                    namedToolChoice.validate()
                 }
             }
         )
@@ -105,16 +102,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionToolChoiceOption && auto == other.auto && chatCompletionNamedToolChoice == other.chatCompletionNamedToolChoice /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionToolChoiceOption && auto == other.auto && namedToolChoice == other.namedToolChoice /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, chatCompletionNamedToolChoice) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, namedToolChoice) /* spotless:on */
 
     override fun toString(): String =
         when {
             auto != null -> "ChatCompletionToolChoiceOption{auto=$auto}"
-            chatCompletionNamedToolChoice != null ->
-                "ChatCompletionToolChoiceOption{chatCompletionNamedToolChoice=$chatCompletionNamedToolChoice}"
+            namedToolChoice != null ->
+                "ChatCompletionToolChoiceOption{namedToolChoice=$namedToolChoice}"
             _json != null -> "ChatCompletionToolChoiceOption{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ChatCompletionToolChoiceOption")
         }
@@ -133,12 +130,8 @@ private constructor(
          * function.
          */
         @JvmStatic
-        fun ofChatCompletionNamedToolChoice(
-            chatCompletionNamedToolChoice: ChatCompletionNamedToolChoice
-        ) =
-            ChatCompletionToolChoiceOption(
-                chatCompletionNamedToolChoice = chatCompletionNamedToolChoice
-            )
+        fun ofNamedToolChoice(namedToolChoice: ChatCompletionNamedToolChoice) =
+            ChatCompletionToolChoiceOption(namedToolChoice = namedToolChoice)
     }
 
     interface Visitor<out T> {
@@ -154,9 +147,7 @@ private constructor(
          * Specifies a tool the model should use. Use to force the model to call a specific
          * function.
          */
-        fun visitChatCompletionNamedToolChoice(
-            chatCompletionNamedToolChoice: ChatCompletionNamedToolChoice
-        ): T
+        fun visitNamedToolChoice(namedToolChoice: ChatCompletionNamedToolChoice): T
 
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown ChatCompletionToolChoiceOption: $json")
@@ -174,10 +165,7 @@ private constructor(
             }
             tryDeserialize(node, jacksonTypeRef<ChatCompletionNamedToolChoice>()) { it.validate() }
                 ?.let {
-                    return ChatCompletionToolChoiceOption(
-                        chatCompletionNamedToolChoice = it,
-                        _json = json
-                    )
+                    return ChatCompletionToolChoiceOption(namedToolChoice = it, _json = json)
                 }
 
             return ChatCompletionToolChoiceOption(_json = json)
@@ -194,8 +182,7 @@ private constructor(
         ) {
             when {
                 value.auto != null -> generator.writeObject(value.auto)
-                value.chatCompletionNamedToolChoice != null ->
-                    generator.writeObject(value.chatCompletionNamedToolChoice)
+                value.namedToolChoice != null -> generator.writeObject(value.namedToolChoice)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid ChatCompletionToolChoiceOption")
             }

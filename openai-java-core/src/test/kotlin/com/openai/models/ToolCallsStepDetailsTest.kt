@@ -31,7 +31,7 @@ class ToolCallsStepDetailsTest {
         assertThat(toolCallsStepDetails).isNotNull
         assertThat(toolCallsStepDetails.toolCalls())
             .containsExactly(
-                ToolCall.ofCodeInterpreterToolCall(
+                ToolCall.ofCodeInterpreter(
                     CodeInterpreterToolCall.builder()
                         .id("id")
                         .codeInterpreter(

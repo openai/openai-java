@@ -27,8 +27,8 @@ import kotlin.jvm.optionals.getOrNull
 @JsonSerialize(using = AnnotationDelta.Serializer::class)
 class AnnotationDelta
 private constructor(
-    private val fileCitationDeltaAnnotation: FileCitationDeltaAnnotation? = null,
-    private val filePathDeltaAnnotation: FilePathDeltaAnnotation? = null,
+    private val fileCitation: FileCitationDeltaAnnotation? = null,
+    private val filePath: FilePathDeltaAnnotation? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -37,43 +37,37 @@ private constructor(
      * with the assistant or the message. Generated when the assistant uses the "file_search" tool
      * to search files.
      */
-    fun fileCitationDeltaAnnotation(): Optional<FileCitationDeltaAnnotation> =
-        Optional.ofNullable(fileCitationDeltaAnnotation)
+    fun fileCitation(): Optional<FileCitationDeltaAnnotation> = Optional.ofNullable(fileCitation)
 
     /**
      * A URL for the file that's generated when the assistant used the `code_interpreter` tool to
      * generate a file.
      */
-    fun filePathDeltaAnnotation(): Optional<FilePathDeltaAnnotation> =
-        Optional.ofNullable(filePathDeltaAnnotation)
+    fun filePath(): Optional<FilePathDeltaAnnotation> = Optional.ofNullable(filePath)
 
-    fun isFileCitationDeltaAnnotation(): Boolean = fileCitationDeltaAnnotation != null
+    fun isFileCitation(): Boolean = fileCitation != null
 
-    fun isFilePathDeltaAnnotation(): Boolean = filePathDeltaAnnotation != null
+    fun isFilePath(): Boolean = filePath != null
 
     /**
      * A citation within the message that points to a specific quote from a specific File associated
      * with the assistant or the message. Generated when the assistant uses the "file_search" tool
      * to search files.
      */
-    fun asFileCitationDeltaAnnotation(): FileCitationDeltaAnnotation =
-        fileCitationDeltaAnnotation.getOrThrow("fileCitationDeltaAnnotation")
+    fun asFileCitation(): FileCitationDeltaAnnotation = fileCitation.getOrThrow("fileCitation")
 
     /**
      * A URL for the file that's generated when the assistant used the `code_interpreter` tool to
      * generate a file.
      */
-    fun asFilePathDeltaAnnotation(): FilePathDeltaAnnotation =
-        filePathDeltaAnnotation.getOrThrow("filePathDeltaAnnotation")
+    fun asFilePath(): FilePathDeltaAnnotation = filePath.getOrThrow("filePath")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T {
         return when {
-            fileCitationDeltaAnnotation != null ->
-                visitor.visitFileCitationDeltaAnnotation(fileCitationDeltaAnnotation)
-            filePathDeltaAnnotation != null ->
-                visitor.visitFilePathDeltaAnnotation(filePathDeltaAnnotation)
+            fileCitation != null -> visitor.visitFileCitation(fileCitation)
+            filePath != null -> visitor.visitFilePath(filePath)
             else -> visitor.unknown(_json)
         }
     }
@@ -87,16 +81,12 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
-                override fun visitFileCitationDeltaAnnotation(
-                    fileCitationDeltaAnnotation: FileCitationDeltaAnnotation
-                ) {
-                    fileCitationDeltaAnnotation.validate()
+                override fun visitFileCitation(fileCitation: FileCitationDeltaAnnotation) {
+                    fileCitation.validate()
                 }
 
-                override fun visitFilePathDeltaAnnotation(
-                    filePathDeltaAnnotation: FilePathDeltaAnnotation
-                ) {
-                    filePathDeltaAnnotation.validate()
+                override fun visitFilePath(filePath: FilePathDeltaAnnotation) {
+                    filePath.validate()
                 }
             }
         )
@@ -108,17 +98,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is AnnotationDelta && fileCitationDeltaAnnotation == other.fileCitationDeltaAnnotation && filePathDeltaAnnotation == other.filePathDeltaAnnotation /* spotless:on */
+        return /* spotless:off */ other is AnnotationDelta && fileCitation == other.fileCitation && filePath == other.filePath /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fileCitationDeltaAnnotation, filePathDeltaAnnotation) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fileCitation, filePath) /* spotless:on */
 
     override fun toString(): String =
         when {
-            fileCitationDeltaAnnotation != null ->
-                "AnnotationDelta{fileCitationDeltaAnnotation=$fileCitationDeltaAnnotation}"
-            filePathDeltaAnnotation != null ->
-                "AnnotationDelta{filePathDeltaAnnotation=$filePathDeltaAnnotation}"
+            fileCitation != null -> "AnnotationDelta{fileCitation=$fileCitation}"
+            filePath != null -> "AnnotationDelta{filePath=$filePath}"
             _json != null -> "AnnotationDelta{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid AnnotationDelta")
         }
@@ -131,17 +119,15 @@ private constructor(
          * "file_search" tool to search files.
          */
         @JvmStatic
-        fun ofFileCitationDeltaAnnotation(
-            fileCitationDeltaAnnotation: FileCitationDeltaAnnotation
-        ) = AnnotationDelta(fileCitationDeltaAnnotation = fileCitationDeltaAnnotation)
+        fun ofFileCitation(fileCitation: FileCitationDeltaAnnotation) =
+            AnnotationDelta(fileCitation = fileCitation)
 
         /**
          * A URL for the file that's generated when the assistant used the `code_interpreter` tool
          * to generate a file.
          */
         @JvmStatic
-        fun ofFilePathDeltaAnnotation(filePathDeltaAnnotation: FilePathDeltaAnnotation) =
-            AnnotationDelta(filePathDeltaAnnotation = filePathDeltaAnnotation)
+        fun ofFilePath(filePath: FilePathDeltaAnnotation) = AnnotationDelta(filePath = filePath)
     }
 
     interface Visitor<out T> {
@@ -151,15 +137,13 @@ private constructor(
          * associated with the assistant or the message. Generated when the assistant uses the
          * "file_search" tool to search files.
          */
-        fun visitFileCitationDeltaAnnotation(
-            fileCitationDeltaAnnotation: FileCitationDeltaAnnotation
-        ): T
+        fun visitFileCitation(fileCitation: FileCitationDeltaAnnotation): T
 
         /**
          * A URL for the file that's generated when the assistant used the `code_interpreter` tool
          * to generate a file.
          */
-        fun visitFilePathDeltaAnnotation(filePathDeltaAnnotation: FilePathDeltaAnnotation): T
+        fun visitFilePath(filePath: FilePathDeltaAnnotation): T
 
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown AnnotationDelta: $json")
@@ -178,7 +162,7 @@ private constructor(
                             it.validate()
                         }
                         ?.let {
-                            return AnnotationDelta(fileCitationDeltaAnnotation = it, _json = json)
+                            return AnnotationDelta(fileCitation = it, _json = json)
                         }
                 }
                 "file_path" -> {
@@ -186,7 +170,7 @@ private constructor(
                             it.validate()
                         }
                         ?.let {
-                            return AnnotationDelta(filePathDeltaAnnotation = it, _json = json)
+                            return AnnotationDelta(filePath = it, _json = json)
                         }
                 }
             }
@@ -203,10 +187,8 @@ private constructor(
             provider: SerializerProvider
         ) {
             when {
-                value.fileCitationDeltaAnnotation != null ->
-                    generator.writeObject(value.fileCitationDeltaAnnotation)
-                value.filePathDeltaAnnotation != null ->
-                    generator.writeObject(value.filePathDeltaAnnotation)
+                value.fileCitation != null -> generator.writeObject(value.fileCitation)
+                value.filePath != null -> generator.writeObject(value.filePath)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid AnnotationDelta")
             }

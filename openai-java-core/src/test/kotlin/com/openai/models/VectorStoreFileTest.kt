@@ -48,7 +48,7 @@ class VectorStoreFileTest {
         assertThat(vectorStoreFile.vectorStoreId()).isEqualTo("vector_store_id")
         assertThat(vectorStoreFile.chunkingStrategy())
             .contains(
-                FileChunkingStrategy.ofStaticFileChunkingStrategyObject(
+                FileChunkingStrategy.ofStatic(
                     StaticFileChunkingStrategyObject.builder()
                         .static_(
                             StaticFileChunkingStrategy.builder()

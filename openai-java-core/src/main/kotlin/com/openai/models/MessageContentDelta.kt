@@ -26,10 +26,10 @@ import kotlin.jvm.optionals.getOrNull
 @JsonSerialize(using = MessageContentDelta.Serializer::class)
 class MessageContentDelta
 private constructor(
-    private val imageFileDeltaBlock: ImageFileDeltaBlock? = null,
-    private val textDeltaBlock: TextDeltaBlock? = null,
-    private val refusalDeltaBlock: RefusalDeltaBlock? = null,
-    private val imageUrlDeltaBlock: ImageUrlDeltaBlock? = null,
+    private val imageFile: ImageFileDeltaBlock? = null,
+    private val text: TextDeltaBlock? = null,
+    private val refusal: RefusalDeltaBlock? = null,
+    private val imageUrl: ImageUrlDeltaBlock? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -37,51 +37,48 @@ private constructor(
      * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
      * content of a message.
      */
-    fun imageFileDeltaBlock(): Optional<ImageFileDeltaBlock> =
-        Optional.ofNullable(imageFileDeltaBlock)
+    fun imageFile(): Optional<ImageFileDeltaBlock> = Optional.ofNullable(imageFile)
 
     /** The text content that is part of a message. */
-    fun textDeltaBlock(): Optional<TextDeltaBlock> = Optional.ofNullable(textDeltaBlock)
+    fun text(): Optional<TextDeltaBlock> = Optional.ofNullable(text)
 
     /** The refusal content that is part of a message. */
-    fun refusalDeltaBlock(): Optional<RefusalDeltaBlock> = Optional.ofNullable(refusalDeltaBlock)
+    fun refusal(): Optional<RefusalDeltaBlock> = Optional.ofNullable(refusal)
 
     /** References an image URL in the content of a message. */
-    fun imageUrlDeltaBlock(): Optional<ImageUrlDeltaBlock> = Optional.ofNullable(imageUrlDeltaBlock)
+    fun imageUrl(): Optional<ImageUrlDeltaBlock> = Optional.ofNullable(imageUrl)
 
-    fun isImageFileDeltaBlock(): Boolean = imageFileDeltaBlock != null
+    fun isImageFile(): Boolean = imageFile != null
 
-    fun isTextDeltaBlock(): Boolean = textDeltaBlock != null
+    fun isText(): Boolean = text != null
 
-    fun isRefusalDeltaBlock(): Boolean = refusalDeltaBlock != null
+    fun isRefusal(): Boolean = refusal != null
 
-    fun isImageUrlDeltaBlock(): Boolean = imageUrlDeltaBlock != null
+    fun isImageUrl(): Boolean = imageUrl != null
 
     /**
      * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
      * content of a message.
      */
-    fun asImageFileDeltaBlock(): ImageFileDeltaBlock =
-        imageFileDeltaBlock.getOrThrow("imageFileDeltaBlock")
+    fun asImageFile(): ImageFileDeltaBlock = imageFile.getOrThrow("imageFile")
 
     /** The text content that is part of a message. */
-    fun asTextDeltaBlock(): TextDeltaBlock = textDeltaBlock.getOrThrow("textDeltaBlock")
+    fun asText(): TextDeltaBlock = text.getOrThrow("text")
 
     /** The refusal content that is part of a message. */
-    fun asRefusalDeltaBlock(): RefusalDeltaBlock = refusalDeltaBlock.getOrThrow("refusalDeltaBlock")
+    fun asRefusal(): RefusalDeltaBlock = refusal.getOrThrow("refusal")
 
     /** References an image URL in the content of a message. */
-    fun asImageUrlDeltaBlock(): ImageUrlDeltaBlock =
-        imageUrlDeltaBlock.getOrThrow("imageUrlDeltaBlock")
+    fun asImageUrl(): ImageUrlDeltaBlock = imageUrl.getOrThrow("imageUrl")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T {
         return when {
-            imageFileDeltaBlock != null -> visitor.visitImageFileDeltaBlock(imageFileDeltaBlock)
-            textDeltaBlock != null -> visitor.visitTextDeltaBlock(textDeltaBlock)
-            refusalDeltaBlock != null -> visitor.visitRefusalDeltaBlock(refusalDeltaBlock)
-            imageUrlDeltaBlock != null -> visitor.visitImageUrlDeltaBlock(imageUrlDeltaBlock)
+            imageFile != null -> visitor.visitImageFile(imageFile)
+            text != null -> visitor.visitText(text)
+            refusal != null -> visitor.visitRefusal(refusal)
+            imageUrl != null -> visitor.visitImageUrl(imageUrl)
             else -> visitor.unknown(_json)
         }
     }
@@ -95,20 +92,20 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
-                override fun visitImageFileDeltaBlock(imageFileDeltaBlock: ImageFileDeltaBlock) {
-                    imageFileDeltaBlock.validate()
+                override fun visitImageFile(imageFile: ImageFileDeltaBlock) {
+                    imageFile.validate()
                 }
 
-                override fun visitTextDeltaBlock(textDeltaBlock: TextDeltaBlock) {
-                    textDeltaBlock.validate()
+                override fun visitText(text: TextDeltaBlock) {
+                    text.validate()
                 }
 
-                override fun visitRefusalDeltaBlock(refusalDeltaBlock: RefusalDeltaBlock) {
-                    refusalDeltaBlock.validate()
+                override fun visitRefusal(refusal: RefusalDeltaBlock) {
+                    refusal.validate()
                 }
 
-                override fun visitImageUrlDeltaBlock(imageUrlDeltaBlock: ImageUrlDeltaBlock) {
-                    imageUrlDeltaBlock.validate()
+                override fun visitImageUrl(imageUrl: ImageUrlDeltaBlock) {
+                    imageUrl.validate()
                 }
             }
         )
@@ -120,19 +117,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is MessageContentDelta && imageFileDeltaBlock == other.imageFileDeltaBlock && textDeltaBlock == other.textDeltaBlock && refusalDeltaBlock == other.refusalDeltaBlock && imageUrlDeltaBlock == other.imageUrlDeltaBlock /* spotless:on */
+        return /* spotless:off */ other is MessageContentDelta && imageFile == other.imageFile && text == other.text && refusal == other.refusal && imageUrl == other.imageUrl /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(imageFileDeltaBlock, textDeltaBlock, refusalDeltaBlock, imageUrlDeltaBlock) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(imageFile, text, refusal, imageUrl) /* spotless:on */
 
     override fun toString(): String =
         when {
-            imageFileDeltaBlock != null ->
-                "MessageContentDelta{imageFileDeltaBlock=$imageFileDeltaBlock}"
-            textDeltaBlock != null -> "MessageContentDelta{textDeltaBlock=$textDeltaBlock}"
-            refusalDeltaBlock != null -> "MessageContentDelta{refusalDeltaBlock=$refusalDeltaBlock}"
-            imageUrlDeltaBlock != null ->
-                "MessageContentDelta{imageUrlDeltaBlock=$imageUrlDeltaBlock}"
+            imageFile != null -> "MessageContentDelta{imageFile=$imageFile}"
+            text != null -> "MessageContentDelta{text=$text}"
+            refusal != null -> "MessageContentDelta{refusal=$refusal}"
+            imageUrl != null -> "MessageContentDelta{imageUrl=$imageUrl}"
             _json != null -> "MessageContentDelta{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid MessageContentDelta")
         }
@@ -144,23 +139,18 @@ private constructor(
          * content of a message.
          */
         @JvmStatic
-        fun ofImageFileDeltaBlock(imageFileDeltaBlock: ImageFileDeltaBlock) =
-            MessageContentDelta(imageFileDeltaBlock = imageFileDeltaBlock)
+        fun ofImageFile(imageFile: ImageFileDeltaBlock) = MessageContentDelta(imageFile = imageFile)
 
         /** The text content that is part of a message. */
-        @JvmStatic
-        fun ofTextDeltaBlock(textDeltaBlock: TextDeltaBlock) =
-            MessageContentDelta(textDeltaBlock = textDeltaBlock)
+        @JvmStatic fun ofText(text: TextDeltaBlock) = MessageContentDelta(text = text)
 
         /** The refusal content that is part of a message. */
         @JvmStatic
-        fun ofRefusalDeltaBlock(refusalDeltaBlock: RefusalDeltaBlock) =
-            MessageContentDelta(refusalDeltaBlock = refusalDeltaBlock)
+        fun ofRefusal(refusal: RefusalDeltaBlock) = MessageContentDelta(refusal = refusal)
 
         /** References an image URL in the content of a message. */
         @JvmStatic
-        fun ofImageUrlDeltaBlock(imageUrlDeltaBlock: ImageUrlDeltaBlock) =
-            MessageContentDelta(imageUrlDeltaBlock = imageUrlDeltaBlock)
+        fun ofImageUrl(imageUrl: ImageUrlDeltaBlock) = MessageContentDelta(imageUrl = imageUrl)
     }
 
     interface Visitor<out T> {
@@ -169,16 +159,16 @@ private constructor(
          * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
          * content of a message.
          */
-        fun visitImageFileDeltaBlock(imageFileDeltaBlock: ImageFileDeltaBlock): T
+        fun visitImageFile(imageFile: ImageFileDeltaBlock): T
 
         /** The text content that is part of a message. */
-        fun visitTextDeltaBlock(textDeltaBlock: TextDeltaBlock): T
+        fun visitText(text: TextDeltaBlock): T
 
         /** The refusal content that is part of a message. */
-        fun visitRefusalDeltaBlock(refusalDeltaBlock: RefusalDeltaBlock): T
+        fun visitRefusal(refusal: RefusalDeltaBlock): T
 
         /** References an image URL in the content of a message. */
-        fun visitImageUrlDeltaBlock(imageUrlDeltaBlock: ImageUrlDeltaBlock): T
+        fun visitImageUrl(imageUrl: ImageUrlDeltaBlock): T
 
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown MessageContentDelta: $json")
@@ -195,25 +185,25 @@ private constructor(
                 "image_file" -> {
                     tryDeserialize(node, jacksonTypeRef<ImageFileDeltaBlock>()) { it.validate() }
                         ?.let {
-                            return MessageContentDelta(imageFileDeltaBlock = it, _json = json)
+                            return MessageContentDelta(imageFile = it, _json = json)
                         }
                 }
                 "text" -> {
                     tryDeserialize(node, jacksonTypeRef<TextDeltaBlock>()) { it.validate() }
                         ?.let {
-                            return MessageContentDelta(textDeltaBlock = it, _json = json)
+                            return MessageContentDelta(text = it, _json = json)
                         }
                 }
                 "refusal" -> {
                     tryDeserialize(node, jacksonTypeRef<RefusalDeltaBlock>()) { it.validate() }
                         ?.let {
-                            return MessageContentDelta(refusalDeltaBlock = it, _json = json)
+                            return MessageContentDelta(refusal = it, _json = json)
                         }
                 }
                 "image_url" -> {
                     tryDeserialize(node, jacksonTypeRef<ImageUrlDeltaBlock>()) { it.validate() }
                         ?.let {
-                            return MessageContentDelta(imageUrlDeltaBlock = it, _json = json)
+                            return MessageContentDelta(imageUrl = it, _json = json)
                         }
                 }
             }
@@ -230,11 +220,10 @@ private constructor(
             provider: SerializerProvider
         ) {
             when {
-                value.imageFileDeltaBlock != null ->
-                    generator.writeObject(value.imageFileDeltaBlock)
-                value.textDeltaBlock != null -> generator.writeObject(value.textDeltaBlock)
-                value.refusalDeltaBlock != null -> generator.writeObject(value.refusalDeltaBlock)
-                value.imageUrlDeltaBlock != null -> generator.writeObject(value.imageUrlDeltaBlock)
+                value.imageFile != null -> generator.writeObject(value.imageFile)
+                value.text != null -> generator.writeObject(value.text)
+                value.refusal != null -> generator.writeObject(value.refusal)
+                value.imageUrl != null -> generator.writeObject(value.imageUrl)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid MessageContentDelta")
             }

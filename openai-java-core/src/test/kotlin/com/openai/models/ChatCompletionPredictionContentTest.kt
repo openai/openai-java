@@ -13,6 +13,6 @@ class ChatCompletionPredictionContentTest {
             ChatCompletionPredictionContent.builder().content("string").build()
         assertThat(chatCompletionPredictionContent).isNotNull
         assertThat(chatCompletionPredictionContent.content())
-            .isEqualTo(ChatCompletionPredictionContent.Content.ofTextContent("string"))
+            .isEqualTo(ChatCompletionPredictionContent.Content.ofText("string"))
     }
 }

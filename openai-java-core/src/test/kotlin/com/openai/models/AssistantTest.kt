@@ -47,9 +47,7 @@ class AssistantTest {
         assertThat(assistant.model()).isEqualTo("model")
         assertThat(assistant.name()).contains("name")
         assertThat(assistant.tools())
-            .containsExactly(
-                AssistantTool.ofCodeInterpreterTool(CodeInterpreterTool.builder().build())
-            )
+            .containsExactly(AssistantTool.ofCodeInterpreter(CodeInterpreterTool.builder().build()))
         assertThat(assistant.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
         assertThat(assistant.temperature()).contains(1.0)
         assertThat(assistant.toolResources())
