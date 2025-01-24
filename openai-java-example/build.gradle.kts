@@ -15,5 +15,5 @@ tasks.withType<JavaCompile>().configureEach {
 }
 
 application {
-    mainClass = "com.openai.example.Main"
+    mainClass = "com.openai.example.CompletionsExample"
 }
