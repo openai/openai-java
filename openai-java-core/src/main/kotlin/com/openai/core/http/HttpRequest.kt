@@ -1,5 +1,6 @@
 package com.openai.core.http
 
+import com.openai.core.checkRequired
 import com.openai.core.toImmutable
 
 class HttpRequest
@@ -134,7 +135,7 @@ private constructor(
 
         fun build(): HttpRequest =
             HttpRequest(
-                checkNotNull(method) { "`method` is required but was not set" },
+                checkRequired("method", method),
                 url,
                 pathSegments.toImmutable(),
                 headers.build(),
