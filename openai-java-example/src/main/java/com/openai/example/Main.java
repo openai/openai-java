@@ -12,12 +12,10 @@ public final class Main {
         OpenAIClient client = OpenAIOkHttpClient.fromEnv();
         ChatCompletionCreateParams completionCreateParams = ChatCompletionCreateParams.builder()
                 .model(ChatModel.GPT_3_5_TURBO)
-                .maxTokens(1024)
-                .addMessage(ChatCompletionMessageParam.ofChatCompletionUserMessageParam(
-                        ChatCompletionUserMessageParam.builder()
-                                .content(ChatCompletionUserMessageParam.Content.ofTextContent(
-                                        "Tell me a story about building the best SDK!"))
-                                .build()))
+                .maxCompletionTokens(1024)
+                .addMessage(ChatCompletionUserMessageParam.builder()
+                        .content("Tell me a story about building the best SDK!")
+                        .build())
                 .build();
 
         // Non-streaming example

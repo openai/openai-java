@@ -37,10 +37,10 @@ public final class AzureEntraIDExampleAsync {
         OpenAIClientAsync asyncClient = asyncClientBuilder.build();
 
         ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-                .addMessage(ChatCompletionMessageParam.ofChatCompletionUserMessageParam(
+                .addMessage(
                         ChatCompletionUserMessageParam.builder()
-                                .content(ChatCompletionUserMessageParam.Content.ofTextContent("Who won the world series in 2020?"))
-                                .build()))
+                                .content("Who won the world series in 2020?")
+                                .build())
                 .model("gpt-4o")
                 .build();
 
