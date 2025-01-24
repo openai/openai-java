@@ -23,43 +23,37 @@ import kotlin.jvm.optionals.getOrNull
 @JsonSerialize(using = FileChunkingStrategy.Serializer::class)
 class FileChunkingStrategy
 private constructor(
-    private val staticFileChunkingStrategyObject: StaticFileChunkingStrategyObject? = null,
-    private val otherFileChunkingStrategyObject: OtherFileChunkingStrategyObject? = null,
+    private val static_: StaticFileChunkingStrategyObject? = null,
+    private val other: OtherFileChunkingStrategyObject? = null,
     private val _json: JsonValue? = null,
 ) {
 
-    fun staticFileChunkingStrategyObject(): Optional<StaticFileChunkingStrategyObject> =
-        Optional.ofNullable(staticFileChunkingStrategyObject)
+    fun static_(): Optional<StaticFileChunkingStrategyObject> = Optional.ofNullable(static_)
 
     /**
      * This is returned when the chunking strategy is unknown. Typically, this is because the file
      * was indexed before the `chunking_strategy` concept was introduced in the API.
      */
-    fun otherFileChunkingStrategyObject(): Optional<OtherFileChunkingStrategyObject> =
-        Optional.ofNullable(otherFileChunkingStrategyObject)
+    fun other(): Optional<OtherFileChunkingStrategyObject> = Optional.ofNullable(other)
 
-    fun isStaticFileChunkingStrategyObject(): Boolean = staticFileChunkingStrategyObject != null
+    fun isStatic(): Boolean = static_ != null
 
-    fun isOtherFileChunkingStrategyObject(): Boolean = otherFileChunkingStrategyObject != null
+    fun isOther(): Boolean = other != null
 
-    fun asStaticFileChunkingStrategyObject(): StaticFileChunkingStrategyObject =
-        staticFileChunkingStrategyObject.getOrThrow("staticFileChunkingStrategyObject")
+    fun asStatic(): StaticFileChunkingStrategyObject = static_.getOrThrow("static_")
 
     /**
      * This is returned when the chunking strategy is unknown. Typically, this is because the file
      * was indexed before the `chunking_strategy` concept was introduced in the API.
      */
-    fun asOtherFileChunkingStrategyObject(): OtherFileChunkingStrategyObject =
-        otherFileChunkingStrategyObject.getOrThrow("otherFileChunkingStrategyObject")
+    fun asOther(): OtherFileChunkingStrategyObject = other.getOrThrow("other")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T {
         return when {
-            staticFileChunkingStrategyObject != null ->
-                visitor.visitStaticFileChunkingStrategyObject(staticFileChunkingStrategyObject)
-            otherFileChunkingStrategyObject != null ->
-                visitor.visitOtherFileChunkingStrategyObject(otherFileChunkingStrategyObject)
+            static_ != null -> visitor.visitStatic(static_)
+            other != null -> visitor.visitOther(other)
             else -> visitor.unknown(_json)
         }
     }
@@ -73,16 +67,12 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
-                override fun visitStaticFileChunkingStrategyObject(
-                    staticFileChunkingStrategyObject: StaticFileChunkingStrategyObject
-                ) {
-                    staticFileChunkingStrategyObject.validate()
+                override fun visitStatic(static_: StaticFileChunkingStrategyObject) {
+                    static_.validate()
                 }
 
-                override fun visitOtherFileChunkingStrategyObject(
-                    otherFileChunkingStrategyObject: OtherFileChunkingStrategyObject
-                ) {
-                    otherFileChunkingStrategyObject.validate()
+                override fun visitOther(other: OtherFileChunkingStrategyObject) {
+                    other.validate()
                 }
             }
         )
@@ -94,17 +84,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FileChunkingStrategy && staticFileChunkingStrategyObject == other.staticFileChunkingStrategyObject && otherFileChunkingStrategyObject == other.otherFileChunkingStrategyObject /* spotless:on */
+        return /* spotless:off */ other is FileChunkingStrategy && static_ == other.static_ && this.other == other.other /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(staticFileChunkingStrategyObject, otherFileChunkingStrategyObject) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(static_, other) /* spotless:on */
 
     override fun toString(): String =
         when {
-            staticFileChunkingStrategyObject != null ->
-                "FileChunkingStrategy{staticFileChunkingStrategyObject=$staticFileChunkingStrategyObject}"
-            otherFileChunkingStrategyObject != null ->
-                "FileChunkingStrategy{otherFileChunkingStrategyObject=$otherFileChunkingStrategyObject}"
+            static_ != null -> "FileChunkingStrategy{static_=$static_}"
+            other != null -> "FileChunkingStrategy{other=$other}"
             _json != null -> "FileChunkingStrategy{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid FileChunkingStrategy")
         }
@@ -112,36 +100,26 @@ private constructor(
     companion object {
 
         @JvmStatic
-        fun ofStaticFileChunkingStrategyObject(
-            staticFileChunkingStrategyObject: StaticFileChunkingStrategyObject
-        ) =
-            FileChunkingStrategy(
-                staticFileChunkingStrategyObject = staticFileChunkingStrategyObject
-            )
+        fun ofStatic(static_: StaticFileChunkingStrategyObject) =
+            FileChunkingStrategy(static_ = static_)
 
         /**
          * This is returned when the chunking strategy is unknown. Typically, this is because the
          * file was indexed before the `chunking_strategy` concept was introduced in the API.
          */
         @JvmStatic
-        fun ofOtherFileChunkingStrategyObject(
-            otherFileChunkingStrategyObject: OtherFileChunkingStrategyObject
-        ) = FileChunkingStrategy(otherFileChunkingStrategyObject = otherFileChunkingStrategyObject)
+        fun ofOther(other: OtherFileChunkingStrategyObject) = FileChunkingStrategy(other = other)
     }
 
     interface Visitor<out T> {
 
-        fun visitStaticFileChunkingStrategyObject(
-            staticFileChunkingStrategyObject: StaticFileChunkingStrategyObject
-        ): T
+        fun visitStatic(static_: StaticFileChunkingStrategyObject): T
 
         /**
          * This is returned when the chunking strategy is unknown. Typically, this is because the
          * file was indexed before the `chunking_strategy` concept was introduced in the API.
          */
-        fun visitOtherFileChunkingStrategyObject(
-            otherFileChunkingStrategyObject: OtherFileChunkingStrategyObject
-        ): T
+        fun visitOther(other: OtherFileChunkingStrategyObject): T
 
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown FileChunkingStrategy: $json")
@@ -160,10 +138,7 @@ private constructor(
                             it.validate()
                         }
                         ?.let {
-                            return FileChunkingStrategy(
-                                staticFileChunkingStrategyObject = it,
-                                _json = json
-                            )
+                            return FileChunkingStrategy(static_ = it, _json = json)
                         }
                 }
                 "other" -> {
@@ -171,10 +146,7 @@ private constructor(
                             it.validate()
                         }
                         ?.let {
-                            return FileChunkingStrategy(
-                                otherFileChunkingStrategyObject = it,
-                                _json = json
-                            )
+                            return FileChunkingStrategy(other = it, _json = json)
                         }
                 }
             }
@@ -191,10 +163,8 @@ private constructor(
             provider: SerializerProvider
         ) {
             when {
-                value.staticFileChunkingStrategyObject != null ->
-                    generator.writeObject(value.staticFileChunkingStrategyObject)
-                value.otherFileChunkingStrategyObject != null ->
-                    generator.writeObject(value.otherFileChunkingStrategyObject)
+                value.static_ != null -> generator.writeObject(value.static_)
+                value.other != null -> generator.writeObject(value.other)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid FileChunkingStrategy")
             }

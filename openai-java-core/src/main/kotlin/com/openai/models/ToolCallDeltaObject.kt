@@ -122,22 +122,22 @@ private constructor(
         }
 
         /** Details of the Code Interpreter tool call the run step was involved in. */
-        fun addToolCall(codeInterpreterToolCallDelta: CodeInterpreterToolCallDelta) =
-            addToolCall(ToolCallDelta.ofCodeInterpreterToolCallDelta(codeInterpreterToolCallDelta))
+        fun addToolCall(codeInterpreter: CodeInterpreterToolCallDelta) =
+            addToolCall(ToolCallDelta.ofCodeInterpreter(codeInterpreter))
 
         /**
          * An array of tool calls the run step was involved in. These can be associated with one of
          * three types of tools: `code_interpreter`, `file_search`, or `function`.
          */
-        fun addToolCall(fileSearchToolCallDelta: FileSearchToolCallDelta) =
-            addToolCall(ToolCallDelta.ofFileSearchToolCallDelta(fileSearchToolCallDelta))
+        fun addToolCall(fileSearch: FileSearchToolCallDelta) =
+            addToolCall(ToolCallDelta.ofFileSearch(fileSearch))
 
         /**
          * An array of tool calls the run step was involved in. These can be associated with one of
          * three types of tools: `code_interpreter`, `file_search`, or `function`.
          */
-        fun addToolCall(functionToolCallDelta: FunctionToolCallDelta) =
-            addToolCall(ToolCallDelta.ofFunctionToolCallDelta(functionToolCallDelta))
+        fun addToolCall(function: FunctionToolCallDelta) =
+            addToolCall(ToolCallDelta.ofFunction(function))
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()

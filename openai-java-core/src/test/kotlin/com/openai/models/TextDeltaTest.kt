@@ -30,7 +30,7 @@ class TextDeltaTest {
         assertThat(textDelta).isNotNull
         assertThat(textDelta.annotations().get())
             .containsExactly(
-                AnnotationDelta.ofFileCitationDeltaAnnotation(
+                AnnotationDelta.ofFileCitation(
                     FileCitationDeltaAnnotation.builder()
                         .index(0L)
                         .endIndex(0L)

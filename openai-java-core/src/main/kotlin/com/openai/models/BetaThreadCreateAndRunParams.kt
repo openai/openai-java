@@ -1152,21 +1152,20 @@ constructor(
              * Override the tools the assistant can use for this run. This is useful for modifying
              * the behavior on a per-run basis.
              */
-            fun addTool(codeInterpreterTool: CodeInterpreterTool) =
-                addTool(Tool.ofCodeInterpreterTool(codeInterpreterTool))
+            fun addTool(codeInterpreter: CodeInterpreterTool) =
+                addTool(Tool.ofCodeInterpreter(codeInterpreter))
 
             /**
              * Override the tools the assistant can use for this run. This is useful for modifying
              * the behavior on a per-run basis.
              */
-            fun addTool(fileSearchTool: FileSearchTool) =
-                addTool(Tool.ofFileSearchTool(fileSearchTool))
+            fun addTool(fileSearch: FileSearchTool) = addTool(Tool.ofFileSearch(fileSearch))
 
             /**
              * Override the tools the assistant can use for this run. This is useful for modifying
              * the behavior on a per-run basis.
              */
-            fun addTool(functionTool: FunctionTool) = addTool(Tool.ofFunctionTool(functionTool))
+            fun addTool(function: FunctionTool) = addTool(Tool.ofFunction(function))
 
             /**
              * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -1753,21 +1752,19 @@ constructor(
          * Override the tools the assistant can use for this run. This is useful for modifying the
          * behavior on a per-run basis.
          */
-        fun addTool(codeInterpreterTool: CodeInterpreterTool) = apply {
-            body.addTool(codeInterpreterTool)
-        }
+        fun addTool(codeInterpreter: CodeInterpreterTool) = apply { body.addTool(codeInterpreter) }
 
         /**
          * Override the tools the assistant can use for this run. This is useful for modifying the
          * behavior on a per-run basis.
          */
-        fun addTool(fileSearchTool: FileSearchTool) = apply { body.addTool(fileSearchTool) }
+        fun addTool(fileSearch: FileSearchTool) = apply { body.addTool(fileSearch) }
 
         /**
          * Override the tools the assistant can use for this run. This is useful for modifying the
          * behavior on a per-run basis.
          */
-        fun addTool(functionTool: FunctionTool) = apply { body.addTool(functionTool) }
+        fun addTool(function: FunctionTool) = apply { body.addTool(function) }
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -2253,7 +2250,7 @@ constructor(
                 fun content(content: JsonField<Content>) = apply { this.content = content }
 
                 /** The text contents of the message. */
-                fun content(textContent: String) = content(Content.ofTextContent(textContent))
+                fun content(text: String) = content(Content.ofText(text))
 
                 /**
                  * An array of content parts with a defined type, each can be of type `text` or
@@ -2362,13 +2359,13 @@ constructor(
             @JsonSerialize(using = Content.Serializer::class)
             class Content
             private constructor(
-                private val textContent: String? = null,
+                private val text: String? = null,
                 private val arrayOfContentParts: List<MessageContentPartParam>? = null,
                 private val _json: JsonValue? = null,
             ) {
 
                 /** The text contents of the message. */
-                fun textContent(): Optional<String> = Optional.ofNullable(textContent)
+                fun text(): Optional<String> = Optional.ofNullable(text)
 
                 /**
                  * An array of content parts with a defined type, each can be of type `text` or
@@ -2378,12 +2375,12 @@ constructor(
                 fun arrayOfContentParts(): Optional<List<MessageContentPartParam>> =
                     Optional.ofNullable(arrayOfContentParts)
 
-                fun isTextContent(): Boolean = textContent != null
+                fun isText(): Boolean = text != null
 
                 fun isArrayOfContentParts(): Boolean = arrayOfContentParts != null
 
                 /** The text contents of the message. */
-                fun asTextContent(): String = textContent.getOrThrow("textContent")
+                fun asText(): String = text.getOrThrow("text")
 
                 /**
                  * An array of content parts with a defined type, each can be of type `text` or
@@ -2397,7 +2394,7 @@ constructor(
 
                 fun <T> accept(visitor: Visitor<T>): T {
                     return when {
-                        textContent != null -> visitor.visitTextContent(textContent)
+                        text != null -> visitor.visitText(text)
                         arrayOfContentParts != null ->
                             visitor.visitArrayOfContentParts(arrayOfContentParts)
                         else -> visitor.unknown(_json)
@@ -2413,7 +2410,7 @@ constructor(
 
                     accept(
                         object : Visitor<Unit> {
-                            override fun visitTextContent(textContent: String) {}
+                            override fun visitText(text: String) {}
 
                             override fun visitArrayOfContentParts(
                                 arrayOfContentParts: List<MessageContentPartParam>
@@ -2430,14 +2427,14 @@ constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is Content && textContent == other.textContent && arrayOfContentParts == other.arrayOfContentParts /* spotless:on */
+                    return /* spotless:off */ other is Content && text == other.text && arrayOfContentParts == other.arrayOfContentParts /* spotless:on */
                 }
 
-                override fun hashCode(): Int = /* spotless:off */ Objects.hash(textContent, arrayOfContentParts) /* spotless:on */
+                override fun hashCode(): Int = /* spotless:off */ Objects.hash(text, arrayOfContentParts) /* spotless:on */
 
                 override fun toString(): String =
                     when {
-                        textContent != null -> "Content{textContent=$textContent}"
+                        text != null -> "Content{text=$text}"
                         arrayOfContentParts != null ->
                             "Content{arrayOfContentParts=$arrayOfContentParts}"
                         _json != null -> "Content{_unknown=$_json}"
@@ -2447,8 +2444,7 @@ constructor(
                 companion object {
 
                     /** The text contents of the message. */
-                    @JvmStatic
-                    fun ofTextContent(textContent: String) = Content(textContent = textContent)
+                    @JvmStatic fun ofText(text: String) = Content(text = text)
 
                     /**
                      * An array of content parts with a defined type, each can be of type `text` or
@@ -2464,7 +2460,7 @@ constructor(
                 interface Visitor<out T> {
 
                     /** The text contents of the message. */
-                    fun visitTextContent(textContent: String): T
+                    fun visitText(text: String): T
 
                     /**
                      * An array of content parts with a defined type, each can be of type `text` or
@@ -2487,7 +2483,7 @@ constructor(
                         val json = JsonValue.fromJsonNode(node)
 
                         tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                            return Content(textContent = it, _json = json)
+                            return Content(text = it, _json = json)
                         }
                         tryDeserialize(node, jacksonTypeRef<List<MessageContentPartParam>>()) {
                                 it.forEach { it.validate() }
@@ -2508,7 +2504,7 @@ constructor(
                         provider: SerializerProvider
                     ) {
                         when {
-                            value.textContent != null -> generator.writeObject(value.textContent)
+                            value.text != null -> generator.writeObject(value.text)
                             value.arrayOfContentParts != null ->
                                 generator.writeObject(value.arrayOfContentParts)
                             value._json != null -> generator.writeObject(value._json)
@@ -2673,8 +2669,8 @@ constructor(
                     }
 
                     /** The tools to add this file to. */
-                    fun addTool(codeInterpreterTool: CodeInterpreterTool) =
-                        addTool(Tool.ofCodeInterpreterTool(codeInterpreterTool))
+                    fun addTool(codeInterpreter: CodeInterpreterTool) =
+                        addTool(Tool.ofCodeInterpreter(codeInterpreter))
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
@@ -2710,22 +2706,22 @@ constructor(
                 @JsonSerialize(using = Tool.Serializer::class)
                 class Tool
                 private constructor(
-                    private val codeInterpreterTool: CodeInterpreterTool? = null,
+                    private val codeInterpreter: CodeInterpreterTool? = null,
                     private val fileSearch: JsonValue? = null,
                     private val _json: JsonValue? = null,
                 ) {
 
-                    fun codeInterpreterTool(): Optional<CodeInterpreterTool> =
-                        Optional.ofNullable(codeInterpreterTool)
+                    fun codeInterpreter(): Optional<CodeInterpreterTool> =
+                        Optional.ofNullable(codeInterpreter)
 
                     fun fileSearch(): Optional<JsonValue> = Optional.ofNullable(fileSearch)
 
-                    fun isCodeInterpreterTool(): Boolean = codeInterpreterTool != null
+                    fun isCodeInterpreter(): Boolean = codeInterpreter != null
 
                     fun isFileSearch(): Boolean = fileSearch != null
 
-                    fun asCodeInterpreterTool(): CodeInterpreterTool =
-                        codeInterpreterTool.getOrThrow("codeInterpreterTool")
+                    fun asCodeInterpreter(): CodeInterpreterTool =
+                        codeInterpreter.getOrThrow("codeInterpreter")
 
                     fun asFileSearch(): JsonValue = fileSearch.getOrThrow("fileSearch")
 
@@ -2733,8 +2729,7 @@ constructor(
 
                     fun <T> accept(visitor: Visitor<T>): T {
                         return when {
-                            codeInterpreterTool != null ->
-                                visitor.visitCodeInterpreterTool(codeInterpreterTool)
+                            codeInterpreter != null -> visitor.visitCodeInterpreter(codeInterpreter)
                             fileSearch != null -> visitor.visitFileSearch(fileSearch)
                             else -> visitor.unknown(_json)
                         }
@@ -2749,10 +2744,10 @@ constructor(
 
                         accept(
                             object : Visitor<Unit> {
-                                override fun visitCodeInterpreterTool(
-                                    codeInterpreterTool: CodeInterpreterTool
+                                override fun visitCodeInterpreter(
+                                    codeInterpreter: CodeInterpreterTool
                                 ) {
-                                    codeInterpreterTool.validate()
+                                    codeInterpreter.validate()
                                 }
 
                                 override fun visitFileSearch(fileSearch: JsonValue) {
@@ -2774,15 +2769,14 @@ constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is Tool && codeInterpreterTool == other.codeInterpreterTool && fileSearch == other.fileSearch /* spotless:on */
+                        return /* spotless:off */ other is Tool && codeInterpreter == other.codeInterpreter && fileSearch == other.fileSearch /* spotless:on */
                     }
 
-                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(codeInterpreterTool, fileSearch) /* spotless:on */
+                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(codeInterpreter, fileSearch) /* spotless:on */
 
                     override fun toString(): String =
                         when {
-                            codeInterpreterTool != null ->
-                                "Tool{codeInterpreterTool=$codeInterpreterTool}"
+                            codeInterpreter != null -> "Tool{codeInterpreter=$codeInterpreter}"
                             fileSearch != null -> "Tool{fileSearch=$fileSearch}"
                             _json != null -> "Tool{_unknown=$_json}"
                             else -> throw IllegalStateException("Invalid Tool")
@@ -2791,8 +2785,8 @@ constructor(
                     companion object {
 
                         @JvmStatic
-                        fun ofCodeInterpreterTool(codeInterpreterTool: CodeInterpreterTool) =
-                            Tool(codeInterpreterTool = codeInterpreterTool)
+                        fun ofCodeInterpreter(codeInterpreter: CodeInterpreterTool) =
+                            Tool(codeInterpreter = codeInterpreter)
 
                         @JvmStatic
                         fun ofFileSearch() =
@@ -2801,7 +2795,7 @@ constructor(
 
                     interface Visitor<out T> {
 
-                        fun visitCodeInterpreterTool(codeInterpreterTool: CodeInterpreterTool): T
+                        fun visitCodeInterpreter(codeInterpreter: CodeInterpreterTool): T
 
                         fun visitFileSearch(fileSearch: JsonValue): T
 
@@ -2823,7 +2817,7 @@ constructor(
                                             it.validate()
                                         }
                                         ?.let {
-                                            return Tool(codeInterpreterTool = it, _json = json)
+                                            return Tool(codeInterpreter = it, _json = json)
                                         }
                                 }
                                 "file_search" -> {
@@ -2859,8 +2853,8 @@ constructor(
                             provider: SerializerProvider
                         ) {
                             when {
-                                value.codeInterpreterTool != null ->
-                                    generator.writeObject(value.codeInterpreterTool)
+                                value.codeInterpreter != null ->
+                                    generator.writeObject(value.codeInterpreter)
                                 value.fileSearch != null -> generator.writeObject(value.fileSearch)
                                 value._json != null -> generator.writeObject(value._json)
                                 else -> throw IllegalStateException("Invalid Tool")
@@ -3471,28 +3465,15 @@ constructor(
                          * The default strategy. This strategy currently uses a
                          * `max_chunk_size_tokens` of `800` and `chunk_overlap_tokens` of `400`.
                          */
-                        fun chunkingStrategy(
-                            autoFileChunkingStrategyParam: AutoFileChunkingStrategyParam
-                        ) =
-                            chunkingStrategy(
-                                FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
-                                    autoFileChunkingStrategyParam
-                                )
-                            )
+                        fun chunkingStrategy(auto: AutoFileChunkingStrategyParam) =
+                            chunkingStrategy(FileChunkingStrategyParam.ofAuto(auto))
 
                         /**
                          * The chunking strategy used to chunk the file(s). If not set, will use the
                          * `auto` strategy. Only applicable if `file_ids` is non-empty.
                          */
-                        fun chunkingStrategy(
-                            staticFileChunkingStrategyObjectParam:
-                                StaticFileChunkingStrategyObjectParam
-                        ) =
-                            chunkingStrategy(
-                                FileChunkingStrategyParam.ofStaticFileChunkingStrategyObjectParam(
-                                    staticFileChunkingStrategyObjectParam
-                                )
-                            )
+                        fun chunkingStrategy(static_: StaticFileChunkingStrategyObjectParam) =
+                            chunkingStrategy(FileChunkingStrategyParam.ofStatic(static_))
 
                         /**
                          * A list of [file](https://platform.openai.com/docs/api-reference/files)
@@ -4060,39 +4041,37 @@ constructor(
     @JsonSerialize(using = Tool.Serializer::class)
     class Tool
     private constructor(
-        private val codeInterpreterTool: CodeInterpreterTool? = null,
-        private val fileSearchTool: FileSearchTool? = null,
-        private val functionTool: FunctionTool? = null,
+        private val codeInterpreter: CodeInterpreterTool? = null,
+        private val fileSearch: FileSearchTool? = null,
+        private val function: FunctionTool? = null,
         private val _json: JsonValue? = null,
     ) {
 
-        fun codeInterpreterTool(): Optional<CodeInterpreterTool> =
-            Optional.ofNullable(codeInterpreterTool)
+        fun codeInterpreter(): Optional<CodeInterpreterTool> = Optional.ofNullable(codeInterpreter)
 
-        fun fileSearchTool(): Optional<FileSearchTool> = Optional.ofNullable(fileSearchTool)
+        fun fileSearch(): Optional<FileSearchTool> = Optional.ofNullable(fileSearch)
 
-        fun functionTool(): Optional<FunctionTool> = Optional.ofNullable(functionTool)
+        fun function(): Optional<FunctionTool> = Optional.ofNullable(function)
 
-        fun isCodeInterpreterTool(): Boolean = codeInterpreterTool != null
+        fun isCodeInterpreter(): Boolean = codeInterpreter != null
 
-        fun isFileSearchTool(): Boolean = fileSearchTool != null
+        fun isFileSearch(): Boolean = fileSearch != null
 
-        fun isFunctionTool(): Boolean = functionTool != null
+        fun isFunction(): Boolean = function != null
 
-        fun asCodeInterpreterTool(): CodeInterpreterTool =
-            codeInterpreterTool.getOrThrow("codeInterpreterTool")
+        fun asCodeInterpreter(): CodeInterpreterTool = codeInterpreter.getOrThrow("codeInterpreter")
 
-        fun asFileSearchTool(): FileSearchTool = fileSearchTool.getOrThrow("fileSearchTool")
+        fun asFileSearch(): FileSearchTool = fileSearch.getOrThrow("fileSearch")
 
-        fun asFunctionTool(): FunctionTool = functionTool.getOrThrow("functionTool")
+        fun asFunction(): FunctionTool = function.getOrThrow("function")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
         fun <T> accept(visitor: Visitor<T>): T {
             return when {
-                codeInterpreterTool != null -> visitor.visitCodeInterpreterTool(codeInterpreterTool)
-                fileSearchTool != null -> visitor.visitFileSearchTool(fileSearchTool)
-                functionTool != null -> visitor.visitFunctionTool(functionTool)
+                codeInterpreter != null -> visitor.visitCodeInterpreter(codeInterpreter)
+                fileSearch != null -> visitor.visitFileSearch(fileSearch)
+                function != null -> visitor.visitFunction(function)
                 else -> visitor.unknown(_json)
             }
         }
@@ -4106,18 +4085,16 @@ constructor(
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitCodeInterpreterTool(
-                        codeInterpreterTool: CodeInterpreterTool
-                    ) {
-                        codeInterpreterTool.validate()
+                    override fun visitCodeInterpreter(codeInterpreter: CodeInterpreterTool) {
+                        codeInterpreter.validate()
                     }
 
-                    override fun visitFileSearchTool(fileSearchTool: FileSearchTool) {
-                        fileSearchTool.validate()
+                    override fun visitFileSearch(fileSearch: FileSearchTool) {
+                        fileSearch.validate()
                     }
 
-                    override fun visitFunctionTool(functionTool: FunctionTool) {
-                        functionTool.validate()
+                    override fun visitFunction(function: FunctionTool) {
+                        function.validate()
                     }
                 }
             )
@@ -4129,16 +4106,16 @@ constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Tool && codeInterpreterTool == other.codeInterpreterTool && fileSearchTool == other.fileSearchTool && functionTool == other.functionTool /* spotless:on */
+            return /* spotless:off */ other is Tool && codeInterpreter == other.codeInterpreter && fileSearch == other.fileSearch && function == other.function /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(codeInterpreterTool, fileSearchTool, functionTool) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(codeInterpreter, fileSearch, function) /* spotless:on */
 
         override fun toString(): String =
             when {
-                codeInterpreterTool != null -> "Tool{codeInterpreterTool=$codeInterpreterTool}"
-                fileSearchTool != null -> "Tool{fileSearchTool=$fileSearchTool}"
-                functionTool != null -> "Tool{functionTool=$functionTool}"
+                codeInterpreter != null -> "Tool{codeInterpreter=$codeInterpreter}"
+                fileSearch != null -> "Tool{fileSearch=$fileSearch}"
+                function != null -> "Tool{function=$function}"
                 _json != null -> "Tool{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Tool")
             }
@@ -4146,24 +4123,21 @@ constructor(
         companion object {
 
             @JvmStatic
-            fun ofCodeInterpreterTool(codeInterpreterTool: CodeInterpreterTool) =
-                Tool(codeInterpreterTool = codeInterpreterTool)
+            fun ofCodeInterpreter(codeInterpreter: CodeInterpreterTool) =
+                Tool(codeInterpreter = codeInterpreter)
 
-            @JvmStatic
-            fun ofFileSearchTool(fileSearchTool: FileSearchTool) =
-                Tool(fileSearchTool = fileSearchTool)
+            @JvmStatic fun ofFileSearch(fileSearch: FileSearchTool) = Tool(fileSearch = fileSearch)
 
-            @JvmStatic
-            fun ofFunctionTool(functionTool: FunctionTool) = Tool(functionTool = functionTool)
+            @JvmStatic fun ofFunction(function: FunctionTool) = Tool(function = function)
         }
 
         interface Visitor<out T> {
 
-            fun visitCodeInterpreterTool(codeInterpreterTool: CodeInterpreterTool): T
+            fun visitCodeInterpreter(codeInterpreter: CodeInterpreterTool): T
 
-            fun visitFileSearchTool(fileSearchTool: FileSearchTool): T
+            fun visitFileSearch(fileSearch: FileSearchTool): T
 
-            fun visitFunctionTool(functionTool: FunctionTool): T
+            fun visitFunction(function: FunctionTool): T
 
             fun unknown(json: JsonValue?): T {
                 throw OpenAIInvalidDataException("Unknown Tool: $json")
@@ -4177,15 +4151,15 @@ constructor(
 
                 tryDeserialize(node, jacksonTypeRef<CodeInterpreterTool>()) { it.validate() }
                     ?.let {
-                        return Tool(codeInterpreterTool = it, _json = json)
+                        return Tool(codeInterpreter = it, _json = json)
                     }
                 tryDeserialize(node, jacksonTypeRef<FileSearchTool>()) { it.validate() }
                     ?.let {
-                        return Tool(fileSearchTool = it, _json = json)
+                        return Tool(fileSearch = it, _json = json)
                     }
                 tryDeserialize(node, jacksonTypeRef<FunctionTool>()) { it.validate() }
                     ?.let {
-                        return Tool(functionTool = it, _json = json)
+                        return Tool(function = it, _json = json)
                     }
 
                 return Tool(_json = json)
@@ -4200,10 +4174,9 @@ constructor(
                 provider: SerializerProvider
             ) {
                 when {
-                    value.codeInterpreterTool != null ->
-                        generator.writeObject(value.codeInterpreterTool)
-                    value.fileSearchTool != null -> generator.writeObject(value.fileSearchTool)
-                    value.functionTool != null -> generator.writeObject(value.functionTool)
+                    value.codeInterpreter != null -> generator.writeObject(value.codeInterpreter)
+                    value.fileSearch != null -> generator.writeObject(value.fileSearch)
+                    value.function != null -> generator.writeObject(value.function)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Tool")
                 }

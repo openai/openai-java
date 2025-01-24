@@ -16,7 +16,7 @@ class ChatCompletionToolMessageParamTest {
                 .build()
         assertThat(chatCompletionToolMessageParam).isNotNull
         assertThat(chatCompletionToolMessageParam.content())
-            .isEqualTo(ChatCompletionToolMessageParam.Content.ofTextContent("string"))
+            .isEqualTo(ChatCompletionToolMessageParam.Content.ofText("string"))
         assertThat(chatCompletionToolMessageParam.toolCallId()).isEqualTo("tool_call_id")
     }
 }

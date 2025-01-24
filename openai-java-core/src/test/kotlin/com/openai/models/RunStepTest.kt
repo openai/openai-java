@@ -67,7 +67,7 @@ class RunStepTest {
         assertThat(runStep.status()).isEqualTo(RunStep.Status.IN_PROGRESS)
         assertThat(runStep.stepDetails())
             .isEqualTo(
-                RunStep.StepDetails.ofMessageCreationStepDetails(
+                RunStep.StepDetails.ofMessageCreation(
                     MessageCreationStepDetails.builder()
                         .messageCreation(
                             MessageCreationStepDetails.MessageCreation.builder()

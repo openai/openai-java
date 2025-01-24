@@ -284,16 +284,14 @@ private constructor(
             }
 
             /** Text output from the Code Interpreter tool call as part of a run step. */
-            fun addOutput(codeInterpreterLogs: CodeInterpreterLogs) =
-                addOutput(Output.ofCodeInterpreterLogs(codeInterpreterLogs))
+            fun addOutput(logs: CodeInterpreterLogs) = addOutput(Output.ofLogs(logs))
 
             /**
              * The outputs from the Code Interpreter tool call. Code Interpreter can output one or
              * more items, including text (`logs`) or images (`image`). Each of these are
              * represented by a different object type.
              */
-            fun addOutput(codeInterpreterOutputImage: CodeInterpreterOutputImage) =
-                addOutput(Output.ofCodeInterpreterOutputImage(codeInterpreterOutputImage))
+            fun addOutput(image: CodeInterpreterOutputImage) = addOutput(Output.ofImage(image))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -327,37 +325,31 @@ private constructor(
         @JsonSerialize(using = Output.Serializer::class)
         class Output
         private constructor(
-            private val codeInterpreterLogs: CodeInterpreterLogs? = null,
-            private val codeInterpreterOutputImage: CodeInterpreterOutputImage? = null,
+            private val logs: CodeInterpreterLogs? = null,
+            private val image: CodeInterpreterOutputImage? = null,
             private val _json: JsonValue? = null,
         ) {
 
             /** Text output from the Code Interpreter tool call as part of a run step. */
-            fun codeInterpreterLogs(): Optional<CodeInterpreterLogs> =
-                Optional.ofNullable(codeInterpreterLogs)
+            fun logs(): Optional<CodeInterpreterLogs> = Optional.ofNullable(logs)
 
-            fun codeInterpreterOutputImage(): Optional<CodeInterpreterOutputImage> =
-                Optional.ofNullable(codeInterpreterOutputImage)
+            fun image(): Optional<CodeInterpreterOutputImage> = Optional.ofNullable(image)
 
-            fun isCodeInterpreterLogs(): Boolean = codeInterpreterLogs != null
+            fun isLogs(): Boolean = logs != null
 
-            fun isCodeInterpreterOutputImage(): Boolean = codeInterpreterOutputImage != null
+            fun isImage(): Boolean = image != null
 
             /** Text output from the Code Interpreter tool call as part of a run step. */
-            fun asCodeInterpreterLogs(): CodeInterpreterLogs =
-                codeInterpreterLogs.getOrThrow("codeInterpreterLogs")
+            fun asLogs(): CodeInterpreterLogs = logs.getOrThrow("logs")
 
-            fun asCodeInterpreterOutputImage(): CodeInterpreterOutputImage =
-                codeInterpreterOutputImage.getOrThrow("codeInterpreterOutputImage")
+            fun asImage(): CodeInterpreterOutputImage = image.getOrThrow("image")
 
             fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
             fun <T> accept(visitor: Visitor<T>): T {
                 return when {
-                    codeInterpreterLogs != null ->
-                        visitor.visitCodeInterpreterLogs(codeInterpreterLogs)
-                    codeInterpreterOutputImage != null ->
-                        visitor.visitCodeInterpreterOutputImage(codeInterpreterOutputImage)
+                    logs != null -> visitor.visitLogs(logs)
+                    image != null -> visitor.visitImage(image)
                     else -> visitor.unknown(_json)
                 }
             }
@@ -371,16 +363,12 @@ private constructor(
 
                 accept(
                     object : Visitor<Unit> {
-                        override fun visitCodeInterpreterLogs(
-                            codeInterpreterLogs: CodeInterpreterLogs
-                        ) {
-                            codeInterpreterLogs.validate()
+                        override fun visitLogs(logs: CodeInterpreterLogs) {
+                            logs.validate()
                         }
 
-                        override fun visitCodeInterpreterOutputImage(
-                            codeInterpreterOutputImage: CodeInterpreterOutputImage
-                        ) {
-                            codeInterpreterOutputImage.validate()
+                        override fun visitImage(image: CodeInterpreterOutputImage) {
+                            image.validate()
                         }
                     }
                 )
@@ -392,17 +380,15 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Output && codeInterpreterLogs == other.codeInterpreterLogs && codeInterpreterOutputImage == other.codeInterpreterOutputImage /* spotless:on */
+                return /* spotless:off */ other is Output && logs == other.logs && image == other.image /* spotless:on */
             }
 
-            override fun hashCode(): Int = /* spotless:off */ Objects.hash(codeInterpreterLogs, codeInterpreterOutputImage) /* spotless:on */
+            override fun hashCode(): Int = /* spotless:off */ Objects.hash(logs, image) /* spotless:on */
 
             override fun toString(): String =
                 when {
-                    codeInterpreterLogs != null ->
-                        "Output{codeInterpreterLogs=$codeInterpreterLogs}"
-                    codeInterpreterOutputImage != null ->
-                        "Output{codeInterpreterOutputImage=$codeInterpreterOutputImage}"
+                    logs != null -> "Output{logs=$logs}"
+                    image != null -> "Output{image=$image}"
                     _json != null -> "Output{_unknown=$_json}"
                     else -> throw IllegalStateException("Invalid Output")
                 }
@@ -410,24 +396,17 @@ private constructor(
             companion object {
 
                 /** Text output from the Code Interpreter tool call as part of a run step. */
-                @JvmStatic
-                fun ofCodeInterpreterLogs(codeInterpreterLogs: CodeInterpreterLogs) =
-                    Output(codeInterpreterLogs = codeInterpreterLogs)
+                @JvmStatic fun ofLogs(logs: CodeInterpreterLogs) = Output(logs = logs)
 
-                @JvmStatic
-                fun ofCodeInterpreterOutputImage(
-                    codeInterpreterOutputImage: CodeInterpreterOutputImage
-                ) = Output(codeInterpreterOutputImage = codeInterpreterOutputImage)
+                @JvmStatic fun ofImage(image: CodeInterpreterOutputImage) = Output(image = image)
             }
 
             interface Visitor<out T> {
 
                 /** Text output from the Code Interpreter tool call as part of a run step. */
-                fun visitCodeInterpreterLogs(codeInterpreterLogs: CodeInterpreterLogs): T
+                fun visitLogs(logs: CodeInterpreterLogs): T
 
-                fun visitCodeInterpreterOutputImage(
-                    codeInterpreterOutputImage: CodeInterpreterOutputImage
-                ): T
+                fun visitImage(image: CodeInterpreterOutputImage): T
 
                 fun unknown(json: JsonValue?): T {
                     throw OpenAIInvalidDataException("Unknown Output: $json")
@@ -446,7 +425,7 @@ private constructor(
                                     it.validate()
                                 }
                                 ?.let {
-                                    return Output(codeInterpreterLogs = it, _json = json)
+                                    return Output(logs = it, _json = json)
                                 }
                         }
                         "image" -> {
@@ -454,7 +433,7 @@ private constructor(
                                     it.validate()
                                 }
                                 ?.let {
-                                    return Output(codeInterpreterOutputImage = it, _json = json)
+                                    return Output(image = it, _json = json)
                                 }
                         }
                     }
@@ -471,10 +450,8 @@ private constructor(
                     provider: SerializerProvider
                 ) {
                     when {
-                        value.codeInterpreterLogs != null ->
-                            generator.writeObject(value.codeInterpreterLogs)
-                        value.codeInterpreterOutputImage != null ->
-                            generator.writeObject(value.codeInterpreterOutputImage)
+                        value.logs != null -> generator.writeObject(value.logs)
+                        value.image != null -> generator.writeObject(value.image)
                         value._json != null -> generator.writeObject(value._json)
                         else -> throw IllegalStateException("Invalid Output")
                     }

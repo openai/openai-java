@@ -131,9 +131,7 @@ class RunTest {
         assertThat(run.toolChoice())
             .contains(AssistantToolChoiceOption.ofAuto(AssistantToolChoiceOption.Auto.NONE))
         assertThat(run.tools())
-            .containsExactly(
-                AssistantTool.ofCodeInterpreterTool(CodeInterpreterTool.builder().build())
-            )
+            .containsExactly(AssistantTool.ofCodeInterpreter(CodeInterpreterTool.builder().build()))
         assertThat(run.truncationStrategy())
             .contains(
                 Run.TruncationStrategy.builder()

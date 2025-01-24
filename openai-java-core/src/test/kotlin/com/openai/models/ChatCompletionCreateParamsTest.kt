@@ -165,7 +165,7 @@ class ChatCompletionCreateParamsTest {
         assertThat(body.messages())
             .isEqualTo(
                 listOf(
-                    ChatCompletionMessageParam.ofChatCompletionDeveloperMessageParam(
+                    ChatCompletionMessageParam.ofDeveloper(
                         ChatCompletionDeveloperMessageParam.builder()
                             .content("string")
                             .name("name")
@@ -226,7 +226,7 @@ class ChatCompletionCreateParamsTest {
         assertThat(body.reasoningEffort()).contains(ChatCompletionReasoningEffort.LOW)
         assertThat(body.responseFormat())
             .contains(
-                ChatCompletionCreateParams.ResponseFormat.ofResponseFormatText(
+                ChatCompletionCreateParams.ResponseFormat.ofText(
                     ResponseFormatText.builder().build()
                 )
             )
@@ -277,7 +277,7 @@ class ChatCompletionCreateParamsTest {
         assertThat(body.messages())
             .isEqualTo(
                 listOf(
-                    ChatCompletionMessageParam.ofChatCompletionDeveloperMessageParam(
+                    ChatCompletionMessageParam.ofDeveloper(
                         ChatCompletionDeveloperMessageParam.builder().content("string").build()
                     )
                 )

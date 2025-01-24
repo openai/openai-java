@@ -407,22 +407,20 @@ private constructor(
          * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
          * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
          */
-        fun addTool(codeInterpreterTool: CodeInterpreterTool) =
-            addTool(AssistantTool.ofCodeInterpreterTool(codeInterpreterTool))
+        fun addTool(codeInterpreter: CodeInterpreterTool) =
+            addTool(AssistantTool.ofCodeInterpreter(codeInterpreter))
 
         /**
          * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
          * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
          */
-        fun addTool(fileSearchTool: FileSearchTool) =
-            addTool(AssistantTool.ofFileSearchTool(fileSearchTool))
+        fun addTool(fileSearch: FileSearchTool) = addTool(AssistantTool.ofFileSearch(fileSearch))
 
         /**
          * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
          * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
          */
-        fun addTool(functionTool: FunctionTool) =
-            addTool(AssistantTool.ofFunctionTool(functionTool))
+        fun addTool(function: FunctionTool) = addTool(AssistantTool.ofFunction(function))
 
         /**
          * Specifies the format that the model must output. Compatible with

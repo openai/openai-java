@@ -22,39 +22,37 @@ import kotlin.jvm.optionals.getOrNull
 @JsonSerialize(using = AssistantTool.Serializer::class)
 class AssistantTool
 private constructor(
-    private val codeInterpreterTool: CodeInterpreterTool? = null,
-    private val fileSearchTool: FileSearchTool? = null,
-    private val functionTool: FunctionTool? = null,
+    private val codeInterpreter: CodeInterpreterTool? = null,
+    private val fileSearch: FileSearchTool? = null,
+    private val function: FunctionTool? = null,
     private val _json: JsonValue? = null,
 ) {
 
-    fun codeInterpreterTool(): Optional<CodeInterpreterTool> =
-        Optional.ofNullable(codeInterpreterTool)
+    fun codeInterpreter(): Optional<CodeInterpreterTool> = Optional.ofNullable(codeInterpreter)
 
-    fun fileSearchTool(): Optional<FileSearchTool> = Optional.ofNullable(fileSearchTool)
+    fun fileSearch(): Optional<FileSearchTool> = Optional.ofNullable(fileSearch)
 
-    fun functionTool(): Optional<FunctionTool> = Optional.ofNullable(functionTool)
+    fun function(): Optional<FunctionTool> = Optional.ofNullable(function)
 
-    fun isCodeInterpreterTool(): Boolean = codeInterpreterTool != null
+    fun isCodeInterpreter(): Boolean = codeInterpreter != null
 
-    fun isFileSearchTool(): Boolean = fileSearchTool != null
+    fun isFileSearch(): Boolean = fileSearch != null
 
-    fun isFunctionTool(): Boolean = functionTool != null
+    fun isFunction(): Boolean = function != null
 
-    fun asCodeInterpreterTool(): CodeInterpreterTool =
-        codeInterpreterTool.getOrThrow("codeInterpreterTool")
+    fun asCodeInterpreter(): CodeInterpreterTool = codeInterpreter.getOrThrow("codeInterpreter")
 
-    fun asFileSearchTool(): FileSearchTool = fileSearchTool.getOrThrow("fileSearchTool")
+    fun asFileSearch(): FileSearchTool = fileSearch.getOrThrow("fileSearch")
 
-    fun asFunctionTool(): FunctionTool = functionTool.getOrThrow("functionTool")
+    fun asFunction(): FunctionTool = function.getOrThrow("function")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T {
         return when {
-            codeInterpreterTool != null -> visitor.visitCodeInterpreterTool(codeInterpreterTool)
-            fileSearchTool != null -> visitor.visitFileSearchTool(fileSearchTool)
-            functionTool != null -> visitor.visitFunctionTool(functionTool)
+            codeInterpreter != null -> visitor.visitCodeInterpreter(codeInterpreter)
+            fileSearch != null -> visitor.visitFileSearch(fileSearch)
+            function != null -> visitor.visitFunction(function)
             else -> visitor.unknown(_json)
         }
     }
@@ -68,16 +66,16 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
-                override fun visitCodeInterpreterTool(codeInterpreterTool: CodeInterpreterTool) {
-                    codeInterpreterTool.validate()
+                override fun visitCodeInterpreter(codeInterpreter: CodeInterpreterTool) {
+                    codeInterpreter.validate()
                 }
 
-                override fun visitFileSearchTool(fileSearchTool: FileSearchTool) {
-                    fileSearchTool.validate()
+                override fun visitFileSearch(fileSearch: FileSearchTool) {
+                    fileSearch.validate()
                 }
 
-                override fun visitFunctionTool(functionTool: FunctionTool) {
-                    functionTool.validate()
+                override fun visitFunction(function: FunctionTool) {
+                    function.validate()
                 }
             }
         )
@@ -89,16 +87,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is AssistantTool && codeInterpreterTool == other.codeInterpreterTool && fileSearchTool == other.fileSearchTool && functionTool == other.functionTool /* spotless:on */
+        return /* spotless:off */ other is AssistantTool && codeInterpreter == other.codeInterpreter && fileSearch == other.fileSearch && function == other.function /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(codeInterpreterTool, fileSearchTool, functionTool) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(codeInterpreter, fileSearch, function) /* spotless:on */
 
     override fun toString(): String =
         when {
-            codeInterpreterTool != null -> "AssistantTool{codeInterpreterTool=$codeInterpreterTool}"
-            fileSearchTool != null -> "AssistantTool{fileSearchTool=$fileSearchTool}"
-            functionTool != null -> "AssistantTool{functionTool=$functionTool}"
+            codeInterpreter != null -> "AssistantTool{codeInterpreter=$codeInterpreter}"
+            fileSearch != null -> "AssistantTool{fileSearch=$fileSearch}"
+            function != null -> "AssistantTool{function=$function}"
             _json != null -> "AssistantTool{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid AssistantTool")
         }
@@ -106,24 +104,22 @@ private constructor(
     companion object {
 
         @JvmStatic
-        fun ofCodeInterpreterTool(codeInterpreterTool: CodeInterpreterTool) =
-            AssistantTool(codeInterpreterTool = codeInterpreterTool)
+        fun ofCodeInterpreter(codeInterpreter: CodeInterpreterTool) =
+            AssistantTool(codeInterpreter = codeInterpreter)
 
         @JvmStatic
-        fun ofFileSearchTool(fileSearchTool: FileSearchTool) =
-            AssistantTool(fileSearchTool = fileSearchTool)
+        fun ofFileSearch(fileSearch: FileSearchTool) = AssistantTool(fileSearch = fileSearch)
 
-        @JvmStatic
-        fun ofFunctionTool(functionTool: FunctionTool) = AssistantTool(functionTool = functionTool)
+        @JvmStatic fun ofFunction(function: FunctionTool) = AssistantTool(function = function)
     }
 
     interface Visitor<out T> {
 
-        fun visitCodeInterpreterTool(codeInterpreterTool: CodeInterpreterTool): T
+        fun visitCodeInterpreter(codeInterpreter: CodeInterpreterTool): T
 
-        fun visitFileSearchTool(fileSearchTool: FileSearchTool): T
+        fun visitFileSearch(fileSearch: FileSearchTool): T
 
-        fun visitFunctionTool(functionTool: FunctionTool): T
+        fun visitFunction(function: FunctionTool): T
 
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown AssistantTool: $json")
@@ -140,19 +136,19 @@ private constructor(
                 "code_interpreter" -> {
                     tryDeserialize(node, jacksonTypeRef<CodeInterpreterTool>()) { it.validate() }
                         ?.let {
-                            return AssistantTool(codeInterpreterTool = it, _json = json)
+                            return AssistantTool(codeInterpreter = it, _json = json)
                         }
                 }
                 "file_search" -> {
                     tryDeserialize(node, jacksonTypeRef<FileSearchTool>()) { it.validate() }
                         ?.let {
-                            return AssistantTool(fileSearchTool = it, _json = json)
+                            return AssistantTool(fileSearch = it, _json = json)
                         }
                 }
                 "function" -> {
                     tryDeserialize(node, jacksonTypeRef<FunctionTool>()) { it.validate() }
                         ?.let {
-                            return AssistantTool(functionTool = it, _json = json)
+                            return AssistantTool(function = it, _json = json)
                         }
                 }
             }
@@ -169,10 +165,9 @@ private constructor(
             provider: SerializerProvider
         ) {
             when {
-                value.codeInterpreterTool != null ->
-                    generator.writeObject(value.codeInterpreterTool)
-                value.fileSearchTool != null -> generator.writeObject(value.fileSearchTool)
-                value.functionTool != null -> generator.writeObject(value.functionTool)
+                value.codeInterpreter != null -> generator.writeObject(value.codeInterpreter)
+                value.fileSearch != null -> generator.writeObject(value.fileSearch)
+                value.function != null -> generator.writeObject(value.function)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid AssistantTool")
             }

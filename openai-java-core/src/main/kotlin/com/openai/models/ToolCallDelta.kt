@@ -23,48 +23,41 @@ import kotlin.jvm.optionals.getOrNull
 @JsonSerialize(using = ToolCallDelta.Serializer::class)
 class ToolCallDelta
 private constructor(
-    private val codeInterpreterToolCallDelta: CodeInterpreterToolCallDelta? = null,
-    private val fileSearchToolCallDelta: FileSearchToolCallDelta? = null,
-    private val functionToolCallDelta: FunctionToolCallDelta? = null,
+    private val codeInterpreter: CodeInterpreterToolCallDelta? = null,
+    private val fileSearch: FileSearchToolCallDelta? = null,
+    private val function: FunctionToolCallDelta? = null,
     private val _json: JsonValue? = null,
 ) {
 
     /** Details of the Code Interpreter tool call the run step was involved in. */
-    fun codeInterpreterToolCallDelta(): Optional<CodeInterpreterToolCallDelta> =
-        Optional.ofNullable(codeInterpreterToolCallDelta)
+    fun codeInterpreter(): Optional<CodeInterpreterToolCallDelta> =
+        Optional.ofNullable(codeInterpreter)
 
-    fun fileSearchToolCallDelta(): Optional<FileSearchToolCallDelta> =
-        Optional.ofNullable(fileSearchToolCallDelta)
+    fun fileSearch(): Optional<FileSearchToolCallDelta> = Optional.ofNullable(fileSearch)
 
-    fun functionToolCallDelta(): Optional<FunctionToolCallDelta> =
-        Optional.ofNullable(functionToolCallDelta)
+    fun function(): Optional<FunctionToolCallDelta> = Optional.ofNullable(function)
 
-    fun isCodeInterpreterToolCallDelta(): Boolean = codeInterpreterToolCallDelta != null
+    fun isCodeInterpreter(): Boolean = codeInterpreter != null
 
-    fun isFileSearchToolCallDelta(): Boolean = fileSearchToolCallDelta != null
+    fun isFileSearch(): Boolean = fileSearch != null
 
-    fun isFunctionToolCallDelta(): Boolean = functionToolCallDelta != null
+    fun isFunction(): Boolean = function != null
 
     /** Details of the Code Interpreter tool call the run step was involved in. */
-    fun asCodeInterpreterToolCallDelta(): CodeInterpreterToolCallDelta =
-        codeInterpreterToolCallDelta.getOrThrow("codeInterpreterToolCallDelta")
+    fun asCodeInterpreter(): CodeInterpreterToolCallDelta =
+        codeInterpreter.getOrThrow("codeInterpreter")
 
-    fun asFileSearchToolCallDelta(): FileSearchToolCallDelta =
-        fileSearchToolCallDelta.getOrThrow("fileSearchToolCallDelta")
+    fun asFileSearch(): FileSearchToolCallDelta = fileSearch.getOrThrow("fileSearch")
 
-    fun asFunctionToolCallDelta(): FunctionToolCallDelta =
-        functionToolCallDelta.getOrThrow("functionToolCallDelta")
+    fun asFunction(): FunctionToolCallDelta = function.getOrThrow("function")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T {
         return when {
-            codeInterpreterToolCallDelta != null ->
-                visitor.visitCodeInterpreterToolCallDelta(codeInterpreterToolCallDelta)
-            fileSearchToolCallDelta != null ->
-                visitor.visitFileSearchToolCallDelta(fileSearchToolCallDelta)
-            functionToolCallDelta != null ->
-                visitor.visitFunctionToolCallDelta(functionToolCallDelta)
+            codeInterpreter != null -> visitor.visitCodeInterpreter(codeInterpreter)
+            fileSearch != null -> visitor.visitFileSearch(fileSearch)
+            function != null -> visitor.visitFunction(function)
             else -> visitor.unknown(_json)
         }
     }
@@ -78,22 +71,16 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
-                override fun visitCodeInterpreterToolCallDelta(
-                    codeInterpreterToolCallDelta: CodeInterpreterToolCallDelta
-                ) {
-                    codeInterpreterToolCallDelta.validate()
+                override fun visitCodeInterpreter(codeInterpreter: CodeInterpreterToolCallDelta) {
+                    codeInterpreter.validate()
                 }
 
-                override fun visitFileSearchToolCallDelta(
-                    fileSearchToolCallDelta: FileSearchToolCallDelta
-                ) {
-                    fileSearchToolCallDelta.validate()
+                override fun visitFileSearch(fileSearch: FileSearchToolCallDelta) {
+                    fileSearch.validate()
                 }
 
-                override fun visitFunctionToolCallDelta(
-                    functionToolCallDelta: FunctionToolCallDelta
-                ) {
-                    functionToolCallDelta.validate()
+                override fun visitFunction(function: FunctionToolCallDelta) {
+                    function.validate()
                 }
             }
         )
@@ -105,19 +92,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ToolCallDelta && codeInterpreterToolCallDelta == other.codeInterpreterToolCallDelta && fileSearchToolCallDelta == other.fileSearchToolCallDelta && functionToolCallDelta == other.functionToolCallDelta /* spotless:on */
+        return /* spotless:off */ other is ToolCallDelta && codeInterpreter == other.codeInterpreter && fileSearch == other.fileSearch && function == other.function /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(codeInterpreterToolCallDelta, fileSearchToolCallDelta, functionToolCallDelta) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(codeInterpreter, fileSearch, function) /* spotless:on */
 
     override fun toString(): String =
         when {
-            codeInterpreterToolCallDelta != null ->
-                "ToolCallDelta{codeInterpreterToolCallDelta=$codeInterpreterToolCallDelta}"
-            fileSearchToolCallDelta != null ->
-                "ToolCallDelta{fileSearchToolCallDelta=$fileSearchToolCallDelta}"
-            functionToolCallDelta != null ->
-                "ToolCallDelta{functionToolCallDelta=$functionToolCallDelta}"
+            codeInterpreter != null -> "ToolCallDelta{codeInterpreter=$codeInterpreter}"
+            fileSearch != null -> "ToolCallDelta{fileSearch=$fileSearch}"
+            function != null -> "ToolCallDelta{function=$function}"
             _json != null -> "ToolCallDelta{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ToolCallDelta")
         }
@@ -126,29 +110,25 @@ private constructor(
 
         /** Details of the Code Interpreter tool call the run step was involved in. */
         @JvmStatic
-        fun ofCodeInterpreterToolCallDelta(
-            codeInterpreterToolCallDelta: CodeInterpreterToolCallDelta
-        ) = ToolCallDelta(codeInterpreterToolCallDelta = codeInterpreterToolCallDelta)
+        fun ofCodeInterpreter(codeInterpreter: CodeInterpreterToolCallDelta) =
+            ToolCallDelta(codeInterpreter = codeInterpreter)
 
         @JvmStatic
-        fun ofFileSearchToolCallDelta(fileSearchToolCallDelta: FileSearchToolCallDelta) =
-            ToolCallDelta(fileSearchToolCallDelta = fileSearchToolCallDelta)
+        fun ofFileSearch(fileSearch: FileSearchToolCallDelta) =
+            ToolCallDelta(fileSearch = fileSearch)
 
         @JvmStatic
-        fun ofFunctionToolCallDelta(functionToolCallDelta: FunctionToolCallDelta) =
-            ToolCallDelta(functionToolCallDelta = functionToolCallDelta)
+        fun ofFunction(function: FunctionToolCallDelta) = ToolCallDelta(function = function)
     }
 
     interface Visitor<out T> {
 
         /** Details of the Code Interpreter tool call the run step was involved in. */
-        fun visitCodeInterpreterToolCallDelta(
-            codeInterpreterToolCallDelta: CodeInterpreterToolCallDelta
-        ): T
+        fun visitCodeInterpreter(codeInterpreter: CodeInterpreterToolCallDelta): T
 
-        fun visitFileSearchToolCallDelta(fileSearchToolCallDelta: FileSearchToolCallDelta): T
+        fun visitFileSearch(fileSearch: FileSearchToolCallDelta): T
 
-        fun visitFunctionToolCallDelta(functionToolCallDelta: FunctionToolCallDelta): T
+        fun visitFunction(function: FunctionToolCallDelta): T
 
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown ToolCallDelta: $json")
@@ -167,7 +147,7 @@ private constructor(
                             it.validate()
                         }
                         ?.let {
-                            return ToolCallDelta(codeInterpreterToolCallDelta = it, _json = json)
+                            return ToolCallDelta(codeInterpreter = it, _json = json)
                         }
                 }
                 "file_search" -> {
@@ -175,13 +155,13 @@ private constructor(
                             it.validate()
                         }
                         ?.let {
-                            return ToolCallDelta(fileSearchToolCallDelta = it, _json = json)
+                            return ToolCallDelta(fileSearch = it, _json = json)
                         }
                 }
                 "function" -> {
                     tryDeserialize(node, jacksonTypeRef<FunctionToolCallDelta>()) { it.validate() }
                         ?.let {
-                            return ToolCallDelta(functionToolCallDelta = it, _json = json)
+                            return ToolCallDelta(function = it, _json = json)
                         }
                 }
             }
@@ -198,12 +178,9 @@ private constructor(
             provider: SerializerProvider
         ) {
             when {
-                value.codeInterpreterToolCallDelta != null ->
-                    generator.writeObject(value.codeInterpreterToolCallDelta)
-                value.fileSearchToolCallDelta != null ->
-                    generator.writeObject(value.fileSearchToolCallDelta)
-                value.functionToolCallDelta != null ->
-                    generator.writeObject(value.functionToolCallDelta)
+                value.codeInterpreter != null -> generator.writeObject(value.codeInterpreter)
+                value.fileSearch != null -> generator.writeObject(value.fileSearch)
+                value.function != null -> generator.writeObject(value.function)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid ToolCallDelta")
             }

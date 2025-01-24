@@ -23,43 +23,39 @@ import kotlin.jvm.optionals.getOrNull
 @JsonSerialize(using = ToolCall.Serializer::class)
 class ToolCall
 private constructor(
-    private val codeInterpreterToolCall: CodeInterpreterToolCall? = null,
-    private val fileSearchToolCall: FileSearchToolCall? = null,
-    private val functionToolCall: FunctionToolCall? = null,
+    private val codeInterpreter: CodeInterpreterToolCall? = null,
+    private val fileSearch: FileSearchToolCall? = null,
+    private val function: FunctionToolCall? = null,
     private val _json: JsonValue? = null,
 ) {
 
     /** Details of the Code Interpreter tool call the run step was involved in. */
-    fun codeInterpreterToolCall(): Optional<CodeInterpreterToolCall> =
-        Optional.ofNullable(codeInterpreterToolCall)
+    fun codeInterpreter(): Optional<CodeInterpreterToolCall> = Optional.ofNullable(codeInterpreter)
 
-    fun fileSearchToolCall(): Optional<FileSearchToolCall> = Optional.ofNullable(fileSearchToolCall)
+    fun fileSearch(): Optional<FileSearchToolCall> = Optional.ofNullable(fileSearch)
 
-    fun functionToolCall(): Optional<FunctionToolCall> = Optional.ofNullable(functionToolCall)
+    fun function(): Optional<FunctionToolCall> = Optional.ofNullable(function)
 
-    fun isCodeInterpreterToolCall(): Boolean = codeInterpreterToolCall != null
+    fun isCodeInterpreter(): Boolean = codeInterpreter != null
 
-    fun isFileSearchToolCall(): Boolean = fileSearchToolCall != null
+    fun isFileSearch(): Boolean = fileSearch != null
 
-    fun isFunctionToolCall(): Boolean = functionToolCall != null
+    fun isFunction(): Boolean = function != null
 
     /** Details of the Code Interpreter tool call the run step was involved in. */
-    fun asCodeInterpreterToolCall(): CodeInterpreterToolCall =
-        codeInterpreterToolCall.getOrThrow("codeInterpreterToolCall")
+    fun asCodeInterpreter(): CodeInterpreterToolCall = codeInterpreter.getOrThrow("codeInterpreter")
 
-    fun asFileSearchToolCall(): FileSearchToolCall =
-        fileSearchToolCall.getOrThrow("fileSearchToolCall")
+    fun asFileSearch(): FileSearchToolCall = fileSearch.getOrThrow("fileSearch")
 
-    fun asFunctionToolCall(): FunctionToolCall = functionToolCall.getOrThrow("functionToolCall")
+    fun asFunction(): FunctionToolCall = function.getOrThrow("function")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T {
         return when {
-            codeInterpreterToolCall != null ->
-                visitor.visitCodeInterpreterToolCall(codeInterpreterToolCall)
-            fileSearchToolCall != null -> visitor.visitFileSearchToolCall(fileSearchToolCall)
-            functionToolCall != null -> visitor.visitFunctionToolCall(functionToolCall)
+            codeInterpreter != null -> visitor.visitCodeInterpreter(codeInterpreter)
+            fileSearch != null -> visitor.visitFileSearch(fileSearch)
+            function != null -> visitor.visitFunction(function)
             else -> visitor.unknown(_json)
         }
     }
@@ -73,18 +69,16 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
-                override fun visitCodeInterpreterToolCall(
-                    codeInterpreterToolCall: CodeInterpreterToolCall
-                ) {
-                    codeInterpreterToolCall.validate()
+                override fun visitCodeInterpreter(codeInterpreter: CodeInterpreterToolCall) {
+                    codeInterpreter.validate()
                 }
 
-                override fun visitFileSearchToolCall(fileSearchToolCall: FileSearchToolCall) {
-                    fileSearchToolCall.validate()
+                override fun visitFileSearch(fileSearch: FileSearchToolCall) {
+                    fileSearch.validate()
                 }
 
-                override fun visitFunctionToolCall(functionToolCall: FunctionToolCall) {
-                    functionToolCall.validate()
+                override fun visitFunction(function: FunctionToolCall) {
+                    function.validate()
                 }
             }
         )
@@ -96,17 +90,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ToolCall && codeInterpreterToolCall == other.codeInterpreterToolCall && fileSearchToolCall == other.fileSearchToolCall && functionToolCall == other.functionToolCall /* spotless:on */
+        return /* spotless:off */ other is ToolCall && codeInterpreter == other.codeInterpreter && fileSearch == other.fileSearch && function == other.function /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(codeInterpreterToolCall, fileSearchToolCall, functionToolCall) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(codeInterpreter, fileSearch, function) /* spotless:on */
 
     override fun toString(): String =
         when {
-            codeInterpreterToolCall != null ->
-                "ToolCall{codeInterpreterToolCall=$codeInterpreterToolCall}"
-            fileSearchToolCall != null -> "ToolCall{fileSearchToolCall=$fileSearchToolCall}"
-            functionToolCall != null -> "ToolCall{functionToolCall=$functionToolCall}"
+            codeInterpreter != null -> "ToolCall{codeInterpreter=$codeInterpreter}"
+            fileSearch != null -> "ToolCall{fileSearch=$fileSearch}"
+            function != null -> "ToolCall{function=$function}"
             _json != null -> "ToolCall{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ToolCall")
         }
@@ -115,26 +108,23 @@ private constructor(
 
         /** Details of the Code Interpreter tool call the run step was involved in. */
         @JvmStatic
-        fun ofCodeInterpreterToolCall(codeInterpreterToolCall: CodeInterpreterToolCall) =
-            ToolCall(codeInterpreterToolCall = codeInterpreterToolCall)
+        fun ofCodeInterpreter(codeInterpreter: CodeInterpreterToolCall) =
+            ToolCall(codeInterpreter = codeInterpreter)
 
         @JvmStatic
-        fun ofFileSearchToolCall(fileSearchToolCall: FileSearchToolCall) =
-            ToolCall(fileSearchToolCall = fileSearchToolCall)
+        fun ofFileSearch(fileSearch: FileSearchToolCall) = ToolCall(fileSearch = fileSearch)
 
-        @JvmStatic
-        fun ofFunctionToolCall(functionToolCall: FunctionToolCall) =
-            ToolCall(functionToolCall = functionToolCall)
+        @JvmStatic fun ofFunction(function: FunctionToolCall) = ToolCall(function = function)
     }
 
     interface Visitor<out T> {
 
         /** Details of the Code Interpreter tool call the run step was involved in. */
-        fun visitCodeInterpreterToolCall(codeInterpreterToolCall: CodeInterpreterToolCall): T
+        fun visitCodeInterpreter(codeInterpreter: CodeInterpreterToolCall): T
 
-        fun visitFileSearchToolCall(fileSearchToolCall: FileSearchToolCall): T
+        fun visitFileSearch(fileSearch: FileSearchToolCall): T
 
-        fun visitFunctionToolCall(functionToolCall: FunctionToolCall): T
+        fun visitFunction(function: FunctionToolCall): T
 
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown ToolCall: $json")
@@ -153,19 +143,19 @@ private constructor(
                             it.validate()
                         }
                         ?.let {
-                            return ToolCall(codeInterpreterToolCall = it, _json = json)
+                            return ToolCall(codeInterpreter = it, _json = json)
                         }
                 }
                 "file_search" -> {
                     tryDeserialize(node, jacksonTypeRef<FileSearchToolCall>()) { it.validate() }
                         ?.let {
-                            return ToolCall(fileSearchToolCall = it, _json = json)
+                            return ToolCall(fileSearch = it, _json = json)
                         }
                 }
                 "function" -> {
                     tryDeserialize(node, jacksonTypeRef<FunctionToolCall>()) { it.validate() }
                         ?.let {
-                            return ToolCall(functionToolCall = it, _json = json)
+                            return ToolCall(function = it, _json = json)
                         }
                 }
             }
@@ -182,10 +172,9 @@ private constructor(
             provider: SerializerProvider
         ) {
             when {
-                value.codeInterpreterToolCall != null ->
-                    generator.writeObject(value.codeInterpreterToolCall)
-                value.fileSearchToolCall != null -> generator.writeObject(value.fileSearchToolCall)
-                value.functionToolCall != null -> generator.writeObject(value.functionToolCall)
+                value.codeInterpreter != null -> generator.writeObject(value.codeInterpreter)
+                value.fileSearch != null -> generator.writeObject(value.fileSearch)
+                value.function != null -> generator.writeObject(value.function)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid ToolCall")
             }

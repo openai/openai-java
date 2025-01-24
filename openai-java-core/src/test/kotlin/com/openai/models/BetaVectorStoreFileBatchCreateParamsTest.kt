@@ -29,9 +29,7 @@ class BetaVectorStoreFileBatchCreateParamsTest {
         assertThat(body.fileIds()).isEqualTo(listOf("string"))
         assertThat(body.chunkingStrategy())
             .contains(
-                FileChunkingStrategyParam.ofAutoFileChunkingStrategyParam(
-                    AutoFileChunkingStrategyParam.builder().build()
-                )
+                FileChunkingStrategyParam.ofAuto(AutoFileChunkingStrategyParam.builder().build())
             )
     }
 

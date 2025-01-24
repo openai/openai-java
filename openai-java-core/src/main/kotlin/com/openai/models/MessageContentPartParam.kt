@@ -26,9 +26,9 @@ import kotlin.jvm.optionals.getOrNull
 @JsonSerialize(using = MessageContentPartParam.Serializer::class)
 class MessageContentPartParam
 private constructor(
-    private val imageFileContentBlock: ImageFileContentBlock? = null,
-    private val imageUrlContentBlock: ImageUrlContentBlock? = null,
-    private val textContentBlockParam: TextContentBlockParam? = null,
+    private val imageFile: ImageFileContentBlock? = null,
+    private val imageUrl: ImageUrlContentBlock? = null,
+    private val text: TextContentBlockParam? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -36,47 +36,39 @@ private constructor(
      * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
      * content of a message.
      */
-    fun imageFileContentBlock(): Optional<ImageFileContentBlock> =
-        Optional.ofNullable(imageFileContentBlock)
+    fun imageFile(): Optional<ImageFileContentBlock> = Optional.ofNullable(imageFile)
 
     /** References an image URL in the content of a message. */
-    fun imageUrlContentBlock(): Optional<ImageUrlContentBlock> =
-        Optional.ofNullable(imageUrlContentBlock)
+    fun imageUrl(): Optional<ImageUrlContentBlock> = Optional.ofNullable(imageUrl)
 
     /** The text content that is part of a message. */
-    fun textContentBlockParam(): Optional<TextContentBlockParam> =
-        Optional.ofNullable(textContentBlockParam)
+    fun text(): Optional<TextContentBlockParam> = Optional.ofNullable(text)
 
-    fun isImageFileContentBlock(): Boolean = imageFileContentBlock != null
+    fun isImageFile(): Boolean = imageFile != null
 
-    fun isImageUrlContentBlock(): Boolean = imageUrlContentBlock != null
+    fun isImageUrl(): Boolean = imageUrl != null
 
-    fun isTextContentBlockParam(): Boolean = textContentBlockParam != null
+    fun isText(): Boolean = text != null
 
     /**
      * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
      * content of a message.
      */
-    fun asImageFileContentBlock(): ImageFileContentBlock =
-        imageFileContentBlock.getOrThrow("imageFileContentBlock")
+    fun asImageFile(): ImageFileContentBlock = imageFile.getOrThrow("imageFile")
 
     /** References an image URL in the content of a message. */
-    fun asImageUrlContentBlock(): ImageUrlContentBlock =
-        imageUrlContentBlock.getOrThrow("imageUrlContentBlock")
+    fun asImageUrl(): ImageUrlContentBlock = imageUrl.getOrThrow("imageUrl")
 
     /** The text content that is part of a message. */
-    fun asTextContentBlockParam(): TextContentBlockParam =
-        textContentBlockParam.getOrThrow("textContentBlockParam")
+    fun asText(): TextContentBlockParam = text.getOrThrow("text")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T {
         return when {
-            imageFileContentBlock != null ->
-                visitor.visitImageFileContentBlock(imageFileContentBlock)
-            imageUrlContentBlock != null -> visitor.visitImageUrlContentBlock(imageUrlContentBlock)
-            textContentBlockParam != null ->
-                visitor.visitTextContentBlockParam(textContentBlockParam)
+            imageFile != null -> visitor.visitImageFile(imageFile)
+            imageUrl != null -> visitor.visitImageUrl(imageUrl)
+            text != null -> visitor.visitText(text)
             else -> visitor.unknown(_json)
         }
     }
@@ -90,20 +82,16 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
-                override fun visitImageFileContentBlock(
-                    imageFileContentBlock: ImageFileContentBlock
-                ) {
-                    imageFileContentBlock.validate()
+                override fun visitImageFile(imageFile: ImageFileContentBlock) {
+                    imageFile.validate()
                 }
 
-                override fun visitImageUrlContentBlock(imageUrlContentBlock: ImageUrlContentBlock) {
-                    imageUrlContentBlock.validate()
+                override fun visitImageUrl(imageUrl: ImageUrlContentBlock) {
+                    imageUrl.validate()
                 }
 
-                override fun visitTextContentBlockParam(
-                    textContentBlockParam: TextContentBlockParam
-                ) {
-                    textContentBlockParam.validate()
+                override fun visitText(text: TextContentBlockParam) {
+                    text.validate()
                 }
             }
         )
@@ -115,19 +103,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is MessageContentPartParam && imageFileContentBlock == other.imageFileContentBlock && imageUrlContentBlock == other.imageUrlContentBlock && textContentBlockParam == other.textContentBlockParam /* spotless:on */
+        return /* spotless:off */ other is MessageContentPartParam && imageFile == other.imageFile && imageUrl == other.imageUrl && text == other.text /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(imageFileContentBlock, imageUrlContentBlock, textContentBlockParam) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(imageFile, imageUrl, text) /* spotless:on */
 
     override fun toString(): String =
         when {
-            imageFileContentBlock != null ->
-                "MessageContentPartParam{imageFileContentBlock=$imageFileContentBlock}"
-            imageUrlContentBlock != null ->
-                "MessageContentPartParam{imageUrlContentBlock=$imageUrlContentBlock}"
-            textContentBlockParam != null ->
-                "MessageContentPartParam{textContentBlockParam=$textContentBlockParam}"
+            imageFile != null -> "MessageContentPartParam{imageFile=$imageFile}"
+            imageUrl != null -> "MessageContentPartParam{imageUrl=$imageUrl}"
+            text != null -> "MessageContentPartParam{text=$text}"
             _json != null -> "MessageContentPartParam{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid MessageContentPartParam")
         }
@@ -139,18 +124,16 @@ private constructor(
          * content of a message.
          */
         @JvmStatic
-        fun ofImageFileContentBlock(imageFileContentBlock: ImageFileContentBlock) =
-            MessageContentPartParam(imageFileContentBlock = imageFileContentBlock)
+        fun ofImageFile(imageFile: ImageFileContentBlock) =
+            MessageContentPartParam(imageFile = imageFile)
 
         /** References an image URL in the content of a message. */
         @JvmStatic
-        fun ofImageUrlContentBlock(imageUrlContentBlock: ImageUrlContentBlock) =
-            MessageContentPartParam(imageUrlContentBlock = imageUrlContentBlock)
+        fun ofImageUrl(imageUrl: ImageUrlContentBlock) =
+            MessageContentPartParam(imageUrl = imageUrl)
 
         /** The text content that is part of a message. */
-        @JvmStatic
-        fun ofTextContentBlockParam(textContentBlockParam: TextContentBlockParam) =
-            MessageContentPartParam(textContentBlockParam = textContentBlockParam)
+        @JvmStatic fun ofText(text: TextContentBlockParam) = MessageContentPartParam(text = text)
     }
 
     interface Visitor<out T> {
@@ -159,13 +142,13 @@ private constructor(
          * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
          * content of a message.
          */
-        fun visitImageFileContentBlock(imageFileContentBlock: ImageFileContentBlock): T
+        fun visitImageFile(imageFile: ImageFileContentBlock): T
 
         /** References an image URL in the content of a message. */
-        fun visitImageUrlContentBlock(imageUrlContentBlock: ImageUrlContentBlock): T
+        fun visitImageUrl(imageUrl: ImageUrlContentBlock): T
 
         /** The text content that is part of a message. */
-        fun visitTextContentBlockParam(textContentBlockParam: TextContentBlockParam): T
+        fun visitText(text: TextContentBlockParam): T
 
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown MessageContentPartParam: $json")
@@ -182,19 +165,19 @@ private constructor(
                 "image_file" -> {
                     tryDeserialize(node, jacksonTypeRef<ImageFileContentBlock>()) { it.validate() }
                         ?.let {
-                            return MessageContentPartParam(imageFileContentBlock = it, _json = json)
+                            return MessageContentPartParam(imageFile = it, _json = json)
                         }
                 }
                 "image_url" -> {
                     tryDeserialize(node, jacksonTypeRef<ImageUrlContentBlock>()) { it.validate() }
                         ?.let {
-                            return MessageContentPartParam(imageUrlContentBlock = it, _json = json)
+                            return MessageContentPartParam(imageUrl = it, _json = json)
                         }
                 }
                 "text" -> {
                     tryDeserialize(node, jacksonTypeRef<TextContentBlockParam>()) { it.validate() }
                         ?.let {
-                            return MessageContentPartParam(textContentBlockParam = it, _json = json)
+                            return MessageContentPartParam(text = it, _json = json)
                         }
                 }
             }
@@ -211,12 +194,9 @@ private constructor(
             provider: SerializerProvider
         ) {
             when {
-                value.imageFileContentBlock != null ->
-                    generator.writeObject(value.imageFileContentBlock)
-                value.imageUrlContentBlock != null ->
-                    generator.writeObject(value.imageUrlContentBlock)
-                value.textContentBlockParam != null ->
-                    generator.writeObject(value.textContentBlockParam)
+                value.imageFile != null -> generator.writeObject(value.imageFile)
+                value.imageUrl != null -> generator.writeObject(value.imageUrl)
+                value.text != null -> generator.writeObject(value.text)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid MessageContentPartParam")
             }
