@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.14.0 (2025-01-24)
+
+Full Changelog: [v0.13.0...v0.14.0](https://github.com/openai/openai-java/compare/v0.13.0...v0.14.0)
+
+### ⚠ BREAKING CHANGES
+
+* **client:** better union variant method and variable names ([#157](https://github.com/openai/openai-java/issues/157))
+
+### Features
+
+* **client:** better union variant method and variable names ([#157](https://github.com/openai/openai-java/issues/157)) ([da5bce5](https://github.com/openai/openai-java/commit/da5bce5d00af53d7297133af09352a7176c2f83e))
+
+
+### Bug Fixes
+
+* examples ([3473781](https://github.com/openai/openai-java/commit/3473781ca26d25531f368485291f9972e600631b))
+
+
+### Chores
+
+* **internal:** swap `checkNotNull` to `checkRequired` ([#156](https://github.com/openai/openai-java/issues/156)) ([d6f65f7](https://github.com/openai/openai-java/commit/d6f65f7c0e25adbce97b22f7a649f6c3eaeb61ed))
+
+
+### Documentation
+
+* move up requirements section ([#154](https://github.com/openai/openai-java/issues/154)) ([48fc646](https://github.com/openai/openai-java/commit/48fc646957ad4ff69c93b40d59ea9d5e8a22eece))
+* update readme ([#152](https://github.com/openai/openai-java/issues/152)) ([293dc47](https://github.com/openai/openai-java/commit/293dc47b242e204b6c6e419002dbb560cb455169))
+
 ## 0.13.0 (2025-01-22)
 
 Full Changelog: [v0.12.0...v0.13.0](https://github.com/openai/openai-java/compare/v0.12.0...v0.13.0)
