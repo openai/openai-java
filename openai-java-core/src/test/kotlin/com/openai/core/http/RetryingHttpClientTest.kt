@@ -45,6 +45,7 @@ internal class RetryingHttpClientTest {
         val retryingClient =
             RetryingHttpClient.builder()
                 .httpClient(httpClient)
+                .maxRetries(2)
                 .idempotencyHeader("X-Some-Header")
                 .build()
         val response = retryingClient.execute(request)
