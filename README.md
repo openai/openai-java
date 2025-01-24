@@ -46,6 +46,8 @@ This library requires Java 8 or later.
 
 ## Usage
 
+See the [`openai-java-example`](openai-java-example/src/main/java/com/openai/example) directory for complete and runnable examples.
+
 ### Configure the client
 
 Use `OpenAIOkHttpClient.builder()` to configure the client. At a minimum you need to set `.apiKey()`:
@@ -290,41 +292,19 @@ This library throws exceptions in a single hierarchy for easy handling:
 ## Microsoft Azure OpenAI
 
 To use this library with [Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/overview), use the same 
-OpenAI client builder but with the Azure-specific configuration. 
+OpenAI client builder but with the Azure-specific configuration.
 
 ```java
-OpenAIOkHttpClient.Builder clientBuilder = OpenAIOkHttpClient.builder();
-
-/* Azure-specific code starts here */
-// You can either set 'endpoint' directly in the builder.
-// or set the env var "AZURE_OPENAI_ENDPOINT" and use fromEnv() method instead
-clientBuilder
-    .baseUrl(System.getenv("AZURE_OPENAI_ENDPOINT"))
-    .credential(BearerTokenCredential.create(
-        AuthenticationUtil.getBearerTokenSupplier(
-            new DefaultAzureCredentialBuilder().build(), "https://cognitiveservices.azure.com/.default")
-    ));
-/* Azure-specific code ends here */
-
-OpenAIClient client = clientBuilder.build();
-
-ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-    .addMessage(ChatCompletionMessageParam.ofChatCompletionUserMessageParam(
-        ChatCompletionUserMessageParam.builder()
-            .content(ChatCompletionUserMessageParam.Content.ofTextContent("Who won the world series in 2020?"))
-            .build()))
-    .model("gpt-4o")
-    .build();
-
-ChatCompletion chatCompletion = client.chat().completions().create(params);
-
-List<ChatCompletion.Choice> choices = chatCompletion.choices();
-for (ChatCompletion.Choice choice : choices) {
-    System.out.println("Choice content: " + choice.message().content().get());
-}
+OpenAIClient client = OpenAIOkHttpClient.builder()
+        // Gets the API key from the `AZURE_OPENAI_KEY` environment variable
+        .fromEnv()
+        // Set the Azure Entra ID
+        .credential(BearerTokenCredential.create(AuthenticationUtil.getBearerTokenSupplier(
+                new DefaultAzureCredentialBuilder().build(), "https://cognitiveservices.azure.com/.default")))
+        .build();
 ```
 
-See the complete Azure OpenAI examples in the [Azure OpenAI example](https://github.com/openai/openai-java/tree/next/openai-azure-java-example/src/main/java/com.openai.azure.examples).
+See the complete Azure OpenAI example in the [`openai-java-example`](openai-java-example/src/main/java/com/openai/example/AzureEntraIdExample.java) directory. The other examples in the directory also work with Azure as long as the client is configured to use it.  
 
 ## Network options
 
