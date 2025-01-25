@@ -23,6 +23,7 @@ public final class ModelListAsyncExample {
                         .forEach(
                                 model -> {
                                     System.out.println(model.id());
+                                    // Keep iterating
                                     return true;
                                 },
                                 pageFuture.defaultExecutor()))
