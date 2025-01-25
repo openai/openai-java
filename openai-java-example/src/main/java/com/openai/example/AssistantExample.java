@@ -19,10 +19,12 @@ public final class AssistantExample {
                 .create(BetaAssistantCreateParams.builder()
                         .name("Math Tutor")
                         .instructions("You are a personal math tutor. Write and run code to answer math questions.")
+                        // TODO: Update this example once we support `addCodeInterpreterTool()` or similar.
                         .addTool(CodeInterpreterTool.builder().build())
                         .model(ChatModel.GPT_4O_MINI)
                         .build());
         Thread thread =
+                // TODO: Update this example once we support `.create()` without arguments.
                 client.beta().threads().create(BetaThreadCreateParams.builder().build());
         client.beta()
                 .threads()

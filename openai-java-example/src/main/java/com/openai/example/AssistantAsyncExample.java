@@ -19,11 +19,13 @@ public final class AssistantAsyncExample {
                 .create(BetaAssistantCreateParams.builder()
                         .name("Math Tutor")
                         .instructions("You are a personal math tutor. Write and run code to answer math questions.")
+                        // TODO: Update this example once we support `addCodeInterpreterTool()` or similar.
                         .addTool(CodeInterpreterTool.builder().build())
                         .model(ChatModel.GPT_4O_MINI)
                         .build());
         CompletableFuture<String> threadIdFuture = client.beta()
                 .threads()
+                // TODO: Update this example once we support `.create()` without arguments.
                 .create(BetaThreadCreateParams.builder().build())
                 .thenComposeAsync(thread -> client.beta()
                         .threads()
