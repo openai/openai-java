@@ -1,0 +1,131 @@
+public final class com/openai/client/okhttp/OkHttpClient : com/openai/core/http/HttpClient {
+	public static final field Companion Lcom/openai/client/okhttp/OkHttpClient$Companion;
+	public synthetic fun <init> (Lokhttp3/OkHttpClient;Lokhttp3/HttpUrl;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public static final fun builder ()Lcom/openai/client/okhttp/OkHttpClient$Builder;
+	public fun close ()V
+	public fun execute (Lcom/openai/core/http/HttpRequest;Lcom/openai/core/RequestOptions;)Lcom/openai/core/http/HttpResponse;
+	public fun executeAsync (Lcom/openai/core/http/HttpRequest;Lcom/openai/core/RequestOptions;)Ljava/util/concurrent/CompletableFuture;
+}
+
+public final class com/openai/client/okhttp/OkHttpClient$Builder {
+	public fun <init> ()V
+	public final fun baseUrl (Ljava/lang/String;)Lcom/openai/client/okhttp/OkHttpClient$Builder;
+	public final fun build ()Lcom/openai/client/okhttp/OkHttpClient;
+	public final fun proxy (Ljava/net/Proxy;)Lcom/openai/client/okhttp/OkHttpClient$Builder;
+	public final fun timeout (Ljava/time/Duration;)Lcom/openai/client/okhttp/OkHttpClient$Builder;
+}
+
+public final class com/openai/client/okhttp/OkHttpClient$Companion {
+	public final fun builder ()Lcom/openai/client/okhttp/OkHttpClient$Builder;
+}
+
+public final class com/openai/client/okhttp/OpenAIOkHttpClient {
+	public static final field Companion Lcom/openai/client/okhttp/OpenAIOkHttpClient$Companion;
+	public static final fun builder ()Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public static final fun fromEnv ()Lcom/openai/client/OpenAIClient;
+}
+
+public final class com/openai/client/okhttp/OpenAIOkHttpClient$Builder {
+	public fun <init> ()V
+	public final fun apiKey (Ljava/lang/String;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun azureServiceVersion (Lcom/openai/azure/AzureOpenAIServiceVersion;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun baseUrl (Ljava/lang/String;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun build ()Lcom/openai/client/OpenAIClient;
+	public final fun clock (Ljava/time/Clock;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun credential (Lcom/openai/credential/Credential;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun fromEnv ()Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun headers (Lcom/openai/core/http/Headers;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun headers (Ljava/util/Map;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun jsonMapper (Lcom/fasterxml/jackson/databind/json/JsonMapper;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun maxRetries (I)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun organization (Ljava/lang/String;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun organization (Ljava/util/Optional;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun project (Ljava/lang/String;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun project (Ljava/util/Optional;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun proxy (Ljava/net/Proxy;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun putAllHeaders (Lcom/openai/core/http/Headers;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun putAllHeaders (Ljava/util/Map;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun putAllQueryParams (Lcom/openai/core/http/QueryParams;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun putAllQueryParams (Ljava/util/Map;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun putHeader (Ljava/lang/String;Ljava/lang/String;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun putHeaders (Ljava/lang/String;Ljava/lang/Iterable;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun putQueryParam (Ljava/lang/String;Ljava/lang/String;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun putQueryParams (Ljava/lang/String;Ljava/lang/Iterable;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun queryParams (Lcom/openai/core/http/QueryParams;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun queryParams (Ljava/util/Map;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun removeAllHeaders (Ljava/util/Set;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun removeAllQueryParams (Ljava/util/Set;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun removeHeaders (Ljava/lang/String;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun removeQueryParams (Ljava/lang/String;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun replaceAllHeaders (Lcom/openai/core/http/Headers;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun replaceAllHeaders (Ljava/util/Map;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun replaceAllQueryParams (Lcom/openai/core/http/QueryParams;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun replaceAllQueryParams (Ljava/util/Map;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun replaceHeaders (Ljava/lang/String;Ljava/lang/Iterable;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun replaceHeaders (Ljava/lang/String;Ljava/lang/String;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun replaceQueryParams (Ljava/lang/String;Ljava/lang/Iterable;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun replaceQueryParams (Ljava/lang/String;Ljava/lang/String;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun responseValidation (Z)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun timeout (Ljava/time/Duration;)Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+}
+
+public final class com/openai/client/okhttp/OpenAIOkHttpClient$Companion {
+	public final fun builder ()Lcom/openai/client/okhttp/OpenAIOkHttpClient$Builder;
+	public final fun fromEnv ()Lcom/openai/client/OpenAIClient;
+}
+
+public final class com/openai/client/okhttp/OpenAIOkHttpClientAsync {
+	public static final field Companion Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Companion;
+	public static final fun builder ()Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public static final fun fromEnv ()Lcom/openai/client/OpenAIClientAsync;
+}
+
+public final class com/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder {
+	public fun <init> ()V
+	public final fun apiKey (Ljava/lang/String;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun azureServiceVersion (Lcom/openai/azure/AzureOpenAIServiceVersion;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun baseUrl (Ljava/lang/String;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun build ()Lcom/openai/client/OpenAIClientAsync;
+	public final fun clock (Ljava/time/Clock;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun credential (Lcom/openai/credential/Credential;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun fromEnv ()Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun headers (Lcom/openai/core/http/Headers;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun headers (Ljava/util/Map;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun jsonMapper (Lcom/fasterxml/jackson/databind/json/JsonMapper;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun maxRetries (I)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun organization (Ljava/lang/String;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun organization (Ljava/util/Optional;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun project (Ljava/lang/String;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun project (Ljava/util/Optional;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun proxy (Ljava/net/Proxy;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun putAllHeaders (Lcom/openai/core/http/Headers;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun putAllHeaders (Ljava/util/Map;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun putAllQueryParams (Lcom/openai/core/http/QueryParams;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun putAllQueryParams (Ljava/util/Map;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun putHeader (Ljava/lang/String;Ljava/lang/String;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun putHeaders (Ljava/lang/String;Ljava/lang/Iterable;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun putQueryParam (Ljava/lang/String;Ljava/lang/String;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun putQueryParams (Ljava/lang/String;Ljava/lang/Iterable;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun queryParams (Lcom/openai/core/http/QueryParams;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun queryParams (Ljava/util/Map;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun removeAllHeaders (Ljava/util/Set;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun removeAllQueryParams (Ljava/util/Set;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun removeHeaders (Ljava/lang/String;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun removeQueryParams (Ljava/lang/String;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun replaceAllHeaders (Lcom/openai/core/http/Headers;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun replaceAllHeaders (Ljava/util/Map;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun replaceAllQueryParams (Lcom/openai/core/http/QueryParams;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun replaceAllQueryParams (Ljava/util/Map;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun replaceHeaders (Ljava/lang/String;Ljava/lang/Iterable;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun replaceHeaders (Ljava/lang/String;Ljava/lang/String;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun replaceQueryParams (Ljava/lang/String;Ljava/lang/Iterable;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun replaceQueryParams (Ljava/lang/String;Ljava/lang/String;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun responseValidation (Z)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun timeout (Ljava/time/Duration;)Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+}
+
+public final class com/openai/client/okhttp/OpenAIOkHttpClientAsync$Companion {
+	public final fun builder ()Lcom/openai/client/okhttp/OpenAIOkHttpClientAsync$Builder;
+	public final fun fromEnv ()Lcom/openai/client/OpenAIClientAsync;
+}
+
