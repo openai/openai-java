@@ -7,8 +7,6 @@ import com.openai.client.okhttp.OpenAIOkHttpClientAsync;
 import com.openai.models.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public final class CompletionsConversationAsyncExample {
     private CompletionsConversationAsyncExample() {}
@@ -31,13 +29,11 @@ public final class CompletionsConversationAsyncExample {
                         .content("Tell me a story about building the best SDK!")
                         .build());
 
-        ExecutorService executor = Executors.newCachedThreadPool();
-
         CompletableFuture<Void> future = CompletableFuture.completedFuture(null);
         for (int i = 0; i < 4; i++) {
             final int index = i;
             future = future.thenComposeAsync(
-                            unused -> client.chat().completions().create(createParamsBuilder.build()), executor)
+                            unused -> client.chat().completions().create(createParamsBuilder.build()))
                     .thenAccept(completion -> {
                         List<ChatCompletionMessage> messages = completion.choices().stream()
                                 .map(ChatCompletion.Choice::message)
@@ -61,6 +57,5 @@ public final class CompletionsConversationAsyncExample {
         }
 
         future.join();
-        executor.shutdown();
     }
 }
