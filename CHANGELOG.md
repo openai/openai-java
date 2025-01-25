@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.14.1 (2025-01-25)
+
+Full Changelog: [v0.14.0...v0.14.1](https://github.com/openai/openai-java/compare/v0.14.0...v0.14.1)
+
+### Bug Fixes
+
+* **client:** async streaming flakiness ([#162](https://github.com/openai/openai-java/issues/162)) ([247c05a](https://github.com/openai/openai-java/commit/247c05a70fecad0bc1498d5aa56e13310f36eb96))
+
+
+### Chores
+
+* add max retries to test ([#160](https://github.com/openai/openai-java/issues/160)) ([7c4a4e0](https://github.com/openai/openai-java/commit/7c4a4e034c5edaea804435972f558df6a9326220))
+* **internal:** fix release ([#163](https://github.com/openai/openai-java/issues/163)) ([987fa44](https://github.com/openai/openai-java/commit/987fa4409a86636bbe87fee77522a1659e263f3b))
+
 ## 0.14.0 (2025-01-24)
 
 Full Changelog: [v0.13.0...v0.14.0](https://github.com/openai/openai-java/compare/v0.13.0...v0.14.0)
