@@ -10,7 +10,7 @@ import java.util.Objects
 
 /** Retrieves a thread. */
 class BetaThreadRetrieveParams
-constructor(
+private constructor(
     private val threadId: String,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -41,7 +41,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var threadId: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()

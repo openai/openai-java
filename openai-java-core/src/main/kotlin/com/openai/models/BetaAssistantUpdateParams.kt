@@ -21,7 +21,7 @@ import java.util.Optional
 
 /** Modifies an assistant. */
 class BetaAssistantUpdateParams
-constructor(
+private constructor(
     private val assistantId: String,
     private val body: BetaAssistantUpdateBody,
     private val additionalHeaders: Headers,
@@ -426,7 +426,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var description: JsonField<String> = JsonMissing.of()
             private var instructions: JsonField<String> = JsonMissing.of()
@@ -884,7 +884,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var assistantId: String? = null
         private var body: BetaAssistantUpdateBody.Builder = BetaAssistantUpdateBody.builder()
@@ -1419,7 +1419,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of()
             private var fileSearch: JsonField<FileSearch> = JsonMissing.of()
@@ -1522,7 +1522,7 @@ constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            class Builder {
+            class Builder internal constructor() {
 
                 private var fileIds: JsonField<MutableList<String>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -1669,7 +1669,7 @@ constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            class Builder {
+            class Builder internal constructor() {
 
                 private var vectorStoreIds: JsonField<MutableList<String>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()

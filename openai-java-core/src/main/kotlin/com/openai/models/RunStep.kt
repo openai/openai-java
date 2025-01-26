@@ -246,7 +246,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
         private var assistantId: JsonField<String>? = null
@@ -561,7 +561,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var code: JsonField<Code>? = null
             private var message: JsonField<String>? = null
@@ -870,7 +870,7 @@ private constructor(
             }
         }
 
-        class Deserializer : BaseDeserializer<StepDetails>(StepDetails::class) {
+        internal class Deserializer : BaseDeserializer<StepDetails>(StepDetails::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): StepDetails {
                 val json = JsonValue.fromJsonNode(node)
@@ -899,7 +899,7 @@ private constructor(
             }
         }
 
-        class Serializer : BaseSerializer<StepDetails>(StepDetails::class) {
+        internal class Serializer : BaseSerializer<StepDetails>(StepDetails::class) {
 
             override fun serialize(
                 value: StepDetails,
@@ -1043,7 +1043,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var completionTokens: JsonField<Long>? = null
             private var promptTokens: JsonField<Long>? = null

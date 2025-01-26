@@ -34,7 +34,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Create a thread. */
 class BetaThreadCreateParams
-constructor(
+private constructor(
     private val body: BetaThreadCreateBody,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -166,7 +166,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var messages: JsonField<MutableList<Message>>? = null
             private var metadata: JsonValue = JsonMissing.of()
@@ -301,7 +301,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var body: BetaThreadCreateBody.Builder = BetaThreadCreateBody.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
@@ -575,7 +575,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var content: JsonField<Content>? = null
             private var role: JsonField<Role>? = null
@@ -809,7 +809,7 @@ constructor(
                 }
             }
 
-            class Deserializer : BaseDeserializer<Content>(Content::class) {
+            internal class Deserializer : BaseDeserializer<Content>(Content::class) {
 
                 override fun ObjectCodec.deserialize(node: JsonNode): Content {
                     val json = JsonValue.fromJsonNode(node)
@@ -828,7 +828,7 @@ constructor(
                 }
             }
 
-            class Serializer : BaseSerializer<Content>(Content::class) {
+            internal class Serializer : BaseSerializer<Content>(Content::class) {
 
                 override fun serialize(
                     value: Content,
@@ -959,7 +959,7 @@ constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            class Builder {
+            class Builder internal constructor() {
 
                 private var fileId: JsonField<String> = JsonMissing.of()
                 private var tools: JsonField<MutableList<Tool>>? = null
@@ -1136,7 +1136,7 @@ constructor(
                     }
                 }
 
-                class Deserializer : BaseDeserializer<Tool>(Tool::class) {
+                internal class Deserializer : BaseDeserializer<Tool>(Tool::class) {
 
                     override fun ObjectCodec.deserialize(node: JsonNode): Tool {
                         val json = JsonValue.fromJsonNode(node)
@@ -1173,7 +1173,7 @@ constructor(
                     }
                 }
 
-                class Serializer : BaseSerializer<Tool>(Tool::class) {
+                internal class Serializer : BaseSerializer<Tool>(Tool::class) {
 
                     override fun serialize(
                         value: Tool,
@@ -1283,7 +1283,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of()
             private var fileSearch: JsonField<FileSearch> = JsonMissing.of()
@@ -1386,7 +1386,7 @@ constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            class Builder {
+            class Builder internal constructor() {
 
                 private var fileIds: JsonField<MutableList<String>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -1553,7 +1553,7 @@ constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            class Builder {
+            class Builder internal constructor() {
 
                 private var vectorStoreIds: JsonField<MutableList<String>>? = null
                 private var vectorStores: JsonField<MutableList<VectorStore>>? = null
@@ -1751,7 +1751,7 @@ constructor(
                     @JvmStatic fun builder() = Builder()
                 }
 
-                class Builder {
+                class Builder internal constructor() {
 
                     private var chunkingStrategy: JsonField<FileChunkingStrategyParam> =
                         JsonMissing.of()

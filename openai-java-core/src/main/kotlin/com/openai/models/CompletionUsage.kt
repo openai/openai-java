@@ -106,7 +106,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var completionTokens: JsonField<Long>? = null
         private var promptTokens: JsonField<Long>? = null
@@ -291,7 +291,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var acceptedPredictionTokens: JsonField<Long> = JsonMissing.of()
             private var audioTokens: JsonField<Long> = JsonMissing.of()
@@ -460,7 +460,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var audioTokens: JsonField<Long> = JsonMissing.of()
             private var cachedTokens: JsonField<Long> = JsonMissing.of()

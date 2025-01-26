@@ -33,7 +33,7 @@ import java.util.Optional
 
 /** Creates an embedding vector representing the input text. */
 class EmbeddingCreateParams
-constructor(
+private constructor(
     private val body: EmbeddingCreateBody,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -255,7 +255,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var input: JsonField<Input>? = null
             private var model: JsonField<EmbeddingModel>? = null
@@ -434,7 +434,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var body: EmbeddingCreateBody.Builder = EmbeddingCreateBody.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
@@ -824,7 +824,7 @@ constructor(
             }
         }
 
-        class Deserializer : BaseDeserializer<Input>(Input::class) {
+        internal class Deserializer : BaseDeserializer<Input>(Input::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): Input {
                 val json = JsonValue.fromJsonNode(node)
@@ -846,7 +846,7 @@ constructor(
             }
         }
 
-        class Serializer : BaseSerializer<Input>(Input::class) {
+        internal class Serializer : BaseSerializer<Input>(Input::class) {
 
             override fun serialize(
                 value: Input,

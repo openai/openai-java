@@ -163,7 +163,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
@@ -394,7 +394,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var cancelled: JsonField<Long>? = null
             private var completed: JsonField<Long>? = null
@@ -608,7 +608,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var anchor: JsonValue = JsonValue.from("last_active_at")
             private var days: JsonField<Long>? = null

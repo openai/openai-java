@@ -117,7 +117,7 @@ private constructor(
         }
     }
 
-    class Deserializer :
+    internal class Deserializer :
         BaseDeserializer<ModerationMultiModalInput>(ModerationMultiModalInput::class) {
 
         override fun ObjectCodec.deserialize(node: JsonNode): ModerationMultiModalInput {
@@ -145,7 +145,8 @@ private constructor(
         }
     }
 
-    class Serializer : BaseSerializer<ModerationMultiModalInput>(ModerationMultiModalInput::class) {
+    internal class Serializer :
+        BaseSerializer<ModerationMultiModalInput>(ModerationMultiModalInput::class) {
 
         override fun serialize(
             value: ModerationMultiModalInput,

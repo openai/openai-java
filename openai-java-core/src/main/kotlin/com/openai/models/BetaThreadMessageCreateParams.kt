@@ -34,7 +34,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Create a message. */
 class BetaThreadMessageCreateParams
-constructor(
+private constructor(
     private val threadId: String,
     private val body: BetaThreadMessageCreateBody,
     private val additionalHeaders: Headers,
@@ -181,7 +181,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var content: JsonField<Content>? = null
             private var role: JsonField<Role>? = null
@@ -323,7 +323,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var threadId: String? = null
         private var body: BetaThreadMessageCreateBody.Builder =
@@ -643,7 +643,7 @@ constructor(
             }
         }
 
-        class Deserializer : BaseDeserializer<Content>(Content::class) {
+        internal class Deserializer : BaseDeserializer<Content>(Content::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): Content {
                 val json = JsonValue.fromJsonNode(node)
@@ -662,7 +662,7 @@ constructor(
             }
         }
 
-        class Serializer : BaseSerializer<Content>(Content::class) {
+        internal class Serializer : BaseSerializer<Content>(Content::class) {
 
             override fun serialize(
                 value: Content,
@@ -793,7 +793,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var fileId: JsonField<String> = JsonMissing.of()
             private var tools: JsonField<MutableList<Tool>>? = null
@@ -965,7 +965,7 @@ constructor(
                 }
             }
 
-            class Deserializer : BaseDeserializer<Tool>(Tool::class) {
+            internal class Deserializer : BaseDeserializer<Tool>(Tool::class) {
 
                 override fun ObjectCodec.deserialize(node: JsonNode): Tool {
                     val json = JsonValue.fromJsonNode(node)
@@ -1000,7 +1000,7 @@ constructor(
                 }
             }
 
-            class Serializer : BaseSerializer<Tool>(Tool::class) {
+            internal class Serializer : BaseSerializer<Tool>(Tool::class) {
 
                 override fun serialize(
                     value: Tool,

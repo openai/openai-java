@@ -36,7 +36,7 @@ import java.util.Objects
  * on [creating a File](https://platform.openai.com/docs/api-reference/files/create).
  */
 class UploadCreateParams
-constructor(
+private constructor(
     private val body: UploadCreateBody,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -187,7 +187,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var bytes: JsonField<Long>? = null
             private var filename: JsonField<String>? = null
@@ -303,7 +303,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var body: UploadCreateBody.Builder = UploadCreateBody.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()

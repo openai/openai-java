@@ -10,7 +10,7 @@ import java.util.Objects
 
 /** Retrieves a vector store file. */
 class BetaVectorStoreFileRetrieveParams
-constructor(
+private constructor(
     private val vectorStoreId: String,
     private val fileId: String,
     private val additionalHeaders: Headers,
@@ -45,7 +45,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var vectorStoreId: String? = null
         private var fileId: String? = null

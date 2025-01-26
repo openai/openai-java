@@ -80,7 +80,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var data: JsonField<MutableList<Embedding>>? = null
         private var model: JsonField<String>? = null
@@ -217,7 +217,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var promptTokens: JsonField<Long>? = null
             private var totalTokens: JsonField<Long>? = null

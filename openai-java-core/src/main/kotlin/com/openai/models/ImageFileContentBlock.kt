@@ -66,7 +66,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var imageFile: JsonField<ImageFile>? = null
         private var type: JsonValue = JsonValue.from("image_file")

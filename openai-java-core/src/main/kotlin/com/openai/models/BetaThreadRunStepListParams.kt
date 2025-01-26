@@ -16,7 +16,7 @@ import java.util.Optional
 
 /** Returns a list of run steps belonging to a run. */
 class BetaThreadRunStepListParams
-constructor(
+private constructor(
     private val threadId: String,
     private val runId: String,
     private val after: String?,
@@ -103,7 +103,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var threadId: String? = null
         private var runId: String? = null

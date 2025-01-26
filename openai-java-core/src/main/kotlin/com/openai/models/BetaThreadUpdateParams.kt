@@ -21,7 +21,7 @@ import java.util.Optional
 
 /** Modifies a thread. */
 class BetaThreadUpdateParams
-constructor(
+private constructor(
     private val threadId: String,
     private val body: BetaThreadUpdateBody,
     private val additionalHeaders: Headers,
@@ -132,7 +132,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var metadata: JsonValue = JsonMissing.of()
             private var toolResources: JsonField<ToolResources> = JsonMissing.of()
@@ -233,7 +233,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var threadId: String? = null
         private var body: BetaThreadUpdateBody.Builder = BetaThreadUpdateBody.builder()
@@ -468,7 +468,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of()
             private var fileSearch: JsonField<FileSearch> = JsonMissing.of()
@@ -571,7 +571,7 @@ constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            class Builder {
+            class Builder internal constructor() {
 
                 private var fileIds: JsonField<MutableList<String>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -715,7 +715,7 @@ constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            class Builder {
+            class Builder internal constructor() {
 
                 private var vectorStoreIds: JsonField<MutableList<String>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()

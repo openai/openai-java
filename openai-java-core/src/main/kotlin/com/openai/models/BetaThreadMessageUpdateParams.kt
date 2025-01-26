@@ -19,7 +19,7 @@ import java.util.Objects
 
 /** Modifies a message. */
 class BetaThreadMessageUpdateParams
-constructor(
+private constructor(
     private val threadId: String,
     private val messageId: String,
     private val body: BetaThreadMessageUpdateBody,
@@ -97,7 +97,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var metadata: JsonValue = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -165,7 +165,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var threadId: String? = null
         private var messageId: String? = null

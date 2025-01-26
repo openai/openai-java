@@ -104,7 +104,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var project: JsonField<String>? = null
         private var entity: JsonField<String> = JsonMissing.of()

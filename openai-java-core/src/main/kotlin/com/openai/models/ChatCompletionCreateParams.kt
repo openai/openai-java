@@ -43,7 +43,7 @@ import java.util.Optional
  * [refer to the reasoning guide](https://platform.openai.com/docs/guides/reasoning).
  */
 class ChatCompletionCreateParams
-constructor(
+private constructor(
     private val body: ChatCompletionCreateBody,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -1248,7 +1248,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var messages: JsonField<MutableList<ChatCompletionMessageParam>>? = null
             private var model: JsonField<ChatModel>? = null
@@ -2437,7 +2437,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var body: ChatCompletionCreateBody.Builder = ChatCompletionCreateBody.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
@@ -3696,7 +3696,7 @@ constructor(
             }
         }
 
-        class Deserializer : BaseDeserializer<FunctionCall>(FunctionCall::class) {
+        internal class Deserializer : BaseDeserializer<FunctionCall>(FunctionCall::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): FunctionCall {
                 val json = JsonValue.fromJsonNode(node)
@@ -3715,7 +3715,7 @@ constructor(
             }
         }
 
-        class Serializer : BaseSerializer<FunctionCall>(FunctionCall::class) {
+        internal class Serializer : BaseSerializer<FunctionCall>(FunctionCall::class) {
 
             override fun serialize(
                 value: FunctionCall,
@@ -3886,7 +3886,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var name: JsonField<String>? = null
             private var description: JsonField<String> = JsonMissing.of()
@@ -4033,7 +4033,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -4114,7 +4114,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -4288,7 +4288,7 @@ constructor(
             }
         }
 
-        class Deserializer : BaseDeserializer<ResponseFormat>(ResponseFormat::class) {
+        internal class Deserializer : BaseDeserializer<ResponseFormat>(ResponseFormat::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): ResponseFormat {
                 val json = JsonValue.fromJsonNode(node)
@@ -4310,7 +4310,7 @@ constructor(
             }
         }
 
-        class Serializer : BaseSerializer<ResponseFormat>(ResponseFormat::class) {
+        internal class Serializer : BaseSerializer<ResponseFormat>(ResponseFormat::class) {
 
             override fun serialize(
                 value: ResponseFormat,
@@ -4481,7 +4481,7 @@ constructor(
             }
         }
 
-        class Deserializer : BaseDeserializer<Stop>(Stop::class) {
+        internal class Deserializer : BaseDeserializer<Stop>(Stop::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): Stop {
                 val json = JsonValue.fromJsonNode(node)
@@ -4497,7 +4497,7 @@ constructor(
             }
         }
 
-        class Serializer : BaseSerializer<Stop>(Stop::class) {
+        internal class Serializer : BaseSerializer<Stop>(Stop::class) {
 
             override fun serialize(
                 value: Stop,

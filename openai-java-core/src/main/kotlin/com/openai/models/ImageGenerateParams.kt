@@ -23,7 +23,7 @@ import java.util.Optional
 
 /** Creates an image given a prompt. */
 class ImageGenerateParams
-constructor(
+private constructor(
     private val body: ImageGenerateBody,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -295,7 +295,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var prompt: JsonField<String>? = null
             private var model: JsonField<ImageModel> = JsonMissing.of()
@@ -523,7 +523,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var body: ImageGenerateBody.Builder = ImageGenerateBody.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()

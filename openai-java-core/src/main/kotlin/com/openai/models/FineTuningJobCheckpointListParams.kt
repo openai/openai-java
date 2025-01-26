@@ -11,7 +11,7 @@ import java.util.Optional
 
 /** List checkpoints for a fine-tuning job. */
 class FineTuningJobCheckpointListParams
-constructor(
+private constructor(
     private val fineTuningJobId: String,
     private val after: String?,
     private val limit: Long?,
@@ -57,7 +57,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var fineTuningJobId: String? = null
         private var after: String? = null

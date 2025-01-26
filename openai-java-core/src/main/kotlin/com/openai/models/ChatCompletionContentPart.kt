@@ -142,7 +142,7 @@ private constructor(
         }
     }
 
-    class Deserializer :
+    internal class Deserializer :
         BaseDeserializer<ChatCompletionContentPart>(ChatCompletionContentPart::class) {
 
         override fun ObjectCodec.deserialize(node: JsonNode): ChatCompletionContentPart {
@@ -180,7 +180,8 @@ private constructor(
         }
     }
 
-    class Serializer : BaseSerializer<ChatCompletionContentPart>(ChatCompletionContentPart::class) {
+    internal class Serializer :
+        BaseSerializer<ChatCompletionContentPart>(ChatCompletionContentPart::class) {
 
         override fun serialize(
             value: ChatCompletionContentPart,

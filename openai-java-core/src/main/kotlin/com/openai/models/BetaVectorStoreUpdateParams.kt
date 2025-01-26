@@ -22,7 +22,7 @@ import java.util.Optional
 
 /** Modifies a vector store. */
 class BetaVectorStoreUpdateParams
-constructor(
+private constructor(
     private val vectorStoreId: String,
     private val body: BetaVectorStoreUpdateBody,
     private val additionalHeaders: Headers,
@@ -131,7 +131,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of()
             private var metadata: JsonValue = JsonMissing.of()
@@ -229,7 +229,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var vectorStoreId: String? = null
         private var body: BetaVectorStoreUpdateBody.Builder = BetaVectorStoreUpdateBody.builder()
@@ -450,7 +450,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var anchor: JsonValue = JsonValue.from("last_active_at")
             private var days: JsonField<Long>? = null

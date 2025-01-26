@@ -34,7 +34,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Create a run. */
 class BetaThreadRunCreateParams
-constructor(
+private constructor(
     private val threadId: String,
     private val include: List<RunStepInclude>?,
     private val body: BetaThreadRunCreateBody,
@@ -662,7 +662,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var assistantId: JsonField<String>? = null
             private var additionalInstructions: JsonField<String> = JsonMissing.of()
@@ -1350,7 +1350,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var threadId: String? = null
         private var include: MutableList<RunStepInclude>? = null
@@ -2152,7 +2152,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var content: JsonField<Content>? = null
             private var role: JsonField<Role>? = null
@@ -2386,7 +2386,7 @@ constructor(
                 }
             }
 
-            class Deserializer : BaseDeserializer<Content>(Content::class) {
+            internal class Deserializer : BaseDeserializer<Content>(Content::class) {
 
                 override fun ObjectCodec.deserialize(node: JsonNode): Content {
                     val json = JsonValue.fromJsonNode(node)
@@ -2405,7 +2405,7 @@ constructor(
                 }
             }
 
-            class Serializer : BaseSerializer<Content>(Content::class) {
+            internal class Serializer : BaseSerializer<Content>(Content::class) {
 
                 override fun serialize(
                     value: Content,
@@ -2536,7 +2536,7 @@ constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            class Builder {
+            class Builder internal constructor() {
 
                 private var fileId: JsonField<String> = JsonMissing.of()
                 private var tools: JsonField<MutableList<Tool>>? = null
@@ -2713,7 +2713,7 @@ constructor(
                     }
                 }
 
-                class Deserializer : BaseDeserializer<Tool>(Tool::class) {
+                internal class Deserializer : BaseDeserializer<Tool>(Tool::class) {
 
                     override fun ObjectCodec.deserialize(node: JsonNode): Tool {
                         val json = JsonValue.fromJsonNode(node)
@@ -2750,7 +2750,7 @@ constructor(
                     }
                 }
 
-                class Serializer : BaseSerializer<Tool>(Tool::class) {
+                internal class Serializer : BaseSerializer<Tool>(Tool::class) {
 
                     override fun serialize(
                         value: Tool,
@@ -2874,7 +2874,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var type: JsonField<Type>? = null
             private var lastMessages: JsonField<Long> = JsonMissing.of()

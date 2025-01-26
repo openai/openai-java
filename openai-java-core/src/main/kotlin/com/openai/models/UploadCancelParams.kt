@@ -13,7 +13,7 @@ import java.util.Optional
 
 /** Cancels the Upload. No Parts may be added after an Upload is cancelled. */
 class UploadCancelParams
-constructor(
+private constructor(
     private val uploadId: String,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -51,7 +51,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var uploadId: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()

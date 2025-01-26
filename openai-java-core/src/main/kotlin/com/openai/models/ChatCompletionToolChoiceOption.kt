@@ -154,7 +154,7 @@ private constructor(
         }
     }
 
-    class Deserializer :
+    internal class Deserializer :
         BaseDeserializer<ChatCompletionToolChoiceOption>(ChatCompletionToolChoiceOption::class) {
 
         override fun ObjectCodec.deserialize(node: JsonNode): ChatCompletionToolChoiceOption {
@@ -172,7 +172,7 @@ private constructor(
         }
     }
 
-    class Serializer :
+    internal class Serializer :
         BaseSerializer<ChatCompletionToolChoiceOption>(ChatCompletionToolChoiceOption::class) {
 
         override fun serialize(

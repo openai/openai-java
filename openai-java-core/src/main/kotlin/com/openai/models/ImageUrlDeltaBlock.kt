@@ -72,7 +72,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var index: JsonField<Long>? = null
         private var type: JsonValue = JsonValue.from("image_url")
