@@ -70,7 +70,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var stepDetails: JsonField<StepDetails> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -221,7 +221,7 @@ private constructor(
             }
         }
 
-        class Deserializer : BaseDeserializer<StepDetails>(StepDetails::class) {
+        internal class Deserializer : BaseDeserializer<StepDetails>(StepDetails::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): StepDetails {
                 val json = JsonValue.fromJsonNode(node)
@@ -250,7 +250,7 @@ private constructor(
             }
         }
 
-        class Serializer : BaseSerializer<StepDetails>(StepDetails::class) {
+        internal class Serializer : BaseSerializer<StepDetails>(StepDetails::class) {
 
             override fun serialize(
                 value: StepDetails,

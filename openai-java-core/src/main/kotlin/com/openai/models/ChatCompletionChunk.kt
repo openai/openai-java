@@ -162,7 +162,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
         private var choices: JsonField<MutableList<Choice>>? = null
@@ -414,7 +414,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var delta: JsonField<Delta>? = null
             private var finishReason: JsonField<FinishReason>? = null
@@ -604,7 +604,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            class Builder {
+            class Builder internal constructor() {
 
                 private var content: JsonField<String> = JsonMissing.of()
                 private var functionCall: JsonField<FunctionCall> = JsonMissing.of()
@@ -783,7 +783,7 @@ private constructor(
                     @JvmStatic fun builder() = Builder()
                 }
 
-                class Builder {
+                class Builder internal constructor() {
 
                     private var arguments: JsonField<String> = JsonMissing.of()
                     private var name: JsonField<String> = JsonMissing.of()
@@ -1006,7 +1006,7 @@ private constructor(
                     @JvmStatic fun builder() = Builder()
                 }
 
-                class Builder {
+                class Builder internal constructor() {
 
                     private var index: JsonField<Long>? = null
                     private var id: JsonField<String> = JsonMissing.of()
@@ -1137,7 +1137,7 @@ private constructor(
                         @JvmStatic fun builder() = Builder()
                     }
 
-                    class Builder {
+                    class Builder internal constructor() {
 
                         private var arguments: JsonField<String> = JsonMissing.of()
                         private var name: JsonField<String> = JsonMissing.of()
@@ -1450,7 +1450,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            class Builder {
+            class Builder internal constructor() {
 
                 private var content: JsonField<MutableList<ChatCompletionTokenLogprob>>? = null
                 private var refusal: JsonField<MutableList<ChatCompletionTokenLogprob>>? = null

@@ -17,7 +17,7 @@ import java.util.Optional
  * output file.
  */
 class BatchCancelParams
-constructor(
+private constructor(
     private val batchId: String,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -55,7 +55,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var batchId: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()

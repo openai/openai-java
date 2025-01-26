@@ -15,7 +15,7 @@ import java.util.Optional
 
 /** Returns a list of messages for a given thread. */
 class BetaThreadMessageListParams
-constructor(
+private constructor(
     private val threadId: String,
     private val after: String?,
     private val before: String?,
@@ -90,7 +90,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var threadId: String? = null
         private var after: String? = null

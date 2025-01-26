@@ -79,7 +79,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var fileSearch: JsonValue? = null
         private var index: JsonField<Long>? = null

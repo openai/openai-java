@@ -129,7 +129,7 @@ private constructor(
         }
     }
 
-    class Deserializer :
+    internal class Deserializer :
         BaseDeserializer<FileChunkingStrategyParam>(FileChunkingStrategyParam::class) {
 
         override fun ObjectCodec.deserialize(node: JsonNode): FileChunkingStrategyParam {
@@ -159,7 +159,8 @@ private constructor(
         }
     }
 
-    class Serializer : BaseSerializer<FileChunkingStrategyParam>(FileChunkingStrategyParam::class) {
+    internal class Serializer :
+        BaseSerializer<FileChunkingStrategyParam>(FileChunkingStrategyParam::class) {
 
         override fun serialize(
             value: FileChunkingStrategyParam,

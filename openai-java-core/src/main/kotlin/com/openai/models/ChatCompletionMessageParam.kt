@@ -235,7 +235,7 @@ private constructor(
         }
     }
 
-    class Deserializer :
+    internal class Deserializer :
         BaseDeserializer<ChatCompletionMessageParam>(ChatCompletionMessageParam::class) {
 
         override fun ObjectCodec.deserialize(node: JsonNode): ChatCompletionMessageParam {
@@ -297,7 +297,7 @@ private constructor(
         }
     }
 
-    class Serializer :
+    internal class Serializer :
         BaseSerializer<ChatCompletionMessageParam>(ChatCompletionMessageParam::class) {
 
         override fun serialize(

@@ -126,7 +126,7 @@ private constructor(
         }
     }
 
-    class Deserializer : BaseDeserializer<AssistantTool>(AssistantTool::class) {
+    internal class Deserializer : BaseDeserializer<AssistantTool>(AssistantTool::class) {
 
         override fun ObjectCodec.deserialize(node: JsonNode): AssistantTool {
             val json = JsonValue.fromJsonNode(node)
@@ -157,7 +157,7 @@ private constructor(
         }
     }
 
-    class Serializer : BaseSerializer<AssistantTool>(AssistantTool::class) {
+    internal class Serializer : BaseSerializer<AssistantTool>(AssistantTool::class) {
 
         override fun serialize(
             value: AssistantTool,

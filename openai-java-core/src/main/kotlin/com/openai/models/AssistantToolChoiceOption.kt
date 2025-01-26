@@ -147,7 +147,7 @@ private constructor(
         }
     }
 
-    class Deserializer :
+    internal class Deserializer :
         BaseDeserializer<AssistantToolChoiceOption>(AssistantToolChoiceOption::class) {
 
         override fun ObjectCodec.deserialize(node: JsonNode): AssistantToolChoiceOption {
@@ -165,7 +165,8 @@ private constructor(
         }
     }
 
-    class Serializer : BaseSerializer<AssistantToolChoiceOption>(AssistantToolChoiceOption::class) {
+    internal class Serializer :
+        BaseSerializer<AssistantToolChoiceOption>(AssistantToolChoiceOption::class) {
 
         override fun serialize(
             value: AssistantToolChoiceOption,

@@ -25,7 +25,7 @@ import java.util.Optional
  * they're all completed. All outputs must be submitted in a single request.
  */
 class BetaThreadRunSubmitToolOutputsParams
-constructor(
+private constructor(
     private val threadId: String,
     private val runId: String,
     private val body: BetaThreadRunSubmitToolOutputsBody,
@@ -104,7 +104,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var toolOutputs: JsonField<MutableList<ToolOutput>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -193,7 +193,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var threadId: String? = null
         private var runId: String? = null
@@ -414,7 +414,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var output: JsonField<String> = JsonMissing.of()
             private var toolCallId: JsonField<String> = JsonMissing.of()

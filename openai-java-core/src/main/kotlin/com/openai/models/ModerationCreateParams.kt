@@ -35,7 +35,7 @@ import java.util.Optional
  * [moderation guide](https://platform.openai.com/docs/guides/moderation).
  */
 class ModerationCreateParams
-constructor(
+private constructor(
     private val body: ModerationCreateBody,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -142,7 +142,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var input: JsonField<Input>? = null
             private var model: JsonField<ModerationModel> = JsonMissing.of()
@@ -252,7 +252,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var body: ModerationCreateBody.Builder = ModerationCreateBody.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
@@ -562,7 +562,7 @@ constructor(
             }
         }
 
-        class Deserializer : BaseDeserializer<Input>(Input::class) {
+        internal class Deserializer : BaseDeserializer<Input>(Input::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): Input {
                 val json = JsonValue.fromJsonNode(node)
@@ -584,7 +584,7 @@ constructor(
             }
         }
 
-        class Serializer : BaseSerializer<Input>(Input::class) {
+        internal class Serializer : BaseSerializer<Input>(Input::class) {
 
             override fun serialize(
                 value: Input,

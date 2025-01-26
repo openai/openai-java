@@ -139,7 +139,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
         private var choices: JsonField<MutableList<Choice>>? = null
@@ -361,7 +361,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var finishReason: JsonField<FinishReason>? = null
             private var index: JsonField<Long>? = null
@@ -588,7 +588,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            class Builder {
+            class Builder internal constructor() {
 
                 private var content: JsonField<MutableList<ChatCompletionTokenLogprob>>? = null
                 private var refusal: JsonField<MutableList<ChatCompletionTokenLogprob>>? = null

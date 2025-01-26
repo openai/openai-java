@@ -80,7 +80,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var format: JsonField<Format>? = null
         private var voice: JsonField<Voice>? = null

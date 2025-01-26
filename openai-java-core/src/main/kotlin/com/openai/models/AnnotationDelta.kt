@@ -150,7 +150,7 @@ private constructor(
         }
     }
 
-    class Deserializer : BaseDeserializer<AnnotationDelta>(AnnotationDelta::class) {
+    internal class Deserializer : BaseDeserializer<AnnotationDelta>(AnnotationDelta::class) {
 
         override fun ObjectCodec.deserialize(node: JsonNode): AnnotationDelta {
             val json = JsonValue.fromJsonNode(node)
@@ -179,7 +179,7 @@ private constructor(
         }
     }
 
-    class Serializer : BaseSerializer<AnnotationDelta>(AnnotationDelta::class) {
+    internal class Serializer : BaseSerializer<AnnotationDelta>(AnnotationDelta::class) {
 
         override fun serialize(
             value: AnnotationDelta,

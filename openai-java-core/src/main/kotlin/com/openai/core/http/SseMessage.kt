@@ -20,7 +20,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var jsonMapper: JsonMapper? = null
         private var event: String? = null

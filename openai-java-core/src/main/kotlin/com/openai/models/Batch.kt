@@ -260,7 +260,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
         private var completionWindow: JsonField<String>? = null
@@ -617,7 +617,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<MutableList<BatchError>>? = null
             private var object_: JsonField<String> = JsonMissing.of()

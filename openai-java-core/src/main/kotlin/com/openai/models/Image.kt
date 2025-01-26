@@ -76,7 +76,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var b64Json: JsonField<String> = JsonMissing.of()
         private var revisedPrompt: JsonField<String> = JsonMissing.of()

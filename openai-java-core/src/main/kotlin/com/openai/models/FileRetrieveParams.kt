@@ -10,7 +10,7 @@ import java.util.Objects
 
 /** Returns information about a specific file. */
 class FileRetrieveParams
-constructor(
+private constructor(
     private val fileId: String,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -41,7 +41,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var fileId: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()

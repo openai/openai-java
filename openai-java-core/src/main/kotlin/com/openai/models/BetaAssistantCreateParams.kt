@@ -21,7 +21,7 @@ import java.util.Optional
 
 /** Create an assistant with a model and instructions. */
 class BetaAssistantCreateParams
-constructor(
+private constructor(
     private val body: BetaAssistantCreateBody,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -416,7 +416,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var model: JsonField<ChatModel>? = null
             private var description: JsonField<String> = JsonMissing.of()
@@ -882,7 +882,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var body: BetaAssistantCreateBody.Builder = BetaAssistantCreateBody.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
@@ -1420,7 +1420,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of()
             private var fileSearch: JsonField<FileSearch> = JsonMissing.of()
@@ -1523,7 +1523,7 @@ constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            class Builder {
+            class Builder internal constructor() {
 
                 private var fileIds: JsonField<MutableList<String>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -1690,7 +1690,7 @@ constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            class Builder {
+            class Builder internal constructor() {
 
                 private var vectorStoreIds: JsonField<MutableList<String>>? = null
                 private var vectorStores: JsonField<MutableList<VectorStore>>? = null
@@ -1888,7 +1888,7 @@ constructor(
                     @JvmStatic fun builder() = Builder()
                 }
 
-                class Builder {
+                class Builder internal constructor() {
 
                     private var chunkingStrategy: JsonField<FileChunkingStrategyParam> =
                         JsonMissing.of()

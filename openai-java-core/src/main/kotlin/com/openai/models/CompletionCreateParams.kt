@@ -33,7 +33,7 @@ import java.util.Optional
 
 /** Creates a completion for the provided prompt and parameters. */
 class CompletionCreateParams
-constructor(
+private constructor(
     private val body: CompletionCreateBody,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -741,7 +741,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var model: JsonField<Model>? = null
             private var prompt: JsonField<Prompt>? = null
@@ -1470,7 +1470,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var body: CompletionCreateBody.Builder = CompletionCreateBody.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
@@ -2418,7 +2418,7 @@ constructor(
             }
         }
 
-        class Deserializer : BaseDeserializer<Prompt>(Prompt::class) {
+        internal class Deserializer : BaseDeserializer<Prompt>(Prompt::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): Prompt {
                 val json = JsonValue.fromJsonNode(node)
@@ -2440,7 +2440,7 @@ constructor(
             }
         }
 
-        class Serializer : BaseSerializer<Prompt>(Prompt::class) {
+        internal class Serializer : BaseSerializer<Prompt>(Prompt::class) {
 
             override fun serialize(
                 value: Prompt,
@@ -2502,7 +2502,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -2638,7 +2638,7 @@ constructor(
             }
         }
 
-        class Deserializer : BaseDeserializer<Stop>(Stop::class) {
+        internal class Deserializer : BaseDeserializer<Stop>(Stop::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): Stop {
                 val json = JsonValue.fromJsonNode(node)
@@ -2654,7 +2654,7 @@ constructor(
             }
         }
 
-        class Serializer : BaseSerializer<Stop>(Stop::class) {
+        internal class Serializer : BaseSerializer<Stop>(Stop::class) {
 
             override fun serialize(
                 value: Stop,

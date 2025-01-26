@@ -27,8 +27,7 @@ import com.openai.services.async.ModerationServiceAsyncImpl
 import com.openai.services.async.UploadServiceAsync
 import com.openai.services.async.UploadServiceAsyncImpl
 
-class OpenAIClientAsyncImpl
-constructor(
+class OpenAIClientAsyncImpl(
     private val clientOptions: ClientOptions,
 ) : OpenAIClientAsync {
 

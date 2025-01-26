@@ -15,7 +15,7 @@ import java.util.Optional
 
 /** Returns a list of vector store files. */
 class BetaVectorStoreFileListParams
-constructor(
+private constructor(
     private val vectorStoreId: String,
     private val after: String?,
     private val before: String?,
@@ -90,7 +90,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var vectorStoreId: String? = null
         private var after: String? = null

@@ -14,7 +14,7 @@ import java.util.Objects
  * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/fine-tuning)
  */
 class FineTuningJobRetrieveParams
-constructor(
+private constructor(
     private val fineTuningJobId: String,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -45,7 +45,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var fineTuningJobId: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()

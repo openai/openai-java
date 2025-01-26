@@ -78,7 +78,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
         private var fileSearch: JsonField<FileSearch>? = null
@@ -192,7 +192,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var rankingOptions: JsonField<RankingOptions> = JsonMissing.of()
             private var results: JsonField<MutableList<Result>>? = null
@@ -322,7 +322,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            class Builder {
+            class Builder internal constructor() {
 
                 private var ranker: JsonValue = JsonValue.from("default_2024_08_21")
                 private var scoreThreshold: JsonField<Double>? = null
@@ -484,7 +484,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            class Builder {
+            class Builder internal constructor() {
 
                 private var fileId: JsonField<String>? = null
                 private var fileName: JsonField<String>? = null
@@ -637,7 +637,7 @@ private constructor(
                     @JvmStatic fun builder() = Builder()
                 }
 
-                class Builder {
+                class Builder internal constructor() {
 
                     private var text: JsonField<String> = JsonMissing.of()
                     private var type: JsonField<Type> = JsonMissing.of()

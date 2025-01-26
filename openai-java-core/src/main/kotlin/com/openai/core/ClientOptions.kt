@@ -48,7 +48,7 @@ private constructor(
         @JvmStatic fun fromEnv(): ClientOptions = builder().fromEnv().build()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var httpClient: HttpClient? = null
         private var jsonMapper: JsonMapper = jsonMapper()

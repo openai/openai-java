@@ -12,7 +12,7 @@ import java.util.Optional
 
 /** Retrieves a run step. */
 class BetaThreadRunStepRetrieveParams
-constructor(
+private constructor(
     private val threadId: String,
     private val runId: String,
     private val stepId: String,
@@ -69,7 +69,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var threadId: String? = null
         private var runId: String? = null

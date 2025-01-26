@@ -64,7 +64,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var static_: JsonField<StaticFileChunkingStrategy>? = null
         private var type: JsonValue = JsonValue.from("static")

@@ -32,7 +32,7 @@ import java.util.Optional
  * when creating the Upload object. No Parts may be added after an Upload is completed.
  */
 class UploadCompleteParams
-constructor(
+private constructor(
     private val uploadId: String,
     private val body: UploadCompleteBody,
     private val additionalHeaders: Headers,
@@ -131,7 +131,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var partIds: JsonField<MutableList<String>>? = null
             private var md5: JsonField<String> = JsonMissing.of()
@@ -231,7 +231,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var uploadId: String? = null
         private var body: UploadCompleteBody.Builder = UploadCompleteBody.builder()

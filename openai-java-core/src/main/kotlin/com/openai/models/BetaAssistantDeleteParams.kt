@@ -13,7 +13,7 @@ import java.util.Optional
 
 /** Delete an assistant. */
 class BetaAssistantDeleteParams
-constructor(
+private constructor(
     private val assistantId: String,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -51,7 +51,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var assistantId: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()

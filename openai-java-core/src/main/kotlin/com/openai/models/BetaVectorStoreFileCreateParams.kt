@@ -25,7 +25,7 @@ import java.util.Optional
  * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object).
  */
 class BetaVectorStoreFileCreateParams
-constructor(
+private constructor(
     private val vectorStoreId: String,
     private val body: BetaVectorStoreFileCreateBody,
     private val additionalHeaders: Headers,
@@ -141,7 +141,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var fileId: JsonField<String>? = null
             private var chunkingStrategy: JsonField<FileChunkingStrategyParam> = JsonMissing.of()
@@ -250,7 +250,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var vectorStoreId: String? = null
         private var body: BetaVectorStoreFileCreateBody.Builder =
