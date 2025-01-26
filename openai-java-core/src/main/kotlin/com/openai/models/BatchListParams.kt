@@ -10,7 +10,7 @@ import java.util.Optional
 
 /** List your organization's batches. */
 class BatchListParams
-constructor(
+private constructor(
     private val after: String?,
     private val limit: Long?,
     private val additionalHeaders: Headers,
@@ -53,7 +53,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var after: String? = null
         private var limit: Long? = null

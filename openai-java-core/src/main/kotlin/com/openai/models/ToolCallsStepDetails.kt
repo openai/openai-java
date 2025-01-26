@@ -73,7 +73,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var toolCalls: JsonField<MutableList<ToolCall>>? = null
         private var type: JsonValue = JsonValue.from("tool_calls")

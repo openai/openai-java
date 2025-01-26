@@ -94,7 +94,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var categories: JsonField<Categories>? = null
         private var categoryAppliedInputTypes: JsonField<CategoryAppliedInputTypes>? = null
@@ -404,7 +404,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var harassment: JsonField<Boolean>? = null
             private var harassmentThreatening: JsonField<Boolean>? = null
@@ -842,7 +842,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var harassment: JsonField<MutableList<Harassment>>? = null
             private var harassmentThreatening: JsonField<MutableList<HarassmentThreatening>>? = null
@@ -2115,7 +2115,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var harassment: JsonField<Double>? = null
             private var harassmentThreatening: JsonField<Double>? = null

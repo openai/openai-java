@@ -13,7 +13,7 @@ import java.util.Optional
 
 /** Deletes a message. */
 class BetaThreadMessageDeleteParams
-constructor(
+private constructor(
     private val threadId: String,
     private val messageId: String,
     private val additionalHeaders: Headers,
@@ -55,7 +55,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var threadId: String? = null
         private var messageId: String? = null

@@ -27,8 +27,7 @@ import com.openai.services.blocking.ModerationServiceImpl
 import com.openai.services.blocking.UploadService
 import com.openai.services.blocking.UploadServiceImpl
 
-class OpenAIClientImpl
-constructor(
+class OpenAIClientImpl(
     private val clientOptions: ClientOptions,
 ) : OpenAIClient {
 

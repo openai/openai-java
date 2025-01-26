@@ -287,7 +287,7 @@ private constructor(
         }
     }
 
-    class Deserializer : BaseDeserializer<MessageStreamEvent>(MessageStreamEvent::class) {
+    internal class Deserializer : BaseDeserializer<MessageStreamEvent>(MessageStreamEvent::class) {
 
         override fun ObjectCodec.deserialize(node: JsonNode): MessageStreamEvent {
             val json = JsonValue.fromJsonNode(node)
@@ -334,7 +334,7 @@ private constructor(
         }
     }
 
-    class Serializer : BaseSerializer<MessageStreamEvent>(MessageStreamEvent::class) {
+    internal class Serializer : BaseSerializer<MessageStreamEvent>(MessageStreamEvent::class) {
 
         override fun serialize(
             value: MessageStreamEvent,
@@ -414,7 +414,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<Message>? = null
             private var event: JsonValue = JsonValue.from("thread.message.created")
@@ -543,7 +543,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<Message>? = null
             private var event: JsonValue = JsonValue.from("thread.message.in_progress")
@@ -666,7 +666,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<MessageDeltaEvent>? = null
             private var event: JsonValue = JsonValue.from("thread.message.delta")
@@ -789,7 +789,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<Message>? = null
             private var event: JsonValue = JsonValue.from("thread.message.completed")
@@ -918,7 +918,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<Message>? = null
             private var event: JsonValue = JsonValue.from("thread.message.incomplete")

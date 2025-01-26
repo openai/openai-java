@@ -62,7 +62,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var annotations: JsonField<MutableList<Annotation>>? = null
         private var value: JsonField<String>? = null

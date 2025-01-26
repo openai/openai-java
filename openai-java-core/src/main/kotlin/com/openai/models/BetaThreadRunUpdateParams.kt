@@ -19,7 +19,7 @@ import java.util.Objects
 
 /** Modifies a run. */
 class BetaThreadRunUpdateParams
-constructor(
+private constructor(
     private val threadId: String,
     private val runId: String,
     private val body: BetaThreadRunUpdateBody,
@@ -97,7 +97,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var metadata: JsonValue = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -164,7 +164,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var threadId: String? = null
         private var runId: String? = null

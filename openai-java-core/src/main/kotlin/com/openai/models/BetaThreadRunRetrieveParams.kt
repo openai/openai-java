@@ -10,7 +10,7 @@ import java.util.Objects
 
 /** Retrieves a run. */
 class BetaThreadRunRetrieveParams
-constructor(
+private constructor(
     private val threadId: String,
     private val runId: String,
     private val additionalHeaders: Headers,
@@ -45,7 +45,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var threadId: String? = null
         private var runId: String? = null

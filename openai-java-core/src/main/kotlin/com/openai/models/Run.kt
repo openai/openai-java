@@ -460,7 +460,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
         private var assistantId: JsonField<String>? = null
@@ -1203,7 +1203,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var reason: JsonField<Reason> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -1376,7 +1376,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var code: JsonField<Code>? = null
             private var message: JsonField<String>? = null
@@ -1564,7 +1564,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var submitToolOutputs: JsonField<SubmitToolOutputs>? = null
             private var type: JsonValue = JsonValue.from("submit_tool_outputs")
@@ -1660,7 +1660,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            class Builder {
+            class Builder internal constructor() {
 
                 private var toolCalls: JsonField<MutableList<RequiredActionFunctionToolCall>>? =
                     null
@@ -1830,7 +1830,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var type: JsonField<Type>? = null
             private var lastMessages: JsonField<Long> = JsonMissing.of()
@@ -2064,7 +2064,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var completionTokens: JsonField<Long>? = null
             private var promptTokens: JsonField<Long>? = null

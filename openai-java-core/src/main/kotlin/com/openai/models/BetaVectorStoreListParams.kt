@@ -14,7 +14,7 @@ import java.util.Optional
 
 /** Returns a list of vector stores. */
 class BetaVectorStoreListParams
-constructor(
+private constructor(
     private val after: String?,
     private val before: String?,
     private val limit: Long?,
@@ -74,7 +74,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var after: String? = null
         private var before: String? = null

@@ -315,7 +315,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
         private var createdAt: JsonField<Long>? = null
@@ -761,7 +761,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var code: JsonField<String>? = null
             private var message: JsonField<String>? = null
@@ -939,7 +939,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var batchSize: JsonField<BatchSize> = JsonMissing.of()
             private var learningRateMultiplier: JsonField<LearningRateMultiplier> = JsonMissing.of()
@@ -1156,7 +1156,7 @@ private constructor(
                 }
             }
 
-            class Deserializer : BaseDeserializer<BatchSize>(BatchSize::class) {
+            internal class Deserializer : BaseDeserializer<BatchSize>(BatchSize::class) {
 
                 override fun ObjectCodec.deserialize(node: JsonNode): BatchSize {
                     val json = JsonValue.fromJsonNode(node)
@@ -1181,7 +1181,7 @@ private constructor(
                 }
             }
 
-            class Serializer : BaseSerializer<BatchSize>(BatchSize::class) {
+            internal class Serializer : BaseSerializer<BatchSize>(BatchSize::class) {
 
                 override fun serialize(
                     value: BatchSize,
@@ -1294,7 +1294,7 @@ private constructor(
                 }
             }
 
-            class Deserializer :
+            internal class Deserializer :
                 BaseDeserializer<LearningRateMultiplier>(LearningRateMultiplier::class) {
 
                 override fun ObjectCodec.deserialize(node: JsonNode): LearningRateMultiplier {
@@ -1320,7 +1320,7 @@ private constructor(
                 }
             }
 
-            class Serializer :
+            internal class Serializer :
                 BaseSerializer<LearningRateMultiplier>(LearningRateMultiplier::class) {
 
                 override fun serialize(
@@ -1434,7 +1434,7 @@ private constructor(
                 }
             }
 
-            class Deserializer : BaseDeserializer<NEpochs>(NEpochs::class) {
+            internal class Deserializer : BaseDeserializer<NEpochs>(NEpochs::class) {
 
                 override fun ObjectCodec.deserialize(node: JsonNode): NEpochs {
                     val json = JsonValue.fromJsonNode(node)
@@ -1459,7 +1459,7 @@ private constructor(
                 }
             }
 
-            class Serializer : BaseSerializer<NEpochs>(NEpochs::class) {
+            internal class Serializer : BaseSerializer<NEpochs>(NEpochs::class) {
 
                 override fun serialize(
                     value: NEpochs,
@@ -1638,7 +1638,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var dpo: JsonField<Dpo> = JsonMissing.of()
             private var supervised: JsonField<Supervised> = JsonMissing.of()
@@ -1744,7 +1744,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            class Builder {
+            class Builder internal constructor() {
 
                 private var hyperparameters: JsonField<Hyperparameters> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -1896,7 +1896,7 @@ private constructor(
                     @JvmStatic fun builder() = Builder()
                 }
 
-                class Builder {
+                class Builder internal constructor() {
 
                     private var batchSize: JsonField<BatchSize> = JsonMissing.of()
                     private var beta: JsonField<Beta> = JsonMissing.of()
@@ -2145,7 +2145,7 @@ private constructor(
                         }
                     }
 
-                    class Deserializer : BaseDeserializer<BatchSize>(BatchSize::class) {
+                    internal class Deserializer : BaseDeserializer<BatchSize>(BatchSize::class) {
 
                         override fun ObjectCodec.deserialize(node: JsonNode): BatchSize {
                             val json = JsonValue.fromJsonNode(node)
@@ -2170,7 +2170,7 @@ private constructor(
                         }
                     }
 
-                    class Serializer : BaseSerializer<BatchSize>(BatchSize::class) {
+                    internal class Serializer : BaseSerializer<BatchSize>(BatchSize::class) {
 
                         override fun serialize(
                             value: BatchSize,
@@ -2283,7 +2283,7 @@ private constructor(
                         }
                     }
 
-                    class Deserializer : BaseDeserializer<Beta>(Beta::class) {
+                    internal class Deserializer : BaseDeserializer<Beta>(Beta::class) {
 
                         override fun ObjectCodec.deserialize(node: JsonNode): Beta {
                             val json = JsonValue.fromJsonNode(node)
@@ -2308,7 +2308,7 @@ private constructor(
                         }
                     }
 
-                    class Serializer : BaseSerializer<Beta>(Beta::class) {
+                    internal class Serializer : BaseSerializer<Beta>(Beta::class) {
 
                         override fun serialize(
                             value: Beta,
@@ -2425,7 +2425,7 @@ private constructor(
                         }
                     }
 
-                    class Deserializer :
+                    internal class Deserializer :
                         BaseDeserializer<LearningRateMultiplier>(LearningRateMultiplier::class) {
 
                         override fun ObjectCodec.deserialize(
@@ -2453,7 +2453,7 @@ private constructor(
                         }
                     }
 
-                    class Serializer :
+                    internal class Serializer :
                         BaseSerializer<LearningRateMultiplier>(LearningRateMultiplier::class) {
 
                         override fun serialize(
@@ -2568,7 +2568,7 @@ private constructor(
                         }
                     }
 
-                    class Deserializer : BaseDeserializer<NEpochs>(NEpochs::class) {
+                    internal class Deserializer : BaseDeserializer<NEpochs>(NEpochs::class) {
 
                         override fun ObjectCodec.deserialize(node: JsonNode): NEpochs {
                             val json = JsonValue.fromJsonNode(node)
@@ -2593,7 +2593,7 @@ private constructor(
                         }
                     }
 
-                    class Serializer : BaseSerializer<NEpochs>(NEpochs::class) {
+                    internal class Serializer : BaseSerializer<NEpochs>(NEpochs::class) {
 
                         override fun serialize(
                             value: NEpochs,
@@ -2689,7 +2689,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            class Builder {
+            class Builder internal constructor() {
 
                 private var hyperparameters: JsonField<Hyperparameters> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -2826,7 +2826,7 @@ private constructor(
                     @JvmStatic fun builder() = Builder()
                 }
 
-                class Builder {
+                class Builder internal constructor() {
 
                     private var batchSize: JsonField<BatchSize> = JsonMissing.of()
                     private var learningRateMultiplier: JsonField<LearningRateMultiplier> =
@@ -3048,7 +3048,7 @@ private constructor(
                         }
                     }
 
-                    class Deserializer : BaseDeserializer<BatchSize>(BatchSize::class) {
+                    internal class Deserializer : BaseDeserializer<BatchSize>(BatchSize::class) {
 
                         override fun ObjectCodec.deserialize(node: JsonNode): BatchSize {
                             val json = JsonValue.fromJsonNode(node)
@@ -3073,7 +3073,7 @@ private constructor(
                         }
                     }
 
-                    class Serializer : BaseSerializer<BatchSize>(BatchSize::class) {
+                    internal class Serializer : BaseSerializer<BatchSize>(BatchSize::class) {
 
                         override fun serialize(
                             value: BatchSize,
@@ -3190,7 +3190,7 @@ private constructor(
                         }
                     }
 
-                    class Deserializer :
+                    internal class Deserializer :
                         BaseDeserializer<LearningRateMultiplier>(LearningRateMultiplier::class) {
 
                         override fun ObjectCodec.deserialize(
@@ -3218,7 +3218,7 @@ private constructor(
                         }
                     }
 
-                    class Serializer :
+                    internal class Serializer :
                         BaseSerializer<LearningRateMultiplier>(LearningRateMultiplier::class) {
 
                         override fun serialize(
@@ -3333,7 +3333,7 @@ private constructor(
                         }
                     }
 
-                    class Deserializer : BaseDeserializer<NEpochs>(NEpochs::class) {
+                    internal class Deserializer : BaseDeserializer<NEpochs>(NEpochs::class) {
 
                         override fun ObjectCodec.deserialize(node: JsonNode): NEpochs {
                             val json = JsonValue.fromJsonNode(node)
@@ -3358,7 +3358,7 @@ private constructor(
                         }
                     }
 
-                    class Serializer : BaseSerializer<NEpochs>(NEpochs::class) {
+                    internal class Serializer : BaseSerializer<NEpochs>(NEpochs::class) {
 
                         override fun serialize(
                             value: NEpochs,

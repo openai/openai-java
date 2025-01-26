@@ -155,7 +155,8 @@ private constructor(
         }
     }
 
-    class Deserializer : BaseDeserializer<MessageContentPartParam>(MessageContentPartParam::class) {
+    internal class Deserializer :
+        BaseDeserializer<MessageContentPartParam>(MessageContentPartParam::class) {
 
         override fun ObjectCodec.deserialize(node: JsonNode): MessageContentPartParam {
             val json = JsonValue.fromJsonNode(node)
@@ -186,7 +187,8 @@ private constructor(
         }
     }
 
-    class Serializer : BaseSerializer<MessageContentPartParam>(MessageContentPartParam::class) {
+    internal class Serializer :
+        BaseSerializer<MessageContentPartParam>(MessageContentPartParam::class) {
 
         override fun serialize(
             value: MessageContentPartParam,

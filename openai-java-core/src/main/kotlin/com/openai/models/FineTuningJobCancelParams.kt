@@ -13,7 +13,7 @@ import java.util.Optional
 
 /** Immediately cancel a fine-tune job. */
 class FineTuningJobCancelParams
-constructor(
+private constructor(
     private val fineTuningJobId: String,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -51,7 +51,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var fineTuningJobId: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()

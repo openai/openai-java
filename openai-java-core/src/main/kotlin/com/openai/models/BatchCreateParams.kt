@@ -23,7 +23,7 @@ import java.util.Optional
 
 /** Creates and executes a batch from an uploaded file of requests */
 class BatchCreateParams
-constructor(
+private constructor(
     private val body: BatchCreateBody,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -206,7 +206,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var completionWindow: JsonField<CompletionWindow>? = null
             private var endpoint: JsonField<Endpoint>? = null
@@ -346,7 +346,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var body: BatchCreateBody.Builder = BatchCreateBody.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
@@ -703,7 +703,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 

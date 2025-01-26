@@ -15,7 +15,7 @@ import java.util.Optional
 
 /** Returns a list of vector store files in a batch. */
 class BetaVectorStoreFileBatchListFilesParams
-constructor(
+private constructor(
     private val vectorStoreId: String,
     private val batchId: String,
     private val after: String?,
@@ -94,7 +94,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var vectorStoreId: String? = null
         private var batchId: String? = null

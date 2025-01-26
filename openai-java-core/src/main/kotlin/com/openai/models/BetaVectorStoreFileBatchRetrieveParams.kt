@@ -10,7 +10,7 @@ import java.util.Objects
 
 /** Retrieves a vector store file batch. */
 class BetaVectorStoreFileBatchRetrieveParams
-constructor(
+private constructor(
     private val vectorStoreId: String,
     private val batchId: String,
     private val additionalHeaders: Headers,
@@ -45,7 +45,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var vectorStoreId: String? = null
         private var batchId: String? = null

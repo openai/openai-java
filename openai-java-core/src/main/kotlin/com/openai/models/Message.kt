@@ -231,7 +231,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
         private var assistantId: JsonField<String>? = null
@@ -557,7 +557,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var fileId: JsonField<String> = JsonMissing.of()
             private var tools: JsonField<MutableList<Tool>>? = null
@@ -743,7 +743,7 @@ private constructor(
                 }
             }
 
-            class Deserializer : BaseDeserializer<Tool>(Tool::class) {
+            internal class Deserializer : BaseDeserializer<Tool>(Tool::class) {
 
                 override fun ObjectCodec.deserialize(node: JsonNode): Tool {
                     val json = JsonValue.fromJsonNode(node)
@@ -769,7 +769,7 @@ private constructor(
                 }
             }
 
-            class Serializer : BaseSerializer<Tool>(Tool::class) {
+            internal class Serializer : BaseSerializer<Tool>(Tool::class) {
 
                 override fun serialize(
                     value: Tool,
@@ -846,7 +846,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var reason: JsonField<Reason>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()

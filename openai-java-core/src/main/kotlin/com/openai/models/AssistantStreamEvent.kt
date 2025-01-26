@@ -1013,7 +1013,8 @@ private constructor(
         }
     }
 
-    class Deserializer : BaseDeserializer<AssistantStreamEvent>(AssistantStreamEvent::class) {
+    internal class Deserializer :
+        BaseDeserializer<AssistantStreamEvent>(AssistantStreamEvent::class) {
 
         override fun ObjectCodec.deserialize(node: JsonNode): AssistantStreamEvent {
             val json = JsonValue.fromJsonNode(node)
@@ -1178,7 +1179,7 @@ private constructor(
         }
     }
 
-    class Serializer : BaseSerializer<AssistantStreamEvent>(AssistantStreamEvent::class) {
+    internal class Serializer : BaseSerializer<AssistantStreamEvent>(AssistantStreamEvent::class) {
 
         override fun serialize(
             value: AssistantStreamEvent,
@@ -1297,7 +1298,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<Thread>? = null
             private var event: JsonValue = JsonValue.from("thread.created")
@@ -1433,7 +1434,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<Run>? = null
             private var event: JsonValue = JsonValue.from("thread.run.created")
@@ -1560,7 +1561,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<Run>? = null
             private var event: JsonValue = JsonValue.from("thread.run.queued")
@@ -1687,7 +1688,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<Run>? = null
             private var event: JsonValue = JsonValue.from("thread.run.in_progress")
@@ -1814,7 +1815,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<Run>? = null
             private var event: JsonValue = JsonValue.from("thread.run.requires_action")
@@ -1940,7 +1941,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<Run>? = null
             private var event: JsonValue = JsonValue.from("thread.run.completed")
@@ -2067,7 +2068,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<Run>? = null
             private var event: JsonValue = JsonValue.from("thread.run.incomplete")
@@ -2191,7 +2192,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<Run>? = null
             private var event: JsonValue = JsonValue.from("thread.run.failed")
@@ -2318,7 +2319,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<Run>? = null
             private var event: JsonValue = JsonValue.from("thread.run.cancelling")
@@ -2444,7 +2445,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<Run>? = null
             private var event: JsonValue = JsonValue.from("thread.run.cancelled")
@@ -2568,7 +2569,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<Run>? = null
             private var event: JsonValue = JsonValue.from("thread.run.expired")
@@ -2691,7 +2692,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<RunStep>? = null
             private var event: JsonValue = JsonValue.from("thread.run.step.created")
@@ -2809,7 +2810,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<RunStep>? = null
             private var event: JsonValue = JsonValue.from("thread.run.step.in_progress")
@@ -2927,7 +2928,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<RunStepDeltaEvent>? = null
             private var event: JsonValue = JsonValue.from("thread.run.step.delta")
@@ -3049,7 +3050,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<RunStep>? = null
             private var event: JsonValue = JsonValue.from("thread.run.step.completed")
@@ -3166,7 +3167,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<RunStep>? = null
             private var event: JsonValue = JsonValue.from("thread.run.step.failed")
@@ -3284,7 +3285,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<RunStep>? = null
             private var event: JsonValue = JsonValue.from("thread.run.step.cancelled")
@@ -3401,7 +3402,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<RunStep>? = null
             private var event: JsonValue = JsonValue.from("thread.run.step.expired")
@@ -3524,7 +3525,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<Message>? = null
             private var event: JsonValue = JsonValue.from("thread.message.created")
@@ -3653,7 +3654,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<Message>? = null
             private var event: JsonValue = JsonValue.from("thread.message.in_progress")
@@ -3776,7 +3777,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<MessageDeltaEvent>? = null
             private var event: JsonValue = JsonValue.from("thread.message.delta")
@@ -3899,7 +3900,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<Message>? = null
             private var event: JsonValue = JsonValue.from("thread.message.completed")
@@ -4028,7 +4029,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<Message>? = null
             private var event: JsonValue = JsonValue.from("thread.message.incomplete")
@@ -4149,7 +4150,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var data: JsonField<ErrorObject>? = null
             private var event: JsonValue = JsonValue.from("error")

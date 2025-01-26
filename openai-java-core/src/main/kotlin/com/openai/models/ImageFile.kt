@@ -81,7 +81,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var fileId: JsonField<String>? = null
         private var detail: JsonField<Detail> = JsonMissing.of()

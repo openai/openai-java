@@ -65,7 +65,8 @@ internal class SerializerTest {
         }
 
         @NoAutoDetect
-        class Builder {
+        class Builder internal constructor() {
+
             private var isActive: JsonField<Boolean> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 

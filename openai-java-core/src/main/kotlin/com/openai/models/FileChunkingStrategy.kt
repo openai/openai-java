@@ -126,7 +126,8 @@ private constructor(
         }
     }
 
-    class Deserializer : BaseDeserializer<FileChunkingStrategy>(FileChunkingStrategy::class) {
+    internal class Deserializer :
+        BaseDeserializer<FileChunkingStrategy>(FileChunkingStrategy::class) {
 
         override fun ObjectCodec.deserialize(node: JsonNode): FileChunkingStrategy {
             val json = JsonValue.fromJsonNode(node)
@@ -155,7 +156,7 @@ private constructor(
         }
     }
 
-    class Serializer : BaseSerializer<FileChunkingStrategy>(FileChunkingStrategy::class) {
+    internal class Serializer : BaseSerializer<FileChunkingStrategy>(FileChunkingStrategy::class) {
 
         override fun serialize(
             value: FileChunkingStrategy,

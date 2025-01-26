@@ -89,7 +89,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var finishReason: JsonField<FinishReason>? = null
         private var index: JsonField<Long>? = null
@@ -306,7 +306,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var textOffset: JsonField<MutableList<Long>>? = null
             private var tokenLogprobs: JsonField<MutableList<Double>>? = null
@@ -458,7 +458,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            class Builder {
+            class Builder internal constructor() {
 
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 

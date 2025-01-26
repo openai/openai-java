@@ -131,7 +131,7 @@ private constructor(
         }
     }
 
-    class Deserializer : BaseDeserializer<ToolCall>(ToolCall::class) {
+    internal class Deserializer : BaseDeserializer<ToolCall>(ToolCall::class) {
 
         override fun ObjectCodec.deserialize(node: JsonNode): ToolCall {
             val json = JsonValue.fromJsonNode(node)
@@ -164,7 +164,7 @@ private constructor(
         }
     }
 
-    class Serializer : BaseSerializer<ToolCall>(ToolCall::class) {
+    internal class Serializer : BaseSerializer<ToolCall>(ToolCall::class) {
 
         override fun serialize(
             value: ToolCall,

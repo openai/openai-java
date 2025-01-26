@@ -21,7 +21,7 @@ import java.util.Optional
 
 /** Create a vector store file batch. */
 class BetaVectorStoreFileBatchCreateParams
-constructor(
+private constructor(
     private val vectorStoreId: String,
     private val body: BetaVectorStoreFileBatchCreateBody,
     private val additionalHeaders: Headers,
@@ -137,7 +137,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var fileIds: JsonField<MutableList<String>>? = null
             private var chunkingStrategy: JsonField<FileChunkingStrategyParam> = JsonMissing.of()
@@ -266,7 +266,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var vectorStoreId: String? = null
         private var body: BetaVectorStoreFileBatchCreateBody.Builder =

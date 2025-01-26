@@ -155,7 +155,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var role: JsonValue = JsonValue.from("assistant")
         private var audio: JsonField<Audio> = JsonMissing.of()
@@ -373,7 +373,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var id: JsonField<String>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -550,7 +550,7 @@ private constructor(
             }
         }
 
-        class Deserializer : BaseDeserializer<Content>(Content::class) {
+        internal class Deserializer : BaseDeserializer<Content>(Content::class) {
 
             override fun ObjectCodec.deserialize(node: JsonNode): Content {
                 val json = JsonValue.fromJsonNode(node)
@@ -572,7 +572,7 @@ private constructor(
             }
         }
 
-        class Serializer : BaseSerializer<Content>(Content::class) {
+        internal class Serializer : BaseSerializer<Content>(Content::class) {
 
             override fun serialize(
                 value: Content,
@@ -705,7 +705,7 @@ private constructor(
                 }
             }
 
-            class Deserializer :
+            internal class Deserializer :
                 BaseDeserializer<ChatCompletionRequestAssistantMessageContentPart>(
                     ChatCompletionRequestAssistantMessageContentPart::class
                 ) {
@@ -748,7 +748,7 @@ private constructor(
                 }
             }
 
-            class Serializer :
+            internal class Serializer :
                 BaseSerializer<ChatCompletionRequestAssistantMessageContentPart>(
                     ChatCompletionRequestAssistantMessageContentPart::class
                 ) {
@@ -836,7 +836,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var arguments: JsonField<String>? = null
             private var name: JsonField<String>? = null

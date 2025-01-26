@@ -22,7 +22,7 @@ import java.util.Optional
 
 /** Create a vector store. */
 class BetaVectorStoreCreateParams
-constructor(
+private constructor(
     private val body: BetaVectorStoreCreateBody,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -180,7 +180,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var chunkingStrategy: JsonField<FileChunkingStrategyParam> = JsonMissing.of()
             private var expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of()
@@ -336,7 +336,7 @@ constructor(
     }
 
     @NoAutoDetect
-    class Builder {
+    class Builder internal constructor() {
 
         private var body: BetaVectorStoreCreateBody.Builder = BetaVectorStoreCreateBody.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
@@ -595,7 +595,7 @@ constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var anchor: JsonValue = JsonValue.from("last_active_at")
             private var days: JsonField<Long>? = null

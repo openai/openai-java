@@ -187,7 +187,7 @@ private constructor(
         }
     }
 
-    class Deserializer :
+    internal class Deserializer :
         BaseDeserializer<AssistantResponseFormatOption>(AssistantResponseFormatOption::class) {
 
         override fun ObjectCodec.deserialize(node: JsonNode): AssistantResponseFormatOption {
@@ -226,7 +226,7 @@ private constructor(
         }
     }
 
-    class Serializer :
+    internal class Serializer :
         BaseSerializer<AssistantResponseFormatOption>(AssistantResponseFormatOption::class) {
 
         override fun serialize(

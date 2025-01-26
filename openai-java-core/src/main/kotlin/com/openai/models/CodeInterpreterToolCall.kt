@@ -90,7 +90,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    class Builder {
+    class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
         private var codeInterpreter: JsonField<CodeInterpreter>? = null
@@ -212,7 +212,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        class Builder {
+        class Builder internal constructor() {
 
             private var input: JsonField<String>? = null
             private var outputs: JsonField<MutableList<Output>>? = null
@@ -395,7 +395,7 @@ private constructor(
                 }
             }
 
-            class Deserializer : BaseDeserializer<Output>(Output::class) {
+            internal class Deserializer : BaseDeserializer<Output>(Output::class) {
 
                 override fun ObjectCodec.deserialize(node: JsonNode): Output {
                     val json = JsonValue.fromJsonNode(node)
@@ -420,7 +420,7 @@ private constructor(
                 }
             }
 
-            class Serializer : BaseSerializer<Output>(Output::class) {
+            internal class Serializer : BaseSerializer<Output>(Output::class) {
 
                 override fun serialize(
                     value: Output,
@@ -487,7 +487,7 @@ private constructor(
                     @JvmStatic fun builder() = Builder()
                 }
 
-                class Builder {
+                class Builder internal constructor() {
 
                     private var logs: JsonField<String>? = null
                     private var type: JsonValue = JsonValue.from("logs")
@@ -605,7 +605,7 @@ private constructor(
                     @JvmStatic fun builder() = Builder()
                 }
 
-                class Builder {
+                class Builder internal constructor() {
 
                     private var image: JsonField<Image>? = null
                     private var type: JsonValue = JsonValue.from("image")
@@ -702,7 +702,7 @@ private constructor(
                         @JvmStatic fun builder() = Builder()
                     }
 
-                    class Builder {
+                    class Builder internal constructor() {
 
                         private var fileId: JsonField<String>? = null
                         private var additionalProperties: MutableMap<String, JsonValue> =
