@@ -30,6 +30,12 @@ import com.openai.services.async.UploadServiceAsync
  */
 interface OpenAIClientAsync {
 
+    /**
+     * Returns a version of this client that uses synchronous execution.
+     *
+     * The returned client shares its resources, like its connection pool and thread pools, with
+     * this client.
+     */
     fun sync(): OpenAIClient
 
     fun completions(): CompletionServiceAsync
