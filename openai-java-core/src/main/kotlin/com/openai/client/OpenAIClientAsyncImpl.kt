@@ -104,4 +104,6 @@ constructor(
     override fun batches(): BatchServiceAsync = batches
 
     override fun uploads(): UploadServiceAsync = uploads
+
+    override fun close() = clientOptions.httpClient.close()
 }
