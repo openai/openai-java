@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.15.0 (2025-01-27)
+
+Full Changelog: [v0.14.1...v0.15.0](https://github.com/openai/openai-java/compare/v0.14.1...v0.15.0)
+
+### Features
+
+* **client:** add `close` method ([#164](https://github.com/openai/openai-java/issues/164)) ([f32975f](https://github.com/openai/openai-java/commit/f32975f523bcab55faa54568982b884ba7d1d381))
+
+
+### Bug Fixes
+
+* **client:** make some classes and constructors non-public ([#169](https://github.com/openai/openai-java/issues/169)) ([20fb5a1](https://github.com/openai/openai-java/commit/20fb5a1eef19b59c9dd152f132e2a980d20b039d))
+
+
+### Chores
+
+* **internal:** remove some unnecessary `constructor` keywords ([20fb5a1](https://github.com/openai/openai-java/commit/20fb5a1eef19b59c9dd152f132e2a980d20b039d))
+
+
+### Documentation
+
+* `async` and `sync` method comments ([#167](https://github.com/openai/openai-java/issues/167)) ([6f11e5d](https://github.com/openai/openai-java/commit/6f11e5d88a70631f18b86c7f24e91042330f39ec))
+* add client documentation ([#166](https://github.com/openai/openai-java/issues/166)) ([4344883](https://github.com/openai/openai-java/commit/434488395fb95e59933242113b5d14b610ef5ec5))
+
 ## 0.14.1 (2025-01-25)
 
 Full Changelog: [v0.14.0...v0.14.1](https://github.com/openai/openai-java/compare/v0.14.0...v0.14.1)
