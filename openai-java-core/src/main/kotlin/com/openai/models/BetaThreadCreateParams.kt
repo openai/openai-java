@@ -1057,6 +1057,9 @@ private constructor(
                 fun addTool(codeInterpreter: CodeInterpreterTool) =
                     addTool(Tool.ofCodeInterpreter(codeInterpreter))
 
+                /** The tools to add this file to. */
+                fun addToolFileSearch() = addTool(Tool.ofFileSearch())
+
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
                     putAllAdditionalProperties(additionalProperties)

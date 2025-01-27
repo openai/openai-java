@@ -343,7 +343,7 @@ private constructor(
             fun model(model: JsonField<ImageModel>) = apply { this.model = model }
 
             /** The model to use for image generation. */
-            fun model(value: String) = apply { model(ImageModel.of(value)) }
+            fun model(value: String) = model(ImageModel.of(value))
 
             /**
              * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
