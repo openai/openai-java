@@ -910,7 +910,7 @@ private constructor(
              * associated with the assistant. If not, the model associated with the assistant will
              * be used.
              */
-            fun model(value: String) = apply { model(ChatModel.of(value)) }
+            fun model(value: String) = model(ChatModel.of(value))
 
             /**
              * Whether to enable
@@ -2633,6 +2633,9 @@ private constructor(
                 /** The tools to add this file to. */
                 fun addTool(codeInterpreter: CodeInterpreterTool) =
                     addTool(Tool.ofCodeInterpreter(codeInterpreter))
+
+                /** The tools to add this file to. */
+                fun addToolFileSearch() = addTool(Tool.ofFileSearch())
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()

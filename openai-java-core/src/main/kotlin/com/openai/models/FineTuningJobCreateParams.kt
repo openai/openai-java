@@ -450,7 +450,7 @@ private constructor(
              * The name of the model to fine-tune. You can select one of the
              * [supported models](https://platform.openai.com/docs/guides/fine-tuning#which-models-can-be-fine-tuned).
              */
-            fun model(value: String) = apply { model(Model.of(value)) }
+            fun model(value: String) = model(Model.of(value))
 
             /**
              * The ID of an uploaded file that contains training data.

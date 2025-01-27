@@ -468,7 +468,7 @@ private constructor(
              * all of your available models, or see our
              * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
              */
-            fun model(value: String) = apply { model(ChatModel.of(value)) }
+            fun model(value: String) = model(ChatModel.of(value))
 
             /** The description of the assistant. The maximum length is 512 characters. */
             fun description(description: String?) = description(JsonField.ofNullable(description))

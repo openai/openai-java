@@ -336,7 +336,7 @@ private constructor(
              * all of your available models, or see our
              * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
              */
-            fun model(value: String) = apply { model(EmbeddingModel.of(value)) }
+            fun model(value: String) = model(EmbeddingModel.of(value))
 
             /**
              * The number of dimensions the resulting output embeddings should have. Only supported

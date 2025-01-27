@@ -1431,7 +1431,7 @@ private constructor(
              * [model endpoint compatibility](https://platform.openai.com/docs/models#model-endpoint-compatibility)
              * table for details on which models work with the Chat API.
              */
-            fun model(value: String) = apply { model(ChatModel.of(value)) }
+            fun model(value: String) = model(ChatModel.of(value))
 
             /**
              * Parameters for audio output. Required when audio output is requested with
@@ -1527,12 +1527,14 @@ private constructor(
              * `none` means the model will not call a function and instead generates a message.
              * `auto` means the model can pick between generating a message or calling a function.
              */
+            @Deprecated("deprecated")
             fun functionCall(auto: FunctionCall.Auto) = functionCall(FunctionCall.ofAuto(auto))
 
             /**
              * Specifying a particular function via `{"name": "my_function"}` forces the model to
              * call that function.
              */
+            @Deprecated("deprecated")
             fun functionCall(functionCallOption: ChatCompletionFunctionCallOption) =
                 functionCall(FunctionCall.ofFunctionCallOption(functionCallOption))
 
@@ -2649,12 +2651,14 @@ private constructor(
          * `none` means the model will not call a function and instead generates a message. `auto`
          * means the model can pick between generating a message or calling a function.
          */
+        @Deprecated("deprecated")
         fun functionCall(auto: FunctionCall.Auto) = apply { body.functionCall(auto) }
 
         /**
          * Specifying a particular function via `{"name": "my_function"}` forces the model to call
          * that function.
          */
+        @Deprecated("deprecated")
         fun functionCall(functionCallOption: ChatCompletionFunctionCallOption) = apply {
             body.functionCall(functionCallOption)
         }
