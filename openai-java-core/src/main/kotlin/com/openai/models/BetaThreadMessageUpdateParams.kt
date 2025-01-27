@@ -97,6 +97,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [BetaThreadMessageUpdateBody]. */
         class Builder internal constructor() {
 
             private var metadata: JsonValue = JsonMissing.of()
@@ -164,6 +165,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [BetaThreadMessageUpdateParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 

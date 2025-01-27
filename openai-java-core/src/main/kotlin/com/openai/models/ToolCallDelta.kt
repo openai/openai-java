@@ -121,6 +121,9 @@ private constructor(
         fun ofFunction(function: FunctionToolCallDelta) = ToolCallDelta(function = function)
     }
 
+    /**
+     * An interface that defines how to map each variant of [ToolCallDelta] to a value of type [T].
+     */
     interface Visitor<out T> {
 
         /** Details of the Code Interpreter tool call the run step was involved in. */
@@ -130,6 +133,15 @@ private constructor(
 
         fun visitFunction(function: FunctionToolCallDelta): T
 
+        /**
+         * Maps an unknown variant of [ToolCallDelta] to a value of type [T].
+         *
+         * An instance of [ToolCallDelta] can contain an unknown variant if it was deserialized from
+         * data that doesn't match any known variant. For example, if the SDK is on an older version
+         * than the API, then the API may respond with new variants that the SDK is unaware of.
+         *
+         * @throws OpenAIInvalidDataException in the default implementation.
+         */
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown ToolCallDelta: $json")
         }

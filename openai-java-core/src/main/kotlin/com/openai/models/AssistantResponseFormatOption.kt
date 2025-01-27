@@ -171,6 +171,10 @@ private constructor(
             AssistantResponseFormatOption(responseFormatJsonSchema = responseFormatJsonSchema)
     }
 
+    /**
+     * An interface that defines how to map each variant of [AssistantResponseFormatOption] to a
+     * value of type [T].
+     */
     interface Visitor<out T> {
 
         /** `auto` is the default value */
@@ -182,6 +186,16 @@ private constructor(
 
         fun visitResponseFormatJsonSchema(responseFormatJsonSchema: ResponseFormatJsonSchema): T
 
+        /**
+         * Maps an unknown variant of [AssistantResponseFormatOption] to a value of type [T].
+         *
+         * An instance of [AssistantResponseFormatOption] can contain an unknown variant if it was
+         * deserialized from data that doesn't match any known variant. For example, if the SDK is
+         * on an older version than the API, then the API may respond with new variants that the SDK
+         * is unaware of.
+         *
+         * @throws OpenAIInvalidDataException in the default implementation.
+         */
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown AssistantResponseFormatOption: $json")
         }

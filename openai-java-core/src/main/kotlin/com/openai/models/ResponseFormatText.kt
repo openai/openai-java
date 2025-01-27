@@ -52,6 +52,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [ResponseFormatText]. */
     class Builder internal constructor() {
 
         private var type: JsonValue = JsonValue.from("text")

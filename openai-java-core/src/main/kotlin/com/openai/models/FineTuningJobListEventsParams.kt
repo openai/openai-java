@@ -56,6 +56,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [FineTuningJobListEventsParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 

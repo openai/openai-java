@@ -64,6 +64,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [ChatCompletionContentPartRefusal]. */
     class Builder internal constructor() {
 
         private var refusal: JsonField<String>? = null

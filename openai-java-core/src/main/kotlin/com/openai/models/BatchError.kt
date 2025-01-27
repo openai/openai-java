@@ -78,6 +78,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [BatchError]. */
     class Builder internal constructor() {
 
         private var code: JsonField<String> = JsonMissing.of()

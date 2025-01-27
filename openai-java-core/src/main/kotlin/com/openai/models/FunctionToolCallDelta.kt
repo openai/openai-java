@@ -81,6 +81,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [FunctionToolCallDelta]. */
     class Builder internal constructor() {
 
         private var index: JsonField<Long>? = null
@@ -216,6 +217,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [Function]. */
         class Builder internal constructor() {
 
             private var arguments: JsonField<String> = JsonMissing.of()

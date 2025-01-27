@@ -90,6 +90,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [CodeInterpreterToolCall]. */
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
@@ -212,6 +213,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [CodeInterpreter]. */
         class Builder internal constructor() {
 
             private var input: JsonField<String>? = null
@@ -383,6 +385,9 @@ private constructor(
                 @JvmStatic fun ofImage(image: ImageOutput) = Output(image = image)
             }
 
+            /**
+             * An interface that defines how to map each variant of [Output] to a value of type [T].
+             */
             interface Visitor<out T> {
 
                 /** Text output from the Code Interpreter tool call as part of a run step. */
@@ -390,6 +395,16 @@ private constructor(
 
                 fun visitImage(image: ImageOutput): T
 
+                /**
+                 * Maps an unknown variant of [Output] to a value of type [T].
+                 *
+                 * An instance of [Output] can contain an unknown variant if it was deserialized
+                 * from data that doesn't match any known variant. For example, if the SDK is on an
+                 * older version than the API, then the API may respond with new variants that the
+                 * SDK is unaware of.
+                 *
+                 * @throws OpenAIInvalidDataException in the default implementation.
+                 */
                 fun unknown(json: JsonValue?): T {
                     throw OpenAIInvalidDataException("Unknown Output: $json")
                 }
@@ -487,6 +502,7 @@ private constructor(
                     @JvmStatic fun builder() = Builder()
                 }
 
+                /** A builder for [LogsOutput]. */
                 class Builder internal constructor() {
 
                     private var logs: JsonField<String>? = null
@@ -605,6 +621,7 @@ private constructor(
                     @JvmStatic fun builder() = Builder()
                 }
 
+                /** A builder for [ImageOutput]. */
                 class Builder internal constructor() {
 
                     private var image: JsonField<Image>? = null
@@ -702,6 +719,7 @@ private constructor(
                         @JvmStatic fun builder() = Builder()
                     }
 
+                    /** A builder for [Image]. */
                     class Builder internal constructor() {
 
                         private var fileId: JsonField<String>? = null

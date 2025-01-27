@@ -66,6 +66,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [RunStepDeltaMessageDelta]. */
     class Builder internal constructor() {
 
         private var type: JsonValue = JsonValue.from("message_creation")
@@ -155,6 +156,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [MessageCreation]. */
         class Builder internal constructor() {
 
             private var messageId: JsonField<String> = JsonMissing.of()

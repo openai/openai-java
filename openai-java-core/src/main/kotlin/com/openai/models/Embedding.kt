@@ -79,6 +79,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [Embedding]. */
     class Builder internal constructor() {
 
         private var embedding: JsonField<MutableList<Double>>? = null

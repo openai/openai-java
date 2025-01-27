@@ -52,6 +52,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [CodeInterpreterTool]. */
     class Builder internal constructor() {
 
         private var type: JsonValue = JsonValue.from("code_interpreter")

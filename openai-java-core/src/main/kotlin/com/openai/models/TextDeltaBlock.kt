@@ -70,6 +70,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [TextDeltaBlock]. */
     class Builder internal constructor() {
 
         private var index: JsonField<Long>? = null

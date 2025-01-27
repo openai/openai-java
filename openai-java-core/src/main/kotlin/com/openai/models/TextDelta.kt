@@ -63,6 +63,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [TextDelta]. */
     class Builder internal constructor() {
 
         private var annotations: JsonField<MutableList<AnnotationDelta>>? = null

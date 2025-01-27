@@ -426,6 +426,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [BetaAssistantUpdateBody]. */
         class Builder internal constructor() {
 
             private var description: JsonField<String> = JsonMissing.of()
@@ -883,6 +884,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [BetaAssistantUpdateParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 
@@ -1419,6 +1421,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ToolResources]. */
         class Builder internal constructor() {
 
             private var codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of()
@@ -1522,6 +1525,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
+            /** A builder for [CodeInterpreter]. */
             class Builder internal constructor() {
 
                 private var fileIds: JsonField<MutableList<String>>? = null
@@ -1669,6 +1673,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
+            /** A builder for [FileSearch]. */
             class Builder internal constructor() {
 
                 private var vectorStoreIds: JsonField<MutableList<String>>? = null

@@ -65,6 +65,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [ModerationImageUrlInput]. */
     class Builder internal constructor() {
 
         private var imageUrl: JsonField<ImageUrl>? = null
@@ -152,6 +153,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ImageUrl]. */
         class Builder internal constructor() {
 
             private var url: JsonField<String>? = null

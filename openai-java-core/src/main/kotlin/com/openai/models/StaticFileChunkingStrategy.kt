@@ -82,6 +82,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [StaticFileChunkingStrategy]. */
     class Builder internal constructor() {
 
         private var chunkOverlapTokens: JsonField<Long>? = null

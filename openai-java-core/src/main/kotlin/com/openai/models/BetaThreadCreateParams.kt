@@ -166,6 +166,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [BetaThreadCreateBody]. */
         class Builder internal constructor() {
 
             private var messages: JsonField<MutableList<Message>>? = null
@@ -300,6 +301,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [BetaThreadCreateParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 
@@ -575,6 +577,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [Message]. */
         class Builder internal constructor() {
 
             private var content: JsonField<Content>? = null
@@ -792,6 +795,10 @@ private constructor(
                     Content(arrayOfContentParts = arrayOfContentParts)
             }
 
+            /**
+             * An interface that defines how to map each variant of [Content] to a value of type
+             * [T].
+             */
             interface Visitor<out T> {
 
                 /** The text contents of the message. */
@@ -804,6 +811,16 @@ private constructor(
                  */
                 fun visitArrayOfContentParts(arrayOfContentParts: List<MessageContentPartParam>): T
 
+                /**
+                 * Maps an unknown variant of [Content] to a value of type [T].
+                 *
+                 * An instance of [Content] can contain an unknown variant if it was deserialized
+                 * from data that doesn't match any known variant. For example, if the SDK is on an
+                 * older version than the API, then the API may respond with new variants that the
+                 * SDK is unaware of.
+                 *
+                 * @throws OpenAIInvalidDataException in the default implementation.
+                 */
                 fun unknown(json: JsonValue?): T {
                     throw OpenAIInvalidDataException("Unknown Content: $json")
                 }
@@ -859,6 +876,14 @@ private constructor(
             private val value: JsonField<String>,
         ) : Enum {
 
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
             @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
             companion object {
@@ -870,17 +895,35 @@ private constructor(
                 @JvmStatic fun of(value: String) = Role(JsonField.of(value))
             }
 
+            /** An enum containing [Role]'s known values. */
             enum class Known {
                 USER,
                 ASSISTANT,
             }
 
+            /**
+             * An enum containing [Role]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Role] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
             enum class Value {
                 USER,
                 ASSISTANT,
+                /** An enum member indicating that [Role] was instantiated with an unknown value. */
                 _UNKNOWN,
             }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
             fun value(): Value =
                 when (this) {
                     USER -> Value.USER
@@ -888,6 +931,15 @@ private constructor(
                     else -> Value._UNKNOWN
                 }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
             fun known(): Known =
                 when (this) {
                     USER -> Known.USER
@@ -959,6 +1011,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
+            /** A builder for [Attachment]. */
             class Builder internal constructor() {
 
                 private var fileId: JsonField<String> = JsonMissing.of()
@@ -1125,12 +1178,26 @@ private constructor(
                         Tool(fileSearch = JsonValue.from(mapOf("type" to "file_search")))
                 }
 
+                /**
+                 * An interface that defines how to map each variant of [Tool] to a value of type
+                 * [T].
+                 */
                 interface Visitor<out T> {
 
                     fun visitCodeInterpreter(codeInterpreter: CodeInterpreterTool): T
 
                     fun visitFileSearch(fileSearch: JsonValue): T
 
+                    /**
+                     * Maps an unknown variant of [Tool] to a value of type [T].
+                     *
+                     * An instance of [Tool] can contain an unknown variant if it was deserialized
+                     * from data that doesn't match any known variant. For example, if the SDK is on
+                     * an older version than the API, then the API may respond with new variants
+                     * that the SDK is unaware of.
+                     *
+                     * @throws OpenAIInvalidDataException in the default implementation.
+                     */
                     fun unknown(json: JsonValue?): T {
                         throw OpenAIInvalidDataException("Unknown Tool: $json")
                     }
@@ -1283,6 +1350,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ToolResources]. */
         class Builder internal constructor() {
 
             private var codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of()
@@ -1386,6 +1454,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
+            /** A builder for [CodeInterpreter]. */
             class Builder internal constructor() {
 
                 private var fileIds: JsonField<MutableList<String>>? = null
@@ -1553,6 +1622,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
+            /** A builder for [FileSearch]. */
             class Builder internal constructor() {
 
                 private var vectorStoreIds: JsonField<MutableList<String>>? = null
@@ -1751,6 +1821,7 @@ private constructor(
                     @JvmStatic fun builder() = Builder()
                 }
 
+                /** A builder for [VectorStore]. */
                 class Builder internal constructor() {
 
                     private var chunkingStrategy: JsonField<FileChunkingStrategyParam> =

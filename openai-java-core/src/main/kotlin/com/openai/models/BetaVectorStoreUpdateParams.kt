@@ -131,6 +131,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [BetaVectorStoreUpdateBody]. */
         class Builder internal constructor() {
 
             private var expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of()
@@ -228,6 +229,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [BetaVectorStoreUpdateParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 
@@ -450,6 +452,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ExpiresAfter]. */
         class Builder internal constructor() {
 
             private var anchor: JsonValue = JsonValue.from("last_active_at")

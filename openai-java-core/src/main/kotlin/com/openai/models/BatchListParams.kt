@@ -52,6 +52,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [BatchListParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 

@@ -155,6 +155,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [ChatCompletionAssistantMessageParam]. */
     class Builder internal constructor() {
 
         private var role: JsonValue = JsonValue.from("assistant")
@@ -373,6 +374,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [Audio]. */
         class Builder internal constructor() {
 
             private var id: JsonField<String>? = null
@@ -532,6 +534,9 @@ private constructor(
             ) = Content(arrayOfContentParts = arrayOfContentParts)
         }
 
+        /**
+         * An interface that defines how to map each variant of [Content] to a value of type [T].
+         */
         interface Visitor<out T> {
 
             /** The contents of the assistant message. */
@@ -545,6 +550,16 @@ private constructor(
                 arrayOfContentParts: List<ChatCompletionRequestAssistantMessageContentPart>
             ): T
 
+            /**
+             * Maps an unknown variant of [Content] to a value of type [T].
+             *
+             * An instance of [Content] can contain an unknown variant if it was deserialized from
+             * data that doesn't match any known variant. For example, if the SDK is on an older
+             * version than the API, then the API may respond with new variants that the SDK is
+             * unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
             fun unknown(json: JsonValue?): T {
                 throw OpenAIInvalidDataException("Unknown Content: $json")
             }
@@ -688,6 +703,10 @@ private constructor(
                     ChatCompletionRequestAssistantMessageContentPart(refusal = refusal)
             }
 
+            /**
+             * An interface that defines how to map each variant of
+             * [ChatCompletionRequestAssistantMessageContentPart] to a value of type [T].
+             */
             interface Visitor<out T> {
 
                 /**
@@ -698,6 +717,17 @@ private constructor(
 
                 fun visitRefusal(refusal: ChatCompletionContentPartRefusal): T
 
+                /**
+                 * Maps an unknown variant of [ChatCompletionRequestAssistantMessageContentPart] to
+                 * a value of type [T].
+                 *
+                 * An instance of [ChatCompletionRequestAssistantMessageContentPart] can contain an
+                 * unknown variant if it was deserialized from data that doesn't match any known
+                 * variant. For example, if the SDK is on an older version than the API, then the
+                 * API may respond with new variants that the SDK is unaware of.
+                 *
+                 * @throws OpenAIInvalidDataException in the default implementation.
+                 */
                 fun unknown(json: JsonValue?): T {
                     throw OpenAIInvalidDataException(
                         "Unknown ChatCompletionRequestAssistantMessageContentPart: $json"
@@ -836,6 +866,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [FunctionCall]. */
         class Builder internal constructor() {
 
             private var arguments: JsonField<String>? = null

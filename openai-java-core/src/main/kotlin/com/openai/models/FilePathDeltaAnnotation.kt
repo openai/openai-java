@@ -99,6 +99,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [FilePathDeltaAnnotation]. */
     class Builder internal constructor() {
 
         private var index: JsonField<Long>? = null
@@ -217,6 +218,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [FilePath]. */
         class Builder internal constructor() {
 
             private var fileId: JsonField<String> = JsonMissing.of()

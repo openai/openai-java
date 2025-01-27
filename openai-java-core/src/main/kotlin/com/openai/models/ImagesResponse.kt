@@ -60,6 +60,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [ImagesResponse]. */
     class Builder internal constructor() {
 
         private var created: JsonField<Long>? = null

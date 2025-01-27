@@ -142,6 +142,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ModerationCreateBody]. */
         class Builder internal constructor() {
 
             private var input: JsonField<Input>? = null
@@ -251,6 +252,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [ModerationCreateParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 
@@ -544,6 +546,7 @@ private constructor(
             ) = Input(moderationMultiModalArray = moderationMultiModalArray)
         }
 
+        /** An interface that defines how to map each variant of [Input] to a value of type [T]. */
         interface Visitor<out T> {
 
             /** A string of text to classify for moderation. */
@@ -557,6 +560,16 @@ private constructor(
                 moderationMultiModalArray: List<ModerationMultiModalInput>
             ): T
 
+            /**
+             * Maps an unknown variant of [Input] to a value of type [T].
+             *
+             * An instance of [Input] can contain an unknown variant if it was deserialized from
+             * data that doesn't match any known variant. For example, if the SDK is on an older
+             * version than the API, then the API may respond with new variants that the SDK is
+             * unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
             fun unknown(json: JsonValue?): T {
                 throw OpenAIInvalidDataException("Unknown Input: $json")
             }

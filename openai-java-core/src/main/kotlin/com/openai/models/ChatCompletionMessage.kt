@@ -146,6 +146,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [ChatCompletionMessage]. */
     class Builder internal constructor() {
 
         private var content: JsonField<String>? = null
@@ -340,6 +341,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [FunctionCall]. */
         class Builder internal constructor() {
 
             private var arguments: JsonField<String>? = null

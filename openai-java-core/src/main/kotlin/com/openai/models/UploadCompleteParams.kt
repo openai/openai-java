@@ -131,6 +131,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [UploadCompleteBody]. */
         class Builder internal constructor() {
 
             private var partIds: JsonField<MutableList<String>>? = null
@@ -230,6 +231,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [UploadCompleteParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 

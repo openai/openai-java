@@ -79,6 +79,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [FileSearchToolCallDelta]. */
     class Builder internal constructor() {
 
         private var fileSearch: JsonValue? = null

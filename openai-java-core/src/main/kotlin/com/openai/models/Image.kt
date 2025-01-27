@@ -76,6 +76,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [Image]. */
     class Builder internal constructor() {
 
         private var b64Json: JsonField<String> = JsonMissing.of()
