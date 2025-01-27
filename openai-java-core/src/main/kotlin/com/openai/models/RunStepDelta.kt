@@ -70,6 +70,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [RunStepDelta]. */
     class Builder internal constructor() {
 
         private var stepDetails: JsonField<StepDetails> = JsonMissing.of()
@@ -208,6 +209,10 @@ private constructor(
             fun ofToolCalls(toolCalls: ToolCallDeltaObject) = StepDetails(toolCalls = toolCalls)
         }
 
+        /**
+         * An interface that defines how to map each variant of [StepDetails] to a value of type
+         * [T].
+         */
         interface Visitor<out T> {
 
             /** Details of the message creation by the run step. */
@@ -216,6 +221,16 @@ private constructor(
             /** Details of the tool call. */
             fun visitToolCalls(toolCalls: ToolCallDeltaObject): T
 
+            /**
+             * Maps an unknown variant of [StepDetails] to a value of type [T].
+             *
+             * An instance of [StepDetails] can contain an unknown variant if it was deserialized
+             * from data that doesn't match any known variant. For example, if the SDK is on an
+             * older version than the API, then the API may respond with new variants that the SDK
+             * is unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
             fun unknown(json: JsonValue?): T {
                 throw OpenAIInvalidDataException("Unknown StepDetails: $json")
             }

@@ -65,6 +65,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [ResponseFormatJsonSchema]. */
     class Builder internal constructor() {
 
         private var jsonSchema: JsonField<JsonSchema>? = null
@@ -206,6 +207,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [JsonSchema]. */
         class Builder internal constructor() {
 
             private var name: JsonField<String>? = null
@@ -347,6 +349,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
+            /** A builder for [Schema]. */
             class Builder internal constructor() {
 
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()

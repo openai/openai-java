@@ -65,6 +65,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [MessageCreationStepDetails]. */
     class Builder internal constructor() {
 
         private var messageCreation: JsonField<MessageCreation>? = null
@@ -154,6 +155,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [MessageCreation]. */
         class Builder internal constructor() {
 
             private var messageId: JsonField<String>? = null

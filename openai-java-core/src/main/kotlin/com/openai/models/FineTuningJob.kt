@@ -315,6 +315,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [FineTuningJob]. */
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
@@ -761,6 +762,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [Error]. */
         class Builder internal constructor() {
 
             private var code: JsonField<String>? = null
@@ -939,6 +941,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [Hyperparameters]. */
         class Builder internal constructor() {
 
             private var batchSize: JsonField<BatchSize> = JsonMissing.of()
@@ -1145,12 +1148,26 @@ private constructor(
                 @JvmStatic fun ofManual(manual: Long) = BatchSize(manual = manual)
             }
 
+            /**
+             * An interface that defines how to map each variant of [BatchSize] to a value of type
+             * [T].
+             */
             interface Visitor<out T> {
 
                 fun visitAuto(auto: JsonValue): T
 
                 fun visitManual(manual: Long): T
 
+                /**
+                 * Maps an unknown variant of [BatchSize] to a value of type [T].
+                 *
+                 * An instance of [BatchSize] can contain an unknown variant if it was deserialized
+                 * from data that doesn't match any known variant. For example, if the SDK is on an
+                 * older version than the API, then the API may respond with new variants that the
+                 * SDK is unaware of.
+                 *
+                 * @throws OpenAIInvalidDataException in the default implementation.
+                 */
                 fun unknown(json: JsonValue?): T {
                     throw OpenAIInvalidDataException("Unknown BatchSize: $json")
                 }
@@ -1283,12 +1300,26 @@ private constructor(
                 @JvmStatic fun ofNumber(number: Double) = LearningRateMultiplier(number = number)
             }
 
+            /**
+             * An interface that defines how to map each variant of [LearningRateMultiplier] to a
+             * value of type [T].
+             */
             interface Visitor<out T> {
 
                 fun visitAuto(auto: JsonValue): T
 
                 fun visitNumber(number: Double): T
 
+                /**
+                 * Maps an unknown variant of [LearningRateMultiplier] to a value of type [T].
+                 *
+                 * An instance of [LearningRateMultiplier] can contain an unknown variant if it was
+                 * deserialized from data that doesn't match any known variant. For example, if the
+                 * SDK is on an older version than the API, then the API may respond with new
+                 * variants that the SDK is unaware of.
+                 *
+                 * @throws OpenAIInvalidDataException in the default implementation.
+                 */
                 fun unknown(json: JsonValue?): T {
                     throw OpenAIInvalidDataException("Unknown LearningRateMultiplier: $json")
                 }
@@ -1423,12 +1454,26 @@ private constructor(
                 @JvmStatic fun ofInteger(integer: Long) = NEpochs(integer = integer)
             }
 
+            /**
+             * An interface that defines how to map each variant of [NEpochs] to a value of type
+             * [T].
+             */
             interface Visitor<out T> {
 
                 fun visitAuto(auto: JsonValue): T
 
                 fun visitInteger(integer: Long): T
 
+                /**
+                 * Maps an unknown variant of [NEpochs] to a value of type [T].
+                 *
+                 * An instance of [NEpochs] can contain an unknown variant if it was deserialized
+                 * from data that doesn't match any known variant. For example, if the SDK is on an
+                 * older version than the API, then the API may respond with new variants that the
+                 * SDK is unaware of.
+                 *
+                 * @throws OpenAIInvalidDataException in the default implementation.
+                 */
                 fun unknown(json: JsonValue?): T {
                     throw OpenAIInvalidDataException("Unknown NEpochs: $json")
                 }
@@ -1504,6 +1549,14 @@ private constructor(
         private val value: JsonField<String>,
     ) : Enum {
 
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
         @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
         companion object {
@@ -1523,6 +1576,7 @@ private constructor(
             @JvmStatic fun of(value: String) = Status(JsonField.of(value))
         }
 
+        /** An enum containing [Status]'s known values. */
         enum class Known {
             VALIDATING_FILES,
             QUEUED,
@@ -1532,6 +1586,15 @@ private constructor(
             CANCELLED,
         }
 
+        /**
+         * An enum containing [Status]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Status] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
         enum class Value {
             VALIDATING_FILES,
             QUEUED,
@@ -1539,9 +1602,17 @@ private constructor(
             SUCCEEDED,
             FAILED,
             CANCELLED,
+            /** An enum member indicating that [Status] was instantiated with an unknown value. */
             _UNKNOWN,
         }
 
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
         fun value(): Value =
             when (this) {
                 VALIDATING_FILES -> Value.VALIDATING_FILES
@@ -1553,6 +1624,15 @@ private constructor(
                 else -> Value._UNKNOWN
             }
 
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
         fun known(): Known =
             when (this) {
                 VALIDATING_FILES -> Known.VALIDATING_FILES
@@ -1638,6 +1718,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [Method]. */
         class Builder internal constructor() {
 
             private var dpo: JsonField<Dpo> = JsonMissing.of()
@@ -1744,6 +1825,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
+            /** A builder for [Dpo]. */
             class Builder internal constructor() {
 
                 private var hyperparameters: JsonField<Hyperparameters> = JsonMissing.of()
@@ -1896,6 +1978,7 @@ private constructor(
                     @JvmStatic fun builder() = Builder()
                 }
 
+                /** A builder for [Hyperparameters]. */
                 class Builder internal constructor() {
 
                     private var batchSize: JsonField<BatchSize> = JsonMissing.of()
@@ -2134,12 +2217,26 @@ private constructor(
                         @JvmStatic fun ofManual(manual: Long) = BatchSize(manual = manual)
                     }
 
+                    /**
+                     * An interface that defines how to map each variant of [BatchSize] to a value
+                     * of type [T].
+                     */
                     interface Visitor<out T> {
 
                         fun visitAuto(auto: JsonValue): T
 
                         fun visitManual(manual: Long): T
 
+                        /**
+                         * Maps an unknown variant of [BatchSize] to a value of type [T].
+                         *
+                         * An instance of [BatchSize] can contain an unknown variant if it was
+                         * deserialized from data that doesn't match any known variant. For example,
+                         * if the SDK is on an older version than the API, then the API may respond
+                         * with new variants that the SDK is unaware of.
+                         *
+                         * @throws OpenAIInvalidDataException in the default implementation.
+                         */
                         fun unknown(json: JsonValue?): T {
                             throw OpenAIInvalidDataException("Unknown BatchSize: $json")
                         }
@@ -2272,12 +2369,26 @@ private constructor(
                         @JvmStatic fun ofManual(manual: Double) = Beta(manual = manual)
                     }
 
+                    /**
+                     * An interface that defines how to map each variant of [Beta] to a value of
+                     * type [T].
+                     */
                     interface Visitor<out T> {
 
                         fun visitAuto(auto: JsonValue): T
 
                         fun visitManual(manual: Double): T
 
+                        /**
+                         * Maps an unknown variant of [Beta] to a value of type [T].
+                         *
+                         * An instance of [Beta] can contain an unknown variant if it was
+                         * deserialized from data that doesn't match any known variant. For example,
+                         * if the SDK is on an older version than the API, then the API may respond
+                         * with new variants that the SDK is unaware of.
+                         *
+                         * @throws OpenAIInvalidDataException in the default implementation.
+                         */
                         fun unknown(json: JsonValue?): T {
                             throw OpenAIInvalidDataException("Unknown Beta: $json")
                         }
@@ -2412,12 +2523,27 @@ private constructor(
                         fun ofManual(manual: Double) = LearningRateMultiplier(manual = manual)
                     }
 
+                    /**
+                     * An interface that defines how to map each variant of [LearningRateMultiplier]
+                     * to a value of type [T].
+                     */
                     interface Visitor<out T> {
 
                         fun visitAuto(auto: JsonValue): T
 
                         fun visitManual(manual: Double): T
 
+                        /**
+                         * Maps an unknown variant of [LearningRateMultiplier] to a value of type
+                         * [T].
+                         *
+                         * An instance of [LearningRateMultiplier] can contain an unknown variant if
+                         * it was deserialized from data that doesn't match any known variant. For
+                         * example, if the SDK is on an older version than the API, then the API may
+                         * respond with new variants that the SDK is unaware of.
+                         *
+                         * @throws OpenAIInvalidDataException in the default implementation.
+                         */
                         fun unknown(json: JsonValue?): T {
                             throw OpenAIInvalidDataException(
                                 "Unknown LearningRateMultiplier: $json"
@@ -2557,12 +2683,26 @@ private constructor(
                         @JvmStatic fun ofManual(manual: Long) = NEpochs(manual = manual)
                     }
 
+                    /**
+                     * An interface that defines how to map each variant of [NEpochs] to a value of
+                     * type [T].
+                     */
                     interface Visitor<out T> {
 
                         fun visitAuto(auto: JsonValue): T
 
                         fun visitManual(manual: Long): T
 
+                        /**
+                         * Maps an unknown variant of [NEpochs] to a value of type [T].
+                         *
+                         * An instance of [NEpochs] can contain an unknown variant if it was
+                         * deserialized from data that doesn't match any known variant. For example,
+                         * if the SDK is on an older version than the API, then the API may respond
+                         * with new variants that the SDK is unaware of.
+                         *
+                         * @throws OpenAIInvalidDataException in the default implementation.
+                         */
                         fun unknown(json: JsonValue?): T {
                             throw OpenAIInvalidDataException("Unknown NEpochs: $json")
                         }
@@ -2689,6 +2829,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
+            /** A builder for [Supervised]. */
             class Builder internal constructor() {
 
                 private var hyperparameters: JsonField<Hyperparameters> = JsonMissing.of()
@@ -2826,6 +2967,7 @@ private constructor(
                     @JvmStatic fun builder() = Builder()
                 }
 
+                /** A builder for [Hyperparameters]. */
                 class Builder internal constructor() {
 
                     private var batchSize: JsonField<BatchSize> = JsonMissing.of()
@@ -3037,12 +3179,26 @@ private constructor(
                         @JvmStatic fun ofManual(manual: Long) = BatchSize(manual = manual)
                     }
 
+                    /**
+                     * An interface that defines how to map each variant of [BatchSize] to a value
+                     * of type [T].
+                     */
                     interface Visitor<out T> {
 
                         fun visitAuto(auto: JsonValue): T
 
                         fun visitManual(manual: Long): T
 
+                        /**
+                         * Maps an unknown variant of [BatchSize] to a value of type [T].
+                         *
+                         * An instance of [BatchSize] can contain an unknown variant if it was
+                         * deserialized from data that doesn't match any known variant. For example,
+                         * if the SDK is on an older version than the API, then the API may respond
+                         * with new variants that the SDK is unaware of.
+                         *
+                         * @throws OpenAIInvalidDataException in the default implementation.
+                         */
                         fun unknown(json: JsonValue?): T {
                             throw OpenAIInvalidDataException("Unknown BatchSize: $json")
                         }
@@ -3177,12 +3333,27 @@ private constructor(
                         fun ofManual(manual: Double) = LearningRateMultiplier(manual = manual)
                     }
 
+                    /**
+                     * An interface that defines how to map each variant of [LearningRateMultiplier]
+                     * to a value of type [T].
+                     */
                     interface Visitor<out T> {
 
                         fun visitAuto(auto: JsonValue): T
 
                         fun visitManual(manual: Double): T
 
+                        /**
+                         * Maps an unknown variant of [LearningRateMultiplier] to a value of type
+                         * [T].
+                         *
+                         * An instance of [LearningRateMultiplier] can contain an unknown variant if
+                         * it was deserialized from data that doesn't match any known variant. For
+                         * example, if the SDK is on an older version than the API, then the API may
+                         * respond with new variants that the SDK is unaware of.
+                         *
+                         * @throws OpenAIInvalidDataException in the default implementation.
+                         */
                         fun unknown(json: JsonValue?): T {
                             throw OpenAIInvalidDataException(
                                 "Unknown LearningRateMultiplier: $json"
@@ -3322,12 +3493,26 @@ private constructor(
                         @JvmStatic fun ofManual(manual: Long) = NEpochs(manual = manual)
                     }
 
+                    /**
+                     * An interface that defines how to map each variant of [NEpochs] to a value of
+                     * type [T].
+                     */
                     interface Visitor<out T> {
 
                         fun visitAuto(auto: JsonValue): T
 
                         fun visitManual(manual: Long): T
 
+                        /**
+                         * Maps an unknown variant of [NEpochs] to a value of type [T].
+                         *
+                         * An instance of [NEpochs] can contain an unknown variant if it was
+                         * deserialized from data that doesn't match any known variant. For example,
+                         * if the SDK is on an older version than the API, then the API may respond
+                         * with new variants that the SDK is unaware of.
+                         *
+                         * @throws OpenAIInvalidDataException in the default implementation.
+                         */
                         fun unknown(json: JsonValue?): T {
                             throw OpenAIInvalidDataException("Unknown NEpochs: $json")
                         }
@@ -3418,6 +3603,14 @@ private constructor(
             private val value: JsonField<String>,
         ) : Enum {
 
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
             @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
             companion object {
@@ -3429,17 +3622,35 @@ private constructor(
                 @JvmStatic fun of(value: String) = Type(JsonField.of(value))
             }
 
+            /** An enum containing [Type]'s known values. */
             enum class Known {
                 SUPERVISED,
                 DPO,
             }
 
+            /**
+             * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Type] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
             enum class Value {
                 SUPERVISED,
                 DPO,
+                /** An enum member indicating that [Type] was instantiated with an unknown value. */
                 _UNKNOWN,
             }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
             fun value(): Value =
                 when (this) {
                     SUPERVISED -> Value.SUPERVISED
@@ -3447,6 +3658,15 @@ private constructor(
                     else -> Value._UNKNOWN
                 }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
             fun known(): Known =
                 when (this) {
                     SUPERVISED -> Known.SUPERVISED

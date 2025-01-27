@@ -187,6 +187,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [UploadCreateBody]. */
         class Builder internal constructor() {
 
             private var bytes: JsonField<Long>? = null
@@ -302,6 +303,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [UploadCreateParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 

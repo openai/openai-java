@@ -72,6 +72,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [ImageUrlDeltaBlock]. */
     class Builder internal constructor() {
 
         private var index: JsonField<Long>? = null

@@ -58,6 +58,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [BetaVectorStoreFileDeleteParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 

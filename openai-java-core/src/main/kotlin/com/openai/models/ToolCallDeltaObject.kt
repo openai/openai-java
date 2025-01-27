@@ -74,6 +74,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [ToolCallDeltaObject]. */
     class Builder internal constructor() {
 
         private var type: JsonValue = JsonValue.from("tool_calls")

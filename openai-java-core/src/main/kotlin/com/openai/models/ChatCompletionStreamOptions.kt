@@ -68,6 +68,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [ChatCompletionStreamOptions]. */
     class Builder internal constructor() {
 
         private var includeUsage: JsonField<Boolean> = JsonMissing.of()

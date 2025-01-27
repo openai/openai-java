@@ -249,6 +249,10 @@ private constructor(
             MessageStreamEvent(threadMessageIncomplete = threadMessageIncomplete)
     }
 
+    /**
+     * An interface that defines how to map each variant of [MessageStreamEvent] to a value of type
+     * [T].
+     */
     interface Visitor<out T> {
 
         /**
@@ -282,6 +286,16 @@ private constructor(
          */
         fun visitThreadMessageIncomplete(threadMessageIncomplete: ThreadMessageIncomplete): T
 
+        /**
+         * Maps an unknown variant of [MessageStreamEvent] to a value of type [T].
+         *
+         * An instance of [MessageStreamEvent] can contain an unknown variant if it was deserialized
+         * from data that doesn't match any known variant. For example, if the SDK is on an older
+         * version than the API, then the API may respond with new variants that the SDK is unaware
+         * of.
+         *
+         * @throws OpenAIInvalidDataException in the default implementation.
+         */
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown MessageStreamEvent: $json")
         }
@@ -414,6 +428,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadMessageCreated]. */
         class Builder internal constructor() {
 
             private var data: JsonField<Message>? = null
@@ -543,6 +558,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadMessageInProgress]. */
         class Builder internal constructor() {
 
             private var data: JsonField<Message>? = null
@@ -666,6 +682,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadMessageDelta]. */
         class Builder internal constructor() {
 
             private var data: JsonField<MessageDeltaEvent>? = null
@@ -789,6 +806,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadMessageCompleted]. */
         class Builder internal constructor() {
 
             private var data: JsonField<Message>? = null
@@ -918,6 +936,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadMessageIncomplete]. */
         class Builder internal constructor() {
 
             private var data: JsonField<Message>? = null

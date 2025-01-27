@@ -56,6 +56,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [AutoFileChunkingStrategyParam]. */
     class Builder internal constructor() {
 
         private var type: JsonValue = JsonValue.from("auto")

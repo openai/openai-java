@@ -1248,6 +1248,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ChatCompletionCreateBody]. */
         class Builder internal constructor() {
 
             private var messages: JsonField<MutableList<ChatCompletionMessageParam>>? = null
@@ -2436,6 +2437,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [ChatCompletionCreateParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 
@@ -3677,6 +3679,10 @@ private constructor(
                 FunctionCall(functionCallOption = functionCallOption)
         }
 
+        /**
+         * An interface that defines how to map each variant of [FunctionCall] to a value of type
+         * [T].
+         */
         interface Visitor<out T> {
 
             /**
@@ -3691,6 +3697,16 @@ private constructor(
              */
             fun visitFunctionCallOption(functionCallOption: ChatCompletionFunctionCallOption): T
 
+            /**
+             * Maps an unknown variant of [FunctionCall] to a value of type [T].
+             *
+             * An instance of [FunctionCall] can contain an unknown variant if it was deserialized
+             * from data that doesn't match any known variant. For example, if the SDK is on an
+             * older version than the API, then the API may respond with new variants that the SDK
+             * is unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
             fun unknown(json: JsonValue?): T {
                 throw OpenAIInvalidDataException("Unknown FunctionCall: $json")
             }
@@ -3742,6 +3758,14 @@ private constructor(
             private val value: JsonField<String>,
         ) : Enum {
 
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
             @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
             companion object {
@@ -3753,17 +3777,35 @@ private constructor(
                 @JvmStatic fun of(value: String) = Auto(JsonField.of(value))
             }
 
+            /** An enum containing [Auto]'s known values. */
             enum class Known {
                 NONE,
                 AUTO,
             }
 
+            /**
+             * An enum containing [Auto]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Auto] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
             enum class Value {
                 NONE,
                 AUTO,
+                /** An enum member indicating that [Auto] was instantiated with an unknown value. */
                 _UNKNOWN,
             }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
             fun value(): Value =
                 when (this) {
                     NONE -> Value.NONE
@@ -3771,6 +3813,15 @@ private constructor(
                     else -> Value._UNKNOWN
                 }
 
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
             fun known(): Known =
                 when (this) {
                     NONE -> Known.NONE
@@ -3886,6 +3937,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [Function]. */
         class Builder internal constructor() {
 
             private var name: JsonField<String>? = null
@@ -4033,6 +4085,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [LogitBias]. */
         class Builder internal constructor() {
 
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -4114,6 +4167,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [Metadata]. */
         class Builder internal constructor() {
 
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -4275,6 +4329,10 @@ private constructor(
                 ResponseFormat(jsonSchema = jsonSchema)
         }
 
+        /**
+         * An interface that defines how to map each variant of [ResponseFormat] to a value of type
+         * [T].
+         */
         interface Visitor<out T> {
 
             fun visitText(text: ResponseFormatText): T
@@ -4283,6 +4341,16 @@ private constructor(
 
             fun visitJsonSchema(jsonSchema: ResponseFormatJsonSchema): T
 
+            /**
+             * Maps an unknown variant of [ResponseFormat] to a value of type [T].
+             *
+             * An instance of [ResponseFormat] can contain an unknown variant if it was deserialized
+             * from data that doesn't match any known variant. For example, if the SDK is on an
+             * older version than the API, then the API may respond with new variants that the SDK
+             * is unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
             fun unknown(json: JsonValue?): T {
                 throw OpenAIInvalidDataException("Unknown ResponseFormat: $json")
             }
@@ -4345,6 +4413,14 @@ private constructor(
         private val value: JsonField<String>,
     ) : Enum {
 
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
         @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
         companion object {
@@ -4356,17 +4432,37 @@ private constructor(
             @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
         }
 
+        /** An enum containing [ServiceTier]'s known values. */
         enum class Known {
             AUTO,
             DEFAULT,
         }
 
+        /**
+         * An enum containing [ServiceTier]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [ServiceTier] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
         enum class Value {
             AUTO,
             DEFAULT,
+            /**
+             * An enum member indicating that [ServiceTier] was instantiated with an unknown value.
+             */
             _UNKNOWN,
         }
 
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
         fun value(): Value =
             when (this) {
                 AUTO -> Value.AUTO
@@ -4374,6 +4470,15 @@ private constructor(
                 else -> Value._UNKNOWN
             }
 
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
         fun known(): Known =
             when (this) {
                 AUTO -> Known.AUTO
@@ -4470,12 +4575,22 @@ private constructor(
             @JvmStatic fun ofStrings(strings: List<String>) = Stop(strings = strings)
         }
 
+        /** An interface that defines how to map each variant of [Stop] to a value of type [T]. */
         interface Visitor<out T> {
 
             fun visitString(string: String): T
 
             fun visitStrings(strings: List<String>): T
 
+            /**
+             * Maps an unknown variant of [Stop] to a value of type [T].
+             *
+             * An instance of [Stop] can contain an unknown variant if it was deserialized from data
+             * that doesn't match any known variant. For example, if the SDK is on an older version
+             * than the API, then the API may respond with new variants that the SDK is unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
             fun unknown(json: JsonValue?): T {
                 throw OpenAIInvalidDataException("Unknown Stop: $json")
             }

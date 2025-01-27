@@ -129,6 +129,7 @@ private constructor(
         @JvmStatic fun ofFilePath(filePath: FilePathAnnotation) = Annotation(filePath = filePath)
     }
 
+    /** An interface that defines how to map each variant of [Annotation] to a value of type [T]. */
     interface Visitor<out T> {
 
         /**
@@ -144,6 +145,15 @@ private constructor(
          */
         fun visitFilePath(filePath: FilePathAnnotation): T
 
+        /**
+         * Maps an unknown variant of [Annotation] to a value of type [T].
+         *
+         * An instance of [Annotation] can contain an unknown variant if it was deserialized from
+         * data that doesn't match any known variant. For example, if the SDK is on an older version
+         * than the API, then the API may respond with new variants that the SDK is unaware of.
+         *
+         * @throws OpenAIInvalidDataException in the default implementation.
+         */
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown Annotation: $json")
         }

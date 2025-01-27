@@ -123,6 +123,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [FunctionDefinition]. */
     class Builder internal constructor() {
 
         private var name: JsonField<String>? = null

@@ -205,6 +205,10 @@ private constructor(
             ChatCompletionMessageParam(function = function)
     }
 
+    /**
+     * An interface that defines how to map each variant of [ChatCompletionMessageParam] to a value
+     * of type [T].
+     */
     interface Visitor<out T> {
 
         /**
@@ -230,6 +234,16 @@ private constructor(
 
         @Deprecated("deprecated") fun visitFunction(function: ChatCompletionFunctionMessageParam): T
 
+        /**
+         * Maps an unknown variant of [ChatCompletionMessageParam] to a value of type [T].
+         *
+         * An instance of [ChatCompletionMessageParam] can contain an unknown variant if it was
+         * deserialized from data that doesn't match any known variant. For example, if the SDK is
+         * on an older version than the API, then the API may respond with new variants that the SDK
+         * is unaware of.
+         *
+         * @throws OpenAIInvalidDataException in the default implementation.
+         */
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown ChatCompletionMessageParam: $json")
         }

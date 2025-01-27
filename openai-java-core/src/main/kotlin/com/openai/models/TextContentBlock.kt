@@ -61,6 +61,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [TextContentBlock]. */
     class Builder internal constructor() {
 
         private var text: JsonField<Text>? = null

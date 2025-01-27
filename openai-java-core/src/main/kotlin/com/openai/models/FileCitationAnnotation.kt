@@ -93,6 +93,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [FileCitationAnnotation]. */
     class Builder internal constructor() {
 
         private var endIndex: JsonField<Long>? = null
@@ -204,6 +205,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [FileCitation]. */
         class Builder internal constructor() {
 
             private var fileId: JsonField<String>? = null

@@ -63,6 +63,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [ChatCompletionContentPartText]. */
     class Builder internal constructor() {
 
         private var text: JsonField<String>? = null

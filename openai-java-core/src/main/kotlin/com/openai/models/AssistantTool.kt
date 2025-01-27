@@ -113,6 +113,9 @@ private constructor(
         @JvmStatic fun ofFunction(function: FunctionTool) = AssistantTool(function = function)
     }
 
+    /**
+     * An interface that defines how to map each variant of [AssistantTool] to a value of type [T].
+     */
     interface Visitor<out T> {
 
         fun visitCodeInterpreter(codeInterpreter: CodeInterpreterTool): T
@@ -121,6 +124,15 @@ private constructor(
 
         fun visitFunction(function: FunctionTool): T
 
+        /**
+         * Maps an unknown variant of [AssistantTool] to a value of type [T].
+         *
+         * An instance of [AssistantTool] can contain an unknown variant if it was deserialized from
+         * data that doesn't match any known variant. For example, if the SDK is on an older version
+         * than the API, then the API may respond with new variants that the SDK is unaware of.
+         *
+         * @throws OpenAIInvalidDataException in the default implementation.
+         */
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown AssistantTool: $json")
         }

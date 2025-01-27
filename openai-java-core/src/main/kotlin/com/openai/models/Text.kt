@@ -62,6 +62,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [Text]. */
     class Builder internal constructor() {
 
         private var annotations: JsonField<MutableList<Annotation>>? = null

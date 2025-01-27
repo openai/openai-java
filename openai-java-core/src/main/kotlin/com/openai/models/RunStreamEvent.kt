@@ -368,6 +368,9 @@ private constructor(
             RunStreamEvent(threadRunExpired = threadRunExpired)
     }
 
+    /**
+     * An interface that defines how to map each variant of [RunStreamEvent] to a value of type [T].
+     */
     interface Visitor<out T> {
 
         /**
@@ -428,6 +431,16 @@ private constructor(
          */
         fun visitThreadRunExpired(threadRunExpired: ThreadRunExpired): T
 
+        /**
+         * Maps an unknown variant of [RunStreamEvent] to a value of type [T].
+         *
+         * An instance of [RunStreamEvent] can contain an unknown variant if it was deserialized
+         * from data that doesn't match any known variant. For example, if the SDK is on an older
+         * version than the API, then the API may respond with new variants that the SDK is unaware
+         * of.
+         *
+         * @throws OpenAIInvalidDataException in the default implementation.
+         */
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown RunStreamEvent: $json")
         }
@@ -591,6 +604,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadRunCreated]. */
         class Builder internal constructor() {
 
             private var data: JsonField<Run>? = null
@@ -718,6 +732,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadRunQueued]. */
         class Builder internal constructor() {
 
             private var data: JsonField<Run>? = null
@@ -845,6 +860,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadRunInProgress]. */
         class Builder internal constructor() {
 
             private var data: JsonField<Run>? = null
@@ -972,6 +988,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadRunRequiresAction]. */
         class Builder internal constructor() {
 
             private var data: JsonField<Run>? = null
@@ -1098,6 +1115,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadRunCompleted]. */
         class Builder internal constructor() {
 
             private var data: JsonField<Run>? = null
@@ -1225,6 +1243,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadRunIncomplete]. */
         class Builder internal constructor() {
 
             private var data: JsonField<Run>? = null
@@ -1349,6 +1368,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadRunFailed]. */
         class Builder internal constructor() {
 
             private var data: JsonField<Run>? = null
@@ -1476,6 +1496,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadRunCancelling]. */
         class Builder internal constructor() {
 
             private var data: JsonField<Run>? = null
@@ -1602,6 +1623,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadRunCancelled]. */
         class Builder internal constructor() {
 
             private var data: JsonField<Run>? = null
@@ -1726,6 +1748,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadRunExpired]. */
         class Builder internal constructor() {
 
             private var data: JsonField<Run>? = null
