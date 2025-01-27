@@ -807,7 +807,7 @@ private constructor(
              * all of your available models, or see our
              * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
              */
-            fun model(value: String) = apply { model(Model.of(value)) }
+            fun model(value: String) = model(Model.of(value))
 
             /**
              * The prompt(s) to generate completions for, encoded as a string, array of strings,

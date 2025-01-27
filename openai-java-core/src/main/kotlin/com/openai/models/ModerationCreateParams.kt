@@ -198,7 +198,7 @@ private constructor(
              * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
              * about available models [here](https://platform.openai.com/docs/models#moderation).
              */
-            fun model(value: String) = apply { model(ModerationModel.of(value)) }
+            fun model(value: String) = model(ModerationModel.of(value))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
