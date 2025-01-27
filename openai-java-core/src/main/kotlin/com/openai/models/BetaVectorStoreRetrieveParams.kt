@@ -40,6 +40,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [BetaVectorStoreRetrieveParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 

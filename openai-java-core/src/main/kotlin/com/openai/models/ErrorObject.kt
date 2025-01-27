@@ -71,6 +71,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [ErrorObject]. */
     class Builder internal constructor() {
 
         private var code: JsonField<String>? = null

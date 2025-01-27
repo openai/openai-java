@@ -130,6 +130,10 @@ private constructor(
         fun ofFilePath(filePath: FilePathDeltaAnnotation) = AnnotationDelta(filePath = filePath)
     }
 
+    /**
+     * An interface that defines how to map each variant of [AnnotationDelta] to a value of type
+     * [T].
+     */
     interface Visitor<out T> {
 
         /**
@@ -145,6 +149,16 @@ private constructor(
          */
         fun visitFilePath(filePath: FilePathDeltaAnnotation): T
 
+        /**
+         * Maps an unknown variant of [AnnotationDelta] to a value of type [T].
+         *
+         * An instance of [AnnotationDelta] can contain an unknown variant if it was deserialized
+         * from data that doesn't match any known variant. For example, if the SDK is on an older
+         * version than the API, then the API may respond with new variants that the SDK is unaware
+         * of.
+         *
+         * @throws OpenAIInvalidDataException in the default implementation.
+         */
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown AnnotationDelta: $json")
         }

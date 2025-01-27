@@ -78,6 +78,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [ImageFileDeltaBlock]. */
     class Builder internal constructor() {
 
         private var index: JsonField<Long>? = null

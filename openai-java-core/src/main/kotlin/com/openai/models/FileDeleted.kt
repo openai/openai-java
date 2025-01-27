@@ -67,6 +67,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [FileDeleted]. */
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null

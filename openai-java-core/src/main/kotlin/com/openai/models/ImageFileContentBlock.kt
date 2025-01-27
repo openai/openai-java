@@ -66,6 +66,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [ImageFileContentBlock]. */
     class Builder internal constructor() {
 
         private var imageFile: JsonField<ImageFile>? = null

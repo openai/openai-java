@@ -416,6 +416,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [BetaAssistantCreateBody]. */
         class Builder internal constructor() {
 
             private var model: JsonField<ChatModel>? = null
@@ -881,6 +882,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [BetaAssistantCreateParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 
@@ -1420,6 +1422,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ToolResources]. */
         class Builder internal constructor() {
 
             private var codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of()
@@ -1523,6 +1526,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
+            /** A builder for [CodeInterpreter]. */
             class Builder internal constructor() {
 
                 private var fileIds: JsonField<MutableList<String>>? = null
@@ -1690,6 +1694,7 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
+            /** A builder for [FileSearch]. */
             class Builder internal constructor() {
 
                 private var vectorStoreIds: JsonField<MutableList<String>>? = null
@@ -1888,6 +1893,7 @@ private constructor(
                     @JvmStatic fun builder() = Builder()
                 }
 
+                /** A builder for [VectorStore]. */
                 class Builder internal constructor() {
 
                     private var chunkingStrategy: JsonField<FileChunkingStrategyParam> =

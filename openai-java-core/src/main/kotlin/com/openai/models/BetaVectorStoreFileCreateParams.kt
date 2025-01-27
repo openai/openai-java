@@ -141,6 +141,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [BetaVectorStoreFileCreateBody]. */
         class Builder internal constructor() {
 
             private var fileId: JsonField<String>? = null
@@ -249,6 +250,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [BetaVectorStoreFileCreateParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 

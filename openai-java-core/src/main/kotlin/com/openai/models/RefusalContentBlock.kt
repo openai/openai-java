@@ -63,6 +63,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [RefusalContentBlock]. */
     class Builder internal constructor() {
 
         private var refusal: JsonField<String>? = null

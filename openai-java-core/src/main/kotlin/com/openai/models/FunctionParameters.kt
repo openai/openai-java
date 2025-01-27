@@ -48,6 +48,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [FunctionParameters]. */
     class Builder internal constructor() {
 
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()

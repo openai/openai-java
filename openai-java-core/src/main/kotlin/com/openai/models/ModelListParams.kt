@@ -32,6 +32,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [ModelListParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 

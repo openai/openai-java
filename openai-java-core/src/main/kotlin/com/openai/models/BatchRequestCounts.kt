@@ -71,6 +71,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [BatchRequestCounts]. */
     class Builder internal constructor() {
 
         private var completed: JsonField<Long>? = null

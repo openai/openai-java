@@ -72,6 +72,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [ChatCompletionMessageToolCall]. */
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
@@ -190,6 +191,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [Function]. */
         class Builder internal constructor() {
 
             private var arguments: JsonField<String>? = null

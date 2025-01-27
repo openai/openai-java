@@ -180,6 +180,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [BetaVectorStoreCreateBody]. */
         class Builder internal constructor() {
 
             private var chunkingStrategy: JsonField<FileChunkingStrategyParam> = JsonMissing.of()
@@ -335,6 +336,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [BetaVectorStoreCreateParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 
@@ -595,6 +597,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ExpiresAfter]. */
         class Builder internal constructor() {
 
             private var anchor: JsonValue = JsonValue.from("last_active_at")

@@ -68,6 +68,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [BetaThreadRunStepRetrieveParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 

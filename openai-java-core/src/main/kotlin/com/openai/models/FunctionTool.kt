@@ -64,6 +64,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [FunctionTool]. */
     class Builder internal constructor() {
 
         private var function: JsonField<FunctionDefinition>? = null

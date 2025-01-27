@@ -24,6 +24,7 @@ class OpenAIOkHttpClient private constructor() {
         @JvmStatic fun fromEnv(): OpenAIClient = builder().fromEnv().build()
     }
 
+    /** A builder for [OpenAIOkHttpClient]. */
     class Builder internal constructor() {
 
         private var clientOptions: ClientOptions.Builder = ClientOptions.builder()

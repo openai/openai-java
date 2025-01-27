@@ -153,6 +153,10 @@ private constructor(
         fun ofImageUrl(imageUrl: ImageUrlDeltaBlock) = MessageContentDelta(imageUrl = imageUrl)
     }
 
+    /**
+     * An interface that defines how to map each variant of [MessageContentDelta] to a value of type
+     * [T].
+     */
     interface Visitor<out T> {
 
         /**
@@ -170,6 +174,16 @@ private constructor(
         /** References an image URL in the content of a message. */
         fun visitImageUrl(imageUrl: ImageUrlDeltaBlock): T
 
+        /**
+         * Maps an unknown variant of [MessageContentDelta] to a value of type [T].
+         *
+         * An instance of [MessageContentDelta] can contain an unknown variant if it was
+         * deserialized from data that doesn't match any known variant. For example, if the SDK is
+         * on an older version than the API, then the API may respond with new variants that the SDK
+         * is unaware of.
+         *
+         * @throws OpenAIInvalidDataException in the default implementation.
+         */
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown MessageContentDelta: $json")
         }

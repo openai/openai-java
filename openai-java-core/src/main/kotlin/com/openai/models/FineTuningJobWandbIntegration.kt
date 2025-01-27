@@ -104,6 +104,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [FineTuningJobWandbIntegration]. */
     class Builder internal constructor() {
 
         private var project: JsonField<String>? = null

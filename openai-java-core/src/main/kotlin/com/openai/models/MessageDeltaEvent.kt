@@ -73,6 +73,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [MessageDeltaEvent]. */
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null

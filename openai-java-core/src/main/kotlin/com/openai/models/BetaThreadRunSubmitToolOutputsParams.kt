@@ -104,6 +104,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [BetaThreadRunSubmitToolOutputsBody]. */
         class Builder internal constructor() {
 
             private var toolOutputs: JsonField<MutableList<ToolOutput>>? = null
@@ -192,6 +193,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [BetaThreadRunSubmitToolOutputsParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 
@@ -414,6 +416,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ToolOutput]. */
         class Builder internal constructor() {
 
             private var output: JsonField<String> = JsonMissing.of()

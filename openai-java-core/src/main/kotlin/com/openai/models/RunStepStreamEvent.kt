@@ -325,6 +325,10 @@ private constructor(
             RunStepStreamEvent(threadRunStepExpired = threadRunStepExpired)
     }
 
+    /**
+     * An interface that defines how to map each variant of [RunStepStreamEvent] to a value of type
+     * [T].
+     */
     interface Visitor<out T> {
 
         /**
@@ -374,6 +378,16 @@ private constructor(
          */
         fun visitThreadRunStepExpired(threadRunStepExpired: ThreadRunStepExpired): T
 
+        /**
+         * Maps an unknown variant of [RunStepStreamEvent] to a value of type [T].
+         *
+         * An instance of [RunStepStreamEvent] can contain an unknown variant if it was deserialized
+         * from data that doesn't match any known variant. For example, if the SDK is on an older
+         * version than the API, then the API may respond with new variants that the SDK is unaware
+         * of.
+         *
+         * @throws OpenAIInvalidDataException in the default implementation.
+         */
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown RunStepStreamEvent: $json")
         }
@@ -514,6 +528,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadRunStepCreated]. */
         class Builder internal constructor() {
 
             private var data: JsonField<RunStep>? = null
@@ -632,6 +647,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadRunStepInProgress]. */
         class Builder internal constructor() {
 
             private var data: JsonField<RunStep>? = null
@@ -750,6 +766,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadRunStepDelta]. */
         class Builder internal constructor() {
 
             private var data: JsonField<RunStepDeltaEvent>? = null
@@ -872,6 +889,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadRunStepCompleted]. */
         class Builder internal constructor() {
 
             private var data: JsonField<RunStep>? = null
@@ -989,6 +1007,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadRunStepFailed]. */
         class Builder internal constructor() {
 
             private var data: JsonField<RunStep>? = null
@@ -1107,6 +1126,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadRunStepCancelled]. */
         class Builder internal constructor() {
 
             private var data: JsonField<RunStep>? = null
@@ -1224,6 +1244,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
+        /** A builder for [ThreadRunStepExpired]. */
         class Builder internal constructor() {
 
             private var data: JsonField<RunStep>? = null

@@ -44,6 +44,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [FineTuningJobRetrieveParams]. */
     @NoAutoDetect
     class Builder internal constructor() {
 

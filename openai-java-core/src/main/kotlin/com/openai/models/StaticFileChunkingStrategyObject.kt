@@ -64,6 +64,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [StaticFileChunkingStrategyObject]. */
     class Builder internal constructor() {
 
         private var static_: JsonField<StaticFileChunkingStrategy>? = null

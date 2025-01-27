@@ -83,6 +83,7 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
+    /** A builder for [Model]. */
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null

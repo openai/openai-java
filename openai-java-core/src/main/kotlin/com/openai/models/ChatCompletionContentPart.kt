@@ -126,6 +126,10 @@ private constructor(
             ChatCompletionContentPart(inputAudio = inputAudio)
     }
 
+    /**
+     * An interface that defines how to map each variant of [ChatCompletionContentPart] to a value
+     * of type [T].
+     */
     interface Visitor<out T> {
 
         /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
@@ -137,6 +141,16 @@ private constructor(
         /** Learn about [audio inputs](https://platform.openai.com/docs/guides/audio). */
         fun visitInputAudio(inputAudio: ChatCompletionContentPartInputAudio): T
 
+        /**
+         * Maps an unknown variant of [ChatCompletionContentPart] to a value of type [T].
+         *
+         * An instance of [ChatCompletionContentPart] can contain an unknown variant if it was
+         * deserialized from data that doesn't match any known variant. For example, if the SDK is
+         * on an older version than the API, then the API may respond with new variants that the SDK
+         * is unaware of.
+         *
+         * @throws OpenAIInvalidDataException in the default implementation.
+         */
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown ChatCompletionContentPart: $json")
         }
