@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.15.1 (2025-01-27)
+
+Full Changelog: [v0.15.0...v0.15.1](https://github.com/openai/openai-java/compare/v0.15.0...v0.15.1)
+
+### Documentation
+
+* builder, enum, and union comments ([#171](https://github.com/openai/openai-java/issues/171)) ([37acbbd](https://github.com/openai/openai-java/commit/37acbbd239d6b540a461084240bc266ad0491e9c))
+
 ## 0.15.0 (2025-01-27)
 
 Full Changelog: [v0.14.1...v0.15.0](https://github.com/openai/openai-java/compare/v0.14.1...v0.15.0)
