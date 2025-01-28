@@ -6,13 +6,14 @@ plugins {
 
 dependencies {
     implementation(project(":openai-java"))
+    api("com.azure:azure-identity:1.15.0")
 }
 
 tasks.withType<JavaCompile>().configureEach {
     // Allow using more modern APIs, like `List.of` and `Map.of`, in examples.
-    options.release.set(9)
+    options.release.set(11)
 }
 
 application {
-    mainClass = "com.openai.example.Main"
+    mainClass = "com.openai.example.CompletionsExample"
 }
