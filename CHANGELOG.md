@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.16.0 (2025-01-28)
+
+Full Changelog: [v0.15.1...v0.16.0](https://github.com/openai/openai-java/compare/v0.15.1...v0.16.0)
+
+### Features
+
+* **client:** add some more builder helpers ([#173](https://github.com/openai/openai-java/issues/173)) ([f314e68](https://github.com/openai/openai-java/commit/f314e68915560703970c9acc16e96030202de9d1))
+
+
+### Chores
+
+* **internal:** shorten `model` method impl ([f314e68](https://github.com/openai/openai-java/commit/f314e68915560703970c9acc16e96030202de9d1))
+
+
+### Documentation
+
+* mark more methods as deprecated ([f314e68](https://github.com/openai/openai-java/commit/f314e68915560703970c9acc16e96030202de9d1))
+* more examples and cleanup ([#159](https://github.com/openai/openai-java/issues/159)) ([fa2a1fc](https://github.com/openai/openai-java/commit/fa2a1fc2983131bac40988049dd3b0e7c730442c))
+
 ## 0.15.1 (2025-01-27)
 
 Full Changelog: [v0.15.0...v0.15.1](https://github.com/openai/openai-java/compare/v0.15.0...v0.15.1)
