@@ -5,6 +5,9 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
 import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.github.tomakehurst.wiremock.stubbing.Scenario
 import com.openai.client.okhttp.OkHttpClient
+import com.openai.core.RequestOptions
+import java.io.InputStream
+import java.util.concurrent.CompletableFuture
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
@@ -13,11 +16,49 @@ import org.junit.jupiter.params.provider.ValueSource
 @WireMockTest
 internal class RetryingHttpClientTest {
 
+    private var openResponseCount = 0
     private lateinit var httpClient: HttpClient
 
     @BeforeEach
     fun beforeEach(wmRuntimeInfo: WireMockRuntimeInfo) {
-        httpClient = OkHttpClient.builder().baseUrl(wmRuntimeInfo.httpBaseUrl).build()
+        val okHttpClient = OkHttpClient.builder().baseUrl(wmRuntimeInfo.httpBaseUrl).build()
+        httpClient =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions
+                ): HttpResponse = trackClose(okHttpClient.execute(request, requestOptions))
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions
+                ): CompletableFuture<HttpResponse> =
+                    okHttpClient.executeAsync(request, requestOptions).thenApply { trackClose(it) }
+
+                override fun close() = okHttpClient.close()
+
+                private fun trackClose(response: HttpResponse): HttpResponse {
+                    openResponseCount++
+                    return object : HttpResponse {
+                        private var isClosed = false
+
+                        override fun statusCode(): Int = response.statusCode()
+
+                        override fun headers(): Headers = response.headers()
+
+                        override fun body(): InputStream = response.body()
+
+                        override fun close() {
+                            response.close()
+                            if (isClosed) {
+                                return
+                            }
+                            openResponseCount--
+                            isClosed = true
+                        }
+                    }
+                }
+            }
         resetAllScenarios()
     }
 
@@ -35,6 +76,7 @@ internal class RetryingHttpClientTest {
 
         assertThat(response.statusCode()).isEqualTo(200)
         verify(1, postRequestedFor(urlPathEqualTo("/something")))
+        assertNoResponseLeaks()
     }
 
     @ParameterizedTest
@@ -60,6 +102,7 @@ internal class RetryingHttpClientTest {
 
         assertThat(response.statusCode()).isEqualTo(200)
         verify(1, postRequestedFor(urlPathEqualTo("/something")))
+        assertNoResponseLeaks()
     }
 
     @ParameterizedTest
@@ -116,6 +159,7 @@ internal class RetryingHttpClientTest {
             postRequestedFor(urlPathEqualTo("/something"))
                 .withHeader("x-stainless-retry-count", equalTo("2"))
         )
+        assertNoResponseLeaks()
     }
 
     @ParameterizedTest
@@ -156,6 +200,7 @@ internal class RetryingHttpClientTest {
             postRequestedFor(urlPathEqualTo("/something"))
                 .withHeader("x-stainless-retry-count", equalTo("42"))
         )
+        assertNoResponseLeaks()
     }
 
     @ParameterizedTest
@@ -186,8 +231,13 @@ internal class RetryingHttpClientTest {
 
         assertThat(response.statusCode()).isEqualTo(200)
         verify(2, postRequestedFor(urlPathEqualTo("/something")))
+        assertNoResponseLeaks()
     }
 
     private fun HttpClient.execute(request: HttpRequest, async: Boolean): HttpResponse =
         if (async) executeAsync(request).get() else execute(request)
+
+    // When retrying, all failed responses should be closed. Only the final returned response should
+    // be open.
+    private fun assertNoResponseLeaks() = assertThat(openResponseCount).isEqualTo(1)
 }
