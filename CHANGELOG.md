@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.17.0 (2025-01-29)
+
+Full Changelog: [v0.16.0...v0.17.0](https://github.com/openai/openai-java/compare/v0.16.0...v0.17.0)
+
+### Features
+
+* **client:** add `_queryParams` and `_headers` methods ([#177](https://github.com/openai/openai-java/issues/177)) ([2d67005](https://github.com/openai/openai-java/commit/2d67005735b554440ed0578de6a182a73b129ffa))
+
+
+### Refactors
+
+* **internal:** extract request preparation logic ([2d67005](https://github.com/openai/openai-java/commit/2d67005735b554440ed0578de6a182a73b129ffa))
+
 ## 0.16.0 (2025-01-28)
 
 Full Changelog: [v0.15.1...v0.16.0](https://github.com/openai/openai-java/compare/v0.15.1...v0.16.0)
