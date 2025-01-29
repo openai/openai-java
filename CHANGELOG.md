@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.18.0 (2025-01-29)
+
+Full Changelog: [v0.17.0...v0.18.0](https://github.com/openai/openai-java/compare/v0.17.0...v0.18.0)
+
+### Features
+
+* **client:** helpers for discriminated union variants with one required prop ([#182](https://github.com/openai/openai-java/issues/182)) ([ec756b9](https://github.com/openai/openai-java/commit/ec756b9788629dfc36bb56d59d9f17f4d0d8cc35))
+
+
+### Chores
+
+* **internal:** improve `RetryingHttpClientTest` ([#180](https://github.com/openai/openai-java/issues/180)) ([b7ebe5d](https://github.com/openai/openai-java/commit/b7ebe5d44b2797618905614b51a27b73906e4271))
+* **internal:** simplify object construction ([#183](https://github.com/openai/openai-java/issues/183)) ([3d5a59d](https://github.com/openai/openai-java/commit/3d5a59dccc425e351a365f9dbdf2ae52244086ae))
+
+
+### Documentation
+
+* simpliy param construction ([2c2ccbc](https://github.com/openai/openai-java/commit/2c2ccbc83a053e525ad0d8df1506de5be4fda46c))
+
 ## 0.17.0 (2025-01-29)
 
 Full Changelog: [v0.16.0...v0.17.0](https://github.com/openai/openai-java/compare/v0.16.0...v0.17.0)
