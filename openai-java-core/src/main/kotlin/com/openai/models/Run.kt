@@ -1040,6 +1040,13 @@ private constructor(
         fun addTool(function: FunctionTool) = addTool(AssistantTool.ofFunction(function))
 
         /**
+         * The list of tools that the
+         * [assistant](https://platform.openai.com/docs/api-reference/assistants) used for this run.
+         */
+        fun addFunctionTool(function: FunctionDefinition) =
+            addTool(FunctionTool.builder().function(function).build())
+
+        /**
          * Controls for how a thread will be truncated prior to the run. Use this to control the
          * intial context window of the run.
          */

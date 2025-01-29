@@ -22,14 +22,16 @@ class MessageTest {
                 )
                 .completedAt(0L)
                 .addContent(
-                    ImageFileContentBlock.builder()
-                        .imageFile(
-                            ImageFile.builder()
-                                .fileId("file_id")
-                                .detail(ImageFile.Detail.AUTO)
-                                .build()
-                        )
-                        .build()
+                    MessageContent.ofImageFile(
+                        ImageFileContentBlock.builder()
+                            .imageFile(
+                                ImageFile.builder()
+                                    .fileId("file_id")
+                                    .detail(ImageFile.Detail.AUTO)
+                                    .build()
+                            )
+                            .build()
+                    )
                 )
                 .createdAt(0L)
                 .incompleteAt(0L)

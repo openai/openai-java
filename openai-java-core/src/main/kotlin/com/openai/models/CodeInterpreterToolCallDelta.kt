@@ -288,12 +288,24 @@ private constructor(
             /** Text output from the Code Interpreter tool call as part of a run step. */
             fun addOutput(logs: CodeInterpreterLogs) = addOutput(Output.ofLogs(logs))
 
+            /** Text output from the Code Interpreter tool call as part of a run step. */
+            fun addLogsOutput(index: Long) =
+                addOutput(CodeInterpreterLogs.builder().index(index).build())
+
             /**
              * The outputs from the Code Interpreter tool call. Code Interpreter can output one or
              * more items, including text (`logs`) or images (`image`). Each of these are
              * represented by a different object type.
              */
             fun addOutput(image: CodeInterpreterOutputImage) = addOutput(Output.ofImage(image))
+
+            /**
+             * The outputs from the Code Interpreter tool call. Code Interpreter can output one or
+             * more items, including text (`logs`) or images (`image`). Each of these are
+             * represented by a different object type.
+             */
+            fun addImageOutput(index: Long) =
+                addOutput(CodeInterpreterOutputImage.builder().index(index).build())
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
