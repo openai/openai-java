@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.18.1 (2025-01-29)
+
+Full Changelog: [v0.18.0...v0.18.1](https://github.com/openai/openai-java/compare/v0.18.0...v0.18.1)
+
+### Bug Fixes
+
+* **client:** don't leak responses when retrying ([#185](https://github.com/openai/openai-java/issues/185)) ([a13f967](https://github.com/openai/openai-java/commit/a13f967d4406cb447b14260c5435f77d91b6b1be))
+
 ## 0.18.0 (2025-01-29)
 
 Full Changelog: [v0.17.0...v0.18.0](https://github.com/openai/openai-java/compare/v0.17.0...v0.18.0)
