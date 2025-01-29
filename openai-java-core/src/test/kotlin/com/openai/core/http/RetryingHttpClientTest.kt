@@ -7,7 +7,6 @@ import com.github.tomakehurst.wiremock.stubbing.Scenario
 import com.openai.client.okhttp.OkHttpClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
@@ -22,21 +21,25 @@ internal class RetryingHttpClientTest {
         resetAllScenarios()
     }
 
-    @Test
-    fun byDefaultShouldNotAddIdempotencyHeaderToRequest() {
-        val request =
-            HttpRequest.builder().method(HttpMethod.POST).addPathSegment("something").build()
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun execute(async: Boolean) {
         stubFor(post(urlPathEqualTo("/something")).willReturn(ok()))
         val retryingClient = RetryingHttpClient.builder().httpClient(httpClient).build()
-        val response = retryingClient.execute(request)
+
+        val response =
+            retryingClient.execute(
+                HttpRequest.builder().method(HttpMethod.POST).addPathSegment("something").build(),
+                async
+            )
+
         assertThat(response.statusCode()).isEqualTo(200)
         verify(1, postRequestedFor(urlPathEqualTo("/something")))
     }
 
-    @Test
-    fun whenProvidedShouldAddIdempotencyHeaderToRequest() {
-        val request =
-            HttpRequest.builder().method(HttpMethod.POST).addPathSegment("something").build()
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun execute_withIdempotencyHeader(async: Boolean) {
         stubFor(
             post(urlPathEqualTo("/something"))
                 .withHeader("X-Some-Header", matching("stainless-java-retry-.+"))
@@ -48,19 +51,24 @@ internal class RetryingHttpClientTest {
                 .maxRetries(2)
                 .idempotencyHeader("X-Some-Header")
                 .build()
-        val response = retryingClient.execute(request)
+
+        val response =
+            retryingClient.execute(
+                HttpRequest.builder().method(HttpMethod.POST).addPathSegment("something").build(),
+                async
+            )
+
         assertThat(response.statusCode()).isEqualTo(200)
         verify(1, postRequestedFor(urlPathEqualTo("/something")))
     }
 
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
-    fun retryAfterHeader(async: Boolean) {
-        val request =
-            HttpRequest.builder().method(HttpMethod.POST).addPathSegment("something").build()
+    fun execute_withRetryAfterHeader(async: Boolean) {
         stubFor(
             post(urlPathEqualTo("/something"))
-                .inScenario("foo") // first we fail with a retry after header given as a date
+                // First we fail with a retry after header given as a date
+                .inScenario("foo")
                 .whenScenarioStateIs(Scenario.STARTED)
                 .willReturn(
                     serviceUnavailable().withHeader("Retry-After", "Wed, 21 Oct 2015 07:28:00 GMT")
@@ -69,14 +77,16 @@ internal class RetryingHttpClientTest {
         )
         stubFor(
             post(urlPathEqualTo("/something"))
-                .inScenario("foo") // then we fail with a retry after header given as a delay
+                // Then we fail with a retry after header given as a delay
+                .inScenario("foo")
                 .whenScenarioStateIs("RETRY_AFTER_DATE")
                 .willReturn(serviceUnavailable().withHeader("Retry-After", "1.234"))
                 .willSetStateTo("RETRY_AFTER_DELAY")
         )
         stubFor(
             post(urlPathEqualTo("/something"))
-                .inScenario("foo") // then we return a success
+                // Then we return a success
+                .inScenario("foo")
                 .whenScenarioStateIs("RETRY_AFTER_DELAY")
                 .willReturn(ok())
                 .willSetStateTo("COMPLETED")
@@ -85,8 +95,10 @@ internal class RetryingHttpClientTest {
             RetryingHttpClient.builder().httpClient(httpClient).maxRetries(2).build()
 
         val response =
-            if (async) retryingClient.executeAsync(request).get()
-            else retryingClient.execute(request)
+            retryingClient.execute(
+                HttpRequest.builder().method(HttpMethod.POST).addPathSegment("something").build(),
+                async
+            )
 
         assertThat(response.statusCode()).isEqualTo(200)
         verify(
@@ -108,13 +120,7 @@ internal class RetryingHttpClientTest {
 
     @ParameterizedTest
     @ValueSource(booleans = [false, true])
-    fun overwriteRetryCountHeader(async: Boolean) {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.POST)
-                .addPathSegment("something")
-                .putHeader("x-stainless-retry-count", "42")
-                .build()
+    fun execute_withOverwrittenRetryCountHeader(async: Boolean) {
         stubFor(
             post(urlPathEqualTo("/something"))
                 .inScenario("foo") // first we fail with a retry after header given as a date
@@ -135,8 +141,14 @@ internal class RetryingHttpClientTest {
             RetryingHttpClient.builder().httpClient(httpClient).maxRetries(2).build()
 
         val response =
-            if (async) retryingClient.executeAsync(request).get()
-            else retryingClient.execute(request)
+            retryingClient.execute(
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegment("something")
+                    .putHeader("x-stainless-retry-count", "42")
+                    .build(),
+                async
+            )
 
         assertThat(response.statusCode()).isEqualTo(200)
         verify(
@@ -146,10 +158,9 @@ internal class RetryingHttpClientTest {
         )
     }
 
-    @Test
-    fun retryAfterMsHeader() {
-        val request =
-            HttpRequest.builder().method(HttpMethod.POST).addPathSegment("something").build()
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun execute_withRetryAfterMsHeader(async: Boolean) {
         stubFor(
             post(urlPathEqualTo("/something"))
                 .inScenario("foo")
@@ -166,8 +177,17 @@ internal class RetryingHttpClientTest {
         )
         val retryingClient =
             RetryingHttpClient.builder().httpClient(httpClient).maxRetries(1).build()
-        val response = retryingClient.execute(request)
+
+        val response =
+            retryingClient.execute(
+                HttpRequest.builder().method(HttpMethod.POST).addPathSegment("something").build(),
+                async
+            )
+
         assertThat(response.statusCode()).isEqualTo(200)
         verify(2, postRequestedFor(urlPathEqualTo("/something")))
     }
+
+    private fun HttpClient.execute(request: HttpRequest, async: Boolean): HttpResponse =
+        if (async) executeAsync(request).get() else execute(request)
 }
