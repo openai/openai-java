@@ -433,9 +433,21 @@ private constructor(
         fun stepDetails(messageCreation: MessageCreationStepDetails) =
             stepDetails(StepDetails.ofMessageCreation(messageCreation))
 
+        /** Details of the message creation by the run step. */
+        fun messageCreationStepDetails(
+            messageCreation: MessageCreationStepDetails.MessageCreation
+        ) =
+            stepDetails(
+                MessageCreationStepDetails.builder().messageCreation(messageCreation).build()
+            )
+
         /** Details of the tool call. */
         fun stepDetails(toolCalls: ToolCallsStepDetails) =
             stepDetails(StepDetails.ofToolCalls(toolCalls))
+
+        /** Details of the tool call. */
+        fun toolCallsStepDetails(toolCalls: List<ToolCall>) =
+            stepDetails(ToolCallsStepDetails.builder().toolCalls(toolCalls).build())
 
         /**
          * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was

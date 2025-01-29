@@ -126,6 +126,10 @@ private constructor(
         fun addToolCall(codeInterpreter: CodeInterpreterToolCallDelta) =
             addToolCall(ToolCallDelta.ofCodeInterpreter(codeInterpreter))
 
+        /** Details of the Code Interpreter tool call the run step was involved in. */
+        fun addCodeInterpreterToolCall(index: Long) =
+            addToolCall(CodeInterpreterToolCallDelta.builder().index(index).build())
+
         /**
          * An array of tool calls the run step was involved in. These can be associated with one of
          * three types of tools: `code_interpreter`, `file_search`, or `function`.
@@ -139,6 +143,13 @@ private constructor(
          */
         fun addToolCall(function: FunctionToolCallDelta) =
             addToolCall(ToolCallDelta.ofFunction(function))
+
+        /**
+         * An array of tool calls the run step was involved in. These can be associated with one of
+         * three types of tools: `code_interpreter`, `file_search`, or `function`.
+         */
+        fun addFunctionToolCall(index: Long) =
+            addToolCall(FunctionToolCallDelta.builder().index(index).build())
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
