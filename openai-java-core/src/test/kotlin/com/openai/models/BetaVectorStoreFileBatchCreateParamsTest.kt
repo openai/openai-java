@@ -17,14 +17,14 @@ class BetaVectorStoreFileBatchCreateParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             BetaVectorStoreFileBatchCreateParams.builder()
                 .vectorStoreId("vs_abc123")
                 .addFileId("string")
                 .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.fileIds()).isEqualTo(listOf("string"))
         assertThat(body.chunkingStrategy())
@@ -34,13 +34,13 @@ class BetaVectorStoreFileBatchCreateParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             BetaVectorStoreFileBatchCreateParams.builder()
                 .vectorStoreId("vs_abc123")
                 .addFileId("string")
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.fileIds()).isEqualTo(listOf("string"))
     }

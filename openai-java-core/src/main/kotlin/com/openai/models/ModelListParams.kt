@@ -3,6 +3,7 @@
 package com.openai.models
 
 import com.openai.core.NoAutoDetect
+import com.openai.core.Params
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import java.util.Objects
@@ -15,15 +16,15 @@ class ModelListParams
 private constructor(
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
-) {
+) : Params {
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun getHeaders(): Headers = additionalHeaders
+    override fun _headers(): Headers = additionalHeaders
 
-    @JvmSynthetic internal fun getQueryParams(): QueryParams = additionalQueryParams
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
     fun toBuilder() = Builder().from(this)
 

@@ -36,7 +36,7 @@ class CompletionCreateParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             CompletionCreateParams.builder()
                 .model(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
@@ -61,7 +61,7 @@ class CompletionCreateParamsTest {
                 .topP(1.0)
                 .user("user-1234")
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.model()).isEqualTo(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
         assertThat(body.prompt())
@@ -90,13 +90,13 @@ class CompletionCreateParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             CompletionCreateParams.builder()
                 .model(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
                 .prompt("This is a test.")
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.model()).isEqualTo(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
         assertThat(body.prompt())

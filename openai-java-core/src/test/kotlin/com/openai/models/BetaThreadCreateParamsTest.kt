@@ -53,7 +53,7 @@ class BetaThreadCreateParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             BetaThreadCreateParams.builder()
                 .addMessage(
@@ -95,7 +95,7 @@ class BetaThreadCreateParamsTest {
                         .build()
                 )
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.messages())
             .contains(
@@ -142,9 +142,9 @@ class BetaThreadCreateParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params = BetaThreadCreateParams.builder().build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
     }
 }

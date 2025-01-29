@@ -19,7 +19,7 @@ class BetaVectorStoreListParamsTest {
     }
 
     @Test
-    fun getQueryParams() {
+    fun queryParams() {
         val params =
             BetaVectorStoreListParams.builder()
                 .after("after")
@@ -32,13 +32,13 @@ class BetaVectorStoreListParamsTest {
         expected.put("before", "before")
         expected.put("limit", "0")
         expected.put("order", BetaVectorStoreListParams.Order.ASC.toString())
-        assertThat(params.getQueryParams()).isEqualTo(expected.build())
+        assertThat(params._queryParams()).isEqualTo(expected.build())
     }
 
     @Test
-    fun getQueryParamsWithoutOptionalFields() {
+    fun queryParamsWithoutOptionalFields() {
         val params = BetaVectorStoreListParams.builder().build()
         val expected = QueryParams.builder()
-        assertThat(params.getQueryParams()).isEqualTo(expected.build())
+        assertThat(params._queryParams()).isEqualTo(expected.build())
     }
 }

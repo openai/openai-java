@@ -18,6 +18,7 @@ import com.openai.core.http.StreamResponse
 import com.openai.core.http.map
 import com.openai.core.http.toAsync
 import com.openai.core.json
+import com.openai.core.prepareAsync
 import com.openai.errors.OpenAIError
 import com.openai.models.ChatCompletion
 import com.openai.models.ChatCompletionChunk
@@ -53,22 +54,20 @@ internal constructor(
             HttpRequest.builder()
                 .method(HttpMethod.POST)
                 .addPathSegments("chat", "completions")
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceAllHeaders(params.getHeaders())
-                .body(json(clientOptions.jsonMapper, params.getBody()))
+                .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).thenApply { response
-            ->
-            response
-                .use { createHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
+                .prepareAsync(clientOptions, params)
+        return request
+            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            .thenApply { response ->
+                response
+                    .use { createHandler.handle(it) }
+                    .apply {
+                        if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                            validate()
+                        }
                     }
-                }
-        }
+            }
     }
 
     private val createStreamingHandler: Handler<StreamResponse<ChatCompletionChunk>> =
@@ -95,23 +94,20 @@ internal constructor(
             HttpRequest.builder()
                 .method(HttpMethod.POST)
                 .addPathSegments("chat", "completions")
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceAllHeaders(params.getHeaders())
                 .body(
                     json(
                         clientOptions.jsonMapper,
                         params
-                            .getBody()
+                            ._body()
                             .toBuilder()
                             .putAdditionalProperty("stream", JsonValue.from(true))
                             .build()
                     )
                 )
                 .build()
-        return clientOptions.httpClient
-            .executeAsync(request, requestOptions)
+                .prepareAsync(clientOptions, params)
+        return request
+            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
                 response
                     .let { createStreamingHandler.handle(it) }

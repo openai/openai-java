@@ -22,7 +22,7 @@ class BetaThreadRunSubmitToolOutputsParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             BetaThreadRunSubmitToolOutputsParams.builder()
                 .threadId("thread_id")
@@ -34,7 +34,7 @@ class BetaThreadRunSubmitToolOutputsParamsTest {
                         .build()
                 )
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.toolOutputs())
             .isEqualTo(
@@ -48,14 +48,14 @@ class BetaThreadRunSubmitToolOutputsParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             BetaThreadRunSubmitToolOutputsParams.builder()
                 .threadId("thread_id")
                 .runId("run_id")
                 .addToolOutput(BetaThreadRunSubmitToolOutputsParams.ToolOutput.builder().build())
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.toolOutputs())
             .isEqualTo(listOf(BetaThreadRunSubmitToolOutputsParams.ToolOutput.builder().build()))
