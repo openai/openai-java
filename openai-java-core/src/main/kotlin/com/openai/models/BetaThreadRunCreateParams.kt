@@ -1227,6 +1227,13 @@ private constructor(
             fun addTool(function: FunctionTool) = addTool(AssistantTool.ofFunction(function))
 
             /**
+             * Override the tools the assistant can use for this run. This is useful for modifying
+             * the behavior on a per-run basis.
+             */
+            fun addFunctionTool(function: FunctionDefinition) =
+                addTool(FunctionTool.builder().function(function).build())
+
+            /**
              * An alternative to sampling with temperature, called nucleus sampling, where the model
              * considers the results of the tokens with top_p probability mass. So 0.1 means only
              * the tokens comprising the top 10% probability mass are considered.
@@ -1884,6 +1891,12 @@ private constructor(
          * behavior on a per-run basis.
          */
         fun addTool(function: FunctionTool) = apply { body.addTool(function) }
+
+        /**
+         * Override the tools the assistant can use for this run. This is useful for modifying the
+         * behavior on a per-run basis.
+         */
+        fun addFunctionTool(function: FunctionDefinition) = apply { body.addFunctionTool(function) }
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model

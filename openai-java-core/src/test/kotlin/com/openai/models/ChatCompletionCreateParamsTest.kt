@@ -269,7 +269,7 @@ class ChatCompletionCreateParamsTest {
     fun bodyWithoutOptionalFields() {
         val params =
             ChatCompletionCreateParams.builder()
-                .addMessage(ChatCompletionDeveloperMessageParam.builder().content("string").build())
+                .addDeveloperMessage("string")
                 .model(ChatModel.O1)
                 .build()
         val body = params._body()

@@ -3554,6 +3554,17 @@ private constructor(
                             chunkingStrategy(FileChunkingStrategyParam.ofStatic(static_))
 
                         /**
+                         * The chunking strategy used to chunk the file(s). If not set, will use the
+                         * `auto` strategy. Only applicable if `file_ids` is non-empty.
+                         */
+                        fun staticChunkingStrategy(static_: StaticFileChunkingStrategy) =
+                            chunkingStrategy(
+                                StaticFileChunkingStrategyObjectParam.builder()
+                                    .static_(static_)
+                                    .build()
+                            )
+
+                        /**
                          * A list of [file](https://platform.openai.com/docs/api-reference/files)
                          * IDs to add to the vector store. There can be a maximum of 10000 files in
                          * a vector store.

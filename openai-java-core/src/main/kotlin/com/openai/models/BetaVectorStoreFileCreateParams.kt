@@ -199,6 +199,15 @@ private constructor(
             fun chunkingStrategy(static_: StaticFileChunkingStrategyObjectParam) =
                 chunkingStrategy(FileChunkingStrategyParam.ofStatic(static_))
 
+            /**
+             * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
+             * strategy. Only applicable if `file_ids` is non-empty.
+             */
+            fun staticChunkingStrategy(static_: StaticFileChunkingStrategy) =
+                chunkingStrategy(
+                    StaticFileChunkingStrategyObjectParam.builder().static_(static_).build()
+                )
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -315,6 +324,14 @@ private constructor(
          */
         fun chunkingStrategy(static_: StaticFileChunkingStrategyObjectParam) = apply {
             body.chunkingStrategy(static_)
+        }
+
+        /**
+         * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
+         * strategy. Only applicable if `file_ids` is non-empty.
+         */
+        fun staticChunkingStrategy(static_: StaticFileChunkingStrategy) = apply {
+            body.staticChunkingStrategy(static_)
         }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {

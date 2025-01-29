@@ -230,6 +230,15 @@ private constructor(
             fun chunkingStrategy(static_: StaticFileChunkingStrategyObjectParam) =
                 chunkingStrategy(FileChunkingStrategyParam.ofStatic(static_))
 
+            /**
+             * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
+             * strategy. Only applicable if `file_ids` is non-empty.
+             */
+            fun staticChunkingStrategy(static_: StaticFileChunkingStrategy) =
+                chunkingStrategy(
+                    StaticFileChunkingStrategyObjectParam.builder().static_(static_).build()
+                )
+
             /** The expiration policy for a vector store. */
             fun expiresAfter(expiresAfter: ExpiresAfter) = expiresAfter(JsonField.of(expiresAfter))
 
@@ -382,6 +391,14 @@ private constructor(
          */
         fun chunkingStrategy(static_: StaticFileChunkingStrategyObjectParam) = apply {
             body.chunkingStrategy(static_)
+        }
+
+        /**
+         * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
+         * strategy. Only applicable if `file_ids` is non-empty.
+         */
+        fun staticChunkingStrategy(static_: StaticFileChunkingStrategy) = apply {
+            body.staticChunkingStrategy(static_)
         }
 
         /** The expiration policy for a vector store. */

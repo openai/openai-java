@@ -105,11 +105,26 @@ private constructor(
             addAnnotation(AnnotationDelta.ofFileCitation(fileCitation))
 
         /**
+         * A citation within the message that points to a specific quote from a specific File
+         * associated with the assistant or the message. Generated when the assistant uses the
+         * "file_search" tool to search files.
+         */
+        fun addFileCitationAnnotation(index: Long) =
+            addAnnotation(FileCitationDeltaAnnotation.builder().index(index).build())
+
+        /**
          * A URL for the file that's generated when the assistant used the `code_interpreter` tool
          * to generate a file.
          */
         fun addAnnotation(filePath: FilePathDeltaAnnotation) =
             addAnnotation(AnnotationDelta.ofFilePath(filePath))
+
+        /**
+         * A URL for the file that's generated when the assistant used the `code_interpreter` tool
+         * to generate a file.
+         */
+        fun addFilePathAnnotation(index: Long) =
+            addAnnotation(FilePathDeltaAnnotation.builder().index(index).build())
 
         /** The data that makes up the text. */
         fun value(value: String) = value(JsonField.of(value))

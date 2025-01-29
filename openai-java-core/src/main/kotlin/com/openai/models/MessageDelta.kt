@@ -111,16 +111,34 @@ private constructor(
         fun addContent(imageFile: ImageFileDeltaBlock) =
             addContent(MessageContentDelta.ofImageFile(imageFile))
 
+        /**
+         * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
+         * content of a message.
+         */
+        fun addImageFileContent(index: Long) =
+            addContent(ImageFileDeltaBlock.builder().index(index).build())
+
         /** The text content that is part of a message. */
         fun addContent(text: TextDeltaBlock) = addContent(MessageContentDelta.ofText(text))
+
+        /** The text content that is part of a message. */
+        fun addTextContent(index: Long) = addContent(TextDeltaBlock.builder().index(index).build())
 
         /** The refusal content that is part of a message. */
         fun addContent(refusal: RefusalDeltaBlock) =
             addContent(MessageContentDelta.ofRefusal(refusal))
 
+        /** The refusal content that is part of a message. */
+        fun addRefusalContent(index: Long) =
+            addContent(RefusalDeltaBlock.builder().index(index).build())
+
         /** References an image URL in the content of a message. */
         fun addContent(imageUrl: ImageUrlDeltaBlock) =
             addContent(MessageContentDelta.ofImageUrl(imageUrl))
+
+        /** References an image URL in the content of a message. */
+        fun addImageUrlContent(index: Long) =
+            addContent(ImageUrlDeltaBlock.builder().index(index).build())
 
         /** The entity that produced the message. One of `user` or `assistant`. */
         fun role(role: Role) = role(JsonField.of(role))

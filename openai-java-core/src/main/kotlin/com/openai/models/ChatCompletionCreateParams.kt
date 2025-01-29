@@ -1371,6 +1371,31 @@ private constructor(
 
             /**
              * Developer-provided instructions that the model should follow, regardless of messages
+             * sent by the user. With o1 models and newer, `developer` messages replace the previous
+             * `system` messages.
+             */
+            fun addDeveloperMessage(content: ChatCompletionDeveloperMessageParam.Content) =
+                addMessage(ChatCompletionDeveloperMessageParam.builder().content(content).build())
+
+            /** The contents of the developer message. */
+            fun addDeveloperMessage(text: String) =
+                addDeveloperMessage(ChatCompletionDeveloperMessageParam.Content.ofText(text))
+
+            /**
+             * An array of content parts with a defined type. For developer messages, only type
+             * `text` is supported.
+             */
+            fun addDeveloperMessageOfArrayOfContentParts(
+                arrayOfContentParts: List<ChatCompletionContentPartText>
+            ) =
+                addDeveloperMessage(
+                    ChatCompletionDeveloperMessageParam.Content.ofArrayOfContentParts(
+                        arrayOfContentParts
+                    )
+                )
+
+            /**
+             * Developer-provided instructions that the model should follow, regardless of messages
              * sent by the user. With o1 models and newer, use `developer` messages for this purpose
              * instead.
              */
@@ -1378,10 +1403,59 @@ private constructor(
                 addMessage(ChatCompletionMessageParam.ofSystem(system))
 
             /**
+             * Developer-provided instructions that the model should follow, regardless of messages
+             * sent by the user. With o1 models and newer, use `developer` messages for this purpose
+             * instead.
+             */
+            fun addSystemMessage(content: ChatCompletionSystemMessageParam.Content) =
+                addMessage(ChatCompletionSystemMessageParam.builder().content(content).build())
+
+            /** The contents of the system message. */
+            fun addSystemMessage(text: String) =
+                addSystemMessage(ChatCompletionSystemMessageParam.Content.ofText(text))
+
+            /**
+             * An array of content parts with a defined type. For system messages, only type `text`
+             * is supported.
+             */
+            fun addSystemMessageOfArrayOfContentParts(
+                arrayOfContentParts: List<ChatCompletionContentPartText>
+            ) =
+                addSystemMessage(
+                    ChatCompletionSystemMessageParam.Content.ofArrayOfContentParts(
+                        arrayOfContentParts
+                    )
+                )
+
+            /**
              * Messages sent by an end user, containing prompts or additional context information.
              */
             fun addMessage(user: ChatCompletionUserMessageParam) =
                 addMessage(ChatCompletionMessageParam.ofUser(user))
+
+            /**
+             * Messages sent by an end user, containing prompts or additional context information.
+             */
+            fun addUserMessage(content: ChatCompletionUserMessageParam.Content) =
+                addMessage(ChatCompletionUserMessageParam.builder().content(content).build())
+
+            /** The text contents of the message. */
+            fun addUserMessage(text: String) =
+                addUserMessage(ChatCompletionUserMessageParam.Content.ofText(text))
+
+            /**
+             * An array of content parts with a defined type. Supported options differ based on the
+             * [model](https://platform.openai.com/docs/models) being used to generate the response.
+             * Can contain text, image, or audio inputs.
+             */
+            fun addUserMessageOfArrayOfContentParts(
+                arrayOfContentParts: List<ChatCompletionContentPart>
+            ) =
+                addUserMessage(
+                    ChatCompletionUserMessageParam.Content.ofArrayOfContentParts(
+                        arrayOfContentParts
+                    )
+                )
 
             /** Messages sent by the model in response to user messages. */
             fun addMessage(assistant: ChatCompletionAssistantMessageParam) =
@@ -2498,12 +2572,68 @@ private constructor(
 
         /**
          * Developer-provided instructions that the model should follow, regardless of messages sent
+         * by the user. With o1 models and newer, `developer` messages replace the previous `system`
+         * messages.
+         */
+        fun addDeveloperMessage(content: ChatCompletionDeveloperMessageParam.Content) = apply {
+            body.addDeveloperMessage(content)
+        }
+
+        /** The contents of the developer message. */
+        fun addDeveloperMessage(text: String) = apply { body.addDeveloperMessage(text) }
+
+        /**
+         * An array of content parts with a defined type. For developer messages, only type `text`
+         * is supported.
+         */
+        fun addDeveloperMessageOfArrayOfContentParts(
+            arrayOfContentParts: List<ChatCompletionContentPartText>
+        ) = apply { body.addDeveloperMessageOfArrayOfContentParts(arrayOfContentParts) }
+
+        /**
+         * Developer-provided instructions that the model should follow, regardless of messages sent
          * by the user. With o1 models and newer, use `developer` messages for this purpose instead.
          */
         fun addMessage(system: ChatCompletionSystemMessageParam) = apply { body.addMessage(system) }
 
+        /**
+         * Developer-provided instructions that the model should follow, regardless of messages sent
+         * by the user. With o1 models and newer, use `developer` messages for this purpose instead.
+         */
+        fun addSystemMessage(content: ChatCompletionSystemMessageParam.Content) = apply {
+            body.addSystemMessage(content)
+        }
+
+        /** The contents of the system message. */
+        fun addSystemMessage(text: String) = apply { body.addSystemMessage(text) }
+
+        /**
+         * An array of content parts with a defined type. For system messages, only type `text` is
+         * supported.
+         */
+        fun addSystemMessageOfArrayOfContentParts(
+            arrayOfContentParts: List<ChatCompletionContentPartText>
+        ) = apply { body.addSystemMessageOfArrayOfContentParts(arrayOfContentParts) }
+
         /** Messages sent by an end user, containing prompts or additional context information. */
         fun addMessage(user: ChatCompletionUserMessageParam) = apply { body.addMessage(user) }
+
+        /** Messages sent by an end user, containing prompts or additional context information. */
+        fun addUserMessage(content: ChatCompletionUserMessageParam.Content) = apply {
+            body.addUserMessage(content)
+        }
+
+        /** The text contents of the message. */
+        fun addUserMessage(text: String) = apply { body.addUserMessage(text) }
+
+        /**
+         * An array of content parts with a defined type. Supported options differ based on the
+         * [model](https://platform.openai.com/docs/models) being used to generate the response. Can
+         * contain text, image, or audio inputs.
+         */
+        fun addUserMessageOfArrayOfContentParts(
+            arrayOfContentParts: List<ChatCompletionContentPart>
+        ) = apply { body.addUserMessageOfArrayOfContentParts(arrayOfContentParts) }
 
         /** Messages sent by the model in response to user messages. */
         fun addMessage(assistant: ChatCompletionAssistantMessageParam) = apply {

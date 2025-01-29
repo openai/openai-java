@@ -18,10 +18,12 @@ class ToolCallsStepDetailsTest {
                             CodeInterpreterToolCall.CodeInterpreter.builder()
                                 .input("input")
                                 .addOutput(
-                                    CodeInterpreterToolCall.CodeInterpreter.Output.LogsOutput
-                                        .builder()
-                                        .logs("logs")
-                                        .build()
+                                    CodeInterpreterToolCall.CodeInterpreter.Output.ofLogs(
+                                        CodeInterpreterToolCall.CodeInterpreter.Output.LogsOutput
+                                            .builder()
+                                            .logs("logs")
+                                            .build()
+                                    )
                                 )
                                 .build()
                         )
@@ -38,10 +40,12 @@ class ToolCallsStepDetailsTest {
                             CodeInterpreterToolCall.CodeInterpreter.builder()
                                 .input("input")
                                 .addOutput(
-                                    CodeInterpreterToolCall.CodeInterpreter.Output.LogsOutput
-                                        .builder()
-                                        .logs("logs")
-                                        .build()
+                                    CodeInterpreterToolCall.CodeInterpreter.Output.ofLogs(
+                                        CodeInterpreterToolCall.CodeInterpreter.Output.LogsOutput
+                                            .builder()
+                                            .logs("logs")
+                                            .build()
+                                    )
                                 )
                                 .build()
                         )

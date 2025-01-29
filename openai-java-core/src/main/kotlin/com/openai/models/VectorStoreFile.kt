@@ -270,6 +270,10 @@ private constructor(
         fun chunkingStrategy(static_: StaticFileChunkingStrategyObject) =
             chunkingStrategy(FileChunkingStrategy.ofStatic(static_))
 
+        /** The strategy used to chunk the file. */
+        fun staticChunkingStrategy(static_: StaticFileChunkingStrategy) =
+            chunkingStrategy(StaticFileChunkingStrategyObject.builder().static_(static_).build())
+
         /**
          * This is returned when the chunking strategy is unknown. Typically, this is because the
          * file was indexed before the `chunking_strategy` concept was introduced in the API.
