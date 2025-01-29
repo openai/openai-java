@@ -23,7 +23,7 @@ class BatchCreateParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             BatchCreateParams.builder()
                 .completionWindow(BatchCreateParams.CompletionWindow._24H)
@@ -35,7 +35,7 @@ class BatchCreateParamsTest {
                         .build()
                 )
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.completionWindow()).isEqualTo(BatchCreateParams.CompletionWindow._24H)
         assertThat(body.endpoint()).isEqualTo(BatchCreateParams.Endpoint.V1_CHAT_COMPLETIONS)
@@ -49,14 +49,14 @@ class BatchCreateParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             BatchCreateParams.builder()
                 .completionWindow(BatchCreateParams.CompletionWindow._24H)
                 .endpoint(BatchCreateParams.Endpoint.V1_CHAT_COMPLETIONS)
                 .inputFileId("input_file_id")
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.completionWindow()).isEqualTo(BatchCreateParams.CompletionWindow._24H)
         assertThat(body.endpoint()).isEqualTo(BatchCreateParams.Endpoint.V1_CHAT_COMPLETIONS)

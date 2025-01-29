@@ -84,7 +84,7 @@ class ChatCompletionCreateParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             ChatCompletionCreateParams.builder()
                 .addMessage(
@@ -160,7 +160,7 @@ class ChatCompletionCreateParamsTest {
                 .topP(1.0)
                 .user("user-1234")
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.messages())
             .isEqualTo(
@@ -266,13 +266,13 @@ class ChatCompletionCreateParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             ChatCompletionCreateParams.builder()
                 .addMessage(ChatCompletionDeveloperMessageParam.builder().content("string").build())
                 .model(ChatModel.O1)
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.messages())
             .isEqualTo(

@@ -50,7 +50,7 @@ class BetaThreadRunCreateParamsTest {
     }
 
     @Test
-    fun getQueryParams() {
+    fun queryParams() {
         val params =
             BetaThreadRunCreateParams.builder()
                 .threadId("thread_id")
@@ -93,22 +93,22 @@ class BetaThreadRunCreateParamsTest {
             "include[]",
             RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT.toString()
         )
-        assertThat(params.getQueryParams()).isEqualTo(expected.build())
+        assertThat(params._queryParams()).isEqualTo(expected.build())
     }
 
     @Test
-    fun getQueryParamsWithoutOptionalFields() {
+    fun queryParamsWithoutOptionalFields() {
         val params =
             BetaThreadRunCreateParams.builder()
                 .threadId("thread_id")
                 .assistantId("assistant_id")
                 .build()
         val expected = QueryParams.builder()
-        assertThat(params.getQueryParams()).isEqualTo(expected.build())
+        assertThat(params._queryParams()).isEqualTo(expected.build())
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             BetaThreadRunCreateParams.builder()
                 .threadId("thread_id")
@@ -146,7 +146,7 @@ class BetaThreadRunCreateParamsTest {
                         .build()
                 )
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.assistantId()).isEqualTo("assistant_id")
         assertThat(body.additionalInstructions()).contains("additional_instructions")
@@ -191,13 +191,13 @@ class BetaThreadRunCreateParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             BetaThreadRunCreateParams.builder()
                 .threadId("thread_id")
                 .assistantId("assistant_id")
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.assistantId()).isEqualTo("assistant_id")
     }

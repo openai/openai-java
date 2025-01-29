@@ -18,26 +18,26 @@ class BetaThreadMessageUpdateParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             BetaThreadMessageUpdateParams.builder()
                 .threadId("thread_id")
                 .messageId("message_id")
                 .metadata(JsonValue.from(mapOf<String, Any>()))
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             BetaThreadMessageUpdateParams.builder()
                 .threadId("thread_id")
                 .messageId("message_id")
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
     }
 

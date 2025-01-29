@@ -21,7 +21,7 @@ class BetaVectorStoreFileListParamsTest {
     }
 
     @Test
-    fun getQueryParams() {
+    fun queryParams() {
         val params =
             BetaVectorStoreFileListParams.builder()
                 .vectorStoreId("vector_store_id")
@@ -37,15 +37,15 @@ class BetaVectorStoreFileListParamsTest {
         expected.put("filter", BetaVectorStoreFileListParams.Filter.IN_PROGRESS.toString())
         expected.put("limit", "0")
         expected.put("order", BetaVectorStoreFileListParams.Order.ASC.toString())
-        assertThat(params.getQueryParams()).isEqualTo(expected.build())
+        assertThat(params._queryParams()).isEqualTo(expected.build())
     }
 
     @Test
-    fun getQueryParamsWithoutOptionalFields() {
+    fun queryParamsWithoutOptionalFields() {
         val params =
             BetaVectorStoreFileListParams.builder().vectorStoreId("vector_store_id").build()
         val expected = QueryParams.builder()
-        assertThat(params.getQueryParams()).isEqualTo(expected.build())
+        assertThat(params._queryParams()).isEqualTo(expected.build())
     }
 
     @Test

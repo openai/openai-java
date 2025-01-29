@@ -25,7 +25,7 @@ class BetaThreadMessageCreateParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             BetaThreadMessageCreateParams.builder()
                 .threadId("thread_id")
@@ -39,7 +39,7 @@ class BetaThreadMessageCreateParamsTest {
                 )
                 .metadata(JsonValue.from(mapOf<String, Any>()))
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.content()).isEqualTo(BetaThreadMessageCreateParams.Content.ofText("string"))
         assertThat(body.role()).isEqualTo(BetaThreadMessageCreateParams.Role.USER)
@@ -56,14 +56,14 @@ class BetaThreadMessageCreateParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             BetaThreadMessageCreateParams.builder()
                 .threadId("thread_id")
                 .content("string")
                 .role(BetaThreadMessageCreateParams.Role.USER)
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.content()).isEqualTo(BetaThreadMessageCreateParams.Content.ofText("string"))
         assertThat(body.role()).isEqualTo(BetaThreadMessageCreateParams.Role.USER)

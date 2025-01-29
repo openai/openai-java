@@ -20,7 +20,7 @@ class BetaThreadRunListParamsTest {
     }
 
     @Test
-    fun getQueryParams() {
+    fun queryParams() {
         val params =
             BetaThreadRunListParams.builder()
                 .threadId("thread_id")
@@ -34,14 +34,14 @@ class BetaThreadRunListParamsTest {
         expected.put("before", "before")
         expected.put("limit", "0")
         expected.put("order", BetaThreadRunListParams.Order.ASC.toString())
-        assertThat(params.getQueryParams()).isEqualTo(expected.build())
+        assertThat(params._queryParams()).isEqualTo(expected.build())
     }
 
     @Test
-    fun getQueryParamsWithoutOptionalFields() {
+    fun queryParamsWithoutOptionalFields() {
         val params = BetaThreadRunListParams.builder().threadId("thread_id").build()
         val expected = QueryParams.builder()
-        assertThat(params.getQueryParams()).isEqualTo(expected.build())
+        assertThat(params._queryParams()).isEqualTo(expected.build())
     }
 
     @Test

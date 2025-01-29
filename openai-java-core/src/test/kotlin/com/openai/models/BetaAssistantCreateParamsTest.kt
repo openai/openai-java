@@ -48,7 +48,7 @@ class BetaAssistantCreateParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             BetaAssistantCreateParams.builder()
                 .model(ChatModel.GPT_4O)
@@ -85,7 +85,7 @@ class BetaAssistantCreateParamsTest {
                 .addTool(CodeInterpreterTool.builder().build())
                 .topP(1.0)
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.model()).isEqualTo(ChatModel.GPT_4O)
         assertThat(body.description()).contains("description")
@@ -127,9 +127,9 @@ class BetaAssistantCreateParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params = BetaAssistantCreateParams.builder().model(ChatModel.GPT_4O).build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.model()).isEqualTo(ChatModel.GPT_4O)
     }

@@ -39,7 +39,7 @@ class BetaAssistantUpdateParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             BetaAssistantUpdateParams.builder()
                 .assistantId("assistant_id")
@@ -67,7 +67,7 @@ class BetaAssistantUpdateParamsTest {
                 .addTool(CodeInterpreterTool.builder().build())
                 .topP(1.0)
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.description()).contains("description")
         assertThat(body.instructions()).contains("instructions")
@@ -99,9 +99,9 @@ class BetaAssistantUpdateParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params = BetaAssistantUpdateParams.builder().assistantId("assistant_id").build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
     }
 

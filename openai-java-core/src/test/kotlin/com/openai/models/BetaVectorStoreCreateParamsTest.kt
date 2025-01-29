@@ -20,7 +20,7 @@ class BetaVectorStoreCreateParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             BetaVectorStoreCreateParams.builder()
                 .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
@@ -29,7 +29,7 @@ class BetaVectorStoreCreateParamsTest {
                 .metadata(JsonValue.from(mapOf<String, Any>()))
                 .name("name")
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.chunkingStrategy())
             .contains(
@@ -43,9 +43,9 @@ class BetaVectorStoreCreateParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params = BetaVectorStoreCreateParams.builder().build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
     }
 }
