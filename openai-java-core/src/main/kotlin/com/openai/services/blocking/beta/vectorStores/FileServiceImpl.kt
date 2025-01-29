@@ -12,6 +12,7 @@ import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.json
+import com.openai.core.prepare
 import com.openai.errors.OpenAIError
 import com.openai.models.BetaVectorStoreFileCreateParams
 import com.openai.models.BetaVectorStoreFileDeleteParams
@@ -49,13 +50,10 @@ internal constructor(
             HttpRequest.builder()
                 .method(HttpMethod.POST)
                 .addPathSegments("vector_stores", params.getPathParam(0), "files")
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceAllHeaders(DEFAULT_HEADERS)
-                .replaceAllHeaders(params.getHeaders())
-                .body(json(clientOptions.jsonMapper, params.getBody()))
+                .putAllHeaders(DEFAULT_HEADERS)
+                .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
+                .prepare(clientOptions, params, deploymentModel = null)
         return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .use { createHandler.handle(it) }
@@ -84,12 +82,9 @@ internal constructor(
                     "files",
                     params.getPathParam(1)
                 )
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceAllHeaders(DEFAULT_HEADERS)
-                .replaceAllHeaders(params.getHeaders())
+                .putAllHeaders(DEFAULT_HEADERS)
                 .build()
+                .prepare(clientOptions, params, deploymentModel = null)
         return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .use { retrieveHandler.handle(it) }
@@ -114,12 +109,9 @@ internal constructor(
             HttpRequest.builder()
                 .method(HttpMethod.GET)
                 .addPathSegments("vector_stores", params.getPathParam(0), "files")
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceAllHeaders(DEFAULT_HEADERS)
-                .replaceAllHeaders(params.getHeaders())
+                .putAllHeaders(DEFAULT_HEADERS)
                 .build()
+                .prepare(clientOptions, params, deploymentModel = null)
         return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .use { listHandler.handle(it) }
@@ -153,13 +145,10 @@ internal constructor(
                     "files",
                     params.getPathParam(1)
                 )
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceAllHeaders(DEFAULT_HEADERS)
-                .replaceAllHeaders(params.getHeaders())
-                .apply { params.getBody().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                .putAllHeaders(DEFAULT_HEADERS)
+                .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                 .build()
+                .prepare(clientOptions, params, deploymentModel = null)
         return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .use { deleteHandler.handle(it) }

@@ -2,8 +2,6 @@
 
 package com.openai.services.async
 
-import com.openai.azure.addPathSegmentsForAzure
-import com.openai.azure.replaceBearerTokenForAzure
 import com.openai.core.ClientOptions
 import com.openai.core.JsonValue
 import com.openai.core.RequestOptions
@@ -20,6 +18,7 @@ import com.openai.core.http.StreamResponse
 import com.openai.core.http.map
 import com.openai.core.http.toAsync
 import com.openai.core.json
+import com.openai.core.prepareAsync
 import com.openai.errors.OpenAIError
 import com.openai.models.Completion
 import com.openai.models.CompletionCreateParams
@@ -43,25 +42,21 @@ internal constructor(
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.POST)
-                .addPathSegmentsForAzure(clientOptions, params.model().toString())
                 .addPathSegments("completions")
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceBearerTokenForAzure(clientOptions)
-                .replaceAllHeaders(params.getHeaders())
-                .body(json(clientOptions.jsonMapper, params.getBody()))
+                .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).thenApply { response
-            ->
-            response
-                .use { createHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
+                .prepareAsync(clientOptions, params, params.model().toString())
+        return request
+            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            .thenApply { response ->
+                response
+                    .use { createHandler.handle(it) }
+                    .apply {
+                        if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                            validate()
+                        }
                     }
-                }
-        }
+            }
     }
 
     private val createStreamingHandler: Handler<StreamResponse<Completion>> =
@@ -76,23 +71,20 @@ internal constructor(
             HttpRequest.builder()
                 .method(HttpMethod.POST)
                 .addPathSegments("completions")
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceAllHeaders(params.getHeaders())
                 .body(
                     json(
                         clientOptions.jsonMapper,
                         params
-                            .getBody()
+                            ._body()
                             .toBuilder()
                             .putAdditionalProperty("stream", JsonValue.from(true))
                             .build()
                     )
                 )
                 .build()
-        return clientOptions.httpClient
-            .executeAsync(request, requestOptions)
+                .prepareAsync(clientOptions, params, params.model().toString())
+        return request
+            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
                 response
                     .let { createStreamingHandler.handle(it) }

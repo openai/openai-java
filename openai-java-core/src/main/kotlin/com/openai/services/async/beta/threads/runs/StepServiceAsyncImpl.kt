@@ -11,6 +11,7 @@ import com.openai.core.http.Headers
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse.Handler
+import com.openai.core.prepareAsync
 import com.openai.errors.OpenAIError
 import com.openai.models.BetaThreadRunStepListPageAsync
 import com.openai.models.BetaThreadRunStepListParams
@@ -49,22 +50,20 @@ internal constructor(
                     "steps",
                     params.getPathParam(2)
                 )
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceAllHeaders(DEFAULT_HEADERS)
-                .replaceAllHeaders(params.getHeaders())
+                .putAllHeaders(DEFAULT_HEADERS)
                 .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).thenApply { response
-            ->
-            response
-                .use { retrieveHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
+                .prepareAsync(clientOptions, params, deploymentModel = null)
+        return request
+            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            .thenApply { response ->
+                response
+                    .use { retrieveHandler.handle(it) }
+                    .apply {
+                        if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                            validate()
+                        }
                     }
-                }
-        }
+            }
     }
 
     private val listHandler: Handler<BetaThreadRunStepListPageAsync.Response> =
@@ -86,22 +85,20 @@ internal constructor(
                     params.getPathParam(1),
                     "steps"
                 )
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceAllHeaders(DEFAULT_HEADERS)
-                .replaceAllHeaders(params.getHeaders())
+                .putAllHeaders(DEFAULT_HEADERS)
                 .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).thenApply { response
-            ->
-            response
-                .use { listHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
+                .prepareAsync(clientOptions, params, deploymentModel = null)
+        return request
+            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            .thenApply { response ->
+                response
+                    .use { listHandler.handle(it) }
+                    .apply {
+                        if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                            validate()
+                        }
                     }
-                }
-                .let { BetaThreadRunStepListPageAsync.of(this, params, it) }
-        }
+                    .let { BetaThreadRunStepListPageAsync.of(this, params, it) }
+            }
     }
 }

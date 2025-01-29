@@ -2,8 +2,6 @@
 
 package com.openai.services.blocking
 
-import com.openai.azure.addPathSegmentsForAzure
-import com.openai.azure.replaceBearerTokenForAzure
 import com.openai.core.ClientOptions
 import com.openai.core.JsonValue
 import com.openai.core.RequestOptions
@@ -18,6 +16,7 @@ import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.StreamResponse
 import com.openai.core.http.map
 import com.openai.core.json
+import com.openai.core.prepare
 import com.openai.errors.OpenAIError
 import com.openai.models.Completion
 import com.openai.models.CompletionCreateParams
@@ -40,15 +39,10 @@ internal constructor(
         val request =
             HttpRequest.builder()
                 .method(HttpMethod.POST)
-                .addPathSegmentsForAzure(clientOptions, params.model().toString())
                 .addPathSegments("completions")
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceBearerTokenForAzure(clientOptions)
-                .replaceAllHeaders(params.getHeaders())
-                .body(json(clientOptions.jsonMapper, params.getBody()))
+                .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
+                .prepare(clientOptions, params, params.model().toString())
         return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .use { createHandler.handle(it) }
@@ -72,21 +66,18 @@ internal constructor(
             HttpRequest.builder()
                 .method(HttpMethod.POST)
                 .addPathSegments("completions")
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceAllHeaders(params.getHeaders())
                 .body(
                     json(
                         clientOptions.jsonMapper,
                         params
-                            .getBody()
+                            ._body()
                             .toBuilder()
                             .putAdditionalProperty("stream", JsonValue.from(true))
                             .build()
                     )
                 )
                 .build()
+                .prepare(clientOptions, params, params.model().toString())
         return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .let { createStreamingHandler.handle(it) }

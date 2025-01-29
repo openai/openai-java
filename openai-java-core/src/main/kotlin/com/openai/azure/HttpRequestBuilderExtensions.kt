@@ -8,9 +8,9 @@ import com.openai.credential.BearerTokenCredential
 @JvmSynthetic
 internal fun HttpRequest.Builder.addPathSegmentsForAzure(
     clientOptions: ClientOptions,
-    deploymentModel: String
+    deploymentModel: String?
 ): HttpRequest.Builder = apply {
-    if (isAzureEndpoint(clientOptions.baseUrl)) {
+    if (isAzureEndpoint(clientOptions.baseUrl) && deploymentModel != null) {
         addPathSegments("openai", "deployments", deploymentModel)
     }
 }

@@ -18,7 +18,7 @@ class FineTuningJobListEventsParamsTest {
     }
 
     @Test
-    fun getQueryParams() {
+    fun queryParams() {
         val params =
             FineTuningJobListEventsParams.builder()
                 .fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
@@ -28,17 +28,17 @@ class FineTuningJobListEventsParamsTest {
         val expected = QueryParams.builder()
         expected.put("after", "after")
         expected.put("limit", "0")
-        assertThat(params.getQueryParams()).isEqualTo(expected.build())
+        assertThat(params._queryParams()).isEqualTo(expected.build())
     }
 
     @Test
-    fun getQueryParamsWithoutOptionalFields() {
+    fun queryParamsWithoutOptionalFields() {
         val params =
             FineTuningJobListEventsParams.builder()
                 .fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
                 .build()
         val expected = QueryParams.builder()
-        assertThat(params.getQueryParams()).isEqualTo(expected.build())
+        assertThat(params._queryParams()).isEqualTo(expected.build())
     }
 
     @Test

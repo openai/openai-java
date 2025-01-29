@@ -17,6 +17,7 @@ import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.StreamResponse
 import com.openai.core.http.map
 import com.openai.core.json
+import com.openai.core.prepare
 import com.openai.errors.OpenAIError
 import com.openai.models.AssistantStreamEvent
 import com.openai.models.BetaThreadRunCancelParams
@@ -55,13 +56,10 @@ internal constructor(
             HttpRequest.builder()
                 .method(HttpMethod.POST)
                 .addPathSegments("threads", params.getPathParam(0), "runs")
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceAllHeaders(DEFAULT_HEADERS)
-                .replaceAllHeaders(params.getHeaders())
-                .body(json(clientOptions.jsonMapper, params.getBody()))
+                .putAllHeaders(DEFAULT_HEADERS)
+                .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
+                .prepare(clientOptions, params, params.model().map { it.toString() }.orElse(null))
         return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .use { createHandler.handle(it) }
@@ -87,22 +85,19 @@ internal constructor(
             HttpRequest.builder()
                 .method(HttpMethod.POST)
                 .addPathSegments("threads", params.getPathParam(0), "runs")
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceAllHeaders(DEFAULT_HEADERS)
-                .replaceAllHeaders(params.getHeaders())
+                .putAllHeaders(DEFAULT_HEADERS)
                 .body(
                     json(
                         clientOptions.jsonMapper,
                         params
-                            .getBody()
+                            ._body()
                             .toBuilder()
                             .putAdditionalProperty("stream", JsonValue.from(true))
                             .build()
                     )
                 )
                 .build()
+                .prepare(clientOptions, params, params.model().map { it.toString() }.orElse(null))
         return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .let { createStreamingHandler.handle(it) }
@@ -128,12 +123,9 @@ internal constructor(
             HttpRequest.builder()
                 .method(HttpMethod.GET)
                 .addPathSegments("threads", params.getPathParam(0), "runs", params.getPathParam(1))
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceAllHeaders(DEFAULT_HEADERS)
-                .replaceAllHeaders(params.getHeaders())
+                .putAllHeaders(DEFAULT_HEADERS)
                 .build()
+                .prepare(clientOptions, params, deploymentModel = null)
         return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .use { retrieveHandler.handle(it) }
@@ -154,13 +146,10 @@ internal constructor(
             HttpRequest.builder()
                 .method(HttpMethod.POST)
                 .addPathSegments("threads", params.getPathParam(0), "runs", params.getPathParam(1))
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceAllHeaders(DEFAULT_HEADERS)
-                .replaceAllHeaders(params.getHeaders())
-                .body(json(clientOptions.jsonMapper, params.getBody()))
+                .putAllHeaders(DEFAULT_HEADERS)
+                .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
+                .prepare(clientOptions, params, deploymentModel = null)
         return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .use { updateHandler.handle(it) }
@@ -185,12 +174,9 @@ internal constructor(
             HttpRequest.builder()
                 .method(HttpMethod.GET)
                 .addPathSegments("threads", params.getPathParam(0), "runs")
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceAllHeaders(DEFAULT_HEADERS)
-                .replaceAllHeaders(params.getHeaders())
+                .putAllHeaders(DEFAULT_HEADERS)
                 .build()
+                .prepare(clientOptions, params, deploymentModel = null)
         return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .use { listHandler.handle(it) }
@@ -218,13 +204,10 @@ internal constructor(
                     params.getPathParam(1),
                     "cancel"
                 )
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceAllHeaders(DEFAULT_HEADERS)
-                .replaceAllHeaders(params.getHeaders())
-                .apply { params.getBody().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                .putAllHeaders(DEFAULT_HEADERS)
+                .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                 .build()
+                .prepare(clientOptions, params, deploymentModel = null)
         return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .use { cancelHandler.handle(it) }
@@ -258,13 +241,10 @@ internal constructor(
                     params.getPathParam(1),
                     "submit_tool_outputs"
                 )
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceAllHeaders(DEFAULT_HEADERS)
-                .replaceAllHeaders(params.getHeaders())
-                .body(json(clientOptions.jsonMapper, params.getBody()))
+                .putAllHeaders(DEFAULT_HEADERS)
+                .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
+                .prepare(clientOptions, params, deploymentModel = null)
         return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .use { submitToolOutputsHandler.handle(it) }
@@ -300,22 +280,19 @@ internal constructor(
                     params.getPathParam(1),
                     "submit_tool_outputs"
                 )
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceAllHeaders(DEFAULT_HEADERS)
-                .replaceAllHeaders(params.getHeaders())
+                .putAllHeaders(DEFAULT_HEADERS)
                 .body(
                     json(
                         clientOptions.jsonMapper,
                         params
-                            .getBody()
+                            ._body()
                             .toBuilder()
                             .putAdditionalProperty("stream", JsonValue.from(true))
                             .build()
                     )
                 )
                 .build()
+                .prepare(clientOptions, params, deploymentModel = null)
         return clientOptions.httpClient.execute(request, requestOptions).let { response ->
             response
                 .let { submitToolOutputsStreamingHandler.handle(it) }

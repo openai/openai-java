@@ -45,6 +45,10 @@ private constructor(
 
         fun url(url: String) = apply { this.url = url }
 
+        fun pathSegments(pathSegments: List<String>) = apply {
+            this.pathSegments = pathSegments.toMutableList()
+        }
+
         fun addPathSegment(pathSegment: String) = apply { pathSegments.add(pathSegment) }
 
         fun addPathSegments(vararg pathSegments: String) = apply {

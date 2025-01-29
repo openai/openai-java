@@ -10,6 +10,7 @@ import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse.Handler
+import com.openai.core.prepareAsync
 import com.openai.errors.OpenAIError
 import com.openai.models.FineTuningJobCheckpointListPageAsync
 import com.openai.models.FineTuningJobCheckpointListParams
@@ -35,21 +36,19 @@ internal constructor(
             HttpRequest.builder()
                 .method(HttpMethod.GET)
                 .addPathSegments("fine_tuning", "jobs", params.getPathParam(0), "checkpoints")
-                .putAllQueryParams(clientOptions.queryParams)
-                .replaceAllQueryParams(params.getQueryParams())
-                .putAllHeaders(clientOptions.headers)
-                .replaceAllHeaders(params.getHeaders())
                 .build()
-        return clientOptions.httpClient.executeAsync(request, requestOptions).thenApply { response
-            ->
-            response
-                .use { listHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
+                .prepareAsync(clientOptions, params, deploymentModel = null)
+        return request
+            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            .thenApply { response ->
+                response
+                    .use { listHandler.handle(it) }
+                    .apply {
+                        if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                            validate()
+                        }
                     }
-                }
-                .let { FineTuningJobCheckpointListPageAsync.of(this, params, it) }
-        }
+                    .let { FineTuningJobCheckpointListPageAsync.of(this, params, it) }
+            }
     }
 }

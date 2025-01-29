@@ -19,7 +19,7 @@ class BetaVectorStoreUpdateParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             BetaVectorStoreUpdateParams.builder()
                 .vectorStoreId("vector_store_id")
@@ -27,7 +27,7 @@ class BetaVectorStoreUpdateParamsTest {
                 .metadata(JsonValue.from(mapOf<String, Any>()))
                 .name("name")
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.expiresAfter())
             .contains(BetaVectorStoreUpdateParams.ExpiresAfter.builder().days(1L).build())
@@ -36,9 +36,9 @@ class BetaVectorStoreUpdateParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params = BetaVectorStoreUpdateParams.builder().vectorStoreId("vector_store_id").build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
     }
 

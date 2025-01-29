@@ -19,7 +19,7 @@ class EmbeddingCreateParamsTest {
     }
 
     @Test
-    fun getBody() {
+    fun body() {
         val params =
             EmbeddingCreateParams.builder()
                 .input("The quick brown fox jumped over the lazy dog")
@@ -28,7 +28,7 @@ class EmbeddingCreateParamsTest {
                 .encodingFormat(EmbeddingCreateParams.EncodingFormat.FLOAT)
                 .user("user-1234")
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.input())
             .isEqualTo(
@@ -41,13 +41,13 @@ class EmbeddingCreateParamsTest {
     }
 
     @Test
-    fun getBodyWithoutOptionalFields() {
+    fun bodyWithoutOptionalFields() {
         val params =
             EmbeddingCreateParams.builder()
                 .input("The quick brown fox jumped over the lazy dog")
                 .model(EmbeddingModel.TEXT_EMBEDDING_ADA_002)
                 .build()
-        val body = params.getBody()
+        val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.input())
             .isEqualTo(

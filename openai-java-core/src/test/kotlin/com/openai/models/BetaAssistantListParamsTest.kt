@@ -19,7 +19,7 @@ class BetaAssistantListParamsTest {
     }
 
     @Test
-    fun getQueryParams() {
+    fun queryParams() {
         val params =
             BetaAssistantListParams.builder()
                 .after("after")
@@ -32,13 +32,13 @@ class BetaAssistantListParamsTest {
         expected.put("before", "before")
         expected.put("limit", "0")
         expected.put("order", BetaAssistantListParams.Order.ASC.toString())
-        assertThat(params.getQueryParams()).isEqualTo(expected.build())
+        assertThat(params._queryParams()).isEqualTo(expected.build())
     }
 
     @Test
-    fun getQueryParamsWithoutOptionalFields() {
+    fun queryParamsWithoutOptionalFields() {
         val params = BetaAssistantListParams.builder().build()
         val expected = QueryParams.builder()
-        assertThat(params.getQueryParams()).isEqualTo(expected.build())
+        assertThat(params._queryParams()).isEqualTo(expected.build())
     }
 }

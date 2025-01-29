@@ -19,7 +19,7 @@ class BetaThreadRunStepRetrieveParamsTest {
     }
 
     @Test
-    fun getQueryParams() {
+    fun queryParams() {
         val params =
             BetaThreadRunStepRetrieveParams.builder()
                 .threadId("thread_id")
@@ -32,11 +32,11 @@ class BetaThreadRunStepRetrieveParamsTest {
             "include[]",
             RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT.toString()
         )
-        assertThat(params.getQueryParams()).isEqualTo(expected.build())
+        assertThat(params._queryParams()).isEqualTo(expected.build())
     }
 
     @Test
-    fun getQueryParamsWithoutOptionalFields() {
+    fun queryParamsWithoutOptionalFields() {
         val params =
             BetaThreadRunStepRetrieveParams.builder()
                 .threadId("thread_id")
@@ -44,7 +44,7 @@ class BetaThreadRunStepRetrieveParamsTest {
                 .stepId("step_id")
                 .build()
         val expected = QueryParams.builder()
-        assertThat(params.getQueryParams()).isEqualTo(expected.build())
+        assertThat(params._queryParams()).isEqualTo(expected.build())
     }
 
     @Test
