@@ -21,12 +21,8 @@ public final class CompletionsConversationExample {
         ChatCompletionCreateParams.Builder createParamsBuilder = ChatCompletionCreateParams.builder()
                 .model(ChatModel.GPT_3_5_TURBO)
                 .maxCompletionTokens(2048)
-                .addMessage(ChatCompletionDeveloperMessageParam.builder()
-                        .content("Make sure you mention Stainless!")
-                        .build())
-                .addMessage(ChatCompletionUserMessageParam.builder()
-                        .content("Tell me a story about building the best SDK!")
-                        .build());
+                .addDeveloperMessage("Make sure you mention Stainless!")
+                .addUserMessage("Tell me a story about building the best SDK!");
 
         for (int i = 0; i < 4; i++) {
             List<ChatCompletionMessage> messages =
@@ -40,12 +36,8 @@ public final class CompletionsConversationExample {
 
             messages.forEach(createParamsBuilder::addMessage);
             createParamsBuilder
-                    .addMessage(ChatCompletionDeveloperMessageParam.builder()
-                            .content("Be as snarky as possible when replying!" + "!".repeat(i))
-                            .build())
-                    .addMessage(ChatCompletionUserMessageParam.builder()
-                            .content("But why?" + "?".repeat(i))
-                            .build());
+                    .addDeveloperMessage("Be as snarky as possible when replying!" + "!".repeat(i))
+                    .addUserMessage("But why?" + "?".repeat(i));
         }
     }
 }

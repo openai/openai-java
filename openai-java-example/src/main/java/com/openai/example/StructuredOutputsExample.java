@@ -31,9 +31,7 @@ public final class StructuredOutputsExample {
                                 .schema(schema)
                                 .build())
                         .build())
-                .addMessage(ChatCompletionUserMessageParam.builder()
-                        .content("Who works at OpenAI?")
-                        .build())
+                .addUserMessage("Who works at OpenAI?")
                 .build();
 
         client.chat().completions().create(createParams).choices().stream()

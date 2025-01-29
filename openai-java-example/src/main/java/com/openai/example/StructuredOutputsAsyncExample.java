@@ -4,7 +4,6 @@ import com.openai.client.OpenAIClientAsync;
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync;
 import com.openai.core.JsonValue;
 import com.openai.models.ChatCompletionCreateParams;
-import com.openai.models.ChatCompletionUserMessageParam;
 import com.openai.models.ChatModel;
 import com.openai.models.ResponseFormatJsonSchema;
 import com.openai.models.ResponseFormatJsonSchema.JsonSchema;
@@ -34,9 +33,7 @@ public final class StructuredOutputsAsyncExample {
                                 .schema(schema)
                                 .build())
                         .build())
-                .addMessage(ChatCompletionUserMessageParam.builder()
-                        .content("Who works at OpenAI?")
-                        .build())
+                .addUserMessage("Who works at OpenAI?")
                 .build();
 
         client.chat()

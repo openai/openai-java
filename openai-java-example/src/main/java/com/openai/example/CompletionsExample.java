@@ -3,8 +3,6 @@ package com.openai.example;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.ChatCompletionCreateParams;
-import com.openai.models.ChatCompletionDeveloperMessageParam;
-import com.openai.models.ChatCompletionUserMessageParam;
 import com.openai.models.ChatModel;
 
 public final class CompletionsExample {
@@ -19,12 +17,8 @@ public final class CompletionsExample {
         ChatCompletionCreateParams createParams = ChatCompletionCreateParams.builder()
                 .model(ChatModel.GPT_3_5_TURBO)
                 .maxCompletionTokens(2048)
-                .addMessage(ChatCompletionDeveloperMessageParam.builder()
-                        .content("Make sure you mention Stainless!")
-                        .build())
-                .addMessage(ChatCompletionUserMessageParam.builder()
-                        .content("Tell me a story about building the best SDK!")
-                        .build())
+                .addDeveloperMessage("Make sure you mention Stainless!")
+                .addUserMessage("Tell me a story about building the best SDK!")
                 .build();
 
         client.chat().completions().create(createParams).choices().stream()
