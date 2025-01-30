@@ -644,6 +644,10 @@ private constructor(
                 }
         }
 
+        /** A list of integrations to enable for this fine-tuning job. */
+        fun addWandbIntegration(wandb: FineTuningJobWandbIntegration) =
+            addIntegration(FineTuningJobWandbIntegrationObject.builder().wandb(wandb).build())
+
         /** The method used for fine-tuning. */
         fun method(method: Method) = method(JsonField.of(method))
 
