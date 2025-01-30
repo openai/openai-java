@@ -11,7 +11,7 @@ class BetaAssistantCreateParamsTest {
     @Test
     fun createBetaAssistantCreateParams() {
         BetaAssistantCreateParams.builder()
-            .model(ChatModel.GPT_4O)
+            .model(ChatModel.O1)
             .description("description")
             .instructions("instructions")
             .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -51,7 +51,7 @@ class BetaAssistantCreateParamsTest {
     fun body() {
         val params =
             BetaAssistantCreateParams.builder()
-                .model(ChatModel.GPT_4O)
+                .model(ChatModel.O1)
                 .description("description")
                 .instructions("instructions")
                 .metadata(JsonValue.from(mapOf<String, Any>()))
@@ -87,7 +87,7 @@ class BetaAssistantCreateParamsTest {
                 .build()
         val body = params._body()
         assertThat(body).isNotNull
-        assertThat(body.model()).isEqualTo(ChatModel.GPT_4O)
+        assertThat(body.model()).isEqualTo(ChatModel.O1)
         assertThat(body.description()).contains("description")
         assertThat(body.instructions()).contains("instructions")
         assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
@@ -128,9 +128,9 @@ class BetaAssistantCreateParamsTest {
 
     @Test
     fun bodyWithoutOptionalFields() {
-        val params = BetaAssistantCreateParams.builder().model(ChatModel.GPT_4O).build()
+        val params = BetaAssistantCreateParams.builder().model(ChatModel.O1).build()
         val body = params._body()
         assertThat(body).isNotNull
-        assertThat(body.model()).isEqualTo(ChatModel.GPT_4O)
+        assertThat(body.model()).isEqualTo(ChatModel.O1)
     }
 }
