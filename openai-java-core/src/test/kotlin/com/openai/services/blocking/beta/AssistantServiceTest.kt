@@ -30,7 +30,7 @@ class AssistantServiceTest {
         val assistant =
             assistantService.create(
                 BetaAssistantCreateParams.builder()
-                    .model(ChatModel.GPT_4O)
+                    .model(ChatModel.O1)
                     .description("description")
                     .instructions("instructions")
                     .metadata(JsonValue.from(mapOf<String, Any>()))
