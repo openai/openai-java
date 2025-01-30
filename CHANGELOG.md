@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.19.0 (2025-01-30)
+
+Full Changelog: [v0.18.1...v0.19.0](https://github.com/openai/openai-java/compare/v0.18.1...v0.19.0)
+
+### Features
+
+* **client:** helpers for discriminated classes with one required prop ([#189](https://github.com/openai/openai-java/issues/189)) ([adbf4b0](https://github.com/openai/openai-java/commit/adbf4b0dd8d978586842e97ba628f8cf4e3484de))
+
+
+### Documentation
+
+* fix incorrect additional properties info ([#190](https://github.com/openai/openai-java/issues/190)) ([3d443f7](https://github.com/openai/openai-java/commit/3d443f7e545036484b571f1893aa058725ca57f6))
+* update breaking change expectations ([ee4ee2b](https://github.com/openai/openai-java/commit/ee4ee2b876ac5e956fbd35a4e10ed4f21668ae03))
+
 ## 0.18.1 (2025-01-29)
 
 Full Changelog: [v0.18.0...v0.18.1](https://github.com/openai/openai-java/compare/v0.18.0...v0.18.1)
