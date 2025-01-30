@@ -3,7 +3,7 @@
 > [!NOTE]  
 > The OpenAI Java API Library is currently in _beta_.
 >
-> There may be frequent breaking changes.
+> There may be minor breaking changes.
 >
 > Have thoughts or feedback? [File an issue](https://github.com/openai/openai-java/issues/new) or comment on [this thread](https://community.openai.com/t/your-feedback-requested-java-sdk/1061029).
 
