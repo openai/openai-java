@@ -11,6 +11,7 @@ import com.openai.models.BetaVectorStoreDeleteParams
 import com.openai.models.BetaVectorStoreListParams
 import com.openai.models.BetaVectorStoreRetrieveParams
 import com.openai.models.BetaVectorStoreUpdateParams
+import com.openai.models.Metadata
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -33,7 +34,11 @@ class VectorStoreServiceTest {
                         BetaVectorStoreCreateParams.ExpiresAfter.builder().days(1L).build()
                     )
                     .addFileId("string")
-                    .metadata(JsonValue.from(mapOf<String, Any>()))
+                    .metadata(
+                        Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
                     .name("name")
                     .build()
             )
@@ -72,7 +77,11 @@ class VectorStoreServiceTest {
                     .expiresAfter(
                         BetaVectorStoreUpdateParams.ExpiresAfter.builder().days(1L).build()
                     )
-                    .metadata(JsonValue.from(mapOf<String, Any>()))
+                    .metadata(
+                        Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
                     .name("name")
                     .build()
             )

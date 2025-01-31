@@ -33,7 +33,11 @@ class RunTest {
                 )
                 .maxCompletionTokens(256L)
                 .maxPromptTokens(256L)
-                .metadata(JsonValue.from(mapOf<String, Any>()))
+                .metadata(
+                    Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
                 .model("model")
                 .parallelToolCalls(true)
                 .requiredAction(
@@ -101,7 +105,10 @@ class RunTest {
             )
         assertThat(run.maxCompletionTokens()).contains(256L)
         assertThat(run.maxPromptTokens()).contains(256L)
-        assertThat(run._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(run.metadata())
+            .contains(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
         assertThat(run.model()).isEqualTo("model")
         assertThat(run.parallelToolCalls()).isEqualTo(true)
         assertThat(run.requiredAction())

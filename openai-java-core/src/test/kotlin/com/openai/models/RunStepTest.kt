@@ -25,7 +25,11 @@ class RunStepTest {
                         .message("message")
                         .build()
                 )
-                .metadata(JsonValue.from(mapOf<String, Any>()))
+                .metadata(
+                    Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
                 .runId("run_id")
                 .status(RunStep.Status.IN_PROGRESS)
                 .messageCreationStepDetails(
@@ -58,7 +62,10 @@ class RunStepTest {
                     .message("message")
                     .build()
             )
-        assertThat(runStep._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(runStep.metadata())
+            .contains(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
         assertThat(runStep.runId()).isEqualTo("run_id")
         assertThat(runStep.status()).isEqualTo(RunStep.Status.IN_PROGRESS)
         assertThat(runStep.stepDetails())

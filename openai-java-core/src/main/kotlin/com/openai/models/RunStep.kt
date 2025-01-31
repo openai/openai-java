@@ -57,7 +57,9 @@ private constructor(
     @JsonProperty("last_error")
     @ExcludeMissing
     private val lastError: JsonField<LastError> = JsonMissing.of(),
-    @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonValue = JsonMissing.of(),
+    @JsonProperty("metadata")
+    @ExcludeMissing
+    private val metadata: JsonField<Metadata> = JsonMissing.of(),
     @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonProperty("run_id") @ExcludeMissing private val runId: JsonField<String> = JsonMissing.of(),
     @JsonProperty("status")
@@ -106,10 +108,13 @@ private constructor(
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format. Keys can be a maximum of 64
-     * characters long and values can be a maximum of 512 characters long.
+     * additional information about the object in a structured format, and querying for objects via
+     * API or the dashboard.
+     *
+     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
+     * length of 512 characters.
      */
-    @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+    fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
 
     /** The object type, which is always `thread.run.step`. */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
@@ -176,6 +181,16 @@ private constructor(
     @JsonProperty("last_error") @ExcludeMissing fun _lastError(): JsonField<LastError> = lastError
 
     /**
+     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
+     * additional information about the object in a structured format, and querying for objects via
+     * API or the dashboard.
+     *
+     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
+     * length of 512 characters.
+     */
+    @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
+
+    /**
      * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) that this run step
      * is a part of.
      */
@@ -225,6 +240,7 @@ private constructor(
         expiredAt()
         failedAt()
         lastError().ifPresent { it.validate() }
+        metadata().ifPresent { it.validate() }
         _object_().let {
             if (it != JsonValue.from("thread.run.step")) {
                 throw OpenAIInvalidDataException("'object_' is invalid, received $it")
@@ -257,7 +273,7 @@ private constructor(
         private var expiredAt: JsonField<Long>? = null
         private var failedAt: JsonField<Long>? = null
         private var lastError: JsonField<LastError>? = null
-        private var metadata: JsonValue? = null
+        private var metadata: JsonField<Metadata>? = null
         private var object_: JsonValue = JsonValue.from("thread.run.step")
         private var runId: JsonField<String>? = null
         private var status: JsonField<Status>? = null
@@ -389,10 +405,33 @@ private constructor(
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format. Keys can be a
-         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
          */
-        fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
+        fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
         /** The object type, which is always `thread.run.step`. */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }

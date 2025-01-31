@@ -15,9 +15,7 @@ class BatchCreateParamsTest {
             .endpoint(BatchCreateParams.Endpoint.V1_CHAT_COMPLETIONS)
             .inputFileId("input_file_id")
             .metadata(
-                BatchCreateParams.Metadata.builder()
-                    .putAdditionalProperty("foo", JsonValue.from("string"))
-                    .build()
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
             )
             .build()
     }
@@ -30,7 +28,7 @@ class BatchCreateParamsTest {
                 .endpoint(BatchCreateParams.Endpoint.V1_CHAT_COMPLETIONS)
                 .inputFileId("input_file_id")
                 .metadata(
-                    BatchCreateParams.Metadata.builder()
+                    Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -42,9 +40,7 @@ class BatchCreateParamsTest {
         assertThat(body.inputFileId()).isEqualTo("input_file_id")
         assertThat(body.metadata())
             .contains(
-                BatchCreateParams.Metadata.builder()
-                    .putAdditionalProperty("foo", JsonValue.from("string"))
-                    .build()
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
             )
     }
 

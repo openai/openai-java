@@ -40,7 +40,11 @@ class BatchTest {
                 .failedAt(0L)
                 .finalizingAt(0L)
                 .inProgressAt(0L)
-                .metadata(JsonValue.from(mapOf<String, Any>()))
+                .metadata(
+                    Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
                 .outputFileId("output_file_id")
                 .requestCounts(
                     BatchRequestCounts.builder().completed(0L).failed(0L).total(0L).build()
@@ -76,7 +80,10 @@ class BatchTest {
         assertThat(batch.failedAt()).contains(0L)
         assertThat(batch.finalizingAt()).contains(0L)
         assertThat(batch.inProgressAt()).contains(0L)
-        assertThat(batch._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(batch.metadata())
+            .contains(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
         assertThat(batch.outputFileId()).contains("output_file_id")
         assertThat(batch.requestCounts())
             .contains(BatchRequestCounts.builder().completed(0L).failed(0L).total(0L).build())

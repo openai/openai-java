@@ -14,7 +14,7 @@ class ChatCompletionCreateParamsTest {
             .addMessage(
                 ChatCompletionDeveloperMessageParam.builder().content("string").name("name").build()
             )
-            .model(ChatModel.O1)
+            .model(ChatModel.O3_MINI)
             .audio(
                 ChatCompletionAudioParam.builder()
                     .format(ChatCompletionAudioParam.Format.WAV)
@@ -43,9 +43,7 @@ class ChatCompletionCreateParamsTest {
             .maxCompletionTokens(0L)
             .maxTokens(0L)
             .metadata(
-                ChatCompletionCreateParams.Metadata.builder()
-                    .putAdditionalProperty("foo", JsonValue.from("string"))
-                    .build()
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
             )
             .addModality(ChatCompletionModality.TEXT)
             .n(1L)
@@ -93,7 +91,7 @@ class ChatCompletionCreateParamsTest {
                         .name("name")
                         .build()
                 )
-                .model(ChatModel.O1)
+                .model(ChatModel.O3_MINI)
                 .audio(
                     ChatCompletionAudioParam.builder()
                         .format(ChatCompletionAudioParam.Format.WAV)
@@ -122,7 +120,7 @@ class ChatCompletionCreateParamsTest {
                 .maxCompletionTokens(0L)
                 .maxTokens(0L)
                 .metadata(
-                    ChatCompletionCreateParams.Metadata.builder()
+                    Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -173,7 +171,7 @@ class ChatCompletionCreateParamsTest {
                     )
                 )
             )
-        assertThat(body.model()).isEqualTo(ChatModel.O1)
+        assertThat(body.model()).isEqualTo(ChatModel.O3_MINI)
         assertThat(body.audio())
             .contains(
                 ChatCompletionAudioParam.builder()
@@ -213,9 +211,7 @@ class ChatCompletionCreateParamsTest {
         assertThat(body.maxTokens()).contains(0L)
         assertThat(body.metadata())
             .contains(
-                ChatCompletionCreateParams.Metadata.builder()
-                    .putAdditionalProperty("foo", JsonValue.from("string"))
-                    .build()
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
             )
         assertThat(body.modalities()).contains(listOf(ChatCompletionModality.TEXT))
         assertThat(body.n()).contains(1L)
@@ -270,7 +266,7 @@ class ChatCompletionCreateParamsTest {
         val params =
             ChatCompletionCreateParams.builder()
                 .addDeveloperMessage("string")
-                .model(ChatModel.O1)
+                .model(ChatModel.O3_MINI)
                 .build()
         val body = params._body()
         assertThat(body).isNotNull
@@ -282,6 +278,6 @@ class ChatCompletionCreateParamsTest {
                     )
                 )
             )
-        assertThat(body.model()).isEqualTo(ChatModel.O1)
+        assertThat(body.model()).isEqualTo(ChatModel.O3_MINI)
     }
 }

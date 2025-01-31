@@ -76,7 +76,7 @@ private constructor(
     /** The status of the Upload. */
     fun status(): Status = status.getRequired("status")
 
-    /** The ready File object after the Upload is completed. */
+    /** The `File` object represents a document that has been uploaded to OpenAI. */
     fun file(): Optional<FileObject> = Optional.ofNullable(file.getNullable("file"))
 
     /** The Upload unique identifier, which can be referenced in API endpoints. */
@@ -104,7 +104,7 @@ private constructor(
     /** The status of the Upload. */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
-    /** The ready File object after the Upload is completed. */
+    /** The `File` object represents a document that has been uploaded to OpenAI. */
     @JsonProperty("file") @ExcludeMissing fun _file(): JsonField<FileObject> = file
 
     @JsonAnyGetter
@@ -222,13 +222,13 @@ private constructor(
         /** The status of the Upload. */
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
-        /** The ready File object after the Upload is completed. */
+        /** The `File` object represents a document that has been uploaded to OpenAI. */
         fun file(file: FileObject?) = file(JsonField.ofNullable(file))
 
-        /** The ready File object after the Upload is completed. */
+        /** The `File` object represents a document that has been uploaded to OpenAI. */
         fun file(file: Optional<FileObject>) = file(file.orElse(null))
 
-        /** The ready File object after the Upload is completed. */
+        /** The `File` object represents a document that has been uploaded to OpenAI. */
         fun file(file: JsonField<FileObject>) = apply { this.file = file }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

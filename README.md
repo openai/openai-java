@@ -97,7 +97,7 @@ import com.openai.models.ChatModel;
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .addUserMessage("Say this is a test")
-    .model(ChatModel.O1)
+    .model(ChatModel.O3_MINI)
     .build();
 ChatCompletion chatCompletion = client.chat().completions().create(params);
 ```

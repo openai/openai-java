@@ -41,10 +41,13 @@ private constructor(
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format. Keys can be a maximum of 64
-     * characters long and values can be a maximum of 512 characters long.
+     * additional information about the object in a structured format, and querying for objects via
+     * API or the dashboard.
+     *
+     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
+     * length of 512 characters.
      */
-    fun _metadata(): JsonValue = body._metadata()
+    fun metadata(): Optional<Metadata> = body.metadata()
 
     /**
      * ID of the model to use. You can use the
@@ -114,6 +117,16 @@ private constructor(
      * The system instructions that the assistant uses. The maximum length is 256,000 characters.
      */
     fun _instructions(): JsonField<String> = body._instructions()
+
+    /**
+     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
+     * additional information about the object in a structured format, and querying for objects via
+     * API or the dashboard.
+     *
+     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
+     * length of 512 characters.
+     */
+    fun _metadata(): JsonField<Metadata> = body._metadata()
 
     /**
      * ID of the model to use. You can use the
@@ -207,7 +220,7 @@ private constructor(
         private val instructions: JsonField<String> = JsonMissing.of(),
         @JsonProperty("metadata")
         @ExcludeMissing
-        private val metadata: JsonValue = JsonMissing.of(),
+        private val metadata: JsonField<Metadata> = JsonMissing.of(),
         @JsonProperty("model")
         @ExcludeMissing
         private val model: JsonField<String> = JsonMissing.of(),
@@ -246,10 +259,13 @@ private constructor(
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format. Keys can be a
-         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
          */
-        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+        fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
 
         /**
          * ID of the model to use. You can use the
@@ -328,6 +344,16 @@ private constructor(
         @JsonProperty("instructions")
         @ExcludeMissing
         fun _instructions(): JsonField<String> = instructions
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
         /**
          * ID of the model to use. You can use the
@@ -410,6 +436,7 @@ private constructor(
 
             description()
             instructions()
+            metadata().ifPresent { it.validate() }
             model()
             name()
             responseFormat().ifPresent { it.validate() }
@@ -432,7 +459,7 @@ private constructor(
 
             private var description: JsonField<String> = JsonMissing.of()
             private var instructions: JsonField<String> = JsonMissing.of()
-            private var metadata: JsonValue = JsonMissing.of()
+            private var metadata: JsonField<Metadata> = JsonMissing.of()
             private var model: JsonField<String> = JsonMissing.of()
             private var name: JsonField<String> = JsonMissing.of()
             private var responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of()
@@ -492,10 +519,33 @@ private constructor(
 
             /**
              * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format. Keys can be a
-             * maximum of 64 characters long and values can be a maximum of 512 characters long.
+             * storing additional information about the object in a structured format, and querying
+             * for objects via API or the dashboard.
+             *
+             * Keys are strings with a maximum length of 64 characters. Values are strings with a
+             * maximum length of 512 characters.
              */
-            fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
+            fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
+
+            /**
+             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+             * storing additional information about the object in a structured format, and querying
+             * for objects via API or the dashboard.
+             *
+             * Keys are strings with a maximum length of 64 characters. Values are strings with a
+             * maximum length of 512 characters.
+             */
+            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+
+            /**
+             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+             * storing additional information about the object in a structured format, and querying
+             * for objects via API or the dashboard.
+             *
+             * Keys are strings with a maximum length of 64 characters. Values are strings with a
+             * maximum length of 512 characters.
+             */
+            fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
             /**
              * ID of the model to use. You can use the
@@ -942,10 +992,33 @@ private constructor(
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format. Keys can be a
-         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
          */
-        fun metadata(metadata: JsonValue) = apply { body.metadata(metadata) }
+        fun metadata(metadata: Metadata?) = apply { body.metadata(metadata) }
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
 
         /**
          * ID of the model to use. You can use the
