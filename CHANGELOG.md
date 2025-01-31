@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.20.0 (2025-01-31)
+
+Full Changelog: [v0.19.0...v0.20.0](https://github.com/openai/openai-java/compare/v0.19.0...v0.20.0)
+
+### Features
+
+* **api:** add o3-mini ([#192](https://github.com/openai/openai-java/issues/192)) ([e10c532](https://github.com/openai/openai-java/commit/e10c532340e9d1022db2927678a5223d1d8c6f5b))
+
+
+### Bug Fixes
+
+* **types:** correct metadata type + other fixes ([e10c532](https://github.com/openai/openai-java/commit/e10c532340e9d1022db2927678a5223d1d8c6f5b))
+
 ## 0.19.0 (2025-01-30)
 
 Full Changelog: [v0.18.1...v0.19.0](https://github.com/openai/openai-java/compare/v0.18.1...v0.19.0)
