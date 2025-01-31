@@ -14,6 +14,7 @@ import com.openai.models.BetaThreadRetrieveParams
 import com.openai.models.BetaThreadUpdateParams
 import com.openai.models.ChatModel
 import com.openai.models.CodeInterpreterTool
+import com.openai.models.Metadata
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -41,10 +42,18 @@ class ThreadServiceTest {
                                     .addTool(CodeInterpreterTool.builder().build())
                                     .build()
                             )
-                            .metadata(JsonValue.from(mapOf<String, Any>()))
+                            .metadata(
+                                Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
                             .build()
                     )
-                    .metadata(JsonValue.from(mapOf<String, Any>()))
+                    .metadata(
+                        Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
                     .toolResources(
                         BetaThreadCreateParams.ToolResources.builder()
                             .codeInterpreter(
@@ -62,7 +71,14 @@ class ThreadServiceTest {
                                                 AutoFileChunkingStrategyParam.builder().build()
                                             )
                                             .addFileId("string")
-                                            .metadata(JsonValue.from(mapOf<String, Any>()))
+                                            .metadata(
+                                                Metadata.builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from("string")
+                                                    )
+                                                    .build()
+                                            )
                                             .build()
                                     )
                                     .build()
@@ -101,7 +117,11 @@ class ThreadServiceTest {
             threadService.update(
                 BetaThreadUpdateParams.builder()
                     .threadId("thread_id")
-                    .metadata(JsonValue.from(mapOf<String, Any>()))
+                    .metadata(
+                        Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
                     .toolResources(
                         BetaThreadUpdateParams.ToolResources.builder()
                             .codeInterpreter(
@@ -151,8 +171,12 @@ class ThreadServiceTest {
                     .instructions("instructions")
                     .maxCompletionTokens(256L)
                     .maxPromptTokens(256L)
-                    .metadata(JsonValue.from(mapOf<String, Any>()))
-                    .model(ChatModel.O1)
+                    .metadata(
+                        Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .model(ChatModel.O3_MINI)
                     .parallelToolCalls(true)
                     .responseFormatAuto()
                     .temperature(1.0)
@@ -169,10 +193,18 @@ class ThreadServiceTest {
                                             .addTool(CodeInterpreterTool.builder().build())
                                             .build()
                                     )
-                                    .metadata(JsonValue.from(mapOf<String, Any>()))
+                                    .metadata(
+                                        Metadata.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                                            .build()
+                                    )
                                     .build()
                             )
-                            .metadata(JsonValue.from(mapOf<String, Any>()))
+                            .metadata(
+                                Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
                             .toolResources(
                                 BetaThreadCreateAndRunParams.Thread.ToolResources.builder()
                                     .codeInterpreter(
@@ -196,7 +228,14 @@ class ThreadServiceTest {
                                                             .build()
                                                     )
                                                     .addFileId("string")
-                                                    .metadata(JsonValue.from(mapOf<String, Any>()))
+                                                    .metadata(
+                                                        Metadata.builder()
+                                                            .putAdditionalProperty(
+                                                                "foo",
+                                                                JsonValue.from("string")
+                                                            )
+                                                            .build()
+                                                    )
                                                     .build()
                                             )
                                             .build()
@@ -250,8 +289,12 @@ class ThreadServiceTest {
                     .instructions("instructions")
                     .maxCompletionTokens(256L)
                     .maxPromptTokens(256L)
-                    .metadata(JsonValue.from(mapOf<String, Any>()))
-                    .model(ChatModel.O1)
+                    .metadata(
+                        Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .model(ChatModel.O3_MINI)
                     .parallelToolCalls(true)
                     .responseFormatAuto()
                     .temperature(1.0)
@@ -268,10 +311,18 @@ class ThreadServiceTest {
                                             .addTool(CodeInterpreterTool.builder().build())
                                             .build()
                                     )
-                                    .metadata(JsonValue.from(mapOf<String, Any>()))
+                                    .metadata(
+                                        Metadata.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                                            .build()
+                                    )
                                     .build()
                             )
-                            .metadata(JsonValue.from(mapOf<String, Any>()))
+                            .metadata(
+                                Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
                             .toolResources(
                                 BetaThreadCreateAndRunParams.Thread.ToolResources.builder()
                                     .codeInterpreter(
@@ -295,7 +346,14 @@ class ThreadServiceTest {
                                                             .build()
                                                     )
                                                     .addFileId("string")
-                                                    .metadata(JsonValue.from(mapOf<String, Any>()))
+                                                    .metadata(
+                                                        Metadata.builder()
+                                                            .putAdditionalProperty(
+                                                                "foo",
+                                                                JsonValue.from("string")
+                                                            )
+                                                            .build()
+                                                    )
                                                     .build()
                                             )
                                             .build()

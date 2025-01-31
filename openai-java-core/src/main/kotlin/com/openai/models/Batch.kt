@@ -70,7 +70,9 @@ private constructor(
     @JsonProperty("in_progress_at")
     @ExcludeMissing
     private val inProgressAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonValue = JsonMissing.of(),
+    @JsonProperty("metadata")
+    @ExcludeMissing
+    private val metadata: JsonField<Metadata> = JsonMissing.of(),
     @JsonProperty("output_file_id")
     @ExcludeMissing
     private val outputFileId: JsonField<String> = JsonMissing.of(),
@@ -135,10 +137,13 @@ private constructor(
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format. Keys can be a maximum of 64
-     * characters long and values can be a maximum of 512 characters long.
+     * additional information about the object in a structured format, and querying for objects via
+     * API or the dashboard.
+     *
+     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
+     * length of 512 characters.
      */
-    @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+    fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
 
     /** The ID of the file containing the outputs of successfully executed requests. */
     fun outputFileId(): Optional<String> =
@@ -206,6 +211,16 @@ private constructor(
     @ExcludeMissing
     fun _inProgressAt(): JsonField<Long> = inProgressAt
 
+    /**
+     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
+     * additional information about the object in a structured format, and querying for objects via
+     * API or the dashboard.
+     *
+     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
+     * length of 512 characters.
+     */
+    @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
+
     /** The ID of the file containing the outputs of successfully executed requests. */
     @JsonProperty("output_file_id")
     @ExcludeMissing
@@ -248,6 +263,7 @@ private constructor(
         failedAt()
         finalizingAt()
         inProgressAt()
+        metadata().ifPresent { it.validate() }
         outputFileId()
         requestCounts().ifPresent { it.validate() }
         validated = true
@@ -280,7 +296,7 @@ private constructor(
         private var failedAt: JsonField<Long> = JsonMissing.of()
         private var finalizingAt: JsonField<Long> = JsonMissing.of()
         private var inProgressAt: JsonField<Long> = JsonMissing.of()
-        private var metadata: JsonValue = JsonMissing.of()
+        private var metadata: JsonField<Metadata> = JsonMissing.of()
         private var outputFileId: JsonField<String> = JsonMissing.of()
         private var requestCounts: JsonField<BatchRequestCounts> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -410,10 +426,33 @@ private constructor(
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format. Keys can be a
-         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
          */
-        fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
+        fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
         /** The ID of the file containing the outputs of successfully executed requests. */
         fun outputFileId(outputFileId: String) = outputFileId(JsonField.of(outputFileId))

@@ -14,7 +14,9 @@ class BetaAssistantUpdateParamsTest {
             .assistantId("assistant_id")
             .description("description")
             .instructions("instructions")
-            .metadata(JsonValue.from(mapOf<String, Any>()))
+            .metadata(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
             .model("model")
             .name("name")
             .responseFormatAuto()
@@ -45,7 +47,11 @@ class BetaAssistantUpdateParamsTest {
                 .assistantId("assistant_id")
                 .description("description")
                 .instructions("instructions")
-                .metadata(JsonValue.from(mapOf<String, Any>()))
+                .metadata(
+                    Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
                 .model("model")
                 .name("name")
                 .responseFormatAuto()
@@ -71,7 +77,10 @@ class BetaAssistantUpdateParamsTest {
         assertThat(body).isNotNull
         assertThat(body.description()).contains("description")
         assertThat(body.instructions()).contains("instructions")
-        assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body.metadata())
+            .contains(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
         assertThat(body.model()).contains("model")
         assertThat(body.name()).contains("name")
         assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())

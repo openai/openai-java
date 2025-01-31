@@ -13,7 +13,9 @@ class BetaThreadMessageUpdateParamsTest {
         BetaThreadMessageUpdateParams.builder()
             .threadId("thread_id")
             .messageId("message_id")
-            .metadata(JsonValue.from(mapOf<String, Any>()))
+            .metadata(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
             .build()
     }
 
@@ -23,11 +25,18 @@ class BetaThreadMessageUpdateParamsTest {
             BetaThreadMessageUpdateParams.builder()
                 .threadId("thread_id")
                 .messageId("message_id")
-                .metadata(JsonValue.from(mapOf<String, Any>()))
+                .metadata(
+                    Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
                 .build()
         val body = params._body()
         assertThat(body).isNotNull
-        assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body.metadata())
+            .contains(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
     }
 
     @Test

@@ -9,6 +9,7 @@ import com.openai.models.BatchCancelParams
 import com.openai.models.BatchCreateParams
 import com.openai.models.BatchListParams
 import com.openai.models.BatchRetrieveParams
+import com.openai.models.Metadata
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -30,7 +31,7 @@ class BatchServiceTest {
                     .endpoint(BatchCreateParams.Endpoint.V1_CHAT_COMPLETIONS)
                     .inputFileId("input_file_id")
                     .metadata(
-                        BatchCreateParams.Metadata.builder()
+                        Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )

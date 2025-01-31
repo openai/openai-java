@@ -11,6 +11,7 @@ import com.openai.models.BetaThreadMessageListParams
 import com.openai.models.BetaThreadMessageRetrieveParams
 import com.openai.models.BetaThreadMessageUpdateParams
 import com.openai.models.CodeInterpreterTool
+import com.openai.models.Metadata
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -37,7 +38,11 @@ class MessageServiceTest {
                             .addTool(CodeInterpreterTool.builder().build())
                             .build()
                     )
-                    .metadata(JsonValue.from(mapOf<String, Any>()))
+                    .metadata(
+                        Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
                     .build()
             )
         println(message)
@@ -76,7 +81,11 @@ class MessageServiceTest {
                 BetaThreadMessageUpdateParams.builder()
                     .threadId("thread_id")
                     .messageId("message_id")
-                    .metadata(JsonValue.from(mapOf<String, Any>()))
+                    .metadata(
+                        Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
                     .build()
             )
         println(message)

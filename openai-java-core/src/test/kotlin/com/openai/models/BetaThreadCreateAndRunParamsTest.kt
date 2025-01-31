@@ -15,8 +15,10 @@ class BetaThreadCreateAndRunParamsTest {
             .instructions("instructions")
             .maxCompletionTokens(256L)
             .maxPromptTokens(256L)
-            .metadata(JsonValue.from(mapOf<String, Any>()))
-            .model(ChatModel.O1)
+            .metadata(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
+            .model(ChatModel.O3_MINI)
             .parallelToolCalls(true)
             .responseFormatAuto()
             .temperature(1.0)
@@ -32,10 +34,18 @@ class BetaThreadCreateAndRunParamsTest {
                                     .addTool(CodeInterpreterTool.builder().build())
                                     .build()
                             )
-                            .metadata(JsonValue.from(mapOf<String, Any>()))
+                            .metadata(
+                                Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
                             .build()
                     )
-                    .metadata(JsonValue.from(mapOf<String, Any>()))
+                    .metadata(
+                        Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
                     .toolResources(
                         BetaThreadCreateAndRunParams.Thread.ToolResources.builder()
                             .codeInterpreter(
@@ -56,7 +66,14 @@ class BetaThreadCreateAndRunParamsTest {
                                                 AutoFileChunkingStrategyParam.builder().build()
                                             )
                                             .addFileId("string")
-                                            .metadata(JsonValue.from(mapOf<String, Any>()))
+                                            .metadata(
+                                                Metadata.builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from("string")
+                                                    )
+                                                    .build()
+                                            )
                                             .build()
                                     )
                                     .build()
@@ -99,8 +116,12 @@ class BetaThreadCreateAndRunParamsTest {
                 .instructions("instructions")
                 .maxCompletionTokens(256L)
                 .maxPromptTokens(256L)
-                .metadata(JsonValue.from(mapOf<String, Any>()))
-                .model(ChatModel.O1)
+                .metadata(
+                    Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
+                .model(ChatModel.O3_MINI)
                 .parallelToolCalls(true)
                 .responseFormatAuto()
                 .temperature(1.0)
@@ -116,10 +137,18 @@ class BetaThreadCreateAndRunParamsTest {
                                         .addTool(CodeInterpreterTool.builder().build())
                                         .build()
                                 )
-                                .metadata(JsonValue.from(mapOf<String, Any>()))
+                                .metadata(
+                                    Metadata.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                                        .build()
+                                )
                                 .build()
                         )
-                        .metadata(JsonValue.from(mapOf<String, Any>()))
+                        .metadata(
+                            Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
                         .toolResources(
                             BetaThreadCreateAndRunParams.Thread.ToolResources.builder()
                                 .codeInterpreter(
@@ -142,7 +171,14 @@ class BetaThreadCreateAndRunParamsTest {
                                                     AutoFileChunkingStrategyParam.builder().build()
                                                 )
                                                 .addFileId("string")
-                                                .metadata(JsonValue.from(mapOf<String, Any>()))
+                                                .metadata(
+                                                    Metadata.builder()
+                                                        .putAdditionalProperty(
+                                                            "foo",
+                                                            JsonValue.from("string")
+                                                        )
+                                                        .build()
+                                                )
                                                 .build()
                                         )
                                         .build()
@@ -181,8 +217,11 @@ class BetaThreadCreateAndRunParamsTest {
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.maxCompletionTokens()).contains(256L)
         assertThat(body.maxPromptTokens()).contains(256L)
-        assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
-        assertThat(body.model()).contains(ChatModel.O1)
+        assertThat(body.metadata())
+            .contains(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
+        assertThat(body.model()).contains(ChatModel.O3_MINI)
         assertThat(body.parallelToolCalls()).contains(true)
         assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
         assertThat(body.temperature()).contains(1.0)
@@ -199,10 +238,18 @@ class BetaThreadCreateAndRunParamsTest {
                                     .addTool(CodeInterpreterTool.builder().build())
                                     .build()
                             )
-                            .metadata(JsonValue.from(mapOf<String, Any>()))
+                            .metadata(
+                                Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
                             .build()
                     )
-                    .metadata(JsonValue.from(mapOf<String, Any>()))
+                    .metadata(
+                        Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
                     .toolResources(
                         BetaThreadCreateAndRunParams.Thread.ToolResources.builder()
                             .codeInterpreter(
@@ -223,7 +270,14 @@ class BetaThreadCreateAndRunParamsTest {
                                                 AutoFileChunkingStrategyParam.builder().build()
                                             )
                                             .addFileId("string")
-                                            .metadata(JsonValue.from(mapOf<String, Any>()))
+                                            .metadata(
+                                                Metadata.builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from("string")
+                                                    )
+                                                    .build()
+                                            )
                                             .build()
                                     )
                                     .build()

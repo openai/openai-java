@@ -13,6 +13,7 @@ import com.openai.models.BetaAssistantRetrieveParams
 import com.openai.models.BetaAssistantUpdateParams
 import com.openai.models.ChatModel
 import com.openai.models.CodeInterpreterTool
+import com.openai.models.Metadata
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -30,10 +31,14 @@ class AssistantServiceTest {
         val assistant =
             assistantService.create(
                 BetaAssistantCreateParams.builder()
-                    .model(ChatModel.O1)
+                    .model(ChatModel.O3_MINI)
                     .description("description")
                     .instructions("instructions")
-                    .metadata(JsonValue.from(mapOf<String, Any>()))
+                    .metadata(
+                        Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
                     .name("name")
                     .responseFormatAuto()
                     .temperature(1.0)
@@ -55,7 +60,14 @@ class AssistantServiceTest {
                                                 AutoFileChunkingStrategyParam.builder().build()
                                             )
                                             .addFileId("string")
-                                            .metadata(JsonValue.from(mapOf<String, Any>()))
+                                            .metadata(
+                                                Metadata.builder()
+                                                    .putAdditionalProperty(
+                                                        "foo",
+                                                        JsonValue.from("string")
+                                                    )
+                                                    .build()
+                                            )
                                             .build()
                                     )
                                     .build()
@@ -100,7 +112,11 @@ class AssistantServiceTest {
                     .assistantId("assistant_id")
                     .description("description")
                     .instructions("instructions")
-                    .metadata(JsonValue.from(mapOf<String, Any>()))
+                    .metadata(
+                        Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
                     .model("model")
                     .name("name")
                     .responseFormatAuto()
