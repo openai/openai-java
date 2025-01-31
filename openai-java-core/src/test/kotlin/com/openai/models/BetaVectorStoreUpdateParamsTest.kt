@@ -13,7 +13,9 @@ class BetaVectorStoreUpdateParamsTest {
         BetaVectorStoreUpdateParams.builder()
             .vectorStoreId("vector_store_id")
             .expiresAfter(BetaVectorStoreUpdateParams.ExpiresAfter.builder().days(1L).build())
-            .metadata(JsonValue.from(mapOf<String, Any>()))
+            .metadata(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
             .name("name")
             .build()
     }
@@ -24,14 +26,21 @@ class BetaVectorStoreUpdateParamsTest {
             BetaVectorStoreUpdateParams.builder()
                 .vectorStoreId("vector_store_id")
                 .expiresAfter(BetaVectorStoreUpdateParams.ExpiresAfter.builder().days(1L).build())
-                .metadata(JsonValue.from(mapOf<String, Any>()))
+                .metadata(
+                    Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
                 .name("name")
                 .build()
         val body = params._body()
         assertThat(body).isNotNull
         assertThat(body.expiresAfter())
             .contains(BetaVectorStoreUpdateParams.ExpiresAfter.builder().days(1L).build())
-        assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body.metadata())
+            .contains(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
         assertThat(body.name()).contains("name")
     }
 

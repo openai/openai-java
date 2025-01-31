@@ -17,6 +17,7 @@ import com.openai.models.ChatCompletionToolChoiceOption
 import com.openai.models.ChatModel
 import com.openai.models.FunctionDefinition
 import com.openai.models.FunctionParameters
+import com.openai.models.Metadata
 import com.openai.models.ResponseFormatText
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -41,7 +42,7 @@ class CompletionServiceTest {
                             .name("name")
                             .build()
                     )
-                    .model(ChatModel.O1)
+                    .model(ChatModel.O3_MINI)
                     .audio(
                         ChatCompletionAudioParam.builder()
                             .format(ChatCompletionAudioParam.Format.WAV)
@@ -70,7 +71,7 @@ class CompletionServiceTest {
                     .maxCompletionTokens(0L)
                     .maxTokens(0L)
                     .metadata(
-                        ChatCompletionCreateParams.Metadata.builder()
+                        Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
@@ -131,7 +132,7 @@ class CompletionServiceTest {
                             .name("name")
                             .build()
                     )
-                    .model(ChatModel.O1)
+                    .model(ChatModel.O3_MINI)
                     .audio(
                         ChatCompletionAudioParam.builder()
                             .format(ChatCompletionAudioParam.Format.WAV)
@@ -160,7 +161,7 @@ class CompletionServiceTest {
                     .maxCompletionTokens(0L)
                     .maxTokens(0L)
                     .metadata(
-                        ChatCompletionCreateParams.Metadata.builder()
+                        Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )

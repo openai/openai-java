@@ -46,10 +46,13 @@ private constructor(
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format. Keys can be a maximum of 64
-     * characters long and values can be a maximum of 512 characters long.
+     * additional information about the object in a structured format, and querying for objects via
+     * API or the dashboard.
+     *
+     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
+     * length of 512 characters.
      */
-    fun _metadata(): JsonValue = body._metadata()
+    fun metadata(): Optional<Metadata> = body.metadata()
 
     /** The name of the vector store. */
     fun name(): Optional<String> = body.name()
@@ -68,6 +71,16 @@ private constructor(
      * store should use. Useful for tools like `file_search` that can access files.
      */
     fun _fileIds(): JsonField<List<String>> = body._fileIds()
+
+    /**
+     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
+     * additional information about the object in a structured format, and querying for objects via
+     * API or the dashboard.
+     *
+     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
+     * length of 512 characters.
+     */
+    fun _metadata(): JsonField<Metadata> = body._metadata()
 
     /** The name of the vector store. */
     fun _name(): JsonField<String> = body._name()
@@ -99,7 +112,7 @@ private constructor(
         private val fileIds: JsonField<List<String>> = JsonMissing.of(),
         @JsonProperty("metadata")
         @ExcludeMissing
-        private val metadata: JsonValue = JsonMissing.of(),
+        private val metadata: JsonField<Metadata> = JsonMissing.of(),
         @JsonProperty("name")
         @ExcludeMissing
         private val name: JsonField<String> = JsonMissing.of(),
@@ -126,10 +139,13 @@ private constructor(
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format. Keys can be a
-         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
          */
-        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+        fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
 
         /** The name of the vector store. */
         fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
@@ -153,6 +169,16 @@ private constructor(
          */
         @JsonProperty("file_ids") @ExcludeMissing fun _fileIds(): JsonField<List<String>> = fileIds
 
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
+
         /** The name of the vector store. */
         @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
@@ -170,6 +196,7 @@ private constructor(
             chunkingStrategy().ifPresent { it.validate() }
             expiresAfter().ifPresent { it.validate() }
             fileIds()
+            metadata().ifPresent { it.validate() }
             name()
             validated = true
         }
@@ -187,7 +214,7 @@ private constructor(
             private var chunkingStrategy: JsonField<FileChunkingStrategyParam> = JsonMissing.of()
             private var expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of()
             private var fileIds: JsonField<MutableList<String>>? = null
-            private var metadata: JsonValue = JsonMissing.of()
+            private var metadata: JsonField<Metadata> = JsonMissing.of()
             private var name: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -280,10 +307,33 @@ private constructor(
 
             /**
              * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format. Keys can be a
-             * maximum of 64 characters long and values can be a maximum of 512 characters long.
+             * storing additional information about the object in a structured format, and querying
+             * for objects via API or the dashboard.
+             *
+             * Keys are strings with a maximum length of 64 characters. Values are strings with a
+             * maximum length of 512 characters.
              */
-            fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
+            fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
+
+            /**
+             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+             * storing additional information about the object in a structured format, and querying
+             * for objects via API or the dashboard.
+             *
+             * Keys are strings with a maximum length of 64 characters. Values are strings with a
+             * maximum length of 512 characters.
+             */
+            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+
+            /**
+             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+             * storing additional information about the object in a structured format, and querying
+             * for objects via API or the dashboard.
+             *
+             * Keys are strings with a maximum length of 64 characters. Values are strings with a
+             * maximum length of 512 characters.
+             */
+            fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
             /** The name of the vector store. */
             fun name(name: String) = name(JsonField.of(name))
@@ -429,10 +479,33 @@ private constructor(
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format. Keys can be a
-         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
          */
-        fun metadata(metadata: JsonValue) = apply { body.metadata(metadata) }
+        fun metadata(metadata: Metadata?) = apply { body.metadata(metadata) }
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
 
         /** The name of the vector store. */
         fun name(name: String) = apply { body.name(name) }

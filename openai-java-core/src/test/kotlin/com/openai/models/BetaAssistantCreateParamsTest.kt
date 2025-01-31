@@ -11,10 +11,12 @@ class BetaAssistantCreateParamsTest {
     @Test
     fun createBetaAssistantCreateParams() {
         BetaAssistantCreateParams.builder()
-            .model(ChatModel.O1)
+            .model(ChatModel.O3_MINI)
             .description("description")
             .instructions("instructions")
-            .metadata(JsonValue.from(mapOf<String, Any>()))
+            .metadata(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
             .name("name")
             .responseFormatAuto()
             .temperature(1.0)
@@ -35,7 +37,11 @@ class BetaAssistantCreateParamsTest {
                                         AutoFileChunkingStrategyParam.builder().build()
                                     )
                                     .addFileId("string")
-                                    .metadata(JsonValue.from(mapOf<String, Any>()))
+                                    .metadata(
+                                        Metadata.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                                            .build()
+                                    )
                                     .build()
                             )
                             .build()
@@ -51,10 +57,14 @@ class BetaAssistantCreateParamsTest {
     fun body() {
         val params =
             BetaAssistantCreateParams.builder()
-                .model(ChatModel.O1)
+                .model(ChatModel.O3_MINI)
                 .description("description")
                 .instructions("instructions")
-                .metadata(JsonValue.from(mapOf<String, Any>()))
+                .metadata(
+                    Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
                 .name("name")
                 .responseFormatAuto()
                 .temperature(1.0)
@@ -75,7 +85,14 @@ class BetaAssistantCreateParamsTest {
                                             AutoFileChunkingStrategyParam.builder().build()
                                         )
                                         .addFileId("string")
-                                        .metadata(JsonValue.from(mapOf<String, Any>()))
+                                        .metadata(
+                                            Metadata.builder()
+                                                .putAdditionalProperty(
+                                                    "foo",
+                                                    JsonValue.from("string")
+                                                )
+                                                .build()
+                                        )
                                         .build()
                                 )
                                 .build()
@@ -87,10 +104,13 @@ class BetaAssistantCreateParamsTest {
                 .build()
         val body = params._body()
         assertThat(body).isNotNull
-        assertThat(body.model()).isEqualTo(ChatModel.O1)
+        assertThat(body.model()).isEqualTo(ChatModel.O3_MINI)
         assertThat(body.description()).contains("description")
         assertThat(body.instructions()).contains("instructions")
-        assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body.metadata())
+            .contains(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
         assertThat(body.name()).contains("name")
         assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
         assertThat(body.temperature()).contains(1.0)
@@ -112,7 +132,11 @@ class BetaAssistantCreateParamsTest {
                                         AutoFileChunkingStrategyParam.builder().build()
                                     )
                                     .addFileId("string")
-                                    .metadata(JsonValue.from(mapOf<String, Any>()))
+                                    .metadata(
+                                        Metadata.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                                            .build()
+                                    )
                                     .build()
                             )
                             .build()
@@ -128,9 +152,9 @@ class BetaAssistantCreateParamsTest {
 
     @Test
     fun bodyWithoutOptionalFields() {
-        val params = BetaAssistantCreateParams.builder().model(ChatModel.O1).build()
+        val params = BetaAssistantCreateParams.builder().model(ChatModel.O3_MINI).build()
         val body = params._body()
         assertThat(body).isNotNull
-        assertThat(body.model()).isEqualTo(ChatModel.O1)
+        assertThat(body.model()).isEqualTo(ChatModel.O3_MINI)
     }
 }

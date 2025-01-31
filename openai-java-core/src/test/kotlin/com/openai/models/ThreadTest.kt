@@ -14,7 +14,11 @@ class ThreadTest {
             Thread.builder()
                 .id("id")
                 .createdAt(0L)
-                .metadata(JsonValue.from(mapOf<String, Any>()))
+                .metadata(
+                    Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
                 .toolResources(
                     Thread.ToolResources.builder()
                         .codeInterpreter(
@@ -33,7 +37,10 @@ class ThreadTest {
         assertThat(thread).isNotNull
         assertThat(thread.id()).isEqualTo("id")
         assertThat(thread.createdAt()).isEqualTo(0L)
-        assertThat(thread._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(thread.metadata())
+            .contains(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
         assertThat(thread.toolResources())
             .contains(
                 Thread.ToolResources.builder()

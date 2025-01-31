@@ -21,10 +21,16 @@ class BetaThreadCreateParamsTest {
                             .addTool(CodeInterpreterTool.builder().build())
                             .build()
                     )
-                    .metadata(JsonValue.from(mapOf<String, Any>()))
+                    .metadata(
+                        Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
                     .build()
             )
-            .metadata(JsonValue.from(mapOf<String, Any>()))
+            .metadata(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
             .toolResources(
                 BetaThreadCreateParams.ToolResources.builder()
                     .codeInterpreter(
@@ -42,7 +48,11 @@ class BetaThreadCreateParamsTest {
                                         AutoFileChunkingStrategyParam.builder().build()
                                     )
                                     .addFileId("string")
-                                    .metadata(JsonValue.from(mapOf<String, Any>()))
+                                    .metadata(
+                                        Metadata.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                                            .build()
+                                    )
                                     .build()
                             )
                             .build()
@@ -66,10 +76,18 @@ class BetaThreadCreateParamsTest {
                                 .addTool(CodeInterpreterTool.builder().build())
                                 .build()
                         )
-                        .metadata(JsonValue.from(mapOf<String, Any>()))
+                        .metadata(
+                            Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
                         .build()
                 )
-                .metadata(JsonValue.from(mapOf<String, Any>()))
+                .metadata(
+                    Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
                 .toolResources(
                     BetaThreadCreateParams.ToolResources.builder()
                         .codeInterpreter(
@@ -87,7 +105,14 @@ class BetaThreadCreateParamsTest {
                                             AutoFileChunkingStrategyParam.builder().build()
                                         )
                                         .addFileId("string")
-                                        .metadata(JsonValue.from(mapOf<String, Any>()))
+                                        .metadata(
+                                            Metadata.builder()
+                                                .putAdditionalProperty(
+                                                    "foo",
+                                                    JsonValue.from("string")
+                                                )
+                                                .build()
+                                        )
                                         .build()
                                 )
                                 .build()
@@ -109,11 +134,18 @@ class BetaThreadCreateParamsTest {
                                 .addTool(CodeInterpreterTool.builder().build())
                                 .build()
                         )
-                        .metadata(JsonValue.from(mapOf<String, Any>()))
+                        .metadata(
+                            Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
                         .build()
                 )
             )
-        assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body.metadata())
+            .contains(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
         assertThat(body.toolResources())
             .contains(
                 BetaThreadCreateParams.ToolResources.builder()
@@ -132,7 +164,11 @@ class BetaThreadCreateParamsTest {
                                         AutoFileChunkingStrategyParam.builder().build()
                                     )
                                     .addFileId("string")
-                                    .metadata(JsonValue.from(mapOf<String, Any>()))
+                                    .metadata(
+                                        Metadata.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                                            .build()
+                                    )
                                     .build()
                             )
                             .build()

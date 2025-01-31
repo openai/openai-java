@@ -139,8 +139,12 @@ private constructor(
     @Deprecated("deprecated") fun maxTokens(): Optional<Long> = body.maxTokens()
 
     /**
-     * Developer-defined tags and values used for filtering completions in the
-     * [dashboard](https://platform.openai.com/chat-completions).
+     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
+     * additional information about the object in a structured format, and querying for objects via
+     * API or the dashboard.
+     *
+     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
+     * length of 512 characters.
      */
     fun metadata(): Optional<Metadata> = body.metadata()
 
@@ -227,9 +231,9 @@ private constructor(
      * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale tier
      *   credits until they are exhausted.
      * - If set to 'auto', and the Project is not Scale tier enabled, the request will be processed
-     *   using the default service tier with a lower uptime SLA and no latency guarentee.
+     *   using the default service tier with a lower uptime SLA and no latency guarantee.
      * - If set to 'default', the request will be processed using the default service tier with a
-     *   lower uptime SLA and no latency guarentee.
+     *   lower uptime SLA and no latency guarantee.
      * - When not set, the default behavior is 'auto'.
      */
     fun serviceTier(): Optional<ServiceTier> = body.serviceTier()
@@ -384,8 +388,12 @@ private constructor(
     @Deprecated("deprecated") fun _maxTokens(): JsonField<Long> = body._maxTokens()
 
     /**
-     * Developer-defined tags and values used for filtering completions in the
-     * [dashboard](https://platform.openai.com/chat-completions).
+     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
+     * additional information about the object in a structured format, and querying for objects via
+     * API or the dashboard.
+     *
+     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
+     * length of 512 characters.
      */
     fun _metadata(): JsonField<Metadata> = body._metadata()
 
@@ -472,9 +480,9 @@ private constructor(
      * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale tier
      *   credits until they are exhausted.
      * - If set to 'auto', and the Project is not Scale tier enabled, the request will be processed
-     *   using the default service tier with a lower uptime SLA and no latency guarentee.
+     *   using the default service tier with a lower uptime SLA and no latency guarantee.
      * - If set to 'default', the request will be processed using the default service tier with a
-     *   lower uptime SLA and no latency guarentee.
+     *   lower uptime SLA and no latency guarantee.
      * - When not set, the default behavior is 'auto'.
      */
     fun _serviceTier(): JsonField<ServiceTier> = body._serviceTier()
@@ -739,8 +747,12 @@ private constructor(
         fun maxTokens(): Optional<Long> = Optional.ofNullable(maxTokens.getNullable("max_tokens"))
 
         /**
-         * Developer-defined tags and values used for filtering completions in the
-         * [dashboard](https://platform.openai.com/chat-completions).
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
          */
         fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
 
@@ -834,9 +846,9 @@ private constructor(
          *   tier credits until they are exhausted.
          * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
          *   processed using the default service tier with a lower uptime SLA and no latency
-         *   guarentee.
+         *   guarantee.
          * - If set to 'default', the request will be processed using the default service tier with
-         *   a lower uptime SLA and no latency guarentee.
+         *   a lower uptime SLA and no latency guarantee.
          * - When not set, the default behavior is 'auto'.
          */
         fun serviceTier(): Optional<ServiceTier> =
@@ -1017,8 +1029,12 @@ private constructor(
         fun _maxTokens(): JsonField<Long> = maxTokens
 
         /**
-         * Developer-defined tags and values used for filtering completions in the
-         * [dashboard](https://platform.openai.com/chat-completions).
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
          */
         @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
@@ -1118,9 +1134,9 @@ private constructor(
          *   tier credits until they are exhausted.
          * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
          *   processed using the default service tier with a lower uptime SLA and no latency
-         *   guarentee.
+         *   guarantee.
          * - If set to 'default', the request will be processed using the default service tier with
-         *   a lower uptime SLA and no latency guarentee.
+         *   a lower uptime SLA and no latency guarantee.
          * - When not set, the default behavior is 'auto'.
          */
         @JsonProperty("service_tier")
@@ -1794,20 +1810,32 @@ private constructor(
             fun maxTokens(maxTokens: JsonField<Long>) = apply { this.maxTokens = maxTokens }
 
             /**
-             * Developer-defined tags and values used for filtering completions in the
-             * [dashboard](https://platform.openai.com/chat-completions).
+             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+             * storing additional information about the object in a structured format, and querying
+             * for objects via API or the dashboard.
+             *
+             * Keys are strings with a maximum length of 64 characters. Values are strings with a
+             * maximum length of 512 characters.
              */
             fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
 
             /**
-             * Developer-defined tags and values used for filtering completions in the
-             * [dashboard](https://platform.openai.com/chat-completions).
+             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+             * storing additional information about the object in a structured format, and querying
+             * for objects via API or the dashboard.
+             *
+             * Keys are strings with a maximum length of 64 characters. Values are strings with a
+             * maximum length of 512 characters.
              */
             fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
 
             /**
-             * Developer-defined tags and values used for filtering completions in the
-             * [dashboard](https://platform.openai.com/chat-completions).
+             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+             * storing additional information about the object in a structured format, and querying
+             * for objects via API or the dashboard.
+             *
+             * Keys are strings with a maximum length of 64 characters. Values are strings with a
+             * maximum length of 512 characters.
              */
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
@@ -2153,9 +2181,9 @@ private constructor(
              *   scale tier credits until they are exhausted.
              * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
              *   processed using the default service tier with a lower uptime SLA and no latency
-             *   guarentee.
+             *   guarantee.
              * - If set to 'default', the request will be processed using the default service tier
-             *   with a lower uptime SLA and no latency guarentee.
+             *   with a lower uptime SLA and no latency guarantee.
              * - When not set, the default behavior is 'auto'.
              */
             fun serviceTier(serviceTier: ServiceTier?) =
@@ -2168,9 +2196,9 @@ private constructor(
              *   scale tier credits until they are exhausted.
              * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
              *   processed using the default service tier with a lower uptime SLA and no latency
-             *   guarentee.
+             *   guarantee.
              * - If set to 'default', the request will be processed using the default service tier
-             *   with a lower uptime SLA and no latency guarentee.
+             *   with a lower uptime SLA and no latency guarantee.
              * - When not set, the default behavior is 'auto'.
              */
             fun serviceTier(serviceTier: Optional<ServiceTier>) =
@@ -2183,9 +2211,9 @@ private constructor(
              *   scale tier credits until they are exhausted.
              * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
              *   processed using the default service tier with a lower uptime SLA and no latency
-             *   guarentee.
+             *   guarantee.
              * - If set to 'default', the request will be processed using the default service tier
-             *   with a lower uptime SLA and no latency guarentee.
+             *   with a lower uptime SLA and no latency guarantee.
              * - When not set, the default behavior is 'auto'.
              */
             fun serviceTier(serviceTier: JsonField<ServiceTier>) = apply {
@@ -2956,20 +2984,32 @@ private constructor(
         fun maxTokens(maxTokens: JsonField<Long>) = apply { body.maxTokens(maxTokens) }
 
         /**
-         * Developer-defined tags and values used for filtering completions in the
-         * [dashboard](https://platform.openai.com/chat-completions).
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
          */
         fun metadata(metadata: Metadata?) = apply { body.metadata(metadata) }
 
         /**
-         * Developer-defined tags and values used for filtering completions in the
-         * [dashboard](https://platform.openai.com/chat-completions).
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
          */
         fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
 
         /**
-         * Developer-defined tags and values used for filtering completions in the
-         * [dashboard](https://platform.openai.com/chat-completions).
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
          */
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
 
@@ -3301,9 +3341,9 @@ private constructor(
          *   tier credits until they are exhausted.
          * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
          *   processed using the default service tier with a lower uptime SLA and no latency
-         *   guarentee.
+         *   guarantee.
          * - If set to 'default', the request will be processed using the default service tier with
-         *   a lower uptime SLA and no latency guarentee.
+         *   a lower uptime SLA and no latency guarantee.
          * - When not set, the default behavior is 'auto'.
          */
         fun serviceTier(serviceTier: ServiceTier?) = apply { body.serviceTier(serviceTier) }
@@ -3315,9 +3355,9 @@ private constructor(
          *   tier credits until they are exhausted.
          * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
          *   processed using the default service tier with a lower uptime SLA and no latency
-         *   guarentee.
+         *   guarantee.
          * - If set to 'default', the request will be processed using the default service tier with
-         *   a lower uptime SLA and no latency guarentee.
+         *   a lower uptime SLA and no latency guarantee.
          * - When not set, the default behavior is 'auto'.
          */
         fun serviceTier(serviceTier: Optional<ServiceTier>) = serviceTier(serviceTier.orElse(null))
@@ -3329,9 +3369,9 @@ private constructor(
          *   tier credits until they are exhausted.
          * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
          *   processed using the default service tier with a lower uptime SLA and no latency
-         *   guarentee.
+         *   guarantee.
          * - If set to 'default', the request will be processed using the default service tier with
-         *   a lower uptime SLA and no latency guarentee.
+         *   a lower uptime SLA and no latency guarantee.
          * - When not set, the default behavior is 'auto'.
          */
         fun serviceTier(serviceTier: JsonField<ServiceTier>) = apply {
@@ -4270,88 +4310,6 @@ private constructor(
     }
 
     /**
-     * Developer-defined tags and values used for filtering completions in the
-     * [dashboard](https://platform.openai.com/chat-completions).
-     */
-    @NoAutoDetect
-    class Metadata
-    @JsonCreator
-    private constructor(
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-    ) {
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Metadata = apply {
-            if (validated) {
-                return@apply
-            }
-
-            validated = true
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Metadata]. */
-        class Builder internal constructor() {
-
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(metadata: Metadata) = apply {
-                additionalProperties = metadata.additionalProperties.toMutableMap()
-            }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            fun build(): Metadata = Metadata(additionalProperties.toImmutable())
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
-        }
-
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
-    }
-
-    /**
      * An object specifying the format that the model must output.
      *
      * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs which
@@ -4537,9 +4495,9 @@ private constructor(
      * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale tier
      *   credits until they are exhausted.
      * - If set to 'auto', and the Project is not Scale tier enabled, the request will be processed
-     *   using the default service tier with a lower uptime SLA and no latency guarentee.
+     *   using the default service tier with a lower uptime SLA and no latency guarantee.
      * - If set to 'default', the request will be processed using the default service tier with a
-     *   lower uptime SLA and no latency guarentee.
+     *   lower uptime SLA and no latency guarantee.
      * - When not set, the default behavior is 'auto'.
      */
     class ServiceTier

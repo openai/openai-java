@@ -24,6 +24,10 @@ private constructor(
 
     companion object {
 
+        @JvmField val O3_MINI = of("o3-mini")
+
+        @JvmField val O3_MINI_2025_01_31 = of("o3-mini-2025-01-31")
+
         @JvmField val O1 = of("o1")
 
         @JvmField val O1_2024_12_17 = of("o1-2024-12-17")
@@ -104,6 +108,8 @@ private constructor(
 
     /** An enum containing [ChatModel]'s known values. */
     enum class Known {
+        O3_MINI,
+        O3_MINI_2025_01_31,
         O1,
         O1_2024_12_17,
         O1_PREVIEW,
@@ -153,6 +159,8 @@ private constructor(
      * - It was constructed with an arbitrary value using the [of] method.
      */
     enum class Value {
+        O3_MINI,
+        O3_MINI_2025_01_31,
         O1,
         O1_2024_12_17,
         O1_PREVIEW,
@@ -203,6 +211,8 @@ private constructor(
      */
     fun value(): Value =
         when (this) {
+            O3_MINI -> Value.O3_MINI
+            O3_MINI_2025_01_31 -> Value.O3_MINI_2025_01_31
             O1 -> Value.O1
             O1_2024_12_17 -> Value.O1_2024_12_17
             O1_PREVIEW -> Value.O1_PREVIEW
@@ -253,6 +263,8 @@ private constructor(
      */
     fun known(): Known =
         when (this) {
+            O3_MINI -> Known.O3_MINI
+            O3_MINI_2025_01_31 -> Known.O3_MINI_2025_01_31
             O1 -> Known.O1
             O1_2024_12_17 -> Known.O1_2024_12_17
             O1_PREVIEW -> Known.O1_PREVIEW

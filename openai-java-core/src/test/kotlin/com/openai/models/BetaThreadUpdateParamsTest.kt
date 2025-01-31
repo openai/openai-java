@@ -12,7 +12,9 @@ class BetaThreadUpdateParamsTest {
     fun createBetaThreadUpdateParams() {
         BetaThreadUpdateParams.builder()
             .threadId("thread_id")
-            .metadata(JsonValue.from(mapOf<String, Any>()))
+            .metadata(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
             .toolResources(
                 BetaThreadUpdateParams.ToolResources.builder()
                     .codeInterpreter(
@@ -35,7 +37,11 @@ class BetaThreadUpdateParamsTest {
         val params =
             BetaThreadUpdateParams.builder()
                 .threadId("thread_id")
-                .metadata(JsonValue.from(mapOf<String, Any>()))
+                .metadata(
+                    Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
                 .toolResources(
                     BetaThreadUpdateParams.ToolResources.builder()
                         .codeInterpreter(
@@ -53,7 +59,10 @@ class BetaThreadUpdateParamsTest {
                 .build()
         val body = params._body()
         assertThat(body).isNotNull
-        assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body.metadata())
+            .contains(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
         assertThat(body.toolResources())
             .contains(
                 BetaThreadUpdateParams.ToolResources.builder()

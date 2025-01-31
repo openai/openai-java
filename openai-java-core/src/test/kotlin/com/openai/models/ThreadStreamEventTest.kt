@@ -16,7 +16,11 @@ class ThreadStreamEventTest {
                     Thread.builder()
                         .id("id")
                         .createdAt(0L)
-                        .metadata(JsonValue.from(mapOf<String, Any>()))
+                        .metadata(
+                            Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
                         .toolResources(
                             Thread.ToolResources.builder()
                                 .codeInterpreter(
@@ -41,7 +45,11 @@ class ThreadStreamEventTest {
                 Thread.builder()
                     .id("id")
                     .createdAt(0L)
-                    .metadata(JsonValue.from(mapOf<String, Any>()))
+                    .metadata(
+                        Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
                     .toolResources(
                         Thread.ToolResources.builder()
                             .codeInterpreter(

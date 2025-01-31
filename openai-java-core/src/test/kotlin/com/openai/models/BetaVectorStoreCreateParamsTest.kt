@@ -14,7 +14,9 @@ class BetaVectorStoreCreateParamsTest {
             .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
             .expiresAfter(BetaVectorStoreCreateParams.ExpiresAfter.builder().days(1L).build())
             .addFileId("string")
-            .metadata(JsonValue.from(mapOf<String, Any>()))
+            .metadata(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
             .name("name")
             .build()
     }
@@ -26,7 +28,11 @@ class BetaVectorStoreCreateParamsTest {
                 .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
                 .expiresAfter(BetaVectorStoreCreateParams.ExpiresAfter.builder().days(1L).build())
                 .addFileId("string")
-                .metadata(JsonValue.from(mapOf<String, Any>()))
+                .metadata(
+                    Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
                 .name("name")
                 .build()
         val body = params._body()
@@ -38,7 +44,10 @@ class BetaVectorStoreCreateParamsTest {
         assertThat(body.expiresAfter())
             .contains(BetaVectorStoreCreateParams.ExpiresAfter.builder().days(1L).build())
         assertThat(body.fileIds()).contains(listOf("string"))
-        assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body.metadata())
+            .contains(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
         assertThat(body.name()).contains("name")
     }
 

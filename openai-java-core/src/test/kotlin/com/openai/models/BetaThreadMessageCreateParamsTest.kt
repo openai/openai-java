@@ -20,7 +20,9 @@ class BetaThreadMessageCreateParamsTest {
                     .addTool(CodeInterpreterTool.builder().build())
                     .build()
             )
-            .metadata(JsonValue.from(mapOf<String, Any>()))
+            .metadata(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
             .build()
     }
 
@@ -37,7 +39,11 @@ class BetaThreadMessageCreateParamsTest {
                         .addTool(CodeInterpreterTool.builder().build())
                         .build()
                 )
-                .metadata(JsonValue.from(mapOf<String, Any>()))
+                .metadata(
+                    Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
                 .build()
         val body = params._body()
         assertThat(body).isNotNull
@@ -52,7 +58,10 @@ class BetaThreadMessageCreateParamsTest {
                         .build()
                 )
             )
-        assertThat(body._metadata()).isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(body.metadata())
+            .contains(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+            )
     }
 
     @Test

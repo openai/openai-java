@@ -61,7 +61,9 @@ private constructor(
     @JsonProperty("max_prompt_tokens")
     @ExcludeMissing
     private val maxPromptTokens: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("metadata") @ExcludeMissing private val metadata: JsonValue = JsonMissing.of(),
+    @JsonProperty("metadata")
+    @ExcludeMissing
+    private val metadata: JsonField<Metadata> = JsonMissing.of(),
     @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
     @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonProperty("parallel_tool_calls")
@@ -151,10 +153,13 @@ private constructor(
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format. Keys can be a maximum of 64
-     * characters long and values can be a maximum of 512 characters long.
+     * additional information about the object in a structured format, and querying for objects via
+     * API or the dashboard.
+     *
+     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
+     * length of 512 characters.
      */
-    @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
+    fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
 
     /**
      * The model that the [assistant](https://platform.openai.com/docs/api-reference/assistants)
@@ -311,6 +316,16 @@ private constructor(
     fun _maxPromptTokens(): JsonField<Long> = maxPromptTokens
 
     /**
+     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
+     * additional information about the object in a structured format, and querying for objects via
+     * API or the dashboard.
+     *
+     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
+     * length of 512 characters.
+     */
+    @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
+
+    /**
      * The model that the [assistant](https://platform.openai.com/docs/api-reference/assistants)
      * used for this run.
      */
@@ -432,6 +447,7 @@ private constructor(
         lastError().ifPresent { it.validate() }
         maxCompletionTokens()
         maxPromptTokens()
+        metadata().ifPresent { it.validate() }
         model()
         _object_().let {
             if (it != JsonValue.from("thread.run")) {
@@ -475,7 +491,7 @@ private constructor(
         private var lastError: JsonField<LastError>? = null
         private var maxCompletionTokens: JsonField<Long>? = null
         private var maxPromptTokens: JsonField<Long>? = null
-        private var metadata: JsonValue? = null
+        private var metadata: JsonField<Metadata>? = null
         private var model: JsonField<String>? = null
         private var object_: JsonValue = JsonValue.from("thread.run")
         private var parallelToolCalls: JsonField<Boolean>? = null
@@ -699,10 +715,33 @@ private constructor(
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format. Keys can be a
-         * maximum of 64 characters long and values can be a maximum of 512 characters long.
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
          */
-        fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
+        fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
         /**
          * The model that the [assistant](https://platform.openai.com/docs/api-reference/assistants)
