@@ -5,6 +5,8 @@
 package com.openai.services.async
 
 import com.openai.core.RequestOptions
+import com.openai.core.http.HttpResponse
+import com.openai.models.FileContentParams
 import com.openai.models.FileDeleteParams
 import com.openai.models.FileDeleted
 import com.openai.models.FileListPageAsync
@@ -35,4 +37,11 @@ interface FileServiceAsync {
         params: FileDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none()
     ): CompletableFuture<FileDeleted>
+
+    /** Returns the contents of the specified file. */
+    @JvmOverloads
+    fun content(
+        params: FileContentParams,
+        requestOptions: RequestOptions = RequestOptions.none()
+    ): CompletableFuture<HttpResponse>
 }

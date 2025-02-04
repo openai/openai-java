@@ -5,6 +5,8 @@
 package com.openai.services.blocking
 
 import com.openai.core.RequestOptions
+import com.openai.core.http.HttpResponse
+import com.openai.models.FileContentParams
 import com.openai.models.FileDeleteParams
 import com.openai.models.FileDeleted
 import com.openai.models.FileListPage
@@ -34,4 +36,11 @@ interface FileService {
         params: FileDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none()
     ): FileDeleted
+
+    /** Returns the contents of the specified file. */
+    @JvmOverloads
+    fun content(
+        params: FileContentParams,
+        requestOptions: RequestOptions = RequestOptions.none()
+    ): HttpResponse
 }

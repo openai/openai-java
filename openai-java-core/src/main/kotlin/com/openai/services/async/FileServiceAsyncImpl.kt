@@ -9,10 +9,12 @@ import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.json
 import com.openai.core.prepareAsync
 import com.openai.errors.OpenAIError
+import com.openai.models.FileContentParams
 import com.openai.models.FileDeleteParams
 import com.openai.models.FileDeleted
 import com.openai.models.FileListPageAsync
@@ -110,5 +112,21 @@ internal constructor(
                         }
                     }
             }
+    }
+
+    /** Returns the contents of the specified file. */
+    override fun content(
+        params: FileContentParams,
+        requestOptions: RequestOptions
+    ): CompletableFuture<HttpResponse> {
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .addPathSegments("files", params.getPathParam(0), "content")
+                .build()
+                .prepareAsync(clientOptions, params)
+        return request.thenComposeAsync {
+            clientOptions.httpClient.executeAsync(it, requestOptions)
+        }
     }
 }
