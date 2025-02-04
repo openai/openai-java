@@ -104,7 +104,7 @@ internal constructor(
                 .method(HttpMethod.GET)
                 .addPathSegments("files", params.getPathParam(0), "content")
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, deploymentModel = null)
         return clientOptions.httpClient.execute(request, requestOptions)
     }
 }

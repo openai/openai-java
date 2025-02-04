@@ -124,7 +124,7 @@ internal constructor(
                 .method(HttpMethod.GET)
                 .addPathSegments("files", params.getPathParam(0), "content")
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request.thenComposeAsync {
             clientOptions.httpClient.executeAsync(it, requestOptions)
         }
