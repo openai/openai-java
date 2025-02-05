@@ -189,7 +189,7 @@ private constructor(
     fun presencePenalty(): Optional<Double> = body.presencePenalty()
 
     /**
-     * **o1 models only**
+     * **o1 and o3-mini models only**
      *
      * Constrains effort on reasoning for
      * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
@@ -438,7 +438,7 @@ private constructor(
     fun _presencePenalty(): JsonField<Double> = body._presencePenalty()
 
     /**
-     * **o1 models only**
+     * **o1 and o3-mini models only**
      *
      * Constrains effort on reasoning for
      * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
@@ -801,7 +801,7 @@ private constructor(
             Optional.ofNullable(presencePenalty.getNullable("presence_penalty"))
 
         /**
-         * **o1 models only**
+         * **o1 and o3-mini models only**
          *
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
@@ -1087,7 +1087,7 @@ private constructor(
         fun _presencePenalty(): JsonField<Double> = presencePenalty
 
         /**
-         * **o1 models only**
+         * **o1 and o3-mini models only**
          *
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
@@ -2013,18 +2013,29 @@ private constructor(
             }
 
             /**
-             * **o1 models only**
+             * **o1 and o3-mini models only**
              *
              * Constrains effort on reasoning for
              * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
              * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
              * result in faster responses and fewer tokens used on reasoning in a response.
              */
-            fun reasoningEffort(reasoningEffort: ChatCompletionReasoningEffort) =
-                reasoningEffort(JsonField.of(reasoningEffort))
+            fun reasoningEffort(reasoningEffort: ChatCompletionReasoningEffort?) =
+                reasoningEffort(JsonField.ofNullable(reasoningEffort))
 
             /**
-             * **o1 models only**
+             * **o1 and o3-mini models only**
+             *
+             * Constrains effort on reasoning for
+             * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+             * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
+             * result in faster responses and fewer tokens used on reasoning in a response.
+             */
+            fun reasoningEffort(reasoningEffort: Optional<ChatCompletionReasoningEffort>) =
+                reasoningEffort(reasoningEffort.orElse(null))
+
+            /**
+             * **o1 and o3-mini models only**
              *
              * Constrains effort on reasoning for
              * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
@@ -3175,19 +3186,30 @@ private constructor(
         }
 
         /**
-         * **o1 models only**
+         * **o1 and o3-mini models only**
          *
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
          * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
          * faster responses and fewer tokens used on reasoning in a response.
          */
-        fun reasoningEffort(reasoningEffort: ChatCompletionReasoningEffort) = apply {
+        fun reasoningEffort(reasoningEffort: ChatCompletionReasoningEffort?) = apply {
             body.reasoningEffort(reasoningEffort)
         }
 
         /**
-         * **o1 models only**
+         * **o1 and o3-mini models only**
+         *
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
+         * faster responses and fewer tokens used on reasoning in a response.
+         */
+        fun reasoningEffort(reasoningEffort: Optional<ChatCompletionReasoningEffort>) =
+            reasoningEffort(reasoningEffort.orElse(null))
+
+        /**
+         * **o1 and o3-mini models only**
          *
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently

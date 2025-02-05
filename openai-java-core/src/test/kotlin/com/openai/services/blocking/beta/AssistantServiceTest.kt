@@ -40,6 +40,7 @@ class AssistantServiceTest {
                             .build()
                     )
                     .name("name")
+                    .reasoningEffort(BetaAssistantCreateParams.ReasoningEffort.LOW)
                     .responseFormatAuto()
                     .temperature(1.0)
                     .toolResources(
@@ -117,8 +118,9 @@ class AssistantServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model("model")
+                    .model(BetaAssistantUpdateParams.Model.O3_MINI)
                     .name("name")
+                    .reasoningEffort(BetaAssistantUpdateParams.ReasoningEffort.LOW)
                     .responseFormatAuto()
                     .temperature(1.0)
                     .toolResources(

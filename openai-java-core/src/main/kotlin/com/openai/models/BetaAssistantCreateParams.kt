@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -17,6 +18,7 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
@@ -56,6 +58,16 @@ private constructor(
 
     /** The name of the assistant. The maximum length is 256 characters. */
     fun name(): Optional<String> = body.name()
+
+    /**
+     * **o1 and o3-mini models only**
+     *
+     * Constrains effort on reasoning for
+     * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
+     * values are `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
+     * responses and fewer tokens used on reasoning in a response.
+     */
+    fun reasoningEffort(): Optional<ReasoningEffort> = body.reasoningEffort()
 
     /**
      * Specifies the format that the model must output. Compatible with
@@ -135,6 +147,16 @@ private constructor(
 
     /** The name of the assistant. The maximum length is 256 characters. */
     fun _name(): JsonField<String> = body._name()
+
+    /**
+     * **o1 and o3-mini models only**
+     *
+     * Constrains effort on reasoning for
+     * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
+     * values are `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
+     * responses and fewer tokens used on reasoning in a response.
+     */
+    fun _reasoningEffort(): JsonField<ReasoningEffort> = body._reasoningEffort()
 
     /**
      * Specifies the format that the model must output. Compatible with
@@ -217,6 +239,9 @@ private constructor(
         @JsonProperty("name")
         @ExcludeMissing
         private val name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("reasoning_effort")
+        @ExcludeMissing
+        private val reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of(),
         @JsonProperty("response_format")
         @ExcludeMissing
         private val responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of(),
@@ -267,6 +292,17 @@ private constructor(
 
         /** The name of the assistant. The maximum length is 256 characters. */
         fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
+
+        /**
+         * **o1 and o3-mini models only**
+         *
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
+         * faster responses and fewer tokens used on reasoning in a response.
+         */
+        fun reasoningEffort(): Optional<ReasoningEffort> =
+            Optional.ofNullable(reasoningEffort.getNullable("reasoning_effort"))
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -357,6 +393,18 @@ private constructor(
         @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         /**
+         * **o1 and o3-mini models only**
+         *
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
+         * faster responses and fewer tokens used on reasoning in a response.
+         */
+        @JsonProperty("reasoning_effort")
+        @ExcludeMissing
+        fun _reasoningEffort(): JsonField<ReasoningEffort> = reasoningEffort
+
+        /**
          * Specifies the format that the model must output. Compatible with
          * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
          * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
@@ -429,6 +477,7 @@ private constructor(
             instructions()
             metadata().ifPresent { it.validate() }
             name()
+            reasoningEffort()
             responseFormat().ifPresent { it.validate() }
             temperature()
             toolResources().ifPresent { it.validate() }
@@ -452,6 +501,7 @@ private constructor(
             private var instructions: JsonField<String> = JsonMissing.of()
             private var metadata: JsonField<Metadata> = JsonMissing.of()
             private var name: JsonField<String> = JsonMissing.of()
+            private var reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of()
             private var responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of()
             private var temperature: JsonField<Double> = JsonMissing.of()
             private var toolResources: JsonField<ToolResources> = JsonMissing.of()
@@ -466,6 +516,7 @@ private constructor(
                 instructions = betaAssistantCreateBody.instructions
                 metadata = betaAssistantCreateBody.metadata
                 name = betaAssistantCreateBody.name
+                reasoningEffort = betaAssistantCreateBody.reasoningEffort
                 responseFormat = betaAssistantCreateBody.responseFormat
                 temperature = betaAssistantCreateBody.temperature
                 toolResources = betaAssistantCreateBody.toolResources
@@ -569,6 +620,40 @@ private constructor(
 
             /** The name of the assistant. The maximum length is 256 characters. */
             fun name(name: JsonField<String>) = apply { this.name = name }
+
+            /**
+             * **o1 and o3-mini models only**
+             *
+             * Constrains effort on reasoning for
+             * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+             * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
+             * result in faster responses and fewer tokens used on reasoning in a response.
+             */
+            fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
+                reasoningEffort(JsonField.ofNullable(reasoningEffort))
+
+            /**
+             * **o1 and o3-mini models only**
+             *
+             * Constrains effort on reasoning for
+             * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+             * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
+             * result in faster responses and fewer tokens used on reasoning in a response.
+             */
+            fun reasoningEffort(reasoningEffort: Optional<ReasoningEffort>) =
+                reasoningEffort(reasoningEffort.orElse(null))
+
+            /**
+             * **o1 and o3-mini models only**
+             *
+             * Constrains effort on reasoning for
+             * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+             * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
+             * result in faster responses and fewer tokens used on reasoning in a response.
+             */
+            fun reasoningEffort(reasoningEffort: JsonField<ReasoningEffort>) = apply {
+                this.reasoningEffort = reasoningEffort
+            }
 
             /**
              * Specifies the format that the model must output. Compatible with
@@ -906,6 +991,7 @@ private constructor(
                     instructions,
                     metadata,
                     name,
+                    reasoningEffort,
                     responseFormat,
                     temperature,
                     toolResources,
@@ -920,17 +1006,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is BetaAssistantCreateBody && model == other.model && description == other.description && instructions == other.instructions && metadata == other.metadata && name == other.name && responseFormat == other.responseFormat && temperature == other.temperature && toolResources == other.toolResources && tools == other.tools && topP == other.topP && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is BetaAssistantCreateBody && model == other.model && description == other.description && instructions == other.instructions && metadata == other.metadata && name == other.name && reasoningEffort == other.reasoningEffort && responseFormat == other.responseFormat && temperature == other.temperature && toolResources == other.toolResources && tools == other.tools && topP == other.topP && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(model, description, instructions, metadata, name, responseFormat, temperature, toolResources, tools, topP, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(model, description, instructions, metadata, name, reasoningEffort, responseFormat, temperature, toolResources, tools, topP, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "BetaAssistantCreateBody{model=$model, description=$description, instructions=$instructions, metadata=$metadata, name=$name, responseFormat=$responseFormat, temperature=$temperature, toolResources=$toolResources, tools=$tools, topP=$topP, additionalProperties=$additionalProperties}"
+            "BetaAssistantCreateBody{model=$model, description=$description, instructions=$instructions, metadata=$metadata, name=$name, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, temperature=$temperature, toolResources=$toolResources, tools=$tools, topP=$topP, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -1046,6 +1132,41 @@ private constructor(
 
         /** The name of the assistant. The maximum length is 256 characters. */
         fun name(name: JsonField<String>) = apply { body.name(name) }
+
+        /**
+         * **o1 and o3-mini models only**
+         *
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
+         * faster responses and fewer tokens used on reasoning in a response.
+         */
+        fun reasoningEffort(reasoningEffort: ReasoningEffort?) = apply {
+            body.reasoningEffort(reasoningEffort)
+        }
+
+        /**
+         * **o1 and o3-mini models only**
+         *
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
+         * faster responses and fewer tokens used on reasoning in a response.
+         */
+        fun reasoningEffort(reasoningEffort: Optional<ReasoningEffort>) =
+            reasoningEffort(reasoningEffort.orElse(null))
+
+        /**
+         * **o1 and o3-mini models only**
+         *
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
+         * faster responses and fewer tokens used on reasoning in a response.
+         */
+        fun reasoningEffort(reasoningEffort: JsonField<ReasoningEffort>) = apply {
+            body.reasoningEffort(reasoningEffort)
+        }
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -1451,6 +1572,115 @@ private constructor(
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
+    }
+
+    /**
+     * **o1 and o3-mini models only**
+     *
+     * Constrains effort on reasoning for
+     * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
+     * values are `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
+     * responses and fewer tokens used on reasoning in a response.
+     */
+    class ReasoningEffort
+    @JsonCreator
+    private constructor(
+        private val value: JsonField<String>,
+    ) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val LOW = of("low")
+
+            @JvmField val MEDIUM = of("medium")
+
+            @JvmField val HIGH = of("high")
+
+            @JvmStatic fun of(value: String) = ReasoningEffort(JsonField.of(value))
+        }
+
+        /** An enum containing [ReasoningEffort]'s known values. */
+        enum class Known {
+            LOW,
+            MEDIUM,
+            HIGH,
+        }
+
+        /**
+         * An enum containing [ReasoningEffort]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [ReasoningEffort] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            LOW,
+            MEDIUM,
+            HIGH,
+            /**
+             * An enum member indicating that [ReasoningEffort] was instantiated with an unknown
+             * value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                LOW -> Value.LOW
+                MEDIUM -> Value.MEDIUM
+                HIGH -> Value.HIGH
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                LOW -> Known.LOW
+                MEDIUM -> Known.MEDIUM
+                HIGH -> Known.HIGH
+                else -> throw OpenAIInvalidDataException("Unknown ReasoningEffort: $value")
+            }
+
+        fun asString(): String = _value().asStringOrThrow()
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is ReasoningEffort && value == other.value /* spotless:on */
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
     }
 
     /**
