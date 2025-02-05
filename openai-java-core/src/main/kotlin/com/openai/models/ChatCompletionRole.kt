@@ -25,6 +25,8 @@ private constructor(
 
     companion object {
 
+        @JvmField val DEVELOPER = of("developer")
+
         @JvmField val SYSTEM = of("system")
 
         @JvmField val USER = of("user")
@@ -40,6 +42,7 @@ private constructor(
 
     /** An enum containing [ChatCompletionRole]'s known values. */
     enum class Known {
+        DEVELOPER,
         SYSTEM,
         USER,
         ASSISTANT,
@@ -57,6 +60,7 @@ private constructor(
      * - It was constructed with an arbitrary value using the [of] method.
      */
     enum class Value {
+        DEVELOPER,
         SYSTEM,
         USER,
         ASSISTANT,
@@ -78,6 +82,7 @@ private constructor(
      */
     fun value(): Value =
         when (this) {
+            DEVELOPER -> Value.DEVELOPER
             SYSTEM -> Value.SYSTEM
             USER -> Value.USER
             ASSISTANT -> Value.ASSISTANT
@@ -96,6 +101,7 @@ private constructor(
      */
     fun known(): Known =
         when (this) {
+            DEVELOPER -> Known.DEVELOPER
             SYSTEM -> Known.SYSTEM
             USER -> Known.USER
             ASSISTANT -> Known.ASSISTANT
