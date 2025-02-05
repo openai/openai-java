@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class BetaThreadCreateParamsTest {
 
     @Test
-    fun createBetaThreadCreateParams() {
+    fun create() {
         BetaThreadCreateParams.builder()
             .addMessage(
                 BetaThreadCreateParams.Message.builder()

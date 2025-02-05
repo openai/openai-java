@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class BetaAssistantRetrieveParamsTest {
 
     @Test
-    fun createBetaAssistantRetrieveParams() {
+    fun create() {
         BetaAssistantRetrieveParams.builder().assistantId("assistant_id").build()
     }
 

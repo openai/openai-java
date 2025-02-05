@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 class BetaThreadRunCreateParamsTest {
 
     @Test
-    fun createBetaThreadRunCreateParams() {
+    fun create() {
         BetaThreadRunCreateParams.builder()
             .threadId("thread_id")
             .assistantId("assistant_id")

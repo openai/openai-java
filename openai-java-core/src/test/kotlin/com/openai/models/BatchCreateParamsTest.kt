@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class BatchCreateParamsTest {
 
     @Test
-    fun createBatchCreateParams() {
+    fun create() {
         BatchCreateParams.builder()
             .completionWindow(BatchCreateParams.CompletionWindow._24H)
             .endpoint(BatchCreateParams.Endpoint.V1_CHAT_COMPLETIONS)

@@ -4,6 +4,7 @@
 
 package com.openai.services.async
 
+import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponse
 import com.openai.models.FileContentParams
@@ -40,6 +41,7 @@ interface FileServiceAsync {
 
     /** Returns the contents of the specified file. */
     @JvmOverloads
+    @MustBeClosed
     fun content(
         params: FileContentParams,
         requestOptions: RequestOptions = RequestOptions.none()

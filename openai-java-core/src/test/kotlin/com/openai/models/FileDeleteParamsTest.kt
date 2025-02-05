@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class FileDeleteParamsTest {
 
     @Test
-    fun createFileDeleteParams() {
+    fun create() {
         FileDeleteParams.builder().fileId("file_id").build()
     }
 

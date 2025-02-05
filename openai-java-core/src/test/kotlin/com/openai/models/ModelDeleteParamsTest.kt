@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class ModelDeleteParamsTest {
 
     @Test
-    fun createModelDeleteParams() {
+    fun create() {
         ModelDeleteParams.builder().model("ft:gpt-4o-mini:acemeco:suffix:abc123").build()
     }
 

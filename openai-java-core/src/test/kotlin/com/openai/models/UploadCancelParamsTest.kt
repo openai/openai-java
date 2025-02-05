@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class UploadCancelParamsTest {
 
     @Test
-    fun createUploadCancelParams() {
+    fun create() {
         UploadCancelParams.builder().uploadId("upload_abc123").build()
     }
 

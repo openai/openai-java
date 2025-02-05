@@ -55,9 +55,9 @@ internal constructor(
             .thenApply { response ->
                 response
                     .use { createHandler.handle(it) }
-                    .apply {
+                    .also {
                         if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                            validate()
+                            it.validate()
                         }
                     }
             }
@@ -88,9 +88,9 @@ internal constructor(
             .thenApply { response ->
                 response
                     .use { retrieveHandler.handle(it) }
-                    .apply {
+                    .also {
                         if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                            validate()
+                            it.validate()
                         }
                     }
             }
@@ -126,9 +126,9 @@ internal constructor(
             .thenApply { response ->
                 response
                     .use { cancelHandler.handle(it) }
-                    .apply {
+                    .also {
                         if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                            validate()
+                            it.validate()
                         }
                     }
             }
@@ -161,9 +161,9 @@ internal constructor(
             .thenApply { response ->
                 response
                     .use { listFilesHandler.handle(it) }
-                    .apply {
+                    .also {
                         if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                            validate()
+                            it.validate()
                         }
                     }
                     .let { BetaVectorStoreFileBatchListFilesPageAsync.of(this, params, it) }

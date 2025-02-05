@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class BetaThreadDeleteParamsTest {
 
     @Test
-    fun createBetaThreadDeleteParams() {
+    fun create() {
         BetaThreadDeleteParams.builder().threadId("thread_id").build()
     }
 

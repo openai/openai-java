@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class BetaVectorStoreFileBatchCancelParamsTest {
 
     @Test
-    fun createBetaVectorStoreFileBatchCancelParams() {
+    fun create() {
         BetaVectorStoreFileBatchCancelParams.builder()
             .vectorStoreId("vector_store_id")
             .batchId("batch_id")

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class BetaThreadRunRetrieveParamsTest {
 
     @Test
-    fun createBetaThreadRunRetrieveParams() {
+    fun create() {
         BetaThreadRunRetrieveParams.builder().threadId("thread_id").runId("run_id").build()
     }
 

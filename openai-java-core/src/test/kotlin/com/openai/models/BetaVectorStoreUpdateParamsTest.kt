@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class BetaVectorStoreUpdateParamsTest {
 
     @Test
-    fun createBetaVectorStoreUpdateParams() {
+    fun create() {
         BetaVectorStoreUpdateParams.builder()
             .vectorStoreId("vector_store_id")
             .expiresAfter(BetaVectorStoreUpdateParams.ExpiresAfter.builder().days(1L).build())

@@ -4,6 +4,7 @@
 
 package com.openai.services.blocking
 
+import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponse
 import com.openai.models.FileContentParams
@@ -39,6 +40,7 @@ interface FileService {
 
     /** Returns the contents of the specified file. */
     @JvmOverloads
+    @MustBeClosed
     fun content(
         params: FileContentParams,
         requestOptions: RequestOptions = RequestOptions.none()

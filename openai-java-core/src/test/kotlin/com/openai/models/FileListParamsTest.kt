@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class FileListParamsTest {
 
     @Test
-    fun createFileListParams() {
+    fun create() {
         FileListParams.builder()
             .after("after")
             .limit(0L)

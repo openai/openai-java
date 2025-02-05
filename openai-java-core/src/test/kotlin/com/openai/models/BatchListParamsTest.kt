@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class BatchListParamsTest {
 
     @Test
-    fun createBatchListParams() {
+    fun create() {
         BatchListParams.builder().after("after").limit(0L).build()
     }
 

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class FineTuningJobListParamsTest {
 
     @Test
-    fun createFineTuningJobListParams() {
+    fun create() {
         FineTuningJobListParams.builder().after("after").limit(0L).build()
     }
 

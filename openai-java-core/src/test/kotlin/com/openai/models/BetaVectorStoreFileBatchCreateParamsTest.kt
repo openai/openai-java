@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class BetaVectorStoreFileBatchCreateParamsTest {
 
     @Test
-    fun createBetaVectorStoreFileBatchCreateParams() {
+    fun create() {
         BetaVectorStoreFileBatchCreateParams.builder()
             .vectorStoreId("vs_abc123")
             .addFileId("string")

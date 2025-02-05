@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class BetaVectorStoreRetrieveParamsTest {
 
     @Test
-    fun createBetaVectorStoreRetrieveParams() {
+    fun create() {
         BetaVectorStoreRetrieveParams.builder().vectorStoreId("vector_store_id").build()
     }
 

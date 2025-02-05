@@ -106,8 +106,7 @@ private constructor(private val okHttpClient: okhttp3.OkHttpClient, private val 
 
     private fun HttpRequest.toRequest(client: okhttp3.OkHttpClient): Request {
         var body: RequestBody? = body?.toRequestBody()
-        // OkHttpClient always requires a request body for PUT and POST methods.
-        if (body == null && (method == HttpMethod.PUT || method == HttpMethod.POST)) {
+        if (body == null && requiresBody(method)) {
             body = "".toRequestBody()
         }
 
@@ -133,6 +132,15 @@ private constructor(private val okHttpClient: okhttp3.OkHttpClient, private val 
 
         return builder.build()
     }
+
+    /** `OkHttpClient` always requires a request body for some methods. */
+    private fun requiresBody(method: HttpMethod): Boolean =
+        when (method) {
+            HttpMethod.POST,
+            HttpMethod.PUT,
+            HttpMethod.PATCH -> true
+            else -> false
+        }
 
     private fun HttpRequest.toUrl(): String {
         url?.let {

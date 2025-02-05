@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class FineTuningJobListEventsParamsTest {
 
     @Test
-    fun createFineTuningJobListEventsParams() {
+    fun create() {
         FineTuningJobListEventsParams.builder()
             .fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
             .after("after")
