@@ -202,8 +202,12 @@ private constructor(
             val openAIProjectId = System.getenv("OPENAI_PROJECT_ID")
             val azureOpenAIKey = System.getenv("AZURE_OPENAI_KEY")
             val azureEndpoint = System.getenv("AZURE_OPENAI_ENDPOINT")
+            val openAIBaseUrl = System.getenv("OPENAI_BASE_URL")
 
             when {
+                !openAIBaseUrl.isNullOrEmpty() -> {
+                    baseUrl(openAIBaseUrl)
+                }
                 !openAIKey.isNullOrEmpty() && !azureOpenAIKey.isNullOrEmpty() -> {
                     throw IllegalArgumentException(
                         "Both OpenAI and Azure OpenAI API keys, `OPENAI_API_KEY` and `AZURE_OPENAI_KEY`, are set. Please specify only one"
