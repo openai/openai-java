@@ -205,9 +205,6 @@ private constructor(
             val openAIBaseUrl = System.getenv("OPENAI_BASE_URL")
 
             when {
-                !openAIBaseUrl.isNullOrEmpty() -> {
-                    baseUrl(openAIBaseUrl)
-                }
                 !openAIKey.isNullOrEmpty() && !azureOpenAIKey.isNullOrEmpty() -> {
                     throw IllegalArgumentException(
                         "Both OpenAI and Azure OpenAI API keys, `OPENAI_API_KEY` and `AZURE_OPENAI_KEY`, are set. Please specify only one"
@@ -229,6 +226,11 @@ private constructor(
                     // to get the token through the supplier, which requires Azure Entra ID as a
                     // dependency.
                     baseUrl(azureEndpoint)
+                }
+                !openAIBaseUrl.isNullOrEmpty() && azureEndpoint.isNullOrEmpty()-> {
+                    // if 'openAIBaseUrl' is set, its added as the BASE_URL provided 'azureEndpoint' is not set.
+                    // if both 'openAIBaseUrl' and 'azureEndpoint' are set, 'azureEndpoint' takes higher priority.
+                    baseUrl(openAIBaseUrl)
                 }
             }
         }
