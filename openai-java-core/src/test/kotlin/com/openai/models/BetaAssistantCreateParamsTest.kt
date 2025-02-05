@@ -18,6 +18,7 @@ class BetaAssistantCreateParamsTest {
                 Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
             )
             .name("name")
+            .reasoningEffort(BetaAssistantCreateParams.ReasoningEffort.LOW)
             .responseFormatAuto()
             .temperature(1.0)
             .toolResources(
@@ -66,6 +67,7 @@ class BetaAssistantCreateParamsTest {
                         .build()
                 )
                 .name("name")
+                .reasoningEffort(BetaAssistantCreateParams.ReasoningEffort.LOW)
                 .responseFormatAuto()
                 .temperature(1.0)
                 .toolResources(
@@ -112,6 +114,7 @@ class BetaAssistantCreateParamsTest {
                 Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
             )
         assertThat(body.name()).contains("name")
+        assertThat(body.reasoningEffort()).contains(BetaAssistantCreateParams.ReasoningEffort.LOW)
         assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
         assertThat(body.temperature()).contains(1.0)
         assertThat(body.toolResources())

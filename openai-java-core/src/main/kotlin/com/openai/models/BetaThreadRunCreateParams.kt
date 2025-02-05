@@ -119,6 +119,16 @@ private constructor(
     fun parallelToolCalls(): Optional<Boolean> = body.parallelToolCalls()
 
     /**
+     * **o1 and o3-mini models only**
+     *
+     * Constrains effort on reasoning for
+     * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
+     * values are `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
+     * responses and fewer tokens used on reasoning in a response.
+     */
+    fun reasoningEffort(): Optional<ReasoningEffort> = body.reasoningEffort()
+
+    /**
      * Specifies the format that the model must output. Compatible with
      * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
      * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5 Turbo
@@ -240,6 +250,16 @@ private constructor(
     fun _parallelToolCalls(): JsonField<Boolean> = body._parallelToolCalls()
 
     /**
+     * **o1 and o3-mini models only**
+     *
+     * Constrains effort on reasoning for
+     * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
+     * values are `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
+     * responses and fewer tokens used on reasoning in a response.
+     */
+    fun _reasoningEffort(): JsonField<ReasoningEffort> = body._reasoningEffort()
+
+    /**
      * Specifies the format that the model must output. Compatible with
      * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
      * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5 Turbo
@@ -353,6 +373,9 @@ private constructor(
         @JsonProperty("parallel_tool_calls")
         @ExcludeMissing
         private val parallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("reasoning_effort")
+        @ExcludeMissing
+        private val reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of(),
         @JsonProperty("response_format")
         @ExcludeMissing
         private val responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of(),
@@ -443,6 +466,17 @@ private constructor(
          */
         fun parallelToolCalls(): Optional<Boolean> =
             Optional.ofNullable(parallelToolCalls.getNullable("parallel_tool_calls"))
+
+        /**
+         * **o1 and o3-mini models only**
+         *
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
+         * faster responses and fewer tokens used on reasoning in a response.
+         */
+        fun reasoningEffort(): Optional<ReasoningEffort> =
+            Optional.ofNullable(reasoningEffort.getNullable("reasoning_effort"))
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -586,6 +620,18 @@ private constructor(
         fun _parallelToolCalls(): JsonField<Boolean> = parallelToolCalls
 
         /**
+         * **o1 and o3-mini models only**
+         *
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
+         * faster responses and fewer tokens used on reasoning in a response.
+         */
+        @JsonProperty("reasoning_effort")
+        @ExcludeMissing
+        fun _reasoningEffort(): JsonField<ReasoningEffort> = reasoningEffort
+
+        /**
          * Specifies the format that the model must output. Compatible with
          * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
          * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
@@ -673,6 +719,7 @@ private constructor(
             metadata().ifPresent { it.validate() }
             model()
             parallelToolCalls()
+            reasoningEffort()
             responseFormat().ifPresent { it.validate() }
             temperature()
             toolChoice().ifPresent { it.validate() }
@@ -701,6 +748,7 @@ private constructor(
             private var metadata: JsonField<Metadata> = JsonMissing.of()
             private var model: JsonField<ChatModel> = JsonMissing.of()
             private var parallelToolCalls: JsonField<Boolean> = JsonMissing.of()
+            private var reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of()
             private var responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of()
             private var temperature: JsonField<Double> = JsonMissing.of()
             private var toolChoice: JsonField<AssistantToolChoiceOption> = JsonMissing.of()
@@ -721,6 +769,7 @@ private constructor(
                 metadata = betaThreadRunCreateBody.metadata
                 model = betaThreadRunCreateBody.model
                 parallelToolCalls = betaThreadRunCreateBody.parallelToolCalls
+                reasoningEffort = betaThreadRunCreateBody.reasoningEffort
                 responseFormat = betaThreadRunCreateBody.responseFormat
                 temperature = betaThreadRunCreateBody.temperature
                 toolChoice = betaThreadRunCreateBody.toolChoice
@@ -977,6 +1026,40 @@ private constructor(
              */
             fun parallelToolCalls(parallelToolCalls: JsonField<Boolean>) = apply {
                 this.parallelToolCalls = parallelToolCalls
+            }
+
+            /**
+             * **o1 and o3-mini models only**
+             *
+             * Constrains effort on reasoning for
+             * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+             * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
+             * result in faster responses and fewer tokens used on reasoning in a response.
+             */
+            fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
+                reasoningEffort(JsonField.ofNullable(reasoningEffort))
+
+            /**
+             * **o1 and o3-mini models only**
+             *
+             * Constrains effort on reasoning for
+             * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+             * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
+             * result in faster responses and fewer tokens used on reasoning in a response.
+             */
+            fun reasoningEffort(reasoningEffort: Optional<ReasoningEffort>) =
+                reasoningEffort(reasoningEffort.orElse(null))
+
+            /**
+             * **o1 and o3-mini models only**
+             *
+             * Constrains effort on reasoning for
+             * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+             * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
+             * result in faster responses and fewer tokens used on reasoning in a response.
+             */
+            fun reasoningEffort(reasoningEffort: JsonField<ReasoningEffort>) = apply {
+                this.reasoningEffort = reasoningEffort
             }
 
             /**
@@ -1372,6 +1455,7 @@ private constructor(
                     metadata,
                     model,
                     parallelToolCalls,
+                    reasoningEffort,
                     responseFormat,
                     temperature,
                     toolChoice,
@@ -1387,17 +1471,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is BetaThreadRunCreateBody && assistantId == other.assistantId && additionalInstructions == other.additionalInstructions && additionalMessages == other.additionalMessages && instructions == other.instructions && maxCompletionTokens == other.maxCompletionTokens && maxPromptTokens == other.maxPromptTokens && metadata == other.metadata && model == other.model && parallelToolCalls == other.parallelToolCalls && responseFormat == other.responseFormat && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && truncationStrategy == other.truncationStrategy && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is BetaThreadRunCreateBody && assistantId == other.assistantId && additionalInstructions == other.additionalInstructions && additionalMessages == other.additionalMessages && instructions == other.instructions && maxCompletionTokens == other.maxCompletionTokens && maxPromptTokens == other.maxPromptTokens && metadata == other.metadata && model == other.model && parallelToolCalls == other.parallelToolCalls && reasoningEffort == other.reasoningEffort && responseFormat == other.responseFormat && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && truncationStrategy == other.truncationStrategy && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(assistantId, additionalInstructions, additionalMessages, instructions, maxCompletionTokens, maxPromptTokens, metadata, model, parallelToolCalls, responseFormat, temperature, toolChoice, tools, topP, truncationStrategy, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(assistantId, additionalInstructions, additionalMessages, instructions, maxCompletionTokens, maxPromptTokens, metadata, model, parallelToolCalls, reasoningEffort, responseFormat, temperature, toolChoice, tools, topP, truncationStrategy, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "BetaThreadRunCreateBody{assistantId=$assistantId, additionalInstructions=$additionalInstructions, additionalMessages=$additionalMessages, instructions=$instructions, maxCompletionTokens=$maxCompletionTokens, maxPromptTokens=$maxPromptTokens, metadata=$metadata, model=$model, parallelToolCalls=$parallelToolCalls, responseFormat=$responseFormat, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, truncationStrategy=$truncationStrategy, additionalProperties=$additionalProperties}"
+            "BetaThreadRunCreateBody{assistantId=$assistantId, additionalInstructions=$additionalInstructions, additionalMessages=$additionalMessages, instructions=$instructions, maxCompletionTokens=$maxCompletionTokens, maxPromptTokens=$maxPromptTokens, metadata=$metadata, model=$model, parallelToolCalls=$parallelToolCalls, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, truncationStrategy=$truncationStrategy, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -1696,6 +1780,41 @@ private constructor(
          */
         fun parallelToolCalls(parallelToolCalls: JsonField<Boolean>) = apply {
             body.parallelToolCalls(parallelToolCalls)
+        }
+
+        /**
+         * **o1 and o3-mini models only**
+         *
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
+         * faster responses and fewer tokens used on reasoning in a response.
+         */
+        fun reasoningEffort(reasoningEffort: ReasoningEffort?) = apply {
+            body.reasoningEffort(reasoningEffort)
+        }
+
+        /**
+         * **o1 and o3-mini models only**
+         *
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
+         * faster responses and fewer tokens used on reasoning in a response.
+         */
+        fun reasoningEffort(reasoningEffort: Optional<ReasoningEffort>) =
+            reasoningEffort(reasoningEffort.orElse(null))
+
+        /**
+         * **o1 and o3-mini models only**
+         *
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
+         * faster responses and fewer tokens used on reasoning in a response.
+         */
+        fun reasoningEffort(reasoningEffort: JsonField<ReasoningEffort>) = apply {
+            body.reasoningEffort(reasoningEffort)
         }
 
         /**
@@ -2995,6 +3114,115 @@ private constructor(
 
         override fun toString() =
             "AdditionalMessage{content=$content, role=$role, attachments=$attachments, metadata=$metadata, additionalProperties=$additionalProperties}"
+    }
+
+    /**
+     * **o1 and o3-mini models only**
+     *
+     * Constrains effort on reasoning for
+     * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
+     * values are `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
+     * responses and fewer tokens used on reasoning in a response.
+     */
+    class ReasoningEffort
+    @JsonCreator
+    private constructor(
+        private val value: JsonField<String>,
+    ) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val LOW = of("low")
+
+            @JvmField val MEDIUM = of("medium")
+
+            @JvmField val HIGH = of("high")
+
+            @JvmStatic fun of(value: String) = ReasoningEffort(JsonField.of(value))
+        }
+
+        /** An enum containing [ReasoningEffort]'s known values. */
+        enum class Known {
+            LOW,
+            MEDIUM,
+            HIGH,
+        }
+
+        /**
+         * An enum containing [ReasoningEffort]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [ReasoningEffort] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            LOW,
+            MEDIUM,
+            HIGH,
+            /**
+             * An enum member indicating that [ReasoningEffort] was instantiated with an unknown
+             * value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                LOW -> Value.LOW
+                MEDIUM -> Value.MEDIUM
+                HIGH -> Value.HIGH
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                LOW -> Known.LOW
+                MEDIUM -> Known.MEDIUM
+                HIGH -> Known.HIGH
+                else -> throw OpenAIInvalidDataException("Unknown ReasoningEffort: $value")
+            }
+
+        fun asString(): String = _value().asStringOrThrow()
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is ReasoningEffort && value == other.value /* spotless:on */
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
     }
 
     /**
