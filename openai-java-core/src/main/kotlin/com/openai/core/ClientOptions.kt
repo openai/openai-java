@@ -40,8 +40,7 @@ private constructor(
     fun toBuilder() = Builder().from(this)
 
     companion object {
-
-        const val PRODUCTION_URL = "https://api.openai.com/v1"
+        val PRODUCTION_URL: String = System.getenv("OPENAI_BASE_URL") ?: "https://api.openai.com/v1"
 
         @JvmStatic fun builder() = Builder()
 
