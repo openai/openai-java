@@ -24,7 +24,7 @@ class ChatCompletionChunkTest {
                                         .build()
                                 )
                                 .refusal("refusal")
-                                .role(ChatCompletionChunk.Choice.Delta.Role.SYSTEM)
+                                .role(ChatCompletionChunk.Choice.Delta.Role.DEVELOPER)
                                 .addToolCall(
                                     ChatCompletionChunk.Choice.Delta.ToolCall.builder()
                                         .index(0L)
@@ -120,7 +120,7 @@ class ChatCompletionChunkTest {
                                     .build()
                             )
                             .refusal("refusal")
-                            .role(ChatCompletionChunk.Choice.Delta.Role.SYSTEM)
+                            .role(ChatCompletionChunk.Choice.Delta.Role.DEVELOPER)
                             .addToolCall(
                                 ChatCompletionChunk.Choice.Delta.ToolCall.builder()
                                     .index(0L)
