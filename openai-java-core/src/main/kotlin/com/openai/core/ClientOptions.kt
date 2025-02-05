@@ -227,8 +227,8 @@ private constructor(
                     // dependency.
                     baseUrl(azureEndpoint)
                 }
-                !openAIBaseUrl.isNullOrEmpty() && azureEndpoint.isNullOrEmpty()-> {
-                    // if 'openAIBaseUrl' is set, its added as the BASE_URL provided 'azureEndpoint' is not set.
+                !openAIBaseUrl.isNullOrEmpty() && azureEndpoint.isNullOrEmpty() && azureOpenAIKey.isNullOrEmpty() -> {
+                    // if 'openAIBaseUrl' is set, its added as the BASE_URL provided 'azureEndpoint' and 'azureOpenAIKey' are not set.
                     // if both 'openAIBaseUrl' and 'azureEndpoint' are set, 'azureEndpoint' takes higher priority.
                     baseUrl(openAIBaseUrl)
                 }
