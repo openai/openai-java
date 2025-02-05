@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.21.1 (2025-02-05)
+
+Full Changelog: [v0.21.0...v0.21.1](https://github.com/openai/openai-java/compare/v0.21.0...v0.21.1)
+
+### Bug Fixes
+
+* **api/types:** correct audio duration & role types ([#199](https://github.com/openai/openai-java/issues/199)) ([5b57a0d](https://github.com/openai/openai-java/commit/5b57a0df88804deed4486d0271f0e62c1ea8c130))
+
 ## 0.21.0 (2025-02-05)
 
 Full Changelog: [v0.20.0...v0.21.0](https://github.com/openai/openai-java/compare/v0.20.0...v0.21.0)
