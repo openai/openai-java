@@ -17,8 +17,9 @@ class BetaAssistantUpdateParamsTest {
             .metadata(
                 Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
             )
-            .model("model")
+            .model(BetaAssistantUpdateParams.Model.O3_MINI)
             .name("name")
+            .reasoningEffort(BetaAssistantUpdateParams.ReasoningEffort.LOW)
             .responseFormatAuto()
             .temperature(1.0)
             .toolResources(
@@ -52,8 +53,9 @@ class BetaAssistantUpdateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model("model")
+                .model(BetaAssistantUpdateParams.Model.O3_MINI)
                 .name("name")
+                .reasoningEffort(BetaAssistantUpdateParams.ReasoningEffort.LOW)
                 .responseFormatAuto()
                 .temperature(1.0)
                 .toolResources(
@@ -81,8 +83,9 @@ class BetaAssistantUpdateParamsTest {
             .contains(
                 Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
             )
-        assertThat(body.model()).contains("model")
+        assertThat(body.model()).contains(BetaAssistantUpdateParams.Model.O3_MINI)
         assertThat(body.name()).contains("name")
+        assertThat(body.reasoningEffort()).contains(BetaAssistantUpdateParams.ReasoningEffort.LOW)
         assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
         assertThat(body.temperature()).contains(1.0)
         assertThat(body.toolResources())

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -17,6 +18,7 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
@@ -55,10 +57,20 @@ private constructor(
      * your available models, or see our [Model overview](https://platform.openai.com/docs/models)
      * for descriptions of them.
      */
-    fun model(): Optional<String> = body.model()
+    fun model(): Optional<Model> = body.model()
 
     /** The name of the assistant. The maximum length is 256 characters. */
     fun name(): Optional<String> = body.name()
+
+    /**
+     * **o1 and o3-mini models only**
+     *
+     * Constrains effort on reasoning for
+     * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
+     * values are `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
+     * responses and fewer tokens used on reasoning in a response.
+     */
+    fun reasoningEffort(): Optional<ReasoningEffort> = body.reasoningEffort()
 
     /**
      * Specifies the format that the model must output. Compatible with
@@ -134,10 +146,20 @@ private constructor(
      * your available models, or see our [Model overview](https://platform.openai.com/docs/models)
      * for descriptions of them.
      */
-    fun _model(): JsonField<String> = body._model()
+    fun _model(): JsonField<Model> = body._model()
 
     /** The name of the assistant. The maximum length is 256 characters. */
     fun _name(): JsonField<String> = body._name()
+
+    /**
+     * **o1 and o3-mini models only**
+     *
+     * Constrains effort on reasoning for
+     * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
+     * values are `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
+     * responses and fewer tokens used on reasoning in a response.
+     */
+    fun _reasoningEffort(): JsonField<ReasoningEffort> = body._reasoningEffort()
 
     /**
      * Specifies the format that the model must output. Compatible with
@@ -223,10 +245,13 @@ private constructor(
         private val metadata: JsonField<Metadata> = JsonMissing.of(),
         @JsonProperty("model")
         @ExcludeMissing
-        private val model: JsonField<String> = JsonMissing.of(),
+        private val model: JsonField<Model> = JsonMissing.of(),
         @JsonProperty("name")
         @ExcludeMissing
         private val name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("reasoning_effort")
+        @ExcludeMissing
+        private val reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of(),
         @JsonProperty("response_format")
         @ExcludeMissing
         private val responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of(),
@@ -273,10 +298,21 @@ private constructor(
          * of your available models, or see our
          * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
          */
-        fun model(): Optional<String> = Optional.ofNullable(model.getNullable("model"))
+        fun model(): Optional<Model> = Optional.ofNullable(model.getNullable("model"))
 
         /** The name of the assistant. The maximum length is 256 characters. */
         fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
+
+        /**
+         * **o1 and o3-mini models only**
+         *
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
+         * faster responses and fewer tokens used on reasoning in a response.
+         */
+        fun reasoningEffort(): Optional<ReasoningEffort> =
+            Optional.ofNullable(reasoningEffort.getNullable("reasoning_effort"))
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -361,10 +397,22 @@ private constructor(
          * of your available models, or see our
          * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
          */
-        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
+        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<Model> = model
 
         /** The name of the assistant. The maximum length is 256 characters. */
         @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+        /**
+         * **o1 and o3-mini models only**
+         *
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
+         * faster responses and fewer tokens used on reasoning in a response.
+         */
+        @JsonProperty("reasoning_effort")
+        @ExcludeMissing
+        fun _reasoningEffort(): JsonField<ReasoningEffort> = reasoningEffort
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -439,6 +487,7 @@ private constructor(
             metadata().ifPresent { it.validate() }
             model()
             name()
+            reasoningEffort()
             responseFormat().ifPresent { it.validate() }
             temperature()
             toolResources().ifPresent { it.validate() }
@@ -460,8 +509,9 @@ private constructor(
             private var description: JsonField<String> = JsonMissing.of()
             private var instructions: JsonField<String> = JsonMissing.of()
             private var metadata: JsonField<Metadata> = JsonMissing.of()
-            private var model: JsonField<String> = JsonMissing.of()
+            private var model: JsonField<Model> = JsonMissing.of()
             private var name: JsonField<String> = JsonMissing.of()
+            private var reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of()
             private var responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of()
             private var temperature: JsonField<Double> = JsonMissing.of()
             private var toolResources: JsonField<ToolResources> = JsonMissing.of()
@@ -476,6 +526,7 @@ private constructor(
                 metadata = betaAssistantUpdateBody.metadata
                 model = betaAssistantUpdateBody.model
                 name = betaAssistantUpdateBody.name
+                reasoningEffort = betaAssistantUpdateBody.reasoningEffort
                 responseFormat = betaAssistantUpdateBody.responseFormat
                 temperature = betaAssistantUpdateBody.temperature
                 toolResources = betaAssistantUpdateBody.toolResources
@@ -553,7 +604,7 @@ private constructor(
              * all of your available models, or see our
              * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
              */
-            fun model(model: String) = model(JsonField.of(model))
+            fun model(model: Model) = model(JsonField.of(model))
 
             /**
              * ID of the model to use. You can use the
@@ -561,7 +612,15 @@ private constructor(
              * all of your available models, or see our
              * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
              */
-            fun model(model: JsonField<String>) = apply { this.model = model }
+            fun model(model: JsonField<Model>) = apply { this.model = model }
+
+            /**
+             * ID of the model to use. You can use the
+             * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see
+             * all of your available models, or see our
+             * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+             */
+            fun model(value: String) = model(Model.of(value))
 
             /** The name of the assistant. The maximum length is 256 characters. */
             fun name(name: String?) = name(JsonField.ofNullable(name))
@@ -571,6 +630,40 @@ private constructor(
 
             /** The name of the assistant. The maximum length is 256 characters. */
             fun name(name: JsonField<String>) = apply { this.name = name }
+
+            /**
+             * **o1 and o3-mini models only**
+             *
+             * Constrains effort on reasoning for
+             * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+             * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
+             * result in faster responses and fewer tokens used on reasoning in a response.
+             */
+            fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
+                reasoningEffort(JsonField.ofNullable(reasoningEffort))
+
+            /**
+             * **o1 and o3-mini models only**
+             *
+             * Constrains effort on reasoning for
+             * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+             * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
+             * result in faster responses and fewer tokens used on reasoning in a response.
+             */
+            fun reasoningEffort(reasoningEffort: Optional<ReasoningEffort>) =
+                reasoningEffort(reasoningEffort.orElse(null))
+
+            /**
+             * **o1 and o3-mini models only**
+             *
+             * Constrains effort on reasoning for
+             * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+             * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
+             * result in faster responses and fewer tokens used on reasoning in a response.
+             */
+            fun reasoningEffort(reasoningEffort: JsonField<ReasoningEffort>) = apply {
+                this.reasoningEffort = reasoningEffort
+            }
 
             /**
              * Specifies the format that the model must output. Compatible with
@@ -908,6 +1001,7 @@ private constructor(
                     metadata,
                     model,
                     name,
+                    reasoningEffort,
                     responseFormat,
                     temperature,
                     toolResources,
@@ -922,17 +1016,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is BetaAssistantUpdateBody && description == other.description && instructions == other.instructions && metadata == other.metadata && model == other.model && name == other.name && responseFormat == other.responseFormat && temperature == other.temperature && toolResources == other.toolResources && tools == other.tools && topP == other.topP && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is BetaAssistantUpdateBody && description == other.description && instructions == other.instructions && metadata == other.metadata && model == other.model && name == other.name && reasoningEffort == other.reasoningEffort && responseFormat == other.responseFormat && temperature == other.temperature && toolResources == other.toolResources && tools == other.tools && topP == other.topP && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(description, instructions, metadata, model, name, responseFormat, temperature, toolResources, tools, topP, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(description, instructions, metadata, model, name, reasoningEffort, responseFormat, temperature, toolResources, tools, topP, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "BetaAssistantUpdateBody{description=$description, instructions=$instructions, metadata=$metadata, model=$model, name=$name, responseFormat=$responseFormat, temperature=$temperature, toolResources=$toolResources, tools=$tools, topP=$topP, additionalProperties=$additionalProperties}"
+            "BetaAssistantUpdateBody{description=$description, instructions=$instructions, metadata=$metadata, model=$model, name=$name, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, temperature=$temperature, toolResources=$toolResources, tools=$tools, topP=$topP, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -1026,7 +1120,7 @@ private constructor(
          * of your available models, or see our
          * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
          */
-        fun model(model: String) = apply { body.model(model) }
+        fun model(model: Model) = apply { body.model(model) }
 
         /**
          * ID of the model to use. You can use the
@@ -1034,7 +1128,15 @@ private constructor(
          * of your available models, or see our
          * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
          */
-        fun model(model: JsonField<String>) = apply { body.model(model) }
+        fun model(model: JsonField<Model>) = apply { body.model(model) }
+
+        /**
+         * ID of the model to use. You can use the
+         * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all
+         * of your available models, or see our
+         * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+         */
+        fun model(value: String) = apply { body.model(value) }
 
         /** The name of the assistant. The maximum length is 256 characters. */
         fun name(name: String?) = apply { body.name(name) }
@@ -1044,6 +1146,41 @@ private constructor(
 
         /** The name of the assistant. The maximum length is 256 characters. */
         fun name(name: JsonField<String>) = apply { body.name(name) }
+
+        /**
+         * **o1 and o3-mini models only**
+         *
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
+         * faster responses and fewer tokens used on reasoning in a response.
+         */
+        fun reasoningEffort(reasoningEffort: ReasoningEffort?) = apply {
+            body.reasoningEffort(reasoningEffort)
+        }
+
+        /**
+         * **o1 and o3-mini models only**
+         *
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
+         * faster responses and fewer tokens used on reasoning in a response.
+         */
+        fun reasoningEffort(reasoningEffort: Optional<ReasoningEffort>) =
+            reasoningEffort(reasoningEffort.orElse(null))
+
+        /**
+         * **o1 and o3-mini models only**
+         *
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
+         * faster responses and fewer tokens used on reasoning in a response.
+         */
+        fun reasoningEffort(reasoningEffort: JsonField<ReasoningEffort>) = apply {
+            body.reasoningEffort(reasoningEffort)
+        }
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -1450,6 +1587,369 @@ private constructor(
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
+    }
+
+    /**
+     * ID of the model to use. You can use the
+     * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all of
+     * your available models, or see our [Model overview](https://platform.openai.com/docs/models)
+     * for descriptions of them.
+     */
+    class Model
+    @JsonCreator
+    private constructor(
+        private val value: JsonField<String>,
+    ) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val O3_MINI = of("o3-mini")
+
+            @JvmField val O3_MINI_2025_01_31 = of("o3-mini-2025-01-31")
+
+            @JvmField val O1 = of("o1")
+
+            @JvmField val O1_2024_12_17 = of("o1-2024-12-17")
+
+            @JvmField val GPT_4O = of("gpt-4o")
+
+            @JvmField val GPT_4O_2024_11_20 = of("gpt-4o-2024-11-20")
+
+            @JvmField val GPT_4O_2024_08_06 = of("gpt-4o-2024-08-06")
+
+            @JvmField val GPT_4O_2024_05_13 = of("gpt-4o-2024-05-13")
+
+            @JvmField val GPT_4O_MINI = of("gpt-4o-mini")
+
+            @JvmField val GPT_4O_MINI_2024_07_18 = of("gpt-4o-mini-2024-07-18")
+
+            @JvmField val GPT_4_TURBO = of("gpt-4-turbo")
+
+            @JvmField val GPT_4_TURBO_2024_04_09 = of("gpt-4-turbo-2024-04-09")
+
+            @JvmField val GPT_4_0125_PREVIEW = of("gpt-4-0125-preview")
+
+            @JvmField val GPT_4_TURBO_PREVIEW = of("gpt-4-turbo-preview")
+
+            @JvmField val GPT_4_1106_PREVIEW = of("gpt-4-1106-preview")
+
+            @JvmField val GPT_4_VISION_PREVIEW = of("gpt-4-vision-preview")
+
+            @JvmField val GPT_4 = of("gpt-4")
+
+            @JvmField val GPT_4_0314 = of("gpt-4-0314")
+
+            @JvmField val GPT_4_0613 = of("gpt-4-0613")
+
+            @JvmField val GPT_4_32K = of("gpt-4-32k")
+
+            @JvmField val GPT_4_32K_0314 = of("gpt-4-32k-0314")
+
+            @JvmField val GPT_4_32K_0613 = of("gpt-4-32k-0613")
+
+            @JvmField val GPT_3_5_TURBO = of("gpt-3.5-turbo")
+
+            @JvmField val GPT_3_5_TURBO_16K = of("gpt-3.5-turbo-16k")
+
+            @JvmField val GPT_3_5_TURBO_0613 = of("gpt-3.5-turbo-0613")
+
+            @JvmField val GPT_3_5_TURBO_1106 = of("gpt-3.5-turbo-1106")
+
+            @JvmField val GPT_3_5_TURBO_0125 = of("gpt-3.5-turbo-0125")
+
+            @JvmField val GPT_3_5_TURBO_16K_0613 = of("gpt-3.5-turbo-16k-0613")
+
+            @JvmStatic fun of(value: String) = Model(JsonField.of(value))
+        }
+
+        /** An enum containing [Model]'s known values. */
+        enum class Known {
+            O3_MINI,
+            O3_MINI_2025_01_31,
+            O1,
+            O1_2024_12_17,
+            GPT_4O,
+            GPT_4O_2024_11_20,
+            GPT_4O_2024_08_06,
+            GPT_4O_2024_05_13,
+            GPT_4O_MINI,
+            GPT_4O_MINI_2024_07_18,
+            GPT_4_TURBO,
+            GPT_4_TURBO_2024_04_09,
+            GPT_4_0125_PREVIEW,
+            GPT_4_TURBO_PREVIEW,
+            GPT_4_1106_PREVIEW,
+            GPT_4_VISION_PREVIEW,
+            GPT_4,
+            GPT_4_0314,
+            GPT_4_0613,
+            GPT_4_32K,
+            GPT_4_32K_0314,
+            GPT_4_32K_0613,
+            GPT_3_5_TURBO,
+            GPT_3_5_TURBO_16K,
+            GPT_3_5_TURBO_0613,
+            GPT_3_5_TURBO_1106,
+            GPT_3_5_TURBO_0125,
+            GPT_3_5_TURBO_16K_0613,
+        }
+
+        /**
+         * An enum containing [Model]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Model] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            O3_MINI,
+            O3_MINI_2025_01_31,
+            O1,
+            O1_2024_12_17,
+            GPT_4O,
+            GPT_4O_2024_11_20,
+            GPT_4O_2024_08_06,
+            GPT_4O_2024_05_13,
+            GPT_4O_MINI,
+            GPT_4O_MINI_2024_07_18,
+            GPT_4_TURBO,
+            GPT_4_TURBO_2024_04_09,
+            GPT_4_0125_PREVIEW,
+            GPT_4_TURBO_PREVIEW,
+            GPT_4_1106_PREVIEW,
+            GPT_4_VISION_PREVIEW,
+            GPT_4,
+            GPT_4_0314,
+            GPT_4_0613,
+            GPT_4_32K,
+            GPT_4_32K_0314,
+            GPT_4_32K_0613,
+            GPT_3_5_TURBO,
+            GPT_3_5_TURBO_16K,
+            GPT_3_5_TURBO_0613,
+            GPT_3_5_TURBO_1106,
+            GPT_3_5_TURBO_0125,
+            GPT_3_5_TURBO_16K_0613,
+            /** An enum member indicating that [Model] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                O3_MINI -> Value.O3_MINI
+                O3_MINI_2025_01_31 -> Value.O3_MINI_2025_01_31
+                O1 -> Value.O1
+                O1_2024_12_17 -> Value.O1_2024_12_17
+                GPT_4O -> Value.GPT_4O
+                GPT_4O_2024_11_20 -> Value.GPT_4O_2024_11_20
+                GPT_4O_2024_08_06 -> Value.GPT_4O_2024_08_06
+                GPT_4O_2024_05_13 -> Value.GPT_4O_2024_05_13
+                GPT_4O_MINI -> Value.GPT_4O_MINI
+                GPT_4O_MINI_2024_07_18 -> Value.GPT_4O_MINI_2024_07_18
+                GPT_4_TURBO -> Value.GPT_4_TURBO
+                GPT_4_TURBO_2024_04_09 -> Value.GPT_4_TURBO_2024_04_09
+                GPT_4_0125_PREVIEW -> Value.GPT_4_0125_PREVIEW
+                GPT_4_TURBO_PREVIEW -> Value.GPT_4_TURBO_PREVIEW
+                GPT_4_1106_PREVIEW -> Value.GPT_4_1106_PREVIEW
+                GPT_4_VISION_PREVIEW -> Value.GPT_4_VISION_PREVIEW
+                GPT_4 -> Value.GPT_4
+                GPT_4_0314 -> Value.GPT_4_0314
+                GPT_4_0613 -> Value.GPT_4_0613
+                GPT_4_32K -> Value.GPT_4_32K
+                GPT_4_32K_0314 -> Value.GPT_4_32K_0314
+                GPT_4_32K_0613 -> Value.GPT_4_32K_0613
+                GPT_3_5_TURBO -> Value.GPT_3_5_TURBO
+                GPT_3_5_TURBO_16K -> Value.GPT_3_5_TURBO_16K
+                GPT_3_5_TURBO_0613 -> Value.GPT_3_5_TURBO_0613
+                GPT_3_5_TURBO_1106 -> Value.GPT_3_5_TURBO_1106
+                GPT_3_5_TURBO_0125 -> Value.GPT_3_5_TURBO_0125
+                GPT_3_5_TURBO_16K_0613 -> Value.GPT_3_5_TURBO_16K_0613
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                O3_MINI -> Known.O3_MINI
+                O3_MINI_2025_01_31 -> Known.O3_MINI_2025_01_31
+                O1 -> Known.O1
+                O1_2024_12_17 -> Known.O1_2024_12_17
+                GPT_4O -> Known.GPT_4O
+                GPT_4O_2024_11_20 -> Known.GPT_4O_2024_11_20
+                GPT_4O_2024_08_06 -> Known.GPT_4O_2024_08_06
+                GPT_4O_2024_05_13 -> Known.GPT_4O_2024_05_13
+                GPT_4O_MINI -> Known.GPT_4O_MINI
+                GPT_4O_MINI_2024_07_18 -> Known.GPT_4O_MINI_2024_07_18
+                GPT_4_TURBO -> Known.GPT_4_TURBO
+                GPT_4_TURBO_2024_04_09 -> Known.GPT_4_TURBO_2024_04_09
+                GPT_4_0125_PREVIEW -> Known.GPT_4_0125_PREVIEW
+                GPT_4_TURBO_PREVIEW -> Known.GPT_4_TURBO_PREVIEW
+                GPT_4_1106_PREVIEW -> Known.GPT_4_1106_PREVIEW
+                GPT_4_VISION_PREVIEW -> Known.GPT_4_VISION_PREVIEW
+                GPT_4 -> Known.GPT_4
+                GPT_4_0314 -> Known.GPT_4_0314
+                GPT_4_0613 -> Known.GPT_4_0613
+                GPT_4_32K -> Known.GPT_4_32K
+                GPT_4_32K_0314 -> Known.GPT_4_32K_0314
+                GPT_4_32K_0613 -> Known.GPT_4_32K_0613
+                GPT_3_5_TURBO -> Known.GPT_3_5_TURBO
+                GPT_3_5_TURBO_16K -> Known.GPT_3_5_TURBO_16K
+                GPT_3_5_TURBO_0613 -> Known.GPT_3_5_TURBO_0613
+                GPT_3_5_TURBO_1106 -> Known.GPT_3_5_TURBO_1106
+                GPT_3_5_TURBO_0125 -> Known.GPT_3_5_TURBO_0125
+                GPT_3_5_TURBO_16K_0613 -> Known.GPT_3_5_TURBO_16K_0613
+                else -> throw OpenAIInvalidDataException("Unknown Model: $value")
+            }
+
+        fun asString(): String = _value().asStringOrThrow()
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Model && value == other.value /* spotless:on */
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
+    /**
+     * **o1 and o3-mini models only**
+     *
+     * Constrains effort on reasoning for
+     * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
+     * values are `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
+     * responses and fewer tokens used on reasoning in a response.
+     */
+    class ReasoningEffort
+    @JsonCreator
+    private constructor(
+        private val value: JsonField<String>,
+    ) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val LOW = of("low")
+
+            @JvmField val MEDIUM = of("medium")
+
+            @JvmField val HIGH = of("high")
+
+            @JvmStatic fun of(value: String) = ReasoningEffort(JsonField.of(value))
+        }
+
+        /** An enum containing [ReasoningEffort]'s known values. */
+        enum class Known {
+            LOW,
+            MEDIUM,
+            HIGH,
+        }
+
+        /**
+         * An enum containing [ReasoningEffort]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [ReasoningEffort] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            LOW,
+            MEDIUM,
+            HIGH,
+            /**
+             * An enum member indicating that [ReasoningEffort] was instantiated with an unknown
+             * value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                LOW -> Value.LOW
+                MEDIUM -> Value.MEDIUM
+                HIGH -> Value.HIGH
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                LOW -> Known.LOW
+                MEDIUM -> Known.MEDIUM
+                HIGH -> Known.HIGH
+                else -> throw OpenAIInvalidDataException("Unknown ReasoningEffort: $value")
+            }
+
+        fun asString(): String = _value().asStringOrThrow()
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is ReasoningEffort && value == other.value /* spotless:on */
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
     }
 
     /**

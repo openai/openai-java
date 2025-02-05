@@ -8,7 +8,7 @@ import com.openai.core.JsonField
 import com.openai.errors.OpenAIInvalidDataException
 
 /**
- * **o1 models only**
+ * **o1 and o3-mini models only**
  *
  * Constrains effort on reasoning for
  * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported values
