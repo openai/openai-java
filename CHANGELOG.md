@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.21.0 (2025-02-05)
+
+Full Changelog: [v0.20.0...v0.21.0](https://github.com/openai/openai-java/compare/v0.20.0...v0.21.0)
+
+### Features
+
+* **api:** add file content endpoint ([#198](https://github.com/openai/openai-java/issues/198)) ([3dd469f](https://github.com/openai/openai-java/commit/3dd469f393b1c33348e6e709687d328154d0aa84))
+* **client:** send client-side timeout headers ([#196](https://github.com/openai/openai-java/issues/196)) ([03706d4](https://github.com/openai/openai-java/commit/03706d4a1f37936e83cb97dd53d815ce12933061))
+
+
+### Bug Fixes
+
+* add deploymentModel ([38e173d](https://github.com/openai/openai-java/commit/38e173d262dae86658355c69052a135398192d80))
+
 ## 0.20.0 (2025-01-31)
 
 Full Changelog: [v0.19.0...v0.20.0](https://github.com/openai/openai-java/compare/v0.19.0...v0.20.0)
