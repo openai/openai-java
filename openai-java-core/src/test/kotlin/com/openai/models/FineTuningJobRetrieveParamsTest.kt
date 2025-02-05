@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class FineTuningJobRetrieveParamsTest {
 
     @Test
-    fun createFineTuningJobRetrieveParams() {
+    fun create() {
         FineTuningJobRetrieveParams.builder().fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F").build()
     }
 

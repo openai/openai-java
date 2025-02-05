@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class CompletionCreateParamsTest {
 
     @Test
-    fun createCompletionCreateParams() {
+    fun create() {
         CompletionCreateParams.builder()
             .model(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
             .prompt("This is a test.")

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class FileRetrieveParamsTest {
 
     @Test
-    fun createFileRetrieveParams() {
+    fun create() {
         FileRetrieveParams.builder().fileId("file_id").build()
     }
 

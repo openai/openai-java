@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class FileContentParamsTest {
 
     @Test
-    fun createFileContentParams() {
+    fun create() {
         FileContentParams.builder().fileId("file_id").build()
     }
 

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class BetaThreadMessageRetrieveParamsTest {
 
     @Test
-    fun createBetaThreadMessageRetrieveParams() {
+    fun create() {
         BetaThreadMessageRetrieveParams.builder()
             .threadId("thread_id")
             .messageId("message_id")

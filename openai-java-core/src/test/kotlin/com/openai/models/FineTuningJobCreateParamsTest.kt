@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class FineTuningJobCreateParamsTest {
 
     @Test
-    fun createFineTuningJobCreateParams() {
+    fun create() {
         FineTuningJobCreateParams.builder()
             .model(FineTuningJobCreateParams.Model.BABBAGE_002)
             .trainingFile("file-abc123")

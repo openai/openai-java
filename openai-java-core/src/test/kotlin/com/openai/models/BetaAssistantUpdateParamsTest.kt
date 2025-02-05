@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class BetaAssistantUpdateParamsTest {
 
     @Test
-    fun createBetaAssistantUpdateParams() {
+    fun create() {
         BetaAssistantUpdateParams.builder()
             .assistantId("assistant_id")
             .description("description")

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class BetaAssistantCreateParamsTest {
 
     @Test
-    fun createBetaAssistantCreateParams() {
+    fun create() {
         BetaAssistantCreateParams.builder()
             .model(ChatModel.O3_MINI)
             .description("description")

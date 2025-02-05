@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class EmbeddingCreateParamsTest {
 
     @Test
-    fun createEmbeddingCreateParams() {
+    fun create() {
         EmbeddingCreateParams.builder()
             .input("The quick brown fox jumped over the lazy dog")
             .model(EmbeddingModel.TEXT_EMBEDDING_ADA_002)

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 class ModelListParamsTest {
 
     @Test
-    fun createModelListParams() {
+    fun create() {
         ModelListParams.builder().build()
     }
 }

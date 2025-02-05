@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class BetaThreadRunStepListParamsTest {
 
     @Test
-    fun createBetaThreadRunStepListParams() {
+    fun create() {
         BetaThreadRunStepListParams.builder()
             .threadId("thread_id")
             .runId("run_id")

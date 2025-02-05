@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class BetaVectorStoreFileCreateParamsTest {
 
     @Test
-    fun createBetaVectorStoreFileCreateParams() {
+    fun create() {
         BetaVectorStoreFileCreateParams.builder()
             .vectorStoreId("vs_abc123")
             .fileId("file_id")

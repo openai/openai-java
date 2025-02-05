@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class FineTuningJobCheckpointListParamsTest {
 
     @Test
-    fun createFineTuningJobCheckpointListParams() {
+    fun create() {
         FineTuningJobCheckpointListParams.builder()
             .fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
             .after("after")

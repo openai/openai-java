@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class BetaVectorStoreFileDeleteParamsTest {
 
     @Test
-    fun createBetaVectorStoreFileDeleteParams() {
+    fun create() {
         BetaVectorStoreFileDeleteParams.builder()
             .vectorStoreId("vector_store_id")
             .fileId("file_id")

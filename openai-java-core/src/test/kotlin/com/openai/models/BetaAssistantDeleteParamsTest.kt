@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class BetaAssistantDeleteParamsTest {
 
     @Test
-    fun createBetaAssistantDeleteParams() {
+    fun create() {
         BetaAssistantDeleteParams.builder().assistantId("assistant_id").build()
     }
 

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class BetaVectorStoreFileBatchListFilesParamsTest {
 
     @Test
-    fun createBetaVectorStoreFileBatchListFilesParams() {
+    fun create() {
         BetaVectorStoreFileBatchListFilesParams.builder()
             .vectorStoreId("vector_store_id")
             .batchId("batch_id")

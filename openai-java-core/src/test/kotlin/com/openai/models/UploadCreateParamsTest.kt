@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class UploadCreateParamsTest {
 
     @Test
-    fun createUploadCreateParams() {
+    fun create() {
         UploadCreateParams.builder()
             .bytes(0L)
             .filename("filename")
