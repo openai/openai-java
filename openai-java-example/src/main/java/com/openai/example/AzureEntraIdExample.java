@@ -12,22 +12,16 @@ public final class AzureEntraIdExample {
     private AzureEntraIdExample() {}
 
     public static void main(String[] args) {
-        OpenAIOkHttpClient.Builder clientBuilder = OpenAIOkHttpClient.builder();
-
-        /* Azure-specific code starts here */
-        // You can either set 'endpoint' directly in the builder.
-        // or set the env var "AZURE_OPENAI_ENDPOINT" and use fromEnv() method instead
-        clientBuilder
-                .baseUrl(System.getenv("AZURE_OPENAI_ENDPOINT"))
+        OpenAIClient client = OpenAIOkHttpClient.builder()
+                // Gets the API key from the `AZURE_OPENAI_KEY` environment variable
+                .fromEnv()
                 // Set the Azure Entra ID
                 .credential(BearerTokenCredential.create(AuthenticationUtil.getBearerTokenSupplier(
-                        new DefaultAzureCredentialBuilder().build(), "https://cognitiveservices.azure.com/.default")));
-        /* Azure-specific code ends here */
-
-        OpenAIClient client = clientBuilder.build();
+                        new DefaultAzureCredentialBuilder().build(), "https://cognitiveservices.azure.com/.default")))
+                .build();
 
         ChatCompletionCreateParams createParams = ChatCompletionCreateParams.builder()
-                .model(ChatModel.GPT_4O)
+                .model(ChatModel.GPT_3_5_TURBO)
                 .maxCompletionTokens(2048)
                 .addDeveloperMessage("Make sure you mention Stainless!")
                 .addUserMessage("Tell me a story about building the best SDK!")
