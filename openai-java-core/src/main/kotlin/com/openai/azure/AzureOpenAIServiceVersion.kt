@@ -16,6 +16,7 @@ class AzureOpenAIServiceVersion private constructor(@get:JvmName("value") val va
         @JvmStatic val V2023_05_15 = fromString("2023-05-15")
         @JvmStatic val V2024_02_01 = fromString("2024-02-01")
         @JvmStatic val V2024_06_01 = fromString("2024-06-01")
+        @JvmStatic val V2024_10_21 = fromString("2024-10-21")
         @JvmStatic val V2023_06_01_PREVIEW = fromString("2023-06-01-preview")
         @JvmStatic val V2023_07_01_PREVIEW = fromString("2023-07-01-preview")
         @JvmStatic val V2024_02_15_PREVIEW = fromString("2024-02-15-preview")
@@ -25,6 +26,9 @@ class AzureOpenAIServiceVersion private constructor(@get:JvmName("value") val va
         @JvmStatic val V2024_07_01_PREVIEW = fromString("2024-07-01-preview")
         @JvmStatic val V2024_08_01_PREVIEW = fromString("2024-08-01-preview")
         @JvmStatic val V2024_09_01_PREVIEW = fromString("2024-09-01-preview")
+        @JvmStatic val V2024_10_01_PREVIEW = fromString("2024-10-01-preview")
+        @JvmStatic val V2024_12_01_PREVIEW = fromString("2024-12-01-preview")
+        @JvmStatic val V2025_01_01_PREVIEW = fromString("2025-01-01-preview")
     }
 
     override fun equals(other: Any?): Boolean =
