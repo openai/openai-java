@@ -31,6 +31,8 @@ private constructor(
 
     fun data(): List<RunStep> = response().data()
 
+    fun hasMore(): Optional<Boolean> = response().hasMore()
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -80,14 +82,20 @@ private constructor(
     @JsonCreator
     constructor(
         @JsonProperty("data") private val data: JsonField<List<RunStep>> = JsonMissing.of(),
+        @JsonProperty("has_more") private val hasMore: JsonField<Boolean> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
         fun data(): List<RunStep> = data.getNullable("data") ?: listOf()
 
+        fun hasMore(): Optional<Boolean> = Optional.ofNullable(hasMore.getNullable("has_more"))
+
         @JsonProperty("data")
         fun _data(): Optional<JsonField<List<RunStep>>> = Optional.ofNullable(data)
+
+        @JsonProperty("has_more")
+        fun _hasMore(): Optional<JsonField<Boolean>> = Optional.ofNullable(hasMore)
 
         @JsonAnyGetter
         @ExcludeMissing
@@ -101,6 +109,7 @@ private constructor(
             }
 
             data().map { it.validate() }
+            hasMore()
             validated = true
         }
 
@@ -111,12 +120,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Response && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Response && data == other.data && hasMore == other.hasMore && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(data, additionalProperties) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(data, hasMore, additionalProperties) /* spotless:on */
 
-        override fun toString() = "Response{data=$data, additionalProperties=$additionalProperties}"
+        override fun toString() =
+            "Response{data=$data, hasMore=$hasMore, additionalProperties=$additionalProperties}"
 
         companion object {
 
@@ -126,11 +136,13 @@ private constructor(
         class Builder {
 
             private var data: JsonField<List<RunStep>> = JsonMissing.of()
+            private var hasMore: JsonField<Boolean> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(page: Response) = apply {
                 this.data = page.data
+                this.hasMore = page.hasMore
                 this.additionalProperties.putAll(page.additionalProperties)
             }
 
@@ -138,11 +150,20 @@ private constructor(
 
             fun data(data: JsonField<List<RunStep>>) = apply { this.data = data }
 
+            fun hasMore(hasMore: Boolean) = hasMore(JsonField.of(hasMore))
+
+            fun hasMore(hasMore: JsonField<Boolean>) = apply { this.hasMore = hasMore }
+
             fun putAdditionalProperty(key: String, value: JsonValue) = apply {
                 this.additionalProperties.put(key, value)
             }
 
-            fun build() = Response(data, additionalProperties.toImmutable())
+            fun build() =
+                Response(
+                    data,
+                    hasMore,
+                    additionalProperties.toImmutable(),
+                )
         }
     }
 
