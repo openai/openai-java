@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class BetaThreadRunSubmitToolOutputsParamsTest {
 
     @Test
-    fun createBetaThreadRunSubmitToolOutputsParams() {
+    fun create() {
         BetaThreadRunSubmitToolOutputsParams.builder()
             .threadId("thread_id")
             .runId("run_id")

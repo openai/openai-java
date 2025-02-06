@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class BetaAssistantListParamsTest {
 
     @Test
-    fun createBetaAssistantListParams() {
+    fun create() {
         BetaAssistantListParams.builder()
             .after("after")
             .before("before")

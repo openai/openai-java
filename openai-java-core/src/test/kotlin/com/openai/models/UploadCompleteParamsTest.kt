@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class UploadCompleteParamsTest {
 
     @Test
-    fun createUploadCompleteParams() {
+    fun create() {
         UploadCompleteParams.builder()
             .uploadId("upload_abc123")
             .addPartId("string")

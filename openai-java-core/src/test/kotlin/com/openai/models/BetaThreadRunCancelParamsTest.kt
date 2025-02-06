@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class BetaThreadRunCancelParamsTest {
 
     @Test
-    fun createBetaThreadRunCancelParams() {
+    fun create() {
         BetaThreadRunCancelParams.builder().threadId("thread_id").runId("run_id").build()
     }
 

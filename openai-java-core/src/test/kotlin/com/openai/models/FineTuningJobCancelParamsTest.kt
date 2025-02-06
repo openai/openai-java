@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class FineTuningJobCancelParamsTest {
 
     @Test
-    fun createFineTuningJobCancelParams() {
+    fun create() {
         FineTuningJobCancelParams.builder().fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F").build()
     }
 

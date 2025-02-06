@@ -60,15 +60,14 @@ internal constructor(
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
                 .prepare(clientOptions, params, params.model().map { it.toString() }.orElse(null))
-        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
-            response
-                .use { createHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
+        val response = clientOptions.httpClient.execute(request, requestOptions)
+        return response
+            .use { createHandler.handle(it) }
+            .also {
+                if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                    it.validate()
                 }
-        }
+            }
     }
 
     private val createStreamingHandler: Handler<StreamResponse<AssistantStreamEvent>> =
@@ -98,17 +97,16 @@ internal constructor(
                 )
                 .build()
                 .prepare(clientOptions, params, params.model().map { it.toString() }.orElse(null))
-        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
-            response
-                .let { createStreamingHandler.handle(it) }
-                .let { streamResponse ->
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        streamResponse.map { it.validate() }
-                    } else {
-                        streamResponse
-                    }
+        val response = clientOptions.httpClient.execute(request, requestOptions)
+        return response
+            .let { createStreamingHandler.handle(it) }
+            .let { streamResponse ->
+                if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                    streamResponse.map { it.validate() }
+                } else {
+                    streamResponse
                 }
-        }
+            }
     }
 
     private val retrieveHandler: Handler<Run> =
@@ -126,15 +124,14 @@ internal constructor(
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()
                 .prepare(clientOptions, params, deploymentModel = null)
-        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
-            response
-                .use { retrieveHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
+        val response = clientOptions.httpClient.execute(request, requestOptions)
+        return response
+            .use { retrieveHandler.handle(it) }
+            .also {
+                if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                    it.validate()
                 }
-        }
+            }
     }
 
     private val updateHandler: Handler<Run> =
@@ -150,15 +147,14 @@ internal constructor(
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
                 .prepare(clientOptions, params, deploymentModel = null)
-        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
-            response
-                .use { updateHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
+        val response = clientOptions.httpClient.execute(request, requestOptions)
+        return response
+            .use { updateHandler.handle(it) }
+            .also {
+                if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                    it.validate()
                 }
-        }
+            }
     }
 
     private val listHandler: Handler<BetaThreadRunListPage.Response> =
@@ -177,16 +173,15 @@ internal constructor(
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()
                 .prepare(clientOptions, params, deploymentModel = null)
-        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
-            response
-                .use { listHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
+        val response = clientOptions.httpClient.execute(request, requestOptions)
+        return response
+            .use { listHandler.handle(it) }
+            .also {
+                if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                    it.validate()
                 }
-                .let { BetaThreadRunListPage.of(this, params, it) }
-        }
+            }
+            .let { BetaThreadRunListPage.of(this, params, it) }
     }
 
     private val cancelHandler: Handler<Run> =
@@ -208,15 +203,14 @@ internal constructor(
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                 .build()
                 .prepare(clientOptions, params, deploymentModel = null)
-        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
-            response
-                .use { cancelHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
+        val response = clientOptions.httpClient.execute(request, requestOptions)
+        return response
+            .use { cancelHandler.handle(it) }
+            .also {
+                if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                    it.validate()
                 }
-        }
+            }
     }
 
     private val submitToolOutputsHandler: Handler<Run> =
@@ -245,15 +239,14 @@ internal constructor(
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
                 .prepare(clientOptions, params, deploymentModel = null)
-        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
-            response
-                .use { submitToolOutputsHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
+        val response = clientOptions.httpClient.execute(request, requestOptions)
+        return response
+            .use { submitToolOutputsHandler.handle(it) }
+            .also {
+                if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                    it.validate()
                 }
-        }
+            }
     }
 
     private val submitToolOutputsStreamingHandler: Handler<StreamResponse<AssistantStreamEvent>> =
@@ -293,16 +286,15 @@ internal constructor(
                 )
                 .build()
                 .prepare(clientOptions, params, deploymentModel = null)
-        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
-            response
-                .let { submitToolOutputsStreamingHandler.handle(it) }
-                .let { streamResponse ->
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        streamResponse.map { it.validate() }
-                    } else {
-                        streamResponse
-                    }
+        val response = clientOptions.httpClient.execute(request, requestOptions)
+        return response
+            .let { submitToolOutputsStreamingHandler.handle(it) }
+            .let { streamResponse ->
+                if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                    streamResponse.map { it.validate() }
+                } else {
+                    streamResponse
                 }
-        }
+            }
     }
 }

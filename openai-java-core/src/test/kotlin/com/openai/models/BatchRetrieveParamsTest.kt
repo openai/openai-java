@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class BatchRetrieveParamsTest {
 
     @Test
-    fun createBatchRetrieveParams() {
+    fun create() {
         BatchRetrieveParams.builder().batchId("batch_id").build()
     }
 

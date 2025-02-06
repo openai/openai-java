@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class ImageGenerateParamsTest {
 
     @Test
-    fun createImageGenerateParams() {
+    fun create() {
         ImageGenerateParams.builder()
             .prompt("A cute baby sea otter")
             .model(ImageModel.DALL_E_2)

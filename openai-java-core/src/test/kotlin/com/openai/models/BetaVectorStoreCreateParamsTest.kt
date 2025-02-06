@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class BetaVectorStoreCreateParamsTest {
 
     @Test
-    fun createBetaVectorStoreCreateParams() {
+    fun create() {
         BetaVectorStoreCreateParams.builder()
             .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
             .expiresAfter(BetaVectorStoreCreateParams.ExpiresAfter.builder().days(1L).build())

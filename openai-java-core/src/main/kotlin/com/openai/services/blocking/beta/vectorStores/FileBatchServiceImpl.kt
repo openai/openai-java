@@ -49,15 +49,14 @@ internal constructor(
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
                 .prepare(clientOptions, params, deploymentModel = null)
-        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
-            response
-                .use { createHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
+        val response = clientOptions.httpClient.execute(request, requestOptions)
+        return response
+            .use { createHandler.handle(it) }
+            .also {
+                if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                    it.validate()
                 }
-        }
+            }
     }
 
     private val retrieveHandler: Handler<VectorStoreFileBatch> =
@@ -80,15 +79,14 @@ internal constructor(
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()
                 .prepare(clientOptions, params, deploymentModel = null)
-        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
-            response
-                .use { retrieveHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
+        val response = clientOptions.httpClient.execute(request, requestOptions)
+        return response
+            .use { retrieveHandler.handle(it) }
+            .also {
+                if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                    it.validate()
                 }
-        }
+            }
     }
 
     private val cancelHandler: Handler<VectorStoreFileBatch> =
@@ -116,15 +114,14 @@ internal constructor(
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                 .build()
                 .prepare(clientOptions, params, deploymentModel = null)
-        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
-            response
-                .use { cancelHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
+        val response = clientOptions.httpClient.execute(request, requestOptions)
+        return response
+            .use { cancelHandler.handle(it) }
+            .also {
+                if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                    it.validate()
                 }
-        }
+            }
     }
 
     private val listFilesHandler: Handler<BetaVectorStoreFileBatchListFilesPage.Response> =
@@ -149,15 +146,14 @@ internal constructor(
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()
                 .prepare(clientOptions, params, deploymentModel = null)
-        return clientOptions.httpClient.execute(request, requestOptions).let { response ->
-            response
-                .use { listFilesHandler.handle(it) }
-                .apply {
-                    if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
-                        validate()
-                    }
+        val response = clientOptions.httpClient.execute(request, requestOptions)
+        return response
+            .use { listFilesHandler.handle(it) }
+            .also {
+                if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                    it.validate()
                 }
-                .let { BetaVectorStoreFileBatchListFilesPage.of(this, params, it) }
-        }
+            }
+            .let { BetaVectorStoreFileBatchListFilesPage.of(this, params, it) }
     }
 }

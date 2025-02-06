@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class BetaVectorStoreFileListParamsTest {
 
     @Test
-    fun createBetaVectorStoreFileListParams() {
+    fun create() {
         BetaVectorStoreFileListParams.builder()
             .vectorStoreId("vector_store_id")
             .after("after")

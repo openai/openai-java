@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class ChatCompletionCreateParamsTest {
 
     @Test
-    fun createChatCompletionCreateParams() {
+    fun create() {
         ChatCompletionCreateParams.builder()
             .addMessage(
                 ChatCompletionDeveloperMessageParam.builder().content("string").name("name").build()
