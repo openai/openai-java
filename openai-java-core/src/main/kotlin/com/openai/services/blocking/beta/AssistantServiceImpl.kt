@@ -101,7 +101,7 @@ internal constructor(
                 .putAllHeaders(DEFAULT_HEADERS)
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-                .prepare(clientOptions, params, params.model().orElse(null))
+                .prepare(clientOptions, params, params.model().map { it.toString() }.orElse(null))
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { updateHandler.handle(it) }

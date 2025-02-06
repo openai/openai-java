@@ -108,7 +108,11 @@ internal constructor(
                 .putAllHeaders(DEFAULT_HEADERS)
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-                .prepareAsync(clientOptions, params, params.model().orElse(null))
+                .prepareAsync(
+                    clientOptions,
+                    params,
+                    params.model().map { it.toString() }.orElse(null)
+                )
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
