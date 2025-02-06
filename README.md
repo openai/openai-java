@@ -9,8 +9,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/0.21.1)
-[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/0.21.1/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/0.21.1)
+[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/0.22.0)
+[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/0.22.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/0.22.0)
 
 <!-- x-release-please-end -->
 
@@ -25,7 +25,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:0.21.1")
+implementation("com.openai:openai-java:0.22.0")
 ```
 
 ### Maven
@@ -34,7 +34,7 @@ implementation("com.openai:openai-java:0.21.1")
 <dependency>
     <groupId>com.openai</groupId>
     <artifactId>openai-java</artifactId>
-    <version>0.21.1</version>
+    <version>0.22.0</version>
 </dependency>
 ```
 

@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.22.0 (2025-02-06)
+
+Full Changelog: [v0.21.1...v0.22.0](https://github.com/openai/openai-java/compare/v0.21.1...v0.22.0)
+
+### Features
+
+* **api:** Add more new Azure service versions ([#208](https://github.com/openai/openai-java/issues/208)) ([a117892](https://github.com/openai/openai-java/commit/a11789220599540173f09d6cc9583365abe5f4e0))
+* **pagination:** avoid fetching when has_more: false ([#209](https://github.com/openai/openai-java/issues/209)) ([183b132](https://github.com/openai/openai-java/commit/183b132bba24beb90168fa77df84a93f0ea92fbe))
+
+
+### Bug Fixes
+
+* **api:** add missing `@MustBeClosed` annotations ([#205](https://github.com/openai/openai-java/issues/205)) ([0a60b9a](https://github.com/openai/openai-java/commit/0a60b9a40ad7f97ed51be3f6a70d674a6a9f1854))
+* **api:** add missing reasoning effort + model enums ([#207](https://github.com/openai/openai-java/issues/207)) ([8eb2394](https://github.com/openai/openai-java/commit/8eb2394b4ea937b19720d97dae84ed56660845c0))
+* **api:** switch `CompletableFuture&lt;Void&gt;` to `CompletableFuture<Void?>` ([0a60b9a](https://github.com/openai/openai-java/commit/0a60b9a40ad7f97ed51be3f6a70d674a6a9f1854))
+* **client:** add missing validation calls on response ([0a60b9a](https://github.com/openai/openai-java/commit/0a60b9a40ad7f97ed51be3f6a70d674a6a9f1854))
+* **client:** always provide a body for `PATCH` methods ([0a60b9a](https://github.com/openai/openai-java/commit/0a60b9a40ad7f97ed51be3f6a70d674a6a9f1854))
+* deploymentModel arg ([3ab4110](https://github.com/openai/openai-java/commit/3ab41105d8b3fbb3db24ee96e825611f27713bb2))
+
+
+### Chores
+
+* **internal:** minor formatting/style changes ([0a60b9a](https://github.com/openai/openai-java/commit/0a60b9a40ad7f97ed51be3f6a70d674a6a9f1854))
+* **internal:** rename some tests ([0a60b9a](https://github.com/openai/openai-java/commit/0a60b9a40ad7f97ed51be3f6a70d674a6a9f1854))
+
 ## 0.21.1 (2025-02-05)
 
 Full Changelog: [v0.21.0...v0.21.1](https://github.com/openai/openai-java/compare/v0.21.0...v0.21.1)
