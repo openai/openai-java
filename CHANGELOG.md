@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.22.1 (2025-02-12)
+
+Full Changelog: [v0.22.0...v0.22.1](https://github.com/openai/openai-java/compare/v0.22.0...v0.22.1)
+
+### Documentation
+
+* function calling example ([#213](https://github.com/openai/openai-java/issues/213)) ([89700ec](https://github.com/openai/openai-java/commit/89700ecff1ec8e0d952bc7c77fcc3e2dd20b8a63))
+
 ## 0.22.0 (2025-02-06)
 
 Full Changelog: [v0.21.1...v0.22.0](https://github.com/openai/openai-java/compare/v0.21.1...v0.22.0)
