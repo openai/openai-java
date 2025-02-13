@@ -23,6 +23,12 @@ import com.openai.errors.OpenAIError
 import com.openai.models.ChatCompletion
 import com.openai.models.ChatCompletionChunk
 import com.openai.models.ChatCompletionCreateParams
+import com.openai.models.ChatCompletionDeleteParams
+import com.openai.models.ChatCompletionDeleted
+import com.openai.models.ChatCompletionRetrieveParams
+import com.openai.models.ChatCompletionUpdateParams
+import com.openai.services.async.chat.completions.MessageServiceAsync
+import com.openai.services.async.chat.completions.MessageServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 
 class CompletionServiceAsyncImpl
@@ -31,6 +37,10 @@ internal constructor(
 ) : CompletionServiceAsync {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+
+    private val messages: MessageServiceAsync by lazy { MessageServiceAsyncImpl(clientOptions) }
+
+    override fun messages(): MessageServiceAsync = messages
 
     private val createHandler: Handler<ChatCompletion> =
         jsonHandler<ChatCompletion>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
@@ -120,5 +130,98 @@ internal constructor(
                     }
             }
             .toAsync(clientOptions.streamHandlerExecutor)
+    }
+
+    private val retrieveHandler: Handler<ChatCompletion> =
+        jsonHandler<ChatCompletion>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+    /**
+     * Get a stored chat completion. Only chat completions that have been created with the `store`
+     * parameter set to `true` will be returned.
+     */
+    override fun retrieve(
+        params: ChatCompletionRetrieveParams,
+        requestOptions: RequestOptions
+    ): CompletableFuture<ChatCompletion> {
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.GET)
+                .addPathSegments("chat", "completions", params.getPathParam(0))
+                .build()
+                .prepareAsync(clientOptions, params)
+        return request
+            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            .thenApply { response ->
+                response
+                    .use { retrieveHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                            it.validate()
+                        }
+                    }
+            }
+    }
+
+    private val updateHandler: Handler<ChatCompletion> =
+        jsonHandler<ChatCompletion>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+    /**
+     * Modify a stored chat completion. Only chat completions that have been created with the
+     * `store` parameter set to `true` can be modified. Currently, the only supported modification
+     * is to update the `metadata` field.
+     */
+    override fun update(
+        params: ChatCompletionUpdateParams,
+        requestOptions: RequestOptions
+    ): CompletableFuture<ChatCompletion> {
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.POST)
+                .addPathSegments("chat", "completions", params.getPathParam(0))
+                .body(json(clientOptions.jsonMapper, params._body()))
+                .build()
+                .prepareAsync(clientOptions, params)
+        return request
+            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            .thenApply { response ->
+                response
+                    .use { updateHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                            it.validate()
+                        }
+                    }
+            }
+    }
+
+    private val deleteHandler: Handler<ChatCompletionDeleted> =
+        jsonHandler<ChatCompletionDeleted>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+    /**
+     * Delete a stored chat completion. Only chat completions that have been created with the
+     * `store` parameter set to `true` can be deleted.
+     */
+    override fun delete(
+        params: ChatCompletionDeleteParams,
+        requestOptions: RequestOptions
+    ): CompletableFuture<ChatCompletionDeleted> {
+        val request =
+            HttpRequest.builder()
+                .method(HttpMethod.DELETE)
+                .addPathSegments("chat", "completions", params.getPathParam(0))
+                .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                .build()
+                .prepareAsync(clientOptions, params)
+        return request
+            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            .thenApply { response ->
+                response
+                    .use { deleteHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                            it.validate()
+                        }
+                    }
+            }
     }
 }
