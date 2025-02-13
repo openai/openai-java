@@ -7,13 +7,16 @@ import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
 import com.openai.models.ChatCompletionAudioParam
 import com.openai.models.ChatCompletionCreateParams
+import com.openai.models.ChatCompletionDeleteParams
 import com.openai.models.ChatCompletionDeveloperMessageParam
 import com.openai.models.ChatCompletionModality
 import com.openai.models.ChatCompletionPredictionContent
 import com.openai.models.ChatCompletionReasoningEffort
+import com.openai.models.ChatCompletionRetrieveParams
 import com.openai.models.ChatCompletionStreamOptions
 import com.openai.models.ChatCompletionTool
 import com.openai.models.ChatCompletionToolChoiceOption
+import com.openai.models.ChatCompletionUpdateParams
 import com.openai.models.ChatModel
 import com.openai.models.FunctionDefinition
 import com.openai.models.FunctionParameters
@@ -207,5 +210,60 @@ class CompletionServiceTest {
                 it.validate()
             }
         }
+    }
+
+    @Test
+    fun callRetrieve() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val completionService = client.chat().completions()
+        val chatCompletion =
+            completionService.retrieve(
+                ChatCompletionRetrieveParams.builder().completionId("completion_id").build()
+            )
+        println(chatCompletion)
+        chatCompletion.validate()
+    }
+
+    @Test
+    fun callUpdate() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val completionService = client.chat().completions()
+        val chatCompletion =
+            completionService.update(
+                ChatCompletionUpdateParams.builder()
+                    .completionId("completion_id")
+                    .metadata(
+                        Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .build()
+            )
+        println(chatCompletion)
+        chatCompletion.validate()
+    }
+
+    @Test
+    fun callDelete() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val completionService = client.chat().completions()
+        val chatCompletionDeleted =
+            completionService.delete(
+                ChatCompletionDeleteParams.builder().completionId("completion_id").build()
+            )
+        println(chatCompletionDeleted)
+        chatCompletionDeleted.validate()
     }
 }
