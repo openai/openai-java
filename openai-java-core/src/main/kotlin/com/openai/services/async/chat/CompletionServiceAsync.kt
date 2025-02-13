@@ -9,9 +9,16 @@ import com.openai.core.http.AsyncStreamResponse
 import com.openai.models.ChatCompletion
 import com.openai.models.ChatCompletionChunk
 import com.openai.models.ChatCompletionCreateParams
+import com.openai.models.ChatCompletionDeleteParams
+import com.openai.models.ChatCompletionDeleted
+import com.openai.models.ChatCompletionRetrieveParams
+import com.openai.models.ChatCompletionUpdateParams
+import com.openai.services.async.chat.completions.MessageServiceAsync
 import java.util.concurrent.CompletableFuture
 
 interface CompletionServiceAsync {
+
+    fun messages(): MessageServiceAsync
 
     /**
      * Creates a model response for the given chat conversation. Learn more in the
@@ -46,4 +53,35 @@ interface CompletionServiceAsync {
         params: ChatCompletionCreateParams,
         requestOptions: RequestOptions = RequestOptions.none()
     ): AsyncStreamResponse<ChatCompletionChunk>
+
+    /**
+     * Get a stored chat completion. Only chat completions that have been created with the `store`
+     * parameter set to `true` will be returned.
+     */
+    @JvmOverloads
+    fun retrieve(
+        params: ChatCompletionRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none()
+    ): CompletableFuture<ChatCompletion>
+
+    /**
+     * Modify a stored chat completion. Only chat completions that have been created with the
+     * `store` parameter set to `true` can be modified. Currently, the only supported modification
+     * is to update the `metadata` field.
+     */
+    @JvmOverloads
+    fun update(
+        params: ChatCompletionUpdateParams,
+        requestOptions: RequestOptions = RequestOptions.none()
+    ): CompletableFuture<ChatCompletion>
+
+    /**
+     * Delete a stored chat completion. Only chat completions that have been created with the
+     * `store` parameter set to `true` can be deleted.
+     */
+    @JvmOverloads
+    fun delete(
+        params: ChatCompletionDeleteParams,
+        requestOptions: RequestOptions = RequestOptions.none()
+    ): CompletableFuture<ChatCompletionDeleted>
 }
