@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.23.0 (2025-02-14)
+
+Full Changelog: [v0.22.1...v0.23.0](https://github.com/openai/openai-java/compare/v0.22.1...v0.23.0)
+
+### Features
+
+* **api:** add support for storing chat completions ([#216](https://github.com/openai/openai-java/issues/216)) ([68a7883](https://github.com/openai/openai-java/commit/68a7883782574f1af0d724c1d838fd70a99f2958))
+
 ## 0.22.1 (2025-02-12)
 
 Full Changelog: [v0.22.0...v0.22.1](https://github.com/openai/openai-java/compare/v0.22.0...v0.22.1)
