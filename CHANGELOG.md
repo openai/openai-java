@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.23.1 (2025-02-15)
+
+Full Changelog: [v0.23.0...v0.23.1](https://github.com/openai/openai-java/compare/v0.23.0...v0.23.1)
+
+### Bug Fixes
+
+* add missing argument ([5a6d2a2](https://github.com/openai/openai-java/commit/5a6d2a21be7bffabe335da4d13b6d2813c17ba7b))
+
 ## 0.23.0 (2025-02-14)
 
 Full Changelog: [v0.22.1...v0.23.0](https://github.com/openai/openai-java/compare/v0.22.1...v0.23.0)
