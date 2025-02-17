@@ -174,11 +174,7 @@ private constructor(
     }
 
     /** The entity that produced the message. One of `user` or `assistant`. */
-    class Role
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Role @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.

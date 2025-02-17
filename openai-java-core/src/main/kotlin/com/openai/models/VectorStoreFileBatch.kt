@@ -401,11 +401,7 @@ private constructor(
      * The status of the vector store files batch, which can be either `in_progress`, `completed`,
      * `cancelled` or `failed`.
      */
-    class Status
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.

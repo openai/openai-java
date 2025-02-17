@@ -220,11 +220,7 @@ private constructor(
         }
 
         /** The format of the encoded audio data. Currently supports "wav" and "mp3". */
-        class Format
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Format @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.

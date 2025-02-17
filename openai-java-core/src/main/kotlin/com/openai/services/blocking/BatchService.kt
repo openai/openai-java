@@ -18,21 +18,21 @@ interface BatchService {
     @JvmOverloads
     fun create(
         params: BatchCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Batch
 
     /** Retrieves a batch. */
     @JvmOverloads
     fun retrieve(
         params: BatchRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Batch
 
     /** List your organization's batches. */
     @JvmOverloads
     fun list(
         params: BatchListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): BatchListPage
 
     /**
@@ -43,6 +43,6 @@ interface BatchService {
     @JvmOverloads
     fun cancel(
         params: BatchCancelParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Batch
 }

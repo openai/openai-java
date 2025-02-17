@@ -28,10 +28,8 @@ import com.openai.services.async.beta.vectorStores.FileServiceAsync
 import com.openai.services.async.beta.vectorStores.FileServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 
-class VectorStoreServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : VectorStoreServiceAsync {
+class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    VectorStoreServiceAsync {
 
     companion object {
 
@@ -56,7 +54,7 @@ internal constructor(
     /** Create a vector store. */
     override fun create(
         params: BetaVectorStoreCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<VectorStore> {
         val request =
             HttpRequest.builder()
@@ -85,7 +83,7 @@ internal constructor(
     /** Retrieves a vector store. */
     override fun retrieve(
         params: BetaVectorStoreRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<VectorStore> {
         val request =
             HttpRequest.builder()
@@ -113,7 +111,7 @@ internal constructor(
     /** Modifies a vector store. */
     override fun update(
         params: BetaVectorStoreUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<VectorStore> {
         val request =
             HttpRequest.builder()
@@ -143,7 +141,7 @@ internal constructor(
     /** Returns a list of vector stores. */
     override fun list(
         params: BetaVectorStoreListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<BetaVectorStoreListPageAsync> {
         val request =
             HttpRequest.builder()
@@ -172,7 +170,7 @@ internal constructor(
     /** Delete a vector store. */
     override fun delete(
         params: BetaVectorStoreDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<VectorStoreDeleted> {
         val request =
             HttpRequest.builder()

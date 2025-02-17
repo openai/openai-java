@@ -72,13 +72,8 @@ private constructor(
         fun of(
             assistantsService: AssistantService,
             params: BetaAssistantListParams,
-            response: Response
-        ) =
-            BetaAssistantListPage(
-                assistantsService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = BetaAssistantListPage(assistantsService, params, response)
     }
 
     @NoAutoDetect
@@ -162,18 +157,11 @@ private constructor(
                 this.additionalProperties.put(key, value)
             }
 
-            fun build() =
-                Response(
-                    data,
-                    hasMore,
-                    additionalProperties.toImmutable(),
-                )
+            fun build() = Response(data, hasMore, additionalProperties.toImmutable())
         }
     }
 
-    class AutoPager(
-        private val firstPage: BetaAssistantListPage,
-    ) : Iterable<Assistant> {
+    class AutoPager(private val firstPage: BetaAssistantListPage) : Iterable<Assistant> {
 
         override fun iterator(): Iterator<Assistant> = iterator {
             var page = firstPage

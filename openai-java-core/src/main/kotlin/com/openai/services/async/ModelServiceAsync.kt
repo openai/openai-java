@@ -22,7 +22,7 @@ interface ModelServiceAsync {
     @JvmOverloads
     fun retrieve(
         params: ModelRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Model>
 
     /**
@@ -32,7 +32,7 @@ interface ModelServiceAsync {
     @JvmOverloads
     fun list(
         params: ModelListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ModelListPageAsync>
 
     /**
@@ -42,6 +42,6 @@ interface ModelServiceAsync {
     @JvmOverloads
     fun delete(
         params: ModelDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ModelDeleted>
 }

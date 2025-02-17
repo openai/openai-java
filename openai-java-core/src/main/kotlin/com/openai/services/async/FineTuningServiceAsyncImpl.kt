@@ -6,10 +6,8 @@ import com.openai.core.ClientOptions
 import com.openai.services.async.fineTuning.JobServiceAsync
 import com.openai.services.async.fineTuning.JobServiceAsyncImpl
 
-class FineTuningServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : FineTuningServiceAsync {
+class FineTuningServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    FineTuningServiceAsync {
 
     private val jobs: JobServiceAsync by lazy { JobServiceAsyncImpl(clientOptions) }
 

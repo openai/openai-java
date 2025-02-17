@@ -31,10 +31,7 @@ import com.openai.models.Run
 import com.openai.services.blocking.beta.threads.runs.StepService
 import com.openai.services.blocking.beta.threads.runs.StepServiceImpl
 
-class RunServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : RunService {
+class RunServiceImpl internal constructor(private val clientOptions: ClientOptions) : RunService {
 
     companion object {
 
@@ -78,7 +75,7 @@ internal constructor(
     /** Create a run. */
     override fun createStreaming(
         params: BetaThreadRunCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): StreamResponse<AssistantStreamEvent> {
         val request =
             HttpRequest.builder()
@@ -92,7 +89,7 @@ internal constructor(
                             ._body()
                             .toBuilder()
                             .putAdditionalProperty("stream", JsonValue.from(true))
-                            .build()
+                            .build(),
                     )
                 )
                 .build()
@@ -115,7 +112,7 @@ internal constructor(
     /** Retrieves a run. */
     override fun retrieve(
         params: BetaThreadRunRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Run {
         val request =
             HttpRequest.builder()
@@ -164,7 +161,7 @@ internal constructor(
     /** Returns a list of runs belonging to a thread. */
     override fun list(
         params: BetaThreadRunListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): BetaThreadRunListPage {
         val request =
             HttpRequest.builder()
@@ -197,7 +194,7 @@ internal constructor(
                     params.getPathParam(0),
                     "runs",
                     params.getPathParam(1),
-                    "cancel"
+                    "cancel",
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
@@ -223,7 +220,7 @@ internal constructor(
      */
     override fun submitToolOutputs(
         params: BetaThreadRunSubmitToolOutputsParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Run {
         val request =
             HttpRequest.builder()
@@ -233,7 +230,7 @@ internal constructor(
                     params.getPathParam(0),
                     "runs",
                     params.getPathParam(1),
-                    "submit_tool_outputs"
+                    "submit_tool_outputs",
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .body(json(clientOptions.jsonMapper, params._body()))
@@ -261,7 +258,7 @@ internal constructor(
      */
     override fun submitToolOutputsStreaming(
         params: BetaThreadRunSubmitToolOutputsParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): StreamResponse<AssistantStreamEvent> {
         val request =
             HttpRequest.builder()
@@ -271,7 +268,7 @@ internal constructor(
                     params.getPathParam(0),
                     "runs",
                     params.getPathParam(1),
-                    "submit_tool_outputs"
+                    "submit_tool_outputs",
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .body(
@@ -281,7 +278,7 @@ internal constructor(
                             ._body()
                             .toBuilder()
                             .putAdditionalProperty("stream", JsonValue.from(true))
-                            .build()
+                            .build(),
                     )
                 )
                 .build()

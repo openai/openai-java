@@ -70,11 +70,7 @@ private constructor(
 
         @JvmStatic
         fun of(jobsService: JobService, params: FineTuningJobListEventsParams, response: Response) =
-            FineTuningJobListEventsPage(
-                jobsService,
-                params,
-                response,
-            )
+            FineTuningJobListEventsPage(jobsService, params, response)
     }
 
     @NoAutoDetect
@@ -159,18 +155,12 @@ private constructor(
                 this.additionalProperties.put(key, value)
             }
 
-            fun build() =
-                Response(
-                    data,
-                    hasMore,
-                    additionalProperties.toImmutable(),
-                )
+            fun build() = Response(data, hasMore, additionalProperties.toImmutable())
         }
     }
 
-    class AutoPager(
-        private val firstPage: FineTuningJobListEventsPage,
-    ) : Iterable<FineTuningJobEvent> {
+    class AutoPager(private val firstPage: FineTuningJobListEventsPage) :
+        Iterable<FineTuningJobEvent> {
 
         override fun iterator(): Iterator<FineTuningJobEvent> = iterator {
             var page = firstPage

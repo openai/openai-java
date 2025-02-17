@@ -237,11 +237,7 @@ private constructor(
      * Sort order for messages by timestamp. Use `asc` for ascending order or `desc` for descending
      * order. Defaults to `asc`.
      */
-    class Order
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Order @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.

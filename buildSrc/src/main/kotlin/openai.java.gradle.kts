@@ -39,8 +39,12 @@ tasks.named<Jar>("jar") {
     }
 }
 
-tasks.named<Test>("test") {
+tasks.withType<Test>().configureEach {
     useJUnitPlatform()
+
+    // Run tests in parallel to some degree.
+    maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
+    forkEvery = 100
 
     testLogging {
         exceptionFormat = TestExceptionFormat.FULL

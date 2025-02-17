@@ -135,13 +135,7 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
-        fun build(): Image =
-            Image(
-                b64Json,
-                revisedPrompt,
-                url,
-                additionalProperties.toImmutable(),
-            )
+        fun build(): Image = Image(b64Json, revisedPrompt, url, additionalProperties.toImmutable())
     }
 
     override fun equals(other: Any?): Boolean {

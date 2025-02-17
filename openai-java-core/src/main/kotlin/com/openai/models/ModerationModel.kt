@@ -7,11 +7,8 @@ import com.openai.core.Enum
 import com.openai.core.JsonField
 import com.openai.errors.OpenAIInvalidDataException
 
-class ModerationModel
-@JsonCreator
-private constructor(
-    private val value: JsonField<String>,
-) : Enum {
+class ModerationModel @JsonCreator private constructor(private val value: JsonField<String>) :
+    Enum {
 
     /**
      * Returns this class instance's raw value.

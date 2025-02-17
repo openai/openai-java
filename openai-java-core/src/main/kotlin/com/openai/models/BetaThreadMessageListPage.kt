@@ -72,13 +72,8 @@ private constructor(
         fun of(
             messagesService: MessageService,
             params: BetaThreadMessageListParams,
-            response: Response
-        ) =
-            BetaThreadMessageListPage(
-                messagesService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = BetaThreadMessageListPage(messagesService, params, response)
     }
 
     @NoAutoDetect
@@ -162,18 +157,11 @@ private constructor(
                 this.additionalProperties.put(key, value)
             }
 
-            fun build() =
-                Response(
-                    data,
-                    hasMore,
-                    additionalProperties.toImmutable(),
-                )
+            fun build() = Response(data, hasMore, additionalProperties.toImmutable())
         }
     }
 
-    class AutoPager(
-        private val firstPage: BetaThreadMessageListPage,
-    ) : Iterable<Message> {
+    class AutoPager(private val firstPage: BetaThreadMessageListPage) : Iterable<Message> {
 
         override fun iterator(): Iterator<Message> = iterator {
             var page = firstPage

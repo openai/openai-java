@@ -536,11 +536,7 @@ private constructor(
      * The status of the vector store, which can be either `expired`, `in_progress`, or `completed`.
      * A status of `completed` indicates that the vector store is ready for use.
      */
-    class Status
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.

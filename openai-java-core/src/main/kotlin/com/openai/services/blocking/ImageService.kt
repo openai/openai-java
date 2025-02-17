@@ -14,6 +14,6 @@ interface ImageService {
     @JvmOverloads
     fun generate(
         params: ImageGenerateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ImagesResponse
 }

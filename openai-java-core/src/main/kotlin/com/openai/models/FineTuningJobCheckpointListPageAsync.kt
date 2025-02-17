@@ -78,13 +78,8 @@ private constructor(
         fun of(
             checkpointsService: CheckpointServiceAsync,
             params: FineTuningJobCheckpointListParams,
-            response: Response
-        ) =
-            FineTuningJobCheckpointListPageAsync(
-                checkpointsService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = FineTuningJobCheckpointListPageAsync(checkpointsService, params, response)
     }
 
     @NoAutoDetect
@@ -169,26 +164,19 @@ private constructor(
                 this.additionalProperties.put(key, value)
             }
 
-            fun build() =
-                Response(
-                    data,
-                    hasMore,
-                    additionalProperties.toImmutable(),
-                )
+            fun build() = Response(data, hasMore, additionalProperties.toImmutable())
         }
     }
 
-    class AutoPager(
-        private val firstPage: FineTuningJobCheckpointListPageAsync,
-    ) {
+    class AutoPager(private val firstPage: FineTuningJobCheckpointListPageAsync) {
 
         fun forEach(
             action: Predicate<FineTuningJobCheckpoint>,
-            executor: Executor
+            executor: Executor,
         ): CompletableFuture<Void> {
             fun CompletableFuture<Optional<FineTuningJobCheckpointListPageAsync>>.forEach(
                 action: (FineTuningJobCheckpoint) -> Boolean,
-                executor: Executor
+                executor: Executor,
             ): CompletableFuture<Void> =
                 thenComposeAsync(
                     { page ->
@@ -197,7 +185,7 @@ private constructor(
                             .map { it.getNextPage().forEach(action, executor) }
                             .orElseGet { CompletableFuture.completedFuture(null) }
                     },
-                    executor
+                    executor,
                 )
             return CompletableFuture.completedFuture(Optional.of(firstPage))
                 .forEach(action::test, executor)

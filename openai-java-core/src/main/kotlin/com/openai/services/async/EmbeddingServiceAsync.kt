@@ -15,6 +15,6 @@ interface EmbeddingServiceAsync {
     @JvmOverloads
     fun create(
         params: EmbeddingCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<CreateEmbeddingResponse>
 }

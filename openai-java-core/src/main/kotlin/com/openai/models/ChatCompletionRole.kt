@@ -8,11 +8,8 @@ import com.openai.core.JsonField
 import com.openai.errors.OpenAIInvalidDataException
 
 /** The role of the author of a message */
-class ChatCompletionRole
-@JsonCreator
-private constructor(
-    private val value: JsonField<String>,
-) : Enum {
+class ChatCompletionRole @JsonCreator private constructor(private val value: JsonField<String>) :
+    Enum {
 
     /**
      * Returns this class instance's raw value.

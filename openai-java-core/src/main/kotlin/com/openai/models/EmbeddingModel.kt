@@ -7,11 +7,7 @@ import com.openai.core.Enum
 import com.openai.core.JsonField
 import com.openai.errors.OpenAIInvalidDataException
 
-class EmbeddingModel
-@JsonCreator
-private constructor(
-    private val value: JsonField<String>,
-) : Enum {
+class EmbeddingModel @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
     /**
      * Returns this class instance's raw value.

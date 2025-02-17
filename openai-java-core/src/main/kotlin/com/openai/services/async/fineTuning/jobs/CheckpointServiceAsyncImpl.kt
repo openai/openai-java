@@ -16,10 +16,8 @@ import com.openai.models.FineTuningJobCheckpointListPageAsync
 import com.openai.models.FineTuningJobCheckpointListParams
 import java.util.concurrent.CompletableFuture
 
-class CheckpointServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : CheckpointServiceAsync {
+class CheckpointServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    CheckpointServiceAsync {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
@@ -30,7 +28,7 @@ internal constructor(
     /** List checkpoints for a fine-tuning job. */
     override fun list(
         params: FineTuningJobCheckpointListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<FineTuningJobCheckpointListPageAsync> {
         val request =
             HttpRequest.builder()

@@ -165,7 +165,7 @@ private constructor(
             fun build(): BetaThreadRunSubmitToolOutputsBody =
                 BetaThreadRunSubmitToolOutputsBody(
                     checkRequired("toolOutputs", toolOutputs).map { it.toImmutable() },
-                    additionalProperties.toImmutable()
+                    additionalProperties.toImmutable(),
                 )
         }
 
@@ -469,11 +469,7 @@ private constructor(
             }
 
             fun build(): ToolOutput =
-                ToolOutput(
-                    output,
-                    toolCallId,
-                    additionalProperties.toImmutable(),
-                )
+                ToolOutput(output, toolCallId, additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {

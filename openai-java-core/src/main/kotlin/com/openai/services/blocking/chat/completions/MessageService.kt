@@ -17,6 +17,6 @@ interface MessageService {
     @JvmOverloads
     fun list(
         params: ChatCompletionMessageListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ChatCompletionMessageListPage
 }

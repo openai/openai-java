@@ -18,14 +18,14 @@ interface FileBatchService {
     @JvmOverloads
     fun create(
         params: BetaVectorStoreFileBatchCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStoreFileBatch
 
     /** Retrieves a vector store file batch. */
     @JvmOverloads
     fun retrieve(
         params: BetaVectorStoreFileBatchRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStoreFileBatch
 
     /**
@@ -35,13 +35,13 @@ interface FileBatchService {
     @JvmOverloads
     fun cancel(
         params: BetaVectorStoreFileBatchCancelParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStoreFileBatch
 
     /** Returns a list of vector store files in a batch. */
     @JvmOverloads
     fun listFiles(
         params: BetaVectorStoreFileBatchListFilesParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): BetaVectorStoreFileBatchListFilesPage
 }

@@ -16,10 +16,8 @@ import com.openai.errors.OpenAIError
 import com.openai.models.ImageGenerateParams
 import com.openai.models.ImagesResponse
 
-class ImageServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : ImageService {
+class ImageServiceImpl internal constructor(private val clientOptions: ClientOptions) :
+    ImageService {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
@@ -29,7 +27,7 @@ internal constructor(
     /** Creates an image given a prompt. */
     override fun generate(
         params: ImageGenerateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): ImagesResponse {
         val request =
             HttpRequest.builder()

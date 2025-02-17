@@ -29,41 +29,41 @@ interface ThreadServiceAsync {
     @JvmOverloads
     fun create(
         params: BetaThreadCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Thread>
 
     /** Retrieves a thread. */
     @JvmOverloads
     fun retrieve(
         params: BetaThreadRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Thread>
 
     /** Modifies a thread. */
     @JvmOverloads
     fun update(
         params: BetaThreadUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Thread>
 
     /** Delete a thread. */
     @JvmOverloads
     fun delete(
         params: BetaThreadDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ThreadDeleted>
 
     /** Create a thread and run it in one request. */
     @JvmOverloads
     fun createAndRun(
         params: BetaThreadCreateAndRunParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Run>
 
     /** Create a thread and run it in one request. */
     @JvmOverloads
     fun createAndRunStreaming(
         params: BetaThreadCreateAndRunParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): AsyncStreamResponse<AssistantStreamEvent>
 }

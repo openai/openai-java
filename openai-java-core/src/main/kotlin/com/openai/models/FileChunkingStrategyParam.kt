@@ -179,7 +179,7 @@ private constructor(
         override fun serialize(
             value: FileChunkingStrategyParam,
             generator: JsonGenerator,
-            provider: SerializerProvider
+            provider: SerializerProvider,
         ) {
             when {
                 value.auto != null -> generator.writeObject(value.auto)

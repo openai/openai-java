@@ -165,7 +165,7 @@ private constructor(
         override fun serialize(
             value: ModerationMultiModalInput,
             generator: JsonGenerator,
-            provider: SerializerProvider
+            provider: SerializerProvider,
         ) {
             when {
                 value.imageUrl != null -> generator.writeObject(value.imageUrl)

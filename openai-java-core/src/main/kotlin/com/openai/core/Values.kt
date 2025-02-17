@@ -287,7 +287,7 @@ class JsonMissing : JsonValue() {
         override fun serialize(
             value: JsonMissing,
             generator: JsonGenerator,
-            provider: SerializerProvider
+            provider: SerializerProvider,
         ) {
             throw RuntimeException("JsonMissing cannot be serialized")
         }
@@ -422,10 +422,7 @@ private constructor(
 }
 
 @JacksonAnnotationsInside
-@JsonInclude(
-    JsonInclude.Include.CUSTOM,
-    valueFilter = JsonField.IsMissing::class,
-)
+@JsonInclude(JsonInclude.Include.CUSTOM, valueFilter = JsonField.IsMissing::class)
 annotation class ExcludeMissing
 
 @JacksonAnnotationsInside
@@ -434,7 +431,7 @@ annotation class ExcludeMissing
     isGetterVisibility = Visibility.NONE,
     setterVisibility = Visibility.NONE,
     creatorVisibility = Visibility.NONE,
-    fieldVisibility = Visibility.NONE
+    fieldVisibility = Visibility.NONE,
 )
 annotation class NoAutoDetect
 
@@ -443,7 +440,7 @@ internal constructor(
     val name: String,
     val value: T,
     val contentType: ContentType,
-    val filename: String? = null
+    val filename: String? = null,
 ) {
 
     private var hashCode: Int = 0
@@ -462,7 +459,7 @@ internal constructor(
                         is Long -> value
                         is Double -> value
                         else -> value?.hashCode()
-                    }
+                    },
                 )
         }
         return hashCode
@@ -496,7 +493,7 @@ internal constructor(
         internal fun fromString(
             name: String,
             value: String,
-            contentType: ContentType
+            contentType: ContentType,
         ): MultipartFormValue<String> = MultipartFormValue(name, value, contentType)
 
         internal fun fromBoolean(
@@ -520,14 +517,14 @@ internal constructor(
         internal fun <T : Enum> fromEnum(
             name: String,
             value: T,
-            contentType: ContentType
+            contentType: ContentType,
         ): MultipartFormValue<T> = MultipartFormValue(name, value, contentType)
 
         internal fun fromByteArray(
             name: String,
             value: ByteArray,
             contentType: ContentType,
-            filename: String? = null
+            filename: String? = null,
         ): MultipartFormValue<ByteArray> = MultipartFormValue(name, value, contentType, filename)
     }
 }

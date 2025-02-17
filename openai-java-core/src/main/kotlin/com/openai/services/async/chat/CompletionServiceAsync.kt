@@ -34,7 +34,7 @@ interface CompletionServiceAsync {
     @JvmOverloads
     fun create(
         params: ChatCompletionCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ChatCompletion>
 
     /**
@@ -51,7 +51,7 @@ interface CompletionServiceAsync {
     @JvmOverloads
     fun createStreaming(
         params: ChatCompletionCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): AsyncStreamResponse<ChatCompletionChunk>
 
     /**
@@ -61,7 +61,7 @@ interface CompletionServiceAsync {
     @JvmOverloads
     fun retrieve(
         params: ChatCompletionRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ChatCompletion>
 
     /**
@@ -72,7 +72,7 @@ interface CompletionServiceAsync {
     @JvmOverloads
     fun update(
         params: ChatCompletionUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ChatCompletion>
 
     /**
@@ -82,6 +82,6 @@ interface CompletionServiceAsync {
     @JvmOverloads
     fun delete(
         params: ChatCompletionDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ChatCompletionDeleted>
 }

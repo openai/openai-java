@@ -18,7 +18,7 @@ abstract class BaseDeserializer<T : Any>(type: KClass<T>) :
 
     override fun createContextual(
         context: DeserializationContext,
-        property: BeanProperty?
+        property: BeanProperty?,
     ): JsonDeserializer<T> {
         return this
     }
@@ -32,7 +32,7 @@ abstract class BaseDeserializer<T : Any>(type: KClass<T>) :
     protected fun <T> ObjectCodec.tryDeserialize(
         node: JsonNode,
         type: TypeReference<T>,
-        validate: (T) -> Unit = {}
+        validate: (T) -> Unit = {},
     ): T? {
         return try {
             readValue(treeAsTokens(node), type).apply(validate)
@@ -46,7 +46,7 @@ abstract class BaseDeserializer<T : Any>(type: KClass<T>) :
     protected fun <T> ObjectCodec.tryDeserialize(
         node: JsonNode,
         type: JavaType,
-        validate: (T) -> Unit = {}
+        validate: (T) -> Unit = {},
     ): T? {
         return try {
             readValue<T>(treeAsTokens(node), type).apply(validate)

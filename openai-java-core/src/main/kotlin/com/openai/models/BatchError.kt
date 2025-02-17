@@ -150,13 +150,7 @@ private constructor(
         }
 
         fun build(): BatchError =
-            BatchError(
-                code,
-                line,
-                message,
-                param,
-                additionalProperties.toImmutable(),
-            )
+            BatchError(code, line, message, param, additionalProperties.toImmutable())
     }
 
     override fun equals(other: Any?): Boolean {

@@ -70,7 +70,7 @@ class BetaThreadCreateAndRunParamsTest {
                                                 Metadata.builder()
                                                     .putAdditionalProperty(
                                                         "foo",
-                                                        JsonValue.from("string")
+                                                        JsonValue.from("string"),
                                                     )
                                                     .build()
                                             )
@@ -175,7 +175,7 @@ class BetaThreadCreateAndRunParamsTest {
                                                     Metadata.builder()
                                                         .putAdditionalProperty(
                                                             "foo",
-                                                            JsonValue.from("string")
+                                                            JsonValue.from("string"),
                                                         )
                                                         .build()
                                                 )
@@ -274,7 +274,7 @@ class BetaThreadCreateAndRunParamsTest {
                                                 Metadata.builder()
                                                     .putAdditionalProperty(
                                                         "foo",
-                                                        JsonValue.from("string")
+                                                        JsonValue.from("string"),
                                                     )
                                                     .build()
                                             )

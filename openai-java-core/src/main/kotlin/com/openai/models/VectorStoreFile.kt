@@ -418,11 +418,7 @@ private constructor(
         }
 
         /** One of `server_error` or `rate_limit_exceeded`. */
-        class Code
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Code @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -539,11 +535,7 @@ private constructor(
      * `cancelled`, or `failed`. The status `completed` indicates that the vector store file is
      * ready for use.
      */
-    class Status
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.

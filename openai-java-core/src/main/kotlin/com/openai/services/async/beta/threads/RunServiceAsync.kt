@@ -26,42 +26,42 @@ interface RunServiceAsync {
     @JvmOverloads
     fun create(
         params: BetaThreadRunCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Run>
 
     /** Create a run. */
     @JvmOverloads
     fun createStreaming(
         params: BetaThreadRunCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): AsyncStreamResponse<AssistantStreamEvent>
 
     /** Retrieves a run. */
     @JvmOverloads
     fun retrieve(
         params: BetaThreadRunRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Run>
 
     /** Modifies a run. */
     @JvmOverloads
     fun update(
         params: BetaThreadRunUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Run>
 
     /** Returns a list of runs belonging to a thread. */
     @JvmOverloads
     fun list(
         params: BetaThreadRunListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<BetaThreadRunListPageAsync>
 
     /** Cancels a run that is `in_progress`. */
     @JvmOverloads
     fun cancel(
         params: BetaThreadRunCancelParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Run>
 
     /**
@@ -72,7 +72,7 @@ interface RunServiceAsync {
     @JvmOverloads
     fun submitToolOutputs(
         params: BetaThreadRunSubmitToolOutputsParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Run>
 
     /**
@@ -83,6 +83,6 @@ interface RunServiceAsync {
     @JvmOverloads
     fun submitToolOutputsStreaming(
         params: BetaThreadRunSubmitToolOutputsParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): AsyncStreamResponse<AssistantStreamEvent>
 }

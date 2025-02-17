@@ -847,11 +847,7 @@ private constructor(
                     }
 
                     fun build(): FunctionCall =
-                        FunctionCall(
-                            arguments,
-                            name,
-                            additionalProperties.toImmutable(),
-                        )
+                        FunctionCall(arguments, name, additionalProperties.toImmutable())
                 }
 
                 override fun equals(other: Any?): Boolean {
@@ -873,11 +869,8 @@ private constructor(
             }
 
             /** The role of the author of this message. */
-            class Role
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
+            class Role @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
 
                 /**
                  * Returns this class instance's raw value.
@@ -1247,11 +1240,7 @@ private constructor(
                         }
 
                         fun build(): Function =
-                            Function(
-                                arguments,
-                                name,
-                                additionalProperties.toImmutable(),
-                            )
+                            Function(arguments, name, additionalProperties.toImmutable())
                     }
 
                     override fun equals(other: Any?): Boolean {
@@ -1273,11 +1262,8 @@ private constructor(
                 }
 
                 /** The type of the tool. Currently, only `function` is supported. */
-                class Type
-                @JsonCreator
-                private constructor(
-                    private val value: JsonField<String>,
-                ) : Enum {
+                class Type @JsonCreator private constructor(private val value: JsonField<String>) :
+                    Enum {
 
                     /**
                      * Returns this class instance's raw value.
@@ -1299,7 +1285,7 @@ private constructor(
 
                     /** An enum containing [Type]'s known values. */
                     enum class Known {
-                        FUNCTION,
+                        FUNCTION
                     }
 
                     /**
@@ -1406,11 +1392,8 @@ private constructor(
          * flag from our content filters, `tool_calls` if the model called a tool, or
          * `function_call` (deprecated) if the model called a function.
          */
-        class FinishReason
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class FinishReason @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1710,11 +1693,8 @@ private constructor(
     }
 
     /** The service tier used for processing the request. */
-    class ServiceTier
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class ServiceTier @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
 
         /**
          * Returns this class instance's raw value.

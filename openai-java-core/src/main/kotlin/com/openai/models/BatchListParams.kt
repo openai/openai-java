@@ -203,12 +203,7 @@ private constructor(
         }
 
         fun build(): BatchListParams =
-            BatchListParams(
-                after,
-                limit,
-                additionalHeaders.build(),
-                additionalQueryParams.build(),
-            )
+            BatchListParams(after, limit, additionalHeaders.build(), additionalQueryParams.build())
     }
 
     override fun equals(other: Any?): Boolean {

@@ -34,7 +34,7 @@ interface CompletionService {
     @JvmOverloads
     fun create(
         params: ChatCompletionCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ChatCompletion
 
     /**
@@ -52,7 +52,7 @@ interface CompletionService {
     @MustBeClosed
     fun createStreaming(
         params: ChatCompletionCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): StreamResponse<ChatCompletionChunk>
 
     /**
@@ -62,7 +62,7 @@ interface CompletionService {
     @JvmOverloads
     fun retrieve(
         params: ChatCompletionRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ChatCompletion
 
     /**
@@ -73,7 +73,7 @@ interface CompletionService {
     @JvmOverloads
     fun update(
         params: ChatCompletionUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ChatCompletion
 
     /**
@@ -83,6 +83,6 @@ interface CompletionService {
     @JvmOverloads
     fun delete(
         params: ChatCompletionDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ChatCompletionDeleted
 }

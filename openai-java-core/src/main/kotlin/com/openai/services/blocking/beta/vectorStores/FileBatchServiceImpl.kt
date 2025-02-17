@@ -21,10 +21,8 @@ import com.openai.models.BetaVectorStoreFileBatchListFilesParams
 import com.openai.models.BetaVectorStoreFileBatchRetrieveParams
 import com.openai.models.VectorStoreFileBatch
 
-class FileBatchServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : FileBatchService {
+class FileBatchServiceImpl internal constructor(private val clientOptions: ClientOptions) :
+    FileBatchService {
 
     companion object {
 
@@ -39,7 +37,7 @@ internal constructor(
     /** Create a vector store file batch. */
     override fun create(
         params: BetaVectorStoreFileBatchCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): VectorStoreFileBatch {
         val request =
             HttpRequest.builder()
@@ -65,7 +63,7 @@ internal constructor(
     /** Retrieves a vector store file batch. */
     override fun retrieve(
         params: BetaVectorStoreFileBatchRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): VectorStoreFileBatch {
         val request =
             HttpRequest.builder()
@@ -74,7 +72,7 @@ internal constructor(
                     "vector_stores",
                     params.getPathParam(0),
                     "file_batches",
-                    params.getPathParam(1)
+                    params.getPathParam(1),
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()
@@ -98,7 +96,7 @@ internal constructor(
      */
     override fun cancel(
         params: BetaVectorStoreFileBatchCancelParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): VectorStoreFileBatch {
         val request =
             HttpRequest.builder()
@@ -108,7 +106,7 @@ internal constructor(
                     params.getPathParam(0),
                     "file_batches",
                     params.getPathParam(1),
-                    "cancel"
+                    "cancel",
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
@@ -131,7 +129,7 @@ internal constructor(
     /** Returns a list of vector store files in a batch. */
     override fun listFiles(
         params: BetaVectorStoreFileBatchListFilesParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): BetaVectorStoreFileBatchListFilesPage {
         val request =
             HttpRequest.builder()
@@ -141,7 +139,7 @@ internal constructor(
                     params.getPathParam(0),
                     "file_batches",
                     params.getPathParam(1),
-                    "files"
+                    "files",
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()

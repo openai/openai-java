@@ -3933,7 +3933,7 @@ private constructor(
             override fun serialize(
                 value: FunctionCall,
                 generator: JsonGenerator,
-                provider: SerializerProvider
+                provider: SerializerProvider,
             ) {
                 when {
                     value.auto != null -> generator.writeObject(value.auto)
@@ -3949,11 +3949,7 @@ private constructor(
          * `none` means the model will not call a function and instead generates a message. `auto`
          * means the model can pick between generating a message or calling a function.
          */
-        class Auto
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Auto @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -4258,7 +4254,7 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
     ) {
 
         @JsonAnyGetter
@@ -4498,7 +4494,7 @@ private constructor(
             override fun serialize(
                 value: ResponseFormat,
                 generator: JsonGenerator,
-                provider: SerializerProvider
+                provider: SerializerProvider,
             ) {
                 when {
                     value.text != null -> generator.writeObject(value.text)
@@ -4522,11 +4518,8 @@ private constructor(
      *   lower uptime SLA and no latency guarantee.
      * - When not set, the default behavior is 'auto'.
      */
-    class ServiceTier
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class ServiceTier @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -4732,7 +4725,7 @@ private constructor(
             override fun serialize(
                 value: Stop,
                 generator: JsonGenerator,
-                provider: SerializerProvider
+                provider: SerializerProvider,
             ) {
                 when {
                     value.string != null -> generator.writeObject(value.string)

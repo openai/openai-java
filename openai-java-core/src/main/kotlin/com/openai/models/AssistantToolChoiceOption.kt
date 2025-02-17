@@ -185,7 +185,7 @@ private constructor(
         override fun serialize(
             value: AssistantToolChoiceOption,
             generator: JsonGenerator,
-            provider: SerializerProvider
+            provider: SerializerProvider,
         ) {
             when {
                 value.auto != null -> generator.writeObject(value.auto)
@@ -202,11 +202,7 @@ private constructor(
      * the model can pick between generating a message or calling one or more tools. `required`
      * means the model must call one or more tools before responding to the user.
      */
-    class Auto
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Auto @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.

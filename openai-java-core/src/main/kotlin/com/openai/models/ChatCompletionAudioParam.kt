@@ -150,11 +150,7 @@ private constructor(
     /**
      * Specifies the output audio format. Must be one of `wav`, `mp3`, `flac`, `opus`, or `pcm16`.
      */
-    class Format
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Format @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -265,11 +261,7 @@ private constructor(
      * and `verse` (also supported but not recommended are `alloy`, `echo`, and `shimmer`; these
      * voices are less expressive).
      */
-    class Voice
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Voice @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.

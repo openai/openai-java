@@ -14,6 +14,6 @@ interface EmbeddingService {
     @JvmOverloads
     fun create(
         params: EmbeddingCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CreateEmbeddingResponse
 }

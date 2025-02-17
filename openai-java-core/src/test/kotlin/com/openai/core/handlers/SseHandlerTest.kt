@@ -20,14 +20,14 @@ class SseHandlerTest {
     enum class TestCase(
         internal val body: String,
         internal val expectedMessages: List<SseMessage>? = null,
-        internal val expectedException: Exception? = null
+        internal val expectedException: Exception? = null,
     ) {
         DATA_MISSING_EVENT(
             buildString {
                 append("data: {\"foo\":true}\n")
                 append("\n")
             },
-            listOf(sseMessageBuilder().data("{\"foo\":true}").build())
+            listOf(sseMessageBuilder().data("{\"foo\":true}").build()),
         ),
         MULTIPLE_DATA_MISSING_EVENT(
             buildString {
@@ -38,8 +38,8 @@ class SseHandlerTest {
             },
             listOf(
                 sseMessageBuilder().data("{\"foo\":true}").build(),
-                sseMessageBuilder().data("{\"bar\":false}").build()
-            )
+                sseMessageBuilder().data("{\"bar\":false}").build(),
+            ),
         ),
         DATA_JSON_ESCAPED_DOUBLE_NEW_LINE(
             buildString {
@@ -48,7 +48,7 @@ class SseHandlerTest {
                 append("data: true}\n")
                 append("\n\n")
             },
-            listOf(sseMessageBuilder().data("{\n\"foo\":\ntrue}").build())
+            listOf(sseMessageBuilder().data("{\n\"foo\":\ntrue}").build()),
         ),
         MULTIPLE_DATA_LINES(
             buildString {
@@ -57,7 +57,7 @@ class SseHandlerTest {
                 append("data: true}\n")
                 append("\n\n")
             },
-            listOf(sseMessageBuilder().data("{\n\"foo\":\ntrue}").build())
+            listOf(sseMessageBuilder().data("{\n\"foo\":\ntrue}").build()),
         ),
         SPECIAL_NEW_LINE_CHARACTER(
             buildString {
@@ -71,37 +71,37 @@ class SseHandlerTest {
             listOf(
                 sseMessageBuilder().data("{\"content\":\" culpa\"}").build(),
                 sseMessageBuilder().data("{\"content\":\" \u2028\"}").build(),
-                sseMessageBuilder().data("{\"content\":\"foo\"}").build()
-            )
+                sseMessageBuilder().data("{\"content\":\"foo\"}").build(),
+            ),
         ),
         MULTI_BYTE_CHARACTER(
             buildString {
                 append("data: {\"content\":\"\u0438\u0437\u0432\u0435\u0441\u0442\u043d\u0438\"}\n")
                 append("\n")
             },
-            listOf(sseMessageBuilder().data("{\"content\":\"известни\"}").build())
+            listOf(sseMessageBuilder().data("{\"content\":\"известни\"}").build()),
         ),
         STRING_ERROR_PROPERTY(
             buildString {
                 append("data: {\"error\":\"ERROR!\"}\n")
                 append("\n")
             },
-            expectedException = OpenAIException("ERROR!")
+            expectedException = OpenAIException("ERROR!"),
         ),
         ERROR_PROPERTY_WITH_MESSAGE(
             buildString {
                 append("data: {\"error\":{\"message\":\"ERROR!\"}}\n")
                 append("\n")
             },
-            expectedException = OpenAIException("ERROR!")
+            expectedException = OpenAIException("ERROR!"),
         ),
         ERROR_PROPERTY_MALFORMED(
             buildString {
                 append("data: {\"error\":42}\n")
                 append("\n")
             },
-            expectedException = OpenAIException("An error occurred during streaming")
-        )
+            expectedException = OpenAIException("An error occurred during streaming"),
+        ),
     }
 
     @ParameterizedTest

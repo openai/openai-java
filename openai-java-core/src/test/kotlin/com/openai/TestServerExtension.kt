@@ -36,7 +36,7 @@ class TestServerExtension : BeforeAllCallback, ExecutionCondition {
                     $ prism mock path/to/your.openapi.yml
                 """
                     .trimIndent(),
-                e
+                e,
             )
         }
     }
