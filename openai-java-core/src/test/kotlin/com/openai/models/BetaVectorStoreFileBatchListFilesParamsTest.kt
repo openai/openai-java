@@ -38,7 +38,7 @@ class BetaVectorStoreFileBatchListFilesParamsTest {
         expected.put("before", "before")
         expected.put(
             "filter",
-            BetaVectorStoreFileBatchListFilesParams.Filter.IN_PROGRESS.toString()
+            BetaVectorStoreFileBatchListFilesParams.Filter.IN_PROGRESS.toString(),
         )
         expected.put("limit", "0")
         expected.put("order", BetaVectorStoreFileBatchListFilesParams.Order.ASC.toString())

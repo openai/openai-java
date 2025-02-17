@@ -25,10 +25,8 @@ import com.openai.services.async.fineTuning.jobs.CheckpointServiceAsync
 import com.openai.services.async.fineTuning.jobs.CheckpointServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 
-class JobServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : JobServiceAsync {
+class JobServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    JobServiceAsync {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
@@ -52,7 +50,7 @@ internal constructor(
      */
     override fun create(
         params: FineTuningJobCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<FineTuningJob> {
         val request =
             HttpRequest.builder()
@@ -84,7 +82,7 @@ internal constructor(
      */
     override fun retrieve(
         params: FineTuningJobRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<FineTuningJob> {
         val request =
             HttpRequest.builder()
@@ -112,7 +110,7 @@ internal constructor(
     /** List your organization's fine-tuning jobs */
     override fun list(
         params: FineTuningJobListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<FineTuningJobListPageAsync> {
         val request =
             HttpRequest.builder()
@@ -140,7 +138,7 @@ internal constructor(
     /** Immediately cancel a fine-tune job. */
     override fun cancel(
         params: FineTuningJobCancelParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<FineTuningJob> {
         val request =
             HttpRequest.builder()
@@ -169,7 +167,7 @@ internal constructor(
     /** Get status updates for a fine-tuning job. */
     override fun listEvents(
         params: FineTuningJobListEventsParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<FineTuningJobListEventsPageAsync> {
         val request =
             HttpRequest.builder()

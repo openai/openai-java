@@ -17,6 +17,6 @@ interface ModerationService {
     @JvmOverloads
     fun create(
         params: ModerationCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ModerationCreateResponse
 }

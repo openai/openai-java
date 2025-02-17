@@ -75,13 +75,8 @@ private constructor(
         fun of(
             filesService: FileServiceAsync,
             params: BetaVectorStoreFileListParams,
-            response: Response
-        ) =
-            BetaVectorStoreFileListPageAsync(
-                filesService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = BetaVectorStoreFileListPageAsync(filesService, params, response)
     }
 
     @NoAutoDetect
@@ -165,26 +160,19 @@ private constructor(
                 this.additionalProperties.put(key, value)
             }
 
-            fun build() =
-                Response(
-                    data,
-                    hasMore,
-                    additionalProperties.toImmutable(),
-                )
+            fun build() = Response(data, hasMore, additionalProperties.toImmutable())
         }
     }
 
-    class AutoPager(
-        private val firstPage: BetaVectorStoreFileListPageAsync,
-    ) {
+    class AutoPager(private val firstPage: BetaVectorStoreFileListPageAsync) {
 
         fun forEach(
             action: Predicate<VectorStoreFile>,
-            executor: Executor
+            executor: Executor,
         ): CompletableFuture<Void> {
             fun CompletableFuture<Optional<BetaVectorStoreFileListPageAsync>>.forEach(
                 action: (VectorStoreFile) -> Boolean,
-                executor: Executor
+                executor: Executor,
             ): CompletableFuture<Void> =
                 thenComposeAsync(
                     { page ->
@@ -193,7 +181,7 @@ private constructor(
                             .map { it.getNextPage().forEach(action, executor) }
                             .orElseGet { CompletableFuture.completedFuture(null) }
                     },
-                    executor
+                    executor,
                 )
             return CompletableFuture.completedFuture(Optional.of(firstPage))
                 .forEach(action::test, executor)

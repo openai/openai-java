@@ -575,7 +575,7 @@ private constructor(
                 }
                 tryDeserialize(
                         node,
-                        jacksonTypeRef<List<ChatCompletionRequestAssistantMessageContentPart>>()
+                        jacksonTypeRef<List<ChatCompletionRequestAssistantMessageContentPart>>(),
                     ) {
                         it.forEach { it.validate() }
                     }
@@ -592,7 +592,7 @@ private constructor(
             override fun serialize(
                 value: Content,
                 generator: JsonGenerator,
-                provider: SerializerProvider
+                provider: SerializerProvider,
             ) {
                 when {
                     value.text != null -> generator.writeObject(value.text)
@@ -754,21 +754,21 @@ private constructor(
                                 ?.let {
                                     return ChatCompletionRequestAssistantMessageContentPart(
                                         text = it,
-                                        _json = json
+                                        _json = json,
                                     )
                                 }
                         }
                         "refusal" -> {
                             tryDeserialize(
                                     node,
-                                    jacksonTypeRef<ChatCompletionContentPartRefusal>()
+                                    jacksonTypeRef<ChatCompletionContentPartRefusal>(),
                                 ) {
                                     it.validate()
                                 }
                                 ?.let {
                                     return ChatCompletionRequestAssistantMessageContentPart(
                                         refusal = it,
-                                        _json = json
+                                        _json = json,
                                     )
                                 }
                         }
@@ -786,7 +786,7 @@ private constructor(
                 override fun serialize(
                     value: ChatCompletionRequestAssistantMessageContentPart,
                     generator: JsonGenerator,
-                    provider: SerializerProvider
+                    provider: SerializerProvider,
                 ) {
                     when {
                         value.text != null -> generator.writeObject(value.text)

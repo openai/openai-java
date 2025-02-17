@@ -865,7 +865,7 @@ private constructor(
             override fun serialize(
                 value: Input,
                 generator: JsonGenerator,
-                provider: SerializerProvider
+                provider: SerializerProvider,
             ) {
                 when {
                     value.string != null -> generator.writeObject(value.string)
@@ -884,11 +884,8 @@ private constructor(
      * The format to return the embeddings in. Can be either `float` or
      * [`base64`](https://pypi.org/project/pybase64/).
      */
-    class EncodingFormat
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class EncodingFormat @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
 
         /**
          * Returns this class instance's raw value.

@@ -28,10 +28,8 @@ import com.openai.models.ChatCompletionUpdateParams
 import com.openai.services.blocking.chat.completions.MessageService
 import com.openai.services.blocking.chat.completions.MessageServiceImpl
 
-class CompletionServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : CompletionService {
+class CompletionServiceImpl internal constructor(private val clientOptions: ClientOptions) :
+    CompletionService {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
@@ -55,7 +53,7 @@ internal constructor(
      */
     override fun create(
         params: ChatCompletionCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): ChatCompletion {
         val request =
             HttpRequest.builder()
@@ -92,7 +90,7 @@ internal constructor(
      */
     override fun createStreaming(
         params: ChatCompletionCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): StreamResponse<ChatCompletionChunk> {
         val request =
             HttpRequest.builder()
@@ -105,7 +103,7 @@ internal constructor(
                             ._body()
                             .toBuilder()
                             .putAdditionalProperty("stream", JsonValue.from(true))
-                            .build()
+                            .build(),
                     )
                 )
                 .build()
@@ -131,7 +129,7 @@ internal constructor(
      */
     override fun retrieve(
         params: ChatCompletionRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): ChatCompletion {
         val request =
             HttpRequest.builder()
@@ -159,7 +157,7 @@ internal constructor(
      */
     override fun update(
         params: ChatCompletionUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): ChatCompletion {
         val request =
             HttpRequest.builder()
@@ -187,7 +185,7 @@ internal constructor(
      */
     override fun delete(
         params: ChatCompletionDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): ChatCompletionDeleted {
         val request =
             HttpRequest.builder()

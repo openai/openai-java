@@ -526,7 +526,7 @@ private constructor(
         override fun serialize(
             value: RunStreamEvent,
             generator: JsonGenerator,
-            provider: SerializerProvider
+            provider: SerializerProvider,
         ) {
             when {
                 value.threadRunCreated != null -> generator.writeObject(value.threadRunCreated)

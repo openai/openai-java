@@ -195,7 +195,7 @@ private constructor(
             fun build(): MessageCreation =
                 MessageCreation(
                     checkRequired("messageId", messageId),
-                    additionalProperties.toImmutable()
+                    additionalProperties.toImmutable(),
                 )
         }
 

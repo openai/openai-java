@@ -850,7 +850,7 @@ private constructor(
                 override fun serialize(
                     value: Tool,
                     generator: JsonGenerator,
-                    provider: SerializerProvider
+                    provider: SerializerProvider,
                 ) {
                     when {
                         value.codeInterpreter != null ->
@@ -962,16 +962,12 @@ private constructor(
             fun build(): IncompleteDetails =
                 IncompleteDetails(
                     checkRequired("reason", reason),
-                    additionalProperties.toImmutable()
+                    additionalProperties.toImmutable(),
                 )
         }
 
         /** The reason the message is incomplete. */
-        class Reason
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Reason @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1098,11 +1094,7 @@ private constructor(
     }
 
     /** The entity that produced the message. One of `user` or `assistant`. */
-    class Role
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Role @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -1193,11 +1185,7 @@ private constructor(
     /**
      * The status of the message, which can be either `in_progress`, `incomplete`, or `completed`.
      */
-    class Status
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.

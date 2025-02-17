@@ -6,10 +6,7 @@ import com.openai.core.ClientOptions
 import com.openai.services.blocking.chat.CompletionService
 import com.openai.services.blocking.chat.CompletionServiceImpl
 
-class ChatServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : ChatService {
+class ChatServiceImpl internal constructor(private val clientOptions: ClientOptions) : ChatService {
 
     private val completions: CompletionService by lazy { CompletionServiceImpl(clientOptions) }
 

@@ -11,10 +11,7 @@ import com.openai.services.blocking.beta.ThreadServiceImpl
 import com.openai.services.blocking.beta.VectorStoreService
 import com.openai.services.blocking.beta.VectorStoreServiceImpl
 
-class BetaServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : BetaService {
+class BetaServiceImpl internal constructor(private val clientOptions: ClientOptions) : BetaService {
 
     companion object {
 

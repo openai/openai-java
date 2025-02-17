@@ -225,14 +225,14 @@ private constructor(
                 ?.let {
                     return AssistantResponseFormatOption(
                         responseFormatJsonObject = it,
-                        _json = json
+                        _json = json,
                     )
                 }
             tryDeserialize(node, jacksonTypeRef<ResponseFormatJsonSchema>()) { it.validate() }
                 ?.let {
                     return AssistantResponseFormatOption(
                         responseFormatJsonSchema = it,
-                        _json = json
+                        _json = json,
                     )
                 }
 
@@ -246,7 +246,7 @@ private constructor(
         override fun serialize(
             value: AssistantResponseFormatOption,
             generator: JsonGenerator,
-            provider: SerializerProvider
+            provider: SerializerProvider,
         ) {
             when {
                 value.auto != null -> generator.writeObject(value.auto)

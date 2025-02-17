@@ -73,11 +73,7 @@ private constructor(
 
         @JvmStatic
         fun of(runsService: RunServiceAsync, params: BetaThreadRunListParams, response: Response) =
-            BetaThreadRunListPageAsync(
-                runsService,
-                params,
-                response,
-            )
+            BetaThreadRunListPageAsync(runsService, params, response)
     }
 
     @NoAutoDetect
@@ -161,23 +157,16 @@ private constructor(
                 this.additionalProperties.put(key, value)
             }
 
-            fun build() =
-                Response(
-                    data,
-                    hasMore,
-                    additionalProperties.toImmutable(),
-                )
+            fun build() = Response(data, hasMore, additionalProperties.toImmutable())
         }
     }
 
-    class AutoPager(
-        private val firstPage: BetaThreadRunListPageAsync,
-    ) {
+    class AutoPager(private val firstPage: BetaThreadRunListPageAsync) {
 
         fun forEach(action: Predicate<Run>, executor: Executor): CompletableFuture<Void> {
             fun CompletableFuture<Optional<BetaThreadRunListPageAsync>>.forEach(
                 action: (Run) -> Boolean,
-                executor: Executor
+                executor: Executor,
             ): CompletableFuture<Void> =
                 thenComposeAsync(
                     { page ->
@@ -186,7 +175,7 @@ private constructor(
                             .map { it.getNextPage().forEach(action, executor) }
                             .orElseGet { CompletableFuture.completedFuture(null) }
                     },
-                    executor
+                    executor,
                 )
             return CompletableFuture.completedFuture(Optional.of(firstPage))
                 .forEach(action::test, executor)

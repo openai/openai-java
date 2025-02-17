@@ -21,21 +21,21 @@ interface FileService {
     @JvmOverloads
     fun retrieve(
         params: FileRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): FileObject
 
     /** Returns a list of files. */
     @JvmOverloads
     fun list(
         params: FileListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): FileListPage
 
     /** Delete a file. */
     @JvmOverloads
     fun delete(
         params: FileDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): FileDeleted
 
     /** Returns the contents of the specified file. */
@@ -43,6 +43,6 @@ interface FileService {
     @MustBeClosed
     fun content(
         params: FileContentParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): HttpResponse
 }

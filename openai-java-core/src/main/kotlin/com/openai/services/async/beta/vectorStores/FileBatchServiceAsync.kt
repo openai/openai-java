@@ -19,14 +19,14 @@ interface FileBatchServiceAsync {
     @JvmOverloads
     fun create(
         params: BetaVectorStoreFileBatchCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStoreFileBatch>
 
     /** Retrieves a vector store file batch. */
     @JvmOverloads
     fun retrieve(
         params: BetaVectorStoreFileBatchRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStoreFileBatch>
 
     /**
@@ -36,13 +36,13 @@ interface FileBatchServiceAsync {
     @JvmOverloads
     fun cancel(
         params: BetaVectorStoreFileBatchCancelParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStoreFileBatch>
 
     /** Returns a list of vector store files in a batch. */
     @JvmOverloads
     fun listFiles(
         params: BetaVectorStoreFileBatchListFilesParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<BetaVectorStoreFileBatchListFilesPageAsync>
 }

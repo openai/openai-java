@@ -689,20 +689,12 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
-                    fun build(): Content =
-                        Content(
-                            text,
-                            type,
-                            additionalProperties.toImmutable(),
-                        )
+                    fun build(): Content = Content(text, type, additionalProperties.toImmutable())
                 }
 
                 /** The type of the content. */
-                class Type
-                @JsonCreator
-                private constructor(
-                    private val value: JsonField<String>,
-                ) : Enum {
+                class Type @JsonCreator private constructor(private val value: JsonField<String>) :
+                    Enum {
 
                     /**
                      * Returns this class instance's raw value.
@@ -724,7 +716,7 @@ private constructor(
 
                     /** An enum containing [Type]'s known values. */
                     enum class Known {
-                        TEXT,
+                        TEXT
                     }
 
                     /**

@@ -20,10 +20,8 @@ import com.openai.models.UploadCreateParams
 import com.openai.services.blocking.uploads.PartService
 import com.openai.services.blocking.uploads.PartServiceImpl
 
-class UploadServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : UploadService {
+class UploadServiceImpl internal constructor(private val clientOptions: ClientOptions) :
+    UploadService {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 

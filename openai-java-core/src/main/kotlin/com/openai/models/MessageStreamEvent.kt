@@ -353,7 +353,7 @@ private constructor(
         override fun serialize(
             value: MessageStreamEvent,
             generator: JsonGenerator,
-            provider: SerializerProvider
+            provider: SerializerProvider,
         ) {
             when {
                 value.threadMessageCreated != null ->

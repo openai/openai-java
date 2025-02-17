@@ -24,10 +24,7 @@ import com.openai.models.FineTuningJobRetrieveParams
 import com.openai.services.blocking.fineTuning.jobs.CheckpointService
 import com.openai.services.blocking.fineTuning.jobs.CheckpointServiceImpl
 
-class JobServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : JobService {
+class JobServiceImpl internal constructor(private val clientOptions: ClientOptions) : JobService {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
@@ -49,7 +46,7 @@ internal constructor(
      */
     override fun create(
         params: FineTuningJobCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): FineTuningJob {
         val request =
             HttpRequest.builder()
@@ -78,7 +75,7 @@ internal constructor(
      */
     override fun retrieve(
         params: FineTuningJobRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): FineTuningJob {
         val request =
             HttpRequest.builder()
@@ -103,7 +100,7 @@ internal constructor(
     /** List your organization's fine-tuning jobs */
     override fun list(
         params: FineTuningJobListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): FineTuningJobListPage {
         val request =
             HttpRequest.builder()
@@ -128,7 +125,7 @@ internal constructor(
     /** Immediately cancel a fine-tune job. */
     override fun cancel(
         params: FineTuningJobCancelParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): FineTuningJob {
         val request =
             HttpRequest.builder()
@@ -154,7 +151,7 @@ internal constructor(
     /** Get status updates for a fine-tuning job. */
     override fun listEvents(
         params: FineTuningJobListEventsParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): FineTuningJobListEventsPage {
         val request =
             HttpRequest.builder()

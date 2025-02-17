@@ -24,10 +24,8 @@ import com.openai.models.BetaAssistantRetrieveParams
 import com.openai.models.BetaAssistantUpdateParams
 import java.util.concurrent.CompletableFuture
 
-class AssistantServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : AssistantServiceAsync {
+class AssistantServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    AssistantServiceAsync {
 
     companion object {
 
@@ -42,7 +40,7 @@ internal constructor(
     /** Create an assistant with a model and instructions. */
     override fun create(
         params: BetaAssistantCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Assistant> {
         val request =
             HttpRequest.builder()
@@ -71,7 +69,7 @@ internal constructor(
     /** Retrieves an assistant. */
     override fun retrieve(
         params: BetaAssistantRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Assistant> {
         val request =
             HttpRequest.builder()
@@ -99,7 +97,7 @@ internal constructor(
     /** Modifies an assistant. */
     override fun update(
         params: BetaAssistantUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Assistant> {
         val request =
             HttpRequest.builder()
@@ -129,7 +127,7 @@ internal constructor(
     /** Returns a list of assistants. */
     override fun list(
         params: BetaAssistantListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<BetaAssistantListPageAsync> {
         val request =
             HttpRequest.builder()
@@ -158,7 +156,7 @@ internal constructor(
     /** Delete an assistant. */
     override fun delete(
         params: BetaAssistantDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<AssistantDeleted> {
         val request =
             HttpRequest.builder()

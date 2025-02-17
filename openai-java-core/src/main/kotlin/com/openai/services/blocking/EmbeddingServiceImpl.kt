@@ -16,10 +16,8 @@ import com.openai.errors.OpenAIError
 import com.openai.models.CreateEmbeddingResponse
 import com.openai.models.EmbeddingCreateParams
 
-class EmbeddingServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : EmbeddingService {
+class EmbeddingServiceImpl internal constructor(private val clientOptions: ClientOptions) :
+    EmbeddingService {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
@@ -30,7 +28,7 @@ internal constructor(
     /** Creates an embedding vector representing the input text. */
     override fun create(
         params: EmbeddingCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CreateEmbeddingResponse {
         val request =
             HttpRequest.builder()

@@ -23,10 +23,8 @@ import com.openai.models.BetaThreadMessageUpdateParams
 import com.openai.models.Message
 import com.openai.models.MessageDeleted
 
-class MessageServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : MessageService {
+class MessageServiceImpl internal constructor(private val clientOptions: ClientOptions) :
+    MessageService {
 
     companion object {
 
@@ -41,7 +39,7 @@ internal constructor(
     /** Create a message. */
     override fun create(
         params: BetaThreadMessageCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Message {
         val request =
             HttpRequest.builder()
@@ -67,7 +65,7 @@ internal constructor(
     /** Retrieve a message. */
     override fun retrieve(
         params: BetaThreadMessageRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Message {
         val request =
             HttpRequest.builder()
@@ -76,7 +74,7 @@ internal constructor(
                     "threads",
                     params.getPathParam(0),
                     "messages",
-                    params.getPathParam(1)
+                    params.getPathParam(1),
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()
@@ -97,7 +95,7 @@ internal constructor(
     /** Modifies a message. */
     override fun update(
         params: BetaThreadMessageUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Message {
         val request =
             HttpRequest.builder()
@@ -106,7 +104,7 @@ internal constructor(
                     "threads",
                     params.getPathParam(0),
                     "messages",
-                    params.getPathParam(1)
+                    params.getPathParam(1),
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .body(json(clientOptions.jsonMapper, params._body()))
@@ -129,7 +127,7 @@ internal constructor(
     /** Returns a list of messages for a given thread. */
     override fun list(
         params: BetaThreadMessageListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): BetaThreadMessageListPage {
         val request =
             HttpRequest.builder()
@@ -155,7 +153,7 @@ internal constructor(
     /** Deletes a message. */
     override fun delete(
         params: BetaThreadMessageDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): MessageDeleted {
         val request =
             HttpRequest.builder()
@@ -164,7 +162,7 @@ internal constructor(
                     "threads",
                     params.getPathParam(0),
                     "messages",
-                    params.getPathParam(1)
+                    params.getPathParam(1),
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }

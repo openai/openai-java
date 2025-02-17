@@ -848,11 +848,7 @@ private constructor(
             }
 
             fun build(): ToolResources =
-                ToolResources(
-                    codeInterpreter,
-                    fileSearch,
-                    additionalProperties.toImmutable(),
-                )
+                ToolResources(codeInterpreter, fileSearch, additionalProperties.toImmutable())
         }
 
         @NoAutoDetect
@@ -976,7 +972,7 @@ private constructor(
                 fun build(): CodeInterpreter =
                     CodeInterpreter(
                         (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
-                        additionalProperties.toImmutable()
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -1125,7 +1121,7 @@ private constructor(
                 fun build(): FileSearch =
                     FileSearch(
                         (vectorStoreIds ?: JsonMissing.of()).map { it.toImmutable() },
-                        additionalProperties.toImmutable()
+                        additionalProperties.toImmutable(),
                     )
             }
 

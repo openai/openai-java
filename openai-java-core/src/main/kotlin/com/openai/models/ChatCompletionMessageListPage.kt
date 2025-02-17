@@ -75,13 +75,8 @@ private constructor(
         fun of(
             messagesService: MessageService,
             params: ChatCompletionMessageListParams,
-            response: Response
-        ) =
-            ChatCompletionMessageListPage(
-                messagesService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = ChatCompletionMessageListPage(messagesService, params, response)
     }
 
     @NoAutoDetect
@@ -167,18 +162,12 @@ private constructor(
                 this.additionalProperties.put(key, value)
             }
 
-            fun build() =
-                Response(
-                    data,
-                    hasMore,
-                    additionalProperties.toImmutable(),
-                )
+            fun build() = Response(data, hasMore, additionalProperties.toImmutable())
         }
     }
 
-    class AutoPager(
-        private val firstPage: ChatCompletionMessageListPage,
-    ) : Iterable<ChatCompletionStoreMessage> {
+    class AutoPager(private val firstPage: ChatCompletionMessageListPage) :
+        Iterable<ChatCompletionStoreMessage> {
 
         override fun iterator(): Iterator<ChatCompletionStoreMessage> = iterator {
             var page = firstPage

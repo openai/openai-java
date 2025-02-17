@@ -72,13 +72,8 @@ private constructor(
         fun of(
             vectorStoresService: VectorStoreService,
             params: BetaVectorStoreListParams,
-            response: Response
-        ) =
-            BetaVectorStoreListPage(
-                vectorStoresService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = BetaVectorStoreListPage(vectorStoresService, params, response)
     }
 
     @NoAutoDetect
@@ -162,18 +157,11 @@ private constructor(
                 this.additionalProperties.put(key, value)
             }
 
-            fun build() =
-                Response(
-                    data,
-                    hasMore,
-                    additionalProperties.toImmutable(),
-                )
+            fun build() = Response(data, hasMore, additionalProperties.toImmutable())
         }
     }
 
-    class AutoPager(
-        private val firstPage: BetaVectorStoreListPage,
-    ) : Iterable<VectorStore> {
+    class AutoPager(private val firstPage: BetaVectorStoreListPage) : Iterable<VectorStore> {
 
         override fun iterator(): Iterator<VectorStore> = iterator {
             var page = firstPage

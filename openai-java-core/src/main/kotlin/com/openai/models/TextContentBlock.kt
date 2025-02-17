@@ -102,11 +102,7 @@ private constructor(
         }
 
         fun build(): TextContentBlock =
-            TextContentBlock(
-                checkRequired("text", text),
-                type,
-                additionalProperties.toImmutable(),
-            )
+            TextContentBlock(checkRequired("text", text), type, additionalProperties.toImmutable())
     }
 
     override fun equals(other: Any?): Boolean {

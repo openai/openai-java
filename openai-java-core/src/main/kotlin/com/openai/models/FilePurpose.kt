@@ -15,11 +15,7 @@ import com.openai.errors.OpenAIInvalidDataException
  * image file inputs, "batch" for [Batch API](https://platform.openai.com/docs/guides/batch), and
  * "fine-tune" for [Fine-tuning](https://platform.openai.com/docs/api-reference/fine-tuning).
  */
-class FilePurpose
-@JsonCreator
-private constructor(
-    private val value: JsonField<String>,
-) : Enum {
+class FilePurpose @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
     /**
      * Returns this class instance's raw value.

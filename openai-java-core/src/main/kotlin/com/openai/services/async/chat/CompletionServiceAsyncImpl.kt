@@ -31,10 +31,8 @@ import com.openai.services.async.chat.completions.MessageServiceAsync
 import com.openai.services.async.chat.completions.MessageServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 
-class CompletionServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : CompletionServiceAsync {
+class CompletionServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    CompletionServiceAsync {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
@@ -58,7 +56,7 @@ internal constructor(
      */
     override fun create(
         params: ChatCompletionCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<ChatCompletion> {
         val request =
             HttpRequest.builder()
@@ -98,7 +96,7 @@ internal constructor(
      */
     override fun createStreaming(
         params: ChatCompletionCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): AsyncStreamResponse<ChatCompletionChunk> {
         val request =
             HttpRequest.builder()
@@ -111,7 +109,7 @@ internal constructor(
                             ._body()
                             .toBuilder()
                             .putAdditionalProperty("stream", JsonValue.from(true))
-                            .build()
+                            .build(),
                     )
                 )
                 .build()
@@ -141,7 +139,7 @@ internal constructor(
      */
     override fun retrieve(
         params: ChatCompletionRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<ChatCompletion> {
         val request =
             HttpRequest.builder()
@@ -172,7 +170,7 @@ internal constructor(
      */
     override fun update(
         params: ChatCompletionUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<ChatCompletion> {
         val request =
             HttpRequest.builder()
@@ -203,7 +201,7 @@ internal constructor(
      */
     override fun delete(
         params: ChatCompletionDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<ChatCompletionDeleted> {
         val request =
             HttpRequest.builder()

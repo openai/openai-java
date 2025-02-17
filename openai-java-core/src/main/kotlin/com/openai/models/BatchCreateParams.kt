@@ -627,11 +627,8 @@ private constructor(
     /**
      * The time frame within which the batch should be processed. Currently only `24h` is supported.
      */
-    class CompletionWindow
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class CompletionWindow @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -652,7 +649,7 @@ private constructor(
 
         /** An enum containing [CompletionWindow]'s known values. */
         enum class Known {
-            _24H,
+            _24H
         }
 
         /**
@@ -721,11 +718,7 @@ private constructor(
      * `/v1/embeddings`, and `/v1/completions` are supported. Note that `/v1/embeddings` batches are
      * also restricted to a maximum of 50,000 embedding inputs across all requests in the batch.
      */
-    class Endpoint
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Endpoint @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.

@@ -36,10 +36,8 @@ import com.openai.services.async.beta.threads.RunServiceAsync
 import com.openai.services.async.beta.threads.RunServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 
-class ThreadServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : ThreadServiceAsync {
+class ThreadServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    ThreadServiceAsync {
 
     companion object {
 
@@ -62,7 +60,7 @@ internal constructor(
     /** Create a thread. */
     override fun create(
         params: BetaThreadCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Thread> {
         val request =
             HttpRequest.builder()
@@ -91,7 +89,7 @@ internal constructor(
     /** Retrieves a thread. */
     override fun retrieve(
         params: BetaThreadRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Thread> {
         val request =
             HttpRequest.builder()
@@ -119,7 +117,7 @@ internal constructor(
     /** Modifies a thread. */
     override fun update(
         params: BetaThreadUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Thread> {
         val request =
             HttpRequest.builder()
@@ -148,7 +146,7 @@ internal constructor(
     /** Delete a thread. */
     override fun delete(
         params: BetaThreadDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<ThreadDeleted> {
         val request =
             HttpRequest.builder()
@@ -177,7 +175,7 @@ internal constructor(
     /** Create a thread and run it in one request. */
     override fun createAndRun(
         params: BetaThreadCreateAndRunParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Run> {
         val request =
             HttpRequest.builder()
@@ -208,7 +206,7 @@ internal constructor(
     /** Create a thread and run it in one request. */
     override fun createAndRunStreaming(
         params: BetaThreadCreateAndRunParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): AsyncStreamResponse<AssistantStreamEvent> {
         val request =
             HttpRequest.builder()
@@ -222,7 +220,7 @@ internal constructor(
                             ._body()
                             .toBuilder()
                             .putAdditionalProperty("stream", JsonValue.from(true))
-                            .build()
+                            .build(),
                     )
                 )
                 .build()

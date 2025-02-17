@@ -18,6 +18,6 @@ interface MessageServiceAsync {
     @JvmOverloads
     fun list(
         params: ChatCompletionMessageListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ChatCompletionMessageListPageAsync>
 }

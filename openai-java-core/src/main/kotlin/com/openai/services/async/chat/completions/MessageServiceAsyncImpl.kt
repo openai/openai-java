@@ -16,10 +16,8 @@ import com.openai.models.ChatCompletionMessageListPageAsync
 import com.openai.models.ChatCompletionMessageListParams
 import java.util.concurrent.CompletableFuture
 
-class MessageServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : MessageServiceAsync {
+class MessageServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    MessageServiceAsync {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
@@ -33,7 +31,7 @@ internal constructor(
      */
     override fun list(
         params: ChatCompletionMessageListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<ChatCompletionMessageListPageAsync> {
         val request =
             HttpRequest.builder()

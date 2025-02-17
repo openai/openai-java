@@ -20,34 +20,34 @@ interface AssistantService {
     @JvmOverloads
     fun create(
         params: BetaAssistantCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Assistant
 
     /** Retrieves an assistant. */
     @JvmOverloads
     fun retrieve(
         params: BetaAssistantRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Assistant
 
     /** Modifies an assistant. */
     @JvmOverloads
     fun update(
         params: BetaAssistantUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Assistant
 
     /** Returns a list of assistants. */
     @JvmOverloads
     fun list(
         params: BetaAssistantListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): BetaAssistantListPage
 
     /** Delete an assistant. */
     @JvmOverloads
     fun delete(
         params: BetaAssistantDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): AssistantDeleted
 }

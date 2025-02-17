@@ -7,11 +7,7 @@ import com.openai.core.Enum
 import com.openai.core.JsonField
 import com.openai.errors.OpenAIInvalidDataException
 
-class RunStepInclude
-@JsonCreator
-private constructor(
-    private val value: JsonField<String>,
-) : Enum {
+class RunStepInclude @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
     /**
      * Returns this class instance's raw value.
@@ -33,7 +29,7 @@ private constructor(
 
     /** An enum containing [RunStepInclude]'s known values. */
     enum class Known {
-        STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT,
+        STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT
     }
 
     /**

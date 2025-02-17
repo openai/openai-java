@@ -21,34 +21,34 @@ interface MessageServiceAsync {
     @JvmOverloads
     fun create(
         params: BetaThreadMessageCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Message>
 
     /** Retrieve a message. */
     @JvmOverloads
     fun retrieve(
         params: BetaThreadMessageRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Message>
 
     /** Modifies a message. */
     @JvmOverloads
     fun update(
         params: BetaThreadMessageUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Message>
 
     /** Returns a list of messages for a given thread. */
     @JvmOverloads
     fun list(
         params: BetaThreadMessageListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<BetaThreadMessageListPageAsync>
 
     /** Deletes a message. */
     @JvmOverloads
     fun delete(
         params: BetaThreadMessageDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<MessageDeleted>
 }

@@ -22,10 +22,7 @@ import com.openai.models.FileListParams
 import com.openai.models.FileObject
 import com.openai.models.FileRetrieveParams
 
-class FileServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : FileService {
+class FileServiceImpl internal constructor(private val clientOptions: ClientOptions) : FileService {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 

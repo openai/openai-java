@@ -10,10 +10,7 @@ import java.io.OutputStream
 import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder
 
 @JvmSynthetic
-internal inline fun <reified T> json(
-    jsonMapper: JsonMapper,
-    value: T,
-): HttpRequestBody {
+internal inline fun <reified T> json(jsonMapper: JsonMapper, value: T): HttpRequestBody {
     return object : HttpRequestBody {
         private var cachedBytes: ByteArray? = null
 
@@ -49,7 +46,7 @@ internal inline fun <reified T> json(
 @JvmSynthetic
 internal fun multipartFormData(
     jsonMapper: JsonMapper,
-    parts: Array<MultipartFormValue<*>?>
+    parts: Array<MultipartFormValue<*>?>,
 ): HttpRequestBody {
     val builder = MultipartEntityBuilder.create()
     parts.forEach { part ->
@@ -66,14 +63,14 @@ internal fun multipartFormData(
                         part.name,
                         buffer.toByteArray(),
                         part.contentType,
-                        part.filename
+                        part.filename,
                     )
                 }
                 is Boolean ->
                     builder.addTextBody(
                         part.name,
                         if (part.value) "true" else "false",
-                        part.contentType
+                        part.contentType,
                     )
                 is Int -> builder.addTextBody(part.name, part.value.toString(), part.contentType)
                 is Long -> builder.addTextBody(part.name, part.value.toString(), part.contentType)

@@ -24,7 +24,7 @@ import java.util.Objects
 class FunctionParameters
 @JsonCreator
 private constructor(
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
 ) {
 
     @JsonAnyGetter
