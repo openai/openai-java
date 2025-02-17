@@ -31,7 +31,9 @@ class BetaThreadMessageUpdateParamsTest {
                         .build()
                 )
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.metadata())
             .contains(
@@ -46,7 +48,9 @@ class BetaThreadMessageUpdateParamsTest {
                 .threadId("thread_id")
                 .messageId("message_id")
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
     }
 

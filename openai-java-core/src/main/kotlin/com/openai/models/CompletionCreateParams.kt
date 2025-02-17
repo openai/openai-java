@@ -35,7 +35,7 @@ import java.util.Optional
 /** Creates a completion for the provided prompt and parameters. */
 class CompletionCreateParams
 private constructor(
-    private val body: CompletionCreateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -334,16 +334,16 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): CompletionCreateBody = body
+    @JvmSynthetic internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     @NoAutoDetect
-    class CompletionCreateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("model")
         @ExcludeMissing
         private val model: JsonField<Model> = JsonMissing.of(),
@@ -710,7 +710,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): CompletionCreateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -742,7 +742,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [CompletionCreateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var model: JsonField<Model>? = null
@@ -765,25 +765,25 @@ private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(completionCreateBody: CompletionCreateBody) = apply {
-                model = completionCreateBody.model
-                prompt = completionCreateBody.prompt
-                bestOf = completionCreateBody.bestOf
-                echo = completionCreateBody.echo
-                frequencyPenalty = completionCreateBody.frequencyPenalty
-                logitBias = completionCreateBody.logitBias
-                logprobs = completionCreateBody.logprobs
-                maxTokens = completionCreateBody.maxTokens
-                n = completionCreateBody.n
-                presencePenalty = completionCreateBody.presencePenalty
-                seed = completionCreateBody.seed
-                stop = completionCreateBody.stop
-                streamOptions = completionCreateBody.streamOptions
-                suffix = completionCreateBody.suffix
-                temperature = completionCreateBody.temperature
-                topP = completionCreateBody.topP
-                user = completionCreateBody.user
-                additionalProperties = completionCreateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                model = body.model
+                prompt = body.prompt
+                bestOf = body.bestOf
+                echo = body.echo
+                frequencyPenalty = body.frequencyPenalty
+                logitBias = body.logitBias
+                logprobs = body.logprobs
+                maxTokens = body.maxTokens
+                n = body.n
+                presencePenalty = body.presencePenalty
+                seed = body.seed
+                stop = body.stop
+                streamOptions = body.streamOptions
+                suffix = body.suffix
+                temperature = body.temperature
+                topP = body.topP
+                user = body.user
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
@@ -1423,8 +1423,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): CompletionCreateBody =
-                CompletionCreateBody(
+            fun build(): Body =
+                Body(
                     checkRequired("model", model),
                     checkRequired("prompt", prompt),
                     bestOf,
@@ -1451,7 +1451,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is CompletionCreateBody && model == other.model && prompt == other.prompt && bestOf == other.bestOf && echo == other.echo && frequencyPenalty == other.frequencyPenalty && logitBias == other.logitBias && logprobs == other.logprobs && maxTokens == other.maxTokens && n == other.n && presencePenalty == other.presencePenalty && seed == other.seed && stop == other.stop && streamOptions == other.streamOptions && suffix == other.suffix && temperature == other.temperature && topP == other.topP && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && model == other.model && prompt == other.prompt && bestOf == other.bestOf && echo == other.echo && frequencyPenalty == other.frequencyPenalty && logitBias == other.logitBias && logprobs == other.logprobs && maxTokens == other.maxTokens && n == other.n && presencePenalty == other.presencePenalty && seed == other.seed && stop == other.stop && streamOptions == other.streamOptions && suffix == other.suffix && temperature == other.temperature && topP == other.topP && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -1461,7 +1461,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "CompletionCreateBody{model=$model, prompt=$prompt, bestOf=$bestOf, echo=$echo, frequencyPenalty=$frequencyPenalty, logitBias=$logitBias, logprobs=$logprobs, maxTokens=$maxTokens, n=$n, presencePenalty=$presencePenalty, seed=$seed, stop=$stop, streamOptions=$streamOptions, suffix=$suffix, temperature=$temperature, topP=$topP, user=$user, additionalProperties=$additionalProperties}"
+            "Body{model=$model, prompt=$prompt, bestOf=$bestOf, echo=$echo, frequencyPenalty=$frequencyPenalty, logitBias=$logitBias, logprobs=$logprobs, maxTokens=$maxTokens, n=$n, presencePenalty=$presencePenalty, seed=$seed, stop=$stop, streamOptions=$streamOptions, suffix=$suffix, temperature=$temperature, topP=$topP, user=$user, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -1475,7 +1475,7 @@ private constructor(
     @NoAutoDetect
     class Builder internal constructor() {
 
-        private var body: CompletionCreateBody.Builder = CompletionCreateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

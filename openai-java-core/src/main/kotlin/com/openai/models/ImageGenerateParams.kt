@@ -25,7 +25,7 @@ import java.util.Optional
 /** Creates an image given a prompt. */
 class ImageGenerateParams
 private constructor(
-    private val body: ImageGenerateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -132,16 +132,16 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): ImageGenerateBody = body
+    @JvmSynthetic internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     @NoAutoDetect
-    class ImageGenerateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("prompt")
         @ExcludeMissing
         private val prompt: JsonField<String> = JsonMissing.of(),
@@ -273,7 +273,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): ImageGenerateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -296,7 +296,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [ImageGenerateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var prompt: JsonField<String>? = null
@@ -310,16 +310,16 @@ private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(imageGenerateBody: ImageGenerateBody) = apply {
-                prompt = imageGenerateBody.prompt
-                model = imageGenerateBody.model
-                n = imageGenerateBody.n
-                quality = imageGenerateBody.quality
-                responseFormat = imageGenerateBody.responseFormat
-                size = imageGenerateBody.size
-                style = imageGenerateBody.style
-                user = imageGenerateBody.user
-                additionalProperties = imageGenerateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                prompt = body.prompt
+                model = body.model
+                n = body.n
+                quality = body.quality
+                responseFormat = body.responseFormat
+                size = body.size
+                style = body.style
+                user = body.user
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
@@ -485,8 +485,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): ImageGenerateBody =
-                ImageGenerateBody(
+            fun build(): Body =
+                Body(
                     checkRequired("prompt", prompt),
                     model,
                     n,
@@ -504,7 +504,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ImageGenerateBody && prompt == other.prompt && model == other.model && n == other.n && quality == other.quality && responseFormat == other.responseFormat && size == other.size && style == other.style && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && prompt == other.prompt && model == other.model && n == other.n && quality == other.quality && responseFormat == other.responseFormat && size == other.size && style == other.style && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -514,7 +514,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ImageGenerateBody{prompt=$prompt, model=$model, n=$n, quality=$quality, responseFormat=$responseFormat, size=$size, style=$style, user=$user, additionalProperties=$additionalProperties}"
+            "Body{prompt=$prompt, model=$model, n=$n, quality=$quality, responseFormat=$responseFormat, size=$size, style=$style, user=$user, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -528,7 +528,7 @@ private constructor(
     @NoAutoDetect
     class Builder internal constructor() {
 
-        private var body: ImageGenerateBody.Builder = ImageGenerateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

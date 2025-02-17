@@ -25,7 +25,7 @@ import java.util.Optional
 /** Create an assistant with a model and instructions. */
 class BetaAssistantCreateParams
 private constructor(
-    private val body: BetaAssistantCreateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -214,16 +214,16 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): BetaAssistantCreateBody = body
+    @JvmSynthetic internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     @NoAutoDetect
-    class BetaAssistantCreateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("model")
         @ExcludeMissing
         private val model: JsonField<ChatModel> = JsonMissing.of(),
@@ -467,7 +467,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): BetaAssistantCreateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -493,7 +493,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [BetaAssistantCreateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var model: JsonField<ChatModel>? = null
@@ -510,19 +510,19 @@ private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(betaAssistantCreateBody: BetaAssistantCreateBody) = apply {
-                model = betaAssistantCreateBody.model
-                description = betaAssistantCreateBody.description
-                instructions = betaAssistantCreateBody.instructions
-                metadata = betaAssistantCreateBody.metadata
-                name = betaAssistantCreateBody.name
-                reasoningEffort = betaAssistantCreateBody.reasoningEffort
-                responseFormat = betaAssistantCreateBody.responseFormat
-                temperature = betaAssistantCreateBody.temperature
-                toolResources = betaAssistantCreateBody.toolResources
-                tools = betaAssistantCreateBody.tools.map { it.toMutableList() }
-                topP = betaAssistantCreateBody.topP
-                additionalProperties = betaAssistantCreateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                model = body.model
+                description = body.description
+                instructions = body.instructions
+                metadata = body.metadata
+                name = body.name
+                reasoningEffort = body.reasoningEffort
+                responseFormat = body.responseFormat
+                temperature = body.temperature
+                toolResources = body.toolResources
+                tools = body.tools.map { it.toMutableList() }
+                topP = body.topP
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
@@ -984,8 +984,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): BetaAssistantCreateBody =
-                BetaAssistantCreateBody(
+            fun build(): Body =
+                Body(
                     checkRequired("model", model),
                     description,
                     instructions,
@@ -1006,7 +1006,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is BetaAssistantCreateBody && model == other.model && description == other.description && instructions == other.instructions && metadata == other.metadata && name == other.name && reasoningEffort == other.reasoningEffort && responseFormat == other.responseFormat && temperature == other.temperature && toolResources == other.toolResources && tools == other.tools && topP == other.topP && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && model == other.model && description == other.description && instructions == other.instructions && metadata == other.metadata && name == other.name && reasoningEffort == other.reasoningEffort && responseFormat == other.responseFormat && temperature == other.temperature && toolResources == other.toolResources && tools == other.tools && topP == other.topP && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -1016,7 +1016,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "BetaAssistantCreateBody{model=$model, description=$description, instructions=$instructions, metadata=$metadata, name=$name, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, temperature=$temperature, toolResources=$toolResources, tools=$tools, topP=$topP, additionalProperties=$additionalProperties}"
+            "Body{model=$model, description=$description, instructions=$instructions, metadata=$metadata, name=$name, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, temperature=$temperature, toolResources=$toolResources, tools=$tools, topP=$topP, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -1030,7 +1030,7 @@ private constructor(
     @NoAutoDetect
     class Builder internal constructor() {
 
-        private var body: BetaAssistantCreateBody.Builder = BetaAssistantCreateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

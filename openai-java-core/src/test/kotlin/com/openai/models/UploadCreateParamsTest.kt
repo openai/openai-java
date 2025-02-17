@@ -26,7 +26,9 @@ class UploadCreateParamsTest {
                 .mimeType("mime_type")
                 .purpose(FilePurpose.ASSISTANTS)
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.bytes()).isEqualTo(0L)
         assertThat(body.filename()).isEqualTo("filename")
@@ -43,7 +45,9 @@ class UploadCreateParamsTest {
                 .mimeType("mime_type")
                 .purpose(FilePurpose.ASSISTANTS)
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.bytes()).isEqualTo(0L)
         assertThat(body.filename()).isEqualTo("filename")

@@ -24,7 +24,9 @@ class BetaVectorStoreFileCreateParamsTest {
                 .fileId("file_id")
                 .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.fileId()).isEqualTo("file_id")
         assertThat(body.chunkingStrategy())
@@ -40,7 +42,9 @@ class BetaVectorStoreFileCreateParamsTest {
                 .vectorStoreId("vs_abc123")
                 .fileId("file_id")
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.fileId()).isEqualTo("file_id")
     }

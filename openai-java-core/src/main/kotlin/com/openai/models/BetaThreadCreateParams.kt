@@ -36,7 +36,7 @@ import kotlin.jvm.optionals.getOrNull
 /** Create a thread. */
 class BetaThreadCreateParams
 private constructor(
-    private val body: BetaThreadCreateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -93,7 +93,7 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): BetaThreadCreateBody = body
+    @JvmSynthetic internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -104,9 +104,9 @@ private constructor(
      * thread will be created.
      */
     @NoAutoDetect
-    class BetaThreadCreateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("messages")
         @ExcludeMissing
         private val messages: JsonField<List<Message>> = JsonMissing.of(),
@@ -180,7 +180,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): BetaThreadCreateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -198,7 +198,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [BetaThreadCreateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var messages: JsonField<MutableList<Message>>? = null
@@ -207,11 +207,11 @@ private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(betaThreadCreateBody: BetaThreadCreateBody) = apply {
-                messages = betaThreadCreateBody.messages.map { it.toMutableList() }
-                metadata = betaThreadCreateBody.metadata
-                toolResources = betaThreadCreateBody.toolResources
-                additionalProperties = betaThreadCreateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                messages = body.messages.map { it.toMutableList() }
+                metadata = body.metadata
+                toolResources = body.toolResources
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
@@ -322,8 +322,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): BetaThreadCreateBody =
-                BetaThreadCreateBody(
+            fun build(): Body =
+                Body(
                     (messages ?: JsonMissing.of()).map { it.toImmutable() },
                     metadata,
                     toolResources,
@@ -336,7 +336,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is BetaThreadCreateBody && messages == other.messages && metadata == other.metadata && toolResources == other.toolResources && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && messages == other.messages && metadata == other.metadata && toolResources == other.toolResources && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -346,7 +346,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "BetaThreadCreateBody{messages=$messages, metadata=$metadata, toolResources=$toolResources, additionalProperties=$additionalProperties}"
+            "Body{messages=$messages, metadata=$metadata, toolResources=$toolResources, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -360,7 +360,7 @@ private constructor(
     @NoAutoDetect
     class Builder internal constructor() {
 
-        private var body: BetaThreadCreateBody.Builder = BetaThreadCreateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
