@@ -38,7 +38,7 @@ import java.util.Objects
  */
 class UploadCreateParams
 private constructor(
-    private val body: UploadCreateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -93,16 +93,16 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): UploadCreateBody = body
+    @JvmSynthetic internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     @NoAutoDetect
-    class UploadCreateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("bytes")
         @ExcludeMissing
         private val bytes: JsonField<Long> = JsonMissing.of(),
@@ -169,7 +169,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): UploadCreateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -188,7 +188,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [UploadCreateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var bytes: JsonField<Long>? = null
@@ -198,12 +198,12 @@ private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(uploadCreateBody: UploadCreateBody) = apply {
-                bytes = uploadCreateBody.bytes
-                filename = uploadCreateBody.filename
-                mimeType = uploadCreateBody.mimeType
-                purpose = uploadCreateBody.purpose
-                additionalProperties = uploadCreateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                bytes = body.bytes
+                filename = body.filename
+                mimeType = body.mimeType
+                purpose = body.purpose
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** The number of bytes in the file you are uploading. */
@@ -269,8 +269,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): UploadCreateBody =
-                UploadCreateBody(
+            fun build(): Body =
+                Body(
                     checkRequired("bytes", bytes),
                     checkRequired("filename", filename),
                     checkRequired("mimeType", mimeType),
@@ -284,7 +284,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is UploadCreateBody && bytes == other.bytes && filename == other.filename && mimeType == other.mimeType && purpose == other.purpose && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && bytes == other.bytes && filename == other.filename && mimeType == other.mimeType && purpose == other.purpose && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -294,7 +294,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "UploadCreateBody{bytes=$bytes, filename=$filename, mimeType=$mimeType, purpose=$purpose, additionalProperties=$additionalProperties}"
+            "Body{bytes=$bytes, filename=$filename, mimeType=$mimeType, purpose=$purpose, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -308,7 +308,7 @@ private constructor(
     @NoAutoDetect
     class Builder internal constructor() {
 
-        private var body: UploadCreateBody.Builder = UploadCreateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

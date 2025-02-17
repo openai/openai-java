@@ -33,7 +33,9 @@ class BetaVectorStoreUpdateParamsTest {
                 )
                 .name("name")
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.expiresAfter())
             .contains(BetaVectorStoreUpdateParams.ExpiresAfter.builder().days(1L).build())
@@ -47,7 +49,9 @@ class BetaVectorStoreUpdateParamsTest {
     @Test
     fun bodyWithoutOptionalFields() {
         val params = BetaVectorStoreUpdateParams.builder().vectorStoreId("vector_store_id").build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
     }
 

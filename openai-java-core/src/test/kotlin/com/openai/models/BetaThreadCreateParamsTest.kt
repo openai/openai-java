@@ -120,7 +120,9 @@ class BetaThreadCreateParamsTest {
                         .build()
                 )
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.messages())
             .contains(
@@ -180,7 +182,9 @@ class BetaThreadCreateParamsTest {
     @Test
     fun bodyWithoutOptionalFields() {
         val params = BetaThreadCreateParams.builder().build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
     }
 }

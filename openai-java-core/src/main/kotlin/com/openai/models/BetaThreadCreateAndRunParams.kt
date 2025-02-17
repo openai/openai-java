@@ -36,7 +36,7 @@ import kotlin.jvm.optionals.getOrNull
 /** Create a thread and run it in one request. */
 class BetaThreadCreateAndRunParams
 private constructor(
-    private val body: BetaThreadCreateAndRunBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -295,16 +295,16 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): BetaThreadCreateAndRunBody = body
+    @JvmSynthetic internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     @NoAutoDetect
-    class BetaThreadCreateAndRunBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("assistant_id")
         @ExcludeMissing
         private val assistantId: JsonField<String> = JsonMissing.of(),
@@ -639,7 +639,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): BetaThreadCreateAndRunBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -669,7 +669,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [BetaThreadCreateAndRunBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var assistantId: JsonField<String>? = null
@@ -690,24 +690,23 @@ private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(betaThreadCreateAndRunBody: BetaThreadCreateAndRunBody) = apply {
-                assistantId = betaThreadCreateAndRunBody.assistantId
-                instructions = betaThreadCreateAndRunBody.instructions
-                maxCompletionTokens = betaThreadCreateAndRunBody.maxCompletionTokens
-                maxPromptTokens = betaThreadCreateAndRunBody.maxPromptTokens
-                metadata = betaThreadCreateAndRunBody.metadata
-                model = betaThreadCreateAndRunBody.model
-                parallelToolCalls = betaThreadCreateAndRunBody.parallelToolCalls
-                responseFormat = betaThreadCreateAndRunBody.responseFormat
-                temperature = betaThreadCreateAndRunBody.temperature
-                thread = betaThreadCreateAndRunBody.thread
-                toolChoice = betaThreadCreateAndRunBody.toolChoice
-                toolResources = betaThreadCreateAndRunBody.toolResources
-                tools = betaThreadCreateAndRunBody.tools.map { it.toMutableList() }
-                topP = betaThreadCreateAndRunBody.topP
-                truncationStrategy = betaThreadCreateAndRunBody.truncationStrategy
-                additionalProperties =
-                    betaThreadCreateAndRunBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                assistantId = body.assistantId
+                instructions = body.instructions
+                maxCompletionTokens = body.maxCompletionTokens
+                maxPromptTokens = body.maxPromptTokens
+                metadata = body.metadata
+                model = body.model
+                parallelToolCalls = body.parallelToolCalls
+                responseFormat = body.responseFormat
+                temperature = body.temperature
+                thread = body.thread
+                toolChoice = body.toolChoice
+                toolResources = body.toolResources
+                tools = body.tools.map { it.toMutableList() }
+                topP = body.topP
+                truncationStrategy = body.truncationStrategy
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
@@ -1315,8 +1314,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): BetaThreadCreateAndRunBody =
-                BetaThreadCreateAndRunBody(
+            fun build(): Body =
+                Body(
                     checkRequired("assistantId", assistantId),
                     instructions,
                     maxCompletionTokens,
@@ -1341,7 +1340,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is BetaThreadCreateAndRunBody && assistantId == other.assistantId && instructions == other.instructions && maxCompletionTokens == other.maxCompletionTokens && maxPromptTokens == other.maxPromptTokens && metadata == other.metadata && model == other.model && parallelToolCalls == other.parallelToolCalls && responseFormat == other.responseFormat && temperature == other.temperature && thread == other.thread && toolChoice == other.toolChoice && toolResources == other.toolResources && tools == other.tools && topP == other.topP && truncationStrategy == other.truncationStrategy && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && assistantId == other.assistantId && instructions == other.instructions && maxCompletionTokens == other.maxCompletionTokens && maxPromptTokens == other.maxPromptTokens && metadata == other.metadata && model == other.model && parallelToolCalls == other.parallelToolCalls && responseFormat == other.responseFormat && temperature == other.temperature && thread == other.thread && toolChoice == other.toolChoice && toolResources == other.toolResources && tools == other.tools && topP == other.topP && truncationStrategy == other.truncationStrategy && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -1351,7 +1350,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "BetaThreadCreateAndRunBody{assistantId=$assistantId, instructions=$instructions, maxCompletionTokens=$maxCompletionTokens, maxPromptTokens=$maxPromptTokens, metadata=$metadata, model=$model, parallelToolCalls=$parallelToolCalls, responseFormat=$responseFormat, temperature=$temperature, thread=$thread, toolChoice=$toolChoice, toolResources=$toolResources, tools=$tools, topP=$topP, truncationStrategy=$truncationStrategy, additionalProperties=$additionalProperties}"
+            "Body{assistantId=$assistantId, instructions=$instructions, maxCompletionTokens=$maxCompletionTokens, maxPromptTokens=$maxPromptTokens, metadata=$metadata, model=$model, parallelToolCalls=$parallelToolCalls, responseFormat=$responseFormat, temperature=$temperature, thread=$thread, toolChoice=$toolChoice, toolResources=$toolResources, tools=$tools, topP=$topP, truncationStrategy=$truncationStrategy, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -1365,7 +1364,7 @@ private constructor(
     @NoAutoDetect
     class Builder internal constructor() {
 
-        private var body: BetaThreadCreateAndRunBody.Builder = BetaThreadCreateAndRunBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

@@ -158,7 +158,9 @@ class ChatCompletionCreateParamsTest {
                 .topP(1.0)
                 .user("user-1234")
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.messages())
             .isEqualTo(
@@ -268,7 +270,9 @@ class ChatCompletionCreateParamsTest {
                 .addDeveloperMessage("string")
                 .model(ChatModel.O3_MINI)
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.messages())
             .isEqualTo(

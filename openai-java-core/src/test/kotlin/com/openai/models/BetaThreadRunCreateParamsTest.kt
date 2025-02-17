@@ -13,8 +13,8 @@ class BetaThreadRunCreateParamsTest {
     fun create() {
         BetaThreadRunCreateParams.builder()
             .threadId("thread_id")
-            .assistantId("assistant_id")
             .addInclude(RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT)
+            .assistantId("assistant_id")
             .additionalInstructions("additional_instructions")
             .addAdditionalMessage(
                 BetaThreadRunCreateParams.AdditionalMessage.builder()
@@ -61,8 +61,8 @@ class BetaThreadRunCreateParamsTest {
         val params =
             BetaThreadRunCreateParams.builder()
                 .threadId("thread_id")
-                .assistantId("assistant_id")
                 .addInclude(RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT)
+                .assistantId("assistant_id")
                 .additionalInstructions("additional_instructions")
                 .addAdditionalMessage(
                     BetaThreadRunCreateParams.AdditionalMessage.builder()
@@ -128,8 +128,8 @@ class BetaThreadRunCreateParamsTest {
         val params =
             BetaThreadRunCreateParams.builder()
                 .threadId("thread_id")
-                .assistantId("assistant_id")
                 .addInclude(RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT)
+                .assistantId("assistant_id")
                 .additionalInstructions("additional_instructions")
                 .addAdditionalMessage(
                     BetaThreadRunCreateParams.AdditionalMessage.builder()
@@ -171,7 +171,9 @@ class BetaThreadRunCreateParamsTest {
                         .build()
                 )
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.assistantId()).isEqualTo("assistant_id")
         assertThat(body.additionalInstructions()).contains("additional_instructions")
@@ -230,7 +232,9 @@ class BetaThreadRunCreateParamsTest {
                 .threadId("thread_id")
                 .assistantId("assistant_id")
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.assistantId()).isEqualTo("assistant_id")
     }

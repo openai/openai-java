@@ -34,8 +34,8 @@ class RunServiceTest {
             runService.create(
                 BetaThreadRunCreateParams.builder()
                     .threadId("thread_id")
-                    .assistantId("assistant_id")
                     .addInclude(RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT)
+                    .assistantId("assistant_id")
                     .additionalInstructions("additional_instructions")
                     .addAdditionalMessage(
                         BetaThreadRunCreateParams.AdditionalMessage.builder()
@@ -95,8 +95,8 @@ class RunServiceTest {
             runService.createStreaming(
                 BetaThreadRunCreateParams.builder()
                     .threadId("thread_id")
-                    .assistantId("assistant_id")
                     .addInclude(RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT)
+                    .assistantId("assistant_id")
                     .additionalInstructions("additional_instructions")
                     .addAdditionalMessage(
                         BetaThreadRunCreateParams.AdditionalMessage.builder()

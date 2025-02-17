@@ -37,7 +37,7 @@ import kotlin.jvm.optionals.getOrNull
 class BetaThreadMessageCreateParams
 private constructor(
     private val threadId: String,
-    private val body: BetaThreadMessageCreateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -100,7 +100,7 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): BetaThreadMessageCreateBody = body
+    @JvmSynthetic internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -114,9 +114,9 @@ private constructor(
     }
 
     @NoAutoDetect
-    class BetaThreadMessageCreateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("content")
         @ExcludeMissing
         private val content: JsonField<Content> = JsonMissing.of(),
@@ -190,7 +190,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): BetaThreadMessageCreateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -209,7 +209,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [BetaThreadMessageCreateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var content: JsonField<Content>? = null
@@ -219,13 +219,12 @@ private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(betaThreadMessageCreateBody: BetaThreadMessageCreateBody) = apply {
-                content = betaThreadMessageCreateBody.content
-                role = betaThreadMessageCreateBody.role
-                attachments = betaThreadMessageCreateBody.attachments.map { it.toMutableList() }
-                metadata = betaThreadMessageCreateBody.metadata
-                additionalProperties =
-                    betaThreadMessageCreateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                content = body.content
+                role = body.role
+                attachments = body.attachments.map { it.toMutableList() }
+                metadata = body.metadata
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** The text contents of the message. */
@@ -339,8 +338,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): BetaThreadMessageCreateBody =
-                BetaThreadMessageCreateBody(
+            fun build(): Body =
+                Body(
                     checkRequired("content", content),
                     checkRequired("role", role),
                     (attachments ?: JsonMissing.of()).map { it.toImmutable() },
@@ -354,7 +353,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is BetaThreadMessageCreateBody && content == other.content && role == other.role && attachments == other.attachments && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && content == other.content && role == other.role && attachments == other.attachments && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -364,7 +363,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "BetaThreadMessageCreateBody{content=$content, role=$role, attachments=$attachments, metadata=$metadata, additionalProperties=$additionalProperties}"
+            "Body{content=$content, role=$role, attachments=$attachments, metadata=$metadata, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -379,8 +378,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var threadId: String? = null
-        private var body: BetaThreadMessageCreateBody.Builder =
-            BetaThreadMessageCreateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

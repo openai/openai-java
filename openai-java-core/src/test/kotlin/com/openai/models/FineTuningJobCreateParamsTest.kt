@@ -124,7 +124,9 @@ class FineTuningJobCreateParamsTest {
                 .suffix("x")
                 .validationFile("file-abc123")
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.model()).isEqualTo(FineTuningJobCreateParams.Model.BABBAGE_002)
         assertThat(body.trainingFile()).isEqualTo("file-abc123")
@@ -193,7 +195,9 @@ class FineTuningJobCreateParamsTest {
                 .model(FineTuningJobCreateParams.Model.BABBAGE_002)
                 .trainingFile("file-abc123")
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.model()).isEqualTo(FineTuningJobCreateParams.Model.BABBAGE_002)
         assertThat(body.trainingFile()).isEqualTo("file-abc123")

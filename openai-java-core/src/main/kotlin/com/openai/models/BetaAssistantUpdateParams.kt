@@ -26,7 +26,7 @@ import java.util.Optional
 class BetaAssistantUpdateParams
 private constructor(
     private val assistantId: String,
-    private val body: BetaAssistantUpdateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -217,7 +217,7 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): BetaAssistantUpdateBody = body
+    @JvmSynthetic internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -231,9 +231,9 @@ private constructor(
     }
 
     @NoAutoDetect
-    class BetaAssistantUpdateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("description")
         @ExcludeMissing
         private val description: JsonField<String> = JsonMissing.of(),
@@ -477,7 +477,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): BetaAssistantUpdateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -503,7 +503,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [BetaAssistantUpdateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var description: JsonField<String> = JsonMissing.of()
@@ -520,19 +520,19 @@ private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(betaAssistantUpdateBody: BetaAssistantUpdateBody) = apply {
-                description = betaAssistantUpdateBody.description
-                instructions = betaAssistantUpdateBody.instructions
-                metadata = betaAssistantUpdateBody.metadata
-                model = betaAssistantUpdateBody.model
-                name = betaAssistantUpdateBody.name
-                reasoningEffort = betaAssistantUpdateBody.reasoningEffort
-                responseFormat = betaAssistantUpdateBody.responseFormat
-                temperature = betaAssistantUpdateBody.temperature
-                toolResources = betaAssistantUpdateBody.toolResources
-                tools = betaAssistantUpdateBody.tools.map { it.toMutableList() }
-                topP = betaAssistantUpdateBody.topP
-                additionalProperties = betaAssistantUpdateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                description = body.description
+                instructions = body.instructions
+                metadata = body.metadata
+                model = body.model
+                name = body.name
+                reasoningEffort = body.reasoningEffort
+                responseFormat = body.responseFormat
+                temperature = body.temperature
+                toolResources = body.toolResources
+                tools = body.tools.map { it.toMutableList() }
+                topP = body.topP
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** The description of the assistant. The maximum length is 512 characters. */
@@ -994,8 +994,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): BetaAssistantUpdateBody =
-                BetaAssistantUpdateBody(
+            fun build(): Body =
+                Body(
                     description,
                     instructions,
                     metadata,
@@ -1016,7 +1016,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is BetaAssistantUpdateBody && description == other.description && instructions == other.instructions && metadata == other.metadata && model == other.model && name == other.name && reasoningEffort == other.reasoningEffort && responseFormat == other.responseFormat && temperature == other.temperature && toolResources == other.toolResources && tools == other.tools && topP == other.topP && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && description == other.description && instructions == other.instructions && metadata == other.metadata && model == other.model && name == other.name && reasoningEffort == other.reasoningEffort && responseFormat == other.responseFormat && temperature == other.temperature && toolResources == other.toolResources && tools == other.tools && topP == other.topP && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -1026,7 +1026,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "BetaAssistantUpdateBody{description=$description, instructions=$instructions, metadata=$metadata, model=$model, name=$name, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, temperature=$temperature, toolResources=$toolResources, tools=$tools, topP=$topP, additionalProperties=$additionalProperties}"
+            "Body{description=$description, instructions=$instructions, metadata=$metadata, model=$model, name=$name, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, temperature=$temperature, toolResources=$toolResources, tools=$tools, topP=$topP, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -1041,7 +1041,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var assistantId: String? = null
-        private var body: BetaAssistantUpdateBody.Builder = BetaAssistantUpdateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
