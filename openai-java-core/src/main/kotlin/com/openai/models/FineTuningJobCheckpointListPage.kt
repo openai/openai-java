@@ -75,13 +75,8 @@ private constructor(
         fun of(
             checkpointsService: CheckpointService,
             params: FineTuningJobCheckpointListParams,
-            response: Response
-        ) =
-            FineTuningJobCheckpointListPage(
-                checkpointsService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = FineTuningJobCheckpointListPage(checkpointsService, params, response)
     }
 
     @NoAutoDetect
@@ -166,18 +161,12 @@ private constructor(
                 this.additionalProperties.put(key, value)
             }
 
-            fun build() =
-                Response(
-                    data,
-                    hasMore,
-                    additionalProperties.toImmutable(),
-                )
+            fun build() = Response(data, hasMore, additionalProperties.toImmutable())
         }
     }
 
-    class AutoPager(
-        private val firstPage: FineTuningJobCheckpointListPage,
-    ) : Iterable<FineTuningJobCheckpoint> {
+    class AutoPager(private val firstPage: FineTuningJobCheckpointListPage) :
+        Iterable<FineTuningJobCheckpoint> {
 
         override fun iterator(): Iterator<FineTuningJobCheckpoint> = iterator {
             var page = firstPage

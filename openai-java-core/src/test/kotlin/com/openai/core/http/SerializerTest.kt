@@ -48,11 +48,7 @@ internal class SerializerTest {
 
         override fun hashCode(): Int {
             if (hashCode == 0) {
-                hashCode =
-                    Objects.hash(
-                        isActive,
-                        additionalProperties,
-                    )
+                hashCode = Objects.hash(isActive, additionalProperties)
             }
             return hashCode
         }
@@ -91,10 +87,7 @@ internal class SerializerTest {
             }
 
             fun build(): ClassWithBooleanFieldPrefixedWithIs =
-                ClassWithBooleanFieldPrefixedWithIs(
-                    isActive,
-                    additionalProperties.toImmutable(),
-                )
+                ClassWithBooleanFieldPrefixedWithIs(isActive, additionalProperties.toImmutable())
         }
     }
 

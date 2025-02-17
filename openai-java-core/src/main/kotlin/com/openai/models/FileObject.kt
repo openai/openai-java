@@ -280,11 +280,7 @@ private constructor(
      * The intended purpose of the file. Supported values are `assistants`, `assistants_output`,
      * `batch`, `batch_output`, `fine-tune`, `fine-tune-results` and `vision`.
      */
-    class Purpose
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Purpose @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -407,11 +403,7 @@ private constructor(
      * `error`.
      */
     @Deprecated("deprecated")
-    class Status
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.

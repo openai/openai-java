@@ -38,14 +38,14 @@ interface UploadService {
     @JvmOverloads
     fun create(
         params: UploadCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Upload
 
     /** Cancels the Upload. No Parts may be added after an Upload is cancelled. */
     @JvmOverloads
     fun cancel(
         params: UploadCancelParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Upload
 
     /**
@@ -64,6 +64,6 @@ interface UploadService {
     @JvmOverloads
     fun complete(
         params: UploadCompleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Upload
 }

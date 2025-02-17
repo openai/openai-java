@@ -29,35 +29,35 @@ interface ThreadService {
     @JvmOverloads
     fun create(
         params: BetaThreadCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Thread
 
     /** Retrieves a thread. */
     @JvmOverloads
     fun retrieve(
         params: BetaThreadRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Thread
 
     /** Modifies a thread. */
     @JvmOverloads
     fun update(
         params: BetaThreadUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Thread
 
     /** Delete a thread. */
     @JvmOverloads
     fun delete(
         params: BetaThreadDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ThreadDeleted
 
     /** Create a thread and run it in one request. */
     @JvmOverloads
     fun createAndRun(
         params: BetaThreadCreateAndRunParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Run
 
     /** Create a thread and run it in one request. */
@@ -65,6 +65,6 @@ interface ThreadService {
     @MustBeClosed
     fun createAndRunStreaming(
         params: BetaThreadCreateAndRunParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): StreamResponse<AssistantStreamEvent>
 }

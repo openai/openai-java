@@ -11,11 +11,7 @@ import com.openai.errors.OpenAIInvalidDataException
  * The status of the run, which can be either `queued`, `in_progress`, `requires_action`,
  * `cancelling`, `cancelled`, `failed`, `completed`, `incomplete`, or `expired`.
  */
-class RunStatus
-@JsonCreator
-private constructor(
-    private val value: JsonField<String>,
-) : Enum {
+class RunStatus @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
     /**
      * Returns this class instance's raw value.

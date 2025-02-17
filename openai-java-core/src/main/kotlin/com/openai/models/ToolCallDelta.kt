@@ -187,7 +187,7 @@ private constructor(
         override fun serialize(
             value: ToolCallDelta,
             generator: JsonGenerator,
-            provider: SerializerProvider
+            provider: SerializerProvider,
         ) {
             when {
                 value.codeInterpreter != null -> generator.writeObject(value.codeInterpreter)

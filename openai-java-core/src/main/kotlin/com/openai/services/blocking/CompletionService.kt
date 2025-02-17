@@ -16,7 +16,7 @@ interface CompletionService {
     @JvmOverloads
     fun create(
         params: CompletionCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Completion
 
     /** Creates a completion for the provided prompt and parameters. */
@@ -24,6 +24,6 @@ interface CompletionService {
     @MustBeClosed
     fun createStreaming(
         params: CompletionCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): StreamResponse<Completion>
 }

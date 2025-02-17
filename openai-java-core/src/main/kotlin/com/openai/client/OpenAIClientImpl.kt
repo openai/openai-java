@@ -27,9 +27,7 @@ import com.openai.services.blocking.ModerationServiceImpl
 import com.openai.services.blocking.UploadService
 import com.openai.services.blocking.UploadServiceImpl
 
-class OpenAIClientImpl(
-    private val clientOptions: ClientOptions,
-) : OpenAIClient {
+class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient {
 
     private val clientOptionsWithUserAgent =
         if (clientOptions.headers.names().contains("User-Agent")) clientOptions

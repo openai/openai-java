@@ -50,7 +50,7 @@ private class SseState(
     var event: String? = null,
     val data: MutableList<String> = mutableListOf(),
     var lastId: String? = null,
-    var retry: Int? = null
+    var retry: Int? = null,
 ) {
     // https://html.spec.whatwg.org/multipage/server-sent-events.html#event-stream-interpretation
     fun decode(line: String): SseMessage? {

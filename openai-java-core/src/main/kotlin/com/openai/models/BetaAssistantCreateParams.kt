@@ -1582,11 +1582,8 @@ private constructor(
      * values are `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
      * responses and fewer tokens used on reasoning in a response.
      */
-    class ReasoningEffort
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class ReasoningEffort @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -1786,11 +1783,7 @@ private constructor(
             }
 
             fun build(): ToolResources =
-                ToolResources(
-                    codeInterpreter,
-                    fileSearch,
-                    additionalProperties.toImmutable(),
-                )
+                ToolResources(codeInterpreter, fileSearch, additionalProperties.toImmutable())
         }
 
         @NoAutoDetect
@@ -1914,7 +1907,7 @@ private constructor(
                 fun build(): CodeInterpreter =
                     CodeInterpreter(
                         (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
-                        additionalProperties.toImmutable()
+                        additionalProperties.toImmutable(),
                     )
             }
 

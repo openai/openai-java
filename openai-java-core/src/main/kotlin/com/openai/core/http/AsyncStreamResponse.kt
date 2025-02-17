@@ -40,7 +40,7 @@ internal fun <T> CompletableFuture<StreamResponse<T>>.toAsync(streamHandlerExecu
 
             override fun subscribe(
                 handler: Handler<T>,
-                executor: Executor
+                executor: Executor,
             ): AsyncStreamResponse<T> = apply {
                 // TODO(JDK): Use `compareAndExchange` once targeting JDK 9.
                 check(state.compareAndSet(State.NEW, State.SUBSCRIBED)) {
@@ -75,7 +75,7 @@ internal fun <T> CompletableFuture<StreamResponse<T>>.toAsync(streamHandlerExecu
                             close()
                         }
                     },
-                    executor
+                    executor,
                 )
             }
 
@@ -93,5 +93,5 @@ internal fun <T> CompletableFuture<StreamResponse<T>>.toAsync(streamHandlerExecu
 private enum class State {
     NEW,
     SUBSCRIBED,
-    CLOSED
+    CLOSED,
 }

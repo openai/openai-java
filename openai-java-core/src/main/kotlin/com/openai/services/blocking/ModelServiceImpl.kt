@@ -20,10 +20,8 @@ import com.openai.models.ModelListPage
 import com.openai.models.ModelListParams
 import com.openai.models.ModelRetrieveParams
 
-class ModelServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : ModelService {
+class ModelServiceImpl internal constructor(private val clientOptions: ClientOptions) :
+    ModelService {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 

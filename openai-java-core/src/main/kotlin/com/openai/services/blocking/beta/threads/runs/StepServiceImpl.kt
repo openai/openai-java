@@ -18,10 +18,7 @@ import com.openai.models.BetaThreadRunStepListParams
 import com.openai.models.BetaThreadRunStepRetrieveParams
 import com.openai.models.RunStep
 
-class StepServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : StepService {
+class StepServiceImpl internal constructor(private val clientOptions: ClientOptions) : StepService {
 
     companion object {
 
@@ -36,7 +33,7 @@ internal constructor(
     /** Retrieves a run step. */
     override fun retrieve(
         params: BetaThreadRunStepRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): RunStep {
         val request =
             HttpRequest.builder()
@@ -47,7 +44,7 @@ internal constructor(
                     "runs",
                     params.getPathParam(1),
                     "steps",
-                    params.getPathParam(2)
+                    params.getPathParam(2),
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()
@@ -69,7 +66,7 @@ internal constructor(
     /** Returns a list of run steps belonging to a run. */
     override fun list(
         params: BetaThreadRunStepListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): BetaThreadRunStepListPage {
         val request =
             HttpRequest.builder()
@@ -79,7 +76,7 @@ internal constructor(
                     params.getPathParam(0),
                     "runs",
                     params.getPathParam(1),
-                    "steps"
+                    "steps",
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()

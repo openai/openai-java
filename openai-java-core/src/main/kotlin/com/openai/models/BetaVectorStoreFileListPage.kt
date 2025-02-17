@@ -72,13 +72,8 @@ private constructor(
         fun of(
             filesService: FileService,
             params: BetaVectorStoreFileListParams,
-            response: Response
-        ) =
-            BetaVectorStoreFileListPage(
-                filesService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = BetaVectorStoreFileListPage(filesService, params, response)
     }
 
     @NoAutoDetect
@@ -162,18 +157,12 @@ private constructor(
                 this.additionalProperties.put(key, value)
             }
 
-            fun build() =
-                Response(
-                    data,
-                    hasMore,
-                    additionalProperties.toImmutable(),
-                )
+            fun build() = Response(data, hasMore, additionalProperties.toImmutable())
         }
     }
 
-    class AutoPager(
-        private val firstPage: BetaVectorStoreFileListPage,
-    ) : Iterable<VectorStoreFile> {
+    class AutoPager(private val firstPage: BetaVectorStoreFileListPage) :
+        Iterable<VectorStoreFile> {
 
         override fun iterator(): Iterator<VectorStoreFile> = iterator {
             var page = firstPage

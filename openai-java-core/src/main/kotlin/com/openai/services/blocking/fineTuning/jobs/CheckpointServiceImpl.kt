@@ -15,10 +15,8 @@ import com.openai.errors.OpenAIError
 import com.openai.models.FineTuningJobCheckpointListPage
 import com.openai.models.FineTuningJobCheckpointListParams
 
-class CheckpointServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : CheckpointService {
+class CheckpointServiceImpl internal constructor(private val clientOptions: ClientOptions) :
+    CheckpointService {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
@@ -29,7 +27,7 @@ internal constructor(
     /** List checkpoints for a fine-tuning job. */
     override fun list(
         params: FineTuningJobCheckpointListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): FineTuningJobCheckpointListPage {
         val request =
             HttpRequest.builder()

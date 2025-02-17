@@ -21,10 +21,8 @@ import com.openai.models.ModelListParams
 import com.openai.models.ModelRetrieveParams
 import java.util.concurrent.CompletableFuture
 
-class ModelServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : ModelServiceAsync {
+class ModelServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    ModelServiceAsync {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
@@ -37,7 +35,7 @@ internal constructor(
      */
     override fun retrieve(
         params: ModelRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Model> {
         val request =
             HttpRequest.builder()
@@ -68,7 +66,7 @@ internal constructor(
      */
     override fun list(
         params: ModelListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<ModelListPageAsync> {
         val request =
             HttpRequest.builder()
@@ -99,7 +97,7 @@ internal constructor(
      */
     override fun delete(
         params: ModelDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<ModelDeleted> {
         val request =
             HttpRequest.builder()

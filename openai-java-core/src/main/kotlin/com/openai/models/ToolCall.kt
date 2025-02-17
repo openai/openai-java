@@ -179,7 +179,7 @@ private constructor(
         override fun serialize(
             value: ToolCall,
             generator: JsonGenerator,
-            provider: SerializerProvider
+            provider: SerializerProvider,
         ) {
             when {
                 value.codeInterpreter != null -> generator.writeObject(value.codeInterpreter)

@@ -667,11 +667,7 @@ private constructor(
         }
 
         /** One of `server_error` or `rate_limit_exceeded`. */
-        class Code
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Code @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -781,11 +777,7 @@ private constructor(
      * The status of the run step, which can be either `in_progress`, `cancelled`, `failed`,
      * `completed`, or `expired`.
      */
-    class Status
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -1041,7 +1033,7 @@ private constructor(
             override fun serialize(
                 value: StepDetails,
                 generator: JsonGenerator,
-                provider: SerializerProvider
+                provider: SerializerProvider,
             ) {
                 when {
                     value.messageCreation != null -> generator.writeObject(value.messageCreation)
@@ -1054,11 +1046,7 @@ private constructor(
     }
 
     /** The type of run step, which can be either `message_creation` or `tool_calls`. */
-    class Type
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.

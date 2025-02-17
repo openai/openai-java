@@ -280,11 +280,7 @@ private constructor(
             }
 
             fun build(): FileCitation =
-                FileCitation(
-                    fileId,
-                    quote,
-                    additionalProperties.toImmutable(),
-                )
+                FileCitation(fileId, quote, additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {

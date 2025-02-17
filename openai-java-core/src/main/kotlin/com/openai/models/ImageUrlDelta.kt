@@ -121,23 +121,14 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
-        fun build(): ImageUrlDelta =
-            ImageUrlDelta(
-                detail,
-                url,
-                additionalProperties.toImmutable(),
-            )
+        fun build(): ImageUrlDelta = ImageUrlDelta(detail, url, additionalProperties.toImmutable())
     }
 
     /**
      * Specifies the detail level of the image. `low` uses fewer tokens, you can opt in to high
      * resolution using `high`.
      */
-    class Detail
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Detail @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.

@@ -70,11 +70,7 @@ private constructor(
 
         @JvmStatic
         fun of(runsService: RunService, params: BetaThreadRunListParams, response: Response) =
-            BetaThreadRunListPage(
-                runsService,
-                params,
-                response,
-            )
+            BetaThreadRunListPage(runsService, params, response)
     }
 
     @NoAutoDetect
@@ -158,18 +154,11 @@ private constructor(
                 this.additionalProperties.put(key, value)
             }
 
-            fun build() =
-                Response(
-                    data,
-                    hasMore,
-                    additionalProperties.toImmutable(),
-                )
+            fun build() = Response(data, hasMore, additionalProperties.toImmutable())
         }
     }
 
-    class AutoPager(
-        private val firstPage: BetaThreadRunListPage,
-    ) : Iterable<Run> {
+    class AutoPager(private val firstPage: BetaThreadRunListPage) : Iterable<Run> {
 
         override fun iterator(): Iterator<Run> = iterator {
             var page = firstPage

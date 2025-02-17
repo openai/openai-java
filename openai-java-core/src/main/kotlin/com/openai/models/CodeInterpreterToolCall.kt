@@ -452,7 +452,7 @@ private constructor(
                 override fun serialize(
                     value: Output,
                     generator: JsonGenerator,
-                    provider: SerializerProvider
+                    provider: SerializerProvider,
                 ) {
                     when {
                         value.logs != null -> generator.writeObject(value.logs)
@@ -781,7 +781,7 @@ private constructor(
                         fun build(): Image =
                             Image(
                                 checkRequired("fileId", fileId),
-                                additionalProperties.toImmutable()
+                                additionalProperties.toImmutable(),
                             )
                     }
 

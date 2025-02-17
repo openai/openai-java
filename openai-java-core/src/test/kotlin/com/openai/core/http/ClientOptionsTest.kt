@@ -26,7 +26,7 @@ internal class ClientOptionsTest {
             return Stream.of(
                 "https://api.openai.com/v1",
                 "https://example.openai.azure.com",
-                "https://example.azure-api.net"
+                "https://example.azure-api.net",
             )
         }
     }

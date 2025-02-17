@@ -28,10 +28,7 @@ private constructor(
     private val idempotencyHeader: String?,
 ) : HttpClient {
 
-    override fun execute(
-        request: HttpRequest,
-        requestOptions: RequestOptions,
-    ): HttpResponse {
+    override fun execute(request: HttpRequest, requestOptions: RequestOptions): HttpResponse {
         if (!isRetryable(request) || maxRetries <= 0) {
             return httpClient.execute(request, requestOptions)
         }
@@ -100,7 +97,7 @@ private constructor(
                 .handleAsync(
                     fun(
                         response: HttpResponse?,
-                        throwable: Throwable?
+                        throwable: Throwable?,
                     ): CompletableFuture<HttpResponse> {
                         if (response != null) {
                             if (++retries > maxRetries || !shouldRetry(response)) {
@@ -120,7 +117,7 @@ private constructor(
                         return sleepAsync(backoffMillis.toMillis()).thenCompose {
                             executeWithRetries(requestWithRetryCount, requestOptions)
                         }
-                    },
+                    }
                 ) {
                     // Run in the same thread.
                     it.run()
@@ -200,8 +197,8 @@ private constructor(
                                     OffsetDateTime.now(clock),
                                     OffsetDateTime.parse(
                                         retryAfter,
-                                        DateTimeFormatter.RFC_1123_DATE_TIME
-                                    )
+                                        DateTimeFormatter.RFC_1123_DATE_TIME,
+                                    ),
                                 )
                             } catch (e: DateTimeParseException) {
                                 null
@@ -239,7 +236,7 @@ private constructor(
                         future.complete(null)
                     }
                 },
-                millis
+                millis,
             )
             return future
         }

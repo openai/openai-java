@@ -23,10 +23,8 @@ import com.openai.models.BetaAssistantListParams
 import com.openai.models.BetaAssistantRetrieveParams
 import com.openai.models.BetaAssistantUpdateParams
 
-class AssistantServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : AssistantService {
+class AssistantServiceImpl internal constructor(private val clientOptions: ClientOptions) :
+    AssistantService {
 
     companion object {
 
@@ -41,7 +39,7 @@ internal constructor(
     /** Create an assistant with a model and instructions. */
     override fun create(
         params: BetaAssistantCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Assistant {
         val request =
             HttpRequest.builder()
@@ -67,7 +65,7 @@ internal constructor(
     /** Retrieves an assistant. */
     override fun retrieve(
         params: BetaAssistantRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Assistant {
         val request =
             HttpRequest.builder()
@@ -92,7 +90,7 @@ internal constructor(
     /** Modifies an assistant. */
     override fun update(
         params: BetaAssistantUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Assistant {
         val request =
             HttpRequest.builder()
@@ -119,7 +117,7 @@ internal constructor(
     /** Returns a list of assistants. */
     override fun list(
         params: BetaAssistantListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): BetaAssistantListPage {
         val request =
             HttpRequest.builder()
@@ -145,7 +143,7 @@ internal constructor(
     /** Delete an assistant. */
     override fun delete(
         params: BetaAssistantDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): AssistantDeleted {
         val request =
             HttpRequest.builder()

@@ -7,11 +7,7 @@ import com.openai.core.Enum
 import com.openai.core.JsonField
 import com.openai.errors.OpenAIInvalidDataException
 
-class ChatModel
-@JsonCreator
-private constructor(
-    private val value: JsonField<String>,
-) : Enum {
+class ChatModel @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
     /**
      * Returns this class instance's raw value.

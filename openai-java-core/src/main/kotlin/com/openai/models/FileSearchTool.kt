@@ -112,11 +112,7 @@ private constructor(
         }
 
         fun build(): FileSearchTool =
-            FileSearchTool(
-                type,
-                fileSearch,
-                additionalProperties.toImmutable(),
-            )
+            FileSearchTool(type, fileSearch, additionalProperties.toImmutable())
     }
 
     /** Overrides for the file search tool. */
@@ -288,11 +284,7 @@ private constructor(
             }
 
             fun build(): FileSearch =
-                FileSearch(
-                    maxNumResults,
-                    rankingOptions,
-                    additionalProperties.toImmutable(),
-                )
+                FileSearch(maxNumResults, rankingOptions, additionalProperties.toImmutable())
         }
 
         /**
@@ -438,11 +430,8 @@ private constructor(
             /**
              * The ranker to use for the file search. If not specified will use the `auto` ranker.
              */
-            class Ranker
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
+            class Ranker @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
 
                 /**
                  * Returns this class instance's raw value.

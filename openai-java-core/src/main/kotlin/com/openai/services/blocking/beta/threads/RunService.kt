@@ -26,7 +26,7 @@ interface RunService {
     @JvmOverloads
     fun create(
         params: BetaThreadRunCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Run
 
     /** Create a run. */
@@ -34,35 +34,35 @@ interface RunService {
     @MustBeClosed
     fun createStreaming(
         params: BetaThreadRunCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): StreamResponse<AssistantStreamEvent>
 
     /** Retrieves a run. */
     @JvmOverloads
     fun retrieve(
         params: BetaThreadRunRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Run
 
     /** Modifies a run. */
     @JvmOverloads
     fun update(
         params: BetaThreadRunUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Run
 
     /** Returns a list of runs belonging to a thread. */
     @JvmOverloads
     fun list(
         params: BetaThreadRunListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): BetaThreadRunListPage
 
     /** Cancels a run that is `in_progress`. */
     @JvmOverloads
     fun cancel(
         params: BetaThreadRunCancelParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Run
 
     /**
@@ -73,7 +73,7 @@ interface RunService {
     @JvmOverloads
     fun submitToolOutputs(
         params: BetaThreadRunSubmitToolOutputsParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Run
 
     /**
@@ -85,6 +85,6 @@ interface RunService {
     @MustBeClosed
     fun submitToolOutputsStreaming(
         params: BetaThreadRunSubmitToolOutputsParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): StreamResponse<AssistantStreamEvent>
 }

@@ -270,7 +270,7 @@ private constructor(
             override fun serialize(
                 value: StepDetails,
                 generator: JsonGenerator,
-                provider: SerializerProvider
+                provider: SerializerProvider,
             ) {
                 when {
                     value.messageCreation != null -> generator.writeObject(value.messageCreation)

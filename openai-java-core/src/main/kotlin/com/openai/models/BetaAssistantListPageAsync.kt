@@ -75,13 +75,8 @@ private constructor(
         fun of(
             assistantsService: AssistantServiceAsync,
             params: BetaAssistantListParams,
-            response: Response
-        ) =
-            BetaAssistantListPageAsync(
-                assistantsService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = BetaAssistantListPageAsync(assistantsService, params, response)
     }
 
     @NoAutoDetect
@@ -165,23 +160,16 @@ private constructor(
                 this.additionalProperties.put(key, value)
             }
 
-            fun build() =
-                Response(
-                    data,
-                    hasMore,
-                    additionalProperties.toImmutable(),
-                )
+            fun build() = Response(data, hasMore, additionalProperties.toImmutable())
         }
     }
 
-    class AutoPager(
-        private val firstPage: BetaAssistantListPageAsync,
-    ) {
+    class AutoPager(private val firstPage: BetaAssistantListPageAsync) {
 
         fun forEach(action: Predicate<Assistant>, executor: Executor): CompletableFuture<Void> {
             fun CompletableFuture<Optional<BetaAssistantListPageAsync>>.forEach(
                 action: (Assistant) -> Boolean,
-                executor: Executor
+                executor: Executor,
             ): CompletableFuture<Void> =
                 thenComposeAsync(
                     { page ->
@@ -190,7 +178,7 @@ private constructor(
                             .map { it.getNextPage().forEach(action, executor) }
                             .orElseGet { CompletableFuture.completedFuture(null) }
                     },
-                    executor
+                    executor,
                 )
             return CompletableFuture.completedFuture(Optional.of(firstPage))
                 .forEach(action::test, executor)

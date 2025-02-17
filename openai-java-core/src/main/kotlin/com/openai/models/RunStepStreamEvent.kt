@@ -455,7 +455,7 @@ private constructor(
         override fun serialize(
             value: RunStepStreamEvent,
             generator: JsonGenerator,
-            provider: SerializerProvider
+            provider: SerializerProvider,
         ) {
             when {
                 value.threadRunStepCreated != null ->

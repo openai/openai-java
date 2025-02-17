@@ -27,9 +27,7 @@ import com.openai.services.async.ModerationServiceAsyncImpl
 import com.openai.services.async.UploadServiceAsync
 import com.openai.services.async.UploadServiceAsyncImpl
 
-class OpenAIClientAsyncImpl(
-    private val clientOptions: ClientOptions,
-) : OpenAIClientAsync {
+class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAIClientAsync {
 
     private val clientOptionsWithUserAgent =
         if (clientOptions.headers.names().contains("User-Agent")) clientOptions

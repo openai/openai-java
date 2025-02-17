@@ -17,10 +17,8 @@ import com.openai.models.ModerationCreateParams
 import com.openai.models.ModerationCreateResponse
 import java.util.concurrent.CompletableFuture
 
-class ModerationServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : ModerationServiceAsync {
+class ModerationServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    ModerationServiceAsync {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
@@ -34,7 +32,7 @@ internal constructor(
      */
     override fun create(
         params: ModerationCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<ModerationCreateResponse> {
         val request =
             HttpRequest.builder()
@@ -45,7 +43,7 @@ internal constructor(
                 .prepareAsync(
                     clientOptions,
                     params,
-                    params.model().map { it.toString() }.orElse(null)
+                    params.model().map { it.toString() }.orElse(null),
                 )
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }

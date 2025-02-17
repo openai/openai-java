@@ -133,22 +133,14 @@ private constructor(
         }
 
         fun build(): ImageUrl =
-            ImageUrl(
-                checkRequired("url", url),
-                detail,
-                additionalProperties.toImmutable(),
-            )
+            ImageUrl(checkRequired("url", url), detail, additionalProperties.toImmutable())
     }
 
     /**
      * Specifies the detail level of the image. `low` uses fewer tokens, you can opt in to high
      * resolution using `high`. Default value is `auto`
      */
-    class Detail
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Detail @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.

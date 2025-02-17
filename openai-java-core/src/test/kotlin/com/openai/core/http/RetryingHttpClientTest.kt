@@ -26,12 +26,12 @@ internal class RetryingHttpClientTest {
             object : HttpClient {
                 override fun execute(
                     request: HttpRequest,
-                    requestOptions: RequestOptions
+                    requestOptions: RequestOptions,
                 ): HttpResponse = trackClose(okHttpClient.execute(request, requestOptions))
 
                 override fun executeAsync(
                     request: HttpRequest,
-                    requestOptions: RequestOptions
+                    requestOptions: RequestOptions,
                 ): CompletableFuture<HttpResponse> =
                     okHttpClient.executeAsync(request, requestOptions).thenApply { trackClose(it) }
 
@@ -71,7 +71,7 @@ internal class RetryingHttpClientTest {
         val response =
             retryingClient.execute(
                 HttpRequest.builder().method(HttpMethod.POST).addPathSegment("something").build(),
-                async
+                async,
             )
 
         assertThat(response.statusCode()).isEqualTo(200)
@@ -97,7 +97,7 @@ internal class RetryingHttpClientTest {
         val response =
             retryingClient.execute(
                 HttpRequest.builder().method(HttpMethod.POST).addPathSegment("something").build(),
-                async
+                async,
             )
 
         assertThat(response.statusCode()).isEqualTo(200)
@@ -140,24 +140,24 @@ internal class RetryingHttpClientTest {
         val response =
             retryingClient.execute(
                 HttpRequest.builder().method(HttpMethod.POST).addPathSegment("something").build(),
-                async
+                async,
             )
 
         assertThat(response.statusCode()).isEqualTo(200)
         verify(
             1,
             postRequestedFor(urlPathEqualTo("/something"))
-                .withHeader("x-stainless-retry-count", equalTo("0"))
+                .withHeader("x-stainless-retry-count", equalTo("0")),
         )
         verify(
             1,
             postRequestedFor(urlPathEqualTo("/something"))
-                .withHeader("x-stainless-retry-count", equalTo("1"))
+                .withHeader("x-stainless-retry-count", equalTo("1")),
         )
         verify(
             1,
             postRequestedFor(urlPathEqualTo("/something"))
-                .withHeader("x-stainless-retry-count", equalTo("2"))
+                .withHeader("x-stainless-retry-count", equalTo("2")),
         )
         assertNoResponseLeaks()
     }
@@ -191,14 +191,14 @@ internal class RetryingHttpClientTest {
                     .addPathSegment("something")
                     .putHeader("x-stainless-retry-count", "42")
                     .build(),
-                async
+                async,
             )
 
         assertThat(response.statusCode()).isEqualTo(200)
         verify(
             2,
             postRequestedFor(urlPathEqualTo("/something"))
-                .withHeader("x-stainless-retry-count", equalTo("42"))
+                .withHeader("x-stainless-retry-count", equalTo("42")),
         )
         assertNoResponseLeaks()
     }
@@ -226,7 +226,7 @@ internal class RetryingHttpClientTest {
         val response =
             retryingClient.execute(
                 HttpRequest.builder().method(HttpMethod.POST).addPathSegment("something").build(),
-                async
+                async,
             )
 
         assertThat(response.statusCode()).isEqualTo(200)

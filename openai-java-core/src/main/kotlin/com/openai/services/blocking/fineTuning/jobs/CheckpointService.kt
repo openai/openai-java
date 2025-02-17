@@ -14,6 +14,6 @@ interface CheckpointService {
     @JvmOverloads
     fun list(
         params: FineTuningJobCheckpointListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): FineTuningJobCheckpointListPage
 }

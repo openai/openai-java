@@ -317,7 +317,7 @@ private constructor(
         override fun serialize(
             value: ChatCompletionMessageParam,
             generator: JsonGenerator,
-            provider: SerializerProvider
+            provider: SerializerProvider,
         ) {
             when {
                 value.developer != null -> generator.writeObject(value.developer)

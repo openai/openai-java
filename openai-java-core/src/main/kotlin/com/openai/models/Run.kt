@@ -1301,11 +1301,7 @@ private constructor(
          * The reason why the run is incomplete. This will point to which specific token limit was
          * reached over the course of the run.
          */
-        class Reason
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Reason @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1515,11 +1511,7 @@ private constructor(
         }
 
         /** One of `server_error`, `rate_limit_exceeded`, or `invalid_prompt`. */
-        class Code
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Code @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1843,7 +1835,7 @@ private constructor(
                 fun build(): SubmitToolOutputs =
                     SubmitToolOutputs(
                         checkRequired("toolCalls", toolCalls).map { it.toImmutable() },
-                        additionalProperties.toImmutable()
+                        additionalProperties.toImmutable(),
                     )
             }
 
@@ -2044,11 +2036,7 @@ private constructor(
          * thread. When set to `auto`, messages in the middle of the thread will be dropped to fit
          * the context length of the model, `max_prompt_tokens`.
          */
-        class Type
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.

@@ -20,10 +20,8 @@ import com.openai.models.BatchListPage
 import com.openai.models.BatchListParams
 import com.openai.models.BatchRetrieveParams
 
-class BatchServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : BatchService {
+class BatchServiceImpl internal constructor(private val clientOptions: ClientOptions) :
+    BatchService {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 

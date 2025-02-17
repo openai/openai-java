@@ -21,7 +21,7 @@ interface ModelService {
     @JvmOverloads
     fun retrieve(
         params: ModelRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Model
 
     /**
@@ -31,7 +31,7 @@ interface ModelService {
     @JvmOverloads
     fun list(
         params: ModelListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ModelListPage
 
     /**
@@ -41,6 +41,6 @@ interface ModelService {
     @JvmOverloads
     fun delete(
         params: ModelDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): ModelDeleted
 }

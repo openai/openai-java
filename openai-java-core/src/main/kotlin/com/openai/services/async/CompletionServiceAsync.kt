@@ -16,13 +16,13 @@ interface CompletionServiceAsync {
     @JvmOverloads
     fun create(
         params: CompletionCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Completion>
 
     /** Creates a completion for the provided prompt and parameters. */
     @JvmOverloads
     fun createStreaming(
         params: CompletionCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): AsyncStreamResponse<Completion>
 }

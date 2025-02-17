@@ -15,10 +15,8 @@ import com.openai.errors.OpenAIError
 import com.openai.models.ChatCompletionMessageListPage
 import com.openai.models.ChatCompletionMessageListParams
 
-class MessageServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : MessageService {
+class MessageServiceImpl internal constructor(private val clientOptions: ClientOptions) :
+    MessageService {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
@@ -32,7 +30,7 @@ internal constructor(
      */
     override fun list(
         params: ChatCompletionMessageListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): ChatCompletionMessageListPage {
         val request =
             HttpRequest.builder()

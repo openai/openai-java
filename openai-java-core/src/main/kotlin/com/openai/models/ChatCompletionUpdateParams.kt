@@ -191,7 +191,7 @@ private constructor(
             fun build(): ChatCompletionUpdateBody =
                 ChatCompletionUpdateBody(
                     checkRequired("metadata", metadata),
-                    additionalProperties.toImmutable()
+                    additionalProperties.toImmutable(),
                 )
         }
 

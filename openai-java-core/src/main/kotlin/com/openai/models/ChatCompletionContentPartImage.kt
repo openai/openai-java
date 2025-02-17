@@ -219,22 +219,14 @@ private constructor(
             }
 
             fun build(): ImageUrl =
-                ImageUrl(
-                    checkRequired("url", url),
-                    detail,
-                    additionalProperties.toImmutable(),
-                )
+                ImageUrl(checkRequired("url", url), detail, additionalProperties.toImmutable())
         }
 
         /**
          * Specifies the detail level of the image. Learn more in the
          * [Vision guide](https://platform.openai.com/docs/guides/vision#low-or-high-fidelity-image-understanding).
          */
-        class Detail
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Detail @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.

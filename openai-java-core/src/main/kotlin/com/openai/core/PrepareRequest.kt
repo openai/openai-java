@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture
 internal fun HttpRequest.prepare(
     clientOptions: ClientOptions,
     params: Params,
-    deploymentModel: String?
+    deploymentModel: String?,
 ): HttpRequest =
     toBuilder()
         // Clear the path segments and add them back below after the Azure path segments.
@@ -29,7 +29,7 @@ internal fun HttpRequest.prepare(
 internal fun HttpRequest.prepareAsync(
     clientOptions: ClientOptions,
     params: Params,
-    deploymentModel: String?
+    deploymentModel: String?,
 ): CompletableFuture<HttpRequest> =
     // This async version exists to make it easier to add async specific preparation logic in the
     // future.

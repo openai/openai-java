@@ -91,7 +91,7 @@ class BetaAssistantCreateParamsTest {
                                             Metadata.builder()
                                                 .putAdditionalProperty(
                                                     "foo",
-                                                    JsonValue.from("string")
+                                                    JsonValue.from("string"),
                                                 )
                                                 .build()
                                         )

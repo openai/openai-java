@@ -33,10 +33,8 @@ import com.openai.services.blocking.beta.threads.MessageServiceImpl
 import com.openai.services.blocking.beta.threads.RunService
 import com.openai.services.blocking.beta.threads.RunServiceImpl
 
-class ThreadServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : ThreadService {
+class ThreadServiceImpl internal constructor(private val clientOptions: ClientOptions) :
+    ThreadService {
 
     companion object {
 
@@ -82,7 +80,7 @@ internal constructor(
     /** Retrieves a thread. */
     override fun retrieve(
         params: BetaThreadRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Thread {
         val request =
             HttpRequest.builder()
@@ -130,7 +128,7 @@ internal constructor(
     /** Delete a thread. */
     override fun delete(
         params: BetaThreadDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): ThreadDeleted {
         val request =
             HttpRequest.builder()
@@ -156,7 +154,7 @@ internal constructor(
     /** Create a thread and run it in one request. */
     override fun createAndRun(
         params: BetaThreadCreateAndRunParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): Run {
         val request =
             HttpRequest.builder()
@@ -184,7 +182,7 @@ internal constructor(
     /** Create a thread and run it in one request. */
     override fun createAndRunStreaming(
         params: BetaThreadCreateAndRunParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): StreamResponse<AssistantStreamEvent> {
         val request =
             HttpRequest.builder()
@@ -198,7 +196,7 @@ internal constructor(
                             ._body()
                             .toBuilder()
                             .putAdditionalProperty("stream", JsonValue.from(true))
-                            .build()
+                            .build(),
                     )
                 )
                 .build()

@@ -98,7 +98,7 @@ private constructor(
         fun build(): ChatCompletionFunctionCallOption =
             ChatCompletionFunctionCallOption(
                 checkRequired("name", name),
-                additionalProperties.toImmutable()
+                additionalProperties.toImmutable(),
             )
     }
 

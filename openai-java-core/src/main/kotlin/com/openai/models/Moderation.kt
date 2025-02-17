@@ -1255,11 +1255,8 @@ private constructor(
                 )
         }
 
-        class Harassment
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Harassment @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1280,7 +1277,7 @@ private constructor(
 
             /** An enum containing [Harassment]'s known values. */
             enum class Known {
-                TEXT,
+                TEXT
             }
 
             /**
@@ -1346,9 +1343,7 @@ private constructor(
 
         class HarassmentThreatening
         @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1369,7 +1364,7 @@ private constructor(
 
             /** An enum containing [HarassmentThreatening]'s known values. */
             enum class Known {
-                TEXT,
+                TEXT
             }
 
             /**
@@ -1436,11 +1431,7 @@ private constructor(
             override fun toString() = value.toString()
         }
 
-        class Hate
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Hate @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1461,7 +1452,7 @@ private constructor(
 
             /** An enum containing [Hate]'s known values. */
             enum class Known {
-                TEXT,
+                TEXT
             }
 
             /**
@@ -1524,9 +1515,7 @@ private constructor(
 
         class HateThreatening
         @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1547,7 +1536,7 @@ private constructor(
 
             /** An enum containing [HateThreatening]'s known values. */
             enum class Known {
-                TEXT,
+                TEXT
             }
 
             /**
@@ -1611,11 +1600,8 @@ private constructor(
             override fun toString() = value.toString()
         }
 
-        class Illicit
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Illicit @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1636,7 +1622,7 @@ private constructor(
 
             /** An enum containing [Illicit]'s known values. */
             enum class Known {
-                TEXT,
+                TEXT
             }
 
             /**
@@ -1701,9 +1687,7 @@ private constructor(
 
         class IllicitViolent
         @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1724,7 +1708,7 @@ private constructor(
 
             /** An enum containing [IllicitViolent]'s known values. */
             enum class Known {
-                TEXT,
+                TEXT
             }
 
             /**
@@ -1788,11 +1772,8 @@ private constructor(
             override fun toString() = value.toString()
         }
 
-        class SelfHarm
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class SelfHarm @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1884,9 +1865,7 @@ private constructor(
 
         class SelfHarmInstruction
         @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1981,9 +1960,7 @@ private constructor(
 
         class SelfHarmIntent
         @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -2074,11 +2051,7 @@ private constructor(
             override fun toString() = value.toString()
         }
 
-        class Sexual
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Sexual @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -2168,11 +2141,8 @@ private constructor(
             override fun toString() = value.toString()
         }
 
-        class SexualMinor
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class SexualMinor @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -2193,7 +2163,7 @@ private constructor(
 
             /** An enum containing [SexualMinor]'s known values. */
             enum class Known {
-                TEXT,
+                TEXT
             }
 
             /**
@@ -2257,11 +2227,8 @@ private constructor(
             override fun toString() = value.toString()
         }
 
-        class Violence
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Violence @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -2353,9 +2320,7 @@ private constructor(
 
         class ViolenceGraphic
         @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
