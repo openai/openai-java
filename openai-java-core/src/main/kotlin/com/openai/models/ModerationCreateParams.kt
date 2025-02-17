@@ -37,7 +37,7 @@ import java.util.Optional
  */
 class ModerationCreateParams
 private constructor(
-    private val body: ModerationCreateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -74,16 +74,16 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): ModerationCreateBody = body
+    @JvmSynthetic internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     @NoAutoDetect
-    class ModerationCreateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("input")
         @ExcludeMissing
         private val input: JsonField<Input> = JsonMissing.of(),
@@ -126,7 +126,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): ModerationCreateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -143,7 +143,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [ModerationCreateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var input: JsonField<Input>? = null
@@ -151,10 +151,10 @@ private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(moderationCreateBody: ModerationCreateBody) = apply {
-                input = moderationCreateBody.input
-                model = moderationCreateBody.model
-                additionalProperties = moderationCreateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                input = body.input
+                model = body.model
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
@@ -220,12 +220,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): ModerationCreateBody =
-                ModerationCreateBody(
-                    checkRequired("input", input),
-                    model,
-                    additionalProperties.toImmutable(),
-                )
+            fun build(): Body =
+                Body(checkRequired("input", input), model, additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
@@ -233,7 +229,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ModerationCreateBody && input == other.input && model == other.model && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && input == other.input && model == other.model && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -243,7 +239,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ModerationCreateBody{input=$input, model=$model, additionalProperties=$additionalProperties}"
+            "Body{input=$input, model=$model, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -257,7 +253,7 @@ private constructor(
     @NoAutoDetect
     class Builder internal constructor() {
 
-        private var body: ModerationCreateBody.Builder = ModerationCreateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

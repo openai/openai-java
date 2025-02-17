@@ -34,7 +34,9 @@ class BetaThreadRunSubmitToolOutputsParamsTest {
                         .build()
                 )
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.toolOutputs())
             .isEqualTo(
@@ -55,7 +57,9 @@ class BetaThreadRunSubmitToolOutputsParamsTest {
                 .runId("run_id")
                 .addToolOutput(BetaThreadRunSubmitToolOutputsParams.ToolOutput.builder().build())
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.toolOutputs())
             .isEqualTo(listOf(BetaThreadRunSubmitToolOutputsParams.ToolOutput.builder().build()))

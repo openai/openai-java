@@ -25,7 +25,7 @@ import java.util.Optional
 class BetaVectorStoreUpdateParams
 private constructor(
     private val vectorStoreId: String,
-    private val body: BetaVectorStoreUpdateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -70,7 +70,7 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): BetaVectorStoreUpdateBody = body
+    @JvmSynthetic internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -84,9 +84,9 @@ private constructor(
     }
 
     @NoAutoDetect
-    class BetaVectorStoreUpdateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("expires_after")
         @ExcludeMissing
         private val expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of(),
@@ -141,7 +141,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): BetaVectorStoreUpdateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -159,7 +159,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [BetaVectorStoreUpdateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of()
@@ -168,11 +168,11 @@ private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(betaVectorStoreUpdateBody: BetaVectorStoreUpdateBody) = apply {
-                expiresAfter = betaVectorStoreUpdateBody.expiresAfter
-                metadata = betaVectorStoreUpdateBody.metadata
-                name = betaVectorStoreUpdateBody.name
-                additionalProperties = betaVectorStoreUpdateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                expiresAfter = body.expiresAfter
+                metadata = body.metadata
+                name = body.name
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** The expiration policy for a vector store. */
@@ -246,13 +246,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): BetaVectorStoreUpdateBody =
-                BetaVectorStoreUpdateBody(
-                    expiresAfter,
-                    metadata,
-                    name,
-                    additionalProperties.toImmutable(),
-                )
+            fun build(): Body =
+                Body(expiresAfter, metadata, name, additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
@@ -260,7 +255,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is BetaVectorStoreUpdateBody && expiresAfter == other.expiresAfter && metadata == other.metadata && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && expiresAfter == other.expiresAfter && metadata == other.metadata && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -270,7 +265,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "BetaVectorStoreUpdateBody{expiresAfter=$expiresAfter, metadata=$metadata, name=$name, additionalProperties=$additionalProperties}"
+            "Body{expiresAfter=$expiresAfter, metadata=$metadata, name=$name, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -285,7 +280,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var vectorStoreId: String? = null
-        private var body: BetaVectorStoreUpdateBody.Builder = BetaVectorStoreUpdateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

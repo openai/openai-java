@@ -211,7 +211,9 @@ class BetaThreadCreateAndRunParamsTest {
                         .build()
                 )
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.assistantId()).isEqualTo("assistant_id")
         assertThat(body.instructions()).contains("instructions")
@@ -324,7 +326,9 @@ class BetaThreadCreateAndRunParamsTest {
     @Test
     fun bodyWithoutOptionalFields() {
         val params = BetaThreadCreateAndRunParams.builder().assistantId("assistant_id").build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.assistantId()).isEqualTo("assistant_id")
     }

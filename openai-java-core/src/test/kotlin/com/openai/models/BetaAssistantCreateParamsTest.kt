@@ -104,7 +104,9 @@ class BetaAssistantCreateParamsTest {
                 .addTool(CodeInterpreterTool.builder().build())
                 .topP(1.0)
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.model()).isEqualTo(ChatModel.O3_MINI)
         assertThat(body.description()).contains("description")
@@ -156,7 +158,9 @@ class BetaAssistantCreateParamsTest {
     @Test
     fun bodyWithoutOptionalFields() {
         val params = BetaAssistantCreateParams.builder().model(ChatModel.O3_MINI).build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.model()).isEqualTo(ChatModel.O3_MINI)
     }

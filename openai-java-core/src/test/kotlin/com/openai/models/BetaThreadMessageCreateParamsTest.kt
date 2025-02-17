@@ -45,7 +45,9 @@ class BetaThreadMessageCreateParamsTest {
                         .build()
                 )
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.content()).isEqualTo(BetaThreadMessageCreateParams.Content.ofText("string"))
         assertThat(body.role()).isEqualTo(BetaThreadMessageCreateParams.Role.USER)
@@ -72,7 +74,9 @@ class BetaThreadMessageCreateParamsTest {
                 .content("string")
                 .role(BetaThreadMessageCreateParams.Role.USER)
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.content()).isEqualTo(BetaThreadMessageCreateParams.Content.ofText("string"))
         assertThat(body.role()).isEqualTo(BetaThreadMessageCreateParams.Role.USER)

@@ -57,7 +57,9 @@ class BetaThreadUpdateParamsTest {
                         .build()
                 )
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.metadata())
             .contains(
@@ -83,7 +85,9 @@ class BetaThreadUpdateParamsTest {
     @Test
     fun bodyWithoutOptionalFields() {
         val params = BetaThreadUpdateParams.builder().threadId("thread_id").build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
     }
 

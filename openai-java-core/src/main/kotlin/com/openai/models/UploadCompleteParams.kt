@@ -35,7 +35,7 @@ import java.util.Optional
 class UploadCompleteParams
 private constructor(
     private val uploadId: String,
-    private val body: UploadCompleteBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -66,7 +66,7 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): UploadCompleteBody = body
+    @JvmSynthetic internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -80,9 +80,9 @@ private constructor(
     }
 
     @NoAutoDetect
-    class UploadCompleteBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("part_ids")
         @ExcludeMissing
         private val partIds: JsonField<List<String>> = JsonMissing.of(),
@@ -115,7 +115,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): UploadCompleteBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -132,7 +132,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [UploadCompleteBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var partIds: JsonField<MutableList<String>>? = null
@@ -140,10 +140,10 @@ private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(uploadCompleteBody: UploadCompleteBody) = apply {
-                partIds = uploadCompleteBody.partIds.map { it.toMutableList() }
-                md5 = uploadCompleteBody.md5
-                additionalProperties = uploadCompleteBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                partIds = body.partIds.map { it.toMutableList() }
+                md5 = body.md5
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** The ordered list of Part IDs. */
@@ -199,8 +199,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): UploadCompleteBody =
-                UploadCompleteBody(
+            fun build(): Body =
+                Body(
                     checkRequired("partIds", partIds).map { it.toImmutable() },
                     md5,
                     additionalProperties.toImmutable(),
@@ -212,7 +212,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is UploadCompleteBody && partIds == other.partIds && md5 == other.md5 && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && partIds == other.partIds && md5 == other.md5 && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -222,7 +222,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "UploadCompleteBody{partIds=$partIds, md5=$md5, additionalProperties=$additionalProperties}"
+            "Body{partIds=$partIds, md5=$md5, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -237,7 +237,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var uploadId: String? = null
-        private var body: UploadCompleteBody.Builder = UploadCompleteBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

@@ -34,7 +34,9 @@ class ImageGenerateParamsTest {
                 .style(ImageGenerateParams.Style.VIVID)
                 .user("user-1234")
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.prompt()).isEqualTo("A cute baby sea otter")
         assertThat(body.model()).contains(ImageModel.DALL_E_2)
@@ -49,7 +51,9 @@ class ImageGenerateParamsTest {
     @Test
     fun bodyWithoutOptionalFields() {
         val params = ImageGenerateParams.builder().prompt("A cute baby sea otter").build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.prompt()).isEqualTo("A cute baby sea otter")
     }

@@ -61,7 +61,9 @@ class CompletionCreateParamsTest {
                 .topP(1.0)
                 .user("user-1234")
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.model()).isEqualTo(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
         assertThat(body.prompt())
@@ -96,7 +98,9 @@ class CompletionCreateParamsTest {
                 .model(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
                 .prompt("This is a test.")
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.model()).isEqualTo(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
         assertThat(body.prompt())

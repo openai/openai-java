@@ -45,7 +45,7 @@ import java.util.Optional
  */
 class ChatCompletionCreateParams
 private constructor(
-    private val body: ChatCompletionCreateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -554,16 +554,16 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): ChatCompletionCreateBody = body
+    @JvmSynthetic internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     @NoAutoDetect
-    class ChatCompletionCreateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("messages")
         @ExcludeMissing
         private val messages: JsonField<List<ChatCompletionMessageParam>> = JsonMissing.of(),
@@ -1221,7 +1221,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): ChatCompletionCreateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -1265,7 +1265,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [ChatCompletionCreateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var messages: JsonField<MutableList<ChatCompletionMessageParam>>? = null
@@ -1300,37 +1300,37 @@ private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(chatCompletionCreateBody: ChatCompletionCreateBody) = apply {
-                messages = chatCompletionCreateBody.messages.map { it.toMutableList() }
-                model = chatCompletionCreateBody.model
-                audio = chatCompletionCreateBody.audio
-                frequencyPenalty = chatCompletionCreateBody.frequencyPenalty
-                functionCall = chatCompletionCreateBody.functionCall
-                functions = chatCompletionCreateBody.functions.map { it.toMutableList() }
-                logitBias = chatCompletionCreateBody.logitBias
-                logprobs = chatCompletionCreateBody.logprobs
-                maxCompletionTokens = chatCompletionCreateBody.maxCompletionTokens
-                maxTokens = chatCompletionCreateBody.maxTokens
-                metadata = chatCompletionCreateBody.metadata
-                modalities = chatCompletionCreateBody.modalities.map { it.toMutableList() }
-                n = chatCompletionCreateBody.n
-                parallelToolCalls = chatCompletionCreateBody.parallelToolCalls
-                prediction = chatCompletionCreateBody.prediction
-                presencePenalty = chatCompletionCreateBody.presencePenalty
-                reasoningEffort = chatCompletionCreateBody.reasoningEffort
-                responseFormat = chatCompletionCreateBody.responseFormat
-                seed = chatCompletionCreateBody.seed
-                serviceTier = chatCompletionCreateBody.serviceTier
-                stop = chatCompletionCreateBody.stop
-                store = chatCompletionCreateBody.store
-                streamOptions = chatCompletionCreateBody.streamOptions
-                temperature = chatCompletionCreateBody.temperature
-                toolChoice = chatCompletionCreateBody.toolChoice
-                tools = chatCompletionCreateBody.tools.map { it.toMutableList() }
-                topLogprobs = chatCompletionCreateBody.topLogprobs
-                topP = chatCompletionCreateBody.topP
-                user = chatCompletionCreateBody.user
-                additionalProperties = chatCompletionCreateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                messages = body.messages.map { it.toMutableList() }
+                model = body.model
+                audio = body.audio
+                frequencyPenalty = body.frequencyPenalty
+                functionCall = body.functionCall
+                functions = body.functions.map { it.toMutableList() }
+                logitBias = body.logitBias
+                logprobs = body.logprobs
+                maxCompletionTokens = body.maxCompletionTokens
+                maxTokens = body.maxTokens
+                metadata = body.metadata
+                modalities = body.modalities.map { it.toMutableList() }
+                n = body.n
+                parallelToolCalls = body.parallelToolCalls
+                prediction = body.prediction
+                presencePenalty = body.presencePenalty
+                reasoningEffort = body.reasoningEffort
+                responseFormat = body.responseFormat
+                seed = body.seed
+                serviceTier = body.serviceTier
+                stop = body.stop
+                store = body.store
+                streamOptions = body.streamOptions
+                temperature = body.temperature
+                toolChoice = body.toolChoice
+                tools = body.tools.map { it.toMutableList() }
+                topLogprobs = body.topLogprobs
+                topP = body.topP
+                user = body.user
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
@@ -2493,8 +2493,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): ChatCompletionCreateBody =
-                ChatCompletionCreateBody(
+            fun build(): Body =
+                Body(
                     checkRequired("messages", messages).map { it.toImmutable() },
                     checkRequired("model", model),
                     audio,
@@ -2533,7 +2533,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ChatCompletionCreateBody && messages == other.messages && model == other.model && audio == other.audio && frequencyPenalty == other.frequencyPenalty && functionCall == other.functionCall && functions == other.functions && logitBias == other.logitBias && logprobs == other.logprobs && maxCompletionTokens == other.maxCompletionTokens && maxTokens == other.maxTokens && metadata == other.metadata && modalities == other.modalities && n == other.n && parallelToolCalls == other.parallelToolCalls && prediction == other.prediction && presencePenalty == other.presencePenalty && reasoningEffort == other.reasoningEffort && responseFormat == other.responseFormat && seed == other.seed && serviceTier == other.serviceTier && stop == other.stop && store == other.store && streamOptions == other.streamOptions && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topLogprobs == other.topLogprobs && topP == other.topP && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && messages == other.messages && model == other.model && audio == other.audio && frequencyPenalty == other.frequencyPenalty && functionCall == other.functionCall && functions == other.functions && logitBias == other.logitBias && logprobs == other.logprobs && maxCompletionTokens == other.maxCompletionTokens && maxTokens == other.maxTokens && metadata == other.metadata && modalities == other.modalities && n == other.n && parallelToolCalls == other.parallelToolCalls && prediction == other.prediction && presencePenalty == other.presencePenalty && reasoningEffort == other.reasoningEffort && responseFormat == other.responseFormat && seed == other.seed && serviceTier == other.serviceTier && stop == other.stop && store == other.store && streamOptions == other.streamOptions && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topLogprobs == other.topLogprobs && topP == other.topP && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -2543,7 +2543,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ChatCompletionCreateBody{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, additionalProperties=$additionalProperties}"
+            "Body{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -2557,7 +2557,7 @@ private constructor(
     @NoAutoDetect
     class Builder internal constructor() {
 
-        private var body: ChatCompletionCreateBody.Builder = ChatCompletionCreateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

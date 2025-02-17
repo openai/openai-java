@@ -25,7 +25,7 @@ import java.util.Optional
 /** Creates and executes a batch from an uploaded file of requests */
 class BatchCreateParams
 private constructor(
-    private val body: BatchCreateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -106,16 +106,16 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): BatchCreateBody = body
+    @JvmSynthetic internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     @NoAutoDetect
-    class BatchCreateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("completion_window")
         @ExcludeMissing
         private val completionWindow: JsonField<CompletionWindow> = JsonMissing.of(),
@@ -216,7 +216,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): BatchCreateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -235,7 +235,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [BatchCreateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var completionWindow: JsonField<CompletionWindow>? = null
@@ -245,12 +245,12 @@ private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(batchCreateBody: BatchCreateBody) = apply {
-                completionWindow = batchCreateBody.completionWindow
-                endpoint = batchCreateBody.endpoint
-                inputFileId = batchCreateBody.inputFileId
-                metadata = batchCreateBody.metadata
-                additionalProperties = batchCreateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                completionWindow = body.completionWindow
+                endpoint = body.endpoint
+                inputFileId = body.inputFileId
+                metadata = body.metadata
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
@@ -361,8 +361,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): BatchCreateBody =
-                BatchCreateBody(
+            fun build(): Body =
+                Body(
                     checkRequired("completionWindow", completionWindow),
                     checkRequired("endpoint", endpoint),
                     checkRequired("inputFileId", inputFileId),
@@ -376,7 +376,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is BatchCreateBody && completionWindow == other.completionWindow && endpoint == other.endpoint && inputFileId == other.inputFileId && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && completionWindow == other.completionWindow && endpoint == other.endpoint && inputFileId == other.inputFileId && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -386,7 +386,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "BatchCreateBody{completionWindow=$completionWindow, endpoint=$endpoint, inputFileId=$inputFileId, metadata=$metadata, additionalProperties=$additionalProperties}"
+            "Body{completionWindow=$completionWindow, endpoint=$endpoint, inputFileId=$inputFileId, metadata=$metadata, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -400,7 +400,7 @@ private constructor(
     @NoAutoDetect
     class Builder internal constructor() {
 
-        private var body: BatchCreateBody.Builder = BatchCreateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

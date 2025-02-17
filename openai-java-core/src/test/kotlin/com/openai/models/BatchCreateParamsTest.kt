@@ -33,7 +33,9 @@ class BatchCreateParamsTest {
                         .build()
                 )
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.completionWindow()).isEqualTo(BatchCreateParams.CompletionWindow._24H)
         assertThat(body.endpoint()).isEqualTo(BatchCreateParams.Endpoint.V1_CHAT_COMPLETIONS)
@@ -52,7 +54,9 @@ class BatchCreateParamsTest {
                 .endpoint(BatchCreateParams.Endpoint.V1_CHAT_COMPLETIONS)
                 .inputFileId("input_file_id")
                 .build()
+
         val body = params._body()
+
         assertThat(body).isNotNull
         assertThat(body.completionWindow()).isEqualTo(BatchCreateParams.CompletionWindow._24H)
         assertThat(body.endpoint()).isEqualTo(BatchCreateParams.Endpoint.V1_CHAT_COMPLETIONS)

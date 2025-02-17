@@ -28,7 +28,7 @@ import java.util.Optional
 class ChatCompletionUpdateParams
 private constructor(
     private val completionId: String,
-    private val body: ChatCompletionUpdateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -61,7 +61,7 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): ChatCompletionUpdateBody = body
+    @JvmSynthetic internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -75,9 +75,9 @@ private constructor(
     }
 
     @NoAutoDetect
-    class ChatCompletionUpdateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("metadata")
         @ExcludeMissing
         private val metadata: JsonField<Metadata> = JsonMissing.of(),
@@ -111,7 +111,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): ChatCompletionUpdateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -127,16 +127,16 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [ChatCompletionUpdateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var metadata: JsonField<Metadata>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(chatCompletionUpdateBody: ChatCompletionUpdateBody) = apply {
-                metadata = chatCompletionUpdateBody.metadata
-                additionalProperties = chatCompletionUpdateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                metadata = body.metadata
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
@@ -188,11 +188,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): ChatCompletionUpdateBody =
-                ChatCompletionUpdateBody(
-                    checkRequired("metadata", metadata),
-                    additionalProperties.toImmutable(),
-                )
+            fun build(): Body =
+                Body(checkRequired("metadata", metadata), additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
@@ -200,7 +197,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ChatCompletionUpdateBody && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -210,7 +207,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ChatCompletionUpdateBody{metadata=$metadata, additionalProperties=$additionalProperties}"
+            "Body{metadata=$metadata, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -225,7 +222,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var completionId: String? = null
-        private var body: ChatCompletionUpdateBody.Builder = ChatCompletionUpdateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
