@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.24.0 (2025-02-18)
+
+Full Changelog: [v0.23.1...v0.24.0](https://github.com/openai/openai-java/compare/v0.23.1...v0.24.0)
+
+### Features
+
+* **client:** support `JsonField#asX()` for known values ([#225](https://github.com/openai/openai-java/issues/225)) ([31c0663](https://github.com/openai/openai-java/commit/31c06634ead5ffcd54e0a9208e39ac9880df6574))
+* **client:** update enum `asX` methods ([#224](https://github.com/openai/openai-java/issues/224)) ([b06a749](https://github.com/openai/openai-java/commit/b06a7496f016b3e7541d9f4e5082ada4a1a5b39d))
+
+
+### Chores
+
+* **internal:** make body class constructors private ([7c6739c](https://github.com/openai/openai-java/commit/7c6739c254ef5a06020fbdbfb6b1d470377e34fc))
+* **internal:** make body classes for multipart requests ([7c6739c](https://github.com/openai/openai-java/commit/7c6739c254ef5a06020fbdbfb6b1d470377e34fc))
+* **internal:** misc formatting changes ([7c6739c](https://github.com/openai/openai-java/commit/7c6739c254ef5a06020fbdbfb6b1d470377e34fc))
+* **internal:** optimize build and test perf ([fc6bcd7](https://github.com/openai/openai-java/commit/fc6bcd742b042e9e8338cc7c8bceb6b1e3be6b38))
+* **internal:** rename internal body classes ([7c6739c](https://github.com/openai/openai-java/commit/7c6739c254ef5a06020fbdbfb6b1d470377e34fc))
+* **internal:** update formatter ([#220](https://github.com/openai/openai-java/issues/220)) ([fc6bcd7](https://github.com/openai/openai-java/commit/fc6bcd742b042e9e8338cc7c8bceb6b1e3be6b38))
+* **internal:** update some formatting in `Values.kt` ([31c0663](https://github.com/openai/openai-java/commit/31c06634ead5ffcd54e0a9208e39ac9880df6574))
+* **internal:** use better test example values ([#222](https://github.com/openai/openai-java/issues/222)) ([7c6739c](https://github.com/openai/openai-java/commit/7c6739c254ef5a06020fbdbfb6b1d470377e34fc))
+
 ## 0.23.1 (2025-02-15)
 
 Full Changelog: [v0.23.0...v0.23.1](https://github.com/openai/openai-java/compare/v0.23.0...v0.23.1)
