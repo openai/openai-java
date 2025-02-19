@@ -154,6 +154,86 @@ CompletableFuture<ChatCompletion> chatCompletion = client.chat().completions().c
 
 The asynchronous client supports the same options as the synchronous one, except most methods return `CompletableFuture`s.
 
+## Streaming
+
+The SDK defines methods that return response "chunk" streams, where each chunk can be individually processed as soon as it arrives instead of waiting on the full response. Streaming methods generally correspond to [SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) or [JSONL](https://jsonlines.org) responses.
+
+Some of these methods may have streaming and non-streaming variants, but a streaming method will always have a `Streaming` suffix in its name, even if it doesn't have a non-streaming variant.
+
+These streaming methods return `StreamResponse` for synchronous clients:
+
+```java
+import com.openai.core.http.StreamResponse;
+import com.openai.models.ChatCompletionChunk;
+
+try (StreamResponse<ChatCompletionChunk> streamResponse = client.chat().completions().createStreaming(params)) {
+    streamResponse.stream().forEach(chunk -> {
+        System.out.println(chunk);
+    });
+    System.out.println("No more chunks!");
+} catch (Exception e) {
+    System.out.println("Something went wrong!");
+    throw new RuntimeException(e);
+}
+```
+
+Or `AsyncStreamResponse` for asynchronous clients:
+
+```java
+import com.openai.core.http.AsyncStreamResponse;
+import com.openai.models.ChatCompletionChunk;
+import java.util.Optional;
+
+client.async().chat().completions().createStreaming(params).subscribe(chunk -> {
+    System.out.println(chunk);
+});
+
+// If you need to handle errors or completion of the stream
+client.async().chat().completions().createStreaming(params).subscribe(new AsyncStreamResponse.Handler<>() {
+    @Override
+    public void onNext(ChatCompletionChunk chunk) {
+        System.out.println(chunk);
+    }
+
+    @Override
+    public void onComplete(Optional<Throwable> error) {
+        if (error.isPresent()) {
+            System.out.println("Something went wrong!");
+            throw new RuntimeException(error.get());
+        } else {
+            System.out.println("Something went wrong!");
+        }
+    }
+});
+```
+
+Async streaming uses a dedicated per-client cached thread pool `Executor` to stream without blocking the current thread. This default is suitable for most purposes.
+
+To use a different `Executor`, configure the subscription using the `executor` parameter:
+
+```java
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
+Executor executor = Executors.newFixedThreadPool(4);
+client.async().chat().completions().createStreaming(params).subscribe(
+    chunk -> System.out.println(chunk), executor
+);
+```
+
+Or configure the client globally using the `streamHandlerExecutor` method:
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import java.util.concurrent.Executors;
+
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    .fromEnv()
+    .streamHandlerExecutor(Executors.newFixedThreadPool(4))
+    .build();
+```
+
 ## Error handling
 
 The SDK throws custom unchecked exception types:
