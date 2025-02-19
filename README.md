@@ -243,6 +243,57 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
     .build();
 ```
 
+## Binary responses
+
+The SDK defines methods that return binary responses, which are used for API responses that shouldn't necessarily be parsed, like non-JSON data.
+
+These methods return `HttpResponse`:
+
+```java
+import com.openai.core.http.HttpResponse;
+import com.openai.models.FileContentParams;
+
+FileContentParams params = FileContentParams.builder()
+    .fileId("file_id")
+    .build();
+HttpResponse response = client.files().content(params);
+```
+
+To save the response content to a file, use the `Files.copy(...)` method:
+
+```java
+import com.openai.core.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
+try (HttpResponse response = client.files().content(params)) {
+    Files.copy(
+        response.body(),
+        Paths.get(path),
+        StandardCopyOption.REPLACE_EXISTING
+    );
+} catch (Exception e) {
+    System.out.println("Something went wrong!");
+    throw new RuntimeException(e);
+}
+```
+
+Or transfer the response content to any `OutputStream`:
+
+```java
+import com.openai.core.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+try (HttpResponse response = client.files().content(params)) {
+    response.body().transferTo(Files.newOutputStream(Paths.get(path)));
+} catch (Exception e) {
+    System.out.println("Something went wrong!");
+    throw new RuntimeException(e);
+}
+```
+
 ## Error handling
 
 The SDK throws custom unchecked exception types:
