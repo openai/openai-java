@@ -2,6 +2,7 @@
 
 package com.openai.models
 
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -27,7 +28,7 @@ class BetaVectorStoreFileCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body).isNotNull
+        assertNotNull(body)
         assertThat(body.fileId()).isEqualTo("file_id")
         assertThat(body.chunkingStrategy())
             .contains(
@@ -45,7 +46,7 @@ class BetaVectorStoreFileCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body).isNotNull
+        assertNotNull(body)
         assertThat(body.fileId()).isEqualTo("file_id")
     }
 

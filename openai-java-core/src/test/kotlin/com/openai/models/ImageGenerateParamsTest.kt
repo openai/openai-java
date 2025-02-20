@@ -2,6 +2,7 @@
 
 package com.openai.models
 
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -37,7 +38,7 @@ class ImageGenerateParamsTest {
 
         val body = params._body()
 
-        assertThat(body).isNotNull
+        assertNotNull(body)
         assertThat(body.prompt()).isEqualTo("A cute baby sea otter")
         assertThat(body.model()).contains(ImageModel.DALL_E_2)
         assertThat(body.n()).contains(1L)
@@ -54,7 +55,7 @@ class ImageGenerateParamsTest {
 
         val body = params._body()
 
-        assertThat(body).isNotNull
+        assertNotNull(body)
         assertThat(body.prompt()).isEqualTo("A cute baby sea otter")
     }
 }

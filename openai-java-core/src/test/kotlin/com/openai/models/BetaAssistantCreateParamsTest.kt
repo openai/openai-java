@@ -3,6 +3,7 @@
 package com.openai.models
 
 import com.openai.core.JsonValue
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -107,7 +108,7 @@ class BetaAssistantCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body).isNotNull
+        assertNotNull(body)
         assertThat(body.model()).isEqualTo(ChatModel.O3_MINI)
         assertThat(body.description()).contains("description")
         assertThat(body.instructions()).contains("instructions")
@@ -161,7 +162,7 @@ class BetaAssistantCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body).isNotNull
+        assertNotNull(body)
         assertThat(body.model()).isEqualTo(ChatModel.O3_MINI)
     }
 }

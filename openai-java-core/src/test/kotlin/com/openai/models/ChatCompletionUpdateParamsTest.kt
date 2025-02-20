@@ -3,6 +3,7 @@
 package com.openai.models
 
 import com.openai.core.JsonValue
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -32,7 +33,7 @@ class ChatCompletionUpdateParamsTest {
 
         val body = params._body()
 
-        assertThat(body).isNotNull
+        assertNotNull(body)
         assertThat(body.metadata())
             .contains(
                 Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
@@ -53,7 +54,7 @@ class ChatCompletionUpdateParamsTest {
 
         val body = params._body()
 
-        assertThat(body).isNotNull
+        assertNotNull(body)
         assertThat(body.metadata())
             .contains(
                 Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
