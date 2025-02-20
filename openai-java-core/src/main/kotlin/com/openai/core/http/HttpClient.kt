@@ -19,4 +19,7 @@ interface HttpClient : AutoCloseable {
         request: HttpRequest,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<HttpResponse>
+
+    /** Overridden from [AutoCloseable] to not have a checked exception in its signature. */
+    override fun close()
 }
