@@ -17,9 +17,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate Gradle wrapper
-        uses: gradle/actions/wrapper-validation@v3
-
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
@@ -30,7 +27,7 @@ jobs:
           cache: gradle
 
       - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Run lints
         run: ./scripts/lint
