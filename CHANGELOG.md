@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.25.0 (2025-02-20)
+
+Full Changelog: [v0.24.1...v0.25.0](https://github.com/openai/openai-java/compare/v0.24.1...v0.25.0)
+
+### Features
+
+* **client:** get rid of annoying checked exceptions ([#236](https://github.com/openai/openai-java/issues/236)) ([4c60942](https://github.com/openai/openai-java/commit/4c6094218ed32bc8fc669703e2f1d94b318c7307))
+
+
+### Chores
+
+* **ci:** update gradle actions to v4 ([#234](https://github.com/openai/openai-java/issues/234)) ([fbcf865](https://github.com/openai/openai-java/commit/fbcf865056c37a022fd905147e1763b96d2ec26a))
+
 ## 0.24.1 (2025-02-20)
 
 Full Changelog: [v0.24.0...v0.24.1](https://github.com/openai/openai-java/compare/v0.24.0...v0.24.1)
