@@ -4,6 +4,7 @@ package com.openai.models
 
 import com.openai.core.JsonValue
 import com.openai.core.http.QueryParams
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -174,7 +175,7 @@ class BetaThreadRunCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body).isNotNull
+        assertNotNull(body)
         assertThat(body.assistantId()).isEqualTo("assistant_id")
         assertThat(body.additionalInstructions()).contains("additional_instructions")
         assertThat(body.additionalMessages())
@@ -235,7 +236,7 @@ class BetaThreadRunCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body).isNotNull
+        assertNotNull(body)
         assertThat(body.assistantId()).isEqualTo("assistant_id")
     }
 

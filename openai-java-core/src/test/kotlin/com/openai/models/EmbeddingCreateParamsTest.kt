@@ -2,6 +2,7 @@
 
 package com.openai.models
 
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -31,7 +32,7 @@ class EmbeddingCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body).isNotNull
+        assertNotNull(body)
         assertThat(body.input())
             .isEqualTo(
                 EmbeddingCreateParams.Input.ofString("The quick brown fox jumped over the lazy dog")
@@ -52,7 +53,7 @@ class EmbeddingCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body).isNotNull
+        assertNotNull(body)
         assertThat(body.input())
             .isEqualTo(
                 EmbeddingCreateParams.Input.ofString("The quick brown fox jumped over the lazy dog")
