@@ -180,9 +180,6 @@ try (StreamResponse<ChatCompletionChunk> streamResponse = client.chat().completi
         System.out.println(chunk);
     });
     System.out.println("No more chunks!");
-} catch (Exception e) {
-    System.out.println("Something went wrong!");
-    throw new RuntimeException(e);
 }
 ```
 
