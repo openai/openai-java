@@ -1,12 +1,11 @@
 package com.openai.core.http
 
-import java.io.IOException
 import java.io.OutputStream
 import java.lang.AutoCloseable
 
 interface HttpRequestBody : AutoCloseable {
 
-    @Throws(IOException::class) fun writeTo(outputStream: OutputStream)
+    fun writeTo(outputStream: OutputStream)
 
     fun contentType(): String?
 
@@ -21,5 +20,6 @@ interface HttpRequestBody : AutoCloseable {
      */
     fun repeatable(): Boolean
 
+    /** Overridden from [AutoCloseable] to not have a checked exception in its signature. */
     override fun close()
 }
