@@ -617,6 +617,35 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
     .build();
 ```
 
+## FAQ
+
+### Why don't you use plain `enum` classes?
+
+Java `enum` classes are not trivially [forwards compatible](https://www.stainless.com/blog/making-java-enums-forwards-compatible). Using them in the SDK could cause runtime exceptions if the API is updated to respond with a new enum value.
+
+### Why do you represent fields using `JsonField<T>` instead of just plain `T`?
+
+Using `JsonField<T>` enables a few features:
+
+- Allowing usage of [undocumented API functionality](#undocumented-api-functionality)
+- Lazily [validating the API response against the expected shape](#response-validation)
+- Representing absent vs explicitly null values
+
+### Why don't you use [`data` classes](https://kotlinlang.org/docs/data-classes.html)?
+
+It is not [backwards compatible to add new fields to a data class](https://kotlinlang.org/docs/api-guidelines-backward-compatibility.html#avoid-using-data-classes-in-your-api) and we don't want to introduce a breaking change every time we add a field to a class.
+
+### Why don't you use checked exceptions?
+
+Checked exceptions are widely considered a mistake in the Java programming language. In fact, they were omitted from Kotlin for this reason.
+
+Checked exceptions:
+
+- Are verbose to handle
+- Encourage error handling at the wrong level of abstraction, where nothing can be done about the error
+- Are tedious to propagate due to the [function coloring problem](https://journal.stuffwithstuff.com/2015/02/01/what-color-is-your-function)
+- Don't play well with lambdas (also due to the function coloring problem)
+
 ## Semantic versioning
 
 This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) conventions, though certain backwards-incompatible changes may be released as minor versions:
