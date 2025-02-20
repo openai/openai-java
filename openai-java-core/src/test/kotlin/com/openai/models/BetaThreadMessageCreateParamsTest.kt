@@ -3,6 +3,7 @@
 package com.openai.models
 
 import com.openai.core.JsonValue
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -48,7 +49,7 @@ class BetaThreadMessageCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body).isNotNull
+        assertNotNull(body)
         assertThat(body.content()).isEqualTo(BetaThreadMessageCreateParams.Content.ofText("string"))
         assertThat(body.role()).isEqualTo(BetaThreadMessageCreateParams.Role.USER)
         assertThat(body.attachments())
@@ -77,7 +78,7 @@ class BetaThreadMessageCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body).isNotNull
+        assertNotNull(body)
         assertThat(body.content()).isEqualTo(BetaThreadMessageCreateParams.Content.ofText("string"))
         assertThat(body.role()).isEqualTo(BetaThreadMessageCreateParams.Role.USER)
     }
