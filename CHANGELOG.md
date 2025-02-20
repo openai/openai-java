@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.24.1 (2025-02-20)
+
+Full Changelog: [v0.24.0...v0.24.1](https://github.com/openai/openai-java/compare/v0.24.0...v0.24.1)
+
+### Bug Fixes
+
+* **client:** add missing `streamHandlerExecutor` method ([#230](https://github.com/openai/openai-java/issues/230)) ([d53a08a](https://github.com/openai/openai-java/commit/d53a08a02d256b702b53734e99d25c7394a8f5db))
+
+
+### Chores
+
+* **docs:** add binary responses info to readme ([#231](https://github.com/openai/openai-java/issues/231)) ([6ae25b4](https://github.com/openai/openai-java/commit/6ae25b4c6e7ee2186b905fb68ee05cb5ad470174))
+* **docs:** add streaming info to readme ([d53a08a](https://github.com/openai/openai-java/commit/d53a08a02d256b702b53734e99d25c7394a8f5db))
+* **docs:** reorganize readme ([#228](https://github.com/openai/openai-java/issues/228)) ([7d92206](https://github.com/openai/openai-java/commit/7d92206374def33c43591e59f33ecc558e4ecf2f))
+* **internal:** get rid of configuration cache ([#233](https://github.com/openai/openai-java/issues/233)) ([d95c380](https://github.com/openai/openai-java/commit/d95c380af1cb3cdb1a94fbd2c65bfaf4d0bf5805))
+
 ## 0.24.0 (2025-02-18)
 
 Full Changelog: [v0.23.1...v0.24.0](https://github.com/openai/openai-java/compare/v0.23.1...v0.24.0)
