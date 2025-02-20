@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 public final class CompletionsStreamingAsyncExample {
     private CompletionsStreamingAsyncExample() {}
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         // Configures using one of:
         // - The `OPENAI_API_KEY` environment variable
         // - The `AZURE_OPENAI_ENDPOINT` and `AZURE_OPENAI_KEY` environment variables
