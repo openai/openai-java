@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.26.0 (2025-02-20)
+
+Full Changelog: [v0.25.0...v0.26.0](https://github.com/openai/openai-java/compare/v0.25.0...v0.26.0)
+
+### Features
+
+* **client:** add an `AsyncStreamResponse#onCompleteFuture()` method ([#239](https://github.com/openai/openai-java/issues/239)) ([9aeddf8](https://github.com/openai/openai-java/commit/9aeddf88f724c3f6dbb648f539d4daaa82f3fa8f))
+
+
+### Bug Fixes
+
+* **client:** mark some request bodies as optional ([#242](https://github.com/openai/openai-java/issues/242)) ([e3c5d67](https://github.com/openai/openai-java/commit/e3c5d679a1be7f5857ad321eb23fc566759e3083))
+* **client:** prevent `IOException` when closing stream early ([#241](https://github.com/openai/openai-java/issues/241)) ([1e174e3](https://github.com/openai/openai-java/commit/1e174e3e255f679ec4785c1fe0a2b5794e99c802))
+
+
+### Chores
+
+* **docs:** add faq to readme ([#240](https://github.com/openai/openai-java/issues/240)) ([6bb4122](https://github.com/openai/openai-java/commit/6bb4122014424d9efaf1b0b7628495bf17ec22e6))
+* **internal:** remove unnecessary non-null asserts in tests ([e3c5d67](https://github.com/openai/openai-java/commit/e3c5d679a1be7f5857ad321eb23fc566759e3083))
+* **internal:** use `assertNotNull` in tests for type narrowing ([e3c5d67](https://github.com/openai/openai-java/commit/e3c5d679a1be7f5857ad321eb23fc566759e3083))
+
+
+### Documentation
+
+* add more documentation to `AsyncStreamResponse` ([9aeddf8](https://github.com/openai/openai-java/commit/9aeddf88f724c3f6dbb648f539d4daaa82f3fa8f))
+* add stream cancellation example ([ddeabe0](https://github.com/openai/openai-java/commit/ddeabe054d02ade542a2555f45b819b090ce1a08))
+* remove unnecessary catch clauses in readme ([#238](https://github.com/openai/openai-java/issues/238)) ([8c86b99](https://github.com/openai/openai-java/commit/8c86b997c5a84d74a71df7f7c5c4a863718f779a))
+* remove unnecessary checked exception signatures ([e26ee05](https://github.com/openai/openai-java/commit/e26ee0569c6cb7289d35b920695b12e9826d8f93))
+* use `onCompleteFuture()` in examples ([c244f17](https://github.com/openai/openai-java/commit/c244f17207f48414437d0558255a91af40f9a647))
+
 ## 0.25.0 (2025-02-20)
 
 Full Changelog: [v0.24.1...v0.25.0](https://github.com/openai/openai-java/compare/v0.24.1...v0.25.0)
