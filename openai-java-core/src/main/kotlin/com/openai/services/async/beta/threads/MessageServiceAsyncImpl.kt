@@ -24,10 +24,8 @@ import com.openai.models.Message
 import com.openai.models.MessageDeleted
 import java.util.concurrent.CompletableFuture
 
-class MessageServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : MessageServiceAsync {
+class MessageServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    MessageServiceAsync {
 
     companion object {
 
@@ -42,7 +40,7 @@ internal constructor(
     /** Create a message. */
     override fun create(
         params: BetaThreadMessageCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Message> {
         val request =
             HttpRequest.builder()
@@ -71,7 +69,7 @@ internal constructor(
     /** Retrieve a message. */
     override fun retrieve(
         params: BetaThreadMessageRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Message> {
         val request =
             HttpRequest.builder()
@@ -80,7 +78,7 @@ internal constructor(
                     "threads",
                     params.getPathParam(0),
                     "messages",
-                    params.getPathParam(1)
+                    params.getPathParam(1),
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()
@@ -104,7 +102,7 @@ internal constructor(
     /** Modifies a message. */
     override fun update(
         params: BetaThreadMessageUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Message> {
         val request =
             HttpRequest.builder()
@@ -113,7 +111,7 @@ internal constructor(
                     "threads",
                     params.getPathParam(0),
                     "messages",
-                    params.getPathParam(1)
+                    params.getPathParam(1),
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .body(json(clientOptions.jsonMapper, params._body()))
@@ -139,7 +137,7 @@ internal constructor(
     /** Returns a list of messages for a given thread. */
     override fun list(
         params: BetaThreadMessageListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<BetaThreadMessageListPageAsync> {
         val request =
             HttpRequest.builder()
@@ -168,7 +166,7 @@ internal constructor(
     /** Deletes a message. */
     override fun delete(
         params: BetaThreadMessageDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<MessageDeleted> {
         val request =
             HttpRequest.builder()
@@ -177,7 +175,7 @@ internal constructor(
                     "threads",
                     params.getPathParam(0),
                     "messages",
-                    params.getPathParam(1)
+                    params.getPathParam(1),
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }

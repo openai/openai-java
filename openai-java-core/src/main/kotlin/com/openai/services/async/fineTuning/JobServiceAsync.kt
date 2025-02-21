@@ -32,7 +32,7 @@ interface JobServiceAsync {
     @JvmOverloads
     fun create(
         params: FineTuningJobCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FineTuningJob>
 
     /**
@@ -43,27 +43,27 @@ interface JobServiceAsync {
     @JvmOverloads
     fun retrieve(
         params: FineTuningJobRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FineTuningJob>
 
     /** List your organization's fine-tuning jobs */
     @JvmOverloads
     fun list(
         params: FineTuningJobListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FineTuningJobListPageAsync>
 
     /** Immediately cancel a fine-tune job. */
     @JvmOverloads
     fun cancel(
         params: FineTuningJobCancelParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FineTuningJob>
 
     /** Get status updates for a fine-tuning job. */
     @JvmOverloads
     fun listEvents(
         params: FineTuningJobListEventsParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FineTuningJobListEventsPageAsync>
 }

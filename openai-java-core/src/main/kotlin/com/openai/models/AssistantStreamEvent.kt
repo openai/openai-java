@@ -1198,7 +1198,7 @@ private constructor(
         override fun serialize(
             value: AssistantStreamEvent,
             generator: JsonGenerator,
-            provider: SerializerProvider
+            provider: SerializerProvider,
         ) {
             when {
                 value.threadCreated != null -> generator.writeObject(value.threadCreated)
@@ -4227,11 +4227,7 @@ private constructor(
             }
 
             fun build(): ErrorEvent =
-                ErrorEvent(
-                    checkRequired("data", data),
-                    event,
-                    additionalProperties.toImmutable(),
-                )
+                ErrorEvent(checkRequired("data", data), event, additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {

@@ -11,28 +11,28 @@ internal class HeadersTest {
     enum class TestCase(
         val headers: Headers,
         val expectedMap: Map<String, List<String>>,
-        val expectedSize: Int
+        val expectedSize: Int,
     ) {
         EMPTY(Headers.builder().build(), expectedMap = mapOf(), expectedSize = 0),
         PUT_ONE(
             Headers.builder().put("name", "value").build(),
             expectedMap = mapOf("name" to listOf("value")),
-            expectedSize = 1
+            expectedSize = 1,
         ),
         PUT_MULTIPLE(
             Headers.builder().put("name", listOf("value1", "value2")).build(),
             expectedMap = mapOf("name" to listOf("value1", "value2")),
-            expectedSize = 2
+            expectedSize = 2,
         ),
         MULTIPLE_PUT(
             Headers.builder().put("name1", "value").put("name2", "value").build(),
             expectedMap = mapOf("name1" to listOf("value"), "name2" to listOf("value")),
-            expectedSize = 2
+            expectedSize = 2,
         ),
         MULTIPLE_PUT_SAME_NAME(
             Headers.builder().put("name", "value1").put("name", "value2").build(),
             expectedMap = mapOf("name" to listOf("value1", "value2")),
-            expectedSize = 2
+            expectedSize = 2,
         ),
         MULTIPLE_PUT_MULTIPLE(
             Headers.builder()
@@ -40,7 +40,7 @@ internal class HeadersTest {
                 .put("name", listOf("value1", "value2"))
                 .build(),
             expectedMap = mapOf("name" to listOf("value1", "value2", "value1", "value2")),
-            expectedSize = 4
+            expectedSize = 4,
         ),
         PUT_CASE_INSENSITIVE(
             Headers.builder()
@@ -49,25 +49,25 @@ internal class HeadersTest {
                 .put("nAmE", "value3")
                 .build(),
             expectedMap = mapOf("name" to listOf("value1", "value2", "value3")),
-            expectedSize = 3
+            expectedSize = 3,
         ),
         PUT_ALL_MAP(
             Headers.builder()
                 .putAll(
                     mapOf(
                         "name1" to listOf("value1", "value2"),
-                        "name2" to listOf("value1", "value2")
+                        "name2" to listOf("value1", "value2"),
                     )
                 )
                 .build(),
             expectedMap =
                 mapOf("name1" to listOf("value1", "value2"), "name2" to listOf("value1", "value2")),
-            expectedSize = 4
+            expectedSize = 4,
         ),
         PUT_ALL_HEADERS(
             Headers.builder().putAll(Headers.builder().put("name", "value").build()).build(),
             expectedMap = mapOf("name" to listOf("value")),
-            expectedSize = 1
+            expectedSize = 1,
         ),
         PUT_ALL_CASE_INSENSITIVE(
             Headers.builder()
@@ -75,32 +75,32 @@ internal class HeadersTest {
                     mapOf(
                         "name" to listOf("value1"),
                         "NAME" to listOf("value2"),
-                        "nAmE" to listOf("value3")
+                        "nAmE" to listOf("value3"),
                     )
                 )
                 .build(),
             expectedMap = mapOf("name" to listOf("value1", "value2", "value3")),
-            expectedSize = 3
+            expectedSize = 3,
         ),
         REMOVE_ABSENT(
             Headers.builder().remove("name").build(),
             expectedMap = mapOf(),
-            expectedSize = 0
+            expectedSize = 0,
         ),
         REMOVE_PRESENT_ONE(
             Headers.builder().put("name", "value").remove("name").build(),
             expectedMap = mapOf(),
-            expectedSize = 0
+            expectedSize = 0,
         ),
         REMOVE_PRESENT_MULTIPLE(
             Headers.builder().put("name", listOf("value1", "value2")).remove("name").build(),
             expectedMap = mapOf(),
-            expectedSize = 0
+            expectedSize = 0,
         ),
         REMOVE_CASE_INSENSITIVE(
             Headers.builder().put("name", listOf("value1", "value2")).remove("NAME").build(),
             expectedMap = mapOf(),
-            expectedSize = 0
+            expectedSize = 0,
         ),
         REMOVE_ALL(
             Headers.builder()
@@ -109,7 +109,7 @@ internal class HeadersTest {
                 .removeAll(setOf("name1", "name2", "name3"))
                 .build(),
             expectedMap = mapOf(),
-            expectedSize = 0
+            expectedSize = 0,
         ),
         REMOVE_ALL_CASE_INSENSITIVE(
             Headers.builder()
@@ -118,22 +118,22 @@ internal class HeadersTest {
                 .removeAll(setOf("NAME1", "nAmE3"))
                 .build(),
             expectedMap = mapOf(),
-            expectedSize = 0
+            expectedSize = 0,
         ),
         CLEAR(
             Headers.builder().put("name1", "value").put("name2", "value").clear().build(),
             expectedMap = mapOf(),
-            expectedSize = 0
+            expectedSize = 0,
         ),
         REPLACE_ONE_ABSENT(
             Headers.builder().replace("name", "value").build(),
             expectedMap = mapOf("name" to listOf("value")),
-            expectedSize = 1
+            expectedSize = 1,
         ),
         REPLACE_ONE_PRESENT_ONE(
             Headers.builder().put("name", "value1").replace("name", "value2").build(),
             expectedMap = mapOf("name" to listOf("value2")),
-            expectedSize = 1
+            expectedSize = 1,
         ),
         REPLACE_ONE_PRESENT_MULTIPLE(
             Headers.builder()
@@ -141,12 +141,12 @@ internal class HeadersTest {
                 .replace("name", "value3")
                 .build(),
             expectedMap = mapOf("name" to listOf("value3")),
-            expectedSize = 1
+            expectedSize = 1,
         ),
         REPLACE_MULTIPLE_ABSENT(
             Headers.builder().replace("name", listOf("value1", "value2")).build(),
             expectedMap = mapOf("name" to listOf("value1", "value2")),
-            expectedSize = 2
+            expectedSize = 2,
         ),
         REPLACE_MULTIPLE_PRESENT_ONE(
             Headers.builder()
@@ -154,7 +154,7 @@ internal class HeadersTest {
                 .replace("name", listOf("value2", "value3"))
                 .build(),
             expectedMap = mapOf("name" to listOf("value2", "value3")),
-            expectedSize = 2
+            expectedSize = 2,
         ),
         REPLACE_MULTIPLE_PRESENT_MULTIPLE(
             Headers.builder()
@@ -162,7 +162,7 @@ internal class HeadersTest {
                 .replace("name", listOf("value3", "value4"))
                 .build(),
             expectedMap = mapOf("name" to listOf("value3", "value4")),
-            expectedSize = 2
+            expectedSize = 2,
         ),
         REPLACE_CASE_INSENSITIVE(
             Headers.builder()
@@ -170,7 +170,7 @@ internal class HeadersTest {
                 .replace("NAME", listOf("value2", "value3"))
                 .build(),
             expectedMap = mapOf("NAME" to listOf("value2", "value3")),
-            expectedSize = 2
+            expectedSize = 2,
         ),
         REPLACE_ALL_MAP(
             Headers.builder()
@@ -183,9 +183,9 @@ internal class HeadersTest {
                 mapOf(
                     "name1" to listOf("value2"),
                     "name2" to listOf("value1"),
-                    "name3" to listOf("value2")
+                    "name3" to listOf("value2"),
                 ),
-            expectedSize = 3
+            expectedSize = 3,
         ),
         REPLACE_ALL_HEADERS(
             Headers.builder()
@@ -198,9 +198,9 @@ internal class HeadersTest {
                 mapOf(
                     "name1" to listOf("value2"),
                     "name2" to listOf("value1"),
-                    "name3" to listOf("value2")
+                    "name3" to listOf("value2"),
                 ),
-            expectedSize = 3
+            expectedSize = 3,
         ),
         REPLACE_ALL_CASE_INSENSITIVE(
             Headers.builder()
@@ -209,8 +209,8 @@ internal class HeadersTest {
                 .replaceAll(mapOf("NAME1" to listOf("value2"), "nAmE2" to listOf("value2")))
                 .build(),
             expectedMap = mapOf("NAME1" to listOf("value2"), "nAmE2" to listOf("value2")),
-            expectedSize = 2
-        )
+            expectedSize = 2,
+        ),
     }
 
     @ParameterizedTest

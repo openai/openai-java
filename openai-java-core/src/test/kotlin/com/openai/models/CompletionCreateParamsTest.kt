@@ -3,6 +3,7 @@
 package com.openai.models
 
 import com.openai.core.JsonValue
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -61,8 +62,10 @@ class CompletionCreateParamsTest {
                 .topP(1.0)
                 .user("user-1234")
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.model()).isEqualTo(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
         assertThat(body.prompt())
             .contains(CompletionCreateParams.Prompt.ofString("This is a test."))
@@ -96,8 +99,10 @@ class CompletionCreateParamsTest {
                 .model(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
                 .prompt("This is a test.")
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.model()).isEqualTo(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
         assertThat(body.prompt())
             .contains(CompletionCreateParams.Prompt.ofString("This is a test."))

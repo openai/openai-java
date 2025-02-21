@@ -26,34 +26,34 @@ interface VectorStoreService {
     @JvmOverloads
     fun create(
         params: BetaVectorStoreCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStore
 
     /** Retrieves a vector store. */
     @JvmOverloads
     fun retrieve(
         params: BetaVectorStoreRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStore
 
     /** Modifies a vector store. */
     @JvmOverloads
     fun update(
         params: BetaVectorStoreUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStore
 
     /** Returns a list of vector stores. */
     @JvmOverloads
     fun list(
         params: BetaVectorStoreListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): BetaVectorStoreListPage
 
     /** Delete a vector store. */
     @JvmOverloads
     fun delete(
         params: BetaVectorStoreDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStoreDeleted
 }

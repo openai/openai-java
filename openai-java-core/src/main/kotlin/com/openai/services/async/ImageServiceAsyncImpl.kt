@@ -17,10 +17,8 @@ import com.openai.models.ImageGenerateParams
 import com.openai.models.ImagesResponse
 import java.util.concurrent.CompletableFuture
 
-class ImageServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : ImageServiceAsync {
+class ImageServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    ImageServiceAsync {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
@@ -30,7 +28,7 @@ internal constructor(
     /** Creates an image given a prompt. */
     override fun generate(
         params: ImageGenerateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<ImagesResponse> {
         val request =
             HttpRequest.builder()

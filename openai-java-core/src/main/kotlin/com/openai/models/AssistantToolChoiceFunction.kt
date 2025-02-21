@@ -92,7 +92,7 @@ private constructor(
         fun build(): AssistantToolChoiceFunction =
             AssistantToolChoiceFunction(
                 checkRequired("name", name),
-                additionalProperties.toImmutable()
+                additionalProperties.toImmutable(),
             )
     }
 

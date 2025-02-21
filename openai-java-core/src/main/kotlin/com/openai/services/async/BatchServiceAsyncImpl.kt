@@ -21,10 +21,8 @@ import com.openai.models.BatchListParams
 import com.openai.models.BatchRetrieveParams
 import java.util.concurrent.CompletableFuture
 
-class BatchServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : BatchServiceAsync {
+class BatchServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    BatchServiceAsync {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
@@ -34,7 +32,7 @@ internal constructor(
     /** Creates and executes a batch from an uploaded file of requests */
     override fun create(
         params: BatchCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Batch> {
         val request =
             HttpRequest.builder()
@@ -62,7 +60,7 @@ internal constructor(
     /** Retrieves a batch. */
     override fun retrieve(
         params: BatchRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Batch> {
         val request =
             HttpRequest.builder()
@@ -90,7 +88,7 @@ internal constructor(
     /** List your organization's batches. */
     override fun list(
         params: BatchListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<BatchListPageAsync> {
         val request =
             HttpRequest.builder()
@@ -122,7 +120,7 @@ internal constructor(
      */
     override fun cancel(
         params: BatchCancelParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Batch> {
         val request =
             HttpRequest.builder()

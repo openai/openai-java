@@ -112,11 +112,7 @@ private constructor(
         }
 
         fun build(): FileSearchTool =
-            FileSearchTool(
-                type,
-                fileSearch,
-                additionalProperties.toImmutable(),
-            )
+            FileSearchTool(type, fileSearch, additionalProperties.toImmutable())
     }
 
     /** Overrides for the file search tool. */
@@ -288,11 +284,7 @@ private constructor(
             }
 
             fun build(): FileSearch =
-                FileSearch(
-                    maxNumResults,
-                    rankingOptions,
-                    additionalProperties.toImmutable(),
-                )
+                FileSearch(maxNumResults, rankingOptions, additionalProperties.toImmutable())
         }
 
         /**
@@ -438,11 +430,8 @@ private constructor(
             /**
              * The ranker to use for the file search. If not specified will use the `auto` ranker.
              */
-            class Ranker
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
+            class Ranker @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
 
                 /**
                  * Returns this class instance's raw value.
@@ -518,7 +507,19 @@ private constructor(
                         else -> throw OpenAIInvalidDataException("Unknown Ranker: $value")
                     }
 
-                fun asString(): String = _value().asStringOrThrow()
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value does not have
+                 *   the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        OpenAIInvalidDataException("Value is not a String")
+                    }
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {

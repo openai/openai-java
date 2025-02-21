@@ -847,11 +847,7 @@ private constructor(
                     }
 
                     fun build(): FunctionCall =
-                        FunctionCall(
-                            arguments,
-                            name,
-                            additionalProperties.toImmutable(),
-                        )
+                        FunctionCall(arguments, name, additionalProperties.toImmutable())
                 }
 
                 override fun equals(other: Any?): Boolean {
@@ -873,11 +869,8 @@ private constructor(
             }
 
             /** The role of the author of this message. */
-            class Role
-            @JsonCreator
-            private constructor(
-                private val value: JsonField<String>,
-            ) : Enum {
+            class Role @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
 
                 /**
                  * Returns this class instance's raw value.
@@ -970,7 +963,19 @@ private constructor(
                         else -> throw OpenAIInvalidDataException("Unknown Role: $value")
                     }
 
-                fun asString(): String = _value().asStringOrThrow()
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value does not have
+                 *   the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        OpenAIInvalidDataException("Value is not a String")
+                    }
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -1247,11 +1252,7 @@ private constructor(
                         }
 
                         fun build(): Function =
-                            Function(
-                                arguments,
-                                name,
-                                additionalProperties.toImmutable(),
-                            )
+                            Function(arguments, name, additionalProperties.toImmutable())
                     }
 
                     override fun equals(other: Any?): Boolean {
@@ -1273,11 +1274,8 @@ private constructor(
                 }
 
                 /** The type of the tool. Currently, only `function` is supported. */
-                class Type
-                @JsonCreator
-                private constructor(
-                    private val value: JsonField<String>,
-                ) : Enum {
+                class Type @JsonCreator private constructor(private val value: JsonField<String>) :
+                    Enum {
 
                     /**
                      * Returns this class instance's raw value.
@@ -1299,7 +1297,7 @@ private constructor(
 
                     /** An enum containing [Type]'s known values. */
                     enum class Known {
-                        FUNCTION,
+                        FUNCTION
                     }
 
                     /**
@@ -1348,7 +1346,19 @@ private constructor(
                             else -> throw OpenAIInvalidDataException("Unknown Type: $value")
                         }
 
-                    fun asString(): String = _value().asStringOrThrow()
+                    /**
+                     * Returns this class instance's primitive wire representation.
+                     *
+                     * This differs from the [toString] method because that method is primarily for
+                     * debugging and generally doesn't throw.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value does not
+                     *   have the expected primitive type.
+                     */
+                    fun asString(): String =
+                        _value().asString().orElseThrow {
+                            OpenAIInvalidDataException("Value is not a String")
+                        }
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
@@ -1406,11 +1416,8 @@ private constructor(
          * flag from our content filters, `tool_calls` if the model called a tool, or
          * `function_call` (deprecated) if the model called a function.
          */
-        class FinishReason
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class FinishReason @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1504,7 +1511,19 @@ private constructor(
                     else -> throw OpenAIInvalidDataException("Unknown FinishReason: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1710,11 +1729,8 @@ private constructor(
     }
 
     /** The service tier used for processing the request. */
-    class ServiceTier
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class ServiceTier @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -1789,7 +1805,17 @@ private constructor(
                 else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
             }
 
-        fun asString(): String = _value().asStringOrThrow()
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

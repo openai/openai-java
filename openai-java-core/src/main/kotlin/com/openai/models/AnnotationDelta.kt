@@ -198,7 +198,7 @@ private constructor(
         override fun serialize(
             value: AnnotationDelta,
             generator: JsonGenerator,
-            provider: SerializerProvider
+            provider: SerializerProvider,
         ) {
             when {
                 value.fileCitation != null -> generator.writeObject(value.fileCitation)

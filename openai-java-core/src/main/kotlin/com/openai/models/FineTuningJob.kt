@@ -1207,7 +1207,7 @@ private constructor(
                 override fun serialize(
                     value: BatchSize,
                     generator: JsonGenerator,
-                    provider: SerializerProvider
+                    provider: SerializerProvider,
                 ) {
                     when {
                         value.auto != null -> generator.writeObject(value.auto)
@@ -1361,7 +1361,7 @@ private constructor(
                 override fun serialize(
                     value: LearningRateMultiplier,
                     generator: JsonGenerator,
-                    provider: SerializerProvider
+                    provider: SerializerProvider,
                 ) {
                     when {
                         value.auto != null -> generator.writeObject(value.auto)
@@ -1513,7 +1513,7 @@ private constructor(
                 override fun serialize(
                     value: NEpochs,
                     generator: JsonGenerator,
-                    provider: SerializerProvider
+                    provider: SerializerProvider,
                 ) {
                     when {
                         value.auto != null -> generator.writeObject(value.auto)
@@ -1547,11 +1547,7 @@ private constructor(
      * The current status of the fine-tuning job, which can be either `validating_files`, `queued`,
      * `running`, `succeeded`, `failed`, or `cancelled`.
      */
-    class Status
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -1648,7 +1644,17 @@ private constructor(
                 else -> throw OpenAIInvalidDataException("Unknown Status: $value")
             }
 
-        fun asString(): String = _value().asStringOrThrow()
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -1777,13 +1783,7 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): Method =
-                Method(
-                    dpo,
-                    supervised,
-                    type,
-                    additionalProperties.toImmutable(),
-                )
+            fun build(): Method = Method(dpo, supervised, type, additionalProperties.toImmutable())
         }
 
         /** Configuration for the DPO fine-tuning method. */
@@ -2276,7 +2276,7 @@ private constructor(
                         override fun serialize(
                             value: BatchSize,
                             generator: JsonGenerator,
-                            provider: SerializerProvider
+                            provider: SerializerProvider,
                         ) {
                             when {
                                 value.auto != null -> generator.writeObject(value.auto)
@@ -2428,7 +2428,7 @@ private constructor(
                         override fun serialize(
                             value: Beta,
                             generator: JsonGenerator,
-                            provider: SerializerProvider
+                            provider: SerializerProvider,
                         ) {
                             when {
                                 value.auto != null -> generator.writeObject(value.auto)
@@ -2589,7 +2589,7 @@ private constructor(
                         override fun serialize(
                             value: LearningRateMultiplier,
                             generator: JsonGenerator,
-                            provider: SerializerProvider
+                            provider: SerializerProvider,
                         ) {
                             when {
                                 value.auto != null -> generator.writeObject(value.auto)
@@ -2742,7 +2742,7 @@ private constructor(
                         override fun serialize(
                             value: NEpochs,
                             generator: JsonGenerator,
-                            provider: SerializerProvider
+                            provider: SerializerProvider,
                         ) {
                             when {
                                 value.auto != null -> generator.writeObject(value.auto)
@@ -3238,7 +3238,7 @@ private constructor(
                         override fun serialize(
                             value: BatchSize,
                             generator: JsonGenerator,
-                            provider: SerializerProvider
+                            provider: SerializerProvider,
                         ) {
                             when {
                                 value.auto != null -> generator.writeObject(value.auto)
@@ -3399,7 +3399,7 @@ private constructor(
                         override fun serialize(
                             value: LearningRateMultiplier,
                             generator: JsonGenerator,
-                            provider: SerializerProvider
+                            provider: SerializerProvider,
                         ) {
                             when {
                                 value.auto != null -> generator.writeObject(value.auto)
@@ -3552,7 +3552,7 @@ private constructor(
                         override fun serialize(
                             value: NEpochs,
                             generator: JsonGenerator,
-                            provider: SerializerProvider
+                            provider: SerializerProvider,
                         ) {
                             when {
                                 value.auto != null -> generator.writeObject(value.auto)
@@ -3601,11 +3601,7 @@ private constructor(
         }
 
         /** The type of method. Is either `supervised` or `dpo`. */
-        class Type
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -3678,7 +3674,19 @@ private constructor(
                     else -> throw OpenAIInvalidDataException("Unknown Type: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {

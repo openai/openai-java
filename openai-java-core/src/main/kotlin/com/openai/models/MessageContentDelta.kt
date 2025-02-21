@@ -232,7 +232,7 @@ private constructor(
         override fun serialize(
             value: MessageContentDelta,
             generator: JsonGenerator,
-            provider: SerializerProvider
+            provider: SerializerProvider,
         ) {
             when {
                 value.imageFile != null -> generator.writeObject(value.imageFile)

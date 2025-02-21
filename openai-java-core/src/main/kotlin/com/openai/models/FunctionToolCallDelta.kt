@@ -286,12 +286,7 @@ private constructor(
             }
 
             fun build(): Function =
-                Function(
-                    arguments,
-                    name,
-                    output,
-                    additionalProperties.toImmutable(),
-                )
+                Function(arguments, name, output, additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {

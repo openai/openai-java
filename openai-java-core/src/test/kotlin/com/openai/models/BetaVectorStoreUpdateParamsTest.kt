@@ -3,6 +3,7 @@
 package com.openai.models
 
 import com.openai.core.JsonValue
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -33,8 +34,10 @@ class BetaVectorStoreUpdateParamsTest {
                 )
                 .name("name")
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.expiresAfter())
             .contains(BetaVectorStoreUpdateParams.ExpiresAfter.builder().days(1L).build())
         assertThat(body.metadata())
@@ -47,8 +50,10 @@ class BetaVectorStoreUpdateParamsTest {
     @Test
     fun bodyWithoutOptionalFields() {
         val params = BetaVectorStoreUpdateParams.builder().vectorStoreId("vector_store_id").build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
     }
 
     @Test

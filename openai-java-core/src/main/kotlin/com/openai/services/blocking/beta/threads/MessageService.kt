@@ -20,34 +20,34 @@ interface MessageService {
     @JvmOverloads
     fun create(
         params: BetaThreadMessageCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Message
 
     /** Retrieve a message. */
     @JvmOverloads
     fun retrieve(
         params: BetaThreadMessageRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Message
 
     /** Modifies a message. */
     @JvmOverloads
     fun update(
         params: BetaThreadMessageUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): Message
 
     /** Returns a list of messages for a given thread. */
     @JvmOverloads
     fun list(
         params: BetaThreadMessageListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): BetaThreadMessageListPage
 
     /** Deletes a message. */
     @JvmOverloads
     fun delete(
         params: BetaThreadMessageDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): MessageDeleted
 }

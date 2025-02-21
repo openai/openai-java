@@ -21,10 +21,8 @@ import com.openai.services.async.uploads.PartServiceAsync
 import com.openai.services.async.uploads.PartServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 
-class UploadServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : UploadServiceAsync {
+class UploadServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    UploadServiceAsync {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
@@ -57,7 +55,7 @@ internal constructor(
      */
     override fun create(
         params: UploadCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Upload> {
         val request =
             HttpRequest.builder()
@@ -85,7 +83,7 @@ internal constructor(
     /** Cancels the Upload. No Parts may be added after an Upload is cancelled. */
     override fun cancel(
         params: UploadCancelParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Upload> {
         val request =
             HttpRequest.builder()
@@ -125,7 +123,7 @@ internal constructor(
      */
     override fun complete(
         params: UploadCompleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Upload> {
         val request =
             HttpRequest.builder()

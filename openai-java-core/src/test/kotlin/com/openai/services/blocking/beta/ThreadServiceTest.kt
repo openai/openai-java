@@ -75,7 +75,7 @@ class ThreadServiceTest {
                                                 Metadata.builder()
                                                     .putAdditionalProperty(
                                                         "foo",
-                                                        JsonValue.from("string")
+                                                        JsonValue.from("string"),
                                                     )
                                                     .build()
                                             )
@@ -232,7 +232,7 @@ class ThreadServiceTest {
                                                         Metadata.builder()
                                                             .putAdditionalProperty(
                                                                 "foo",
-                                                                JsonValue.from("string")
+                                                                JsonValue.from("string"),
                                                             )
                                                             .build()
                                                     )
@@ -350,7 +350,7 @@ class ThreadServiceTest {
                                                         Metadata.builder()
                                                             .putAdditionalProperty(
                                                                 "foo",
-                                                                JsonValue.from("string")
+                                                                JsonValue.from("string"),
                                                             )
                                                             .build()
                                                     )

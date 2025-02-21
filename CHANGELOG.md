@@ -1,5 +1,117 @@
 # Changelog
 
+## 0.26.1 (2025-02-21)
+
+Full Changelog: [v0.26.0...v0.26.1](https://github.com/openai/openai-java/compare/v0.26.0...v0.26.1)
+
+### Documentation
+
+* add immutability explanation to readme ([#243](https://github.com/openai/openai-java/issues/243)) ([5826fb0](https://github.com/openai/openai-java/commit/5826fb0fafa06c647a520f82847319a32ddcbbbb))
+
+## 0.26.0 (2025-02-20)
+
+Full Changelog: [v0.25.0...v0.26.0](https://github.com/openai/openai-java/compare/v0.25.0...v0.26.0)
+
+### Features
+
+* **client:** add an `AsyncStreamResponse#onCompleteFuture()` method ([#239](https://github.com/openai/openai-java/issues/239)) ([9aeddf8](https://github.com/openai/openai-java/commit/9aeddf88f724c3f6dbb648f539d4daaa82f3fa8f))
+
+
+### Bug Fixes
+
+* **client:** mark some request bodies as optional ([#242](https://github.com/openai/openai-java/issues/242)) ([e3c5d67](https://github.com/openai/openai-java/commit/e3c5d679a1be7f5857ad321eb23fc566759e3083))
+* **client:** prevent `IOException` when closing stream early ([#241](https://github.com/openai/openai-java/issues/241)) ([1e174e3](https://github.com/openai/openai-java/commit/1e174e3e255f679ec4785c1fe0a2b5794e99c802))
+
+
+### Chores
+
+* **docs:** add faq to readme ([#240](https://github.com/openai/openai-java/issues/240)) ([6bb4122](https://github.com/openai/openai-java/commit/6bb4122014424d9efaf1b0b7628495bf17ec22e6))
+* **internal:** remove unnecessary non-null asserts in tests ([e3c5d67](https://github.com/openai/openai-java/commit/e3c5d679a1be7f5857ad321eb23fc566759e3083))
+* **internal:** use `assertNotNull` in tests for type narrowing ([e3c5d67](https://github.com/openai/openai-java/commit/e3c5d679a1be7f5857ad321eb23fc566759e3083))
+
+
+### Documentation
+
+* add more documentation to `AsyncStreamResponse` ([9aeddf8](https://github.com/openai/openai-java/commit/9aeddf88f724c3f6dbb648f539d4daaa82f3fa8f))
+* add stream cancellation example ([ddeabe0](https://github.com/openai/openai-java/commit/ddeabe054d02ade542a2555f45b819b090ce1a08))
+* remove unnecessary catch clauses in readme ([#238](https://github.com/openai/openai-java/issues/238)) ([8c86b99](https://github.com/openai/openai-java/commit/8c86b997c5a84d74a71df7f7c5c4a863718f779a))
+* remove unnecessary checked exception signatures ([e26ee05](https://github.com/openai/openai-java/commit/e26ee0569c6cb7289d35b920695b12e9826d8f93))
+* use `onCompleteFuture()` in examples ([c244f17](https://github.com/openai/openai-java/commit/c244f17207f48414437d0558255a91af40f9a647))
+
+## 0.25.0 (2025-02-20)
+
+Full Changelog: [v0.24.1...v0.25.0](https://github.com/openai/openai-java/compare/v0.24.1...v0.25.0)
+
+### Features
+
+* **client:** get rid of annoying checked exceptions ([#236](https://github.com/openai/openai-java/issues/236)) ([4c60942](https://github.com/openai/openai-java/commit/4c6094218ed32bc8fc669703e2f1d94b318c7307))
+
+
+### Chores
+
+* **ci:** update gradle actions to v4 ([#234](https://github.com/openai/openai-java/issues/234)) ([fbcf865](https://github.com/openai/openai-java/commit/fbcf865056c37a022fd905147e1763b96d2ec26a))
+
+## 0.24.1 (2025-02-20)
+
+Full Changelog: [v0.24.0...v0.24.1](https://github.com/openai/openai-java/compare/v0.24.0...v0.24.1)
+
+### Bug Fixes
+
+* **client:** add missing `streamHandlerExecutor` method ([#230](https://github.com/openai/openai-java/issues/230)) ([d53a08a](https://github.com/openai/openai-java/commit/d53a08a02d256b702b53734e99d25c7394a8f5db))
+
+
+### Chores
+
+* **docs:** add binary responses info to readme ([#231](https://github.com/openai/openai-java/issues/231)) ([6ae25b4](https://github.com/openai/openai-java/commit/6ae25b4c6e7ee2186b905fb68ee05cb5ad470174))
+* **docs:** add streaming info to readme ([d53a08a](https://github.com/openai/openai-java/commit/d53a08a02d256b702b53734e99d25c7394a8f5db))
+* **docs:** reorganize readme ([#228](https://github.com/openai/openai-java/issues/228)) ([7d92206](https://github.com/openai/openai-java/commit/7d92206374def33c43591e59f33ecc558e4ecf2f))
+* **internal:** get rid of configuration cache ([#233](https://github.com/openai/openai-java/issues/233)) ([d95c380](https://github.com/openai/openai-java/commit/d95c380af1cb3cdb1a94fbd2c65bfaf4d0bf5805))
+
+## 0.24.0 (2025-02-18)
+
+Full Changelog: [v0.23.1...v0.24.0](https://github.com/openai/openai-java/compare/v0.23.1...v0.24.0)
+
+### Features
+
+* **client:** support `JsonField#asX()` for known values ([#225](https://github.com/openai/openai-java/issues/225)) ([31c0663](https://github.com/openai/openai-java/commit/31c06634ead5ffcd54e0a9208e39ac9880df6574))
+* **client:** update enum `asX` methods ([#224](https://github.com/openai/openai-java/issues/224)) ([b06a749](https://github.com/openai/openai-java/commit/b06a7496f016b3e7541d9f4e5082ada4a1a5b39d))
+
+
+### Chores
+
+* **internal:** make body class constructors private ([7c6739c](https://github.com/openai/openai-java/commit/7c6739c254ef5a06020fbdbfb6b1d470377e34fc))
+* **internal:** make body classes for multipart requests ([7c6739c](https://github.com/openai/openai-java/commit/7c6739c254ef5a06020fbdbfb6b1d470377e34fc))
+* **internal:** misc formatting changes ([7c6739c](https://github.com/openai/openai-java/commit/7c6739c254ef5a06020fbdbfb6b1d470377e34fc))
+* **internal:** optimize build and test perf ([fc6bcd7](https://github.com/openai/openai-java/commit/fc6bcd742b042e9e8338cc7c8bceb6b1e3be6b38))
+* **internal:** rename internal body classes ([7c6739c](https://github.com/openai/openai-java/commit/7c6739c254ef5a06020fbdbfb6b1d470377e34fc))
+* **internal:** update formatter ([#220](https://github.com/openai/openai-java/issues/220)) ([fc6bcd7](https://github.com/openai/openai-java/commit/fc6bcd742b042e9e8338cc7c8bceb6b1e3be6b38))
+* **internal:** update some formatting in `Values.kt` ([31c0663](https://github.com/openai/openai-java/commit/31c06634ead5ffcd54e0a9208e39ac9880df6574))
+* **internal:** use better test example values ([#222](https://github.com/openai/openai-java/issues/222)) ([7c6739c](https://github.com/openai/openai-java/commit/7c6739c254ef5a06020fbdbfb6b1d470377e34fc))
+
+## 0.23.1 (2025-02-15)
+
+Full Changelog: [v0.23.0...v0.23.1](https://github.com/openai/openai-java/compare/v0.23.0...v0.23.1)
+
+### Bug Fixes
+
+* add missing argument ([5a6d2a2](https://github.com/openai/openai-java/commit/5a6d2a21be7bffabe335da4d13b6d2813c17ba7b))
+
+## 0.23.0 (2025-02-14)
+
+Full Changelog: [v0.22.1...v0.23.0](https://github.com/openai/openai-java/compare/v0.22.1...v0.23.0)
+
+### Features
+
+* **api:** add support for storing chat completions ([#216](https://github.com/openai/openai-java/issues/216)) ([68a7883](https://github.com/openai/openai-java/commit/68a7883782574f1af0d724c1d838fd70a99f2958))
+
+## 0.22.1 (2025-02-12)
+
+Full Changelog: [v0.22.0...v0.22.1](https://github.com/openai/openai-java/compare/v0.22.0...v0.22.1)
+
+### Documentation
+
+* function calling example ([#213](https://github.com/openai/openai-java/issues/213)) ([89700ec](https://github.com/openai/openai-java/commit/89700ecff1ec8e0d952bc7c77fcc3e2dd20b8a63))
+
 ## 0.22.0 (2025-02-06)
 
 Full Changelog: [v0.21.1...v0.22.0](https://github.com/openai/openai-java/compare/v0.21.1...v0.22.0)

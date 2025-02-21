@@ -17,6 +17,7 @@ import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
+import java.util.Optional
 
 @NoAutoDetect
 class Moderation
@@ -245,14 +246,15 @@ private constructor(
          * wrongdoing, or that gives advice or instruction on how to commit illicit acts. For
          * example, "how to shoplift" would fit this category.
          */
-        fun illicit(): Boolean = illicit.getRequired("illicit")
+        fun illicit(): Optional<Boolean> = Optional.ofNullable(illicit.getNullable("illicit"))
 
         /**
          * Content that includes instructions or advice that facilitate the planning or execution of
          * wrongdoing that also includes violence, or that gives advice or instruction on the
          * procurement of any weapon.
          */
-        fun illicitViolent(): Boolean = illicitViolent.getRequired("illicit/violent")
+        fun illicitViolent(): Optional<Boolean> =
+            Optional.ofNullable(illicitViolent.getNullable("illicit/violent"))
 
         /**
          * Content that promotes, encourages, or depicts acts of self-harm, such as suicide,
@@ -500,7 +502,22 @@ private constructor(
              * execution of wrongdoing, or that gives advice or instruction on how to commit illicit
              * acts. For example, "how to shoplift" would fit this category.
              */
-            fun illicit(illicit: Boolean) = illicit(JsonField.of(illicit))
+            fun illicit(illicit: Boolean?) = illicit(JsonField.ofNullable(illicit))
+
+            /**
+             * Content that includes instructions or advice that facilitate the planning or
+             * execution of wrongdoing, or that gives advice or instruction on how to commit illicit
+             * acts. For example, "how to shoplift" would fit this category.
+             */
+            fun illicit(illicit: Boolean) = illicit(illicit as Boolean?)
+
+            /**
+             * Content that includes instructions or advice that facilitate the planning or
+             * execution of wrongdoing, or that gives advice or instruction on how to commit illicit
+             * acts. For example, "how to shoplift" would fit this category.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun illicit(illicit: Optional<Boolean>) = illicit(illicit.orElse(null) as Boolean?)
 
             /**
              * Content that includes instructions or advice that facilitate the planning or
@@ -514,8 +531,24 @@ private constructor(
              * execution of wrongdoing that also includes violence, or that gives advice or
              * instruction on the procurement of any weapon.
              */
-            fun illicitViolent(illicitViolent: Boolean) =
-                illicitViolent(JsonField.of(illicitViolent))
+            fun illicitViolent(illicitViolent: Boolean?) =
+                illicitViolent(JsonField.ofNullable(illicitViolent))
+
+            /**
+             * Content that includes instructions or advice that facilitate the planning or
+             * execution of wrongdoing that also includes violence, or that gives advice or
+             * instruction on the procurement of any weapon.
+             */
+            fun illicitViolent(illicitViolent: Boolean) = illicitViolent(illicitViolent as Boolean?)
+
+            /**
+             * Content that includes instructions or advice that facilitate the planning or
+             * execution of wrongdoing that also includes violence, or that gives advice or
+             * instruction on the procurement of any weapon.
+             */
+            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
+            fun illicitViolent(illicitViolent: Optional<Boolean>) =
+                illicitViolent(illicitViolent.orElse(null) as Boolean?)
 
             /**
              * Content that includes instructions or advice that facilitate the planning or
@@ -1222,11 +1255,8 @@ private constructor(
                 )
         }
 
-        class Harassment
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Harassment @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1247,7 +1277,7 @@ private constructor(
 
             /** An enum containing [Harassment]'s known values. */
             enum class Known {
-                TEXT,
+                TEXT
             }
 
             /**
@@ -1296,7 +1326,19 @@ private constructor(
                     else -> throw OpenAIInvalidDataException("Unknown Harassment: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1313,9 +1355,7 @@ private constructor(
 
         class HarassmentThreatening
         @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1336,7 +1376,7 @@ private constructor(
 
             /** An enum containing [HarassmentThreatening]'s known values. */
             enum class Known {
-                TEXT,
+                TEXT
             }
 
             /**
@@ -1388,7 +1428,19 @@ private constructor(
                         throw OpenAIInvalidDataException("Unknown HarassmentThreatening: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1403,11 +1455,7 @@ private constructor(
             override fun toString() = value.toString()
         }
 
-        class Hate
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Hate @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1428,7 +1476,7 @@ private constructor(
 
             /** An enum containing [Hate]'s known values. */
             enum class Known {
-                TEXT,
+                TEXT
             }
 
             /**
@@ -1474,7 +1522,19 @@ private constructor(
                     else -> throw OpenAIInvalidDataException("Unknown Hate: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1491,9 +1551,7 @@ private constructor(
 
         class HateThreatening
         @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1514,7 +1572,7 @@ private constructor(
 
             /** An enum containing [HateThreatening]'s known values. */
             enum class Known {
-                TEXT,
+                TEXT
             }
 
             /**
@@ -1563,7 +1621,19 @@ private constructor(
                     else -> throw OpenAIInvalidDataException("Unknown HateThreatening: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1578,11 +1648,8 @@ private constructor(
             override fun toString() = value.toString()
         }
 
-        class Illicit
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Illicit @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1603,7 +1670,7 @@ private constructor(
 
             /** An enum containing [Illicit]'s known values. */
             enum class Known {
-                TEXT,
+                TEXT
             }
 
             /**
@@ -1651,7 +1718,19 @@ private constructor(
                     else -> throw OpenAIInvalidDataException("Unknown Illicit: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1668,9 +1747,7 @@ private constructor(
 
         class IllicitViolent
         @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1691,7 +1768,7 @@ private constructor(
 
             /** An enum containing [IllicitViolent]'s known values. */
             enum class Known {
-                TEXT,
+                TEXT
             }
 
             /**
@@ -1740,7 +1817,19 @@ private constructor(
                     else -> throw OpenAIInvalidDataException("Unknown IllicitViolent: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1755,11 +1844,8 @@ private constructor(
             override fun toString() = value.toString()
         }
 
-        class SelfHarm
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class SelfHarm @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1834,7 +1920,19 @@ private constructor(
                     else -> throw OpenAIInvalidDataException("Unknown SelfHarm: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1851,9 +1949,7 @@ private constructor(
 
         class SelfHarmInstruction
         @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -1931,7 +2027,19 @@ private constructor(
                     else -> throw OpenAIInvalidDataException("Unknown SelfHarmInstruction: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1948,9 +2056,7 @@ private constructor(
 
         class SelfHarmIntent
         @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -2026,7 +2132,19 @@ private constructor(
                     else -> throw OpenAIInvalidDataException("Unknown SelfHarmIntent: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2041,11 +2159,7 @@ private constructor(
             override fun toString() = value.toString()
         }
 
-        class Sexual
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Sexual @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -2120,7 +2234,19 @@ private constructor(
                     else -> throw OpenAIInvalidDataException("Unknown Sexual: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2135,11 +2261,8 @@ private constructor(
             override fun toString() = value.toString()
         }
 
-        class SexualMinor
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class SexualMinor @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -2160,7 +2283,7 @@ private constructor(
 
             /** An enum containing [SexualMinor]'s known values. */
             enum class Known {
-                TEXT,
+                TEXT
             }
 
             /**
@@ -2209,7 +2332,19 @@ private constructor(
                     else -> throw OpenAIInvalidDataException("Unknown SexualMinor: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2224,11 +2359,8 @@ private constructor(
             override fun toString() = value.toString()
         }
 
-        class Violence
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Violence @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -2303,7 +2435,19 @@ private constructor(
                     else -> throw OpenAIInvalidDataException("Unknown Violence: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2320,9 +2464,7 @@ private constructor(
 
         class ViolenceGraphic
         @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -2398,7 +2540,19 @@ private constructor(
                     else -> throw OpenAIInvalidDataException("Unknown ViolenceGraphic: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {

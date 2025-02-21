@@ -75,13 +75,8 @@ private constructor(
         fun of(
             vectorStoresService: VectorStoreServiceAsync,
             params: BetaVectorStoreListParams,
-            response: Response
-        ) =
-            BetaVectorStoreListPageAsync(
-                vectorStoresService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = BetaVectorStoreListPageAsync(vectorStoresService, params, response)
     }
 
     @NoAutoDetect
@@ -165,23 +160,16 @@ private constructor(
                 this.additionalProperties.put(key, value)
             }
 
-            fun build() =
-                Response(
-                    data,
-                    hasMore,
-                    additionalProperties.toImmutable(),
-                )
+            fun build() = Response(data, hasMore, additionalProperties.toImmutable())
         }
     }
 
-    class AutoPager(
-        private val firstPage: BetaVectorStoreListPageAsync,
-    ) {
+    class AutoPager(private val firstPage: BetaVectorStoreListPageAsync) {
 
         fun forEach(action: Predicate<VectorStore>, executor: Executor): CompletableFuture<Void> {
             fun CompletableFuture<Optional<BetaVectorStoreListPageAsync>>.forEach(
                 action: (VectorStore) -> Boolean,
-                executor: Executor
+                executor: Executor,
             ): CompletableFuture<Void> =
                 thenComposeAsync(
                     { page ->
@@ -190,7 +178,7 @@ private constructor(
                             .map { it.getNextPage().forEach(action, executor) }
                             .orElseGet { CompletableFuture.completedFuture(null) }
                     },
-                    executor
+                    executor,
                 )
             return CompletableFuture.completedFuture(Optional.of(firstPage))
                 .forEach(action::test, executor)

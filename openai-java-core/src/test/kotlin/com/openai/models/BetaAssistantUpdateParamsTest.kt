@@ -3,6 +3,7 @@
 package com.openai.models
 
 import com.openai.core.JsonValue
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -75,8 +76,10 @@ class BetaAssistantUpdateParamsTest {
                 .addTool(CodeInterpreterTool.builder().build())
                 .topP(1.0)
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.description()).contains("description")
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.metadata())
@@ -113,8 +116,10 @@ class BetaAssistantUpdateParamsTest {
     @Test
     fun bodyWithoutOptionalFields() {
         val params = BetaAssistantUpdateParams.builder().assistantId("assistant_id").build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
     }
 
     @Test

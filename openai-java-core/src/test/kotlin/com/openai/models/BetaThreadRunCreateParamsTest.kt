@@ -4,6 +4,7 @@ package com.openai.models
 
 import com.openai.core.JsonValue
 import com.openai.core.http.QueryParams
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -13,8 +14,8 @@ class BetaThreadRunCreateParamsTest {
     fun create() {
         BetaThreadRunCreateParams.builder()
             .threadId("thread_id")
-            .assistantId("assistant_id")
             .addInclude(RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT)
+            .assistantId("assistant_id")
             .additionalInstructions("additional_instructions")
             .addAdditionalMessage(
                 BetaThreadRunCreateParams.AdditionalMessage.builder()
@@ -61,8 +62,8 @@ class BetaThreadRunCreateParamsTest {
         val params =
             BetaThreadRunCreateParams.builder()
                 .threadId("thread_id")
-                .assistantId("assistant_id")
                 .addInclude(RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT)
+                .assistantId("assistant_id")
                 .additionalInstructions("additional_instructions")
                 .addAdditionalMessage(
                     BetaThreadRunCreateParams.AdditionalMessage.builder()
@@ -107,7 +108,7 @@ class BetaThreadRunCreateParamsTest {
         val expected = QueryParams.builder()
         expected.put(
             "include[]",
-            RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT.toString()
+            RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT.toString(),
         )
         assertThat(params._queryParams()).isEqualTo(expected.build())
     }
@@ -128,8 +129,8 @@ class BetaThreadRunCreateParamsTest {
         val params =
             BetaThreadRunCreateParams.builder()
                 .threadId("thread_id")
-                .assistantId("assistant_id")
                 .addInclude(RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT)
+                .assistantId("assistant_id")
                 .additionalInstructions("additional_instructions")
                 .addAdditionalMessage(
                     BetaThreadRunCreateParams.AdditionalMessage.builder()
@@ -171,8 +172,10 @@ class BetaThreadRunCreateParamsTest {
                         .build()
                 )
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.assistantId()).isEqualTo("assistant_id")
         assertThat(body.additionalInstructions()).contains("additional_instructions")
         assertThat(body.additionalMessages())
@@ -230,8 +233,10 @@ class BetaThreadRunCreateParamsTest {
                 .threadId("thread_id")
                 .assistantId("assistant_id")
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.assistantId()).isEqualTo("assistant_id")
     }
 

@@ -42,7 +42,7 @@ import java.util.Optional
  */
 class FineTuningJobCreateParams
 private constructor(
-    private val body: FineTuningJobCreateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -193,16 +193,16 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): FineTuningJobCreateBody = body
+    @JvmSynthetic internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     @NoAutoDetect
-    class FineTuningJobCreateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("model")
         @ExcludeMissing
         private val model: JsonField<Model> = JsonMissing.of(),
@@ -386,7 +386,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): FineTuningJobCreateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -409,7 +409,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [FineTuningJobCreateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var model: JsonField<Model>? = null
@@ -423,16 +423,16 @@ private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(fineTuningJobCreateBody: FineTuningJobCreateBody) = apply {
-                model = fineTuningJobCreateBody.model
-                trainingFile = fineTuningJobCreateBody.trainingFile
-                hyperparameters = fineTuningJobCreateBody.hyperparameters
-                integrations = fineTuningJobCreateBody.integrations.map { it.toMutableList() }
-                method = fineTuningJobCreateBody.method
-                seed = fineTuningJobCreateBody.seed
-                suffix = fineTuningJobCreateBody.suffix
-                validationFile = fineTuningJobCreateBody.validationFile
-                additionalProperties = fineTuningJobCreateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                model = body.model
+                trainingFile = body.trainingFile
+                hyperparameters = body.hyperparameters
+                integrations = body.integrations.map { it.toMutableList() }
+                method = body.method
+                seed = body.seed
+                suffix = body.suffix
+                validationFile = body.validationFile
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
@@ -668,8 +668,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): FineTuningJobCreateBody =
-                FineTuningJobCreateBody(
+            fun build(): Body =
+                Body(
                     checkRequired("model", model),
                     checkRequired("trainingFile", trainingFile),
                     hyperparameters,
@@ -687,7 +687,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is FineTuningJobCreateBody && model == other.model && trainingFile == other.trainingFile && hyperparameters == other.hyperparameters && integrations == other.integrations && method == other.method && seed == other.seed && suffix == other.suffix && validationFile == other.validationFile && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && model == other.model && trainingFile == other.trainingFile && hyperparameters == other.hyperparameters && integrations == other.integrations && method == other.method && seed == other.seed && suffix == other.suffix && validationFile == other.validationFile && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -697,7 +697,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "FineTuningJobCreateBody{model=$model, trainingFile=$trainingFile, hyperparameters=$hyperparameters, integrations=$integrations, method=$method, seed=$seed, suffix=$suffix, validationFile=$validationFile, additionalProperties=$additionalProperties}"
+            "Body{model=$model, trainingFile=$trainingFile, hyperparameters=$hyperparameters, integrations=$integrations, method=$method, seed=$seed, suffix=$suffix, validationFile=$validationFile, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -711,7 +711,7 @@ private constructor(
     @NoAutoDetect
     class Builder internal constructor() {
 
-        private var body: FineTuningJobCreateBody.Builder = FineTuningJobCreateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
@@ -1055,11 +1055,7 @@ private constructor(
      * The name of the model to fine-tune. You can select one of the
      * [supported models](https://platform.openai.com/docs/guides/fine-tuning#which-models-can-be-fine-tuned).
      */
-    class Model
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class Model @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -1144,7 +1140,17 @@ private constructor(
                 else -> throw OpenAIInvalidDataException("Unknown Model: $value")
             }
 
-        fun asString(): String = _value().asStringOrThrow()
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -1509,7 +1515,7 @@ private constructor(
                 override fun serialize(
                     value: BatchSize,
                     generator: JsonGenerator,
-                    provider: SerializerProvider
+                    provider: SerializerProvider,
                 ) {
                     when {
                         value.auto != null -> generator.writeObject(value.auto)
@@ -1663,7 +1669,7 @@ private constructor(
                 override fun serialize(
                     value: LearningRateMultiplier,
                     generator: JsonGenerator,
-                    provider: SerializerProvider
+                    provider: SerializerProvider,
                 ) {
                     when {
                         value.auto != null -> generator.writeObject(value.auto)
@@ -1815,7 +1821,7 @@ private constructor(
                 override fun serialize(
                     value: NEpochs,
                     generator: JsonGenerator,
-                    provider: SerializerProvider
+                    provider: SerializerProvider,
                 ) {
                     when {
                         value.auto != null -> generator.writeObject(value.auto)
@@ -1962,11 +1968,7 @@ private constructor(
             }
 
             fun build(): Integration =
-                Integration(
-                    type,
-                    checkRequired("wandb", wandb),
-                    additionalProperties.toImmutable(),
-                )
+                Integration(type, checkRequired("wandb", wandb), additionalProperties.toImmutable())
         }
 
         /**
@@ -2343,13 +2345,7 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): Method =
-                Method(
-                    dpo,
-                    supervised,
-                    type,
-                    additionalProperties.toImmutable(),
-                )
+            fun build(): Method = Method(dpo, supervised, type, additionalProperties.toImmutable())
         }
 
         /** Configuration for the DPO fine-tuning method. */
@@ -2842,7 +2838,7 @@ private constructor(
                         override fun serialize(
                             value: BatchSize,
                             generator: JsonGenerator,
-                            provider: SerializerProvider
+                            provider: SerializerProvider,
                         ) {
                             when {
                                 value.auto != null -> generator.writeObject(value.auto)
@@ -2994,7 +2990,7 @@ private constructor(
                         override fun serialize(
                             value: Beta,
                             generator: JsonGenerator,
-                            provider: SerializerProvider
+                            provider: SerializerProvider,
                         ) {
                             when {
                                 value.auto != null -> generator.writeObject(value.auto)
@@ -3155,7 +3151,7 @@ private constructor(
                         override fun serialize(
                             value: LearningRateMultiplier,
                             generator: JsonGenerator,
-                            provider: SerializerProvider
+                            provider: SerializerProvider,
                         ) {
                             when {
                                 value.auto != null -> generator.writeObject(value.auto)
@@ -3308,7 +3304,7 @@ private constructor(
                         override fun serialize(
                             value: NEpochs,
                             generator: JsonGenerator,
-                            provider: SerializerProvider
+                            provider: SerializerProvider,
                         ) {
                             when {
                                 value.auto != null -> generator.writeObject(value.auto)
@@ -3804,7 +3800,7 @@ private constructor(
                         override fun serialize(
                             value: BatchSize,
                             generator: JsonGenerator,
-                            provider: SerializerProvider
+                            provider: SerializerProvider,
                         ) {
                             when {
                                 value.auto != null -> generator.writeObject(value.auto)
@@ -3965,7 +3961,7 @@ private constructor(
                         override fun serialize(
                             value: LearningRateMultiplier,
                             generator: JsonGenerator,
-                            provider: SerializerProvider
+                            provider: SerializerProvider,
                         ) {
                             when {
                                 value.auto != null -> generator.writeObject(value.auto)
@@ -4118,7 +4114,7 @@ private constructor(
                         override fun serialize(
                             value: NEpochs,
                             generator: JsonGenerator,
-                            provider: SerializerProvider
+                            provider: SerializerProvider,
                         ) {
                             when {
                                 value.auto != null -> generator.writeObject(value.auto)
@@ -4167,11 +4163,7 @@ private constructor(
         }
 
         /** The type of method. Is either `supervised` or `dpo`. */
-        class Type
-        @JsonCreator
-        private constructor(
-            private val value: JsonField<String>,
-        ) : Enum {
+        class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -4244,7 +4236,19 @@ private constructor(
                     else -> throw OpenAIInvalidDataException("Unknown Type: $value")
                 }
 
-            fun asString(): String = _value().asStringOrThrow()
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {

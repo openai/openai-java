@@ -68,11 +68,7 @@ private constructor(
 
         @JvmStatic
         fun of(batchesService: BatchService, params: BatchListParams, response: Response) =
-            BatchListPage(
-                batchesService,
-                params,
-                response,
-            )
+            BatchListPage(batchesService, params, response)
     }
 
     @NoAutoDetect
@@ -156,18 +152,11 @@ private constructor(
                 this.additionalProperties.put(key, value)
             }
 
-            fun build() =
-                Response(
-                    data,
-                    hasMore,
-                    additionalProperties.toImmutable(),
-                )
+            fun build() = Response(data, hasMore, additionalProperties.toImmutable())
         }
     }
 
-    class AutoPager(
-        private val firstPage: BatchListPage,
-    ) : Iterable<Batch> {
+    class AutoPager(private val firstPage: BatchListPage) : Iterable<Batch> {
 
         override fun iterator(): Iterator<Batch> = iterator {
             var page = firstPage

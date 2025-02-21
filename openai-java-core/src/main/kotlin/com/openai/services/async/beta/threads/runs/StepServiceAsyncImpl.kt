@@ -19,10 +19,8 @@ import com.openai.models.BetaThreadRunStepRetrieveParams
 import com.openai.models.RunStep
 import java.util.concurrent.CompletableFuture
 
-class StepServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : StepServiceAsync {
+class StepServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    StepServiceAsync {
 
     companion object {
 
@@ -37,7 +35,7 @@ internal constructor(
     /** Retrieves a run step. */
     override fun retrieve(
         params: BetaThreadRunStepRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<RunStep> {
         val request =
             HttpRequest.builder()
@@ -48,7 +46,7 @@ internal constructor(
                     "runs",
                     params.getPathParam(1),
                     "steps",
-                    params.getPathParam(2)
+                    params.getPathParam(2),
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()
@@ -73,7 +71,7 @@ internal constructor(
     /** Returns a list of run steps belonging to a run. */
     override fun list(
         params: BetaThreadRunStepListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<BetaThreadRunStepListPageAsync> {
         val request =
             HttpRequest.builder()
@@ -83,7 +81,7 @@ internal constructor(
                     params.getPathParam(0),
                     "runs",
                     params.getPathParam(1),
-                    "steps"
+                    "steps",
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()

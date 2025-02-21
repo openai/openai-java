@@ -34,10 +34,8 @@ import com.openai.services.async.beta.threads.runs.StepServiceAsync
 import com.openai.services.async.beta.threads.runs.StepServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 
-class RunServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : RunServiceAsync {
+class RunServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    RunServiceAsync {
 
     companion object {
 
@@ -56,7 +54,7 @@ internal constructor(
     /** Create a run. */
     override fun create(
         params: BetaThreadRunCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Run> {
         val request =
             HttpRequest.builder()
@@ -68,7 +66,7 @@ internal constructor(
                 .prepareAsync(
                     clientOptions,
                     params,
-                    params.model().map { it.toString() }.orElse(null)
+                    params.model().map { it.toString() }.orElse(null),
                 )
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -91,7 +89,7 @@ internal constructor(
     /** Create a run. */
     override fun createStreaming(
         params: BetaThreadRunCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): AsyncStreamResponse<AssistantStreamEvent> {
         val request =
             HttpRequest.builder()
@@ -105,14 +103,14 @@ internal constructor(
                             ._body()
                             .toBuilder()
                             .putAdditionalProperty("stream", JsonValue.from(true))
-                            .build()
+                            .build(),
                     )
                 )
                 .build()
                 .prepareAsync(
                     clientOptions,
                     params,
-                    params.model().map { it.toString() }.orElse(null)
+                    params.model().map { it.toString() }.orElse(null),
                 )
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -136,7 +134,7 @@ internal constructor(
     /** Retrieves a run. */
     override fun retrieve(
         params: BetaThreadRunRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Run> {
         val request =
             HttpRequest.builder()
@@ -164,7 +162,7 @@ internal constructor(
     /** Modifies a run. */
     override fun update(
         params: BetaThreadRunUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Run> {
         val request =
             HttpRequest.builder()
@@ -194,7 +192,7 @@ internal constructor(
     /** Returns a list of runs belonging to a thread. */
     override fun list(
         params: BetaThreadRunListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<BetaThreadRunListPageAsync> {
         val request =
             HttpRequest.builder()
@@ -223,7 +221,7 @@ internal constructor(
     /** Cancels a run that is `in_progress`. */
     override fun cancel(
         params: BetaThreadRunCancelParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Run> {
         val request =
             HttpRequest.builder()
@@ -233,7 +231,7 @@ internal constructor(
                     params.getPathParam(0),
                     "runs",
                     params.getPathParam(1),
-                    "cancel"
+                    "cancel",
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
@@ -262,7 +260,7 @@ internal constructor(
      */
     override fun submitToolOutputs(
         params: BetaThreadRunSubmitToolOutputsParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Run> {
         val request =
             HttpRequest.builder()
@@ -272,7 +270,7 @@ internal constructor(
                     params.getPathParam(0),
                     "runs",
                     params.getPathParam(1),
-                    "submit_tool_outputs"
+                    "submit_tool_outputs",
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .body(json(clientOptions.jsonMapper, params._body()))
@@ -303,7 +301,7 @@ internal constructor(
      */
     override fun submitToolOutputsStreaming(
         params: BetaThreadRunSubmitToolOutputsParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): AsyncStreamResponse<AssistantStreamEvent> {
         val request =
             HttpRequest.builder()
@@ -313,7 +311,7 @@ internal constructor(
                     params.getPathParam(0),
                     "runs",
                     params.getPathParam(1),
-                    "submit_tool_outputs"
+                    "submit_tool_outputs",
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .body(
@@ -323,7 +321,7 @@ internal constructor(
                             ._body()
                             .toBuilder()
                             .putAdditionalProperty("stream", JsonValue.from(true))
-                            .build()
+                            .build(),
                     )
                 )
                 .build()

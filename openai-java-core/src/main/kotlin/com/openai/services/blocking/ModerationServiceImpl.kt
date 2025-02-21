@@ -16,10 +16,8 @@ import com.openai.errors.OpenAIError
 import com.openai.models.ModerationCreateParams
 import com.openai.models.ModerationCreateResponse
 
-class ModerationServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : ModerationService {
+class ModerationServiceImpl internal constructor(private val clientOptions: ClientOptions) :
+    ModerationService {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
@@ -33,7 +31,7 @@ internal constructor(
      */
     override fun create(
         params: ModerationCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): ModerationCreateResponse {
         val request =
             HttpRequest.builder()

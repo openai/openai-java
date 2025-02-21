@@ -23,21 +23,21 @@ interface FileService {
     @JvmOverloads
     fun create(
         params: BetaVectorStoreFileCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStoreFile
 
     /** Retrieves a vector store file. */
     @JvmOverloads
     fun retrieve(
         params: BetaVectorStoreFileRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStoreFile
 
     /** Returns a list of vector store files. */
     @JvmOverloads
     fun list(
         params: BetaVectorStoreFileListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): BetaVectorStoreFileListPage
 
     /**
@@ -48,6 +48,6 @@ interface FileService {
     @JvmOverloads
     fun delete(
         params: BetaVectorStoreFileDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStoreFileDeleted
 }

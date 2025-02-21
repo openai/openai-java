@@ -3,6 +3,7 @@
 package com.openai.models
 
 import com.openai.core.JsonValue
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -109,7 +110,7 @@ class BetaThreadCreateParamsTest {
                                             Metadata.builder()
                                                 .putAdditionalProperty(
                                                     "foo",
-                                                    JsonValue.from("string")
+                                                    JsonValue.from("string"),
                                                 )
                                                 .build()
                                         )
@@ -120,8 +121,10 @@ class BetaThreadCreateParamsTest {
                         .build()
                 )
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.messages())
             .contains(
                 listOf(
@@ -180,7 +183,9 @@ class BetaThreadCreateParamsTest {
     @Test
     fun bodyWithoutOptionalFields() {
         val params = BetaThreadCreateParams.builder().build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
     }
 }

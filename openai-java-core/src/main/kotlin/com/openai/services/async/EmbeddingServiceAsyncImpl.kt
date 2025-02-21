@@ -17,10 +17,8 @@ import com.openai.models.CreateEmbeddingResponse
 import com.openai.models.EmbeddingCreateParams
 import java.util.concurrent.CompletableFuture
 
-class EmbeddingServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : EmbeddingServiceAsync {
+class EmbeddingServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    EmbeddingServiceAsync {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
@@ -31,7 +29,7 @@ internal constructor(
     /** Creates an embedding vector representing the input text. */
     override fun create(
         params: EmbeddingCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<CreateEmbeddingResponse> {
         val request =
             HttpRequest.builder()

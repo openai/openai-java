@@ -540,7 +540,7 @@ class ErrorHandlingTest {
                 assertUnprocessableEntity(
                     e,
                     Headers.builder().put("Foo", "Bar").build(),
-                    OPENAI_ERROR
+                    OPENAI_ERROR,
                 )
             })
     }
@@ -755,7 +755,7 @@ class ErrorHandlingTest {
                     e,
                     999,
                     Headers.builder().put("Foo", "Bar").build(),
-                    toJson(OPENAI_ERROR)
+                    toJson(OPENAI_ERROR),
                 )
             })
     }
@@ -904,7 +904,7 @@ class ErrorHandlingTest {
         throwable: Throwable,
         statusCode: Int,
         headers: Headers,
-        responseBody: ByteArray
+        responseBody: ByteArray,
     ) {
         assertThat(throwable)
             .asInstanceOf(
@@ -962,7 +962,7 @@ class ErrorHandlingTest {
     private fun assertUnprocessableEntity(
         throwable: Throwable,
         headers: Headers,
-        error: OpenAIError
+        error: OpenAIError,
     ) {
         assertThat(throwable)
             .asInstanceOf(

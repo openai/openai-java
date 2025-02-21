@@ -24,10 +24,8 @@ import com.openai.models.Completion
 import com.openai.models.CompletionCreateParams
 import java.util.concurrent.CompletableFuture
 
-class CompletionServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : CompletionServiceAsync {
+class CompletionServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    CompletionServiceAsync {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
@@ -37,7 +35,7 @@ internal constructor(
     /** Creates a completion for the provided prompt and parameters. */
     override fun create(
         params: CompletionCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<Completion> {
         val request =
             HttpRequest.builder()
@@ -65,7 +63,7 @@ internal constructor(
     /** Creates a completion for the provided prompt and parameters. */
     override fun createStreaming(
         params: CompletionCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): AsyncStreamResponse<Completion> {
         val request =
             HttpRequest.builder()
@@ -78,7 +76,7 @@ internal constructor(
                             ._body()
                             .toBuilder()
                             .putAdditionalProperty("stream", JsonValue.from(true))
-                            .build()
+                            .build(),
                     )
                 )
                 .build()

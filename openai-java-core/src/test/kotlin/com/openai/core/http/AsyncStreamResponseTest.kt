@@ -132,6 +132,109 @@ internal class AsyncStreamResponseTest {
     }
 
     @Test
+    fun onCompleteFuture_whenStreamResponseFutureNotCompleted_onCompleteFutureNotCompleted() {
+        val future = CompletableFuture<StreamResponse<String>>()
+        val asyncStreamResponse = future.toAsync(executor)
+
+        val onCompletableFuture = asyncStreamResponse.onCompleteFuture()
+
+        assertThat(onCompletableFuture).isNotCompleted
+    }
+
+    @Test
+    fun onCompleteFuture_whenStreamResponseFutureErrors_onCompleteFutureCompletedExceptionally() {
+        val future = CompletableFuture<StreamResponse<String>>()
+        val asyncStreamResponse = future.toAsync(executor)
+        future.completeExceptionally(ERROR)
+
+        val onCompletableFuture = asyncStreamResponse.onCompleteFuture()
+
+        assertThat(onCompletableFuture).isCompletedExceptionally
+    }
+
+    @Test
+    fun onCompleteFuture_whenStreamResponseFutureCompletedButStillStreaming_onCompleteFutureNotCompleted() {
+        val future = CompletableFuture<StreamResponse<String>>()
+        val asyncStreamResponse = future.toAsync(executor)
+        future.complete(streamResponse)
+
+        val onCompletableFuture = asyncStreamResponse.onCompleteFuture()
+
+        assertThat(onCompletableFuture).isNotCompleted
+    }
+
+    @Test
+    fun onCompleteFuture_whenStreamResponseFutureCompletedAndStreamErrors_onCompleteFutureCompletedExceptionally() {
+        val future = CompletableFuture<StreamResponse<String>>()
+        val asyncStreamResponse = future.toAsync(executor)
+        asyncStreamResponse.subscribe(handler)
+        future.complete(erroringStreamResponse)
+
+        val onCompletableFuture = asyncStreamResponse.onCompleteFuture()
+
+        assertThat(onCompletableFuture).isCompletedExceptionally
+    }
+
+    @Test
+    fun onCompleteFuture_whenStreamResponseFutureCompletedAndStreamCompleted_onCompleteFutureCompleted() {
+        val future = CompletableFuture<StreamResponse<String>>()
+        val asyncStreamResponse = future.toAsync(executor)
+        asyncStreamResponse.subscribe(handler)
+        future.complete(streamResponse)
+
+        val onCompletableFuture = asyncStreamResponse.onCompleteFuture()
+
+        assertThat(onCompletableFuture).isCompleted
+    }
+
+    @Test
+    fun onCompleteFuture_whenHandlerOnCompleteWithoutThrowableThrows_onCompleteFutureCompleted() {
+        val future = CompletableFuture<StreamResponse<String>>()
+        val asyncStreamResponse = future.toAsync(executor)
+        asyncStreamResponse.subscribe(
+            object : AsyncStreamResponse.Handler<String> {
+                override fun onNext(value: String) {}
+
+                override fun onComplete(error: Optional<Throwable>) = throw ERROR
+            }
+        )
+        future.complete(streamResponse)
+
+        val onCompletableFuture = asyncStreamResponse.onCompleteFuture()
+
+        assertThat(onCompletableFuture).isCompleted
+    }
+
+    @Test
+    fun onCompleteFuture_whenHandlerOnCompleteWithThrowableThrows_onCompleteFutureCompletedExceptionally() {
+        val future = CompletableFuture<StreamResponse<String>>()
+        val asyncStreamResponse = future.toAsync(executor)
+        asyncStreamResponse.subscribe(
+            object : AsyncStreamResponse.Handler<String> {
+                override fun onNext(value: String) {}
+
+                override fun onComplete(error: Optional<Throwable>) = throw ERROR
+            }
+        )
+        future.complete(erroringStreamResponse)
+
+        val onCompletableFuture = asyncStreamResponse.onCompleteFuture()
+
+        assertThat(onCompletableFuture).isCompletedExceptionally
+    }
+
+    @Test
+    fun onCompleteFuture_whenClosed_onCompleteFutureCompleted() {
+        val future = CompletableFuture<StreamResponse<String>>()
+        val asyncStreamResponse = future.toAsync(executor)
+        asyncStreamResponse.close()
+
+        val onCompletableFuture = asyncStreamResponse.onCompleteFuture()
+
+        assertThat(onCompletableFuture).isCompleted
+    }
+
+    @Test
     fun close_whenNotClosed_closesStreamResponse() {
         val future = CompletableFuture<StreamResponse<String>>()
         val asyncStreamResponse = future.toAsync(executor)

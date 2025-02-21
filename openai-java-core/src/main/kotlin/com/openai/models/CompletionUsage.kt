@@ -510,11 +510,7 @@ private constructor(
             }
 
             fun build(): PromptTokensDetails =
-                PromptTokensDetails(
-                    audioTokens,
-                    cachedTokens,
-                    additionalProperties.toImmutable(),
-                )
+                PromptTokensDetails(audioTokens, cachedTokens, additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {

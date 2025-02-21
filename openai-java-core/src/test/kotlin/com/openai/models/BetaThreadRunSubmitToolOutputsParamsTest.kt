@@ -2,6 +2,7 @@
 
 package com.openai.models
 
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -34,8 +35,10 @@ class BetaThreadRunSubmitToolOutputsParamsTest {
                         .build()
                 )
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.toolOutputs())
             .isEqualTo(
                 listOf(
@@ -55,8 +58,10 @@ class BetaThreadRunSubmitToolOutputsParamsTest {
                 .runId("run_id")
                 .addToolOutput(BetaThreadRunSubmitToolOutputsParams.ToolOutput.builder().build())
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.toolOutputs())
             .isEqualTo(listOf(BetaThreadRunSubmitToolOutputsParams.ToolOutput.builder().build()))
     }

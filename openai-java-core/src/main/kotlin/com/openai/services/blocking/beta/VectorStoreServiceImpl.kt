@@ -27,10 +27,8 @@ import com.openai.services.blocking.beta.vectorStores.FileBatchServiceImpl
 import com.openai.services.blocking.beta.vectorStores.FileService
 import com.openai.services.blocking.beta.vectorStores.FileServiceImpl
 
-class VectorStoreServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : VectorStoreService {
+class VectorStoreServiceImpl internal constructor(private val clientOptions: ClientOptions) :
+    VectorStoreService {
 
     companion object {
 
@@ -53,7 +51,7 @@ internal constructor(
     /** Create a vector store. */
     override fun create(
         params: BetaVectorStoreCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): VectorStore {
         val request =
             HttpRequest.builder()
@@ -79,7 +77,7 @@ internal constructor(
     /** Retrieves a vector store. */
     override fun retrieve(
         params: BetaVectorStoreRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): VectorStore {
         val request =
             HttpRequest.builder()
@@ -104,7 +102,7 @@ internal constructor(
     /** Modifies a vector store. */
     override fun update(
         params: BetaVectorStoreUpdateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): VectorStore {
         val request =
             HttpRequest.builder()
@@ -131,7 +129,7 @@ internal constructor(
     /** Returns a list of vector stores. */
     override fun list(
         params: BetaVectorStoreListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): BetaVectorStoreListPage {
         val request =
             HttpRequest.builder()
@@ -157,7 +155,7 @@ internal constructor(
     /** Delete a vector store. */
     override fun delete(
         params: BetaVectorStoreDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): VectorStoreDeleted {
         val request =
             HttpRequest.builder()

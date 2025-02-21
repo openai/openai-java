@@ -3,6 +3,7 @@
 package com.openai.models
 
 import com.openai.core.JsonValue
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -70,7 +71,7 @@ class BetaThreadCreateAndRunParamsTest {
                                                 Metadata.builder()
                                                     .putAdditionalProperty(
                                                         "foo",
-                                                        JsonValue.from("string")
+                                                        JsonValue.from("string"),
                                                     )
                                                     .build()
                                             )
@@ -175,7 +176,7 @@ class BetaThreadCreateAndRunParamsTest {
                                                     Metadata.builder()
                                                         .putAdditionalProperty(
                                                             "foo",
-                                                            JsonValue.from("string")
+                                                            JsonValue.from("string"),
                                                         )
                                                         .build()
                                                 )
@@ -211,8 +212,10 @@ class BetaThreadCreateAndRunParamsTest {
                         .build()
                 )
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.assistantId()).isEqualTo("assistant_id")
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.maxCompletionTokens()).contains(256L)
@@ -274,7 +277,7 @@ class BetaThreadCreateAndRunParamsTest {
                                                 Metadata.builder()
                                                     .putAdditionalProperty(
                                                         "foo",
-                                                        JsonValue.from("string")
+                                                        JsonValue.from("string"),
                                                     )
                                                     .build()
                                             )
@@ -324,8 +327,10 @@ class BetaThreadCreateAndRunParamsTest {
     @Test
     fun bodyWithoutOptionalFields() {
         val params = BetaThreadCreateAndRunParams.builder().assistantId("assistant_id").build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.assistantId()).isEqualTo("assistant_id")
     }
 }

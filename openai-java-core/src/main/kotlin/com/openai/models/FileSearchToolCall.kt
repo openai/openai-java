@@ -689,20 +689,12 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
-                    fun build(): Content =
-                        Content(
-                            text,
-                            type,
-                            additionalProperties.toImmutable(),
-                        )
+                    fun build(): Content = Content(text, type, additionalProperties.toImmutable())
                 }
 
                 /** The type of the content. */
-                class Type
-                @JsonCreator
-                private constructor(
-                    private val value: JsonField<String>,
-                ) : Enum {
+                class Type @JsonCreator private constructor(private val value: JsonField<String>) :
+                    Enum {
 
                     /**
                      * Returns this class instance's raw value.
@@ -724,7 +716,7 @@ private constructor(
 
                     /** An enum containing [Type]'s known values. */
                     enum class Known {
-                        TEXT,
+                        TEXT
                     }
 
                     /**
@@ -773,7 +765,19 @@ private constructor(
                             else -> throw OpenAIInvalidDataException("Unknown Type: $value")
                         }
 
-                    fun asString(): String = _value().asStringOrThrow()
+                    /**
+                     * Returns this class instance's primitive wire representation.
+                     *
+                     * This differs from the [toString] method because that method is primarily for
+                     * debugging and generally doesn't throw.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value does not
+                     *   have the expected primitive type.
+                     */
+                    fun asString(): String =
+                        _value().asString().orElseThrow {
+                            OpenAIInvalidDataException("Value is not a String")
+                        }
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {

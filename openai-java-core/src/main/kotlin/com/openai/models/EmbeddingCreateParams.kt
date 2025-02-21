@@ -35,7 +35,7 @@ import java.util.Optional
 /** Creates an embedding vector representing the input text. */
 class EmbeddingCreateParams
 private constructor(
-    private val body: EmbeddingCreateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -122,16 +122,16 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): EmbeddingCreateBody = body
+    @JvmSynthetic internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     @NoAutoDetect
-    class EmbeddingCreateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("input")
         @ExcludeMissing
         private val input: JsonField<Input> = JsonMissing.of(),
@@ -236,7 +236,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): EmbeddingCreateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -256,7 +256,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [EmbeddingCreateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var input: JsonField<Input>? = null
@@ -267,13 +267,13 @@ private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(embeddingCreateBody: EmbeddingCreateBody) = apply {
-                input = embeddingCreateBody.input
-                model = embeddingCreateBody.model
-                dimensions = embeddingCreateBody.dimensions
-                encodingFormat = embeddingCreateBody.encodingFormat
-                user = embeddingCreateBody.user
-                additionalProperties = embeddingCreateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                input = body.input
+                model = body.model
+                dimensions = body.dimensions
+                encodingFormat = body.encodingFormat
+                user = body.user
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
@@ -399,8 +399,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): EmbeddingCreateBody =
-                EmbeddingCreateBody(
+            fun build(): Body =
+                Body(
                     checkRequired("input", input),
                     checkRequired("model", model),
                     dimensions,
@@ -415,7 +415,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is EmbeddingCreateBody && input == other.input && model == other.model && dimensions == other.dimensions && encodingFormat == other.encodingFormat && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && input == other.input && model == other.model && dimensions == other.dimensions && encodingFormat == other.encodingFormat && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -425,7 +425,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "EmbeddingCreateBody{input=$input, model=$model, dimensions=$dimensions, encodingFormat=$encodingFormat, user=$user, additionalProperties=$additionalProperties}"
+            "Body{input=$input, model=$model, dimensions=$dimensions, encodingFormat=$encodingFormat, user=$user, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -439,7 +439,7 @@ private constructor(
     @NoAutoDetect
     class Builder internal constructor() {
 
-        private var body: EmbeddingCreateBody.Builder = EmbeddingCreateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
@@ -865,7 +865,7 @@ private constructor(
             override fun serialize(
                 value: Input,
                 generator: JsonGenerator,
-                provider: SerializerProvider
+                provider: SerializerProvider,
             ) {
                 when {
                     value.string != null -> generator.writeObject(value.string)
@@ -884,11 +884,8 @@ private constructor(
      * The format to return the embeddings in. Can be either `float` or
      * [`base64`](https://pypi.org/project/pybase64/).
      */
-    class EncodingFormat
-    @JsonCreator
-    private constructor(
-        private val value: JsonField<String>,
-    ) : Enum {
+    class EncodingFormat @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -964,7 +961,17 @@ private constructor(
                 else -> throw OpenAIInvalidDataException("Unknown EncodingFormat: $value")
             }
 
-        fun asString(): String = _value().asStringOrThrow()
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

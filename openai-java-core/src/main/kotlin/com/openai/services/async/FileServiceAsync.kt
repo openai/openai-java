@@ -22,21 +22,21 @@ interface FileServiceAsync {
     @JvmOverloads
     fun retrieve(
         params: FileRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FileObject>
 
     /** Returns a list of files. */
     @JvmOverloads
     fun list(
         params: FileListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FileListPageAsync>
 
     /** Delete a file. */
     @JvmOverloads
     fun delete(
         params: FileDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FileDeleted>
 
     /** Returns the contents of the specified file. */
@@ -44,6 +44,6 @@ interface FileServiceAsync {
     @MustBeClosed
     fun content(
         params: FileContentParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<HttpResponse>
 }

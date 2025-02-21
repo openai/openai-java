@@ -30,7 +30,7 @@ class BetaThreadRunStepRetrieveParamsTest {
         val expected = QueryParams.builder()
         expected.put(
             "include[]",
-            RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT.toString()
+            RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT.toString(),
         )
         assertThat(params._queryParams()).isEqualTo(expected.build())
     }

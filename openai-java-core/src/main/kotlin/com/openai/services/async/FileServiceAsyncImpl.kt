@@ -23,10 +23,8 @@ import com.openai.models.FileObject
 import com.openai.models.FileRetrieveParams
 import java.util.concurrent.CompletableFuture
 
-class FileServiceAsyncImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : FileServiceAsync {
+class FileServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    FileServiceAsync {
 
     private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
@@ -36,7 +34,7 @@ internal constructor(
     /** Returns information about a specific file. */
     override fun retrieve(
         params: FileRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<FileObject> {
         val request =
             HttpRequest.builder()
@@ -64,7 +62,7 @@ internal constructor(
     /** Returns a list of files. */
     override fun list(
         params: FileListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<FileListPageAsync> {
         val request =
             HttpRequest.builder()
@@ -92,7 +90,7 @@ internal constructor(
     /** Delete a file. */
     override fun delete(
         params: FileDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<FileDeleted> {
         val request =
             HttpRequest.builder()
@@ -117,7 +115,7 @@ internal constructor(
     /** Returns the contents of the specified file. */
     override fun content(
         params: FileContentParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> {
         val request =
             HttpRequest.builder()

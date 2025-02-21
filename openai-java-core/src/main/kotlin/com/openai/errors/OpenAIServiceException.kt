@@ -10,7 +10,7 @@ constructor(
     private val body: String,
     private val error: OpenAIError,
     message: String = "$statusCode: $error",
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : OpenAIException(message, cause) {
 
     fun statusCode(): Int = statusCode

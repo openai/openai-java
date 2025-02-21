@@ -25,7 +25,7 @@ class BetaThreadMessageUpdateParams
 private constructor(
     private val threadId: String,
     private val messageId: String,
-    private val body: BetaThreadMessageUpdateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -60,7 +60,7 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): BetaThreadMessageUpdateBody = body
+    @JvmSynthetic internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -75,9 +75,9 @@ private constructor(
     }
 
     @NoAutoDetect
-    class BetaThreadMessageUpdateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("metadata")
         @ExcludeMissing
         private val metadata: JsonField<Metadata> = JsonMissing.of(),
@@ -111,7 +111,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): BetaThreadMessageUpdateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -127,17 +127,16 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [BetaThreadMessageUpdateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var metadata: JsonField<Metadata> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(betaThreadMessageUpdateBody: BetaThreadMessageUpdateBody) = apply {
-                metadata = betaThreadMessageUpdateBody.metadata
-                additionalProperties =
-                    betaThreadMessageUpdateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                metadata = body.metadata
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
@@ -189,8 +188,7 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): BetaThreadMessageUpdateBody =
-                BetaThreadMessageUpdateBody(metadata, additionalProperties.toImmutable())
+            fun build(): Body = Body(metadata, additionalProperties.toImmutable())
         }
 
         override fun equals(other: Any?): Boolean {
@@ -198,7 +196,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is BetaThreadMessageUpdateBody && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -208,7 +206,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "BetaThreadMessageUpdateBody{metadata=$metadata, additionalProperties=$additionalProperties}"
+            "Body{metadata=$metadata, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -224,8 +222,7 @@ private constructor(
 
         private var threadId: String? = null
         private var messageId: String? = null
-        private var body: BetaThreadMessageUpdateBody.Builder =
-            BetaThreadMessageUpdateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

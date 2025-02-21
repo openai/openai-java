@@ -110,11 +110,7 @@ private constructor(
         }
 
         fun build(): RunStepDeltaMessageDelta =
-            RunStepDeltaMessageDelta(
-                type,
-                messageCreation,
-                additionalProperties.toImmutable(),
-            )
+            RunStepDeltaMessageDelta(type, messageCreation, additionalProperties.toImmutable())
     }
 
     @NoAutoDetect

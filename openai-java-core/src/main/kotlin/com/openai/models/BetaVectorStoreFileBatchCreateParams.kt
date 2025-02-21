@@ -24,7 +24,7 @@ import java.util.Optional
 class BetaVectorStoreFileBatchCreateParams
 private constructor(
     private val vectorStoreId: String,
-    private val body: BetaVectorStoreFileBatchCreateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -61,7 +61,7 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): BetaVectorStoreFileBatchCreateBody = body
+    @JvmSynthetic internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -75,9 +75,9 @@ private constructor(
     }
 
     @NoAutoDetect
-    class BetaVectorStoreFileBatchCreateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("file_ids")
         @ExcludeMissing
         private val fileIds: JsonField<List<String>> = JsonMissing.of(),
@@ -121,7 +121,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): BetaVectorStoreFileBatchCreateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -138,7 +138,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [BetaVectorStoreFileBatchCreateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var fileIds: JsonField<MutableList<String>>? = null
@@ -146,13 +146,10 @@ private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(
-                betaVectorStoreFileBatchCreateBody: BetaVectorStoreFileBatchCreateBody
-            ) = apply {
-                fileIds = betaVectorStoreFileBatchCreateBody.fileIds.map { it.toMutableList() }
-                chunkingStrategy = betaVectorStoreFileBatchCreateBody.chunkingStrategy
-                additionalProperties =
-                    betaVectorStoreFileBatchCreateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                fileIds = body.fileIds.map { it.toMutableList() }
+                chunkingStrategy = body.chunkingStrategy
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
@@ -243,8 +240,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): BetaVectorStoreFileBatchCreateBody =
-                BetaVectorStoreFileBatchCreateBody(
+            fun build(): Body =
+                Body(
                     checkRequired("fileIds", fileIds).map { it.toImmutable() },
                     chunkingStrategy,
                     additionalProperties.toImmutable(),
@@ -256,7 +253,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is BetaVectorStoreFileBatchCreateBody && fileIds == other.fileIds && chunkingStrategy == other.chunkingStrategy && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && fileIds == other.fileIds && chunkingStrategy == other.chunkingStrategy && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -266,7 +263,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "BetaVectorStoreFileBatchCreateBody{fileIds=$fileIds, chunkingStrategy=$chunkingStrategy, additionalProperties=$additionalProperties}"
+            "Body{fileIds=$fileIds, chunkingStrategy=$chunkingStrategy, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -281,8 +278,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var vectorStoreId: String? = null
-        private var body: BetaVectorStoreFileBatchCreateBody.Builder =
-            BetaVectorStoreFileBatchCreateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

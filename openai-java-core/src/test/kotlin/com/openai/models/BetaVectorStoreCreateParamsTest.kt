@@ -3,6 +3,7 @@
 package com.openai.models
 
 import com.openai.core.JsonValue
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -35,8 +36,10 @@ class BetaVectorStoreCreateParamsTest {
                 )
                 .name("name")
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.chunkingStrategy())
             .contains(
                 FileChunkingStrategyParam.ofAuto(AutoFileChunkingStrategyParam.builder().build())
@@ -54,7 +57,9 @@ class BetaVectorStoreCreateParamsTest {
     @Test
     fun bodyWithoutOptionalFields() {
         val params = BetaVectorStoreCreateParams.builder().build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
     }
 }

@@ -75,13 +75,8 @@ private constructor(
         fun of(
             jobsService: JobServiceAsync,
             params: FineTuningJobListEventsParams,
-            response: Response
-        ) =
-            FineTuningJobListEventsPageAsync(
-                jobsService,
-                params,
-                response,
-            )
+            response: Response,
+        ) = FineTuningJobListEventsPageAsync(jobsService, params, response)
     }
 
     @NoAutoDetect
@@ -166,26 +161,19 @@ private constructor(
                 this.additionalProperties.put(key, value)
             }
 
-            fun build() =
-                Response(
-                    data,
-                    hasMore,
-                    additionalProperties.toImmutable(),
-                )
+            fun build() = Response(data, hasMore, additionalProperties.toImmutable())
         }
     }
 
-    class AutoPager(
-        private val firstPage: FineTuningJobListEventsPageAsync,
-    ) {
+    class AutoPager(private val firstPage: FineTuningJobListEventsPageAsync) {
 
         fun forEach(
             action: Predicate<FineTuningJobEvent>,
-            executor: Executor
+            executor: Executor,
         ): CompletableFuture<Void> {
             fun CompletableFuture<Optional<FineTuningJobListEventsPageAsync>>.forEach(
                 action: (FineTuningJobEvent) -> Boolean,
-                executor: Executor
+                executor: Executor,
             ): CompletableFuture<Void> =
                 thenComposeAsync(
                     { page ->
@@ -194,7 +182,7 @@ private constructor(
                             .map { it.getNextPage().forEach(action, executor) }
                             .orElseGet { CompletableFuture.completedFuture(null) }
                     },
-                    executor
+                    executor,
                 )
             return CompletableFuture.completedFuture(Optional.of(firstPage))
                 .forEach(action::test, executor)

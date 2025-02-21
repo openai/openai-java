@@ -24,21 +24,21 @@ interface FileServiceAsync {
     @JvmOverloads
     fun create(
         params: BetaVectorStoreFileCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStoreFile>
 
     /** Retrieves a vector store file. */
     @JvmOverloads
     fun retrieve(
         params: BetaVectorStoreFileRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStoreFile>
 
     /** Returns a list of vector store files. */
     @JvmOverloads
     fun list(
         params: BetaVectorStoreFileListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<BetaVectorStoreFileListPageAsync>
 
     /**
@@ -49,6 +49,6 @@ interface FileServiceAsync {
     @JvmOverloads
     fun delete(
         params: BetaVectorStoreFileDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStoreFileDeleted>
 }

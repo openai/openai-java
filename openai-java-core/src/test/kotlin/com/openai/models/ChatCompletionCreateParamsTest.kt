@@ -3,6 +3,7 @@
 package com.openai.models
 
 import com.openai.core.JsonValue
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -158,8 +159,10 @@ class ChatCompletionCreateParamsTest {
                 .topP(1.0)
                 .user("user-1234")
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.messages())
             .isEqualTo(
                 listOf(
@@ -268,8 +271,10 @@ class ChatCompletionCreateParamsTest {
                 .addDeveloperMessage("string")
                 .model(ChatModel.O3_MINI)
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.messages())
             .isEqualTo(
                 listOf(

@@ -24,7 +24,7 @@ import java.util.Optional
 /** Create a vector store. */
 class BetaVectorStoreCreateParams
 private constructor(
-    private val body: BetaVectorStoreCreateBody,
+    private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -91,16 +91,16 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): BetaVectorStoreCreateBody = body
+    @JvmSynthetic internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     @NoAutoDetect
-    class BetaVectorStoreCreateBody
+    class Body
     @JsonCreator
-    internal constructor(
+    private constructor(
         @JsonProperty("chunking_strategy")
         @ExcludeMissing
         private val chunkingStrategy: JsonField<FileChunkingStrategyParam> = JsonMissing.of(),
@@ -188,7 +188,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): BetaVectorStoreCreateBody = apply {
+        fun validate(): Body = apply {
             if (validated) {
                 return@apply
             }
@@ -208,7 +208,7 @@ private constructor(
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [BetaVectorStoreCreateBody]. */
+        /** A builder for [Body]. */
         class Builder internal constructor() {
 
             private var chunkingStrategy: JsonField<FileChunkingStrategyParam> = JsonMissing.of()
@@ -219,13 +219,13 @@ private constructor(
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(betaVectorStoreCreateBody: BetaVectorStoreCreateBody) = apply {
-                chunkingStrategy = betaVectorStoreCreateBody.chunkingStrategy
-                expiresAfter = betaVectorStoreCreateBody.expiresAfter
-                fileIds = betaVectorStoreCreateBody.fileIds.map { it.toMutableList() }
-                metadata = betaVectorStoreCreateBody.metadata
-                name = betaVectorStoreCreateBody.name
-                additionalProperties = betaVectorStoreCreateBody.additionalProperties.toMutableMap()
+            internal fun from(body: Body) = apply {
+                chunkingStrategy = body.chunkingStrategy
+                expiresAfter = body.expiresAfter
+                fileIds = body.fileIds.map { it.toMutableList() }
+                metadata = body.metadata
+                name = body.name
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
@@ -360,8 +360,8 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): BetaVectorStoreCreateBody =
-                BetaVectorStoreCreateBody(
+            fun build(): Body =
+                Body(
                     chunkingStrategy,
                     expiresAfter,
                     (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
@@ -376,7 +376,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is BetaVectorStoreCreateBody && chunkingStrategy == other.chunkingStrategy && expiresAfter == other.expiresAfter && fileIds == other.fileIds && metadata == other.metadata && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && chunkingStrategy == other.chunkingStrategy && expiresAfter == other.expiresAfter && fileIds == other.fileIds && metadata == other.metadata && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
@@ -386,7 +386,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "BetaVectorStoreCreateBody{chunkingStrategy=$chunkingStrategy, expiresAfter=$expiresAfter, fileIds=$fileIds, metadata=$metadata, name=$name, additionalProperties=$additionalProperties}"
+            "Body{chunkingStrategy=$chunkingStrategy, expiresAfter=$expiresAfter, fileIds=$fileIds, metadata=$metadata, name=$name, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -400,7 +400,7 @@ private constructor(
     @NoAutoDetect
     class Builder internal constructor() {
 
-        private var body: BetaVectorStoreCreateBody.Builder = BetaVectorStoreCreateBody.builder()
+        private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 

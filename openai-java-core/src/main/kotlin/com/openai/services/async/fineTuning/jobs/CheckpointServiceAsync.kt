@@ -15,6 +15,6 @@ interface CheckpointServiceAsync {
     @JvmOverloads
     fun list(
         params: FineTuningJobCheckpointListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FineTuningJobCheckpointListPageAsync>
 }

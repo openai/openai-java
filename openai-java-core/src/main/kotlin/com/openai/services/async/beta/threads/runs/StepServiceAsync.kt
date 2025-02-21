@@ -17,13 +17,13 @@ interface StepServiceAsync {
     @JvmOverloads
     fun retrieve(
         params: BetaThreadRunStepRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<RunStep>
 
     /** Returns a list of run steps belonging to a run. */
     @JvmOverloads
     fun list(
         params: BetaThreadRunStepListParams,
-        requestOptions: RequestOptions = RequestOptions.none()
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<BetaThreadRunStepListPageAsync>
 }

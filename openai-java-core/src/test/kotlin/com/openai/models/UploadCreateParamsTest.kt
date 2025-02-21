@@ -2,6 +2,7 @@
 
 package com.openai.models
 
+import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -26,8 +27,10 @@ class UploadCreateParamsTest {
                 .mimeType("mime_type")
                 .purpose(FilePurpose.ASSISTANTS)
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.bytes()).isEqualTo(0L)
         assertThat(body.filename()).isEqualTo("filename")
         assertThat(body.mimeType()).isEqualTo("mime_type")
@@ -43,8 +46,10 @@ class UploadCreateParamsTest {
                 .mimeType("mime_type")
                 .purpose(FilePurpose.ASSISTANTS)
                 .build()
+
         val body = params._body()
-        assertThat(body).isNotNull
+
+        assertNotNull(body)
         assertThat(body.bytes()).isEqualTo(0L)
         assertThat(body.filename()).isEqualTo("filename")
         assertThat(body.mimeType()).isEqualTo("mime_type")

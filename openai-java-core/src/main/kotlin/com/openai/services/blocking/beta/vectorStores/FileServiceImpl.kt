@@ -22,10 +22,7 @@ import com.openai.models.BetaVectorStoreFileRetrieveParams
 import com.openai.models.VectorStoreFile
 import com.openai.models.VectorStoreFileDeleted
 
-class FileServiceImpl
-internal constructor(
-    private val clientOptions: ClientOptions,
-) : FileService {
+class FileServiceImpl internal constructor(private val clientOptions: ClientOptions) : FileService {
 
     companion object {
 
@@ -44,7 +41,7 @@ internal constructor(
      */
     override fun create(
         params: BetaVectorStoreFileCreateParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): VectorStoreFile {
         val request =
             HttpRequest.builder()
@@ -70,7 +67,7 @@ internal constructor(
     /** Retrieves a vector store file. */
     override fun retrieve(
         params: BetaVectorStoreFileRetrieveParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): VectorStoreFile {
         val request =
             HttpRequest.builder()
@@ -79,7 +76,7 @@ internal constructor(
                     "vector_stores",
                     params.getPathParam(0),
                     "files",
-                    params.getPathParam(1)
+                    params.getPathParam(1),
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()
@@ -101,7 +98,7 @@ internal constructor(
     /** Returns a list of vector store files. */
     override fun list(
         params: BetaVectorStoreFileListParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): BetaVectorStoreFileListPage {
         val request =
             HttpRequest.builder()
@@ -131,7 +128,7 @@ internal constructor(
      */
     override fun delete(
         params: BetaVectorStoreFileDeleteParams,
-        requestOptions: RequestOptions
+        requestOptions: RequestOptions,
     ): VectorStoreFileDeleted {
         val request =
             HttpRequest.builder()
@@ -140,7 +137,7 @@ internal constructor(
                     "vector_stores",
                     params.getPathParam(0),
                     "files",
-                    params.getPathParam(1)
+                    params.getPathParam(1),
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
