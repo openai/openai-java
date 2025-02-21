@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.26.1 (2025-02-21)
+
+Full Changelog: [v0.26.0...v0.26.1](https://github.com/openai/openai-java/compare/v0.26.0...v0.26.1)
+
+### Documentation
+
+* add immutability explanation to readme ([#243](https://github.com/openai/openai-java/issues/243)) ([5826fb0](https://github.com/openai/openai-java/commit/5826fb0fafa06c647a520f82847319a32ddcbbbb))
+
 ## 0.26.0 (2025-02-20)
 
 Full Changelog: [v0.25.0...v0.26.0](https://github.com/openai/openai-java/compare/v0.25.0...v0.26.0)
