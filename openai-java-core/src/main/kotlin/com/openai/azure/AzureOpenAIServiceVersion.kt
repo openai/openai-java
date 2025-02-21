@@ -1,5 +1,7 @@
 package com.openai.azure
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.ConcurrentHashMap
 
 class AzureOpenAIServiceVersion private constructor(@get:JvmName("value") val value: String) {
@@ -7,6 +9,32 @@ class AzureOpenAIServiceVersion private constructor(@get:JvmName("value") val va
     companion object {
         private val values: ConcurrentHashMap<String, AzureOpenAIServiceVersion> =
             ConcurrentHashMap()
+        private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        private fun extractDate(version: String): LocalDate {
+            return LocalDate.parse(version, dateFormatter)
+        }
+
+        @JvmStatic
+        fun latestStableVersion(): AzureOpenAIServiceVersion {
+            // We can update the value every general available(GA)/stable announcement.
+            return V2024_10_21
+        }
+
+        @JvmStatic
+        fun latestPreviewVersion(): AzureOpenAIServiceVersion {
+            // We can update the value every preview announcement.
+            return V2025_01_01_PREVIEW
+        }
+
+        @JvmStatic
+        fun latestVersion(): AzureOpenAIServiceVersion {
+            val stableVersion = latestStableVersion()
+            val previewVersion = latestPreviewVersion()
+            val stableDate = extractDate(stableVersion.value)
+            val previewDate = extractDate(previewVersion.value.substring(0, 10))
+            return if (stableDate.isAfter(previewDate)) stableVersion else previewVersion
+        }
 
         @JvmStatic
         fun fromString(version: String): AzureOpenAIServiceVersion =
