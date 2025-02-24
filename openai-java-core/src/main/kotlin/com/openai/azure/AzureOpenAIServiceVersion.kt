@@ -9,6 +9,18 @@ class AzureOpenAIServiceVersion private constructor(@get:JvmName("value") val va
             ConcurrentHashMap()
 
         @JvmStatic
+        fun latestStableVersion(): AzureOpenAIServiceVersion {
+            // We can update the value every general available(GA)/stable announcement.
+            return V2024_10_21
+        }
+
+        @JvmStatic
+        fun latestPreviewVersion(): AzureOpenAIServiceVersion {
+            // We can update the value every preview announcement.
+            return V2025_01_01_PREVIEW
+        }
+
+        @JvmStatic
         fun fromString(version: String): AzureOpenAIServiceVersion =
             values.computeIfAbsent(version) { AzureOpenAIServiceVersion(version) }
 

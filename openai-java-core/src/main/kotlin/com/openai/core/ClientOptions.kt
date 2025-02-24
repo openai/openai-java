@@ -4,7 +4,6 @@ package com.openai.core
 
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.openai.azure.AzureOpenAIServiceVersion
-import com.openai.azure.AzureOpenAIServiceVersion.Companion.V2024_10_21
 import com.openai.azure.credential.AzureApiKeyCredential
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpClient
@@ -261,8 +260,10 @@ private constructor(
             if (isAzureEndpoint(baseUrl)) {
                 // Default Azure OpenAI version is used if Azure user doesn't
                 // specific a service API version in 'queryParams'.
-                // We can update the default value every major announcement if needed.
-                replaceQueryParams("api-version", (azureServiceVersion ?: V2024_10_21).value)
+                replaceQueryParams(
+                    "api-version",
+                    (azureServiceVersion ?: AzureOpenAIServiceVersion.latestStableVersion()).value,
+                )
             }
 
             headers.replaceAll(this.headers.build())
