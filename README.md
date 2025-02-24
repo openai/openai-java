@@ -177,7 +177,7 @@ The SDK defines methods that return response "chunk" streams, where each chunk c
 
 Some of these methods may have streaming and non-streaming variants, but a streaming method will always have a `Streaming` suffix in its name, even if it doesn't have a non-streaming variant.
 
-These streaming methods return `StreamResponse` for synchronous clients:
+These streaming methods return [`StreamResponse`](openai-java-core/src/main/kotlin/com/openai/core/http/StreamResponse.kt) for synchronous clients:
 
 ```java
 import com.openai.core.http.StreamResponse;
@@ -191,7 +191,7 @@ try (StreamResponse<ChatCompletionChunk> streamResponse = client.chat().completi
 }
 ```
 
-Or `AsyncStreamResponse` for asynchronous clients:
+Or [`AsyncStreamResponse`](openai-java-core/src/main/kotlin/com/openai/core/http/AsyncStreamResponse.kt) for asynchronous clients:
 
 ```java
 import com.openai.core.http.AsyncStreamResponse;
@@ -236,7 +236,7 @@ client.async().chat().completions().createStreaming(params)
     });
 ```
 
-Async streaming uses a dedicated per-client cached thread pool `Executor` to stream without blocking the current thread. This default is suitable for most purposes.
+Async streaming uses a dedicated per-client cached thread pool [`Executor`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html) to stream without blocking the current thread. This default is suitable for most purposes.
 
 To use a different `Executor`, configure the subscription using the `executor` parameter:
 
@@ -267,7 +267,7 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
 
 The SDK defines methods that return binary responses, which are used for API responses that shouldn't necessarily be parsed, like non-JSON data.
 
-These methods return `HttpResponse`:
+These methods return [`HttpResponse`](openai-java-core/src/main/kotlin/com/openai/core/http/HttpResponse.kt):
 
 ```java
 import com.openai.core.http.HttpResponse;
@@ -279,7 +279,7 @@ FileContentParams params = FileContentParams.builder()
 HttpResponse response = client.files().content(params);
 ```
 
-To save the response content to a file, use the `Files.copy(...)` method:
+To save the response content to a file, use the [`Files.copy(...)`](https://docs.oracle.com/javase/8/docs/api/java/nio/file/Files.html#copy-java.io.InputStream-java.nio.file.Path-java.nio.file.CopyOption...-) method:
 
 ```java
 import com.openai.core.http.HttpResponse;
@@ -299,7 +299,7 @@ try (HttpResponse response = client.files().content(params)) {
 }
 ```
 
-Or transfer the response content to any `OutputStream`:
+Or transfer the response content to any [`OutputStream`](https://docs.oracle.com/javase/8/docs/api/java/io/OutputStream.html):
 
 ```java
 import com.openai.core.http.HttpResponse;
@@ -318,7 +318,7 @@ try (HttpResponse response = client.files().content(params)) {
 
 The SDK throws custom unchecked exception types:
 
-- `OpenAIServiceException`: Base class for HTTP errors. See this table for which exception subclass is thrown for each HTTP status code:
+- [`OpenAIServiceException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIServiceException.kt): Base class for HTTP errors. See this table for which exception subclass is thrown for each HTTP status code:
 
   | Status | Exception                       |
   | ------ | ------------------------------- |
@@ -331,11 +331,11 @@ The SDK throws custom unchecked exception types:
   | 5xx    | `InternalServerException`       |
   | others | `UnexpectedStatusCodeException` |
 
-- `OpenAIIoException`: I/O networking errors.
+- [`OpenAIIoException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIIoException.kt): I/O networking errors.
 
-- `OpenAIInvalidDataException`: Failure to interpret successfully parsed data. For example, when accessing a property that's supposed to be required, but the API unexpectedly omitted it from the response.
+- [`OpenAIInvalidDataException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIInvalidDataException.kt): Failure to interpret successfully parsed data. For example, when accessing a property that's supposed to be required, but the API unexpectedly omitted it from the response.
 
-- `OpenAIException`: Base class for all exceptions. Most errors will result in one of the previously mentioned ones, but completely generic errors may be thrown using the base class.
+- [`OpenAIException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIException.kt): Base class for all exceptions. Most errors will result in one of the previously mentioned ones, but completely generic errors may be thrown using the base class.
 
 ## Pagination
 
@@ -520,7 +520,7 @@ ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
 
 These can be accessed on the built object later using the `_additionalHeaders()`, `_additionalQueryParams()`, and `_additionalBodyProperties()` methods. You can also set undocumented parameters on nested headers, query params, or body classes using the `putAdditionalProperty` method. These properties can be accessed on the built object later using the `_additionalProperties()` method.
 
-To set a documented parameter or property to an undocumented or not yet supported _value_, pass a `JsonValue` object to its setter:
+To set a documented parameter or property to an undocumented or not yet supported _value_, pass a [`JsonValue`](openai-java-core/src/main/kotlin/com/openai/core/JsonValue.kt) object to its setter:
 
 ```java
 import com.openai.core.JsonValue;
@@ -591,7 +591,7 @@ if (messages.isMissing()) {
 
 In rare cases, the API may return a response that doesn't match the expected type. For example, the SDK may expect a property to contain a `String`, but the API could return something else.
 
-By default, the SDK will not throw an exception in this case. It will throw `OpenAIInvalidDataException` only if you directly access the property.
+By default, the SDK will not throw an exception in this case. It will throw [`OpenAIInvalidDataException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIInvalidDataException.kt) only if you directly access the property.
 
 If you would prefer to check that the response is completely well-typed upfront, then either call `validate()`:
 
