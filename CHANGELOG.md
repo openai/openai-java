@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.28.0 (2025-02-24)
+
+Full Changelog: [v0.27.0...v0.28.0](https://github.com/openai/openai-java/compare/v0.27.0...v0.28.0)
+
+### Features
+
+* **api:** add latest stable/preview version helper methods ([#226](https://github.com/openai/openai-java/issues/226)) ([9766b7c](https://github.com/openai/openai-java/commit/9766b7c93928c9837fa13cbab5969a883ccec22a))
+
+
+### Documentation
+
+* add source file links to readme ([#247](https://github.com/openai/openai-java/issues/247)) ([d9b67d7](https://github.com/openai/openai-java/commit/d9b67d7ef7552112774039acf951a582c3eeefea))
+
 ## 0.27.0 (2025-02-24)
 
 Full Changelog: [v0.26.1...v0.27.0](https://github.com/openai/openai-java/compare/v0.26.1...v0.27.0)
