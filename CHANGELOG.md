@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.27.0 (2025-02-24)
+
+Full Changelog: [v0.26.1...v0.27.0](https://github.com/openai/openai-java/compare/v0.26.1...v0.27.0)
+
+### Features
+
+* docs: moderations example ([#245](https://github.com/openai/openai-java/issues/245)) ([3108fee](https://github.com/openai/openai-java/commit/3108feeb0fd17cce70d77fb3c6e858ea53f465e6))
+
 ## 0.26.1 (2025-02-21)
 
 Full Changelog: [v0.26.0...v0.26.1](https://github.com/openai/openai-java/compare/v0.26.0...v0.26.1)
