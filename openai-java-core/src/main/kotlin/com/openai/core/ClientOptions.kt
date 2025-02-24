@@ -262,7 +262,7 @@ private constructor(
                 // specific a service API version in 'queryParams'.
                 replaceQueryParams(
                     "api-version",
-                    (azureServiceVersion ?: AzureOpenAIServiceVersion.latestStableVersion()).value
+                    (azureServiceVersion ?: AzureOpenAIServiceVersion.latestStableVersion()).value,
                 )
             }
 
