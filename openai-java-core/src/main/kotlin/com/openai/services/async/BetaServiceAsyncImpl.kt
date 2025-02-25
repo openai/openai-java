@@ -3,7 +3,6 @@
 package com.openai.services.async
 
 import com.openai.core.ClientOptions
-import com.openai.core.http.Headers
 import com.openai.services.async.beta.AssistantServiceAsync
 import com.openai.services.async.beta.AssistantServiceAsyncImpl
 import com.openai.services.async.beta.ThreadServiceAsync
@@ -13,11 +12,6 @@ import com.openai.services.async.beta.VectorStoreServiceAsyncImpl
 
 class BetaServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     BetaServiceAsync {
-
-    companion object {
-
-        private val DEFAULT_HEADERS = Headers.builder().put("OpenAI-Beta", "assistants=v2").build()
-    }
 
     private val vectorStores: VectorStoreServiceAsync by lazy {
         VectorStoreServiceAsyncImpl(clientOptions)
