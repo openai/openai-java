@@ -47,9 +47,13 @@ interface VectorStoreServiceAsync {
     /** Returns a list of vector stores. */
     @JvmOverloads
     fun list(
-        params: BetaVectorStoreListParams,
+        params: BetaVectorStoreListParams = BetaVectorStoreListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<BetaVectorStoreListPageAsync>
+
+    /** Returns a list of vector stores. */
+    fun list(requestOptions: RequestOptions): CompletableFuture<BetaVectorStoreListPageAsync> =
+        list(BetaVectorStoreListParams.none(), requestOptions)
 
     /** Delete a vector store. */
     @JvmOverloads

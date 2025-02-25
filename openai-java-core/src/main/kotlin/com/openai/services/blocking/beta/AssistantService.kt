@@ -40,9 +40,13 @@ interface AssistantService {
     /** Returns a list of assistants. */
     @JvmOverloads
     fun list(
-        params: BetaAssistantListParams,
+        params: BetaAssistantListParams = BetaAssistantListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): BetaAssistantListPage
+
+    /** Returns a list of assistants. */
+    fun list(requestOptions: RequestOptions): BetaAssistantListPage =
+        list(BetaAssistantListParams.none(), requestOptions)
 
     /** Delete an assistant. */
     @JvmOverloads

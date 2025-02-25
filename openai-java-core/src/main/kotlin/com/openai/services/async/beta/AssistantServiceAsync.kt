@@ -41,9 +41,13 @@ interface AssistantServiceAsync {
     /** Returns a list of assistants. */
     @JvmOverloads
     fun list(
-        params: BetaAssistantListParams,
+        params: BetaAssistantListParams = BetaAssistantListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<BetaAssistantListPageAsync>
+
+    /** Returns a list of assistants. */
+    fun list(requestOptions: RequestOptions): CompletableFuture<BetaAssistantListPageAsync> =
+        list(BetaAssistantListParams.none(), requestOptions)
 
     /** Delete an assistant. */
     @JvmOverloads

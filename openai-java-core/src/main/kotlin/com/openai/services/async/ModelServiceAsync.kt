@@ -31,9 +31,16 @@ interface ModelServiceAsync {
      */
     @JvmOverloads
     fun list(
-        params: ModelListParams,
+        params: ModelListParams = ModelListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ModelListPageAsync>
+
+    /**
+     * Lists the currently available models, and provides basic information about each one such as
+     * the owner and availability.
+     */
+    fun list(requestOptions: RequestOptions): CompletableFuture<ModelListPageAsync> =
+        list(ModelListParams.none(), requestOptions)
 
     /**
      * Delete a fine-tuned model. You must have the Owner role in your organization to delete a

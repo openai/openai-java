@@ -48,9 +48,13 @@ interface JobService {
     /** List your organization's fine-tuning jobs */
     @JvmOverloads
     fun list(
-        params: FineTuningJobListParams,
+        params: FineTuningJobListParams = FineTuningJobListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FineTuningJobListPage
+
+    /** List your organization's fine-tuning jobs */
+    fun list(requestOptions: RequestOptions): FineTuningJobListPage =
+        list(FineTuningJobListParams.none(), requestOptions)
 
     /** Immediately cancel a fine-tune job. */
     @JvmOverloads

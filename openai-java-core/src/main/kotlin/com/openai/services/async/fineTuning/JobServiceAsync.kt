@@ -49,9 +49,13 @@ interface JobServiceAsync {
     /** List your organization's fine-tuning jobs */
     @JvmOverloads
     fun list(
-        params: FineTuningJobListParams,
+        params: FineTuningJobListParams = FineTuningJobListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FineTuningJobListPageAsync>
+
+    /** List your organization's fine-tuning jobs */
+    fun list(requestOptions: RequestOptions): CompletableFuture<FineTuningJobListPageAsync> =
+        list(FineTuningJobListParams.none(), requestOptions)
 
     /** Immediately cancel a fine-tune job. */
     @JvmOverloads
