@@ -70,6 +70,8 @@ private constructor(
 
     companion object {
 
+        fun none(): BetaAssistantListParams = builder().build()
+
         @JvmStatic fun builder() = Builder()
     }
 

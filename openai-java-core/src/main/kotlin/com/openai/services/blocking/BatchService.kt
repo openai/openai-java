@@ -31,9 +31,13 @@ interface BatchService {
     /** List your organization's batches. */
     @JvmOverloads
     fun list(
-        params: BatchListParams,
+        params: BatchListParams = BatchListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): BatchListPage
+
+    /** List your organization's batches. */
+    fun list(requestOptions: RequestOptions): BatchListPage =
+        list(BatchListParams.none(), requestOptions)
 
     /**
      * Cancels an in-progress batch. The batch will be in status `cancelling` for up to 10 minutes,

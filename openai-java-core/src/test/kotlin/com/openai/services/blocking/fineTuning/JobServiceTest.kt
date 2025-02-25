@@ -7,7 +7,6 @@ import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.models.FineTuningJobCancelParams
 import com.openai.models.FineTuningJobCreateParams
 import com.openai.models.FineTuningJobListEventsParams
-import com.openai.models.FineTuningJobListParams
 import com.openai.models.FineTuningJobRetrieveParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -112,8 +111,7 @@ class JobServiceTest {
                 .apiKey("My API Key")
                 .build()
         val jobService = client.fineTuning().jobs()
-        val listPaginatedFineTuningJobsResponse =
-            jobService.list(FineTuningJobListParams.builder().build())
+        val listPaginatedFineTuningJobsResponse = jobService.list()
         println(listPaginatedFineTuningJobsResponse)
         listPaginatedFineTuningJobsResponse.data().forEach { it.validate() }
     }

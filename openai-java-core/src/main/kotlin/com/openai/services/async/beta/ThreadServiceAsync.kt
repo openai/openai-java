@@ -28,9 +28,13 @@ interface ThreadServiceAsync {
     /** Create a thread. */
     @JvmOverloads
     fun create(
-        params: BetaThreadCreateParams,
+        params: BetaThreadCreateParams = BetaThreadCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Thread>
+
+    /** Create a thread. */
+    fun create(requestOptions: RequestOptions): CompletableFuture<Thread> =
+        create(BetaThreadCreateParams.none(), requestOptions)
 
     /** Retrieves a thread. */
     @JvmOverloads

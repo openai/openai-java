@@ -13,7 +13,6 @@ import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.http.HttpResponse
 import com.openai.models.FileContentParams
 import com.openai.models.FileDeleteParams
-import com.openai.models.FileListParams
 import com.openai.models.FileRetrieveParams
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -45,7 +44,7 @@ class FileServiceTest {
                 .apiKey("My API Key")
                 .build()
         val fileService = client.files()
-        val listFilesResponse = fileService.list(FileListParams.builder().build())
+        val listFilesResponse = fileService.list()
         println(listFilesResponse)
         listFilesResponse.data().forEach { it.validate() }
     }

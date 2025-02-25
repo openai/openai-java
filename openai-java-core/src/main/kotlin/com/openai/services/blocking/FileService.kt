@@ -27,9 +27,13 @@ interface FileService {
     /** Returns a list of files. */
     @JvmOverloads
     fun list(
-        params: FileListParams,
+        params: FileListParams = FileListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FileListPage
+
+    /** Returns a list of files. */
+    fun list(requestOptions: RequestOptions): FileListPage =
+        list(FileListParams.none(), requestOptions)
 
     /** Delete a file. */
     @JvmOverloads

@@ -8,7 +8,6 @@ import com.openai.core.JsonValue
 import com.openai.models.AutoFileChunkingStrategyParam
 import com.openai.models.BetaAssistantCreateParams
 import com.openai.models.BetaAssistantDeleteParams
-import com.openai.models.BetaAssistantListParams
 import com.openai.models.BetaAssistantRetrieveParams
 import com.openai.models.BetaAssistantUpdateParams
 import com.openai.models.ChatModel
@@ -153,8 +152,7 @@ class AssistantServiceTest {
                 .apiKey("My API Key")
                 .build()
         val assistantService = client.beta().assistants()
-        val listAssistantsResponse =
-            assistantService.list(BetaAssistantListParams.builder().build())
+        val listAssistantsResponse = assistantService.list()
         println(listAssistantsResponse)
         listAssistantsResponse.data().forEach { it.validate() }
     }
