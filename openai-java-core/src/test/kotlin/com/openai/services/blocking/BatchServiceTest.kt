@@ -7,7 +7,6 @@ import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
 import com.openai.models.BatchCancelParams
 import com.openai.models.BatchCreateParams
-import com.openai.models.BatchListParams
 import com.openai.models.BatchRetrieveParams
 import com.openai.models.Metadata
 import org.junit.jupiter.api.Test
@@ -62,7 +61,7 @@ class BatchServiceTest {
                 .apiKey("My API Key")
                 .build()
         val batchService = client.batches()
-        val listBatchesResponse = batchService.list(BatchListParams.builder().build())
+        val listBatchesResponse = batchService.list()
         println(listBatchesResponse)
         listBatchesResponse.data().forEach { it.validate() }
     }

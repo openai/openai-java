@@ -8,7 +8,6 @@ import com.openai.core.JsonValue
 import com.openai.models.AutoFileChunkingStrategyParam
 import com.openai.models.BetaVectorStoreCreateParams
 import com.openai.models.BetaVectorStoreDeleteParams
-import com.openai.models.BetaVectorStoreListParams
 import com.openai.models.BetaVectorStoreRetrieveParams
 import com.openai.models.BetaVectorStoreUpdateParams
 import com.openai.models.Metadata
@@ -97,8 +96,7 @@ class VectorStoreServiceTest {
                 .apiKey("My API Key")
                 .build()
         val vectorStoreService = client.beta().vectorStores()
-        val listVectorStoresResponse =
-            vectorStoreService.list(BetaVectorStoreListParams.builder().build())
+        val listVectorStoresResponse = vectorStoreService.list()
         println(listVectorStoresResponse)
         listVectorStoresResponse.data().forEach { it.validate() }
     }
