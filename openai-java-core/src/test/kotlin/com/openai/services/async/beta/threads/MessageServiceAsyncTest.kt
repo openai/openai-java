@@ -1,9 +1,9 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.services.blocking.beta.threads
+package com.openai.services.async.beta.threads
 
 import com.openai.TestServerExtension
-import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
 import com.openai.models.BetaThreadMessageCreateParams
 import com.openai.models.BetaThreadMessageDeleteParams
@@ -16,19 +16,19 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class MessageServiceTest {
+class MessageServiceAsyncTest {
 
     @Test
     fun create() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val messageService = client.beta().threads().messages()
+        val messageServiceAsync = client.beta().threads().messages()
 
-        val message =
-            messageService.create(
+        val messageFuture =
+            messageServiceAsync.create(
                 BetaThreadMessageCreateParams.builder()
                     .threadId("thread_id")
                     .content("string")
@@ -47,40 +47,42 @@ class MessageServiceTest {
                     .build()
             )
 
+        val message = messageFuture.get()
         message.validate()
     }
 
     @Test
     fun retrieve() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val messageService = client.beta().threads().messages()
+        val messageServiceAsync = client.beta().threads().messages()
 
-        val message =
-            messageService.retrieve(
+        val messageFuture =
+            messageServiceAsync.retrieve(
                 BetaThreadMessageRetrieveParams.builder()
                     .threadId("thread_id")
                     .messageId("message_id")
                     .build()
             )
 
+        val message = messageFuture.get()
         message.validate()
     }
 
     @Test
     fun update() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val messageService = client.beta().threads().messages()
+        val messageServiceAsync = client.beta().threads().messages()
 
-        val message =
-            messageService.update(
+        val messageFuture =
+            messageServiceAsync.update(
                 BetaThreadMessageUpdateParams.builder()
                     .threadId("thread_id")
                     .messageId("message_id")
@@ -92,41 +94,46 @@ class MessageServiceTest {
                     .build()
             )
 
+        val message = messageFuture.get()
         message.validate()
     }
 
     @Test
     fun list() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val messageService = client.beta().threads().messages()
+        val messageServiceAsync = client.beta().threads().messages()
 
-        val page =
-            messageService.list(BetaThreadMessageListParams.builder().threadId("thread_id").build())
+        val pageFuture =
+            messageServiceAsync.list(
+                BetaThreadMessageListParams.builder().threadId("thread_id").build()
+            )
 
+        val page = pageFuture.get()
         page.response().validate()
     }
 
     @Test
     fun delete() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val messageService = client.beta().threads().messages()
+        val messageServiceAsync = client.beta().threads().messages()
 
-        val messageDeleted =
-            messageService.delete(
+        val messageDeletedFuture =
+            messageServiceAsync.delete(
                 BetaThreadMessageDeleteParams.builder()
                     .threadId("thread_id")
                     .messageId("message_id")
                     .build()
             )
 
+        val messageDeleted = messageDeletedFuture.get()
         messageDeleted.validate()
     }
 }

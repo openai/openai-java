@@ -1,9 +1,9 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.services.blocking.beta.threads.runs
+package com.openai.services.async.beta.threads.runs
 
 import com.openai.TestServerExtension
-import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.models.BetaThreadRunStepListParams
 import com.openai.models.BetaThreadRunStepRetrieveParams
 import com.openai.models.RunStepInclude
@@ -11,19 +11,19 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class StepServiceTest {
+class StepServiceAsyncTest {
 
     @Test
     fun retrieve() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val stepService = client.beta().threads().runs().steps()
+        val stepServiceAsync = client.beta().threads().runs().steps()
 
-        val runStep =
-            stepService.retrieve(
+        val runStepFuture =
+            stepServiceAsync.retrieve(
                 BetaThreadRunStepRetrieveParams.builder()
                     .threadId("thread_id")
                     .runId("run_id")
@@ -32,23 +32,25 @@ class StepServiceTest {
                     .build()
             )
 
+        val runStep = runStepFuture.get()
         runStep.validate()
     }
 
     @Test
     fun list() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val stepService = client.beta().threads().runs().steps()
+        val stepServiceAsync = client.beta().threads().runs().steps()
 
-        val page =
-            stepService.list(
+        val pageFuture =
+            stepServiceAsync.list(
                 BetaThreadRunStepListParams.builder().threadId("thread_id").runId("run_id").build()
             )
 
+        val page = pageFuture.get()
         page.response().validate()
     }
 }

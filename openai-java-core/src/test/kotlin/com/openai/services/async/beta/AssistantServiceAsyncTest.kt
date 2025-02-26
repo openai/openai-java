@@ -1,9 +1,9 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.services.blocking.beta
+package com.openai.services.async.beta
 
 import com.openai.TestServerExtension
-import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
 import com.openai.models.AutoFileChunkingStrategyParam
 import com.openai.models.BetaAssistantCreateParams
@@ -17,19 +17,19 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class AssistantServiceTest {
+class AssistantServiceAsyncTest {
 
     @Test
     fun create() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val assistantService = client.beta().assistants()
+        val assistantServiceAsync = client.beta().assistants()
 
-        val assistant =
-            assistantService.create(
+        val assistantFuture =
+            assistantServiceAsync.create(
                 BetaAssistantCreateParams.builder()
                     .model(ChatModel.O3_MINI)
                     .description("description")
@@ -80,37 +80,39 @@ class AssistantServiceTest {
                     .build()
             )
 
+        val assistant = assistantFuture.get()
         assistant.validate()
     }
 
     @Test
     fun retrieve() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val assistantService = client.beta().assistants()
+        val assistantServiceAsync = client.beta().assistants()
 
-        val assistant =
-            assistantService.retrieve(
+        val assistantFuture =
+            assistantServiceAsync.retrieve(
                 BetaAssistantRetrieveParams.builder().assistantId("assistant_id").build()
             )
 
+        val assistant = assistantFuture.get()
         assistant.validate()
     }
 
     @Test
     fun update() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val assistantService = client.beta().assistants()
+        val assistantServiceAsync = client.beta().assistants()
 
-        val assistant =
-            assistantService.update(
+        val assistantFuture =
+            assistantServiceAsync.update(
                 BetaAssistantUpdateParams.builder()
                     .assistantId("assistant_id")
                     .description("description")
@@ -144,37 +146,40 @@ class AssistantServiceTest {
                     .build()
             )
 
+        val assistant = assistantFuture.get()
         assistant.validate()
     }
 
     @Test
     fun list() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val assistantService = client.beta().assistants()
+        val assistantServiceAsync = client.beta().assistants()
 
-        val page = assistantService.list()
+        val pageFuture = assistantServiceAsync.list()
 
+        val page = pageFuture.get()
         page.response().validate()
     }
 
     @Test
     fun delete() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val assistantService = client.beta().assistants()
+        val assistantServiceAsync = client.beta().assistants()
 
-        val assistantDeleted =
-            assistantService.delete(
+        val assistantDeletedFuture =
+            assistantServiceAsync.delete(
                 BetaAssistantDeleteParams.builder().assistantId("assistant_id").build()
             )
 
+        val assistantDeleted = assistantDeletedFuture.get()
         assistantDeleted.validate()
     }
 }
