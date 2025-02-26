@@ -1,28 +1,28 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.services.blocking
+package com.openai.services.async
 
 import com.openai.TestServerExtension
-import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.models.EmbeddingCreateParams
 import com.openai.models.EmbeddingModel
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class EmbeddingServiceTest {
+class EmbeddingServiceAsyncTest {
 
     @Test
     fun create() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val embeddingService = client.embeddings()
+        val embeddingServiceAsync = client.embeddings()
 
-        val createEmbeddingResponse =
-            embeddingService.create(
+        val createEmbeddingResponseFuture =
+            embeddingServiceAsync.create(
                 EmbeddingCreateParams.builder()
                     .input("The quick brown fox jumped over the lazy dog")
                     .model(EmbeddingModel.TEXT_EMBEDDING_ADA_002)
@@ -32,6 +32,7 @@ class EmbeddingServiceTest {
                     .build()
             )
 
+        val createEmbeddingResponse = createEmbeddingResponseFuture.get()
         createEmbeddingResponse.validate()
     }
 }

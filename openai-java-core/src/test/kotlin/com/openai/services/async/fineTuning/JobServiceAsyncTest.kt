@@ -1,9 +1,9 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.services.blocking.fineTuning
+package com.openai.services.async.fineTuning
 
 import com.openai.TestServerExtension
-import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.models.FineTuningJobCancelParams
 import com.openai.models.FineTuningJobCreateParams
 import com.openai.models.FineTuningJobListEventsParams
@@ -12,19 +12,19 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class JobServiceTest {
+class JobServiceAsyncTest {
 
     @Test
     fun create() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val jobService = client.fineTuning().jobs()
+        val jobServiceAsync = client.fineTuning().jobs()
 
-        val fineTuningJob =
-            jobService.create(
+        val fineTuningJobFuture =
+            jobServiceAsync.create(
                 FineTuningJobCreateParams.builder()
                     .model(FineTuningJobCreateParams.Model.BABBAGE_002)
                     .trainingFile("file-abc123")
@@ -83,77 +83,82 @@ class JobServiceTest {
                     .build()
             )
 
+        val fineTuningJob = fineTuningJobFuture.get()
         fineTuningJob.validate()
     }
 
     @Test
     fun retrieve() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val jobService = client.fineTuning().jobs()
+        val jobServiceAsync = client.fineTuning().jobs()
 
-        val fineTuningJob =
-            jobService.retrieve(
+        val fineTuningJobFuture =
+            jobServiceAsync.retrieve(
                 FineTuningJobRetrieveParams.builder()
                     .fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
                     .build()
             )
 
+        val fineTuningJob = fineTuningJobFuture.get()
         fineTuningJob.validate()
     }
 
     @Test
     fun list() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val jobService = client.fineTuning().jobs()
+        val jobServiceAsync = client.fineTuning().jobs()
 
-        val page = jobService.list()
+        val pageFuture = jobServiceAsync.list()
 
+        val page = pageFuture.get()
         page.response().validate()
     }
 
     @Test
     fun cancel() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val jobService = client.fineTuning().jobs()
+        val jobServiceAsync = client.fineTuning().jobs()
 
-        val fineTuningJob =
-            jobService.cancel(
+        val fineTuningJobFuture =
+            jobServiceAsync.cancel(
                 FineTuningJobCancelParams.builder()
                     .fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
                     .build()
             )
 
+        val fineTuningJob = fineTuningJobFuture.get()
         fineTuningJob.validate()
     }
 
     @Test
     fun listEvents() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val jobService = client.fineTuning().jobs()
+        val jobServiceAsync = client.fineTuning().jobs()
 
-        val page =
-            jobService.listEvents(
+        val pageFuture =
+            jobServiceAsync.listEvents(
                 FineTuningJobListEventsParams.builder()
                     .fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
                     .build()
             )
 
+        val page = pageFuture.get()
         page.response().validate()
     }
 }

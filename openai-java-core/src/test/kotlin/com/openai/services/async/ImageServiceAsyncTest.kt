@@ -1,28 +1,28 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.services.blocking
+package com.openai.services.async
 
 import com.openai.TestServerExtension
-import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.models.ImageGenerateParams
 import com.openai.models.ImageModel
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class ImageServiceTest {
+class ImageServiceAsyncTest {
 
     @Test
     fun generate() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val imageService = client.images()
+        val imageServiceAsync = client.images()
 
-        val imagesResponse =
-            imageService.generate(
+        val imagesResponseFuture =
+            imageServiceAsync.generate(
                 ImageGenerateParams.builder()
                     .prompt("A cute baby sea otter")
                     .model(ImageModel.DALL_E_2)
@@ -35,6 +35,7 @@ class ImageServiceTest {
                     .build()
             )
 
+        val imagesResponse = imagesResponseFuture.get()
         imagesResponse.validate()
     }
 }

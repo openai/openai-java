@@ -1,9 +1,9 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.services.blocking.beta
+package com.openai.services.async.beta
 
 import com.openai.TestServerExtension
-import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
 import com.openai.models.AssistantToolChoiceOption
 import com.openai.models.AutoFileChunkingStrategyParam
@@ -19,19 +19,19 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class ThreadServiceTest {
+class ThreadServiceAsyncTest {
 
     @Test
     fun create() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val threadService = client.beta().threads()
+        val threadServiceAsync = client.beta().threads()
 
-        val thread =
-            threadService.create(
+        val threadFuture =
+            threadServiceAsync.create(
                 BetaThreadCreateParams.builder()
                     .addMessage(
                         BetaThreadCreateParams.Message.builder()
@@ -89,35 +89,39 @@ class ThreadServiceTest {
                     .build()
             )
 
+        val thread = threadFuture.get()
         thread.validate()
     }
 
     @Test
     fun retrieve() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val threadService = client.beta().threads()
+        val threadServiceAsync = client.beta().threads()
 
-        val thread =
-            threadService.retrieve(BetaThreadRetrieveParams.builder().threadId("thread_id").build())
+        val threadFuture =
+            threadServiceAsync.retrieve(
+                BetaThreadRetrieveParams.builder().threadId("thread_id").build()
+            )
 
+        val thread = threadFuture.get()
         thread.validate()
     }
 
     @Test
     fun update() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val threadService = client.beta().threads()
+        val threadServiceAsync = client.beta().threads()
 
-        val thread =
-            threadService.update(
+        val threadFuture =
+            threadServiceAsync.update(
                 BetaThreadUpdateParams.builder()
                     .threadId("thread_id")
                     .metadata(
@@ -142,35 +146,39 @@ class ThreadServiceTest {
                     .build()
             )
 
+        val thread = threadFuture.get()
         thread.validate()
     }
 
     @Test
     fun delete() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val threadService = client.beta().threads()
+        val threadServiceAsync = client.beta().threads()
 
-        val threadDeleted =
-            threadService.delete(BetaThreadDeleteParams.builder().threadId("thread_id").build())
+        val threadDeletedFuture =
+            threadServiceAsync.delete(
+                BetaThreadDeleteParams.builder().threadId("thread_id").build()
+            )
 
+        val threadDeleted = threadDeletedFuture.get()
         threadDeleted.validate()
     }
 
     @Test
     fun createAndRun() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val threadService = client.beta().threads()
+        val threadServiceAsync = client.beta().threads()
 
-        val run =
-            threadService.createAndRun(
+        val runFuture =
+            threadServiceAsync.createAndRun(
                 BetaThreadCreateAndRunParams.builder()
                     .assistantId("assistant_id")
                     .instructions("instructions")
@@ -275,20 +283,21 @@ class ThreadServiceTest {
                     .build()
             )
 
+        val run = runFuture.get()
         run.validate()
     }
 
     @Test
     fun createAndRunStreaming() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val threadService = client.beta().threads()
+        val threadServiceAsync = client.beta().threads()
 
         val runStreamResponse =
-            threadService.createAndRunStreaming(
+            threadServiceAsync.createAndRunStreaming(
                 BetaThreadCreateAndRunParams.builder()
                     .assistantId("assistant_id")
                     .instructions("instructions")
@@ -393,6 +402,8 @@ class ThreadServiceTest {
                     .build()
             )
 
-        runStreamResponse.use { runStreamResponse.stream().forEach { run -> run.validate() } }
+        val onCompleteFuture =
+            runStreamResponse.subscribe { run -> run.validate() }.onCompleteFuture()
+        onCompleteFuture.get()
     }
 }

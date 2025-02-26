@@ -1,9 +1,9 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.services.blocking.beta
+package com.openai.services.async.beta
 
 import com.openai.TestServerExtension
-import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
 import com.openai.models.AutoFileChunkingStrategyParam
 import com.openai.models.BetaVectorStoreCreateParams
@@ -15,19 +15,19 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class VectorStoreServiceTest {
+class VectorStoreServiceAsyncTest {
 
     @Test
     fun create() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val vectorStoreService = client.beta().vectorStores()
+        val vectorStoreServiceAsync = client.beta().vectorStores()
 
-        val vectorStore =
-            vectorStoreService.create(
+        val vectorStoreFuture =
+            vectorStoreServiceAsync.create(
                 BetaVectorStoreCreateParams.builder()
                     .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
                     .expiresAfter(
@@ -43,37 +43,39 @@ class VectorStoreServiceTest {
                     .build()
             )
 
+        val vectorStore = vectorStoreFuture.get()
         vectorStore.validate()
     }
 
     @Test
     fun retrieve() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val vectorStoreService = client.beta().vectorStores()
+        val vectorStoreServiceAsync = client.beta().vectorStores()
 
-        val vectorStore =
-            vectorStoreService.retrieve(
+        val vectorStoreFuture =
+            vectorStoreServiceAsync.retrieve(
                 BetaVectorStoreRetrieveParams.builder().vectorStoreId("vector_store_id").build()
             )
 
+        val vectorStore = vectorStoreFuture.get()
         vectorStore.validate()
     }
 
     @Test
     fun update() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val vectorStoreService = client.beta().vectorStores()
+        val vectorStoreServiceAsync = client.beta().vectorStores()
 
-        val vectorStore =
-            vectorStoreService.update(
+        val vectorStoreFuture =
+            vectorStoreServiceAsync.update(
                 BetaVectorStoreUpdateParams.builder()
                     .vectorStoreId("vector_store_id")
                     .expiresAfter(
@@ -88,37 +90,40 @@ class VectorStoreServiceTest {
                     .build()
             )
 
+        val vectorStore = vectorStoreFuture.get()
         vectorStore.validate()
     }
 
     @Test
     fun list() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val vectorStoreService = client.beta().vectorStores()
+        val vectorStoreServiceAsync = client.beta().vectorStores()
 
-        val page = vectorStoreService.list()
+        val pageFuture = vectorStoreServiceAsync.list()
 
+        val page = pageFuture.get()
         page.response().validate()
     }
 
     @Test
     fun delete() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val vectorStoreService = client.beta().vectorStores()
+        val vectorStoreServiceAsync = client.beta().vectorStores()
 
-        val vectorStoreDeleted =
-            vectorStoreService.delete(
+        val vectorStoreDeletedFuture =
+            vectorStoreServiceAsync.delete(
                 BetaVectorStoreDeleteParams.builder().vectorStoreId("vector_store_id").build()
             )
 
+        val vectorStoreDeleted = vectorStoreDeletedFuture.get()
         vectorStoreDeleted.validate()
     }
 }

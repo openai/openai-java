@@ -1,60 +1,63 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.services.blocking
+package com.openai.services.async
 
 import com.openai.TestServerExtension
-import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.models.ModelDeleteParams
 import com.openai.models.ModelRetrieveParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class ModelServiceTest {
+class ModelServiceAsyncTest {
 
     @Test
     fun retrieve() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val modelService = client.models()
+        val modelServiceAsync = client.models()
 
-        val model =
-            modelService.retrieve(ModelRetrieveParams.builder().model("gpt-4o-mini").build())
+        val modelFuture =
+            modelServiceAsync.retrieve(ModelRetrieveParams.builder().model("gpt-4o-mini").build())
 
+        val model = modelFuture.get()
         model.validate()
     }
 
     @Test
     fun list() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val modelService = client.models()
+        val modelServiceAsync = client.models()
 
-        val page = modelService.list()
+        val pageFuture = modelServiceAsync.list()
 
+        val page = pageFuture.get()
         page.response().validate()
     }
 
     @Test
     fun delete() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val modelService = client.models()
+        val modelServiceAsync = client.models()
 
-        val modelDeleted =
-            modelService.delete(
+        val modelDeletedFuture =
+            modelServiceAsync.delete(
                 ModelDeleteParams.builder().model("ft:gpt-4o-mini:acemeco:suffix:abc123").build()
             )
 
+        val modelDeleted = modelDeletedFuture.get()
         modelDeleted.validate()
     }
 }

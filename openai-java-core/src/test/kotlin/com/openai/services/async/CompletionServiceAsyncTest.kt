@@ -1,9 +1,9 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.services.blocking
+package com.openai.services.async
 
 import com.openai.TestServerExtension
-import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
 import com.openai.models.ChatCompletionStreamOptions
 import com.openai.models.CompletionCreateParams
@@ -11,19 +11,19 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class CompletionServiceTest {
+class CompletionServiceAsyncTest {
 
     @Test
     fun create() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val completionService = client.completions()
+        val completionServiceAsync = client.completions()
 
-        val completion =
-            completionService.create(
+        val completionFuture =
+            completionServiceAsync.create(
                 CompletionCreateParams.builder()
                     .model(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
                     .prompt("This is a test.")
@@ -49,20 +49,21 @@ class CompletionServiceTest {
                     .build()
             )
 
+        val completion = completionFuture.get()
         completion.validate()
     }
 
     @Test
     fun createStreaming() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val completionService = client.completions()
+        val completionServiceAsync = client.completions()
 
         val completionStreamResponse =
-            completionService.createStreaming(
+            completionServiceAsync.createStreaming(
                 CompletionCreateParams.builder()
                     .model(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
                     .prompt("This is a test.")
@@ -88,8 +89,10 @@ class CompletionServiceTest {
                     .build()
             )
 
-        completionStreamResponse.use {
-            completionStreamResponse.stream().forEach { completion -> completion.validate() }
-        }
+        val onCompleteFuture =
+            completionStreamResponse
+                .subscribe { completion -> completion.validate() }
+                .onCompleteFuture()
+        onCompleteFuture.get()
     }
 }
