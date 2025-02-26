@@ -1,9 +1,9 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.services.blocking.beta.threads
+package com.openai.services.async.beta.threads
 
 import com.openai.TestServerExtension
-import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
 import com.openai.models.AssistantToolChoiceOption
 import com.openai.models.BetaThreadRunCancelParams
@@ -20,19 +20,19 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class RunServiceTest {
+class RunServiceAsyncTest {
 
     @Test
     fun create() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val runService = client.beta().threads().runs()
+        val runServiceAsync = client.beta().threads().runs()
 
-        val run =
-            runService.create(
+        val runFuture =
+            runServiceAsync.create(
                 BetaThreadRunCreateParams.builder()
                     .threadId("thread_id")
                     .addInclude(RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT)
@@ -80,20 +80,21 @@ class RunServiceTest {
                     .build()
             )
 
+        val run = runFuture.get()
         run.validate()
     }
 
     @Test
     fun createStreaming() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val runService = client.beta().threads().runs()
+        val runServiceAsync = client.beta().threads().runs()
 
         val runStreamResponse =
-            runService.createStreaming(
+            runServiceAsync.createStreaming(
                 BetaThreadRunCreateParams.builder()
                     .threadId("thread_id")
                     .addInclude(RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT)
@@ -141,37 +142,40 @@ class RunServiceTest {
                     .build()
             )
 
-        runStreamResponse.use { runStreamResponse.stream().forEach { run -> run.validate() } }
+        val onCompleteFuture =
+            runStreamResponse.subscribe { run -> run.validate() }.onCompleteFuture()
+        onCompleteFuture.get()
     }
 
     @Test
     fun retrieve() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val runService = client.beta().threads().runs()
+        val runServiceAsync = client.beta().threads().runs()
 
-        val run =
-            runService.retrieve(
+        val runFuture =
+            runServiceAsync.retrieve(
                 BetaThreadRunRetrieveParams.builder().threadId("thread_id").runId("run_id").build()
             )
 
+        val run = runFuture.get()
         run.validate()
     }
 
     @Test
     fun update() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val runService = client.beta().threads().runs()
+        val runServiceAsync = client.beta().threads().runs()
 
-        val run =
-            runService.update(
+        val runFuture =
+            runServiceAsync.update(
                 BetaThreadRunUpdateParams.builder()
                     .threadId("thread_id")
                     .runId("run_id")
@@ -183,51 +187,55 @@ class RunServiceTest {
                     .build()
             )
 
+        val run = runFuture.get()
         run.validate()
     }
 
     @Test
     fun list() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val runService = client.beta().threads().runs()
+        val runServiceAsync = client.beta().threads().runs()
 
-        val page = runService.list(BetaThreadRunListParams.builder().threadId("thread_id").build())
+        val pageFuture =
+            runServiceAsync.list(BetaThreadRunListParams.builder().threadId("thread_id").build())
 
+        val page = pageFuture.get()
         page.response().validate()
     }
 
     @Test
     fun cancel() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val runService = client.beta().threads().runs()
+        val runServiceAsync = client.beta().threads().runs()
 
-        val run =
-            runService.cancel(
+        val runFuture =
+            runServiceAsync.cancel(
                 BetaThreadRunCancelParams.builder().threadId("thread_id").runId("run_id").build()
             )
 
+        val run = runFuture.get()
         run.validate()
     }
 
     @Test
     fun submitToolOutputs() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val runService = client.beta().threads().runs()
+        val runServiceAsync = client.beta().threads().runs()
 
-        val run =
-            runService.submitToolOutputs(
+        val runFuture =
+            runServiceAsync.submitToolOutputs(
                 BetaThreadRunSubmitToolOutputsParams.builder()
                     .threadId("thread_id")
                     .runId("run_id")
@@ -240,20 +248,21 @@ class RunServiceTest {
                     .build()
             )
 
+        val run = runFuture.get()
         run.validate()
     }
 
     @Test
     fun submitToolOutputsStreaming() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val runService = client.beta().threads().runs()
+        val runServiceAsync = client.beta().threads().runs()
 
         val runStreamResponse =
-            runService.submitToolOutputsStreaming(
+            runServiceAsync.submitToolOutputsStreaming(
                 BetaThreadRunSubmitToolOutputsParams.builder()
                     .threadId("thread_id")
                     .runId("run_id")
@@ -266,6 +275,8 @@ class RunServiceTest {
                     .build()
             )
 
-        runStreamResponse.use { runStreamResponse.stream().forEach { run -> run.validate() } }
+        val onCompleteFuture =
+            runStreamResponse.subscribe { run -> run.validate() }.onCompleteFuture()
+        onCompleteFuture.get()
     }
 }

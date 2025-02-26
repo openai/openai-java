@@ -1,9 +1,9 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.services.blocking
+package com.openai.services.async
 
 import com.openai.TestServerExtension
-import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
 import com.openai.models.BatchCancelParams
 import com.openai.models.BatchCreateParams
@@ -13,19 +13,19 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class BatchServiceTest {
+class BatchServiceAsyncTest {
 
     @Test
     fun create() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val batchService = client.batches()
+        val batchServiceAsync = client.batches()
 
-        val batch =
-            batchService.create(
+        val batchFuture =
+            batchServiceAsync.create(
                 BatchCreateParams.builder()
                     .completionWindow(BatchCreateParams.CompletionWindow._24H)
                     .endpoint(BatchCreateParams.Endpoint.V1_CHAT_COMPLETIONS)
@@ -38,48 +38,54 @@ class BatchServiceTest {
                     .build()
             )
 
+        val batch = batchFuture.get()
         batch.validate()
     }
 
     @Test
     fun retrieve() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val batchService = client.batches()
+        val batchServiceAsync = client.batches()
 
-        val batch = batchService.retrieve(BatchRetrieveParams.builder().batchId("batch_id").build())
+        val batchFuture =
+            batchServiceAsync.retrieve(BatchRetrieveParams.builder().batchId("batch_id").build())
 
+        val batch = batchFuture.get()
         batch.validate()
     }
 
     @Test
     fun list() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val batchService = client.batches()
+        val batchServiceAsync = client.batches()
 
-        val page = batchService.list()
+        val pageFuture = batchServiceAsync.list()
 
+        val page = pageFuture.get()
         page.response().validate()
     }
 
     @Test
     fun cancel() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val batchService = client.batches()
+        val batchServiceAsync = client.batches()
 
-        val batch = batchService.cancel(BatchCancelParams.builder().batchId("batch_id").build())
+        val batchFuture =
+            batchServiceAsync.cancel(BatchCancelParams.builder().batchId("batch_id").build())
 
+        val batch = batchFuture.get()
         batch.validate()
     }
 }

@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.services.blocking
+package com.openai.services.async
 
 import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
 import com.github.tomakehurst.wiremock.client.WireMock.get
@@ -9,7 +9,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
 import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.openai.TestServerExtension
-import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.models.FileContentParams
 import com.openai.models.FileDeleteParams
 import com.openai.models.FileRetrieveParams
@@ -19,63 +19,69 @@ import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
 @WireMockTest
-class FileServiceTest {
+class FileServiceAsyncTest {
 
     @Test
     fun retrieve() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val fileService = client.files()
+        val fileServiceAsync = client.files()
 
-        val fileObject =
-            fileService.retrieve(FileRetrieveParams.builder().fileId("file_id").build())
+        val fileObjectFuture =
+            fileServiceAsync.retrieve(FileRetrieveParams.builder().fileId("file_id").build())
 
+        val fileObject = fileObjectFuture.get()
         fileObject.validate()
     }
 
     @Test
     fun list() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val fileService = client.files()
+        val fileServiceAsync = client.files()
 
-        val page = fileService.list()
+        val pageFuture = fileServiceAsync.list()
 
+        val page = pageFuture.get()
         page.response().validate()
     }
 
     @Test
     fun delete() {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(TestServerExtension.BASE_URL)
                 .apiKey("My API Key")
                 .build()
-        val fileService = client.files()
+        val fileServiceAsync = client.files()
 
-        val fileDeleted = fileService.delete(FileDeleteParams.builder().fileId("file_id").build())
+        val fileDeletedFuture =
+            fileServiceAsync.delete(FileDeleteParams.builder().fileId("file_id").build())
 
+        val fileDeleted = fileDeletedFuture.get()
         fileDeleted.validate()
     }
 
     @Test
     fun content(wmRuntimeInfo: WireMockRuntimeInfo) {
         val client =
-            OpenAIOkHttpClient.builder()
+            OpenAIOkHttpClientAsync.builder()
                 .baseUrl(wmRuntimeInfo.httpBaseUrl)
                 .apiKey("My API Key")
                 .build()
-        val fileService = client.files()
+        val fileServiceAsync = client.files()
         stubFor(get(anyUrl()).willReturn(ok().withBody("abc")))
 
-        val response = fileService.content(FileContentParams.builder().fileId("file_id").build())
+        val responseFuture =
+            fileServiceAsync.content(FileContentParams.builder().fileId("file_id").build())
 
+        val response = responseFuture.get()
         assertThat(response.body()).hasContent("abc")
     }
 }
