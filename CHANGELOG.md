@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.29.0 (2025-02-26)
+
+Full Changelog: [v0.28.0...v0.29.0](https://github.com/openai/openai-java/compare/v0.28.0...v0.29.0)
+
+### Features
+
+* **client:** allow omitting params object when none required ([#249](https://github.com/openai/openai-java/issues/249)) ([e77a6c3](https://github.com/openai/openai-java/commit/e77a6c35a1940bd6f1ef37f08a524974b28f17ac))
+
+
+### Bug Fixes
+
+* **client:** add missing `@JvmStatic` ([#252](https://github.com/openai/openai-java/issues/252)) ([06231c2](https://github.com/openai/openai-java/commit/06231c26727f09fd2065f2ebe9670b8149fcee84))
+
+
+### Chores
+
+* **internal:** remove unused variable ([#251](https://github.com/openai/openai-java/issues/251)) ([b41bc4e](https://github.com/openai/openai-java/commit/b41bc4ebbe38a216e1276e0b15fd3fe54fe37353))
+
+
+### Documentation
+
+* switch to `.list()` without arguments in examples ([d1480f1](https://github.com/openai/openai-java/commit/d1480f1c85c0e2704c2095298525401b76cec2e5))
+
 ## 0.28.0 (2025-02-24)
 
 Full Changelog: [v0.27.0...v0.28.0](https://github.com/openai/openai-java/compare/v0.27.0...v0.28.0)
