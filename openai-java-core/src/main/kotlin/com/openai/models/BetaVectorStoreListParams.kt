@@ -70,7 +70,7 @@ private constructor(
 
     companion object {
 
-        fun none(): BetaVectorStoreListParams = builder().build()
+        @JvmStatic fun none(): BetaVectorStoreListParams = builder().build()
 
         @JvmStatic fun builder() = Builder()
     }

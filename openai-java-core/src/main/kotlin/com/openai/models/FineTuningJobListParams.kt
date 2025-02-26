@@ -42,7 +42,7 @@ private constructor(
 
     companion object {
 
-        fun none(): FineTuningJobListParams = builder().build()
+        @JvmStatic fun none(): FineTuningJobListParams = builder().build()
 
         @JvmStatic fun builder() = Builder()
     }
