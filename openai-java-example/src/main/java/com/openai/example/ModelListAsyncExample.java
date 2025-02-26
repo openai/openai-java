@@ -3,7 +3,6 @@ package com.openai.example;
 import com.openai.client.OpenAIClientAsync;
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync;
 import com.openai.models.ModelListPageAsync;
-import com.openai.models.ModelListParams;
 import java.util.concurrent.CompletableFuture;
 
 public final class ModelListAsyncExample {
@@ -15,9 +14,7 @@ public final class ModelListAsyncExample {
         // - The `AZURE_OPENAI_ENDPOINT` and `AZURE_OPENAI_KEY` environment variables
         OpenAIClientAsync client = OpenAIOkHttpClientAsync.fromEnv();
 
-        CompletableFuture<ModelListPageAsync> pageFuture =
-                // TODO: Update this example once we support `.list()` without arguments.
-                client.models().list(ModelListParams.builder().build());
+        CompletableFuture<ModelListPageAsync> pageFuture = client.models().list();
         pageFuture
                 .thenComposeAsync(page -> page.autoPager()
                         .forEach(

@@ -13,10 +13,6 @@ public final class ModelListExample {
         // - The `AZURE_OPENAI_ENDPOINT` and `AZURE_OPENAI_KEY` environment variables
         OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
-        client.models()
-                // TODO: Update this example once we support `.list()` without arguments.
-                .list(ModelListParams.builder().build())
-                .autoPager()
-                .forEach(model -> System.out.println(model.id()));
+        client.models().list().autoPager().forEach(model -> System.out.println(model.id()));
     }
 }
