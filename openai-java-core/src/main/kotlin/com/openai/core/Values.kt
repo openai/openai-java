@@ -470,41 +470,20 @@ internal constructor(
     val filename: String? = null,
 ) {
 
-    private var hashCode: Int = 0
+    private val hashCode: Int by lazy { contentHash(name, value, contentType, filename) }
 
-    override fun hashCode(): Int {
-        if (hashCode == 0) {
-            hashCode =
-                Objects.hash(
-                    name,
-                    contentType,
-                    filename,
-                    when (value) {
-                        is ByteArray -> value.contentHashCode()
-                        is String -> value
-                        is Boolean -> value
-                        is Long -> value
-                        is Double -> value
-                        else -> value?.hashCode()
-                    },
-                )
-        }
-        return hashCode
-    }
+    override fun hashCode(): Int = hashCode
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || this.javaClass != other.javaClass) return false
-
-        other as MultipartFormValue<*>
-
-        if (name != other.name || contentType != other.contentType || filename != other.filename)
-            return false
-
-        return when {
-            value is ByteArray && other.value is ByteArray -> value contentEquals other.value
-            else -> value?.equals(other.value) ?: (other.value == null)
+        if (this === other) {
+            return true
         }
+
+        return other is MultipartFormValue<*> &&
+            name == other.name &&
+            value contentEquals other.value &&
+            contentType == other.contentType &&
+            filename == other.filename
     }
 
     override fun toString(): String =
