@@ -39,6 +39,9 @@ private constructor(
     @JsonProperty("status")
     @ExcludeMissing
     private val status: JsonField<Status> = JsonMissing.of(),
+    @JsonProperty("expires_at")
+    @ExcludeMissing
+    private val expiresAt: JsonField<Long> = JsonMissing.of(),
     @JsonProperty("status_details")
     @ExcludeMissing
     private val statusDetails: JsonField<String> = JsonMissing.of(),
@@ -71,6 +74,9 @@ private constructor(
      * `error`.
      */
     @Deprecated("deprecated") fun status(): Status = status.getRequired("status")
+
+    /** The Unix timestamp (in seconds) for when the file will expire. */
+    fun expiresAt(): Optional<Long> = Optional.ofNullable(expiresAt.getNullable("expires_at"))
 
     /**
      * Deprecated. For details on why a fine-tuning training file failed validation, see the `error`
@@ -107,6 +113,9 @@ private constructor(
     @ExcludeMissing
     fun _status(): JsonField<Status> = status
 
+    /** The Unix timestamp (in seconds) for when the file will expire. */
+    @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt(): JsonField<Long> = expiresAt
+
     /**
      * Deprecated. For details on why a fine-tuning training file failed validation, see the `error`
      * field on `fine_tuning.job`.
@@ -138,6 +147,7 @@ private constructor(
         }
         purpose()
         status()
+        expiresAt()
         statusDetails()
         validated = true
     }
@@ -159,6 +169,7 @@ private constructor(
         private var object_: JsonValue = JsonValue.from("file")
         private var purpose: JsonField<Purpose>? = null
         private var status: JsonField<Status>? = null
+        private var expiresAt: JsonField<Long> = JsonMissing.of()
         private var statusDetails: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -171,6 +182,7 @@ private constructor(
             object_ = fileObject.object_
             purpose = fileObject.purpose
             status = fileObject.status
+            expiresAt = fileObject.expiresAt
             statusDetails = fileObject.statusDetails
             additionalProperties = fileObject.additionalProperties.toMutableMap()
         }
@@ -227,6 +239,12 @@ private constructor(
         @Deprecated("deprecated")
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
+        /** The Unix timestamp (in seconds) for when the file will expire. */
+        fun expiresAt(expiresAt: Long) = expiresAt(JsonField.of(expiresAt))
+
+        /** The Unix timestamp (in seconds) for when the file will expire. */
+        fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
+
         /**
          * Deprecated. For details on why a fine-tuning training file failed validation, see the
          * `error` field on `fine_tuning.job`.
@@ -271,6 +289,7 @@ private constructor(
                 object_,
                 checkRequired("purpose", purpose),
                 checkRequired("status", status),
+                expiresAt,
                 statusDetails,
                 additionalProperties.toImmutable(),
             )
@@ -522,15 +541,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FileObject && id == other.id && bytes == other.bytes && createdAt == other.createdAt && filename == other.filename && object_ == other.object_ && purpose == other.purpose && status == other.status && statusDetails == other.statusDetails && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FileObject && id == other.id && bytes == other.bytes && createdAt == other.createdAt && filename == other.filename && object_ == other.object_ && purpose == other.purpose && status == other.status && expiresAt == other.expiresAt && statusDetails == other.statusDetails && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, bytes, createdAt, filename, object_, purpose, status, statusDetails, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, bytes, createdAt, filename, object_, purpose, status, expiresAt, statusDetails, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "FileObject{id=$id, bytes=$bytes, createdAt=$createdAt, filename=$filename, object_=$object_, purpose=$purpose, status=$status, statusDetails=$statusDetails, additionalProperties=$additionalProperties}"
+        "FileObject{id=$id, bytes=$bytes, createdAt=$createdAt, filename=$filename, object_=$object_, purpose=$purpose, status=$status, expiresAt=$expiresAt, statusDetails=$statusDetails, additionalProperties=$additionalProperties}"
 }

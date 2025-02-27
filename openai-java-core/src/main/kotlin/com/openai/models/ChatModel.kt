@@ -36,6 +36,10 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
         @JvmField val O1_MINI_2024_09_12 = of("o1-mini-2024-09-12")
 
+        @JvmField val GPT_4_5_PREVIEW = of("gpt-4.5-preview")
+
+        @JvmField val GPT_4_5_PREVIEW_2025_02_27 = of("gpt-4.5-preview-2025-02-27")
+
         @JvmField val GPT_4O = of("gpt-4o")
 
         @JvmField val GPT_4O_2024_11_20 = of("gpt-4o-2024-11-20")
@@ -112,6 +116,8 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         O1_PREVIEW_2024_09_12,
         O1_MINI,
         O1_MINI_2024_09_12,
+        GPT_4_5_PREVIEW,
+        GPT_4_5_PREVIEW_2025_02_27,
         GPT_4O,
         GPT_4O_2024_11_20,
         GPT_4O_2024_08_06,
@@ -163,6 +169,8 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         O1_PREVIEW_2024_09_12,
         O1_MINI,
         O1_MINI_2024_09_12,
+        GPT_4_5_PREVIEW,
+        GPT_4_5_PREVIEW_2025_02_27,
         GPT_4O,
         GPT_4O_2024_11_20,
         GPT_4O_2024_08_06,
@@ -215,6 +223,8 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             O1_PREVIEW_2024_09_12 -> Value.O1_PREVIEW_2024_09_12
             O1_MINI -> Value.O1_MINI
             O1_MINI_2024_09_12 -> Value.O1_MINI_2024_09_12
+            GPT_4_5_PREVIEW -> Value.GPT_4_5_PREVIEW
+            GPT_4_5_PREVIEW_2025_02_27 -> Value.GPT_4_5_PREVIEW_2025_02_27
             GPT_4O -> Value.GPT_4O
             GPT_4O_2024_11_20 -> Value.GPT_4O_2024_11_20
             GPT_4O_2024_08_06 -> Value.GPT_4O_2024_08_06
@@ -267,6 +277,8 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             O1_PREVIEW_2024_09_12 -> Known.O1_PREVIEW_2024_09_12
             O1_MINI -> Known.O1_MINI
             O1_MINI_2024_09_12 -> Known.O1_MINI_2024_09_12
+            GPT_4_5_PREVIEW -> Known.GPT_4_5_PREVIEW
+            GPT_4_5_PREVIEW_2025_02_27 -> Known.GPT_4_5_PREVIEW_2025_02_27
             GPT_4O -> Known.GPT_4O
             GPT_4O_2024_11_20 -> Known.GPT_4O_2024_11_20
             GPT_4O_2024_08_06 -> Known.GPT_4O_2024_08_06
