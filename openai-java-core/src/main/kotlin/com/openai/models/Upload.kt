@@ -57,7 +57,7 @@ private constructor(
     /** The Unix timestamp (in seconds) for when the Upload was created. */
     fun createdAt(): Long = createdAt.getRequired("created_at")
 
-    /** The Unix timestamp (in seconds) for when the Upload was created. */
+    /** The Unix timestamp (in seconds) for when the Upload will expire. */
     fun expiresAt(): Long = expiresAt.getRequired("expires_at")
 
     /** The name of the file to be uploaded. */
@@ -88,7 +88,7 @@ private constructor(
     /** The Unix timestamp (in seconds) for when the Upload was created. */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
-    /** The Unix timestamp (in seconds) for when the Upload was created. */
+    /** The Unix timestamp (in seconds) for when the Upload will expire. */
     @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt(): JsonField<Long> = expiresAt
 
     /** The name of the file to be uploaded. */
@@ -187,10 +187,10 @@ private constructor(
         /** The Unix timestamp (in seconds) for when the Upload was created. */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
-        /** The Unix timestamp (in seconds) for when the Upload was created. */
+        /** The Unix timestamp (in seconds) for when the Upload will expire. */
         fun expiresAt(expiresAt: Long) = expiresAt(JsonField.of(expiresAt))
 
-        /** The Unix timestamp (in seconds) for when the Upload was created. */
+        /** The Unix timestamp (in seconds) for when the Upload will expire. */
         fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
 
         /** The name of the file to be uploaded. */

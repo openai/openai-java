@@ -1629,6 +1629,10 @@ private constructor(
 
             @JvmField val GPT_4O_MINI_2024_07_18 = of("gpt-4o-mini-2024-07-18")
 
+            @JvmField val GPT_4_5_PREVIEW = of("gpt-4.5-preview")
+
+            @JvmField val GPT_4_5_PREVIEW_2025_02_27 = of("gpt-4.5-preview-2025-02-27")
+
             @JvmField val GPT_4_TURBO = of("gpt-4-turbo")
 
             @JvmField val GPT_4_TURBO_2024_04_09 = of("gpt-4-turbo-2024-04-09")
@@ -1680,6 +1684,8 @@ private constructor(
             GPT_4O_2024_05_13,
             GPT_4O_MINI,
             GPT_4O_MINI_2024_07_18,
+            GPT_4_5_PREVIEW,
+            GPT_4_5_PREVIEW_2025_02_27,
             GPT_4_TURBO,
             GPT_4_TURBO_2024_04_09,
             GPT_4_0125_PREVIEW,
@@ -1720,6 +1726,8 @@ private constructor(
             GPT_4O_2024_05_13,
             GPT_4O_MINI,
             GPT_4O_MINI_2024_07_18,
+            GPT_4_5_PREVIEW,
+            GPT_4_5_PREVIEW_2025_02_27,
             GPT_4_TURBO,
             GPT_4_TURBO_2024_04_09,
             GPT_4_0125_PREVIEW,
@@ -1761,6 +1769,8 @@ private constructor(
                 GPT_4O_2024_05_13 -> Value.GPT_4O_2024_05_13
                 GPT_4O_MINI -> Value.GPT_4O_MINI
                 GPT_4O_MINI_2024_07_18 -> Value.GPT_4O_MINI_2024_07_18
+                GPT_4_5_PREVIEW -> Value.GPT_4_5_PREVIEW
+                GPT_4_5_PREVIEW_2025_02_27 -> Value.GPT_4_5_PREVIEW_2025_02_27
                 GPT_4_TURBO -> Value.GPT_4_TURBO
                 GPT_4_TURBO_2024_04_09 -> Value.GPT_4_TURBO_2024_04_09
                 GPT_4_0125_PREVIEW -> Value.GPT_4_0125_PREVIEW
@@ -1803,6 +1813,8 @@ private constructor(
                 GPT_4O_2024_05_13 -> Known.GPT_4O_2024_05_13
                 GPT_4O_MINI -> Known.GPT_4O_MINI
                 GPT_4O_MINI_2024_07_18 -> Known.GPT_4O_MINI_2024_07_18
+                GPT_4_5_PREVIEW -> Known.GPT_4_5_PREVIEW
+                GPT_4_5_PREVIEW_2025_02_27 -> Known.GPT_4_5_PREVIEW_2025_02_27
                 GPT_4_TURBO -> Known.GPT_4_TURBO
                 GPT_4_TURBO_2024_04_09 -> Known.GPT_4_TURBO_2024_04_09
                 GPT_4_0125_PREVIEW -> Known.GPT_4_0125_PREVIEW
