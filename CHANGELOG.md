@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.30.0 (2025-02-27)
+
+Full Changelog: [v0.29.0...v0.30.0](https://github.com/openai/openai-java/compare/v0.29.0...v0.30.0)
+
+### Features
+
+* **api:** add gpt-4.5-preview ([#258](https://github.com/openai/openai-java/issues/258)) ([27d1e7f](https://github.com/openai/openai-java/commit/27d1e7f6565ab00161d322bf04a8cb1e70c31694))
+
+
+### Chores
+
+* **client:** use deep identity methods for primitive array types ([#255](https://github.com/openai/openai-java/issues/255)) ([fac8678](https://github.com/openai/openai-java/commit/fac86783373355488b81a7a1452bc8ba2a74066f))
+* **internal:** add async service tests ([#253](https://github.com/openai/openai-java/issues/253)) ([147872a](https://github.com/openai/openai-java/commit/147872a570403c78059fb785d9860003a5187583))
+* **internal:** improve sync service tests ([147872a](https://github.com/openai/openai-java/commit/147872a570403c78059fb785d9860003a5187583))
+* **internal:** refactor `ServiceParamsTest` ([#257](https://github.com/openai/openai-java/issues/257)) ([9cb1929](https://github.com/openai/openai-java/commit/9cb19297c372976fa331d5945c028017392b2d5d))
+
+
+### Documentation
+
+* readme parameter tweaks ([147872a](https://github.com/openai/openai-java/commit/147872a570403c78059fb785d9860003a5187583))
+
 ## 0.29.0 (2025-02-26)
 
 Full Changelog: [v0.28.0...v0.29.0](https://github.com/openai/openai-java/compare/v0.28.0...v0.29.0)
