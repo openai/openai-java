@@ -17,6 +17,7 @@ class FileObjectTest {
                 .filename("filename")
                 .purpose(FileObject.Purpose.ASSISTANTS)
                 .status(FileObject.Status.UPLOADED)
+                .expiresAt(0L)
                 .statusDetails("status_details")
                 .build()
         assertThat(fileObject).isNotNull
@@ -26,6 +27,7 @@ class FileObjectTest {
         assertThat(fileObject.filename()).isEqualTo("filename")
         assertThat(fileObject.purpose()).isEqualTo(FileObject.Purpose.ASSISTANTS)
         assertThat(fileObject.status()).isEqualTo(FileObject.Status.UPLOADED)
+        assertThat(fileObject.expiresAt()).contains(0L)
         assertThat(fileObject.statusDetails()).contains("status_details")
     }
 }
