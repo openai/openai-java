@@ -305,6 +305,37 @@ try (HttpResponse response = client.files().content(params)) {
 }
 ```
 
+## Raw responses
+
+The SDK defines methods that deserialize responses into instances of Java classes. However, these methods don't provide access to the response headers, status code, or the raw response body.
+
+To access this data, prefix any HTTP method call on a client or service with `withRawResponse()`:
+
+```java
+import com.openai.core.http.Headers;
+import com.openai.core.http.HttpResponseFor;
+import com.openai.models.ChatCompletion;
+import com.openai.models.ChatCompletionCreateParams;
+import com.openai.models.ChatModel;
+
+ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
+    .addUserMessage("Say this is a test")
+    .model(ChatModel.O3_MINI)
+    .build();
+HttpResponseFor<ChatCompletion> chatCompletion = client.chat().completions().withRawResponse().create(params);
+
+int statusCode = chatCompletion.statusCode();
+Headers headers = chatCompletion.headers();
+```
+
+You can still deserialize the response into an instance of a Java class if needed:
+
+```java
+import com.openai.models.ChatCompletion;
+
+ChatCompletion parsedChatCompletion = chatCompletion.parse();
+```
+
 ## Error handling
 
 The SDK throws custom unchecked exception types:
