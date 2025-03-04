@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.31.0 (2025-03-04)
+
+Full Changelog: [v0.30.0...v0.31.0](https://github.com/openai/openai-java/compare/v0.30.0...v0.31.0)
+
+### Features
+
+* **client:** add file upload endpoints ([#268](https://github.com/openai/openai-java/issues/268)) ([456274d](https://github.com/openai/openai-java/commit/456274d2dc572ad4711d2fc3640c7e01aa08f4b8))
+* **client:** allow configuring timeouts granularly ([#266](https://github.com/openai/openai-java/issues/266)) ([c3bc6e4](https://github.com/openai/openai-java/commit/c3bc6e4fb9717c7f6146f864ce3cc2451619c9f0))
+
+
+### Chores
+
+* **internal:** refactor `ErrorHandlingTest` ([#264](https://github.com/openai/openai-java/issues/264)) ([2472f85](https://github.com/openai/openai-java/commit/2472f859b49f49cf14539e787cf15e8f863f5dac))
+* **internal:** run example files in CI ([#271](https://github.com/openai/openai-java/issues/271)) ([8da7851](https://github.com/openai/openai-java/commit/8da785184c3e039ea4b9d2b26c6d14b607291750))
+
+
+### Documentation
+
+* add raw response readme documentation ([#269](https://github.com/openai/openai-java/issues/269)) ([2839903](https://github.com/openai/openai-java/commit/28399031c60eed8899475c5d1d38677c2eaa2284))
+* update URLs from stainlessapi.com to stainless.com ([#259](https://github.com/openai/openai-java/issues/259)) ([b824bf3](https://github.com/openai/openai-java/commit/b824bf39a44251e15c7c8b5b14bc6cbf9133dff5))
+
 ## 0.30.0 (2025-02-27)
 
 Full Changelog: [v0.29.0...v0.30.0](https://github.com/openai/openai-java/compare/v0.29.0...v0.30.0)
