@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.30.1 (2025-03-04)
+
+Full Changelog: [v0.30.0...v0.30.1](https://github.com/openai/openai-java/compare/v0.30.0...v0.30.1)
+
+### Chores
+
+* **internal:** refactor `ErrorHandlingTest` ([#264](https://github.com/openai/openai-java/issues/264)) ([2472f85](https://github.com/openai/openai-java/commit/2472f859b49f49cf14539e787cf15e8f863f5dac))
+
+
+### Documentation
+
+* update URLs from stainlessapi.com to stainless.com ([#259](https://github.com/openai/openai-java/issues/259)) ([b824bf3](https://github.com/openai/openai-java/commit/b824bf39a44251e15c7c8b5b14bc6cbf9133dff5))
+
 ## 0.30.0 (2025-02-27)
 
 Full Changelog: [v0.29.0...v0.30.0](https://github.com/openai/openai-java/compare/v0.29.0...v0.30.0)
