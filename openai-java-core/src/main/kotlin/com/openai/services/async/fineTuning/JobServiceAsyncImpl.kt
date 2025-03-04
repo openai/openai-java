@@ -58,7 +58,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                 .addPathSegments("fine_tuning", "jobs")
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, params.model().toString())
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -89,7 +89,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                 .method(HttpMethod.GET)
                 .addPathSegments("fine_tuning", "jobs", params.getPathParam(0))
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -117,7 +117,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                 .method(HttpMethod.GET)
                 .addPathSegments("fine_tuning", "jobs")
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -146,7 +146,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                 .addPathSegments("fine_tuning", "jobs", params.getPathParam(0), "cancel")
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -174,7 +174,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                 .method(HttpMethod.GET)
                 .addPathSegments("fine_tuning", "jobs", params.getPathParam(0), "events")
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->

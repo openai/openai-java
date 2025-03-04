@@ -35,7 +35,7 @@ class ImageServiceImpl internal constructor(private val clientOptions: ClientOpt
                 .addPathSegments("images", "generations")
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, params.model().toString())
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { generateHandler.handle(it) }

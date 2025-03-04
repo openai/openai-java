@@ -61,7 +61,7 @@ class CompletionServiceImpl internal constructor(private val clientOptions: Clie
                 .addPathSegments("chat", "completions")
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, params.model().toString())
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { createHandler.handle(it) }
@@ -107,7 +107,7 @@ class CompletionServiceImpl internal constructor(private val clientOptions: Clie
                     )
                 )
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, params.model().toString())
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .let { createStreamingHandler.handle(it) }
@@ -136,7 +136,7 @@ class CompletionServiceImpl internal constructor(private val clientOptions: Clie
                 .method(HttpMethod.GET)
                 .addPathSegments("chat", "completions", params.getPathParam(0))
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { retrieveHandler.handle(it) }
@@ -165,7 +165,7 @@ class CompletionServiceImpl internal constructor(private val clientOptions: Clie
                 .addPathSegments("chat", "completions", params.getPathParam(0))
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { updateHandler.handle(it) }
@@ -193,7 +193,7 @@ class CompletionServiceImpl internal constructor(private val clientOptions: Clie
                 .addPathSegments("chat", "completions", params.getPathParam(0))
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { deleteHandler.handle(it) }

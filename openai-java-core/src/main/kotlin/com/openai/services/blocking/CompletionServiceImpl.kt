@@ -40,7 +40,7 @@ class CompletionServiceImpl internal constructor(private val clientOptions: Clie
                 .addPathSegments("completions")
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, params.model().toString())
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { createHandler.handle(it) }
@@ -74,7 +74,7 @@ class CompletionServiceImpl internal constructor(private val clientOptions: Clie
                     )
                 )
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, params.model().toString())
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .let { createStreamingHandler.handle(it) }

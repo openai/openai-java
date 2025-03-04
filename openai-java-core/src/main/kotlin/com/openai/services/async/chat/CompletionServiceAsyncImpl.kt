@@ -64,7 +64,7 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
                 .addPathSegments("chat", "completions")
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, params.model().toString())
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -113,7 +113,7 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
                     )
                 )
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, params.model().toString())
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -146,7 +146,7 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
                 .method(HttpMethod.GET)
                 .addPathSegments("chat", "completions", params.getPathParam(0))
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -178,7 +178,7 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
                 .addPathSegments("chat", "completions", params.getPathParam(0))
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -209,7 +209,7 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
                 .addPathSegments("chat", "completions", params.getPathParam(0))
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->

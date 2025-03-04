@@ -35,7 +35,7 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
                 .method(HttpMethod.GET)
                 .addPathSegments("fine_tuning", "jobs", params.getPathParam(0), "checkpoints")
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->

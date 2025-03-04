@@ -49,7 +49,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                 .putAllHeaders(DEFAULT_HEADERS)
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -82,7 +82,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -116,7 +116,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                 .putAllHeaders(DEFAULT_HEADERS)
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -145,7 +145,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                 .addPathSegments("threads", params.getPathParam(0), "messages")
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -180,7 +180,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                 .putAllHeaders(DEFAULT_HEADERS)
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->

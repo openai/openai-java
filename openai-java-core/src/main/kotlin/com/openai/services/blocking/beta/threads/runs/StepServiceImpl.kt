@@ -48,7 +48,7 @@ class StepServiceImpl internal constructor(private val clientOptions: ClientOpti
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, deploymentModel = null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { retrieveHandler.handle(it) }
@@ -80,7 +80,7 @@ class StepServiceImpl internal constructor(private val clientOptions: ClientOpti
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, deploymentModel = null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { listHandler.handle(it) }

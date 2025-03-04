@@ -63,7 +63,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                 .putAllHeaders(DEFAULT_HEADERS)
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -91,7 +91,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                 .addPathSegments("vector_stores", params.getPathParam(0))
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -120,7 +120,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                 .putAllHeaders(DEFAULT_HEADERS)
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -149,7 +149,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                 .addPathSegments("vector_stores")
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -179,7 +179,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                 .putAllHeaders(DEFAULT_HEADERS)
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->

@@ -37,7 +37,7 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
                 .method(HttpMethod.GET)
                 .addPathSegments("chat", "completions", params.getPathParam(0), "messages")
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { listHandler.handle(it) }

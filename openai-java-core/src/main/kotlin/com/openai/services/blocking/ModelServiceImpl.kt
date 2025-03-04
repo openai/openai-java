@@ -38,7 +38,7 @@ class ModelServiceImpl internal constructor(private val clientOptions: ClientOpt
                 .method(HttpMethod.GET)
                 .addPathSegments("models", params.getPathParam(0))
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, params.model())
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { retrieveHandler.handle(it) }
@@ -62,7 +62,7 @@ class ModelServiceImpl internal constructor(private val clientOptions: ClientOpt
                 .method(HttpMethod.GET)
                 .addPathSegments("models")
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, deploymentModel = null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { listHandler.handle(it) }
@@ -88,7 +88,7 @@ class ModelServiceImpl internal constructor(private val clientOptions: ClientOpt
                 .addPathSegments("models", params.getPathParam(0))
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, params.model())
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { deleteHandler.handle(it) }

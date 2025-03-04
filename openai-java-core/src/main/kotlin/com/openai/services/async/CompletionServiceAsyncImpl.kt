@@ -43,7 +43,7 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
                 .addPathSegments("completions")
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, params.model().toString())
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -80,7 +80,7 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
                     )
                 )
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, params.model().toString())
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->

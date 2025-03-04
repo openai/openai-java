@@ -1,9 +1,16 @@
 # OpenAI Java API Library
 
+> [!NOTE]  
+> The OpenAI Java API Library is currently in _beta_.
+>
+> There may be minor breaking changes.
+>
+> Have thoughts or feedback? [File an issue](https://github.com/openai/openai-java/issues/new) or comment on [this thread](https://community.openai.com/t/your-feedback-requested-java-sdk/1061029).
+
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/0.0.1)
-[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/0.0.1/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/0.0.1)
+[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/0.30.0)
+[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/0.30.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/0.30.0)
 
 <!-- x-release-please-end -->
 
@@ -18,7 +25,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:0.0.1")
+implementation("com.openai:openai-java:0.30.0")
 ```
 
 ### Maven
@@ -27,7 +34,7 @@ implementation("com.openai:openai-java:0.0.1")
 <dependency>
     <groupId>com.openai</groupId>
     <artifactId>openai-java</artifactId>
-    <version>0.0.1</version>
+    <version>0.30.0</version>
 </dependency>
 ```
 
@@ -38,6 +45,8 @@ implementation("com.openai:openai-java:0.0.1")
 This library requires Java 8 or later.
 
 ## Usage
+
+See the [`openai-java-example`](openai-java-example/src/main/java/com/openai/example) directory for complete and runnable examples.
 
 ```java
 import com.openai.client.OpenAIClient;
@@ -395,6 +404,23 @@ Or to `debug` for more verbose logging:
 ```sh
 $ export OPENAI_LOG=debug
 ```
+
+## Microsoft Azure
+
+To use this library with [Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/overview), use the same 
+OpenAI client builder but with the Azure-specific configuration.
+
+```java
+OpenAIClient client = OpenAIOkHttpClient.builder()
+        // Gets the API key from the `AZURE_OPENAI_KEY` environment variable
+        .fromEnv()
+        // Set the Azure Entra ID
+        .credential(BearerTokenCredential.create(AuthenticationUtil.getBearerTokenSupplier(
+                new DefaultAzureCredentialBuilder().build(), "https://cognitiveservices.azure.com/.default")))
+        .build();
+```
+
+See the complete Azure OpenAI example in the [`openai-java-example`](openai-java-example/src/main/java/com/openai/example/AzureEntraIdExample.java) directory. The other examples in the directory also work with Azure as long as the client is configured to use it.  
 
 ## Network options
 

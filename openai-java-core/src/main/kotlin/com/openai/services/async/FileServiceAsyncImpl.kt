@@ -41,7 +41,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 .method(HttpMethod.GET)
                 .addPathSegments("files", params.getPathParam(0))
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -69,7 +69,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 .method(HttpMethod.GET)
                 .addPathSegments("files")
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -98,7 +98,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 .addPathSegments("files", params.getPathParam(0))
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -122,7 +122,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 .method(HttpMethod.GET)
                 .addPathSegments("files", params.getPathParam(0), "content")
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request.thenComposeAsync {
             clientOptions.httpClient.executeAsync(it, requestOptions)
         }

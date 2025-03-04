@@ -46,7 +46,7 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
                 .putAllHeaders(DEFAULT_HEADERS)
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, deploymentModel = null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { createHandler.handle(it) }
@@ -76,7 +76,7 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, deploymentModel = null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { retrieveHandler.handle(it) }
@@ -111,7 +111,7 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
                 .putAllHeaders(DEFAULT_HEADERS)
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, deploymentModel = null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { cancelHandler.handle(it) }
@@ -143,7 +143,7 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, deploymentModel = null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { listFilesHandler.handle(it) }

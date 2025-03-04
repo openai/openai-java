@@ -36,7 +36,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
                 .method(HttpMethod.GET)
                 .addPathSegments("files", params.getPathParam(0))
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, deploymentModel = null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { retrieveHandler.handle(it) }
@@ -57,7 +57,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
                 .method(HttpMethod.GET)
                 .addPathSegments("files")
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, deploymentModel = null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { listHandler.handle(it) }
@@ -80,7 +80,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
                 .addPathSegments("files", params.getPathParam(0))
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, deploymentModel = null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { deleteHandler.handle(it) }
@@ -98,7 +98,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
                 .method(HttpMethod.GET)
                 .addPathSegments("files", params.getPathParam(0), "content")
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, deploymentModel = null)
         return clientOptions.httpClient.execute(request, requestOptions)
     }
 }

@@ -36,7 +36,7 @@ class EmbeddingServiceImpl internal constructor(private val clientOptions: Clien
                 .addPathSegments("embeddings")
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, params.model().toString())
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { createHandler.handle(it) }

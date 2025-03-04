@@ -42,7 +42,7 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 .method(HttpMethod.GET)
                 .addPathSegments("models", params.getPathParam(0))
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, params.model())
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -73,7 +73,7 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 .method(HttpMethod.GET)
                 .addPathSegments("models")
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -105,7 +105,7 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 .addPathSegments("models", params.getPathParam(0))
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, params.model())
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->

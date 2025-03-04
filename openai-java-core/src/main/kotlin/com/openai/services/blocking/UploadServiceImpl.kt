@@ -59,7 +59,7 @@ class UploadServiceImpl internal constructor(private val clientOptions: ClientOp
                 .addPathSegments("uploads")
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, deploymentModel = null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { createHandler.handle(it) }
@@ -81,7 +81,7 @@ class UploadServiceImpl internal constructor(private val clientOptions: ClientOp
                 .addPathSegments("uploads", params.getPathParam(0), "cancel")
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, deploymentModel = null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { cancelHandler.handle(it) }
@@ -115,7 +115,7 @@ class UploadServiceImpl internal constructor(private val clientOptions: ClientOp
                 .addPathSegments("uploads", params.getPathParam(0), "complete")
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, deploymentModel = null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { completeHandler.handle(it) }

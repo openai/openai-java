@@ -50,7 +50,7 @@ class StepServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
@@ -85,7 +85,7 @@ class StepServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 )
                 .putAllHeaders(DEFAULT_HEADERS)
                 .build()
-                .prepareAsync(clientOptions, params)
+                .prepareAsync(clientOptions, params, deploymentModel = null)
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->

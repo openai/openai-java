@@ -54,7 +54,7 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
                 .addPathSegments("fine_tuning", "jobs")
                 .body(json(clientOptions.jsonMapper, params._body()))
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, params.model().toString())
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { createHandler.handle(it) }
@@ -82,7 +82,7 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
                 .method(HttpMethod.GET)
                 .addPathSegments("fine_tuning", "jobs", params.getPathParam(0))
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, deploymentModel = null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { retrieveHandler.handle(it) }
@@ -107,7 +107,7 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
                 .method(HttpMethod.GET)
                 .addPathSegments("fine_tuning", "jobs")
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, deploymentModel = null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { listHandler.handle(it) }
@@ -133,7 +133,7 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
                 .addPathSegments("fine_tuning", "jobs", params.getPathParam(0), "cancel")
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, deploymentModel = null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { cancelHandler.handle(it) }
@@ -158,7 +158,7 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
                 .method(HttpMethod.GET)
                 .addPathSegments("fine_tuning", "jobs", params.getPathParam(0), "events")
                 .build()
-                .prepare(clientOptions, params)
+                .prepare(clientOptions, params, deploymentModel = null)
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { listEventsHandler.handle(it) }
