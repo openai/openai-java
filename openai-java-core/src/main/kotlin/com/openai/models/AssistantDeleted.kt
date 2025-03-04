@@ -64,6 +64,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [AssistantDeleted].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .deleted()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

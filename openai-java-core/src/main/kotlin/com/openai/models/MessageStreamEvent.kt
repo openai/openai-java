@@ -425,6 +425,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadMessageCreated].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -555,6 +563,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadMessageInProgress].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -679,6 +695,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadMessageDelta].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -803,6 +827,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadMessageCompleted].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -933,6 +965,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadMessageIncomplete].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 

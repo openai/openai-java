@@ -75,6 +75,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ImageFileDeltaBlock].
+         *
+         * The following fields are required:
+         * ```java
+         * .index()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

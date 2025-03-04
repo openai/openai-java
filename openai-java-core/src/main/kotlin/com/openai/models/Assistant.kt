@@ -275,6 +275,21 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [Assistant].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .description()
+         * .instructions()
+         * .metadata()
+         * .model()
+         * .name()
+         * .tools()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -791,6 +806,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [ToolResources]. */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -891,6 +907,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [CodeInterpreter]. */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -1030,6 +1047,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [FileSearch]. */
                 @JvmStatic fun builder() = Builder()
             }
 

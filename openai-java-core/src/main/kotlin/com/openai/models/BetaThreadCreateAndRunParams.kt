@@ -667,6 +667,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .assistantId()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -1352,6 +1360,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [BetaThreadCreateAndRunParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .assistantId()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -2141,6 +2157,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Thread]. */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -2369,6 +2386,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Message].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .content()
+                 * .role()
+                 * ```
+                 */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -2847,6 +2873,7 @@ private constructor(
 
                 companion object {
 
+                    /** Returns a mutable builder for constructing an instance of [Attachment]. */
                     @JvmStatic fun builder() = Builder()
                 }
 
@@ -3188,6 +3215,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [ToolResources]. */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -3291,6 +3319,9 @@ private constructor(
 
                 companion object {
 
+                    /**
+                     * Returns a mutable builder for constructing an instance of [CodeInterpreter].
+                     */
                     @JvmStatic fun builder() = Builder()
                 }
 
@@ -3453,6 +3484,7 @@ private constructor(
 
                 companion object {
 
+                    /** Returns a mutable builder for constructing an instance of [FileSearch]. */
                     @JvmStatic fun builder() = Builder()
                 }
 
@@ -3658,6 +3690,9 @@ private constructor(
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [VectorStore].
+                         */
                         @JvmStatic fun builder() = Builder()
                     }
 
@@ -3935,6 +3970,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [ToolResources]. */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -4035,6 +4071,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [CodeInterpreter]. */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -4174,6 +4211,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [FileSearch]. */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -4510,6 +4548,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [TruncationStrategy].
+             *
+             * The following fields are required:
+             * ```java
+             * .type()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 

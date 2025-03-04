@@ -67,6 +67,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [TextDeltaBlock].
+         *
+         * The following fields are required:
+         * ```java
+         * .index()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

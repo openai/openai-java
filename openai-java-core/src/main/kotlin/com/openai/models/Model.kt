@@ -80,6 +80,16 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [Model].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .created()
+         * .ownedBy()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

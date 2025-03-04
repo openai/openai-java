@@ -203,6 +203,16 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .input()
+             * .model()
+             * .voice()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -345,6 +355,16 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [AudioSpeechCreateParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .input()
+         * .model()
+         * .voice()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

@@ -62,6 +62,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [MessageCreationStepDetails].
+         *
+         * The following fields are required:
+         * ```java
+         * .messageCreation()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -152,6 +160,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [MessageCreation].
+             *
+             * The following fields are required:
+             * ```java
+             * .messageId()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 

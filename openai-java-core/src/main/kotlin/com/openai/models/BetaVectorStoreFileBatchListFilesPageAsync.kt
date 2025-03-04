@@ -135,6 +135,10 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of
+             * [BetaVectorStoreFileBatchListFilesPageAsync].
+             */
             @JvmStatic fun builder() = Builder()
         }
 

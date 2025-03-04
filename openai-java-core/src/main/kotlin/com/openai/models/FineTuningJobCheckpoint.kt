@@ -119,6 +119,19 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [FineTuningJobCheckpoint].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .fineTunedModelCheckpoint()
+         * .fineTuningJobId()
+         * .metrics()
+         * .stepNumber()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -320,6 +333,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Metrics]. */
             @JvmStatic fun builder() = Builder()
         }
 

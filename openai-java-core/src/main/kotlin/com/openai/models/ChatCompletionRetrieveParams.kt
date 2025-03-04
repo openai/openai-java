@@ -41,6 +41,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ChatCompletionRetrieveParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .completionId()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

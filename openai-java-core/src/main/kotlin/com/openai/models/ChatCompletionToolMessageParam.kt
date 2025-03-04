@@ -82,6 +82,16 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of
+         * [ChatCompletionToolMessageParam].
+         *
+         * The following fields are required:
+         * ```java
+         * .content()
+         * .toolCallId()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

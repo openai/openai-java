@@ -525,6 +525,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadRunStepCreated].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -644,6 +652,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadRunStepInProgress].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -763,6 +779,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadRunStepDelta].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -886,6 +910,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadRunStepCompleted].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -1004,6 +1036,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadRunStepFailed].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -1123,6 +1163,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadRunStepCancelled].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -1241,6 +1289,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadRunStepExpired].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 

@@ -38,6 +38,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [FileContentParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .fileId()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

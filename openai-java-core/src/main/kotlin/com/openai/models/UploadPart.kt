@@ -80,6 +80,16 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [UploadPart].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .uploadId()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

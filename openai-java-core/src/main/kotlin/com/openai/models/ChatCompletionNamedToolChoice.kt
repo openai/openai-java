@@ -60,6 +60,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of
+         * [ChatCompletionNamedToolChoice].
+         *
+         * The following fields are required:
+         * ```java
+         * .function()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -147,6 +156,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Function].
+             *
+             * The following fields are required:
+             * ```java
+             * .name()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 

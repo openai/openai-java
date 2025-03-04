@@ -62,6 +62,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ResponseFormatJsonSchema].
+         *
+         * The following fields are required:
+         * ```java
+         * .jsonSchema()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -204,6 +212,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [JsonSchema].
+             *
+             * The following fields are required:
+             * ```java
+             * .name()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -346,6 +362,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [Schema]. */
                 @JvmStatic fun builder() = Builder()
             }
 

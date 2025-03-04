@@ -259,6 +259,28 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [RunStep].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .assistantId()
+         * .cancelledAt()
+         * .completedAt()
+         * .createdAt()
+         * .expiredAt()
+         * .failedAt()
+         * .lastError()
+         * .metadata()
+         * .runId()
+         * .status()
+         * .stepDetails()
+         * .threadId()
+         * .type()
+         * .usage()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -610,6 +632,15 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [LastError].
+             *
+             * The following fields are required:
+             * ```java
+             * .code()
+             * .message()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -1232,6 +1263,16 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Usage].
+             *
+             * The following fields are required:
+             * ```java
+             * .completionTokens()
+             * .promptTokens()
+             * .totalTokens()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 

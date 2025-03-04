@@ -245,6 +245,26 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [Message].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .assistantId()
+         * .attachments()
+         * .completedAt()
+         * .content()
+         * .createdAt()
+         * .incompleteAt()
+         * .incompleteDetails()
+         * .metadata()
+         * .role()
+         * .runId()
+         * .status()
+         * .threadId()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -601,6 +621,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Attachment]. */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -902,6 +923,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [IncompleteDetails].
+             *
+             * The following fields are required:
+             * ```java
+             * .reason()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 

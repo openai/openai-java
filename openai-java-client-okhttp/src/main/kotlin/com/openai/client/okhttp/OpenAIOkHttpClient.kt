@@ -21,6 +21,7 @@ class OpenAIOkHttpClient private constructor() {
 
     companion object {
 
+        /** Returns a mutable builder for constructing an instance of [OpenAIOkHttpClient]. */
         @JvmStatic fun builder() = Builder()
 
         @JvmStatic fun fromEnv(): OpenAIClient = builder().fromEnv().build()

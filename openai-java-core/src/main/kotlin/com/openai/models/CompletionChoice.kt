@@ -87,6 +87,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [CompletionChoice].
+         *
+         * The following fields are required:
+         * ```java
+         * .finishReason()
+         * .index()
+         * .logprobs()
+         * .text()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -349,6 +360,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Logprobs]. */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -478,6 +490,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [TopLogprob]. */
                 @JvmStatic fun builder() = Builder()
             }
 

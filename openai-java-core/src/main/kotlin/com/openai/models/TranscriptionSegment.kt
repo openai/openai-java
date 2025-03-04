@@ -152,6 +152,23 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [TranscriptionSegment].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .avgLogprob()
+         * .compressionRatio()
+         * .end()
+         * .noSpeechProb()
+         * .seek()
+         * .start()
+         * .temperature()
+         * .text()
+         * .tokens()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

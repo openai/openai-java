@@ -130,6 +130,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .partIds()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -224,6 +232,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [UploadCompleteParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .uploadId()
+         * .partIds()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

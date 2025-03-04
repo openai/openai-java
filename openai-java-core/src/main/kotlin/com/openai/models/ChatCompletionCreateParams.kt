@@ -1263,6 +1263,15 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .messages()
+             * .model()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -2527,6 +2536,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ChatCompletionCreateParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .messages()
+         * .model()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -4116,6 +4134,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Function].
+             *
+             * The following fields are required:
+             * ```java
+             * .name()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -4264,6 +4290,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [LogitBias]. */
             @JvmStatic fun builder() = Builder()
         }
 

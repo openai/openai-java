@@ -63,6 +63,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of
+         * [ChatCompletionContentPartInputAudio].
+         *
+         * The following fields are required:
+         * ```java
+         * .inputAudio()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -163,6 +172,15 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [InputAudio].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * .format()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 

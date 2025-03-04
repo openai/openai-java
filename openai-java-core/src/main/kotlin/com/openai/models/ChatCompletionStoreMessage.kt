@@ -142,6 +142,16 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ChatCompletionStoreMessage].
+         *
+         * The following fields are required:
+         * ```java
+         * .content()
+         * .refusal()
+         * .id()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

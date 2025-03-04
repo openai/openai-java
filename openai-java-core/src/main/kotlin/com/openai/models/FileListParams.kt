@@ -68,6 +68,7 @@ private constructor(
 
         @JvmStatic fun none(): FileListParams = builder().build()
 
+        /** Returns a mutable builder for constructing an instance of [FileListParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
