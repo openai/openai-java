@@ -35,11 +35,12 @@ class CheckpointServiceImpl internal constructor(private val clientOptions: Clie
                 .addPathSegments("fine_tuning", "jobs", params.getPathParam(0), "checkpoints")
                 .build()
                 .prepare(clientOptions, params)
+        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
         val response = clientOptions.httpClient.execute(request, requestOptions)
         return response
             .use { listHandler.handle(it) }
             .also {
-                if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                if (requestOptions.responseValidation!!) {
                     it.validate()
                 }
             }
