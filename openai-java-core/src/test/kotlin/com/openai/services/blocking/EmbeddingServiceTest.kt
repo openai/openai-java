@@ -25,7 +25,7 @@ class EmbeddingServiceTest {
             embeddingService.create(
                 EmbeddingCreateParams.builder()
                     .input("The quick brown fox jumped over the lazy dog")
-                    .model(EmbeddingModel.TEXT_EMBEDDING_ADA_002)
+                    .model(EmbeddingModel.TEXT_EMBEDDING_3_SMALL)
                     .dimensions(1L)
                     .encodingFormat(EmbeddingCreateParams.EncodingFormat.FLOAT)
                     .user("user-1234")
