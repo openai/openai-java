@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
@@ -227,14 +228,8 @@ private constructor(
             /** The results of the file search. */
             fun addResult(result: Result) = apply {
                 results =
-                    (results ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(result)
+                    (results ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("results", it).add(result)
                     }
             }
 
@@ -549,14 +544,8 @@ private constructor(
                  */
                 fun addContent(content: Content) = apply {
                     this.content =
-                        (this.content ?: JsonField.of(mutableListOf())).apply {
-                            asKnown()
-                                .orElseThrow {
-                                    IllegalStateException(
-                                        "Field was set to non-list type: ${javaClass.simpleName}"
-                                    )
-                                }
-                                .add(content)
+                        (this.content ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("content", it).add(content)
                         }
                 }
 

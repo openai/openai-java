@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
@@ -432,15 +433,7 @@ private constructor(
          */
         fun addTool(tool: AssistantTool) = apply {
             tools =
-                (tools ?: JsonField.of(mutableListOf())).apply {
-                    asKnown()
-                        .orElseThrow {
-                            IllegalStateException(
-                                "Field was set to non-list type: ${javaClass.simpleName}"
-                            )
-                        }
-                        .add(tool)
-                }
+                (tools ?: JsonField.of(mutableListOf())).also { checkKnown("tools", it).add(tool) }
         }
 
         /**
@@ -936,14 +929,8 @@ private constructor(
                  */
                 fun addFileId(fileId: String) = apply {
                     fileIds =
-                        (fileIds ?: JsonField.of(mutableListOf())).apply {
-                            asKnown()
-                                .orElseThrow {
-                                    IllegalStateException(
-                                        "Field was set to non-list type: ${javaClass.simpleName}"
-                                    )
-                                }
-                                .add(fileId)
+                        (fileIds ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("fileIds", it).add(fileId)
                         }
                 }
 
@@ -1085,14 +1072,8 @@ private constructor(
                  */
                 fun addVectorStoreId(vectorStoreId: String) = apply {
                     vectorStoreIds =
-                        (vectorStoreIds ?: JsonField.of(mutableListOf())).apply {
-                            asKnown()
-                                .orElseThrow {
-                                    IllegalStateException(
-                                        "Field was set to non-list type: ${javaClass.simpleName}"
-                                    )
-                                }
-                                .add(vectorStoreId)
+                        (vectorStoreIds ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("vectorStoreIds", it).add(vectorStoreId)
                         }
                 }
 

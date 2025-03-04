@@ -10,7 +10,9 @@ import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse.Handler
-import com.openai.core.json
+import com.openai.core.http.HttpResponseFor
+import com.openai.core.http.json
+import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.errors.OpenAIError
 import com.openai.models.FineTuningJob
@@ -28,169 +30,225 @@ import java.util.concurrent.CompletableFuture
 class JobServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     JobServiceAsync {
 
-    private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+    private val withRawResponse: JobServiceAsync.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
 
     private val checkpoints: CheckpointServiceAsync by lazy {
         CheckpointServiceAsyncImpl(clientOptions)
     }
 
+    override fun withRawResponse(): JobServiceAsync.WithRawResponse = withRawResponse
+
     override fun checkpoints(): CheckpointServiceAsync = checkpoints
 
-    private val createHandler: Handler<FineTuningJob> =
-        jsonHandler<FineTuningJob>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /**
-     * Creates a fine-tuning job which begins the process of creating a new model from a given
-     * dataset.
-     *
-     * Response includes details of the enqueued job including job status and the name of the
-     * fine-tuned models once complete.
-     *
-     * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/fine-tuning)
-     */
     override fun create(
         params: FineTuningJobCreateParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<FineTuningJob> {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.POST)
-                .addPathSegments("fine_tuning", "jobs")
-                .body(json(clientOptions.jsonMapper, params._body()))
-                .build()
-                .prepareAsync(clientOptions, params, params.model().toString())
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        return request
-            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-            .thenApply { response ->
-                response
-                    .use { createHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-            }
-    }
+    ): CompletableFuture<FineTuningJob> =
+        // post /fine_tuning/jobs
+        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
 
-    private val retrieveHandler: Handler<FineTuningJob> =
-        jsonHandler<FineTuningJob>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /**
-     * Get info about a fine-tuning job.
-     *
-     * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/fine-tuning)
-     */
     override fun retrieve(
         params: FineTuningJobRetrieveParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<FineTuningJob> {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("fine_tuning", "jobs", params.getPathParam(0))
-                .build()
-                .prepareAsync(clientOptions, params, deploymentModel = null)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        return request
-            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-            .thenApply { response ->
-                response
-                    .use { retrieveHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-            }
-    }
+    ): CompletableFuture<FineTuningJob> =
+        // get /fine_tuning/jobs/{fine_tuning_job_id}
+        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
-    private val listHandler: Handler<FineTuningJobListPageAsync.Response> =
-        jsonHandler<FineTuningJobListPageAsync.Response>(clientOptions.jsonMapper)
-            .withErrorHandler(errorHandler)
-
-    /** List your organization's fine-tuning jobs */
     override fun list(
         params: FineTuningJobListParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<FineTuningJobListPageAsync> {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("fine_tuning", "jobs")
-                .build()
-                .prepareAsync(clientOptions, params, deploymentModel = null)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        return request
-            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-            .thenApply { response ->
-                response
-                    .use { listHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-                    .let { FineTuningJobListPageAsync.of(this, params, it) }
-            }
-    }
+    ): CompletableFuture<FineTuningJobListPageAsync> =
+        // get /fine_tuning/jobs
+        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
 
-    private val cancelHandler: Handler<FineTuningJob> =
-        jsonHandler<FineTuningJob>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /** Immediately cancel a fine-tune job. */
     override fun cancel(
         params: FineTuningJobCancelParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<FineTuningJob> {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.POST)
-                .addPathSegments("fine_tuning", "jobs", params.getPathParam(0), "cancel")
-                .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
-                .build()
-                .prepareAsync(clientOptions, params, deploymentModel = null)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        return request
-            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-            .thenApply { response ->
-                response
-                    .use { cancelHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-            }
-    }
+    ): CompletableFuture<FineTuningJob> =
+        // post /fine_tuning/jobs/{fine_tuning_job_id}/cancel
+        withRawResponse().cancel(params, requestOptions).thenApply { it.parse() }
 
-    private val listEventsHandler: Handler<FineTuningJobListEventsPageAsync.Response> =
-        jsonHandler<FineTuningJobListEventsPageAsync.Response>(clientOptions.jsonMapper)
-            .withErrorHandler(errorHandler)
-
-    /** Get status updates for a fine-tuning job. */
     override fun listEvents(
         params: FineTuningJobListEventsParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<FineTuningJobListEventsPageAsync> {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("fine_tuning", "jobs", params.getPathParam(0), "events")
-                .build()
-                .prepareAsync(clientOptions, params, deploymentModel = null)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        return request
-            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-            .thenApply { response ->
-                response
-                    .use { listEventsHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
+    ): CompletableFuture<FineTuningJobListEventsPageAsync> =
+        // get /fine_tuning/jobs/{fine_tuning_job_id}/events
+        withRawResponse().listEvents(params, requestOptions).thenApply { it.parse() }
+
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        JobServiceAsync.WithRawResponse {
+
+        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+
+        private val checkpoints: CheckpointServiceAsync.WithRawResponse by lazy {
+            CheckpointServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        override fun checkpoints(): CheckpointServiceAsync.WithRawResponse = checkpoints
+
+        private val createHandler: Handler<FineTuningJob> =
+            jsonHandler<FineTuningJob>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun create(
+            params: FineTuningJobCreateParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<FineTuningJob>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("fine_tuning", "jobs")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params, params.model().toString())
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { createHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
-                    .let { FineTuningJobListEventsPageAsync.of(this, params, it) }
-            }
+                }
+        }
+
+        private val retrieveHandler: Handler<FineTuningJob> =
+            jsonHandler<FineTuningJob>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun retrieve(
+            params: FineTuningJobRetrieveParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<FineTuningJob>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("fine_tuning", "jobs", params.getPathParam(0))
+                    .build()
+                    .prepareAsync(clientOptions, params, deploymentModel = null)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { retrieveHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val listHandler: Handler<FineTuningJobListPageAsync.Response> =
+            jsonHandler<FineTuningJobListPageAsync.Response>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun list(
+            params: FineTuningJobListParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<FineTuningJobListPageAsync>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("fine_tuning", "jobs")
+                    .build()
+                    .prepareAsync(clientOptions, params, deploymentModel = null)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { listHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                            .let {
+                                FineTuningJobListPageAsync.of(
+                                    JobServiceAsyncImpl(clientOptions),
+                                    params,
+                                    it,
+                                )
+                            }
+                    }
+                }
+        }
+
+        private val cancelHandler: Handler<FineTuningJob> =
+            jsonHandler<FineTuningJob>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun cancel(
+            params: FineTuningJobCancelParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<FineTuningJob>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("fine_tuning", "jobs", params.getPathParam(0), "cancel")
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params, deploymentModel = null)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { cancelHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val listEventsHandler: Handler<FineTuningJobListEventsPageAsync.Response> =
+            jsonHandler<FineTuningJobListEventsPageAsync.Response>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun listEvents(
+            params: FineTuningJobListEventsParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<FineTuningJobListEventsPageAsync>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("fine_tuning", "jobs", params.getPathParam(0), "events")
+                    .build()
+                    .prepareAsync(clientOptions, params, deploymentModel = null)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { listEventsHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                            .let {
+                                FineTuningJobListEventsPageAsync.of(
+                                    JobServiceAsyncImpl(clientOptions),
+                                    params,
+                                    it,
+                                )
+                            }
+                    }
+                }
+        }
     }
 }

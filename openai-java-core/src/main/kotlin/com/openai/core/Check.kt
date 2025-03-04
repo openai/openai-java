@@ -6,6 +6,18 @@ fun <T : Any> checkRequired(name: String, value: T?): T =
     checkNotNull(value) { "`$name` is required, but was not set" }
 
 @JvmSynthetic
+internal fun <T : Any> checkKnown(name: String, value: JsonField<T>): T =
+    value.asKnown().orElseThrow {
+        IllegalStateException("`$name` is not a known type: ${value.javaClass.simpleName}")
+    }
+
+@JvmSynthetic
+internal fun <T : Any> checkKnown(name: String, value: MultipartField<T>): T =
+    value.value.asKnown().orElseThrow {
+        IllegalStateException("`$name` is not a known type: ${value.javaClass.simpleName}")
+    }
+
+@JvmSynthetic
 internal fun checkLength(name: String, value: String, length: Int): String =
     value.also {
         check(it.length == length) { "`$name` must have length $length, but was ${it.length}" }

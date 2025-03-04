@@ -12,6 +12,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.Params
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -172,14 +173,8 @@ private constructor(
              */
             fun addFileId(fileId: String) = apply {
                 fileIds =
-                    (fileIds ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(fileId)
+                    (fileIds ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("fileIds", it).add(fileId)
                     }
             }
 

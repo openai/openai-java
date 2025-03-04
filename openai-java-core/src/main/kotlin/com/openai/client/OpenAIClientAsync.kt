@@ -2,6 +2,7 @@
 
 package com.openai.client
 
+import com.openai.services.async.AudioServiceAsync
 import com.openai.services.async.BatchServiceAsync
 import com.openai.services.async.BetaServiceAsync
 import com.openai.services.async.ChatServiceAsync
@@ -38,6 +39,11 @@ interface OpenAIClientAsync {
      */
     fun sync(): OpenAIClient
 
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
+
     fun completions(): CompletionServiceAsync
 
     fun chat(): ChatServiceAsync
@@ -47,6 +53,8 @@ interface OpenAIClientAsync {
     fun files(): FileServiceAsync
 
     fun images(): ImageServiceAsync
+
+    fun audio(): AudioServiceAsync
 
     fun moderations(): ModerationServiceAsync
 
@@ -72,4 +80,32 @@ interface OpenAIClientAsync {
      * method.
      */
     fun close()
+
+    /** A view of [OpenAIClientAsync] that provides access to raw HTTP responses for each method. */
+    interface WithRawResponse {
+
+        fun completions(): CompletionServiceAsync.WithRawResponse
+
+        fun chat(): ChatServiceAsync.WithRawResponse
+
+        fun embeddings(): EmbeddingServiceAsync.WithRawResponse
+
+        fun files(): FileServiceAsync.WithRawResponse
+
+        fun images(): ImageServiceAsync.WithRawResponse
+
+        fun audio(): AudioServiceAsync.WithRawResponse
+
+        fun moderations(): ModerationServiceAsync.WithRawResponse
+
+        fun models(): ModelServiceAsync.WithRawResponse
+
+        fun fineTuning(): FineTuningServiceAsync.WithRawResponse
+
+        fun beta(): BetaServiceAsync.WithRawResponse
+
+        fun batches(): BatchServiceAsync.WithRawResponse
+
+        fun uploads(): UploadServiceAsync.WithRawResponse
+    }
 }

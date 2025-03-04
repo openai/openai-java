@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
@@ -182,14 +183,8 @@ private constructor(
         /** A list of chat completion choices. Can be more than one if `n` is greater than 1. */
         fun addChoice(choice: Choice) = apply {
             choices =
-                (choices ?: JsonField.of(mutableListOf())).apply {
-                    asKnown()
-                        .orElseThrow {
-                            IllegalStateException(
-                                "Field was set to non-list type: ${javaClass.simpleName}"
-                            )
-                        }
-                        .add(choice)
+                (choices ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("choices", it).add(choice)
                 }
         }
 
@@ -667,14 +662,8 @@ private constructor(
                 /** A list of message content tokens with log probability information. */
                 fun addContent(content: ChatCompletionTokenLogprob) = apply {
                     this.content =
-                        (this.content ?: JsonField.of(mutableListOf())).apply {
-                            asKnown()
-                                .orElseThrow {
-                                    IllegalStateException(
-                                        "Field was set to non-list type: ${javaClass.simpleName}"
-                                    )
-                                }
-                                .add(content)
+                        (this.content ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("content", it).add(content)
                         }
                 }
 
@@ -694,14 +683,8 @@ private constructor(
                 /** A list of message refusal tokens with log probability information. */
                 fun addRefusal(refusal: ChatCompletionTokenLogprob) = apply {
                     this.refusal =
-                        (this.refusal ?: JsonField.of(mutableListOf())).apply {
-                            asKnown()
-                                .orElseThrow {
-                                    IllegalStateException(
-                                        "Field was set to non-list type: ${javaClass.simpleName}"
-                                    )
-                                }
-                                .add(refusal)
+                        (this.refusal ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("refusal", it).add(refusal)
                         }
                 }
 

@@ -10,7 +10,9 @@ import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse.Handler
-import com.openai.core.json
+import com.openai.core.http.HttpResponseFor
+import com.openai.core.http.json
+import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
 import com.openai.models.ModerationCreateParams
@@ -19,35 +21,50 @@ import com.openai.models.ModerationCreateResponse
 class ModerationServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     ModerationService {
 
-    private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+    private val withRawResponse: ModerationService.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
 
-    private val createHandler: Handler<ModerationCreateResponse> =
-        jsonHandler<ModerationCreateResponse>(clientOptions.jsonMapper)
-            .withErrorHandler(errorHandler)
+    override fun withRawResponse(): ModerationService.WithRawResponse = withRawResponse
 
-    /**
-     * Classifies if text and/or image inputs are potentially harmful. Learn more in the
-     * [moderation guide](https://platform.openai.com/docs/guides/moderation).
-     */
     override fun create(
         params: ModerationCreateParams,
         requestOptions: RequestOptions,
-    ): ModerationCreateResponse {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.POST)
-                .addPathSegments("moderations")
-                .body(json(clientOptions.jsonMapper, params._body()))
-                .build()
-                .prepare(clientOptions, params, params.model().toString())
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.execute(request, requestOptions)
-        return response
-            .use { createHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
+    ): ModerationCreateResponse =
+        // post /moderations
+        withRawResponse().create(params, requestOptions).parse()
+
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        ModerationService.WithRawResponse {
+
+        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+
+        private val createHandler: Handler<ModerationCreateResponse> =
+            jsonHandler<ModerationCreateResponse>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun create(
+            params: ModerationCreateParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ModerationCreateResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("moderations")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params, params.model().toString())
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { createHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
+        }
     }
 }

@@ -6,6 +6,7 @@ package com.openai.services.blocking.beta.threads
 
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
+import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
 import com.openai.models.AssistantStreamEvent
 import com.openai.models.BetaThreadRunCancelParams
@@ -19,6 +20,11 @@ import com.openai.models.Run
 import com.openai.services.blocking.beta.threads.runs.StepService
 
 interface RunService {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
 
     fun steps(): StepService
 
@@ -87,4 +93,100 @@ interface RunService {
         params: BetaThreadRunSubmitToolOutputsParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): StreamResponse<AssistantStreamEvent>
+
+    /** A view of [RunService] that provides access to raw HTTP responses for each method. */
+    interface WithRawResponse {
+
+        fun steps(): StepService.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `post /threads/{thread_id}/runs`, but is otherwise the
+         * same as [RunService.create].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun create(
+            params: BetaThreadRunCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Run>
+
+        /**
+         * Returns a raw HTTP response for `post /threads/{thread_id}/runs`, but is otherwise the
+         * same as [RunService.createStreaming].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun createStreaming(
+            params: BetaThreadRunCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<AssistantStreamEvent>>
+
+        /**
+         * Returns a raw HTTP response for `get /threads/{thread_id}/runs/{run_id}`, but is
+         * otherwise the same as [RunService.retrieve].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(
+            params: BetaThreadRunRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Run>
+
+        /**
+         * Returns a raw HTTP response for `post /threads/{thread_id}/runs/{run_id}`, but is
+         * otherwise the same as [RunService.update].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun update(
+            params: BetaThreadRunUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Run>
+
+        /**
+         * Returns a raw HTTP response for `get /threads/{thread_id}/runs`, but is otherwise the
+         * same as [RunService.list].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun list(
+            params: BetaThreadRunListParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<BetaThreadRunListPage>
+
+        /**
+         * Returns a raw HTTP response for `post /threads/{thread_id}/runs/{run_id}/cancel`, but is
+         * otherwise the same as [RunService.cancel].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun cancel(
+            params: BetaThreadRunCancelParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Run>
+
+        /**
+         * Returns a raw HTTP response for `post
+         * /threads/{thread_id}/runs/{run_id}/submit_tool_outputs`, but is otherwise the same as
+         * [RunService.submitToolOutputs].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun submitToolOutputs(
+            params: BetaThreadRunSubmitToolOutputsParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Run>
+
+        /**
+         * Returns a raw HTTP response for `post
+         * /threads/{thread_id}/runs/{run_id}/submit_tool_outputs`, but is otherwise the same as
+         * [RunService.submitToolOutputsStreaming].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun submitToolOutputsStreaming(
+            params: BetaThreadRunSubmitToolOutputsParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<AssistantStreamEvent>>
+    }
 }

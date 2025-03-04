@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkKnown
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -93,14 +94,8 @@ private constructor(
         /** The content of the message in array of text and/or images. */
         fun addContent(content: MessageContentDelta) = apply {
             this.content =
-                (this.content ?: JsonField.of(mutableListOf())).apply {
-                    asKnown()
-                        .orElseThrow {
-                            IllegalStateException(
-                                "Field was set to non-list type: ${javaClass.simpleName}"
-                            )
-                        }
-                        .add(content)
+                (this.content ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("content", it).add(content)
                 }
         }
 

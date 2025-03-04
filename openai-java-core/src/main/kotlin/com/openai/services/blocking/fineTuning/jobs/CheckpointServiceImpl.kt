@@ -10,6 +10,8 @@ import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse.Handler
+import com.openai.core.http.HttpResponseFor
+import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
 import com.openai.models.FineTuningJobCheckpointListPage
@@ -18,32 +20,56 @@ import com.openai.models.FineTuningJobCheckpointListParams
 class CheckpointServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     CheckpointService {
 
-    private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+    private val withRawResponse: CheckpointService.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
 
-    private val listHandler: Handler<FineTuningJobCheckpointListPage.Response> =
-        jsonHandler<FineTuningJobCheckpointListPage.Response>(clientOptions.jsonMapper)
-            .withErrorHandler(errorHandler)
+    override fun withRawResponse(): CheckpointService.WithRawResponse = withRawResponse
 
-    /** List checkpoints for a fine-tuning job. */
     override fun list(
         params: FineTuningJobCheckpointListParams,
         requestOptions: RequestOptions,
-    ): FineTuningJobCheckpointListPage {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("fine_tuning", "jobs", params.getPathParam(0), "checkpoints")
-                .build()
-                .prepare(clientOptions, params, deploymentModel = null)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.execute(request, requestOptions)
-        return response
-            .use { listHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
+    ): FineTuningJobCheckpointListPage =
+        // get /fine_tuning/jobs/{fine_tuning_job_id}/checkpoints
+        withRawResponse().list(params, requestOptions).parse()
+
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        CheckpointService.WithRawResponse {
+
+        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+
+        private val listHandler: Handler<FineTuningJobCheckpointListPage.Response> =
+            jsonHandler<FineTuningJobCheckpointListPage.Response>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun list(
+            params: FineTuningJobCheckpointListParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<FineTuningJobCheckpointListPage> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("fine_tuning", "jobs", params.getPathParam(0), "checkpoints")
+                    .build()
+                    .prepare(clientOptions, params, deploymentModel = null)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { listHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+                    .let {
+                        FineTuningJobCheckpointListPage.of(
+                            CheckpointServiceImpl(clientOptions),
+                            params,
+                            it,
+                        )
+                    }
             }
-            .let { FineTuningJobCheckpointListPage.of(this, params, it) }
+        }
     }
 }

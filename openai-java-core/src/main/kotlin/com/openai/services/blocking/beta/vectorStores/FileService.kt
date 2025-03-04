@@ -4,7 +4,9 @@
 
 package com.openai.services.blocking.beta.vectorStores
 
+import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
+import com.openai.core.http.HttpResponseFor
 import com.openai.models.BetaVectorStoreFileCreateParams
 import com.openai.models.BetaVectorStoreFileDeleteParams
 import com.openai.models.BetaVectorStoreFileListPage
@@ -14,6 +16,11 @@ import com.openai.models.VectorStoreFile
 import com.openai.models.VectorStoreFileDeleted
 
 interface FileService {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
 
     /**
      * Create a vector store file by attaching a
@@ -50,4 +57,53 @@ interface FileService {
         params: BetaVectorStoreFileDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStoreFileDeleted
+
+    /** A view of [FileService] that provides access to raw HTTP responses for each method. */
+    interface WithRawResponse {
+
+        /**
+         * Returns a raw HTTP response for `post /vector_stores/{vector_store_id}/files`, but is
+         * otherwise the same as [FileService.create].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun create(
+            params: BetaVectorStoreFileCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<VectorStoreFile>
+
+        /**
+         * Returns a raw HTTP response for `get /vector_stores/{vector_store_id}/files/{file_id}`,
+         * but is otherwise the same as [FileService.retrieve].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(
+            params: BetaVectorStoreFileRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<VectorStoreFile>
+
+        /**
+         * Returns a raw HTTP response for `get /vector_stores/{vector_store_id}/files`, but is
+         * otherwise the same as [FileService.list].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun list(
+            params: BetaVectorStoreFileListParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<BetaVectorStoreFileListPage>
+
+        /**
+         * Returns a raw HTTP response for `delete
+         * /vector_stores/{vector_store_id}/files/{file_id}`, but is otherwise the same as
+         * [FileService.delete].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun delete(
+            params: BetaVectorStoreFileDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<VectorStoreFileDeleted>
+    }
 }

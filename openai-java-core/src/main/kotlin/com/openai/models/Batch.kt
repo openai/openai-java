@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
@@ -720,14 +721,8 @@ private constructor(
 
             fun addData(data: BatchError) = apply {
                 this.data =
-                    (this.data ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(data)
+                    (this.data ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("data", it).add(data)
                     }
             }
 

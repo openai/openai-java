@@ -4,7 +4,9 @@
 
 package com.openai.services.async
 
+import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
+import com.openai.core.http.HttpResponseFor
 import com.openai.models.Upload
 import com.openai.models.UploadCancelParams
 import com.openai.models.UploadCompleteParams
@@ -13,6 +15,11 @@ import com.openai.services.async.uploads.PartServiceAsync
 import java.util.concurrent.CompletableFuture
 
 interface UploadServiceAsync {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
 
     fun parts(): PartServiceAsync
 
@@ -67,4 +74,45 @@ interface UploadServiceAsync {
         params: UploadCompleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Upload>
+
+    /**
+     * A view of [UploadServiceAsync] that provides access to raw HTTP responses for each method.
+     */
+    interface WithRawResponse {
+
+        fun parts(): PartServiceAsync.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `post /uploads`, but is otherwise the same as
+         * [UploadServiceAsync.create].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun create(
+            params: UploadCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Upload>>
+
+        /**
+         * Returns a raw HTTP response for `post /uploads/{upload_id}/cancel`, but is otherwise the
+         * same as [UploadServiceAsync.cancel].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun cancel(
+            params: UploadCancelParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Upload>>
+
+        /**
+         * Returns a raw HTTP response for `post /uploads/{upload_id}/complete`, but is otherwise
+         * the same as [UploadServiceAsync.complete].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun complete(
+            params: UploadCompleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Upload>>
+    }
 }

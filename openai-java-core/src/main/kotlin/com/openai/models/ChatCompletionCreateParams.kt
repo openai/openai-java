@@ -22,6 +22,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.Params
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
@@ -1366,14 +1367,8 @@ private constructor(
              */
             fun addMessage(message: ChatCompletionMessageParam) = apply {
                 messages =
-                    (messages ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(message)
+                    (messages ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("messages", it).add(message)
                     }
             }
 
@@ -1655,14 +1650,8 @@ private constructor(
             @Deprecated("deprecated")
             fun addFunction(function: Function) = apply {
                 functions =
-                    (functions ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(function)
+                    (functions ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("functions", it).add(function)
                     }
             }
 
@@ -1899,14 +1888,8 @@ private constructor(
              */
             fun addModality(modality: ChatCompletionModality) = apply {
                 modalities =
-                    (modalities ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(modality)
+                    (modalities ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("modalities", it).add(modality)
                     }
             }
 
@@ -2382,14 +2365,8 @@ private constructor(
              */
             fun addTool(tool: ChatCompletionTool) = apply {
                 tools =
-                    (tools ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(tool)
+                    (tools ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("tools", it).add(tool)
                     }
             }
 
