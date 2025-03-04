@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
@@ -165,15 +166,7 @@ private constructor(
          */
         fun addByte(byte_: Long) = apply {
             bytes =
-                (bytes ?: JsonField.of(mutableListOf())).apply {
-                    asKnown()
-                        .orElseThrow {
-                            IllegalStateException(
-                                "Field was set to non-list type: ${javaClass.simpleName}"
-                            )
-                        }
-                        .add(byte_)
-                }
+                (bytes ?: JsonField.of(mutableListOf())).also { checkKnown("bytes", it).add(byte_) }
         }
 
         /**
@@ -208,14 +201,8 @@ private constructor(
          */
         fun addTopLogprob(topLogprob: TopLogprob) = apply {
             topLogprobs =
-                (topLogprobs ?: JsonField.of(mutableListOf())).apply {
-                    asKnown()
-                        .orElseThrow {
-                            IllegalStateException(
-                                "Field was set to non-list type: ${javaClass.simpleName}"
-                            )
-                        }
-                        .add(topLogprob)
+                (topLogprobs ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("topLogprobs", it).add(topLogprob)
                 }
         }
 
@@ -379,14 +366,8 @@ private constructor(
              */
             fun addByte(byte_: Long) = apply {
                 bytes =
-                    (bytes ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(byte_)
+                    (bytes ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("bytes", it).add(byte_)
                     }
             }
 

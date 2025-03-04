@@ -11,7 +11,9 @@ import com.openai.core.http.Headers
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse.Handler
-import com.openai.core.json
+import com.openai.core.http.HttpResponseFor
+import com.openai.core.http.json
+import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
 import com.openai.models.BetaVectorStoreCreateParams
@@ -35,148 +37,216 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
         private val DEFAULT_HEADERS = Headers.builder().put("OpenAI-Beta", "assistants=v2").build()
     }
 
-    private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+    private val withRawResponse: VectorStoreService.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
 
     private val files: FileService by lazy { FileServiceImpl(clientOptions) }
 
     private val fileBatches: FileBatchService by lazy { FileBatchServiceImpl(clientOptions) }
 
+    override fun withRawResponse(): VectorStoreService.WithRawResponse = withRawResponse
+
     override fun files(): FileService = files
 
     override fun fileBatches(): FileBatchService = fileBatches
 
-    private val createHandler: Handler<VectorStore> =
-        jsonHandler<VectorStore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /** Create a vector store. */
     override fun create(
         params: BetaVectorStoreCreateParams,
         requestOptions: RequestOptions,
-    ): VectorStore {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.POST)
-                .addPathSegments("vector_stores")
-                .putAllHeaders(DEFAULT_HEADERS)
-                .body(json(clientOptions.jsonMapper, params._body()))
-                .build()
-                .prepare(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.execute(request, requestOptions)
-        return response
-            .use { createHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
-            }
-    }
+    ): VectorStore =
+        // post /vector_stores
+        withRawResponse().create(params, requestOptions).parse()
 
-    private val retrieveHandler: Handler<VectorStore> =
-        jsonHandler<VectorStore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /** Retrieves a vector store. */
     override fun retrieve(
         params: BetaVectorStoreRetrieveParams,
         requestOptions: RequestOptions,
-    ): VectorStore {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("vector_stores", params.getPathParam(0))
-                .putAllHeaders(DEFAULT_HEADERS)
-                .build()
-                .prepare(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.execute(request, requestOptions)
-        return response
-            .use { retrieveHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
-            }
-    }
+    ): VectorStore =
+        // get /vector_stores/{vector_store_id}
+        withRawResponse().retrieve(params, requestOptions).parse()
 
-    private val updateHandler: Handler<VectorStore> =
-        jsonHandler<VectorStore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /** Modifies a vector store. */
     override fun update(
         params: BetaVectorStoreUpdateParams,
         requestOptions: RequestOptions,
-    ): VectorStore {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.POST)
-                .addPathSegments("vector_stores", params.getPathParam(0))
-                .putAllHeaders(DEFAULT_HEADERS)
-                .body(json(clientOptions.jsonMapper, params._body()))
-                .build()
-                .prepare(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.execute(request, requestOptions)
-        return response
-            .use { updateHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
-            }
-    }
+    ): VectorStore =
+        // post /vector_stores/{vector_store_id}
+        withRawResponse().update(params, requestOptions).parse()
 
-    private val listHandler: Handler<BetaVectorStoreListPage.Response> =
-        jsonHandler<BetaVectorStoreListPage.Response>(clientOptions.jsonMapper)
-            .withErrorHandler(errorHandler)
-
-    /** Returns a list of vector stores. */
     override fun list(
         params: BetaVectorStoreListParams,
         requestOptions: RequestOptions,
-    ): BetaVectorStoreListPage {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("vector_stores")
-                .putAllHeaders(DEFAULT_HEADERS)
-                .build()
-                .prepare(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.execute(request, requestOptions)
-        return response
-            .use { listHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
-            }
-            .let { BetaVectorStoreListPage.of(this, params, it) }
-    }
+    ): BetaVectorStoreListPage =
+        // get /vector_stores
+        withRawResponse().list(params, requestOptions).parse()
 
-    private val deleteHandler: Handler<VectorStoreDeleted> =
-        jsonHandler<VectorStoreDeleted>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /** Delete a vector store. */
     override fun delete(
         params: BetaVectorStoreDeleteParams,
         requestOptions: RequestOptions,
-    ): VectorStoreDeleted {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.DELETE)
-                .addPathSegments("vector_stores", params.getPathParam(0))
-                .putAllHeaders(DEFAULT_HEADERS)
-                .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
-                .build()
-                .prepare(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.execute(request, requestOptions)
-        return response
-            .use { deleteHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
+    ): VectorStoreDeleted =
+        // delete /vector_stores/{vector_store_id}
+        withRawResponse().delete(params, requestOptions).parse()
+
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        VectorStoreService.WithRawResponse {
+
+        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+
+        private val files: FileService.WithRawResponse by lazy {
+            FileServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val fileBatches: FileBatchService.WithRawResponse by lazy {
+            FileBatchServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        override fun files(): FileService.WithRawResponse = files
+
+        override fun fileBatches(): FileBatchService.WithRawResponse = fileBatches
+
+        private val createHandler: Handler<VectorStore> =
+            jsonHandler<VectorStore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun create(
+            params: BetaVectorStoreCreateParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<VectorStore> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("vector_stores")
+                    .putAllHeaders(DEFAULT_HEADERS)
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { createHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
+        }
+
+        private val retrieveHandler: Handler<VectorStore> =
+            jsonHandler<VectorStore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun retrieve(
+            params: BetaVectorStoreRetrieveParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<VectorStore> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("vector_stores", params.getPathParam(0))
+                    .putAllHeaders(DEFAULT_HEADERS)
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { retrieveHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val updateHandler: Handler<VectorStore> =
+            jsonHandler<VectorStore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun update(
+            params: BetaVectorStoreUpdateParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<VectorStore> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("vector_stores", params.getPathParam(0))
+                    .putAllHeaders(DEFAULT_HEADERS)
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { updateHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val listHandler: Handler<BetaVectorStoreListPage.Response> =
+            jsonHandler<BetaVectorStoreListPage.Response>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun list(
+            params: BetaVectorStoreListParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<BetaVectorStoreListPage> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("vector_stores")
+                    .putAllHeaders(DEFAULT_HEADERS)
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { listHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+                    .let {
+                        BetaVectorStoreListPage.of(
+                            VectorStoreServiceImpl(clientOptions),
+                            params,
+                            it,
+                        )
+                    }
+            }
+        }
+
+        private val deleteHandler: Handler<VectorStoreDeleted> =
+            jsonHandler<VectorStoreDeleted>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun delete(
+            params: BetaVectorStoreDeleteParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<VectorStoreDeleted> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.DELETE)
+                    .addPathSegments("vector_stores", params.getPathParam(0))
+                    .putAllHeaders(DEFAULT_HEADERS)
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { deleteHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
     }
 }

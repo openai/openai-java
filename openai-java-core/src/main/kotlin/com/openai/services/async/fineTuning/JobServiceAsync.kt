@@ -4,7 +4,9 @@
 
 package com.openai.services.async.fineTuning
 
+import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
+import com.openai.core.http.HttpResponseFor
 import com.openai.models.FineTuningJob
 import com.openai.models.FineTuningJobCancelParams
 import com.openai.models.FineTuningJobCreateParams
@@ -17,6 +19,11 @@ import com.openai.services.async.fineTuning.jobs.CheckpointServiceAsync
 import java.util.concurrent.CompletableFuture
 
 interface JobServiceAsync {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
 
     fun checkpoints(): CheckpointServiceAsync
 
@@ -70,4 +77,75 @@ interface JobServiceAsync {
         params: FineTuningJobListEventsParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FineTuningJobListEventsPageAsync>
+
+    /** A view of [JobServiceAsync] that provides access to raw HTTP responses for each method. */
+    interface WithRawResponse {
+
+        fun checkpoints(): CheckpointServiceAsync.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `post /fine_tuning/jobs`, but is otherwise the same as
+         * [JobServiceAsync.create].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun create(
+            params: FineTuningJobCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<FineTuningJob>>
+
+        /**
+         * Returns a raw HTTP response for `get /fine_tuning/jobs/{fine_tuning_job_id}`, but is
+         * otherwise the same as [JobServiceAsync.retrieve].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(
+            params: FineTuningJobRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<FineTuningJob>>
+
+        /**
+         * Returns a raw HTTP response for `get /fine_tuning/jobs`, but is otherwise the same as
+         * [JobServiceAsync.list].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun list(
+            params: FineTuningJobListParams = FineTuningJobListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<FineTuningJobListPageAsync>>
+
+        /**
+         * Returns a raw HTTP response for `get /fine_tuning/jobs`, but is otherwise the same as
+         * [JobServiceAsync.list].
+         */
+        @MustBeClosed
+        fun list(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<FineTuningJobListPageAsync>> =
+            list(FineTuningJobListParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /fine_tuning/jobs/{fine_tuning_job_id}/cancel`, but
+         * is otherwise the same as [JobServiceAsync.cancel].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun cancel(
+            params: FineTuningJobCancelParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<FineTuningJob>>
+
+        /**
+         * Returns a raw HTTP response for `get /fine_tuning/jobs/{fine_tuning_job_id}/events`, but
+         * is otherwise the same as [JobServiceAsync.listEvents].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun listEvents(
+            params: FineTuningJobListEventsParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<FineTuningJobListEventsPageAsync>>
+    }
 }

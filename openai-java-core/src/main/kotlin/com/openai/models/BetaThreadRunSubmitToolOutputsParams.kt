@@ -12,6 +12,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.Params
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -128,14 +129,8 @@ private constructor(
             /** A list of tools for which the outputs are being submitted. */
             fun addToolOutput(toolOutput: ToolOutput) = apply {
                 toolOutputs =
-                    (toolOutputs ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(toolOutput)
+                    (toolOutputs ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("toolOutputs", it).add(toolOutput)
                     }
             }
 

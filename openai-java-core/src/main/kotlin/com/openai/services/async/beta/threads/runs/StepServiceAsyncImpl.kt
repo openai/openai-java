@@ -11,6 +11,8 @@ import com.openai.core.http.Headers
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse.Handler
+import com.openai.core.http.HttpResponseFor
+import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.errors.OpenAIError
 import com.openai.models.BetaThreadRunStepListPageAsync
@@ -27,78 +29,110 @@ class StepServiceAsyncImpl internal constructor(private val clientOptions: Clien
         private val DEFAULT_HEADERS = Headers.builder().put("OpenAI-Beta", "assistants=v2").build()
     }
 
-    private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+    private val withRawResponse: StepServiceAsync.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
 
-    private val retrieveHandler: Handler<RunStep> =
-        jsonHandler<RunStep>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    override fun withRawResponse(): StepServiceAsync.WithRawResponse = withRawResponse
 
-    /** Retrieves a run step. */
     override fun retrieve(
         params: BetaThreadRunStepRetrieveParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<RunStep> {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments(
-                    "threads",
-                    params.getPathParam(0),
-                    "runs",
-                    params.getPathParam(1),
-                    "steps",
-                    params.getPathParam(2),
-                )
-                .putAllHeaders(DEFAULT_HEADERS)
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        return request
-            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-            .thenApply { response ->
-                response
-                    .use { retrieveHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-            }
-    }
+    ): CompletableFuture<RunStep> =
+        // get /threads/{thread_id}/runs/{run_id}/steps/{step_id}
+        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
-    private val listHandler: Handler<BetaThreadRunStepListPageAsync.Response> =
-        jsonHandler<BetaThreadRunStepListPageAsync.Response>(clientOptions.jsonMapper)
-            .withErrorHandler(errorHandler)
-
-    /** Returns a list of run steps belonging to a run. */
     override fun list(
         params: BetaThreadRunStepListParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<BetaThreadRunStepListPageAsync> {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments(
-                    "threads",
-                    params.getPathParam(0),
-                    "runs",
-                    params.getPathParam(1),
-                    "steps",
-                )
-                .putAllHeaders(DEFAULT_HEADERS)
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        return request
-            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-            .thenApply { response ->
-                response
-                    .use { listHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
+    ): CompletableFuture<BetaThreadRunStepListPageAsync> =
+        // get /threads/{thread_id}/runs/{run_id}/steps
+        withRawResponse().list(params, requestOptions).thenApply { it.parse() }
+
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        StepServiceAsync.WithRawResponse {
+
+        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+
+        private val retrieveHandler: Handler<RunStep> =
+            jsonHandler<RunStep>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun retrieve(
+            params: BetaThreadRunStepRetrieveParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<RunStep>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments(
+                        "threads",
+                        params.getPathParam(0),
+                        "runs",
+                        params.getPathParam(1),
+                        "steps",
+                        params.getPathParam(2),
+                    )
+                    .putAllHeaders(DEFAULT_HEADERS)
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { retrieveHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
-                    .let { BetaThreadRunStepListPageAsync.of(this, params, it) }
-            }
+                }
+        }
+
+        private val listHandler: Handler<BetaThreadRunStepListPageAsync.Response> =
+            jsonHandler<BetaThreadRunStepListPageAsync.Response>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun list(
+            params: BetaThreadRunStepListParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<BetaThreadRunStepListPageAsync>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments(
+                        "threads",
+                        params.getPathParam(0),
+                        "runs",
+                        params.getPathParam(1),
+                        "steps",
+                    )
+                    .putAllHeaders(DEFAULT_HEADERS)
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { listHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                            .let {
+                                BetaThreadRunStepListPageAsync.of(
+                                    StepServiceAsyncImpl(clientOptions),
+                                    params,
+                                    it,
+                                )
+                            }
+                    }
+                }
+        }
     }
 }

@@ -22,6 +22,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.Params
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
@@ -833,14 +834,8 @@ private constructor(
             /** Adds additional messages to the thread before creating the run. */
             fun addAdditionalMessage(additionalMessage: AdditionalMessage) = apply {
                 additionalMessages =
-                    (additionalMessages ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(additionalMessage)
+                    (additionalMessages ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("additionalMessages", it).add(additionalMessage)
                     }
             }
 
@@ -1327,14 +1322,8 @@ private constructor(
              */
             fun addTool(tool: AssistantTool) = apply {
                 tools =
-                    (tools ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(tool)
+                    (tools ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("tools", it).add(tool)
                     }
             }
 
@@ -2441,14 +2430,8 @@ private constructor(
             /** A list of files attached to the message, and the tools they should be added to. */
             fun addAttachment(attachment: Attachment) = apply {
                 attachments =
-                    (attachments ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(attachment)
+                    (attachments ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("attachments", it).add(attachment)
                     }
             }
 
@@ -2868,14 +2851,8 @@ private constructor(
                 /** The tools to add this file to. */
                 fun addTool(tool: Tool) = apply {
                     tools =
-                        (tools ?: JsonField.of(mutableListOf())).apply {
-                            asKnown()
-                                .orElseThrow {
-                                    IllegalStateException(
-                                        "Field was set to non-list type: ${javaClass.simpleName}"
-                                    )
-                                }
-                                .add(tool)
+                        (tools ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("tools", it).add(tool)
                         }
                 }
 

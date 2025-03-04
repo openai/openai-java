@@ -4,7 +4,9 @@
 
 package com.openai.services.blocking
 
+import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
+import com.openai.core.http.HttpResponseFor
 import com.openai.models.Upload
 import com.openai.models.UploadCancelParams
 import com.openai.models.UploadCompleteParams
@@ -12,6 +14,11 @@ import com.openai.models.UploadCreateParams
 import com.openai.services.blocking.uploads.PartService
 
 interface UploadService {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
 
     fun parts(): PartService
 
@@ -66,4 +73,43 @@ interface UploadService {
         params: UploadCompleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Upload
+
+    /** A view of [UploadService] that provides access to raw HTTP responses for each method. */
+    interface WithRawResponse {
+
+        fun parts(): PartService.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `post /uploads`, but is otherwise the same as
+         * [UploadService.create].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun create(
+            params: UploadCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Upload>
+
+        /**
+         * Returns a raw HTTP response for `post /uploads/{upload_id}/cancel`, but is otherwise the
+         * same as [UploadService.cancel].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun cancel(
+            params: UploadCancelParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Upload>
+
+        /**
+         * Returns a raw HTTP response for `post /uploads/{upload_id}/complete`, but is otherwise
+         * the same as [UploadService.complete].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun complete(
+            params: UploadCompleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Upload>
+    }
 }

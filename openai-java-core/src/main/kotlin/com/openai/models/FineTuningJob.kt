@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.immutableEmptyMap
@@ -494,14 +495,8 @@ private constructor(
          */
         fun addResultFile(resultFile: String) = apply {
             resultFiles =
-                (resultFiles ?: JsonField.of(mutableListOf())).apply {
-                    asKnown()
-                        .orElseThrow {
-                            IllegalStateException(
-                                "Field was set to non-list type: ${javaClass.simpleName}"
-                            )
-                        }
-                        .add(resultFile)
+                (resultFiles ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("resultFiles", it).add(resultFile)
                 }
         }
 
@@ -633,14 +628,8 @@ private constructor(
         /** A list of integrations to enable for this fine-tuning job. */
         fun addIntegration(integration: FineTuningJobWandbIntegrationObject) = apply {
             integrations =
-                (integrations ?: JsonField.of(mutableListOf())).apply {
-                    asKnown()
-                        .orElseThrow {
-                            IllegalStateException(
-                                "Field was set to non-list type: ${javaClass.simpleName}"
-                            )
-                        }
-                        .add(integration)
+                (integrations ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("integrations", it).add(integration)
                 }
         }
 

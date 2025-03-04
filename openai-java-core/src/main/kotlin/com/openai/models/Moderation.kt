@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
@@ -928,14 +929,8 @@ private constructor(
             /** The applied input type(s) for the category 'harassment'. */
             fun addHarassment(harassment: Harassment) = apply {
                 this.harassment =
-                    (this.harassment ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(harassment)
+                    (this.harassment ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("harassment", it).add(harassment)
                     }
             }
 
@@ -953,14 +948,8 @@ private constructor(
             /** The applied input type(s) for the category 'harassment/threatening'. */
             fun addHarassmentThreatening(harassmentThreatening: HarassmentThreatening) = apply {
                 this.harassmentThreatening =
-                    (this.harassmentThreatening ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(harassmentThreatening)
+                    (this.harassmentThreatening ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("harassmentThreatening", it).add(harassmentThreatening)
                     }
             }
 
@@ -975,14 +964,8 @@ private constructor(
             /** The applied input type(s) for the category 'hate'. */
             fun addHate(hate: Hate) = apply {
                 this.hate =
-                    (this.hate ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(hate)
+                    (this.hate ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("hate", it).add(hate)
                     }
             }
 
@@ -998,14 +981,8 @@ private constructor(
             /** The applied input type(s) for the category 'hate/threatening'. */
             fun addHateThreatening(hateThreatening: HateThreatening) = apply {
                 this.hateThreatening =
-                    (this.hateThreatening ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(hateThreatening)
+                    (this.hateThreatening ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("hateThreatening", it).add(hateThreatening)
                     }
             }
 
@@ -1020,14 +997,8 @@ private constructor(
             /** The applied input type(s) for the category 'illicit'. */
             fun addIllicit(illicit: Illicit) = apply {
                 this.illicit =
-                    (this.illicit ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(illicit)
+                    (this.illicit ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("illicit", it).add(illicit)
                     }
             }
 
@@ -1043,14 +1014,8 @@ private constructor(
             /** The applied input type(s) for the category 'illicit/violent'. */
             fun addIllicitViolent(illicitViolent: IllicitViolent) = apply {
                 this.illicitViolent =
-                    (this.illicitViolent ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(illicitViolent)
+                    (this.illicitViolent ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("illicitViolent", it).add(illicitViolent)
                     }
             }
 
@@ -1065,14 +1030,8 @@ private constructor(
             /** The applied input type(s) for the category 'self-harm'. */
             fun addSelfHarm(selfHarm: SelfHarm) = apply {
                 this.selfHarm =
-                    (this.selfHarm ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(selfHarm)
+                    (this.selfHarm ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("selfHarm", it).add(selfHarm)
                     }
             }
 
@@ -1089,14 +1048,8 @@ private constructor(
             /** The applied input type(s) for the category 'self-harm/instructions'. */
             fun addSelfHarmInstruction(selfHarmInstruction: SelfHarmInstruction) = apply {
                 selfHarmInstructions =
-                    (selfHarmInstructions ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(selfHarmInstruction)
+                    (selfHarmInstructions ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("selfHarmInstructions", it).add(selfHarmInstruction)
                     }
             }
 
@@ -1112,14 +1065,8 @@ private constructor(
             /** The applied input type(s) for the category 'self-harm/intent'. */
             fun addSelfHarmIntent(selfHarmIntent: SelfHarmIntent) = apply {
                 this.selfHarmIntent =
-                    (this.selfHarmIntent ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(selfHarmIntent)
+                    (this.selfHarmIntent ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("selfHarmIntent", it).add(selfHarmIntent)
                     }
             }
 
@@ -1134,14 +1081,8 @@ private constructor(
             /** The applied input type(s) for the category 'sexual'. */
             fun addSexual(sexual: Sexual) = apply {
                 this.sexual =
-                    (this.sexual ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(sexual)
+                    (this.sexual ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("sexual", it).add(sexual)
                     }
             }
 
@@ -1157,14 +1098,8 @@ private constructor(
             /** The applied input type(s) for the category 'sexual/minors'. */
             fun addSexualMinor(sexualMinor: SexualMinor) = apply {
                 sexualMinors =
-                    (sexualMinors ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(sexualMinor)
+                    (sexualMinors ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("sexualMinors", it).add(sexualMinor)
                     }
             }
 
@@ -1179,14 +1114,8 @@ private constructor(
             /** The applied input type(s) for the category 'violence'. */
             fun addViolence(violence: Violence) = apply {
                 this.violence =
-                    (this.violence ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(violence)
+                    (this.violence ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("violence", it).add(violence)
                     }
             }
 
@@ -1202,14 +1131,8 @@ private constructor(
             /** The applied input type(s) for the category 'violence/graphic'. */
             fun addViolenceGraphic(violenceGraphic: ViolenceGraphic) = apply {
                 this.violenceGraphic =
-                    (this.violenceGraphic ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(violenceGraphic)
+                    (this.violenceGraphic ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("violenceGraphic", it).add(violenceGraphic)
                     }
             }
 

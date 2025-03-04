@@ -11,7 +11,9 @@ import com.openai.core.http.Headers
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse.Handler
-import com.openai.core.json
+import com.openai.core.http.HttpResponseFor
+import com.openai.core.http.json
+import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.errors.OpenAIError
 import com.openai.models.BetaVectorStoreFileBatchCancelParams
@@ -30,145 +32,195 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
         private val DEFAULT_HEADERS = Headers.builder().put("OpenAI-Beta", "assistants=v2").build()
     }
 
-    private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+    private val withRawResponse: FileBatchServiceAsync.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
 
-    private val createHandler: Handler<VectorStoreFileBatch> =
-        jsonHandler<VectorStoreFileBatch>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    override fun withRawResponse(): FileBatchServiceAsync.WithRawResponse = withRawResponse
 
-    /** Create a vector store file batch. */
     override fun create(
         params: BetaVectorStoreFileBatchCreateParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<VectorStoreFileBatch> {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.POST)
-                .addPathSegments("vector_stores", params.getPathParam(0), "file_batches")
-                .putAllHeaders(DEFAULT_HEADERS)
-                .body(json(clientOptions.jsonMapper, params._body()))
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        return request
-            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-            .thenApply { response ->
-                response
-                    .use { createHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-            }
-    }
+    ): CompletableFuture<VectorStoreFileBatch> =
+        // post /vector_stores/{vector_store_id}/file_batches
+        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
 
-    private val retrieveHandler: Handler<VectorStoreFileBatch> =
-        jsonHandler<VectorStoreFileBatch>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /** Retrieves a vector store file batch. */
     override fun retrieve(
         params: BetaVectorStoreFileBatchRetrieveParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<VectorStoreFileBatch> {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments(
-                    "vector_stores",
-                    params.getPathParam(0),
-                    "file_batches",
-                    params.getPathParam(1),
-                )
-                .putAllHeaders(DEFAULT_HEADERS)
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        return request
-            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-            .thenApply { response ->
-                response
-                    .use { retrieveHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-            }
-    }
+    ): CompletableFuture<VectorStoreFileBatch> =
+        // get /vector_stores/{vector_store_id}/file_batches/{batch_id}
+        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
-    private val cancelHandler: Handler<VectorStoreFileBatch> =
-        jsonHandler<VectorStoreFileBatch>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /**
-     * Cancel a vector store file batch. This attempts to cancel the processing of files in this
-     * batch as soon as possible.
-     */
     override fun cancel(
         params: BetaVectorStoreFileBatchCancelParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<VectorStoreFileBatch> {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.POST)
-                .addPathSegments(
-                    "vector_stores",
-                    params.getPathParam(0),
-                    "file_batches",
-                    params.getPathParam(1),
-                    "cancel",
-                )
-                .putAllHeaders(DEFAULT_HEADERS)
-                .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        return request
-            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-            .thenApply { response ->
-                response
-                    .use { cancelHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-            }
-    }
+    ): CompletableFuture<VectorStoreFileBatch> =
+        // post /vector_stores/{vector_store_id}/file_batches/{batch_id}/cancel
+        withRawResponse().cancel(params, requestOptions).thenApply { it.parse() }
 
-    private val listFilesHandler: Handler<BetaVectorStoreFileBatchListFilesPageAsync.Response> =
-        jsonHandler<BetaVectorStoreFileBatchListFilesPageAsync.Response>(clientOptions.jsonMapper)
-            .withErrorHandler(errorHandler)
-
-    /** Returns a list of vector store files in a batch. */
     override fun listFiles(
         params: BetaVectorStoreFileBatchListFilesParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<BetaVectorStoreFileBatchListFilesPageAsync> {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments(
-                    "vector_stores",
-                    params.getPathParam(0),
-                    "file_batches",
-                    params.getPathParam(1),
-                    "files",
-                )
-                .putAllHeaders(DEFAULT_HEADERS)
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        return request
-            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-            .thenApply { response ->
-                response
-                    .use { listFilesHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
+    ): CompletableFuture<BetaVectorStoreFileBatchListFilesPageAsync> =
+        // get /vector_stores/{vector_store_id}/file_batches/{batch_id}/files
+        withRawResponse().listFiles(params, requestOptions).thenApply { it.parse() }
+
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        FileBatchServiceAsync.WithRawResponse {
+
+        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+
+        private val createHandler: Handler<VectorStoreFileBatch> =
+            jsonHandler<VectorStoreFileBatch>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun create(
+            params: BetaVectorStoreFileBatchCreateParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("vector_stores", params.getPathParam(0), "file_batches")
+                    .putAllHeaders(DEFAULT_HEADERS)
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { createHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
-                    .let { BetaVectorStoreFileBatchListFilesPageAsync.of(this, params, it) }
-            }
+                }
+        }
+
+        private val retrieveHandler: Handler<VectorStoreFileBatch> =
+            jsonHandler<VectorStoreFileBatch>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun retrieve(
+            params: BetaVectorStoreFileBatchRetrieveParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments(
+                        "vector_stores",
+                        params.getPathParam(0),
+                        "file_batches",
+                        params.getPathParam(1),
+                    )
+                    .putAllHeaders(DEFAULT_HEADERS)
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { retrieveHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val cancelHandler: Handler<VectorStoreFileBatch> =
+            jsonHandler<VectorStoreFileBatch>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun cancel(
+            params: BetaVectorStoreFileBatchCancelParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments(
+                        "vector_stores",
+                        params.getPathParam(0),
+                        "file_batches",
+                        params.getPathParam(1),
+                        "cancel",
+                    )
+                    .putAllHeaders(DEFAULT_HEADERS)
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { cancelHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val listFilesHandler: Handler<BetaVectorStoreFileBatchListFilesPageAsync.Response> =
+            jsonHandler<BetaVectorStoreFileBatchListFilesPageAsync.Response>(
+                    clientOptions.jsonMapper
+                )
+                .withErrorHandler(errorHandler)
+
+        override fun listFiles(
+            params: BetaVectorStoreFileBatchListFilesParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<BetaVectorStoreFileBatchListFilesPageAsync>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments(
+                        "vector_stores",
+                        params.getPathParam(0),
+                        "file_batches",
+                        params.getPathParam(1),
+                        "files",
+                    )
+                    .putAllHeaders(DEFAULT_HEADERS)
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { listFilesHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                            .let {
+                                BetaVectorStoreFileBatchListFilesPageAsync.of(
+                                    FileBatchServiceAsyncImpl(clientOptions),
+                                    params,
+                                    it,
+                                )
+                            }
+                    }
+                }
+        }
     }
 }

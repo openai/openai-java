@@ -6,6 +6,7 @@ package com.openai.services.blocking.chat
 
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
+import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
 import com.openai.models.ChatCompletion
 import com.openai.models.ChatCompletionChunk
@@ -17,6 +18,11 @@ import com.openai.models.ChatCompletionUpdateParams
 import com.openai.services.blocking.chat.completions.MessageService
 
 interface CompletionService {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
 
     fun messages(): MessageService
 
@@ -85,4 +91,65 @@ interface CompletionService {
         params: ChatCompletionDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ChatCompletionDeleted
+
+    /** A view of [CompletionService] that provides access to raw HTTP responses for each method. */
+    interface WithRawResponse {
+
+        fun messages(): MessageService.WithRawResponse
+
+        /**
+         * Returns a raw HTTP response for `post /chat/completions`, but is otherwise the same as
+         * [CompletionService.create].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun create(
+            params: ChatCompletionCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ChatCompletion>
+
+        /**
+         * Returns a raw HTTP response for `post /chat/completions`, but is otherwise the same as
+         * [CompletionService.createStreaming].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun createStreaming(
+            params: ChatCompletionCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<ChatCompletionChunk>>
+
+        /**
+         * Returns a raw HTTP response for `get /chat/completions/{completion_id}`, but is otherwise
+         * the same as [CompletionService.retrieve].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(
+            params: ChatCompletionRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ChatCompletion>
+
+        /**
+         * Returns a raw HTTP response for `post /chat/completions/{completion_id}`, but is
+         * otherwise the same as [CompletionService.update].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun update(
+            params: ChatCompletionUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ChatCompletion>
+
+        /**
+         * Returns a raw HTTP response for `delete /chat/completions/{completion_id}`, but is
+         * otherwise the same as [CompletionService.delete].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun delete(
+            params: ChatCompletionDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ChatCompletionDeleted>
+    }
 }

@@ -10,7 +10,9 @@ import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse.Handler
-import com.openai.core.json
+import com.openai.core.http.HttpResponseFor
+import com.openai.core.http.json
+import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
 import com.openai.models.Model
@@ -23,82 +25,108 @@ import com.openai.models.ModelRetrieveParams
 class ModelServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     ModelService {
 
-    private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
-
-    private val retrieveHandler: Handler<Model> =
-        jsonHandler<Model>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /**
-     * Retrieves a model instance, providing basic information about the model such as the owner and
-     * permissioning.
-     */
-    override fun retrieve(params: ModelRetrieveParams, requestOptions: RequestOptions): Model {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("models", params.getPathParam(0))
-                .build()
-                .prepare(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.execute(request, requestOptions)
-        return response
-            .use { retrieveHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
-            }
+    private val withRawResponse: ModelService.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
     }
 
-    private val listHandler: Handler<ModelListPage.Response> =
-        jsonHandler<ModelListPage.Response>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    override fun withRawResponse(): ModelService.WithRawResponse = withRawResponse
 
-    /**
-     * Lists the currently available models, and provides basic information about each one such as
-     * the owner and availability.
-     */
-    override fun list(params: ModelListParams, requestOptions: RequestOptions): ModelListPage {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("models")
-                .build()
-                .prepare(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.execute(request, requestOptions)
-        return response
-            .use { listHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
+    override fun retrieve(params: ModelRetrieveParams, requestOptions: RequestOptions): Model =
+        // get /models/{model}
+        withRawResponse().retrieve(params, requestOptions).parse()
+
+    override fun list(params: ModelListParams, requestOptions: RequestOptions): ModelListPage =
+        // get /models
+        withRawResponse().list(params, requestOptions).parse()
+
+    override fun delete(params: ModelDeleteParams, requestOptions: RequestOptions): ModelDeleted =
+        // delete /models/{model}
+        withRawResponse().delete(params, requestOptions).parse()
+
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        ModelService.WithRawResponse {
+
+        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+
+        private val retrieveHandler: Handler<Model> =
+            jsonHandler<Model>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun retrieve(
+            params: ModelRetrieveParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Model> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("models", params.getPathParam(0))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { retrieveHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
-            .let { ModelListPage.of(this, params, it) }
-    }
+        }
 
-    private val deleteHandler: Handler<ModelDeleted> =
-        jsonHandler<ModelDeleted>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val listHandler: Handler<ModelListPage.Response> =
+            jsonHandler<ModelListPage.Response>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
 
-    /**
-     * Delete a fine-tuned model. You must have the Owner role in your organization to delete a
-     * model.
-     */
-    override fun delete(params: ModelDeleteParams, requestOptions: RequestOptions): ModelDeleted {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.DELETE)
-                .addPathSegments("models", params.getPathParam(0))
-                .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
-                .build()
-                .prepare(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.execute(request, requestOptions)
-        return response
-            .use { deleteHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
+        override fun list(
+            params: ModelListParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ModelListPage> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("models")
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { listHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+                    .let { ModelListPage.of(ModelServiceImpl(clientOptions), params, it) }
             }
+        }
+
+        private val deleteHandler: Handler<ModelDeleted> =
+            jsonHandler<ModelDeleted>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun delete(
+            params: ModelDeleteParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ModelDeleted> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.DELETE)
+                    .addPathSegments("models", params.getPathParam(0))
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { deleteHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
     }
 }

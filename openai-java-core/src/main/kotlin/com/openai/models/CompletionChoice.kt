@@ -12,6 +12,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
@@ -377,14 +378,8 @@ private constructor(
 
             fun addTextOffset(textOffset: Long) = apply {
                 this.textOffset =
-                    (this.textOffset ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(textOffset)
+                    (this.textOffset ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("textOffset", it).add(textOffset)
                     }
             }
 
@@ -397,14 +392,8 @@ private constructor(
 
             fun addTokenLogprob(tokenLogprob: Double) = apply {
                 tokenLogprobs =
-                    (tokenLogprobs ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(tokenLogprob)
+                    (tokenLogprobs ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("tokenLogprobs", it).add(tokenLogprob)
                     }
             }
 
@@ -416,14 +405,8 @@ private constructor(
 
             fun addToken(token: String) = apply {
                 tokens =
-                    (tokens ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(token)
+                    (tokens ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("tokens", it).add(token)
                     }
             }
 
@@ -435,14 +418,8 @@ private constructor(
 
             fun addTopLogprob(topLogprob: TopLogprob) = apply {
                 topLogprobs =
-                    (topLogprobs ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(topLogprob)
+                    (topLogprobs ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("topLogprobs", it).add(topLogprob)
                     }
             }
 

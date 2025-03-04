@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.immutableEmptyMap
@@ -328,14 +329,8 @@ private constructor(
         /** A list of files attached to the message, and the tools they were added to. */
         fun addAttachment(attachment: Attachment) = apply {
             attachments =
-                (attachments ?: JsonField.of(mutableListOf())).apply {
-                    asKnown()
-                        .orElseThrow {
-                            IllegalStateException(
-                                "Field was set to non-list type: ${javaClass.simpleName}"
-                            )
-                        }
-                        .add(attachment)
+                (attachments ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("attachments", it).add(attachment)
                 }
         }
 
@@ -364,14 +359,8 @@ private constructor(
         /** The content of the message in array of text and/or images. */
         fun addContent(content: MessageContent) = apply {
             this.content =
-                (this.content ?: JsonField.of(mutableListOf())).apply {
-                    asKnown()
-                        .orElseThrow {
-                            IllegalStateException(
-                                "Field was set to non-list type: ${javaClass.simpleName}"
-                            )
-                        }
-                        .add(content)
+                (this.content ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("content", it).add(content)
                 }
         }
 
@@ -646,14 +635,8 @@ private constructor(
             /** The tools to add this file to. */
             fun addTool(tool: Tool) = apply {
                 tools =
-                    (tools ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(tool)
+                    (tools ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("tools", it).add(tool)
                     }
             }
 

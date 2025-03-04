@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
@@ -171,14 +172,8 @@ private constructor(
         /** The list of completion choices the model generated for the input prompt. */
         fun addChoice(choice: CompletionChoice) = apply {
             choices =
-                (choices ?: JsonField.of(mutableListOf())).apply {
-                    asKnown()
-                        .orElseThrow {
-                            IllegalStateException(
-                                "Field was set to non-list type: ${javaClass.simpleName}"
-                            )
-                        }
-                        .add(choice)
+                (choices ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("choices", it).add(choice)
                 }
         }
 
