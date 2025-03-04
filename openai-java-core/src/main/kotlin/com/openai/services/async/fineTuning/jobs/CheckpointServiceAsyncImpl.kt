@@ -36,13 +36,14 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
                 .addPathSegments("fine_tuning", "jobs", params.getPathParam(0), "checkpoints")
                 .build()
                 .prepareAsync(clientOptions, params, deploymentModel = null)
+        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
                 response
                     .use { listHandler.handle(it) }
                     .also {
-                        if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                        if (requestOptions.responseValidation!!) {
                             it.validate()
                         }
                     }

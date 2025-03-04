@@ -42,13 +42,14 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 .addPathSegments("files", params.getPathParam(0))
                 .build()
                 .prepareAsync(clientOptions, params, deploymentModel = null)
+        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
                 response
                     .use { retrieveHandler.handle(it) }
                     .also {
-                        if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                        if (requestOptions.responseValidation!!) {
                             it.validate()
                         }
                     }
@@ -70,13 +71,14 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 .addPathSegments("files")
                 .build()
                 .prepareAsync(clientOptions, params, deploymentModel = null)
+        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
                 response
                     .use { listHandler.handle(it) }
                     .also {
-                        if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                        if (requestOptions.responseValidation!!) {
                             it.validate()
                         }
                     }
@@ -99,13 +101,14 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                 .build()
                 .prepareAsync(clientOptions, params, deploymentModel = null)
+        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
                 response
                     .use { deleteHandler.handle(it) }
                     .also {
-                        if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                        if (requestOptions.responseValidation!!) {
                             it.validate()
                         }
                     }
@@ -123,6 +126,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 .addPathSegments("files", params.getPathParam(0), "content")
                 .build()
                 .prepareAsync(clientOptions, params, deploymentModel = null)
+        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
         return request.thenComposeAsync {
             clientOptions.httpClient.executeAsync(it, requestOptions)
         }

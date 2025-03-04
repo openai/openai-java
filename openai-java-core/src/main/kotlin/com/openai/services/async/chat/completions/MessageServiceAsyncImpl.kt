@@ -39,13 +39,14 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                 .addPathSegments("chat", "completions", params.getPathParam(0), "messages")
                 .build()
                 .prepareAsync(clientOptions, params, null)
+        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
         return request
             .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
             .thenApply { response ->
                 response
                     .use { listHandler.handle(it) }
                     .also {
-                        if (requestOptions.responseValidation ?: clientOptions.responseValidation) {
+                        if (requestOptions.responseValidation!!) {
                             it.validate()
                         }
                     }
