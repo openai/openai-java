@@ -140,6 +140,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .input()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -246,6 +254,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ModerationCreateParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .input()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

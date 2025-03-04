@@ -61,6 +61,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of
+         * [StaticFileChunkingStrategyObject].
+         *
+         * The following fields are required:
+         * ```java
+         * .static_()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

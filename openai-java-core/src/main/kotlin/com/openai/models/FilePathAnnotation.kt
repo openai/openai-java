@@ -87,6 +87,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [FilePathAnnotation].
+         *
+         * The following fields are required:
+         * ```java
+         * .endIndex()
+         * .filePath()
+         * .startIndex()
+         * .text()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -197,6 +208,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [FilePath].
+             *
+             * The following fields are required:
+             * ```java
+             * .fileId()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 

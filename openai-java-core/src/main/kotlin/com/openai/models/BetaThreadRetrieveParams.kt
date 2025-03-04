@@ -38,6 +38,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [BetaThreadRetrieveParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .threadId()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

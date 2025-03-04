@@ -60,6 +60,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ImageUrlContentBlock].
+         *
+         * The following fields are required:
+         * ```java
+         * .imageUrl()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

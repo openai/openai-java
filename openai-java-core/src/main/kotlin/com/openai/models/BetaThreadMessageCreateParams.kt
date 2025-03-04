@@ -207,6 +207,15 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .content()
+             * .role()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -365,6 +374,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of
+         * [BetaThreadMessageCreateParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .threadId()
+         * .content()
+         * .role()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -913,6 +933,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Attachment]. */
             @JvmStatic fun builder() = Builder()
         }
 

@@ -734,6 +734,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .assistantId()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -1476,6 +1484,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [BetaThreadRunCreateParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .threadId()
+         * .assistantId()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -2358,6 +2375,15 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [AdditionalMessage].
+             *
+             * The following fields are required:
+             * ```java
+             * .content()
+             * .role()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -2817,6 +2843,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [Attachment]. */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -3283,6 +3310,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [TruncationStrategy].
+             *
+             * The following fields are required:
+             * ```java
+             * .type()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 

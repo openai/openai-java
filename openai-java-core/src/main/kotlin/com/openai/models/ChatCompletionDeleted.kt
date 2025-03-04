@@ -69,6 +69,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ChatCompletionDeleted].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .deleted()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

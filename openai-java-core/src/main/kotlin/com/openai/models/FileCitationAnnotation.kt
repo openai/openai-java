@@ -90,6 +90,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [FileCitationAnnotation].
+         *
+         * The following fields are required:
+         * ```java
+         * .endIndex()
+         * .fileCitation()
+         * .startIndex()
+         * .text()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -202,6 +213,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [FileCitation].
+             *
+             * The following fields are required:
+             * ```java
+             * .fileId()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 

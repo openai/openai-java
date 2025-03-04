@@ -49,6 +49,7 @@ private constructor(
 
     companion object {
 
+        /** Returns a mutable builder for constructing an instance of [ResponseFormatText]. */
         @JvmStatic fun builder() = Builder()
     }
 

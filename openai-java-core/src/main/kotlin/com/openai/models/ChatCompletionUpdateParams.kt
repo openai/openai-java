@@ -124,6 +124,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .metadata()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -214,6 +222,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ChatCompletionUpdateParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .completionId()
+         * .metadata()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

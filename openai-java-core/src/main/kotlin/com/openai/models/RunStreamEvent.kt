@@ -601,6 +601,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadRunCreated].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -729,6 +737,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadRunQueued].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -857,6 +873,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadRunInProgress].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -985,6 +1009,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadRunRequiresAction].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -1112,6 +1144,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadRunCompleted].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -1240,6 +1280,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadRunIncomplete].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -1365,6 +1413,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadRunFailed].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -1493,6 +1549,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadRunCancelling].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -1620,6 +1684,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadRunCancelled].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -1745,6 +1817,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ThreadRunExpired].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 

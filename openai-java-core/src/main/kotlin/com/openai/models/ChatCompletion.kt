@@ -137,6 +137,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ChatCompletion].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .choices()
+         * .created()
+         * .model()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -354,6 +365,17 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Choice].
+             *
+             * The following fields are required:
+             * ```java
+             * .finishReason()
+             * .index()
+             * .logprobs()
+             * .message()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -629,6 +651,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Logprobs].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .content()
+                 * .refusal()
+                 * ```
+                 */
                 @JvmStatic fun builder() = Builder()
             }
 

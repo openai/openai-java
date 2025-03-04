@@ -63,6 +63,16 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ModelDeleted].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .deleted()
+         * .object_()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

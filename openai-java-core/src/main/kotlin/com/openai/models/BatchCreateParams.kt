@@ -232,6 +232,16 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .completionWindow()
+             * .endpoint()
+             * .inputFileId()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -393,6 +403,16 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [BatchCreateParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .completionWindow()
+         * .endpoint()
+         * .inputFileId()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

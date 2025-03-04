@@ -70,6 +70,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [RunStepDeltaEvent].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .delta()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

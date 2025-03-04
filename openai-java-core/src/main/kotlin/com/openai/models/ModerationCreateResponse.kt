@@ -69,6 +69,16 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ModerationCreateResponse].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .model()
+         * .results()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

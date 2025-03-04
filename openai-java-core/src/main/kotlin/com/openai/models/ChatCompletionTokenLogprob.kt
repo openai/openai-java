@@ -105,6 +105,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ChatCompletionTokenLogprob].
+         *
+         * The following fields are required:
+         * ```java
+         * .token()
+         * .bytes()
+         * .logprob()
+         * .topLogprobs()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -307,6 +318,16 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [TopLogprob].
+             *
+             * The following fields are required:
+             * ```java
+             * .token()
+             * .bytes()
+             * .logprob()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 

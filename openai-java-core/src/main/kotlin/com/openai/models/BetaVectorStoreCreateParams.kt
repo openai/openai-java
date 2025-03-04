@@ -206,6 +206,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -388,6 +389,9 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [BetaVectorStoreCreateParams].
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -680,6 +684,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ExpiresAfter].
+             *
+             * The following fields are required:
+             * ```java
+             * .days()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 

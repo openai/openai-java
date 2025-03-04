@@ -160,6 +160,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ChatCompletionChunk].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .choices()
+         * .created()
+         * .model()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -407,6 +418,16 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Choice].
+             *
+             * The following fields are required:
+             * ```java
+             * .delta()
+             * .finishReason()
+             * .index()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -598,6 +619,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [Delta]. */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -772,6 +794,7 @@ private constructor(
 
                 companion object {
 
+                    /** Returns a mutable builder for constructing an instance of [FunctionCall]. */
                     @JvmStatic fun builder() = Builder()
                 }
 
@@ -1044,6 +1067,14 @@ private constructor(
 
                 companion object {
 
+                    /**
+                     * Returns a mutable builder for constructing an instance of [ToolCall].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .index()
+                     * ```
+                     */
                     @JvmStatic fun builder() = Builder()
                 }
 
@@ -1176,6 +1207,7 @@ private constructor(
 
                     companion object {
 
+                        /** Returns a mutable builder for constructing an instance of [Function]. */
                         @JvmStatic fun builder() = Builder()
                     }
 
@@ -1580,6 +1612,15 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Logprobs].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .content()
+                 * .refusal()
+                 * ```
+                 */
                 @JvmStatic fun builder() = Builder()
             }
 

@@ -32,6 +32,7 @@ private constructor(
 
         @JvmStatic fun none(): ModelListParams = builder().build()
 
+        /** Returns a mutable builder for constructing an instance of [ModelListParams]. */
         @JvmStatic fun builder() = Builder()
     }
 

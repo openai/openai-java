@@ -61,6 +61,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of
+         * [ChatCompletionContentPartRefusal].
+         *
+         * The following fields are required:
+         * ```java
+         * .refusal()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
