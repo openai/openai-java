@@ -12,6 +12,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.Params
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -157,14 +158,8 @@ private constructor(
             /** The ordered list of Part IDs. */
             fun addPartId(partId: String) = apply {
                 partIds =
-                    (partIds ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(partId)
+                    (partIds ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("partIds", it).add(partId)
                     }
             }
 

@@ -14,10 +14,12 @@ import com.openai.core.http.AsyncStreamResponse
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse.Handler
+import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
+import com.openai.core.http.json
 import com.openai.core.http.map
+import com.openai.core.http.parseable
 import com.openai.core.http.toAsync
-import com.openai.core.json
 import com.openai.core.prepareAsync
 import com.openai.errors.OpenAIError
 import com.openai.models.ChatCompletion
@@ -34,197 +36,226 @@ import java.util.concurrent.CompletableFuture
 class CompletionServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     CompletionServiceAsync {
 
-    private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+    private val withRawResponse: CompletionServiceAsync.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
 
     private val messages: MessageServiceAsync by lazy { MessageServiceAsyncImpl(clientOptions) }
 
+    override fun withRawResponse(): CompletionServiceAsync.WithRawResponse = withRawResponse
+
     override fun messages(): MessageServiceAsync = messages
 
-    private val createHandler: Handler<ChatCompletion> =
-        jsonHandler<ChatCompletion>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /**
-     * Creates a model response for the given chat conversation. Learn more in the
-     * [text generation](https://platform.openai.com/docs/guides/text-generation),
-     * [vision](https://platform.openai.com/docs/guides/vision), and
-     * [audio](https://platform.openai.com/docs/guides/audio) guides.
-     *
-     * Parameter support can differ depending on the model used to generate the response,
-     * particularly for newer reasoning models. Parameters that are only supported for reasoning
-     * models are noted below. For the current state of unsupported parameters in reasoning models,
-     * [refer to the reasoning guide](https://platform.openai.com/docs/guides/reasoning).
-     */
     override fun create(
         params: ChatCompletionCreateParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<ChatCompletion> {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.POST)
-                .addPathSegments("chat", "completions")
-                .body(json(clientOptions.jsonMapper, params._body()))
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        return request
-            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-            .thenApply { response ->
-                response
-                    .use { createHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-            }
-    }
+    ): CompletableFuture<ChatCompletion> =
+        // post /chat/completions
+        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
 
-    private val createStreamingHandler: Handler<StreamResponse<ChatCompletionChunk>> =
-        sseHandler(clientOptions.jsonMapper)
-            .mapJson<ChatCompletionChunk>()
-            .withErrorHandler(errorHandler)
-
-    /**
-     * Creates a model response for the given chat conversation. Learn more in the
-     * [text generation](https://platform.openai.com/docs/guides/text-generation),
-     * [vision](https://platform.openai.com/docs/guides/vision), and
-     * [audio](https://platform.openai.com/docs/guides/audio) guides.
-     *
-     * Parameter support can differ depending on the model used to generate the response,
-     * particularly for newer reasoning models. Parameters that are only supported for reasoning
-     * models are noted below. For the current state of unsupported parameters in reasoning models,
-     * [refer to the reasoning guide](https://platform.openai.com/docs/guides/reasoning).
-     */
     override fun createStreaming(
         params: ChatCompletionCreateParams,
         requestOptions: RequestOptions,
-    ): AsyncStreamResponse<ChatCompletionChunk> {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.POST)
-                .addPathSegments("chat", "completions")
-                .body(
-                    json(
-                        clientOptions.jsonMapper,
-                        params
-                            ._body()
-                            .toBuilder()
-                            .putAdditionalProperty("stream", JsonValue.from(true))
-                            .build(),
-                    )
-                )
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        return request
-            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-            .thenApply { response ->
-                response
-                    .let { createStreamingHandler.handle(it) }
-                    .let { streamResponse ->
-                        if (requestOptions.responseValidation!!) {
-                            streamResponse.map { it.validate() }
-                        } else {
-                            streamResponse
-                        }
-                    }
-            }
+    ): AsyncStreamResponse<ChatCompletionChunk> =
+        // post /chat/completions
+        withRawResponse()
+            .createStreaming(params, requestOptions)
+            .thenApply { it.parse() }
             .toAsync(clientOptions.streamHandlerExecutor)
-    }
 
-    private val retrieveHandler: Handler<ChatCompletion> =
-        jsonHandler<ChatCompletion>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /**
-     * Get a stored chat completion. Only chat completions that have been created with the `store`
-     * parameter set to `true` will be returned.
-     */
     override fun retrieve(
         params: ChatCompletionRetrieveParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<ChatCompletion> {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.GET)
-                .addPathSegments("chat", "completions", params.getPathParam(0))
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        return request
-            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-            .thenApply { response ->
-                response
-                    .use { retrieveHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-            }
-    }
+    ): CompletableFuture<ChatCompletion> =
+        // get /chat/completions/{completion_id}
+        withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
-    private val updateHandler: Handler<ChatCompletion> =
-        jsonHandler<ChatCompletion>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /**
-     * Modify a stored chat completion. Only chat completions that have been created with the
-     * `store` parameter set to `true` can be modified. Currently, the only supported modification
-     * is to update the `metadata` field.
-     */
     override fun update(
         params: ChatCompletionUpdateParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<ChatCompletion> {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.POST)
-                .addPathSegments("chat", "completions", params.getPathParam(0))
-                .body(json(clientOptions.jsonMapper, params._body()))
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        return request
-            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-            .thenApply { response ->
-                response
-                    .use { updateHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
-                    }
-            }
-    }
+    ): CompletableFuture<ChatCompletion> =
+        // post /chat/completions/{completion_id}
+        withRawResponse().update(params, requestOptions).thenApply { it.parse() }
 
-    private val deleteHandler: Handler<ChatCompletionDeleted> =
-        jsonHandler<ChatCompletionDeleted>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-    /**
-     * Delete a stored chat completion. Only chat completions that have been created with the
-     * `store` parameter set to `true` can be deleted.
-     */
     override fun delete(
         params: ChatCompletionDeleteParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<ChatCompletionDeleted> {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.DELETE)
-                .addPathSegments("chat", "completions", params.getPathParam(0))
-                .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
-                .build()
-                .prepareAsync(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        return request
-            .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-            .thenApply { response ->
-                response
-                    .use { deleteHandler.handle(it) }
-                    .also {
-                        if (requestOptions.responseValidation!!) {
-                            it.validate()
-                        }
+    ): CompletableFuture<ChatCompletionDeleted> =
+        // delete /chat/completions/{completion_id}
+        withRawResponse().delete(params, requestOptions).thenApply { it.parse() }
+
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        CompletionServiceAsync.WithRawResponse {
+
+        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+
+        private val messages: MessageServiceAsync.WithRawResponse by lazy {
+            MessageServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        override fun messages(): MessageServiceAsync.WithRawResponse = messages
+
+        private val createHandler: Handler<ChatCompletion> =
+            jsonHandler<ChatCompletion>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun create(
+            params: ChatCompletionCreateParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<ChatCompletion>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("chat", "completions")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { createHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
                     }
-            }
+                }
+        }
+
+        private val createStreamingHandler: Handler<StreamResponse<ChatCompletionChunk>> =
+            sseHandler(clientOptions.jsonMapper)
+                .mapJson<ChatCompletionChunk>()
+                .withErrorHandler(errorHandler)
+
+        override fun createStreaming(
+            params: ChatCompletionCreateParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<StreamResponse<ChatCompletionChunk>>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("chat", "completions")
+                    .body(
+                        json(
+                            clientOptions.jsonMapper,
+                            params
+                                ._body()
+                                .toBuilder()
+                                .putAdditionalProperty("stream", JsonValue.from(true))
+                                .build(),
+                        )
+                    )
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .let { createStreamingHandler.handle(it) }
+                            .let { streamResponse ->
+                                if (requestOptions.responseValidation!!) {
+                                    streamResponse.map { it.validate() }
+                                } else {
+                                    streamResponse
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val retrieveHandler: Handler<ChatCompletion> =
+            jsonHandler<ChatCompletion>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun retrieve(
+            params: ChatCompletionRetrieveParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<ChatCompletion>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("chat", "completions", params.getPathParam(0))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { retrieveHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val updateHandler: Handler<ChatCompletion> =
+            jsonHandler<ChatCompletion>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun update(
+            params: ChatCompletionUpdateParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<ChatCompletion>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("chat", "completions", params.getPathParam(0))
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { updateHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val deleteHandler: Handler<ChatCompletionDeleted> =
+            jsonHandler<ChatCompletionDeleted>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun delete(
+            params: ChatCompletionDeleteParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<ChatCompletionDeleted>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.DELETE)
+                    .addPathSegments("chat", "completions", params.getPathParam(0))
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { deleteHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
     }
 }

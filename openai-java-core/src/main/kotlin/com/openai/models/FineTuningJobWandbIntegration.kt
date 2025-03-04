@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
@@ -180,16 +181,7 @@ private constructor(
          * "openai/{base-model}", "openai/{ftjob-abcdef}".
          */
         fun addTag(tag: String) = apply {
-            tags =
-                (tags ?: JsonField.of(mutableListOf())).apply {
-                    asKnown()
-                        .orElseThrow {
-                            IllegalStateException(
-                                "Field was set to non-list type: ${javaClass.simpleName}"
-                            )
-                        }
-                        .add(tag)
-                }
+            tags = (tags ?: JsonField.of(mutableListOf())).also { checkKnown("tags", it).add(tag) }
         }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

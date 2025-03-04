@@ -4,7 +4,9 @@
 
 package com.openai.services.async
 
+import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
+import com.openai.core.http.HttpResponseFor
 import com.openai.models.Model
 import com.openai.models.ModelDeleteParams
 import com.openai.models.ModelDeleted
@@ -14,6 +16,11 @@ import com.openai.models.ModelRetrieveParams
 import java.util.concurrent.CompletableFuture
 
 interface ModelServiceAsync {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
 
     /**
      * Retrieves a model instance, providing basic information about the model such as the owner and
@@ -51,4 +58,51 @@ interface ModelServiceAsync {
         params: ModelDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ModelDeleted>
+
+    /** A view of [ModelServiceAsync] that provides access to raw HTTP responses for each method. */
+    interface WithRawResponse {
+
+        /**
+         * Returns a raw HTTP response for `get /models/{model}`, but is otherwise the same as
+         * [ModelServiceAsync.retrieve].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(
+            params: ModelRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Model>>
+
+        /**
+         * Returns a raw HTTP response for `get /models`, but is otherwise the same as
+         * [ModelServiceAsync.list].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun list(
+            params: ModelListParams = ModelListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ModelListPageAsync>>
+
+        /**
+         * Returns a raw HTTP response for `get /models`, but is otherwise the same as
+         * [ModelServiceAsync.list].
+         */
+        @MustBeClosed
+        fun list(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<ModelListPageAsync>> =
+            list(ModelListParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `delete /models/{model}`, but is otherwise the same as
+         * [ModelServiceAsync.delete].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun delete(
+            params: ModelDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ModelDeleted>>
+    }
 }

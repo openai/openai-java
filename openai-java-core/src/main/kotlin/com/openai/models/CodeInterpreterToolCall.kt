@@ -20,6 +20,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.immutableEmptyMap
@@ -256,14 +257,8 @@ private constructor(
              */
             fun addOutput(output: Output) = apply {
                 outputs =
-                    (outputs ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(output)
+                    (outputs ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("outputs", it).add(output)
                     }
             }
 

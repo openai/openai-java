@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
+import com.openai.core.checkKnown
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -111,14 +112,8 @@ private constructor(
          */
         fun addToolCall(toolCall: ToolCallDelta) = apply {
             toolCalls =
-                (toolCalls ?: JsonField.of(mutableListOf())).apply {
-                    asKnown()
-                        .orElseThrow {
-                            IllegalStateException(
-                                "Field was set to non-list type: ${javaClass.simpleName}"
-                            )
-                        }
-                        .add(toolCall)
+                (toolCalls ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("toolCalls", it).add(toolCall)
                 }
         }
 

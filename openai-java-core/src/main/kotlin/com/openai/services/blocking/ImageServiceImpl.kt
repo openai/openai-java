@@ -10,40 +10,128 @@ import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse.Handler
-import com.openai.core.json
+import com.openai.core.http.HttpResponseFor
+import com.openai.core.http.json
+import com.openai.core.http.multipartFormData
+import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
+import com.openai.models.ImageCreateVariationParams
+import com.openai.models.ImageEditParams
 import com.openai.models.ImageGenerateParams
 import com.openai.models.ImagesResponse
 
 class ImageServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     ImageService {
 
-    private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+    private val withRawResponse: ImageService.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
 
-    private val generateHandler: Handler<ImagesResponse> =
-        jsonHandler<ImagesResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+    override fun withRawResponse(): ImageService.WithRawResponse = withRawResponse
 
-    /** Creates an image given a prompt. */
+    override fun createVariation(
+        params: ImageCreateVariationParams,
+        requestOptions: RequestOptions,
+    ): ImagesResponse =
+        // post /images/variations
+        withRawResponse().createVariation(params, requestOptions).parse()
+
+    override fun edit(params: ImageEditParams, requestOptions: RequestOptions): ImagesResponse =
+        // post /images/edits
+        withRawResponse().edit(params, requestOptions).parse()
+
     override fun generate(
         params: ImageGenerateParams,
         requestOptions: RequestOptions,
-    ): ImagesResponse {
-        val request =
-            HttpRequest.builder()
-                .method(HttpMethod.POST)
-                .addPathSegments("images", "generations")
-                .body(json(clientOptions.jsonMapper, params._body()))
-                .build()
-                .prepare(clientOptions, params)
-        val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-        val response = clientOptions.httpClient.execute(request, requestOptions)
-        return response
-            .use { generateHandler.handle(it) }
-            .also {
-                if (requestOptions.responseValidation!!) {
-                    it.validate()
-                }
+    ): ImagesResponse =
+        // post /images/generations
+        withRawResponse().generate(params, requestOptions).parse()
+
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        ImageService.WithRawResponse {
+
+        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+
+        private val createVariationHandler: Handler<ImagesResponse> =
+            jsonHandler<ImagesResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun createVariation(
+            params: ImageCreateVariationParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ImagesResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("images", "variations")
+                    .body(multipartFormData(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { createVariationHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
             }
+        }
+
+        private val editHandler: Handler<ImagesResponse> =
+            jsonHandler<ImagesResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun edit(
+            params: ImageEditParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ImagesResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("images", "edits")
+                    .body(multipartFormData(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { editHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val generateHandler: Handler<ImagesResponse> =
+            jsonHandler<ImagesResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun generate(
+            params: ImageGenerateParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ImagesResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("images", "generations")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { generateHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
     }
 }

@@ -4,7 +4,9 @@
 
 package com.openai.services.blocking.beta
 
+import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
+import com.openai.core.http.HttpResponseFor
 import com.openai.models.Assistant
 import com.openai.models.AssistantDeleted
 import com.openai.models.BetaAssistantCreateParams
@@ -15,6 +17,11 @@ import com.openai.models.BetaAssistantRetrieveParams
 import com.openai.models.BetaAssistantUpdateParams
 
 interface AssistantService {
+
+    /**
+     * Returns a view of this service that provides access to raw HTTP responses for each method.
+     */
+    fun withRawResponse(): WithRawResponse
 
     /** Create an assistant with a model and instructions. */
     @JvmOverloads
@@ -54,4 +61,71 @@ interface AssistantService {
         params: BetaAssistantDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AssistantDeleted
+
+    /** A view of [AssistantService] that provides access to raw HTTP responses for each method. */
+    interface WithRawResponse {
+
+        /**
+         * Returns a raw HTTP response for `post /assistants`, but is otherwise the same as
+         * [AssistantService.create].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun create(
+            params: BetaAssistantCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Assistant>
+
+        /**
+         * Returns a raw HTTP response for `get /assistants/{assistant_id}`, but is otherwise the
+         * same as [AssistantService.retrieve].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(
+            params: BetaAssistantRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Assistant>
+
+        /**
+         * Returns a raw HTTP response for `post /assistants/{assistant_id}`, but is otherwise the
+         * same as [AssistantService.update].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun update(
+            params: BetaAssistantUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Assistant>
+
+        /**
+         * Returns a raw HTTP response for `get /assistants`, but is otherwise the same as
+         * [AssistantService.list].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun list(
+            params: BetaAssistantListParams = BetaAssistantListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<BetaAssistantListPage>
+
+        /**
+         * Returns a raw HTTP response for `get /assistants`, but is otherwise the same as
+         * [AssistantService.list].
+         */
+        @MustBeClosed
+        fun list(requestOptions: RequestOptions): HttpResponseFor<BetaAssistantListPage> =
+            list(BetaAssistantListParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `delete /assistants/{assistant_id}`, but is otherwise the
+         * same as [AssistantService.delete].
+         */
+        @JvmOverloads
+        @MustBeClosed
+        fun delete(
+            params: BetaAssistantDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<AssistantDeleted>
+    }
 }

@@ -22,6 +22,7 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.Params
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
@@ -530,14 +531,8 @@ private constructor(
             /** A list of integrations to enable for your fine-tuning job. */
             fun addIntegration(integration: Integration) = apply {
                 integrations =
-                    (integrations ?: JsonField.of(mutableListOf())).apply {
-                        asKnown()
-                            .orElseThrow {
-                                IllegalStateException(
-                                    "Field was set to non-list type: ${javaClass.simpleName}"
-                                )
-                            }
-                            .add(integration)
+                    (integrations ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("integrations", it).add(integration)
                     }
             }
 
@@ -2152,14 +2147,8 @@ private constructor(
                  */
                 fun addTag(tag: String) = apply {
                     tags =
-                        (tags ?: JsonField.of(mutableListOf())).apply {
-                            asKnown()
-                                .orElseThrow {
-                                    IllegalStateException(
-                                        "Field was set to non-list type: ${javaClass.simpleName}"
-                                    )
-                                }
-                                .add(tag)
+                        (tags ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("tags", it).add(tag)
                         }
                 }
 
