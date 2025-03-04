@@ -103,6 +103,16 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [CompletionUsage].
+         *
+         * The following fields are required:
+         * ```java
+         * .completionTokens()
+         * .promptTokens()
+         * .totalTokens()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -289,6 +299,9 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [CompletionTokensDetails].
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -459,6 +472,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [PromptTokensDetails]. */
             @JvmStatic fun builder() = Builder()
         }
 

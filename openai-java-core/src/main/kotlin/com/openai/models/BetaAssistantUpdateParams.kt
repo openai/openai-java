@@ -501,6 +501,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -1028,6 +1029,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [BetaAssistantUpdateParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .assistantId()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -2025,6 +2034,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [ToolResources]. */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -2125,6 +2135,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [CodeInterpreter]. */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -2267,6 +2278,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [FileSearch]. */
                 @JvmStatic fun builder() = Builder()
             }
 

@@ -97,6 +97,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [CodeInterpreterToolCallDelta].
+         *
+         * The following fields are required:
+         * ```java
+         * .index()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -229,6 +237,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [CodeInterpreter]. */
             @JvmStatic fun builder() = Builder()
         }
 

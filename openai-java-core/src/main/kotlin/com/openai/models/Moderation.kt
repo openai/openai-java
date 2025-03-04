@@ -93,6 +93,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [Moderation].
+         *
+         * The following fields are required:
+         * ```java
+         * .categories()
+         * .categoryAppliedInputTypes()
+         * .categoryScores()
+         * .flagged()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -405,6 +416,26 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Categories].
+             *
+             * The following fields are required:
+             * ```java
+             * .harassment()
+             * .harassmentThreatening()
+             * .hate()
+             * .hateThreatening()
+             * .illicit()
+             * .illicitViolent()
+             * .selfHarm()
+             * .selfHarmInstructions()
+             * .selfHarmIntent()
+             * .sexual()
+             * .sexualMinors()
+             * .violence()
+             * .violenceGraphic()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -875,6 +906,27 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of
+             * [CategoryAppliedInputTypes].
+             *
+             * The following fields are required:
+             * ```java
+             * .harassment()
+             * .harassmentThreatening()
+             * .hate()
+             * .hateThreatening()
+             * .illicit()
+             * .illicitViolent()
+             * .selfHarm()
+             * .selfHarmInstructions()
+             * .selfHarmIntent()
+             * .sexual()
+             * .sexualMinors()
+             * .violence()
+             * .violenceGraphic()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -2683,6 +2735,26 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [CategoryScores].
+             *
+             * The following fields are required:
+             * ```java
+             * .harassment()
+             * .harassmentThreatening()
+             * .hate()
+             * .hateThreatening()
+             * .illicit()
+             * .illicitViolent()
+             * .selfHarm()
+             * .selfHarmInstructions()
+             * .selfHarmIntent()
+             * .sexual()
+             * .sexualMinors()
+             * .violence()
+             * .violenceGraphic()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 

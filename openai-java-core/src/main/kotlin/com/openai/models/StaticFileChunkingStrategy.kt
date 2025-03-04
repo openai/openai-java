@@ -79,6 +79,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [StaticFileChunkingStrategy].
+         *
+         * The following fields are required:
+         * ```java
+         * .chunkOverlapTokens()
+         * .maxChunkSizeTokens()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

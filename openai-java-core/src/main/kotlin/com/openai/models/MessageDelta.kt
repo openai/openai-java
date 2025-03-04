@@ -66,6 +66,7 @@ private constructor(
 
     companion object {
 
+        /** Returns a mutable builder for constructing an instance of [MessageDelta]. */
         @JvmStatic fun builder() = Builder()
     }
 

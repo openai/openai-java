@@ -102,6 +102,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [FineTuningJobEvent].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .level()
+         * .message()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

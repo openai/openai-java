@@ -196,6 +196,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -350,6 +351,7 @@ private constructor(
 
         @JvmStatic fun none(): BetaThreadCreateParams = builder().build()
 
+        /** Returns a mutable builder for constructing an instance of [BetaThreadCreateParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -663,6 +665,15 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Message].
+             *
+             * The following fields are required:
+             * ```java
+             * .content()
+             * .role()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -1122,6 +1133,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [Attachment]. */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -1458,6 +1470,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [ToolResources]. */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -1558,6 +1571,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [CodeInterpreter]. */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -1720,6 +1734,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [FileSearch]. */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -1923,6 +1938,7 @@ private constructor(
 
                 companion object {
 
+                    /** Returns a mutable builder for constructing an instance of [VectorStore]. */
                     @JvmStatic fun builder() = Builder()
                 }
 

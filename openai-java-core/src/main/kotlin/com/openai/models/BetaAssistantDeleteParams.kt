@@ -48,6 +48,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [BetaAssistantDeleteParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .assistantId()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

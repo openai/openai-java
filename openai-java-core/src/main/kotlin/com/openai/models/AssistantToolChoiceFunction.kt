@@ -49,6 +49,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [AssistantToolChoiceFunction].
+         *
+         * The following fields are required:
+         * ```java
+         * .name()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

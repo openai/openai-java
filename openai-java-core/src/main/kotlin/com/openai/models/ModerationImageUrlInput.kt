@@ -62,6 +62,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ModerationImageUrlInput].
+         *
+         * The following fields are required:
+         * ```java
+         * .imageUrl()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -150,6 +158,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ImageUrl].
+             *
+             * The following fields are required:
+             * ```java
+             * .url()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 

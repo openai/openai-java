@@ -42,6 +42,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [FineTuningJobRetrieveParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .fineTuningJobId()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

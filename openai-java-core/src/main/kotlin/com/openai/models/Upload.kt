@@ -138,6 +138,20 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [Upload].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .bytes()
+         * .createdAt()
+         * .expiresAt()
+         * .filename()
+         * .purpose()
+         * .status()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

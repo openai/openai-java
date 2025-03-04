@@ -313,6 +313,27 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [FineTuningJob].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .error()
+         * .fineTunedModel()
+         * .finishedAt()
+         * .hyperparameters()
+         * .model()
+         * .organizationId()
+         * .resultFiles()
+         * .seed()
+         * .status()
+         * .trainedTokens()
+         * .trainingFile()
+         * .validationFile()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -752,6 +773,16 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Error].
+             *
+             * The following fields are required:
+             * ```java
+             * .code()
+             * .message()
+             * .param()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -931,6 +962,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Hyperparameters]. */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -1714,6 +1746,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Method]. */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -1815,6 +1848,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [Dpo]. */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -1968,6 +2002,9 @@ private constructor(
 
                 companion object {
 
+                    /**
+                     * Returns a mutable builder for constructing an instance of [Hyperparameters].
+                     */
                     @JvmStatic fun builder() = Builder()
                 }
 
@@ -2819,6 +2856,7 @@ private constructor(
 
             companion object {
 
+                /** Returns a mutable builder for constructing an instance of [Supervised]. */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -2957,6 +2995,9 @@ private constructor(
 
                 companion object {
 
+                    /**
+                     * Returns a mutable builder for constructing an instance of [Hyperparameters].
+                     */
                     @JvmStatic fun builder() = Builder()
                 }
 

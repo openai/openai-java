@@ -71,6 +71,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ToolCallsStepDetails].
+         *
+         * The following fields are required:
+         * ```java
+         * .toolCalls()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

@@ -76,6 +76,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [FileSearchToolCall].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .fileSearch()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -191,6 +200,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [FileSearch]. */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -316,6 +326,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [RankingOptions].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .scoreThreshold()
+                 * ```
+                 */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -479,6 +497,16 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [Result].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .fileId()
+                 * .fileName()
+                 * .score()
+                 * ```
+                 */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -627,6 +655,7 @@ private constructor(
 
                 companion object {
 
+                    /** Returns a mutable builder for constructing an instance of [Content]. */
                     @JvmStatic fun builder() = Builder()
                 }
 

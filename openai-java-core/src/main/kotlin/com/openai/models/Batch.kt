@@ -274,6 +274,19 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [Batch].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .completionWindow()
+         * .createdAt()
+         * .endpoint()
+         * .inputFileId()
+         * .status()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -696,6 +709,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Errors]. */
             @JvmStatic fun builder() = Builder()
         }
 

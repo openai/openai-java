@@ -61,6 +61,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [FunctionTool].
+         *
+         * The following fields are required:
+         * ```java
+         * .function()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

@@ -48,6 +48,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [UploadCancelParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .uploadId()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

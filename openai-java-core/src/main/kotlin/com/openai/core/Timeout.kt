@@ -60,6 +60,7 @@ private constructor(
 
         @JvmStatic fun default() = builder().build()
 
+        /** Returns a mutable builder for constructing an instance of [Timeout]. */
         @JvmStatic fun builder() = Builder()
     }
 

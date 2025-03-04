@@ -102,6 +102,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of
+         * [FineTuningJobWandbIntegration].
+         *
+         * The following fields are required:
+         * ```java
+         * .project()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

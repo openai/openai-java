@@ -77,6 +77,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [Embedding].
+         *
+         * The following fields are required:
+         * ```java
+         * .embedding()
+         * .index()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

@@ -474,6 +474,37 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [Run].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .assistantId()
+         * .cancelledAt()
+         * .completedAt()
+         * .createdAt()
+         * .expiresAt()
+         * .failedAt()
+         * .incompleteDetails()
+         * .instructions()
+         * .lastError()
+         * .maxCompletionTokens()
+         * .maxPromptTokens()
+         * .metadata()
+         * .model()
+         * .parallelToolCalls()
+         * .requiredAction()
+         * .responseFormat()
+         * .startedAt()
+         * .status()
+         * .threadId()
+         * .toolChoice()
+         * .tools()
+         * .truncationStrategy()
+         * .usage()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -1240,6 +1271,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [IncompleteDetails]. */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -1459,6 +1491,15 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [LastError].
+             *
+             * The following fields are required:
+             * ```java
+             * .code()
+             * .message()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -1691,6 +1732,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [RequiredAction].
+             *
+             * The following fields are required:
+             * ```java
+             * .submitToolOutputs()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -1788,6 +1837,14 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Returns a mutable builder for constructing an instance of [SubmitToolOutputs].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .toolCalls()
+                 * ```
+                 */
                 @JvmStatic fun builder() = Builder()
             }
 
@@ -1953,6 +2010,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [TruncationStrategy].
+             *
+             * The following fields are required:
+             * ```java
+             * .type()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -2231,6 +2296,16 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Usage].
+             *
+             * The following fields are required:
+             * ```java
+             * .completionTokens()
+             * .promptTokens()
+             * .totalTokens()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 

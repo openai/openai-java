@@ -91,6 +91,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [ChatCompletionAudio].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .data()
+         * .expiresAt()
+         * .transcript()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

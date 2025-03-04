@@ -56,6 +56,16 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of
+         * [BetaVectorStoreFileDeleteParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .vectorStoreId()
+         * .fileId()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

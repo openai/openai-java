@@ -176,6 +176,21 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [VectorStore].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .fileCounts()
+         * .lastActiveAt()
+         * .metadata()
+         * .name()
+         * .status()
+         * .usageBytes()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -431,6 +446,18 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [FileCounts].
+             *
+             * The following fields are required:
+             * ```java
+             * .cancelled()
+             * .completed()
+             * .failed()
+             * .inProgress()
+             * .total()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -687,6 +714,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [ExpiresAfter].
+             *
+             * The following fields are required:
+             * ```java
+             * .days()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 

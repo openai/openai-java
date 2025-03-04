@@ -153,6 +153,19 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [VectorStoreFile].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .lastError()
+         * .status()
+         * .usageBytes()
+         * .vectorStoreId()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -361,6 +374,15 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [LastError].
+             *
+             * The following fields are required:
+             * ```java
+             * .code()
+             * .message()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 

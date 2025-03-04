@@ -44,6 +44,7 @@ private constructor(
 
         @JvmStatic fun none(): FineTuningJobListParams = builder().build()
 
+        /** Returns a mutable builder for constructing an instance of [FineTuningJobListParams]. */
         @JvmStatic fun builder() = Builder()
     }
 

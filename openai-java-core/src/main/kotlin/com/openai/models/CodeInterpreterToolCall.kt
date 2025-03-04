@@ -88,6 +88,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [CodeInterpreterToolCall].
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .codeInterpreter()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -211,6 +220,15 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [CodeInterpreter].
+             *
+             * The following fields are required:
+             * ```java
+             * .input()
+             * .outputs()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -506,6 +524,14 @@ private constructor(
 
                 companion object {
 
+                    /**
+                     * Returns a mutable builder for constructing an instance of [LogsOutput].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .logs()
+                     * ```
+                     */
                     @JvmStatic fun builder() = Builder()
                 }
 
@@ -625,6 +651,14 @@ private constructor(
 
                 companion object {
 
+                    /**
+                     * Returns a mutable builder for constructing an instance of [ImageOutput].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .image()
+                     * ```
+                     */
                     @JvmStatic fun builder() = Builder()
                 }
 
@@ -723,6 +757,14 @@ private constructor(
 
                     companion object {
 
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Image].
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .fileId()
+                         * ```
+                         */
                         @JvmStatic fun builder() = Builder()
                     }
 

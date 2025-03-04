@@ -65,6 +65,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of
+         * [BetaThreadRunStepRetrieveParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .threadId()
+         * .runId()
+         * .stepId()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

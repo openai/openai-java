@@ -126,6 +126,10 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of
+             * [BetaThreadRunStepListPage].
+             */
             @JvmStatic fun builder() = Builder()
         }
 

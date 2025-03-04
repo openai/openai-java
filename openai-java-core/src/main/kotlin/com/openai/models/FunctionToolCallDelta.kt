@@ -78,6 +78,14 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [FunctionToolCallDelta].
+         *
+         * The following fields are required:
+         * ```java
+         * .index()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -214,6 +222,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [Function]. */
             @JvmStatic fun builder() = Builder()
         }
 

@@ -60,6 +60,15 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of
+         * [ChatCompletionContentPartText].
+         *
+         * The following fields are required:
+         * ```java
+         * .text()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

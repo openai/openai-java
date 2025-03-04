@@ -65,6 +65,16 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of [TranscriptionWord].
+         *
+         * The following fields are required:
+         * ```java
+         * .end()
+         * .start()
+         * .word()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 

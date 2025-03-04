@@ -103,6 +103,14 @@ private constructor(
 
         companion object {
 
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .toolOutputs()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
@@ -182,6 +190,17 @@ private constructor(
 
     companion object {
 
+        /**
+         * Returns a mutable builder for constructing an instance of
+         * [BetaThreadRunSubmitToolOutputsParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .threadId()
+         * .runId()
+         * .toolOutputs()
+         * ```
+         */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -404,6 +423,7 @@ private constructor(
 
         companion object {
 
+            /** Returns a mutable builder for constructing an instance of [ToolOutput]. */
             @JvmStatic fun builder() = Builder()
         }
 
