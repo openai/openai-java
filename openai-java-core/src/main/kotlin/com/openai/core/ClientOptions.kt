@@ -29,9 +29,13 @@ private constructor(
     @get:JvmName("timeout") val timeout: Timeout,
     @get:JvmName("maxRetries") val maxRetries: Int,
     @get:JvmName("apiKey") val apiKey: String,
-    @get:JvmName("organization") val organization: String?,
-    @get:JvmName("project") val project: String?,
+    private val organization: String?,
+    private val project: String?,
 ) {
+
+    fun organization(): Optional<String> = Optional.ofNullable(organization)
+
+    fun project(): Optional<String> = Optional.ofNullable(project)
 
     fun toBuilder() = Builder().from(this)
 
