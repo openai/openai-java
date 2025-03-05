@@ -2,6 +2,7 @@
 
 package com.openai.models
 
+import com.openai.core.JsonValue
 import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -31,6 +32,9 @@ class FineTuningJobCreateParamsTest {
                             .build()
                     )
                     .build()
+            )
+            .metadata(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
             )
             .method(
                 FineTuningJobCreateParams.Method.builder()
@@ -90,6 +94,11 @@ class FineTuningJobCreateParamsTest {
                                 .addTag("custom-tag")
                                 .build()
                         )
+                        .build()
+                )
+                .metadata(
+                    Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
                 .method(
@@ -153,6 +162,10 @@ class FineTuningJobCreateParamsTest {
                         )
                         .build()
                 )
+            )
+        assertThat(body.metadata())
+            .contains(
+                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
             )
         assertThat(body.method())
             .contains(

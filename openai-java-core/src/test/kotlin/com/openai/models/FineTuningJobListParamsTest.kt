@@ -10,15 +10,36 @@ class FineTuningJobListParamsTest {
 
     @Test
     fun create() {
-        FineTuningJobListParams.builder().after("after").limit(0L).build()
+        FineTuningJobListParams.builder()
+            .after("after")
+            .limit(0L)
+            .metadata(
+                FineTuningJobListParams.Metadata.builder()
+                    .putAdditionalProperty("foo", "string")
+                    .build()
+            )
+            .build()
     }
 
     @Test
     fun queryParams() {
-        val params = FineTuningJobListParams.builder().after("after").limit(0L).build()
+        val params =
+            FineTuningJobListParams.builder()
+                .after("after")
+                .limit(0L)
+                .metadata(
+                    FineTuningJobListParams.Metadata.builder()
+                        .putAdditionalProperty("foo", "string")
+                        .build()
+                )
+                .build()
         val expected = QueryParams.builder()
         expected.put("after", "after")
         expected.put("limit", "0")
+        FineTuningJobListParams.Metadata.builder()
+            .putAdditionalProperty("foo", "string")
+            .build()
+            .forEachQueryParam { key, values -> expected.put("metadata[$key]", values) }
         assertThat(params._queryParams()).isEqualTo(expected.build())
     }
 
