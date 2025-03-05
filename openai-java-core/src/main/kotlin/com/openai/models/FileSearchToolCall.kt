@@ -277,7 +277,7 @@ private constructor(
         private constructor(
             @JsonProperty("ranker")
             @ExcludeMissing
-            private val ranker: JsonValue = JsonMissing.of(),
+            private val ranker: JsonField<Ranker> = JsonMissing.of(),
             @JsonProperty("score_threshold")
             @ExcludeMissing
             private val scoreThreshold: JsonField<Double> = JsonMissing.of(),
@@ -285,14 +285,21 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
-            /** The ranker used for the file search. */
-            @JsonProperty("ranker") @ExcludeMissing fun _ranker(): JsonValue = ranker
+            /**
+             * The ranker to use for the file search. If not specified will use the `auto` ranker.
+             */
+            fun ranker(): Ranker = ranker.getRequired("ranker")
 
             /**
              * The score threshold for the file search. All values must be a floating point number
              * between 0 and 1.
              */
             fun scoreThreshold(): Double = scoreThreshold.getRequired("score_threshold")
+
+            /**
+             * The ranker to use for the file search. If not specified will use the `auto` ranker.
+             */
+            @JsonProperty("ranker") @ExcludeMissing fun _ranker(): JsonField<Ranker> = ranker
 
             /**
              * The score threshold for the file search. All values must be a floating point number
@@ -313,11 +320,7 @@ private constructor(
                     return@apply
                 }
 
-                _ranker().let {
-                    if (it != JsonValue.from("default_2024_08_21")) {
-                        throw OpenAIInvalidDataException("'ranker' is invalid, received $it")
-                    }
-                }
+                ranker()
                 scoreThreshold()
                 validated = true
             }
@@ -331,6 +334,7 @@ private constructor(
                  *
                  * The following fields are required:
                  * ```java
+                 * .ranker()
                  * .scoreThreshold()
                  * ```
                  */
@@ -340,7 +344,7 @@ private constructor(
             /** A builder for [RankingOptions]. */
             class Builder internal constructor() {
 
-                private var ranker: JsonValue = JsonValue.from("default_2024_08_21")
+                private var ranker: JsonField<Ranker>? = null
                 private var scoreThreshold: JsonField<Double>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -351,8 +355,17 @@ private constructor(
                     additionalProperties = rankingOptions.additionalProperties.toMutableMap()
                 }
 
-                /** The ranker used for the file search. */
-                fun ranker(ranker: JsonValue) = apply { this.ranker = ranker }
+                /**
+                 * The ranker to use for the file search. If not specified will use the `auto`
+                 * ranker.
+                 */
+                fun ranker(ranker: Ranker) = ranker(JsonField.of(ranker))
+
+                /**
+                 * The ranker to use for the file search. If not specified will use the `auto`
+                 * ranker.
+                 */
+                fun ranker(ranker: JsonField<Ranker>) = apply { this.ranker = ranker }
 
                 /**
                  * The score threshold for the file search. All values must be a floating point
@@ -393,10 +406,117 @@ private constructor(
 
                 fun build(): RankingOptions =
                     RankingOptions(
-                        ranker,
+                        checkRequired("ranker", ranker),
                         checkRequired("scoreThreshold", scoreThreshold),
                         additionalProperties.toImmutable(),
                     )
+            }
+
+            /**
+             * The ranker to use for the file search. If not specified will use the `auto` ranker.
+             */
+            class Ranker @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    @JvmField val AUTO = of("auto")
+
+                    @JvmField val DEFAULT_2024_08_21 = of("default_2024_08_21")
+
+                    @JvmStatic fun of(value: String) = Ranker(JsonField.of(value))
+                }
+
+                /** An enum containing [Ranker]'s known values. */
+                enum class Known {
+                    AUTO,
+                    DEFAULT_2024_08_21,
+                }
+
+                /**
+                 * An enum containing [Ranker]'s known values, as well as an [_UNKNOWN] member.
+                 *
+                 * An instance of [Ranker] can contain an unknown value in a couple of cases:
+                 * - It was deserialized from data that doesn't match any known member. For example,
+                 *   if the SDK is on an older version than the API, then the API may respond with
+                 *   new members that the SDK is unaware of.
+                 * - It was constructed with an arbitrary value using the [of] method.
+                 */
+                enum class Value {
+                    AUTO,
+                    DEFAULT_2024_08_21,
+                    /**
+                     * An enum member indicating that [Ranker] was instantiated with an unknown
+                     * value.
+                     */
+                    _UNKNOWN,
+                }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value, or
+                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                 *
+                 * Use the [known] method instead if you're certain the value is always known or if
+                 * you want to throw for the unknown case.
+                 */
+                fun value(): Value =
+                    when (this) {
+                        AUTO -> Value.AUTO
+                        DEFAULT_2024_08_21 -> Value.DEFAULT_2024_08_21
+                        else -> Value._UNKNOWN
+                    }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value.
+                 *
+                 * Use the [value] method instead if you're uncertain the value is always known and
+                 * don't want to throw for the unknown case.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                 *   known member.
+                 */
+                fun known(): Known =
+                    when (this) {
+                        AUTO -> Known.AUTO
+                        DEFAULT_2024_08_21 -> Known.DEFAULT_2024_08_21
+                        else -> throw OpenAIInvalidDataException("Unknown Ranker: $value")
+                    }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value does not have
+                 *   the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        OpenAIInvalidDataException("Value is not a String")
+                    }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return /* spotless:off */ other is Ranker && value == other.value /* spotless:on */
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
             }
 
             override fun equals(other: Any?): Boolean {
