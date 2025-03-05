@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.31.1 (2025-03-05)
+
+Full Changelog: [v0.31.0...v0.31.1](https://github.com/openai/openai-java/compare/v0.31.0...v0.31.1)
+
+### Bug Fixes
+
+* **api:** add missing file rank enum + more metadata ([#276](https://github.com/openai/openai-java/issues/276)) ([e92512f](https://github.com/openai/openai-java/commit/e92512f551df43f994ec6a29cfb7ef918e203324))
+
+
+### Chores
+
+* **client:** expose `Optional`, not nullable, from `ClientOptions` ([#274](https://github.com/openai/openai-java/issues/274)) ([c029310](https://github.com/openai/openai-java/commit/c029310f6f31d5a78767585a9f4ece4ba076fe2e))
+
+
+### Documentation
+
+* add audio transcription example ([2c6a1aa](https://github.com/openai/openai-java/commit/2c6a1aa334dec5625a771ddd40452a7ffe32439b))
+* embeddings example ([#263](https://github.com/openai/openai-java/issues/263)) ([e1b68de](https://github.com/openai/openai-java/commit/e1b68de090359c4272435b2236fd021d616331a2))
+* note required fields in `builder` javadoc ([#272](https://github.com/openai/openai-java/issues/272)) ([603b5c9](https://github.com/openai/openai-java/commit/603b5c955ad383fa3ec358c91ce034cbbf7d1446))
+
 ## 0.31.0 (2025-03-04)
 
 Full Changelog: [v0.30.0...v0.31.0](https://github.com/openai/openai-java/compare/v0.30.0...v0.31.0)
