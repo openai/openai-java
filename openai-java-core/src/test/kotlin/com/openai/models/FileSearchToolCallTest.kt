@@ -16,6 +16,7 @@ class FileSearchToolCallTest {
                     FileSearchToolCall.FileSearch.builder()
                         .rankingOptions(
                             FileSearchToolCall.FileSearch.RankingOptions.builder()
+                                .ranker(FileSearchToolCall.FileSearch.RankingOptions.Ranker.AUTO)
                                 .scoreThreshold(0.0)
                                 .build()
                         )
@@ -44,6 +45,7 @@ class FileSearchToolCallTest {
                 FileSearchToolCall.FileSearch.builder()
                     .rankingOptions(
                         FileSearchToolCall.FileSearch.RankingOptions.builder()
+                            .ranker(FileSearchToolCall.FileSearch.RankingOptions.Ranker.AUTO)
                             .scoreThreshold(0.0)
                             .build()
                     )

@@ -4,10 +4,12 @@ package com.openai.services.async.fineTuning
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
+import com.openai.core.JsonValue
 import com.openai.models.FineTuningJobCancelParams
 import com.openai.models.FineTuningJobCreateParams
 import com.openai.models.FineTuningJobListEventsParams
 import com.openai.models.FineTuningJobRetrieveParams
+import com.openai.models.Metadata
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -45,6 +47,11 @@ class JobServiceAsyncTest {
                                     .addTag("custom-tag")
                                     .build()
                             )
+                            .build()
+                    )
+                    .metadata(
+                        Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
                     .method(

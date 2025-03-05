@@ -79,6 +79,9 @@ private constructor(
     @ExcludeMissing
     private val integrations: JsonField<List<FineTuningJobWandbIntegrationObject>> =
         JsonMissing.of(),
+    @JsonProperty("metadata")
+    @ExcludeMissing
+    private val metadata: JsonField<Metadata> = JsonMissing.of(),
     @JsonProperty("method")
     @ExcludeMissing
     private val method: JsonField<Method> = JsonMissing.of(),
@@ -170,6 +173,16 @@ private constructor(
     /** A list of integrations to enable for this fine-tuning job. */
     fun integrations(): Optional<List<FineTuningJobWandbIntegrationObject>> =
         Optional.ofNullable(integrations.getNullable("integrations"))
+
+    /**
+     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
+     * additional information about the object in a structured format, and querying for objects via
+     * API or the dashboard.
+     *
+     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
+     * length of 512 characters.
+     */
+    fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
 
     /** The method used for fine-tuning. */
     fun method(): Optional<Method> = Optional.ofNullable(method.getNullable("method"))
@@ -270,6 +283,16 @@ private constructor(
     @ExcludeMissing
     fun _integrations(): JsonField<List<FineTuningJobWandbIntegrationObject>> = integrations
 
+    /**
+     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
+     * additional information about the object in a structured format, and querying for objects via
+     * API or the dashboard.
+     *
+     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
+     * length of 512 characters.
+     */
+    @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
+
     /** The method used for fine-tuning. */
     @JsonProperty("method") @ExcludeMissing fun _method(): JsonField<Method> = method
 
@@ -305,6 +328,7 @@ private constructor(
         validationFile()
         estimatedFinish()
         integrations().ifPresent { it.forEach { it.validate() } }
+        metadata().ifPresent { it.validate() }
         method().ifPresent { it.validate() }
         validated = true
     }
@@ -358,6 +382,7 @@ private constructor(
         private var estimatedFinish: JsonField<Long> = JsonMissing.of()
         private var integrations: JsonField<MutableList<FineTuningJobWandbIntegrationObject>>? =
             null
+        private var metadata: JsonField<Metadata> = JsonMissing.of()
         private var method: JsonField<Method> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -380,6 +405,7 @@ private constructor(
             validationFile = fineTuningJob.validationFile
             estimatedFinish = fineTuningJob.estimatedFinish
             integrations = fineTuningJob.integrations.map { it.toMutableList() }
+            metadata = fineTuningJob.metadata
             method = fineTuningJob.method
             additionalProperties = fineTuningJob.additionalProperties.toMutableMap()
         }
@@ -658,6 +684,36 @@ private constructor(
         fun addWandbIntegration(wandb: FineTuningJobWandbIntegration) =
             addIntegration(FineTuningJobWandbIntegrationObject.builder().wandb(wandb).build())
 
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
+
         /** The method used for fine-tuning. */
         fun method(method: Method) = method(JsonField.of(method))
 
@@ -702,6 +758,7 @@ private constructor(
                 checkRequired("validationFile", validationFile),
                 estimatedFinish,
                 (integrations ?: JsonMissing.of()).map { it.toImmutable() },
+                metadata,
                 method,
                 additionalProperties.toImmutable(),
             )
@@ -3754,15 +3811,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FineTuningJob && id == other.id && createdAt == other.createdAt && error == other.error && fineTunedModel == other.fineTunedModel && finishedAt == other.finishedAt && hyperparameters == other.hyperparameters && model == other.model && object_ == other.object_ && organizationId == other.organizationId && resultFiles == other.resultFiles && seed == other.seed && status == other.status && trainedTokens == other.trainedTokens && trainingFile == other.trainingFile && validationFile == other.validationFile && estimatedFinish == other.estimatedFinish && integrations == other.integrations && method == other.method && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is FineTuningJob && id == other.id && createdAt == other.createdAt && error == other.error && fineTunedModel == other.fineTunedModel && finishedAt == other.finishedAt && hyperparameters == other.hyperparameters && model == other.model && object_ == other.object_ && organizationId == other.organizationId && resultFiles == other.resultFiles && seed == other.seed && status == other.status && trainedTokens == other.trainedTokens && trainingFile == other.trainingFile && validationFile == other.validationFile && estimatedFinish == other.estimatedFinish && integrations == other.integrations && metadata == other.metadata && method == other.method && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, createdAt, error, fineTunedModel, finishedAt, hyperparameters, model, object_, organizationId, resultFiles, seed, status, trainedTokens, trainingFile, validationFile, estimatedFinish, integrations, method, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, createdAt, error, fineTunedModel, finishedAt, hyperparameters, model, object_, organizationId, resultFiles, seed, status, trainedTokens, trainingFile, validationFile, estimatedFinish, integrations, metadata, method, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "FineTuningJob{id=$id, createdAt=$createdAt, error=$error, fineTunedModel=$fineTunedModel, finishedAt=$finishedAt, hyperparameters=$hyperparameters, model=$model, object_=$object_, organizationId=$organizationId, resultFiles=$resultFiles, seed=$seed, status=$status, trainedTokens=$trainedTokens, trainingFile=$trainingFile, validationFile=$validationFile, estimatedFinish=$estimatedFinish, integrations=$integrations, method=$method, additionalProperties=$additionalProperties}"
+        "FineTuningJob{id=$id, createdAt=$createdAt, error=$error, fineTunedModel=$fineTunedModel, finishedAt=$finishedAt, hyperparameters=$hyperparameters, model=$model, object_=$object_, organizationId=$organizationId, resultFiles=$resultFiles, seed=$seed, status=$status, trainedTokens=$trainedTokens, trainingFile=$trainingFile, validationFile=$validationFile, estimatedFinish=$estimatedFinish, integrations=$integrations, metadata=$metadata, method=$method, additionalProperties=$additionalProperties}"
 }

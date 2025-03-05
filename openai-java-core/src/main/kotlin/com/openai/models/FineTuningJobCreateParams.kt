@@ -85,6 +85,16 @@ private constructor(
     /** A list of integrations to enable for your fine-tuning job. */
     fun integrations(): Optional<List<Integration>> = body.integrations()
 
+    /**
+     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
+     * additional information about the object in a structured format, and querying for objects via
+     * API or the dashboard.
+     *
+     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
+     * length of 512 characters.
+     */
+    fun metadata(): Optional<Metadata> = body.metadata()
+
     /** The method used for fine-tuning. */
     fun method(): Optional<Method> = body.method()
 
@@ -155,6 +165,16 @@ private constructor(
     /** A list of integrations to enable for your fine-tuning job. */
     fun _integrations(): JsonField<List<Integration>> = body._integrations()
 
+    /**
+     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
+     * additional information about the object in a structured format, and querying for objects via
+     * API or the dashboard.
+     *
+     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
+     * length of 512 characters.
+     */
+    fun _metadata(): JsonField<Metadata> = body._metadata()
+
     /** The method used for fine-tuning. */
     fun _method(): JsonField<Method> = body._method()
 
@@ -216,6 +236,9 @@ private constructor(
         @JsonProperty("integrations")
         @ExcludeMissing
         private val integrations: JsonField<List<Integration>> = JsonMissing.of(),
+        @JsonProperty("metadata")
+        @ExcludeMissing
+        private val metadata: JsonField<Metadata> = JsonMissing.of(),
         @JsonProperty("method")
         @ExcludeMissing
         private val method: JsonField<Method> = JsonMissing.of(),
@@ -268,6 +291,16 @@ private constructor(
         /** A list of integrations to enable for your fine-tuning job. */
         fun integrations(): Optional<List<Integration>> =
             Optional.ofNullable(integrations.getNullable("integrations"))
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
 
         /** The method used for fine-tuning. */
         fun method(): Optional<Method> = Optional.ofNullable(method.getNullable("method"))
@@ -346,6 +379,16 @@ private constructor(
         @ExcludeMissing
         fun _integrations(): JsonField<List<Integration>> = integrations
 
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
+
         /** The method used for fine-tuning. */
         @JsonProperty("method") @ExcludeMissing fun _method(): JsonField<Method> = method
 
@@ -396,6 +439,7 @@ private constructor(
             trainingFile()
             hyperparameters().ifPresent { it.validate() }
             integrations().ifPresent { it.forEach { it.validate() } }
+            metadata().ifPresent { it.validate() }
             method().ifPresent { it.validate() }
             seed()
             suffix()
@@ -426,6 +470,7 @@ private constructor(
             private var trainingFile: JsonField<String>? = null
             private var hyperparameters: JsonField<Hyperparameters> = JsonMissing.of()
             private var integrations: JsonField<MutableList<Integration>>? = null
+            private var metadata: JsonField<Metadata> = JsonMissing.of()
             private var method: JsonField<Method> = JsonMissing.of()
             private var seed: JsonField<Long> = JsonMissing.of()
             private var suffix: JsonField<String> = JsonMissing.of()
@@ -438,6 +483,7 @@ private constructor(
                 trainingFile = body.trainingFile
                 hyperparameters = body.hyperparameters
                 integrations = body.integrations.map { it.toMutableList() }
+                metadata = body.metadata
                 method = body.method
                 seed = body.seed
                 suffix = body.suffix
@@ -544,6 +590,36 @@ private constructor(
                         checkKnown("integrations", it).add(integration)
                     }
             }
+
+            /**
+             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+             * storing additional information about the object in a structured format, and querying
+             * for objects via API or the dashboard.
+             *
+             * Keys are strings with a maximum length of 64 characters. Values are strings with a
+             * maximum length of 512 characters.
+             */
+            fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
+
+            /**
+             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+             * storing additional information about the object in a structured format, and querying
+             * for objects via API or the dashboard.
+             *
+             * Keys are strings with a maximum length of 64 characters. Values are strings with a
+             * maximum length of 512 characters.
+             */
+            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+
+            /**
+             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+             * storing additional information about the object in a structured format, and querying
+             * for objects via API or the dashboard.
+             *
+             * Keys are strings with a maximum length of 64 characters. Values are strings with a
+             * maximum length of 512 characters.
+             */
+            fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
             /** The method used for fine-tuning. */
             fun method(method: Method) = method(JsonField.of(method))
@@ -678,6 +754,7 @@ private constructor(
                     checkRequired("trainingFile", trainingFile),
                     hyperparameters,
                     (integrations ?: JsonMissing.of()).map { it.toImmutable() },
+                    metadata,
                     method,
                     seed,
                     suffix,
@@ -691,17 +768,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && model == other.model && trainingFile == other.trainingFile && hyperparameters == other.hyperparameters && integrations == other.integrations && method == other.method && seed == other.seed && suffix == other.suffix && validationFile == other.validationFile && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && model == other.model && trainingFile == other.trainingFile && hyperparameters == other.hyperparameters && integrations == other.integrations && metadata == other.metadata && method == other.method && seed == other.seed && suffix == other.suffix && validationFile == other.validationFile && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(model, trainingFile, hyperparameters, integrations, method, seed, suffix, validationFile, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(model, trainingFile, hyperparameters, integrations, metadata, method, seed, suffix, validationFile, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{model=$model, trainingFile=$trainingFile, hyperparameters=$hyperparameters, integrations=$integrations, method=$method, seed=$seed, suffix=$suffix, validationFile=$validationFile, additionalProperties=$additionalProperties}"
+            "Body{model=$model, trainingFile=$trainingFile, hyperparameters=$hyperparameters, integrations=$integrations, metadata=$metadata, method=$method, seed=$seed, suffix=$suffix, validationFile=$validationFile, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -831,6 +908,36 @@ private constructor(
 
         /** A list of integrations to enable for your fine-tuning job. */
         fun addIntegration(integration: Integration) = apply { body.addIntegration(integration) }
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        fun metadata(metadata: Metadata?) = apply { body.metadata(metadata) }
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
 
         /** The method used for fine-tuning. */
         fun method(method: Method) = apply { body.method(method) }

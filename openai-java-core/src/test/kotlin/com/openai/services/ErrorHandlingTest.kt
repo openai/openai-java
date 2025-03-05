@@ -24,6 +24,7 @@ import com.openai.errors.UnauthorizedException
 import com.openai.errors.UnexpectedStatusCodeException
 import com.openai.errors.UnprocessableEntityException
 import com.openai.models.FineTuningJobCreateParams
+import com.openai.models.Metadata
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.entry
 import org.junit.jupiter.api.BeforeEach
@@ -91,6 +92,11 @@ class ErrorHandlingTest {
                                         .addTag("custom-tag")
                                         .build()
                                 )
+                                .build()
+                        )
+                        .metadata(
+                            Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
                         .method(
@@ -169,6 +175,11 @@ class ErrorHandlingTest {
                                 )
                                 .build()
                         )
+                        .metadata(
+                            Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
                         .method(
                             FineTuningJobCreateParams.Method.builder()
                                 .dpo(
@@ -243,6 +254,11 @@ class ErrorHandlingTest {
                                         .addTag("custom-tag")
                                         .build()
                                 )
+                                .build()
+                        )
+                        .metadata(
+                            Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
                         .method(
@@ -321,6 +337,11 @@ class ErrorHandlingTest {
                                 )
                                 .build()
                         )
+                        .metadata(
+                            Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
                         .method(
                             FineTuningJobCreateParams.Method.builder()
                                 .dpo(
@@ -395,6 +416,11 @@ class ErrorHandlingTest {
                                         .addTag("custom-tag")
                                         .build()
                                 )
+                                .build()
+                        )
+                        .metadata(
+                            Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
                         .method(
@@ -473,6 +499,11 @@ class ErrorHandlingTest {
                                 )
                                 .build()
                         )
+                        .metadata(
+                            Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
                         .method(
                             FineTuningJobCreateParams.Method.builder()
                                 .dpo(
@@ -547,6 +578,11 @@ class ErrorHandlingTest {
                                         .addTag("custom-tag")
                                         .build()
                                 )
+                                .build()
+                        )
+                        .metadata(
+                            Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
                         .method(
@@ -625,6 +661,11 @@ class ErrorHandlingTest {
                                 )
                                 .build()
                         )
+                        .metadata(
+                            Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
                         .method(
                             FineTuningJobCreateParams.Method.builder()
                                 .dpo(
@@ -699,6 +740,11 @@ class ErrorHandlingTest {
                                         .addTag("custom-tag")
                                         .build()
                                 )
+                                .build()
+                        )
+                        .metadata(
+                            Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
                         .method(
