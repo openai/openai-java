@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.33.0 (2025-03-06)
+
+Full Changelog: [v0.32.0...v0.33.0](https://github.com/openai/openai-java/compare/v0.32.0...v0.33.0)
+
+### Features
+
+* **client:** detect binary incompatible jackson versions ([#282](https://github.com/openai/openai-java/issues/282)) ([10eca3f](https://github.com/openai/openai-java/commit/10eca3f728726b0022d7f851a3784548764ede6c))
+
+
+### Chores
+
+* **ci:** run more examples ([4815776](https://github.com/openai/openai-java/commit/48157762da46b6bca6169a79adbfd7c07a701496))
+
 ## 0.32.0 (2025-03-06)
 
 Full Changelog: [v0.31.1...v0.32.0](https://github.com/openai/openai-java/compare/v0.31.1...v0.32.0)
