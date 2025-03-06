@@ -4,7 +4,7 @@ package com.openai.core.http
 
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import com.openai.errors.OpenAIException
+import com.openai.core.enhanceJacksonException
 import java.util.Objects
 
 internal class SseMessage
@@ -50,14 +50,18 @@ private constructor(
             jsonNode = newJsonNode
         }
 
-        return jsonMapper.readerFor(jacksonTypeRef<T>()).readValue(jsonNode)
+        try {
+            return jsonMapper.readerFor(jacksonTypeRef<T>()).readValue(jsonNode)
+        } catch (e: Exception) {
+            throw enhanceJacksonException("Error reading response", e)
+        }
     }
 
     private val jsonNode by lazy {
         try {
             jsonMapper.readTree(data)
         } catch (e: Exception) {
-            throw OpenAIException("Error deserializing json", e)
+            throw enhanceJacksonException("Error reading response", e)
         }
     }
 
