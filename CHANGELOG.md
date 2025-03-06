@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.32.0 (2025-03-06)
+
+Full Changelog: [v0.31.1...v0.32.0](https://github.com/openai/openai-java/compare/v0.31.1...v0.32.0)
+
+### Features
+
+* **client:** accept `InputStream` and `Path` for file params ([3fda365](https://github.com/openai/openai-java/commit/3fda365a9d1b228ec4799a57137a288c25441dc7))
+* **client:** accept `InputStream` and `Path` for file params ([#277](https://github.com/openai/openai-java/issues/277)) ([04f2d3c](https://github.com/openai/openai-java/commit/04f2d3c1042187fe2b52ec132ff3a0529f5b1316))
+
+
+### Documentation
+
+* document file uploads in readme ([#279](https://github.com/openai/openai-java/issues/279)) ([96e4969](https://github.com/openai/openai-java/commit/96e4969a322da35f6ac13324f69d9170c7280aff))
+
 ## 0.31.1 (2025-03-05)
 
 Full Changelog: [v0.31.0...v0.31.1](https://github.com/openai/openai-java/compare/v0.31.0...v0.31.1)
