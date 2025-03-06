@@ -263,6 +263,74 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
     .build();
 ```
 
+## File uploads
+
+The SDK defines methods that accept files.
+
+To upload a file, pass a [`Path`](https://docs.oracle.com/javase/8/docs/api/java/nio/file/Path.html):
+
+```java
+import com.openai.models.FileCreateParams;
+import com.openai.models.FileObject;
+import com.openai.models.FilePurpose;
+import java.nio.file.Paths;
+
+FileCreateParams params = FileCreateParams.builder()
+    .purpose(FilePurpose.FINE_TUNE)
+    .file(Paths.get("input.jsonl"))
+    .build();
+FileObject fileObject = client.files().create(params);
+```
+
+Or an arbitrary [`InputStream`](https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html):
+
+```java
+import com.openai.models.FileCreateParams;
+import com.openai.models.FileObject;
+import com.openai.models.FilePurpose;
+import java.net.URL;
+
+FileCreateParams params = FileCreateParams.builder()
+    .purpose(FilePurpose.FINE_TUNE)
+    .file(new URL("https://example.com").openStream())
+    .build();
+FileObject fileObject = client.files().create(params);
+```
+
+Or a `byte[]` array:
+
+```java
+import com.openai.models.FileCreateParams;
+import com.openai.models.FileObject;
+import com.openai.models.FilePurpose;
+
+FileCreateParams params = FileCreateParams.builder()
+    .purpose(FilePurpose.FINE_TUNE)
+    .file("content".getBytes())
+    .build();
+FileObject fileObject = client.files().create(params);
+```
+
+Note that when passing a non-`Path` its filename is unknown so it will not be included in the request. To manually set a filename, pass a `MultipartField`:
+
+```java
+import com.openai.core.MultipartField;
+import com.openai.models.FileCreateParams;
+import com.openai.models.FileObject;
+import com.openai.models.FilePurpose;
+import java.io.InputStream;
+import java.net.URL;
+
+FileCreateParams params = FileCreateParams.builder()
+    .purpose(FilePurpose.FINE_TUNE)
+    .file(MultipartField.<InputStream>builder()
+        .value(new URL("https://example.com").openStream())
+        .filename("input.jsonl")
+        .build())
+    .build();
+FileObject fileObject = client.files().create(params);
+```
+
 ## Binary responses
 
 The SDK defines methods that return binary responses, which are used for API responses that shouldn't necessarily be parsed, like non-JSON data.
