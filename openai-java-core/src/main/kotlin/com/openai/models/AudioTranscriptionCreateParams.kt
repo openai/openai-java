@@ -14,8 +14,13 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.io.ByteArrayInputStream
+import java.io.InputStream
+import java.nio.file.Path
 import java.util.Objects
 import java.util.Optional
+import kotlin.io.path.inputStream
+import kotlin.io.path.name
 
 /** Transcribes audio into the input language. */
 class AudioTranscriptionCreateParams
@@ -29,7 +34,7 @@ private constructor(
      * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3, mp4,
      * mpeg, mpga, m4a, ogg, wav, or webm.
      */
-    fun file(): ByteArray = body.file()
+    fun file(): InputStream = body.file()
 
     /**
      * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2
@@ -78,7 +83,7 @@ private constructor(
      * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3, mp4,
      * mpeg, mpga, m4a, ogg, wav, or webm.
      */
-    fun _file(): MultipartField<ByteArray> = body._file()
+    fun _file(): MultipartField<InputStream> = body._file()
 
     /**
      * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2
@@ -148,7 +153,7 @@ private constructor(
     class Body
     @JsonCreator
     private constructor(
-        private val file: MultipartField<ByteArray>,
+        private val file: MultipartField<InputStream>,
         private val model: MultipartField<AudioModel>,
         private val language: MultipartField<String>,
         private val prompt: MultipartField<String>,
@@ -161,7 +166,7 @@ private constructor(
          * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3,
          * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
          */
-        fun file(): ByteArray = file.value.getRequired("file")
+        fun file(): InputStream = file.value.getRequired("file")
 
         /**
          * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2
@@ -214,7 +219,7 @@ private constructor(
          * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3,
          * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
          */
-        fun _file(): MultipartField<ByteArray> = file
+        fun _file(): MultipartField<InputStream> = file
 
         /**
          * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2
@@ -296,7 +301,7 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var file: MultipartField<ByteArray>? = null
+            private var file: MultipartField<InputStream>? = null
             private var model: MultipartField<AudioModel>? = null
             private var language: MultipartField<String> = MultipartField.of(null)
             private var prompt: MultipartField<String> = MultipartField.of(null)
@@ -321,13 +326,31 @@ private constructor(
              * The audio file object (not file name) to transcribe, in one of these formats: flac,
              * mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
              */
-            fun file(file: ByteArray) = file(MultipartField.of(file))
+            fun file(file: InputStream) = file(MultipartField.of(file))
 
             /**
              * The audio file object (not file name) to transcribe, in one of these formats: flac,
              * mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
              */
-            fun file(file: MultipartField<ByteArray>) = apply { this.file = file }
+            fun file(file: MultipartField<InputStream>) = apply { this.file = file }
+
+            /**
+             * The audio file object (not file name) to transcribe, in one of these formats: flac,
+             * mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+             */
+            fun file(file: ByteArray) = file(ByteArrayInputStream(file))
+
+            /**
+             * The audio file object (not file name) to transcribe, in one of these formats: flac,
+             * mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+             */
+            fun file(file: Path) =
+                file(
+                    MultipartField.builder<InputStream>()
+                        .value(file.inputStream())
+                        .filename(file.name)
+                        .build()
+                )
 
             /**
              * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper
@@ -510,13 +533,25 @@ private constructor(
          * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3,
          * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
          */
+        fun file(file: InputStream) = apply { body.file(file) }
+
+        /**
+         * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3,
+         * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+         */
+        fun file(file: MultipartField<InputStream>) = apply { body.file(file) }
+
+        /**
+         * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3,
+         * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+         */
         fun file(file: ByteArray) = apply { body.file(file) }
 
         /**
          * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3,
          * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
          */
-        fun file(file: MultipartField<ByteArray>) = apply { body.file(file) }
+        fun file(file: Path) = apply { body.file(file) }
 
         /**
          * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2

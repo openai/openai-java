@@ -13,8 +13,13 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.io.ByteArrayInputStream
+import java.io.InputStream
+import java.nio.file.Path
 import java.util.Objects
 import java.util.Optional
+import kotlin.io.path.inputStream
+import kotlin.io.path.name
 
 /** Creates an edited or extended image given an original image and a prompt. */
 class ImageEditParams
@@ -28,7 +33,7 @@ private constructor(
      * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not
      * provided, image must have transparency, which will be used as the mask.
      */
-    fun image(): ByteArray = body.image()
+    fun image(): InputStream = body.image()
 
     /** A text description of the desired image(s). The maximum length is 1000 characters. */
     fun prompt(): String = body.prompt()
@@ -38,7 +43,7 @@ private constructor(
      * `image` should be edited. Must be a valid PNG file, less than 4MB, and have the same
      * dimensions as `image`.
      */
-    fun mask(): Optional<ByteArray> = body.mask()
+    fun mask(): Optional<InputStream> = body.mask()
 
     /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
     fun model(): Optional<ImageModel> = body.model()
@@ -66,7 +71,7 @@ private constructor(
      * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not
      * provided, image must have transparency, which will be used as the mask.
      */
-    fun _image(): MultipartField<ByteArray> = body._image()
+    fun _image(): MultipartField<InputStream> = body._image()
 
     /** A text description of the desired image(s). The maximum length is 1000 characters. */
     fun _prompt(): MultipartField<String> = body._prompt()
@@ -76,7 +81,7 @@ private constructor(
      * `image` should be edited. Must be a valid PNG file, less than 4MB, and have the same
      * dimensions as `image`.
      */
-    fun _mask(): MultipartField<ByteArray> = body._mask()
+    fun _mask(): MultipartField<InputStream> = body._mask()
 
     /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
     fun _model(): MultipartField<ImageModel> = body._model()
@@ -126,9 +131,9 @@ private constructor(
     class Body
     @JsonCreator
     private constructor(
-        private val image: MultipartField<ByteArray>,
+        private val image: MultipartField<InputStream>,
         private val prompt: MultipartField<String>,
-        private val mask: MultipartField<ByteArray>,
+        private val mask: MultipartField<InputStream>,
         private val model: MultipartField<ImageModel>,
         private val n: MultipartField<Long>,
         private val responseFormat: MultipartField<ResponseFormat>,
@@ -140,7 +145,7 @@ private constructor(
          * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not
          * provided, image must have transparency, which will be used as the mask.
          */
-        fun image(): ByteArray = image.value.getRequired("image")
+        fun image(): InputStream = image.value.getRequired("image")
 
         /** A text description of the desired image(s). The maximum length is 1000 characters. */
         fun prompt(): String = prompt.value.getRequired("prompt")
@@ -150,7 +155,7 @@ private constructor(
          * where `image` should be edited. Must be a valid PNG file, less than 4MB, and have the
          * same dimensions as `image`.
          */
-        fun mask(): Optional<ByteArray> = Optional.ofNullable(mask.value.getNullable("mask"))
+        fun mask(): Optional<InputStream> = Optional.ofNullable(mask.value.getNullable("mask"))
 
         /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
         fun model(): Optional<ImageModel> = Optional.ofNullable(model.value.getNullable("model"))
@@ -181,7 +186,7 @@ private constructor(
          * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not
          * provided, image must have transparency, which will be used as the mask.
          */
-        fun _image(): MultipartField<ByteArray> = image
+        fun _image(): MultipartField<InputStream> = image
 
         /** A text description of the desired image(s). The maximum length is 1000 characters. */
         fun _prompt(): MultipartField<String> = prompt
@@ -191,7 +196,7 @@ private constructor(
          * where `image` should be edited. Must be a valid PNG file, less than 4MB, and have the
          * same dimensions as `image`.
          */
-        fun _mask(): MultipartField<ByteArray> = mask
+        fun _mask(): MultipartField<InputStream> = mask
 
         /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
         fun _model(): MultipartField<ImageModel> = model
@@ -254,9 +259,9 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var image: MultipartField<ByteArray>? = null
+            private var image: MultipartField<InputStream>? = null
             private var prompt: MultipartField<String>? = null
-            private var mask: MultipartField<ByteArray> = MultipartField.of(null)
+            private var mask: MultipartField<InputStream> = MultipartField.of(null)
             private var model: MultipartField<ImageModel> = MultipartField.of(null)
             private var n: MultipartField<Long> = MultipartField.of(null)
             private var responseFormat: MultipartField<ResponseFormat> = MultipartField.of(null)
@@ -279,13 +284,31 @@ private constructor(
              * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is
              * not provided, image must have transparency, which will be used as the mask.
              */
-            fun image(image: ByteArray) = image(MultipartField.of(image))
+            fun image(image: InputStream) = image(MultipartField.of(image))
 
             /**
              * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is
              * not provided, image must have transparency, which will be used as the mask.
              */
-            fun image(image: MultipartField<ByteArray>) = apply { this.image = image }
+            fun image(image: MultipartField<InputStream>) = apply { this.image = image }
+
+            /**
+             * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is
+             * not provided, image must have transparency, which will be used as the mask.
+             */
+            fun image(image: ByteArray) = image(ByteArrayInputStream(image))
+
+            /**
+             * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is
+             * not provided, image must have transparency, which will be used as the mask.
+             */
+            fun image(image: Path) =
+                image(
+                    MultipartField.builder<InputStream>()
+                        .value(image.inputStream())
+                        .filename(image.name)
+                        .build()
+                )
 
             /**
              * A text description of the desired image(s). The maximum length is 1000 characters.
@@ -302,14 +325,34 @@ private constructor(
              * where `image` should be edited. Must be a valid PNG file, less than 4MB, and have the
              * same dimensions as `image`.
              */
-            fun mask(mask: ByteArray) = mask(MultipartField.of(mask))
+            fun mask(mask: InputStream) = mask(MultipartField.of(mask))
 
             /**
              * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
              * where `image` should be edited. Must be a valid PNG file, less than 4MB, and have the
              * same dimensions as `image`.
              */
-            fun mask(mask: MultipartField<ByteArray>) = apply { this.mask = mask }
+            fun mask(mask: MultipartField<InputStream>) = apply { this.mask = mask }
+
+            /**
+             * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
+             * where `image` should be edited. Must be a valid PNG file, less than 4MB, and have the
+             * same dimensions as `image`.
+             */
+            fun mask(mask: ByteArray) = mask(ByteArrayInputStream(mask))
+
+            /**
+             * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
+             * where `image` should be edited. Must be a valid PNG file, less than 4MB, and have the
+             * same dimensions as `image`.
+             */
+            fun mask(mask: Path) =
+                mask(
+                    MultipartField.builder<InputStream>()
+                        .value(mask.inputStream())
+                        .filename(mask.name)
+                        .build()
+                )
 
             /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
             fun model(model: ImageModel?) = model(MultipartField.of(model))
@@ -456,19 +499,45 @@ private constructor(
          * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not
          * provided, image must have transparency, which will be used as the mask.
          */
+        fun image(image: InputStream) = apply { body.image(image) }
+
+        /**
+         * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not
+         * provided, image must have transparency, which will be used as the mask.
+         */
+        fun image(image: MultipartField<InputStream>) = apply { body.image(image) }
+
+        /**
+         * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not
+         * provided, image must have transparency, which will be used as the mask.
+         */
         fun image(image: ByteArray) = apply { body.image(image) }
 
         /**
          * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not
          * provided, image must have transparency, which will be used as the mask.
          */
-        fun image(image: MultipartField<ByteArray>) = apply { body.image(image) }
+        fun image(image: Path) = apply { body.image(image) }
 
         /** A text description of the desired image(s). The maximum length is 1000 characters. */
         fun prompt(prompt: String) = apply { body.prompt(prompt) }
 
         /** A text description of the desired image(s). The maximum length is 1000 characters. */
         fun prompt(prompt: MultipartField<String>) = apply { body.prompt(prompt) }
+
+        /**
+         * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
+         * where `image` should be edited. Must be a valid PNG file, less than 4MB, and have the
+         * same dimensions as `image`.
+         */
+        fun mask(mask: InputStream) = apply { body.mask(mask) }
+
+        /**
+         * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
+         * where `image` should be edited. Must be a valid PNG file, less than 4MB, and have the
+         * same dimensions as `image`.
+         */
+        fun mask(mask: MultipartField<InputStream>) = apply { body.mask(mask) }
 
         /**
          * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
@@ -482,7 +551,7 @@ private constructor(
          * where `image` should be edited. Must be a valid PNG file, less than 4MB, and have the
          * same dimensions as `image`.
          */
-        fun mask(mask: MultipartField<ByteArray>) = apply { body.mask(mask) }
+        fun mask(mask: Path) = apply { body.mask(mask) }
 
         /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
         fun model(model: ImageModel?) = apply { body.model(model) }

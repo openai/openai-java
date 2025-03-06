@@ -13,8 +13,13 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.io.ByteArrayInputStream
+import java.io.InputStream
+import java.nio.file.Path
 import java.util.Objects
 import java.util.Optional
+import kotlin.io.path.inputStream
+import kotlin.io.path.name
 
 /** Creates a variation of a given image. */
 class ImageCreateVariationParams
@@ -28,7 +33,7 @@ private constructor(
      * The image to use as the basis for the variation(s). Must be a valid PNG file, less than 4MB,
      * and square.
      */
-    fun image(): ByteArray = body.image()
+    fun image(): InputStream = body.image()
 
     /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
     fun model(): Optional<ImageModel> = body.model()
@@ -59,7 +64,7 @@ private constructor(
      * The image to use as the basis for the variation(s). Must be a valid PNG file, less than 4MB,
      * and square.
      */
-    fun _image(): MultipartField<ByteArray> = body._image()
+    fun _image(): MultipartField<InputStream> = body._image()
 
     /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
     fun _model(): MultipartField<ImageModel> = body._model()
@@ -110,7 +115,7 @@ private constructor(
     class Body
     @JsonCreator
     private constructor(
-        private val image: MultipartField<ByteArray>,
+        private val image: MultipartField<InputStream>,
         private val model: MultipartField<ImageModel>,
         private val n: MultipartField<Long>,
         private val responseFormat: MultipartField<ResponseFormat>,
@@ -122,7 +127,7 @@ private constructor(
          * The image to use as the basis for the variation(s). Must be a valid PNG file, less than
          * 4MB, and square.
          */
-        fun image(): ByteArray = image.value.getRequired("image")
+        fun image(): InputStream = image.value.getRequired("image")
 
         /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
         fun model(): Optional<ImageModel> = Optional.ofNullable(model.value.getNullable("model"))
@@ -156,7 +161,7 @@ private constructor(
          * The image to use as the basis for the variation(s). Must be a valid PNG file, less than
          * 4MB, and square.
          */
-        fun _image(): MultipartField<ByteArray> = image
+        fun _image(): MultipartField<InputStream> = image
 
         /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
         fun _model(): MultipartField<ImageModel> = model
@@ -219,7 +224,7 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var image: MultipartField<ByteArray>? = null
+            private var image: MultipartField<InputStream>? = null
             private var model: MultipartField<ImageModel> = MultipartField.of(null)
             private var n: MultipartField<Long> = MultipartField.of(null)
             private var responseFormat: MultipartField<ResponseFormat> = MultipartField.of(null)
@@ -240,13 +245,31 @@ private constructor(
              * The image to use as the basis for the variation(s). Must be a valid PNG file, less
              * than 4MB, and square.
              */
-            fun image(image: ByteArray) = image(MultipartField.of(image))
+            fun image(image: InputStream) = image(MultipartField.of(image))
 
             /**
              * The image to use as the basis for the variation(s). Must be a valid PNG file, less
              * than 4MB, and square.
              */
-            fun image(image: MultipartField<ByteArray>) = apply { this.image = image }
+            fun image(image: MultipartField<InputStream>) = apply { this.image = image }
+
+            /**
+             * The image to use as the basis for the variation(s). Must be a valid PNG file, less
+             * than 4MB, and square.
+             */
+            fun image(image: ByteArray) = image(ByteArrayInputStream(image))
+
+            /**
+             * The image to use as the basis for the variation(s). Must be a valid PNG file, less
+             * than 4MB, and square.
+             */
+            fun image(image: Path) =
+                image(
+                    MultipartField.builder<InputStream>()
+                        .value(image.inputStream())
+                        .filename(image.name)
+                        .build()
+                )
 
             /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
             fun model(model: ImageModel?) = model(MultipartField.of(model))
@@ -395,13 +418,25 @@ private constructor(
          * The image to use as the basis for the variation(s). Must be a valid PNG file, less than
          * 4MB, and square.
          */
+        fun image(image: InputStream) = apply { body.image(image) }
+
+        /**
+         * The image to use as the basis for the variation(s). Must be a valid PNG file, less than
+         * 4MB, and square.
+         */
+        fun image(image: MultipartField<InputStream>) = apply { body.image(image) }
+
+        /**
+         * The image to use as the basis for the variation(s). Must be a valid PNG file, less than
+         * 4MB, and square.
+         */
         fun image(image: ByteArray) = apply { body.image(image) }
 
         /**
          * The image to use as the basis for the variation(s). Must be a valid PNG file, less than
          * 4MB, and square.
          */
-        fun image(image: MultipartField<ByteArray>) = apply { body.image(image) }
+        fun image(image: Path) = apply { body.image(image) }
 
         /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
         fun model(model: ImageModel?) = apply { body.model(model) }
