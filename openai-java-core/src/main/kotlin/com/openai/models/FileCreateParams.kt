@@ -10,7 +10,12 @@ import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
+import java.io.ByteArrayInputStream
+import java.io.InputStream
+import java.nio.file.Path
 import java.util.Objects
+import kotlin.io.path.inputStream
+import kotlin.io.path.name
 
 /**
  * Upload a file that can be used across various endpoints. Individual files can be up to 512 MB,
@@ -37,7 +42,7 @@ private constructor(
 ) : Params {
 
     /** The File object (not file name) to be uploaded. */
-    fun file(): ByteArray = body.file()
+    fun file(): InputStream = body.file()
 
     /**
      * The intended purpose of the uploaded file.
@@ -51,7 +56,7 @@ private constructor(
     fun purpose(): FilePurpose = body.purpose()
 
     /** The File object (not file name) to be uploaded. */
-    fun _file(): MultipartField<ByteArray> = body._file()
+    fun _file(): MultipartField<InputStream> = body._file()
 
     /**
      * The intended purpose of the uploaded file.
@@ -80,12 +85,12 @@ private constructor(
     class Body
     @JsonCreator
     private constructor(
-        private val file: MultipartField<ByteArray>,
+        private val file: MultipartField<InputStream>,
         private val purpose: MultipartField<FilePurpose>,
     ) {
 
         /** The File object (not file name) to be uploaded. */
-        fun file(): ByteArray = file.value.getRequired("file")
+        fun file(): InputStream = file.value.getRequired("file")
 
         /**
          * The intended purpose of the uploaded file.
@@ -100,7 +105,7 @@ private constructor(
         fun purpose(): FilePurpose = purpose.value.getRequired("purpose")
 
         /** The File object (not file name) to be uploaded. */
-        fun _file(): MultipartField<ByteArray> = file
+        fun _file(): MultipartField<InputStream> = file
 
         /**
          * The intended purpose of the uploaded file.
@@ -145,7 +150,7 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var file: MultipartField<ByteArray>? = null
+            private var file: MultipartField<InputStream>? = null
             private var purpose: MultipartField<FilePurpose>? = null
 
             @JvmSynthetic
@@ -155,10 +160,22 @@ private constructor(
             }
 
             /** The File object (not file name) to be uploaded. */
-            fun file(file: ByteArray) = file(MultipartField.of(file))
+            fun file(file: InputStream) = file(MultipartField.of(file))
 
             /** The File object (not file name) to be uploaded. */
-            fun file(file: MultipartField<ByteArray>) = apply { this.file = file }
+            fun file(file: MultipartField<InputStream>) = apply { this.file = file }
+
+            /** The File object (not file name) to be uploaded. */
+            fun file(file: ByteArray) = file(ByteArrayInputStream(file))
+
+            /** The File object (not file name) to be uploaded. */
+            fun file(file: Path) =
+                file(
+                    MultipartField.builder<InputStream>()
+                        .value(file.inputStream())
+                        .filename(file.name)
+                        .build()
+                )
 
             /**
              * The intended purpose of the uploaded file.
@@ -236,10 +253,16 @@ private constructor(
         }
 
         /** The File object (not file name) to be uploaded. */
+        fun file(file: InputStream) = apply { body.file(file) }
+
+        /** The File object (not file name) to be uploaded. */
+        fun file(file: MultipartField<InputStream>) = apply { body.file(file) }
+
+        /** The File object (not file name) to be uploaded. */
         fun file(file: ByteArray) = apply { body.file(file) }
 
         /** The File object (not file name) to be uploaded. */
-        fun file(file: MultipartField<ByteArray>) = apply { body.file(file) }
+        fun file(file: Path) = apply { body.file(file) }
 
         /**
          * The intended purpose of the uploaded file.

@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.node.JsonNodeType
 import com.openai.core.MultipartField
 import com.openai.errors.OpenAIInvalidDataException
+import java.io.ByteArrayInputStream
+import java.io.InputStream
 import java.io.OutputStream
 import kotlin.jvm.optionals.getOrNull
 import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder
@@ -41,8 +43,18 @@ internal fun multipartFormData(
             MultipartEntityBuilder.create()
                 .apply {
                     fields.forEach { (name, field) ->
-                        val node = jsonMapper.valueToTree<JsonNode>(field.value)
-                        serializePart(name, node).forEach { (name, bytes) ->
+                        val knownValue = field.value.asKnown().getOrNull()
+                        val parts =
+                            if (knownValue is InputStream) {
+                                // Read directly from the `InputStream` instead of reading it all
+                                // into memory due to the `jsonMapper` serialization below.
+                                sequenceOf(name to knownValue)
+                            } else {
+                                val node = jsonMapper.valueToTree<JsonNode>(field.value)
+                                serializePart(name, node)
+                            }
+
+                        parts.forEach { (name, bytes) ->
                             addBinaryBody(
                                 name,
                                 bytes,
@@ -55,16 +67,19 @@ internal fun multipartFormData(
                 .build()
         }
 
-        private fun serializePart(name: String, node: JsonNode): Sequence<Pair<String, ByteArray>> =
+        private fun serializePart(
+            name: String,
+            node: JsonNode,
+        ): Sequence<Pair<String, InputStream>> =
             when (node.nodeType) {
                 JsonNodeType.MISSING,
                 JsonNodeType.NULL -> emptySequence()
-                JsonNodeType.BINARY -> sequenceOf(name to node.binaryValue())
-                JsonNodeType.STRING -> sequenceOf(name to node.textValue().toByteArray())
+                JsonNodeType.BINARY -> sequenceOf(name to ByteArrayInputStream(node.binaryValue()))
+                JsonNodeType.STRING -> sequenceOf(name to node.textValue().toInputStream())
                 JsonNodeType.BOOLEAN ->
-                    sequenceOf(name to node.booleanValue().toString().toByteArray())
+                    sequenceOf(name to node.booleanValue().toString().toInputStream())
                 JsonNodeType.NUMBER ->
-                    sequenceOf(name to node.numberValue().toString().toByteArray())
+                    sequenceOf(name to node.numberValue().toString().toInputStream())
                 JsonNodeType.ARRAY ->
                     node.elements().asSequence().flatMap { element ->
                         serializePart("$name[]", element)
@@ -77,6 +92,8 @@ internal fun multipartFormData(
                 null ->
                     throw OpenAIInvalidDataException("Unexpected JsonNode type: ${node.nodeType}")
             }
+
+        private fun String.toInputStream(): InputStream = ByteArrayInputStream(toByteArray())
 
         override fun writeTo(outputStream: OutputStream) = entity.writeTo(outputStream)
 
