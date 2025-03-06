@@ -10,7 +10,12 @@ import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
+import java.io.ByteArrayInputStream
+import java.io.InputStream
+import java.nio.file.Path
 import java.util.Objects
+import kotlin.io.path.inputStream
+import kotlin.io.path.name
 
 /**
  * Adds a [Part](https://platform.openai.com/docs/api-reference/uploads/part-object) to an
@@ -33,10 +38,10 @@ private constructor(
     fun uploadId(): String = uploadId
 
     /** The chunk of bytes for this Part. */
-    fun data(): ByteArray = body.data()
+    fun data(): InputStream = body.data()
 
     /** The chunk of bytes for this Part. */
-    fun _data(): MultipartField<ByteArray> = body._data()
+    fun _data(): MultipartField<InputStream> = body._data()
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -57,13 +62,13 @@ private constructor(
     }
 
     @NoAutoDetect
-    class Body @JsonCreator private constructor(private val data: MultipartField<ByteArray>) {
+    class Body @JsonCreator private constructor(private val data: MultipartField<InputStream>) {
 
         /** The chunk of bytes for this Part. */
-        fun data(): ByteArray = data.value.getRequired("data")
+        fun data(): InputStream = data.value.getRequired("data")
 
         /** The chunk of bytes for this Part. */
-        fun _data(): MultipartField<ByteArray> = data
+        fun _data(): MultipartField<InputStream> = data
 
         private var validated: Boolean = false
 
@@ -94,15 +99,27 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var data: MultipartField<ByteArray>? = null
+            private var data: MultipartField<InputStream>? = null
 
             @JvmSynthetic internal fun from(body: Body) = apply { data = body.data }
 
             /** The chunk of bytes for this Part. */
-            fun data(data: ByteArray) = data(MultipartField.of(data))
+            fun data(data: InputStream) = data(MultipartField.of(data))
 
             /** The chunk of bytes for this Part. */
-            fun data(data: MultipartField<ByteArray>) = apply { this.data = data }
+            fun data(data: MultipartField<InputStream>) = apply { this.data = data }
+
+            /** The chunk of bytes for this Part. */
+            fun data(data: ByteArray) = data(ByteArrayInputStream(data))
+
+            /** The chunk of bytes for this Part. */
+            fun data(data: Path) =
+                data(
+                    MultipartField.builder<InputStream>()
+                        .value(data.inputStream())
+                        .filename(data.name)
+                        .build()
+                )
 
             fun build(): Body = Body(checkRequired("data", data))
         }
@@ -160,10 +177,16 @@ private constructor(
         fun uploadId(uploadId: String) = apply { this.uploadId = uploadId }
 
         /** The chunk of bytes for this Part. */
+        fun data(data: InputStream) = apply { body.data(data) }
+
+        /** The chunk of bytes for this Part. */
+        fun data(data: MultipartField<InputStream>) = apply { body.data(data) }
+
+        /** The chunk of bytes for this Part. */
         fun data(data: ByteArray) = apply { body.data(data) }
 
         /** The chunk of bytes for this Part. */
-        fun data(data: MultipartField<ByteArray>) = apply { body.data(data) }
+        fun data(data: Path) = apply { body.data(data) }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
