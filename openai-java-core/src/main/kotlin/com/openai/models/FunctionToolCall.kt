@@ -17,6 +17,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 @NoAutoDetect
 class FunctionToolCall
@@ -259,7 +260,7 @@ private constructor(
              * [submitted](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs)
              * yet.
              */
-            fun output(output: Optional<String>) = output(output.orElse(null))
+            fun output(output: Optional<String>) = output(output.getOrNull())
 
             /**
              * The output of the function. This will be `null` if the outputs have not been

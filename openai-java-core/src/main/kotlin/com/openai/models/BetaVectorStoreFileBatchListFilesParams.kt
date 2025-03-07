@@ -13,6 +13,7 @@ import com.openai.core.http.QueryParams
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Returns a list of vector store files in a batch. */
 class BetaVectorStoreFileBatchListFilesParams
@@ -152,7 +153,7 @@ private constructor(
          * obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page
          * of the list.
          */
-        fun after(after: Optional<String>) = after(after.orElse(null))
+        fun after(after: Optional<String>) = after(after.getOrNull())
 
         /**
          * A cursor for use in pagination. `before` is an object ID that defines your place in the
@@ -168,13 +169,13 @@ private constructor(
          * obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous
          * page of the list.
          */
-        fun before(before: Optional<String>) = before(before.orElse(null))
+        fun before(before: Optional<String>) = before(before.getOrNull())
 
         /** Filter by file status. One of `in_progress`, `completed`, `failed`, `cancelled`. */
         fun filter(filter: Filter?) = apply { this.filter = filter }
 
         /** Filter by file status. One of `in_progress`, `completed`, `failed`, `cancelled`. */
-        fun filter(filter: Optional<Filter>) = filter(filter.orElse(null))
+        fun filter(filter: Optional<Filter>) = filter(filter.getOrNull())
 
         /**
          * A limit on the number of objects to be returned. Limit can range between 1 and 100, and
@@ -192,8 +193,7 @@ private constructor(
          * A limit on the number of objects to be returned. Limit can range between 1 and 100, and
          * the default is 20.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun limit(limit: Optional<Long>) = limit(limit.orElse(null) as Long?)
+        fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
 
         /**
          * Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and
@@ -205,7 +205,7 @@ private constructor(
          * Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and
          * `desc` for descending order.
          */
-        fun order(order: Optional<Order>) = order(order.orElse(null))
+        fun order(order: Optional<Order>) = order(order.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()

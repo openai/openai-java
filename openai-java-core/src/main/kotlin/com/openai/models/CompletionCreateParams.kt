@@ -31,6 +31,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Creates a completion for the provided prompt and parameters. */
 class CompletionCreateParams
@@ -837,7 +838,7 @@ private constructor(
              * training, so if a prompt is not specified the model will generate as if from the
              * beginning of a new document.
              */
-            fun prompt(prompt: Optional<Prompt>) = prompt(prompt.orElse(null))
+            fun prompt(prompt: Optional<Prompt>) = prompt(prompt.getOrNull())
 
             /**
              * The prompt(s) to generate completions for, encoded as a string, array of strings,
@@ -929,8 +930,7 @@ private constructor(
              * your token quota. Use carefully and ensure that you have reasonable settings for
              * `max_tokens` and `stop`.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun bestOf(bestOf: Optional<Long>) = bestOf(bestOf.orElse(null) as Long?)
+            fun bestOf(bestOf: Optional<Long>) = bestOf(bestOf.getOrNull())
 
             /**
              * Generates `best_of` completions server-side and returns the "best" (the one with the
@@ -952,8 +952,7 @@ private constructor(
             fun echo(echo: Boolean) = echo(echo as Boolean?)
 
             /** Echo back the prompt in addition to the completion */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun echo(echo: Optional<Boolean>) = echo(echo.orElse(null) as Boolean?)
+            fun echo(echo: Optional<Boolean>) = echo(echo.getOrNull())
 
             /** Echo back the prompt in addition to the completion */
             fun echo(echo: JsonField<Boolean>) = apply { this.echo = echo }
@@ -988,9 +987,8 @@ private constructor(
              * [See more information about frequency and presence
              * penalties.](https://platform.openai.com/docs/guides/text-generation)
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
             fun frequencyPenalty(frequencyPenalty: Optional<Double>) =
-                frequencyPenalty(frequencyPenalty.orElse(null) as Double?)
+                frequencyPenalty(frequencyPenalty.getOrNull())
 
             /**
              * Number between -2.0 and 2.0. Positive values penalize new tokens based on their
@@ -1034,7 +1032,7 @@ private constructor(
              * As an example, you can pass `{"50256": -100}` to prevent the <|endoftext|> token from
              * being generated.
              */
-            fun logitBias(logitBias: Optional<LogitBias>) = logitBias(logitBias.orElse(null))
+            fun logitBias(logitBias: Optional<LogitBias>) = logitBias(logitBias.getOrNull())
 
             /**
              * Modify the likelihood of specified tokens appearing in the completion.
@@ -1080,8 +1078,7 @@ private constructor(
              *
              * The maximum value for `logprobs` is 5.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun logprobs(logprobs: Optional<Long>) = logprobs(logprobs.orElse(null) as Long?)
+            fun logprobs(logprobs: Optional<Long>) = logprobs(logprobs.getOrNull())
 
             /**
              * Include the log probabilities on the `logprobs` most likely output tokens, as well
@@ -1121,8 +1118,7 @@ private constructor(
              * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
              * for counting tokens.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun maxTokens(maxTokens: Optional<Long>) = maxTokens(maxTokens.orElse(null) as Long?)
+            fun maxTokens(maxTokens: Optional<Long>) = maxTokens(maxTokens.getOrNull())
 
             /**
              * The maximum number of [tokens](/tokenizer) that can be generated in the completion.
@@ -1159,8 +1155,7 @@ private constructor(
              * your token quota. Use carefully and ensure that you have reasonable settings for
              * `max_tokens` and `stop`.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun n(n: Optional<Long>) = n(n.orElse(null) as Long?)
+            fun n(n: Optional<Long>) = n(n.getOrNull())
 
             /**
              * How many completions to generate for each prompt.
@@ -1201,9 +1196,8 @@ private constructor(
              * [See more information about frequency and presence
              * penalties.](https://platform.openai.com/docs/guides/text-generation)
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
             fun presencePenalty(presencePenalty: Optional<Double>) =
-                presencePenalty(presencePenalty.orElse(null) as Double?)
+                presencePenalty(presencePenalty.getOrNull())
 
             /**
              * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether
@@ -1245,8 +1239,7 @@ private constructor(
              * Determinism is not guaranteed, and you should refer to the `system_fingerprint`
              * response parameter to monitor changes in the backend.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun seed(seed: Optional<Long>) = seed(seed.orElse(null) as Long?)
+            fun seed(seed: Optional<Long>) = seed(seed.getOrNull())
 
             /**
              * If specified, our system will make a best effort to sample deterministically, such
@@ -1268,7 +1261,7 @@ private constructor(
              * Up to 4 sequences where the API will stop generating further tokens. The returned
              * text will not contain the stop sequence.
              */
-            fun stop(stop: Optional<Stop>) = stop(stop.orElse(null))
+            fun stop(stop: Optional<Stop>) = stop(stop.getOrNull())
 
             /**
              * Up to 4 sequences where the API will stop generating further tokens. The returned
@@ -1294,7 +1287,7 @@ private constructor(
 
             /** Options for streaming response. Only set this when you set `stream: true`. */
             fun streamOptions(streamOptions: Optional<ChatCompletionStreamOptions>) =
-                streamOptions(streamOptions.orElse(null))
+                streamOptions(streamOptions.getOrNull())
 
             /** Options for streaming response. Only set this when you set `stream: true`. */
             fun streamOptions(streamOptions: JsonField<ChatCompletionStreamOptions>) = apply {
@@ -1313,7 +1306,7 @@ private constructor(
              *
              * This parameter is only supported for `gpt-3.5-turbo-instruct`.
              */
-            fun suffix(suffix: Optional<String>) = suffix(suffix.orElse(null))
+            fun suffix(suffix: Optional<String>) = suffix(suffix.getOrNull())
 
             /**
              * The suffix that comes after a completion of inserted text.
@@ -1347,9 +1340,7 @@ private constructor(
              *
              * We generally recommend altering this or `top_p` but not both.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun temperature(temperature: Optional<Double>) =
-                temperature(temperature.orElse(null) as Double?)
+            fun temperature(temperature: Optional<Double>) = temperature(temperature.getOrNull())
 
             /**
              * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
@@ -1387,8 +1378,7 @@ private constructor(
              *
              * We generally recommend altering this or `temperature` but not both.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
+            fun topP(topP: Optional<Double>) = topP(topP.getOrNull())
 
             /**
              * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -1546,7 +1536,7 @@ private constructor(
          * if a prompt is not specified the model will generate as if from the beginning of a new
          * document.
          */
-        fun prompt(prompt: Optional<Prompt>) = prompt(prompt.orElse(null))
+        fun prompt(prompt: Optional<Prompt>) = prompt(prompt.getOrNull())
 
         /**
          * The prompt(s) to generate completions for, encoded as a string, array of strings, array
@@ -1641,8 +1631,7 @@ private constructor(
          * token quota. Use carefully and ensure that you have reasonable settings for `max_tokens`
          * and `stop`.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun bestOf(bestOf: Optional<Long>) = bestOf(bestOf.orElse(null) as Long?)
+        fun bestOf(bestOf: Optional<Long>) = bestOf(bestOf.getOrNull())
 
         /**
          * Generates `best_of` completions server-side and returns the "best" (the one with the
@@ -1664,8 +1653,7 @@ private constructor(
         fun echo(echo: Boolean) = echo(echo as Boolean?)
 
         /** Echo back the prompt in addition to the completion */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun echo(echo: Optional<Boolean>) = echo(echo.orElse(null) as Boolean?)
+        fun echo(echo: Optional<Boolean>) = echo(echo.getOrNull())
 
         /** Echo back the prompt in addition to the completion */
         fun echo(echo: JsonField<Boolean>) = apply { body.echo(echo) }
@@ -1701,9 +1689,8 @@ private constructor(
          * [See more information about frequency and presence
          * penalties.](https://platform.openai.com/docs/guides/text-generation)
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
         fun frequencyPenalty(frequencyPenalty: Optional<Double>) =
-            frequencyPenalty(frequencyPenalty.orElse(null) as Double?)
+            frequencyPenalty(frequencyPenalty.getOrNull())
 
         /**
          * Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing
@@ -1747,7 +1734,7 @@ private constructor(
          * As an example, you can pass `{"50256": -100}` to prevent the <|endoftext|> token from
          * being generated.
          */
-        fun logitBias(logitBias: Optional<LogitBias>) = logitBias(logitBias.orElse(null))
+        fun logitBias(logitBias: Optional<LogitBias>) = logitBias(logitBias.getOrNull())
 
         /**
          * Modify the likelihood of specified tokens appearing in the completion.
@@ -1793,8 +1780,7 @@ private constructor(
          *
          * The maximum value for `logprobs` is 5.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun logprobs(logprobs: Optional<Long>) = logprobs(logprobs.orElse(null) as Long?)
+        fun logprobs(logprobs: Optional<Long>) = logprobs(logprobs.getOrNull())
 
         /**
          * Include the log probabilities on the `logprobs` most likely output tokens, as well the
@@ -1834,8 +1820,7 @@ private constructor(
          * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
          * for counting tokens.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun maxTokens(maxTokens: Optional<Long>) = maxTokens(maxTokens.orElse(null) as Long?)
+        fun maxTokens(maxTokens: Optional<Long>) = maxTokens(maxTokens.getOrNull())
 
         /**
          * The maximum number of [tokens](/tokenizer) that can be generated in the completion.
@@ -1872,8 +1857,7 @@ private constructor(
          * token quota. Use carefully and ensure that you have reasonable settings for `max_tokens`
          * and `stop`.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun n(n: Optional<Long>) = n(n.orElse(null) as Long?)
+        fun n(n: Optional<Long>) = n(n.getOrNull())
 
         /**
          * How many completions to generate for each prompt.
@@ -1911,9 +1895,8 @@ private constructor(
          * [See more information about frequency and presence
          * penalties.](https://platform.openai.com/docs/guides/text-generation)
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
         fun presencePenalty(presencePenalty: Optional<Double>) =
-            presencePenalty(presencePenalty.orElse(null) as Double?)
+            presencePenalty(presencePenalty.getOrNull())
 
         /**
          * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they
@@ -1951,8 +1934,7 @@ private constructor(
          * Determinism is not guaranteed, and you should refer to the `system_fingerprint` response
          * parameter to monitor changes in the backend.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun seed(seed: Optional<Long>) = seed(seed.orElse(null) as Long?)
+        fun seed(seed: Optional<Long>) = seed(seed.getOrNull())
 
         /**
          * If specified, our system will make a best effort to sample deterministically, such that
@@ -1973,7 +1955,7 @@ private constructor(
          * Up to 4 sequences where the API will stop generating further tokens. The returned text
          * will not contain the stop sequence.
          */
-        fun stop(stop: Optional<Stop>) = stop(stop.orElse(null))
+        fun stop(stop: Optional<Stop>) = stop(stop.getOrNull())
 
         /**
          * Up to 4 sequences where the API will stop generating further tokens. The returned text
@@ -2000,7 +1982,7 @@ private constructor(
 
         /** Options for streaming response. Only set this when you set `stream: true`. */
         fun streamOptions(streamOptions: Optional<ChatCompletionStreamOptions>) =
-            streamOptions(streamOptions.orElse(null))
+            streamOptions(streamOptions.getOrNull())
 
         /** Options for streaming response. Only set this when you set `stream: true`. */
         fun streamOptions(streamOptions: JsonField<ChatCompletionStreamOptions>) = apply {
@@ -2019,7 +2001,7 @@ private constructor(
          *
          * This parameter is only supported for `gpt-3.5-turbo-instruct`.
          */
-        fun suffix(suffix: Optional<String>) = suffix(suffix.orElse(null))
+        fun suffix(suffix: Optional<String>) = suffix(suffix.getOrNull())
 
         /**
          * The suffix that comes after a completion of inserted text.
@@ -2053,9 +2035,7 @@ private constructor(
          *
          * We generally recommend altering this or `top_p` but not both.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun temperature(temperature: Optional<Double>) =
-            temperature(temperature.orElse(null) as Double?)
+        fun temperature(temperature: Optional<Double>) = temperature(temperature.getOrNull())
 
         /**
          * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
@@ -2091,8 +2071,7 @@ private constructor(
          *
          * We generally recommend altering this or `temperature` but not both.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
+        fun topP(topP: Optional<Double>) = topP(topP.getOrNull())
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model

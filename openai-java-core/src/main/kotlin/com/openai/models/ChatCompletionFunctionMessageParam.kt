@@ -17,6 +17,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 @Deprecated("deprecated")
 @NoAutoDetect
@@ -106,7 +107,7 @@ private constructor(
         fun content(content: String?) = content(JsonField.ofNullable(content))
 
         /** The contents of the function message. */
-        fun content(content: Optional<String>) = content(content.orElse(null))
+        fun content(content: Optional<String>) = content(content.getOrNull())
 
         /** The contents of the function message. */
         fun content(content: JsonField<String>) = apply { this.content = content }

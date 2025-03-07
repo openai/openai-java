@@ -351,9 +351,7 @@ private constructor(
         fun cancelledAt(cancelledAt: Long) = cancelledAt(cancelledAt as Long?)
 
         /** The Unix timestamp (in seconds) for when the run step was cancelled. */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun cancelledAt(cancelledAt: Optional<Long>) =
-            cancelledAt(cancelledAt.orElse(null) as Long?)
+        fun cancelledAt(cancelledAt: Optional<Long>) = cancelledAt(cancelledAt.getOrNull())
 
         /** The Unix timestamp (in seconds) for when the run step was cancelled. */
         fun cancelledAt(cancelledAt: JsonField<Long>) = apply { this.cancelledAt = cancelledAt }
@@ -365,9 +363,7 @@ private constructor(
         fun completedAt(completedAt: Long) = completedAt(completedAt as Long?)
 
         /** The Unix timestamp (in seconds) for when the run step completed. */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun completedAt(completedAt: Optional<Long>) =
-            completedAt(completedAt.orElse(null) as Long?)
+        fun completedAt(completedAt: Optional<Long>) = completedAt(completedAt.getOrNull())
 
         /** The Unix timestamp (in seconds) for when the run step completed. */
         fun completedAt(completedAt: JsonField<Long>) = apply { this.completedAt = completedAt }
@@ -394,8 +390,7 @@ private constructor(
          * The Unix timestamp (in seconds) for when the run step expired. A step is considered
          * expired if the parent run is expired.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun expiredAt(expiredAt: Optional<Long>) = expiredAt(expiredAt.orElse(null) as Long?)
+        fun expiredAt(expiredAt: Optional<Long>) = expiredAt(expiredAt.getOrNull())
 
         /**
          * The Unix timestamp (in seconds) for when the run step expired. A step is considered
@@ -410,8 +405,7 @@ private constructor(
         fun failedAt(failedAt: Long) = failedAt(failedAt as Long?)
 
         /** The Unix timestamp (in seconds) for when the run step failed. */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun failedAt(failedAt: Optional<Long>) = failedAt(failedAt.orElse(null) as Long?)
+        fun failedAt(failedAt: Optional<Long>) = failedAt(failedAt.getOrNull())
 
         /** The Unix timestamp (in seconds) for when the run step failed. */
         fun failedAt(failedAt: JsonField<Long>) = apply { this.failedAt = failedAt }
@@ -420,7 +414,7 @@ private constructor(
         fun lastError(lastError: LastError?) = lastError(JsonField.ofNullable(lastError))
 
         /** The last error associated with this run step. Will be `null` if there are no errors. */
-        fun lastError(lastError: Optional<LastError>) = lastError(lastError.orElse(null))
+        fun lastError(lastError: Optional<LastError>) = lastError(lastError.getOrNull())
 
         /** The last error associated with this run step. Will be `null` if there are no errors. */
         fun lastError(lastError: JsonField<LastError>) = apply { this.lastError = lastError }
@@ -443,7 +437,7 @@ private constructor(
          * Keys are strings with a maximum length of 64 characters. Values are strings with a
          * maximum length of 512 characters.
          */
-        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -538,7 +532,7 @@ private constructor(
          * Usage statistics related to the run step. This value will be `null` while the run step's
          * status is `in_progress`.
          */
-        fun usage(usage: Optional<Usage>) = usage(usage.orElse(null))
+        fun usage(usage: Optional<Usage>) = usage(usage.getOrNull())
 
         /**
          * Usage statistics related to the run step. This value will be `null` while the run step's

@@ -16,6 +16,7 @@ import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 @NoAutoDetect
 class FunctionDefinition
@@ -217,8 +218,7 @@ private constructor(
          * subset of JSON Schema is supported when `strict` is `true`. Learn more about Structured
          * Outputs in the [function calling guide](docs/guides/function-calling).
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun strict(strict: Optional<Boolean>) = strict(strict.orElse(null) as Boolean?)
+        fun strict(strict: Optional<Boolean>) = strict(strict.getOrNull())
 
         /**
          * Whether to enable strict schema adherence when generating the function call. If set to

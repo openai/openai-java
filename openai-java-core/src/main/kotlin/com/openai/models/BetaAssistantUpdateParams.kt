@@ -22,6 +22,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Modifies an assistant. */
 class BetaAssistantUpdateParams
@@ -541,7 +542,7 @@ private constructor(
             fun description(description: String?) = description(JsonField.ofNullable(description))
 
             /** The description of the assistant. The maximum length is 512 characters. */
-            fun description(description: Optional<String>) = description(description.orElse(null))
+            fun description(description: Optional<String>) = description(description.getOrNull())
 
             /** The description of the assistant. The maximum length is 512 characters. */
             fun description(description: JsonField<String>) = apply {
@@ -560,7 +561,7 @@ private constructor(
              * characters.
              */
             fun instructions(instructions: Optional<String>) =
-                instructions(instructions.orElse(null))
+                instructions(instructions.getOrNull())
 
             /**
              * The system instructions that the assistant uses. The maximum length is 256,000
@@ -588,7 +589,7 @@ private constructor(
              * Keys are strings with a maximum length of 64 characters. Values are strings with a
              * maximum length of 512 characters.
              */
-            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
             /**
              * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -628,7 +629,7 @@ private constructor(
             fun name(name: String?) = name(JsonField.ofNullable(name))
 
             /** The name of the assistant. The maximum length is 256 characters. */
-            fun name(name: Optional<String>) = name(name.orElse(null))
+            fun name(name: Optional<String>) = name(name.getOrNull())
 
             /** The name of the assistant. The maximum length is 256 characters. */
             fun name(name: JsonField<String>) = apply { this.name = name }
@@ -653,7 +654,7 @@ private constructor(
              * result in faster responses and fewer tokens used on reasoning in a response.
              */
             fun reasoningEffort(reasoningEffort: Optional<ReasoningEffort>) =
-                reasoningEffort(reasoningEffort.orElse(null))
+                reasoningEffort(reasoningEffort.getOrNull())
 
             /**
              * **o1 and o3-mini models only**
@@ -713,7 +714,7 @@ private constructor(
              * exceeded `max_tokens` or the conversation exceeded the max context length.
              */
             fun responseFormat(responseFormat: Optional<AssistantResponseFormatOption>) =
-                responseFormat(responseFormat.orElse(null))
+                responseFormat(responseFormat.getOrNull())
 
             /**
              * Specifies the format that the model must output. Compatible with
@@ -844,9 +845,7 @@ private constructor(
              * the output more random, while lower values like 0.2 will make it more focused and
              * deterministic.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun temperature(temperature: Optional<Double>) =
-                temperature(temperature.orElse(null) as Double?)
+            fun temperature(temperature: Optional<Double>) = temperature(temperature.getOrNull())
 
             /**
              * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
@@ -871,7 +870,7 @@ private constructor(
              * IDs, while the `file_search` tool requires a list of vector store IDs.
              */
             fun toolResources(toolResources: Optional<ToolResources>) =
-                toolResources(toolResources.orElse(null))
+                toolResources(toolResources.getOrNull())
 
             /**
              * A set of resources that are used by the assistant's tools. The resources are specific
@@ -959,8 +958,7 @@ private constructor(
              *
              * We generally recommend altering this or temperature but not both.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
+            fun topP(topP: Optional<Double>) = topP(topP.getOrNull())
 
             /**
              * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -1063,7 +1061,7 @@ private constructor(
         fun description(description: String?) = apply { body.description(description) }
 
         /** The description of the assistant. The maximum length is 512 characters. */
-        fun description(description: Optional<String>) = description(description.orElse(null))
+        fun description(description: Optional<String>) = description(description.getOrNull())
 
         /** The description of the assistant. The maximum length is 512 characters. */
         fun description(description: JsonField<String>) = apply { body.description(description) }
@@ -1078,7 +1076,7 @@ private constructor(
          * The system instructions that the assistant uses. The maximum length is 256,000
          * characters.
          */
-        fun instructions(instructions: Optional<String>) = instructions(instructions.orElse(null))
+        fun instructions(instructions: Optional<String>) = instructions(instructions.getOrNull())
 
         /**
          * The system instructions that the assistant uses. The maximum length is 256,000
@@ -1106,7 +1104,7 @@ private constructor(
          * Keys are strings with a maximum length of 64 characters. Values are strings with a
          * maximum length of 512 characters.
          */
-        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -1146,7 +1144,7 @@ private constructor(
         fun name(name: String?) = apply { body.name(name) }
 
         /** The name of the assistant. The maximum length is 256 characters. */
-        fun name(name: Optional<String>) = name(name.orElse(null))
+        fun name(name: Optional<String>) = name(name.getOrNull())
 
         /** The name of the assistant. The maximum length is 256 characters. */
         fun name(name: JsonField<String>) = apply { body.name(name) }
@@ -1172,7 +1170,7 @@ private constructor(
          * faster responses and fewer tokens used on reasoning in a response.
          */
         fun reasoningEffort(reasoningEffort: Optional<ReasoningEffort>) =
-            reasoningEffort(reasoningEffort.orElse(null))
+            reasoningEffort(reasoningEffort.getOrNull())
 
         /**
          * **o1 and o3-mini models only**
@@ -1231,7 +1229,7 @@ private constructor(
          * `max_tokens` or the conversation exceeded the max context length.
          */
         fun responseFormat(responseFormat: Optional<AssistantResponseFormatOption>) =
-            responseFormat(responseFormat.orElse(null))
+            responseFormat(responseFormat.getOrNull())
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -1351,9 +1349,7 @@ private constructor(
          * output more random, while lower values like 0.2 will make it more focused and
          * deterministic.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun temperature(temperature: Optional<Double>) =
-            temperature(temperature.orElse(null) as Double?)
+        fun temperature(temperature: Optional<Double>) = temperature(temperature.getOrNull())
 
         /**
          * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
@@ -1377,7 +1373,7 @@ private constructor(
          * while the `file_search` tool requires a list of vector store IDs.
          */
         fun toolResources(toolResources: Optional<ToolResources>) =
-            toolResources(toolResources.orElse(null))
+            toolResources(toolResources.getOrNull())
 
         /**
          * A set of resources that are used by the assistant's tools. The resources are specific to
@@ -1455,8 +1451,7 @@ private constructor(
          *
          * We generally recommend altering this or temperature but not both.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
+        fun topP(topP: Optional<Double>) = topP(topP.getOrNull())
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model

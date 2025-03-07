@@ -32,6 +32,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Creates a model response for the given chat conversation. Learn more in the
@@ -1538,7 +1539,7 @@ private constructor(
              * Parameters for audio output. Required when audio output is requested with
              * `modalities: ["audio"]`. [Learn more](https://platform.openai.com/docs/guides/audio).
              */
-            fun audio(audio: Optional<ChatCompletionAudioParam>) = audio(audio.orElse(null))
+            fun audio(audio: Optional<ChatCompletionAudioParam>) = audio(audio.getOrNull())
 
             /**
              * Parameters for audio output. Required when audio output is requested with
@@ -1567,9 +1568,8 @@ private constructor(
              * existing frequency in the text so far, decreasing the model's likelihood to repeat
              * the same line verbatim.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
             fun frequencyPenalty(frequencyPenalty: Optional<Double>) =
-                frequencyPenalty(frequencyPenalty.orElse(null) as Double?)
+                frequencyPenalty(frequencyPenalty.getOrNull())
 
             /**
              * Number between -2.0 and 2.0. Positive values penalize new tokens based on their
@@ -1686,7 +1686,7 @@ private constructor(
              * selection; values like -100 or 100 should result in a ban or exclusive selection of
              * the relevant token.
              */
-            fun logitBias(logitBias: Optional<LogitBias>) = logitBias(logitBias.orElse(null))
+            fun logitBias(logitBias: Optional<LogitBias>) = logitBias(logitBias.getOrNull())
 
             /**
              * Modify the likelihood of specified tokens appearing in the completion.
@@ -1716,8 +1716,7 @@ private constructor(
              * Whether to return log probabilities of the output tokens or not. If true, returns the
              * log probabilities of each output token returned in the `content` of `message`.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun logprobs(logprobs: Optional<Boolean>) = logprobs(logprobs.orElse(null) as Boolean?)
+            fun logprobs(logprobs: Optional<Boolean>) = logprobs(logprobs.getOrNull())
 
             /**
              * Whether to return log probabilities of the output tokens or not. If true, returns the
@@ -1746,9 +1745,8 @@ private constructor(
              * including visible output tokens and
              * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
             fun maxCompletionTokens(maxCompletionTokens: Optional<Long>) =
-                maxCompletionTokens(maxCompletionTokens.orElse(null) as Long?)
+                maxCompletionTokens(maxCompletionTokens.getOrNull())
 
             /**
              * An upper bound for the number of tokens that can be generated for a completion,
@@ -1792,8 +1790,7 @@ private constructor(
              * [o1 series models](https://platform.openai.com/docs/guides/reasoning).
              */
             @Deprecated("deprecated")
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun maxTokens(maxTokens: Optional<Long>) = maxTokens(maxTokens.orElse(null) as Long?)
+            fun maxTokens(maxTokens: Optional<Long>) = maxTokens(maxTokens.getOrNull())
 
             /**
              * The maximum number of [tokens](/tokenizer) that can be generated in the chat
@@ -1825,7 +1822,7 @@ private constructor(
              * Keys are strings with a maximum length of 64 characters. Values are strings with a
              * maximum length of 512 characters.
              */
-            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
             /**
              * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -1865,7 +1862,7 @@ private constructor(
              * `["text", "audio"]`
              */
             fun modalities(modalities: Optional<List<ChatCompletionModality>>) =
-                modalities(modalities.orElse(null))
+                modalities(modalities.getOrNull())
 
             /**
              * Output types that you would like the model to generate for this request. Most models
@@ -1921,8 +1918,7 @@ private constructor(
              * will be charged based on the number of generated tokens across all of the choices.
              * Keep `n` as `1` to minimize costs.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun n(n: Optional<Long>) = n(n.orElse(null) as Long?)
+            fun n(n: Optional<Long>) = n(n.getOrNull())
 
             /**
              * How many chat completion choices to generate for each input message. Note that you
@@ -1960,7 +1956,7 @@ private constructor(
              * regenerated.
              */
             fun prediction(prediction: Optional<ChatCompletionPredictionContent>) =
-                prediction(prediction.orElse(null))
+                prediction(prediction.getOrNull())
 
             /**
              * Static predicted output content, such as the content of a text file that is being
@@ -1991,9 +1987,8 @@ private constructor(
              * they appear in the text so far, increasing the model's likelihood to talk about new
              * topics.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
             fun presencePenalty(presencePenalty: Optional<Double>) =
-                presencePenalty(presencePenalty.orElse(null) as Double?)
+                presencePenalty(presencePenalty.getOrNull())
 
             /**
              * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether
@@ -2024,7 +2019,7 @@ private constructor(
              * result in faster responses and fewer tokens used on reasoning in a response.
              */
             fun reasoningEffort(reasoningEffort: Optional<ChatCompletionReasoningEffort>) =
-                reasoningEffort(reasoningEffort.orElse(null))
+                reasoningEffort(reasoningEffort.getOrNull())
 
             /**
              * **o1 and o3-mini models only**
@@ -2166,8 +2161,7 @@ private constructor(
              * should return the same result. Determinism is not guaranteed, and you should refer to
              * the `system_fingerprint` response parameter to monitor changes in the backend.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun seed(seed: Optional<Long>) = seed(seed.orElse(null) as Long?)
+            fun seed(seed: Optional<Long>) = seed(seed.getOrNull())
 
             /**
              * This feature is in Beta. If specified, our system will make a best effort to sample
@@ -2205,7 +2199,7 @@ private constructor(
              * - When not set, the default behavior is 'auto'.
              */
             fun serviceTier(serviceTier: Optional<ServiceTier>) =
-                serviceTier(serviceTier.orElse(null))
+                serviceTier(serviceTier.getOrNull())
 
             /**
              * Specifies the latency tier to use for processing the request. This parameter is
@@ -2254,8 +2248,7 @@ private constructor(
              * [model distillation](https://platform.openai.com/docs/guides/distillation) or
              * [evals](https://platform.openai.com/docs/guides/evals) products.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun store(store: Optional<Boolean>) = store(store.orElse(null) as Boolean?)
+            fun store(store: Optional<Boolean>) = store(store.getOrNull())
 
             /**
              * Whether or not to store the output of this chat completion request for use in our
@@ -2270,7 +2263,7 @@ private constructor(
 
             /** Options for streaming response. Only set this when you set `stream: true`. */
             fun streamOptions(streamOptions: Optional<ChatCompletionStreamOptions>) =
-                streamOptions(streamOptions.orElse(null))
+                streamOptions(streamOptions.getOrNull())
 
             /** Options for streaming response. Only set this when you set `stream: true`. */
             fun streamOptions(streamOptions: JsonField<ChatCompletionStreamOptions>) = apply {
@@ -2296,9 +2289,7 @@ private constructor(
              * the output more random, while lower values like 0.2 will make it more focused and
              * deterministic. We generally recommend altering this or `top_p` but not both.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun temperature(temperature: Optional<Double>) =
-                temperature(temperature.orElse(null) as Double?)
+            fun temperature(temperature: Optional<Double>) = temperature(temperature.getOrNull())
 
             /**
              * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
@@ -2398,9 +2389,7 @@ private constructor(
              * each token position, each with an associated log probability. `logprobs` must be set
              * to `true` if this parameter is used.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun topLogprobs(topLogprobs: Optional<Long>) =
-                topLogprobs(topLogprobs.orElse(null) as Long?)
+            fun topLogprobs(topLogprobs: Optional<Long>) = topLogprobs(topLogprobs.getOrNull())
 
             /**
              * An integer between 0 and 20 specifying the number of most likely tokens to return at
@@ -2434,8 +2423,7 @@ private constructor(
              *
              * We generally recommend altering this or `temperature` but not both.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
+            fun topP(topP: Optional<Double>) = topP(topP.getOrNull())
 
             /**
              * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -2731,7 +2719,7 @@ private constructor(
          * Parameters for audio output. Required when audio output is requested with `modalities:
          * ["audio"]`. [Learn more](https://platform.openai.com/docs/guides/audio).
          */
-        fun audio(audio: Optional<ChatCompletionAudioParam>) = audio(audio.orElse(null))
+        fun audio(audio: Optional<ChatCompletionAudioParam>) = audio(audio.getOrNull())
 
         /**
          * Parameters for audio output. Required when audio output is requested with `modalities:
@@ -2761,9 +2749,8 @@ private constructor(
          * frequency in the text so far, decreasing the model's likelihood to repeat the same line
          * verbatim.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
         fun frequencyPenalty(frequencyPenalty: Optional<Double>) =
-            frequencyPenalty(frequencyPenalty.orElse(null) as Double?)
+            frequencyPenalty(frequencyPenalty.getOrNull())
 
         /**
          * Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing
@@ -2872,7 +2859,7 @@ private constructor(
          * but values between -1 and 1 should decrease or increase likelihood of selection; values
          * like -100 or 100 should result in a ban or exclusive selection of the relevant token.
          */
-        fun logitBias(logitBias: Optional<LogitBias>) = logitBias(logitBias.orElse(null))
+        fun logitBias(logitBias: Optional<LogitBias>) = logitBias(logitBias.getOrNull())
 
         /**
          * Modify the likelihood of specified tokens appearing in the completion.
@@ -2901,8 +2888,7 @@ private constructor(
          * Whether to return log probabilities of the output tokens or not. If true, returns the log
          * probabilities of each output token returned in the `content` of `message`.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun logprobs(logprobs: Optional<Boolean>) = logprobs(logprobs.orElse(null) as Boolean?)
+        fun logprobs(logprobs: Optional<Boolean>) = logprobs(logprobs.getOrNull())
 
         /**
          * Whether to return log probabilities of the output tokens or not. If true, returns the log
@@ -2932,9 +2918,8 @@ private constructor(
          * visible output tokens and
          * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
         fun maxCompletionTokens(maxCompletionTokens: Optional<Long>) =
-            maxCompletionTokens(maxCompletionTokens.orElse(null) as Long?)
+            maxCompletionTokens(maxCompletionTokens.getOrNull())
 
         /**
          * An upper bound for the number of tokens that can be generated for a completion, including
@@ -2975,8 +2960,7 @@ private constructor(
          * with [o1 series models](https://platform.openai.com/docs/guides/reasoning).
          */
         @Deprecated("deprecated")
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun maxTokens(maxTokens: Optional<Long>) = maxTokens(maxTokens.orElse(null) as Long?)
+        fun maxTokens(maxTokens: Optional<Long>) = maxTokens(maxTokens.getOrNull())
 
         /**
          * The maximum number of [tokens](/tokenizer) that can be generated in the chat completion.
@@ -3007,7 +2991,7 @@ private constructor(
          * Keys are strings with a maximum length of 64 characters. Values are strings with a
          * maximum length of 512 characters.
          */
-        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -3048,7 +3032,7 @@ private constructor(
          * `["text", "audio"]`
          */
         fun modalities(modalities: Optional<List<ChatCompletionModality>>) =
-            modalities(modalities.orElse(null))
+            modalities(modalities.getOrNull())
 
         /**
          * Output types that you would like the model to generate for this request. Most models are
@@ -3099,8 +3083,7 @@ private constructor(
          * be charged based on the number of generated tokens across all of the choices. Keep `n` as
          * `1` to minimize costs.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun n(n: Optional<Long>) = n(n.orElse(null) as Long?)
+        fun n(n: Optional<Long>) = n(n.getOrNull())
 
         /**
          * How many chat completion choices to generate for each input message. Note that you will
@@ -3140,7 +3123,7 @@ private constructor(
          * regenerated.
          */
         fun prediction(prediction: Optional<ChatCompletionPredictionContent>) =
-            prediction(prediction.orElse(null))
+            prediction(prediction.getOrNull())
 
         /**
          * Static predicted output content, such as the content of a text file that is being
@@ -3168,9 +3151,8 @@ private constructor(
          * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they
          * appear in the text so far, increasing the model's likelihood to talk about new topics.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
         fun presencePenalty(presencePenalty: Optional<Double>) =
-            presencePenalty(presencePenalty.orElse(null) as Double?)
+            presencePenalty(presencePenalty.getOrNull())
 
         /**
          * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they
@@ -3201,7 +3183,7 @@ private constructor(
          * faster responses and fewer tokens used on reasoning in a response.
          */
         fun reasoningEffort(reasoningEffort: Optional<ChatCompletionReasoningEffort>) =
-            reasoningEffort(reasoningEffort.orElse(null))
+            reasoningEffort(reasoningEffort.getOrNull())
 
         /**
          * **o1 and o3-mini models only**
@@ -3340,8 +3322,7 @@ private constructor(
          * return the same result. Determinism is not guaranteed, and you should refer to the
          * `system_fingerprint` response parameter to monitor changes in the backend.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun seed(seed: Optional<Long>) = seed(seed.orElse(null) as Long?)
+        fun seed(seed: Optional<Long>) = seed(seed.getOrNull())
 
         /**
          * This feature is in Beta. If specified, our system will make a best effort to sample
@@ -3377,7 +3358,7 @@ private constructor(
          *   a lower uptime SLA and no latency guarantee.
          * - When not set, the default behavior is 'auto'.
          */
-        fun serviceTier(serviceTier: Optional<ServiceTier>) = serviceTier(serviceTier.orElse(null))
+        fun serviceTier(serviceTier: Optional<ServiceTier>) = serviceTier(serviceTier.getOrNull())
 
         /**
          * Specifies the latency tier to use for processing the request. This parameter is relevant
@@ -3426,8 +3407,7 @@ private constructor(
          * [model distillation](https://platform.openai.com/docs/guides/distillation) or
          * [evals](https://platform.openai.com/docs/guides/evals) products.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun store(store: Optional<Boolean>) = store(store.orElse(null) as Boolean?)
+        fun store(store: Optional<Boolean>) = store(store.getOrNull())
 
         /**
          * Whether or not to store the output of this chat completion request for use in our
@@ -3443,7 +3423,7 @@ private constructor(
 
         /** Options for streaming response. Only set this when you set `stream: true`. */
         fun streamOptions(streamOptions: Optional<ChatCompletionStreamOptions>) =
-            streamOptions(streamOptions.orElse(null))
+            streamOptions(streamOptions.getOrNull())
 
         /** Options for streaming response. Only set this when you set `stream: true`. */
         fun streamOptions(streamOptions: JsonField<ChatCompletionStreamOptions>) = apply {
@@ -3469,9 +3449,7 @@ private constructor(
          * output more random, while lower values like 0.2 will make it more focused and
          * deterministic. We generally recommend altering this or `top_p` but not both.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun temperature(temperature: Optional<Double>) =
-            temperature(temperature.orElse(null) as Double?)
+        fun temperature(temperature: Optional<Double>) = temperature(temperature.getOrNull())
 
         /**
          * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
@@ -3563,9 +3541,7 @@ private constructor(
          * token position, each with an associated log probability. `logprobs` must be set to `true`
          * if this parameter is used.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun topLogprobs(topLogprobs: Optional<Long>) =
-            topLogprobs(topLogprobs.orElse(null) as Long?)
+        fun topLogprobs(topLogprobs: Optional<Long>) = topLogprobs(topLogprobs.getOrNull())
 
         /**
          * An integer between 0 and 20 specifying the number of most likely tokens to return at each
@@ -3599,8 +3575,7 @@ private constructor(
          *
          * We generally recommend altering this or `temperature` but not both.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
+        fun topP(topP: Optional<Double>) = topP(topP.getOrNull())
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model

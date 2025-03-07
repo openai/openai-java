@@ -19,6 +19,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Represents an execution run on a
@@ -597,9 +598,7 @@ private constructor(
         fun cancelledAt(cancelledAt: Long) = cancelledAt(cancelledAt as Long?)
 
         /** The Unix timestamp (in seconds) for when the run was cancelled. */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun cancelledAt(cancelledAt: Optional<Long>) =
-            cancelledAt(cancelledAt.orElse(null) as Long?)
+        fun cancelledAt(cancelledAt: Optional<Long>) = cancelledAt(cancelledAt.getOrNull())
 
         /** The Unix timestamp (in seconds) for when the run was cancelled. */
         fun cancelledAt(cancelledAt: JsonField<Long>) = apply { this.cancelledAt = cancelledAt }
@@ -611,9 +610,7 @@ private constructor(
         fun completedAt(completedAt: Long) = completedAt(completedAt as Long?)
 
         /** The Unix timestamp (in seconds) for when the run was completed. */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun completedAt(completedAt: Optional<Long>) =
-            completedAt(completedAt.orElse(null) as Long?)
+        fun completedAt(completedAt: Optional<Long>) = completedAt(completedAt.getOrNull())
 
         /** The Unix timestamp (in seconds) for when the run was completed. */
         fun completedAt(completedAt: JsonField<Long>) = apply { this.completedAt = completedAt }
@@ -631,8 +628,7 @@ private constructor(
         fun expiresAt(expiresAt: Long) = expiresAt(expiresAt as Long?)
 
         /** The Unix timestamp (in seconds) for when the run will expire. */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun expiresAt(expiresAt: Optional<Long>) = expiresAt(expiresAt.orElse(null) as Long?)
+        fun expiresAt(expiresAt: Optional<Long>) = expiresAt(expiresAt.getOrNull())
 
         /** The Unix timestamp (in seconds) for when the run will expire. */
         fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
@@ -644,8 +640,7 @@ private constructor(
         fun failedAt(failedAt: Long) = failedAt(failedAt as Long?)
 
         /** The Unix timestamp (in seconds) for when the run failed. */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun failedAt(failedAt: Optional<Long>) = failedAt(failedAt.orElse(null) as Long?)
+        fun failedAt(failedAt: Optional<Long>) = failedAt(failedAt.getOrNull())
 
         /** The Unix timestamp (in seconds) for when the run failed. */
         fun failedAt(failedAt: JsonField<Long>) = apply { this.failedAt = failedAt }
@@ -656,7 +651,7 @@ private constructor(
 
         /** Details on why the run is incomplete. Will be `null` if the run is not incomplete. */
         fun incompleteDetails(incompleteDetails: Optional<IncompleteDetails>) =
-            incompleteDetails(incompleteDetails.orElse(null))
+            incompleteDetails(incompleteDetails.getOrNull())
 
         /** Details on why the run is incomplete. Will be `null` if the run is not incomplete. */
         fun incompleteDetails(incompleteDetails: JsonField<IncompleteDetails>) = apply {
@@ -681,7 +676,7 @@ private constructor(
         fun lastError(lastError: LastError?) = lastError(JsonField.ofNullable(lastError))
 
         /** The last error associated with this run. Will be `null` if there are no errors. */
-        fun lastError(lastError: Optional<LastError>) = lastError(lastError.orElse(null))
+        fun lastError(lastError: Optional<LastError>) = lastError(lastError.getOrNull())
 
         /** The last error associated with this run. Will be `null` if there are no errors. */
         fun lastError(lastError: JsonField<LastError>) = apply { this.lastError = lastError }
@@ -704,9 +699,8 @@ private constructor(
          * The maximum number of completion tokens specified to have been used over the course of
          * the run.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
         fun maxCompletionTokens(maxCompletionTokens: Optional<Long>) =
-            maxCompletionTokens(maxCompletionTokens.orElse(null) as Long?)
+            maxCompletionTokens(maxCompletionTokens.getOrNull())
 
         /**
          * The maximum number of completion tokens specified to have been used over the course of
@@ -733,9 +727,8 @@ private constructor(
          * The maximum number of prompt tokens specified to have been used over the course of the
          * run.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
         fun maxPromptTokens(maxPromptTokens: Optional<Long>) =
-            maxPromptTokens(maxPromptTokens.orElse(null) as Long?)
+            maxPromptTokens(maxPromptTokens.getOrNull())
 
         /**
          * The maximum number of prompt tokens specified to have been used over the course of the
@@ -763,7 +756,7 @@ private constructor(
          * Keys are strings with a maximum length of 64 characters. Values are strings with a
          * maximum length of 512 characters.
          */
-        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -819,7 +812,7 @@ private constructor(
          * required.
          */
         fun requiredAction(requiredAction: Optional<RequiredAction>) =
-            requiredAction(requiredAction.orElse(null))
+            requiredAction(requiredAction.getOrNull())
 
         /**
          * Details on the action required to continue the run. Will be `null` if no action is
@@ -873,7 +866,7 @@ private constructor(
          * `max_tokens` or the conversation exceeded the max context length.
          */
         fun responseFormat(responseFormat: Optional<AssistantResponseFormatOption>) =
-            responseFormat(responseFormat.orElse(null))
+            responseFormat(responseFormat.getOrNull())
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -982,8 +975,7 @@ private constructor(
         fun startedAt(startedAt: Long) = startedAt(startedAt as Long?)
 
         /** The Unix timestamp (in seconds) for when the run was started. */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun startedAt(startedAt: Optional<Long>) = startedAt(startedAt.orElse(null) as Long?)
+        fun startedAt(startedAt: Optional<Long>) = startedAt(startedAt.getOrNull())
 
         /** The Unix timestamp (in seconds) for when the run was started. */
         fun startedAt(startedAt: JsonField<Long>) = apply { this.startedAt = startedAt }
@@ -1032,7 +1024,7 @@ private constructor(
          * {"name": "my_function"}}` forces the model to call that tool.
          */
         fun toolChoice(toolChoice: Optional<AssistantToolChoiceOption>) =
-            toolChoice(toolChoice.orElse(null))
+            toolChoice(toolChoice.getOrNull())
 
         /**
          * Controls which (if any) tool is called by the model. `none` means the model will not call
@@ -1121,7 +1113,7 @@ private constructor(
          * intial context window of the run.
          */
         fun truncationStrategy(truncationStrategy: Optional<TruncationStrategy>) =
-            truncationStrategy(truncationStrategy.orElse(null))
+            truncationStrategy(truncationStrategy.getOrNull())
 
         /**
          * Controls for how a thread will be truncated prior to the run. Use this to control the
@@ -1141,7 +1133,7 @@ private constructor(
          * Usage statistics related to the run. This value will be `null` if the run is not in a
          * terminal state (i.e. `in_progress`, `queued`, etc.).
          */
-        fun usage(usage: Optional<Usage>) = usage(usage.orElse(null))
+        fun usage(usage: Optional<Usage>) = usage(usage.getOrNull())
 
         /**
          * Usage statistics related to the run. This value will be `null` if the run is not in a
@@ -1156,9 +1148,7 @@ private constructor(
         fun temperature(temperature: Double) = temperature(temperature as Double?)
 
         /** The sampling temperature used for this run. If not set, defaults to 1. */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun temperature(temperature: Optional<Double>) =
-            temperature(temperature.orElse(null) as Double?)
+        fun temperature(temperature: Optional<Double>) = temperature(temperature.getOrNull())
 
         /** The sampling temperature used for this run. If not set, defaults to 1. */
         fun temperature(temperature: JsonField<Double>) = apply { this.temperature = temperature }
@@ -1170,8 +1160,7 @@ private constructor(
         fun topP(topP: Double) = topP(topP as Double?)
 
         /** The nucleus sampling value used for this run. If not set, defaults to 1. */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
+        fun topP(topP: Optional<Double>) = topP(topP.getOrNull())
 
         /** The nucleus sampling value used for this run. If not set, defaults to 1. */
         fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
@@ -2067,9 +2056,7 @@ private constructor(
              * The number of most recent messages from the thread when constructing the context for
              * the run.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun lastMessages(lastMessages: Optional<Long>) =
-                lastMessages(lastMessages.orElse(null) as Long?)
+            fun lastMessages(lastMessages: Optional<Long>) = lastMessages(lastMessages.getOrNull())
 
             /**
              * The number of most recent messages from the thread when constructing the context for
