@@ -13,6 +13,7 @@ import com.openai.core.http.QueryParams
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Get the messages in a stored chat completion. Only chat completions that have been created with
@@ -109,7 +110,7 @@ private constructor(
         fun after(after: String?) = apply { this.after = after }
 
         /** Identifier for the last message from the previous pagination request. */
-        fun after(after: Optional<String>) = after(after.orElse(null))
+        fun after(after: Optional<String>) = after(after.getOrNull())
 
         /** Number of messages to retrieve. */
         fun limit(limit: Long?) = apply { this.limit = limit }
@@ -118,8 +119,7 @@ private constructor(
         fun limit(limit: Long) = limit(limit as Long?)
 
         /** Number of messages to retrieve. */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun limit(limit: Optional<Long>) = limit(limit.orElse(null) as Long?)
+        fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
 
         /**
          * Sort order for messages by timestamp. Use `asc` for ascending order or `desc` for
@@ -131,7 +131,7 @@ private constructor(
          * Sort order for messages by timestamp. Use `asc` for ascending order or `desc` for
          * descending order. Defaults to `asc`.
          */
-        fun order(order: Optional<Order>) = order(order.orElse(null))
+        fun order(order: Optional<Order>) = order(order.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()

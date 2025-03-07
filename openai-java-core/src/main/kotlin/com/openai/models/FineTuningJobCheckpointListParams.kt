@@ -9,6 +9,7 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** List checkpoints for a fine-tuning job. */
 class FineTuningJobCheckpointListParams
@@ -94,7 +95,7 @@ private constructor(
         fun after(after: String?) = apply { this.after = after }
 
         /** Identifier for the last checkpoint ID from the previous pagination request. */
-        fun after(after: Optional<String>) = after(after.orElse(null))
+        fun after(after: Optional<String>) = after(after.getOrNull())
 
         /** Number of checkpoints to retrieve. */
         fun limit(limit: Long?) = apply { this.limit = limit }
@@ -103,8 +104,7 @@ private constructor(
         fun limit(limit: Long) = limit(limit as Long?)
 
         /** Number of checkpoints to retrieve. */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun limit(limit: Optional<Long>) = limit(limit.orElse(null) as Long?)
+        fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()

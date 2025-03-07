@@ -12,6 +12,7 @@ import com.openai.core.http.QueryParams
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Returns a list of files. */
 class FileListParams
@@ -107,7 +108,7 @@ private constructor(
          * obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page
          * of the list.
          */
-        fun after(after: Optional<String>) = after(after.orElse(null))
+        fun after(after: Optional<String>) = after(after.getOrNull())
 
         /**
          * A limit on the number of objects to be returned. Limit can range between 1 and 10,000,
@@ -125,8 +126,7 @@ private constructor(
          * A limit on the number of objects to be returned. Limit can range between 1 and 10,000,
          * and the default is 10,000.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun limit(limit: Optional<Long>) = limit(limit.orElse(null) as Long?)
+        fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
 
         /**
          * Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and
@@ -138,13 +138,13 @@ private constructor(
          * Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and
          * `desc` for descending order.
          */
-        fun order(order: Optional<Order>) = order(order.orElse(null))
+        fun order(order: Optional<Order>) = order(order.getOrNull())
 
         /** Only return files with the given purpose. */
         fun purpose(purpose: String?) = apply { this.purpose = purpose }
 
         /** Only return files with the given purpose. */
-        fun purpose(purpose: Optional<String>) = purpose(purpose.orElse(null))
+        fun purpose(purpose: Optional<String>) = purpose(purpose.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()

@@ -15,6 +15,7 @@ import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 @NoAutoDetect
 class BatchError
@@ -110,8 +111,7 @@ private constructor(
         fun line(line: Long) = line(line as Long?)
 
         /** The line number of the input file where the error occurred, if applicable. */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun line(line: Optional<Long>) = line(line.orElse(null) as Long?)
+        fun line(line: Optional<Long>) = line(line.getOrNull())
 
         /** The line number of the input file where the error occurred, if applicable. */
         fun line(line: JsonField<Long>) = apply { this.line = line }
@@ -126,7 +126,7 @@ private constructor(
         fun param(param: String?) = param(JsonField.ofNullable(param))
 
         /** The name of the parameter that caused the error, if applicable. */
-        fun param(param: Optional<String>) = param(param.orElse(null))
+        fun param(param: Optional<String>) = param(param.getOrNull())
 
         /** The name of the parameter that caused the error, if applicable. */
         fun param(param: JsonField<String>) = apply { this.param = param }

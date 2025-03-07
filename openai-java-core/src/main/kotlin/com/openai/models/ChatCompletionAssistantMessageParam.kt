@@ -200,7 +200,7 @@ private constructor(
          * Data about a previous audio response from the model.
          * [Learn more](https://platform.openai.com/docs/guides/audio).
          */
-        fun audio(audio: Optional<Audio>) = audio(audio.orElse(null))
+        fun audio(audio: Optional<Audio>) = audio(audio.getOrNull())
 
         /**
          * Data about a previous audio response from the model.
@@ -218,7 +218,7 @@ private constructor(
          * The contents of the assistant message. Required unless `tool_calls` or `function_call` is
          * specified.
          */
-        fun content(content: Optional<Content>) = content(content.orElse(null))
+        fun content(content: Optional<Content>) = content(content.getOrNull())
 
         /**
          * The contents of the assistant message. Required unless `tool_calls` or `function_call` is
@@ -251,7 +251,7 @@ private constructor(
          */
         @Deprecated("deprecated")
         fun functionCall(functionCall: Optional<FunctionCall>) =
-            functionCall(functionCall.orElse(null))
+            functionCall(functionCall.getOrNull())
 
         /**
          * Deprecated and replaced by `tool_calls`. The name and arguments of a function that should
@@ -278,7 +278,7 @@ private constructor(
         fun refusal(refusal: String?) = refusal(JsonField.ofNullable(refusal))
 
         /** The refusal message by the assistant. */
-        fun refusal(refusal: Optional<String>) = refusal(refusal.orElse(null))
+        fun refusal(refusal: Optional<String>) = refusal(refusal.getOrNull())
 
         /** The refusal message by the assistant. */
         fun refusal(refusal: JsonField<String>) = apply { this.refusal = refusal }

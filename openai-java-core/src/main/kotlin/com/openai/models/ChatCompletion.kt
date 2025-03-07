@@ -19,6 +19,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Represents a chat completion response returned by model, based on the provided input. */
 @NoAutoDetect
@@ -218,7 +219,7 @@ private constructor(
         fun serviceTier(serviceTier: ServiceTier?) = serviceTier(JsonField.ofNullable(serviceTier))
 
         /** The service tier used for processing the request. */
-        fun serviceTier(serviceTier: Optional<ServiceTier>) = serviceTier(serviceTier.orElse(null))
+        fun serviceTier(serviceTier: Optional<ServiceTier>) = serviceTier(serviceTier.getOrNull())
 
         /** The service tier used for processing the request. */
         fun serviceTier(serviceTier: JsonField<ServiceTier>) = apply {
@@ -427,7 +428,7 @@ private constructor(
             fun logprobs(logprobs: Logprobs?) = logprobs(JsonField.ofNullable(logprobs))
 
             /** Log probability information for the choice. */
-            fun logprobs(logprobs: Optional<Logprobs>) = logprobs(logprobs.orElse(null))
+            fun logprobs(logprobs: Optional<Logprobs>) = logprobs(logprobs.getOrNull())
 
             /** Log probability information for the choice. */
             fun logprobs(logprobs: JsonField<Logprobs>) = apply { this.logprobs = logprobs }
@@ -683,7 +684,7 @@ private constructor(
 
                 /** A list of message content tokens with log probability information. */
                 fun content(content: Optional<List<ChatCompletionTokenLogprob>>) =
-                    content(content.orElse(null))
+                    content(content.getOrNull())
 
                 /** A list of message content tokens with log probability information. */
                 fun content(content: JsonField<List<ChatCompletionTokenLogprob>>) = apply {
@@ -704,7 +705,7 @@ private constructor(
 
                 /** A list of message refusal tokens with log probability information. */
                 fun refusal(refusal: Optional<List<ChatCompletionTokenLogprob>>) =
-                    refusal(refusal.orElse(null))
+                    refusal(refusal.getOrNull())
 
                 /** A list of message refusal tokens with log probability information. */
                 fun refusal(refusal: JsonField<List<ChatCompletionTokenLogprob>>) = apply {

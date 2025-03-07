@@ -17,6 +17,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 @NoAutoDetect
 class ResponseFormatJsonSchema
@@ -295,8 +296,7 @@ private constructor(
              * subset of JSON Schema is supported when `strict` is `true`. To learn more, read the
              * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun strict(strict: Optional<Boolean>) = strict(strict.orElse(null) as Boolean?)
+            fun strict(strict: Optional<Boolean>) = strict(strict.getOrNull())
 
             /**
              * Whether to enable strict schema adherence when generating the output. If set to true,

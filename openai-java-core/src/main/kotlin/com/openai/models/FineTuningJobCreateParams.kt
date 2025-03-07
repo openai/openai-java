@@ -32,6 +32,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Creates a fine-tuning job which begins the process of creating a new model from a given dataset.
@@ -576,7 +577,7 @@ private constructor(
 
             /** A list of integrations to enable for your fine-tuning job. */
             fun integrations(integrations: Optional<List<Integration>>) =
-                integrations(integrations.orElse(null))
+                integrations(integrations.getOrNull())
 
             /** A list of integrations to enable for your fine-tuning job. */
             fun integrations(integrations: JsonField<List<Integration>>) = apply {
@@ -609,7 +610,7 @@ private constructor(
              * Keys are strings with a maximum length of 64 characters. Values are strings with a
              * maximum length of 512 characters.
              */
-            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
             /**
              * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -646,8 +647,7 @@ private constructor(
              * parameters should produce the same results, but may differ in rare cases. If a seed
              * is not specified, one will be generated for you.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun seed(seed: Optional<Long>) = seed(seed.orElse(null) as Long?)
+            fun seed(seed: Optional<Long>) = seed(seed.getOrNull())
 
             /**
              * The seed controls the reproducibility of the job. Passing in the same seed and job
@@ -670,7 +670,7 @@ private constructor(
              * For example, a `suffix` of "custom-model-name" would produce a model name like
              * `ft:gpt-4o-mini:openai:custom-model-name:7p4lURel`.
              */
-            fun suffix(suffix: Optional<String>) = suffix(suffix.orElse(null))
+            fun suffix(suffix: Optional<String>) = suffix(suffix.getOrNull())
 
             /**
              * A string of up to 64 characters that will be added to your fine-tuned model name.
@@ -710,7 +710,7 @@ private constructor(
              * more details.
              */
             fun validationFile(validationFile: Optional<String>) =
-                validationFile(validationFile.orElse(null))
+                validationFile(validationFile.getOrNull())
 
             /**
              * The ID of an uploaded file that contains validation data.
@@ -899,7 +899,7 @@ private constructor(
 
         /** A list of integrations to enable for your fine-tuning job. */
         fun integrations(integrations: Optional<List<Integration>>) =
-            integrations(integrations.orElse(null))
+            integrations(integrations.getOrNull())
 
         /** A list of integrations to enable for your fine-tuning job. */
         fun integrations(integrations: JsonField<List<Integration>>) = apply {
@@ -927,7 +927,7 @@ private constructor(
          * Keys are strings with a maximum length of 64 characters. Values are strings with a
          * maximum length of 512 characters.
          */
-        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -964,8 +964,7 @@ private constructor(
          * parameters should produce the same results, but may differ in rare cases. If a seed is
          * not specified, one will be generated for you.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun seed(seed: Optional<Long>) = seed(seed.orElse(null) as Long?)
+        fun seed(seed: Optional<Long>) = seed(seed.getOrNull())
 
         /**
          * The seed controls the reproducibility of the job. Passing in the same seed and job
@@ -988,7 +987,7 @@ private constructor(
          * For example, a `suffix` of "custom-model-name" would produce a model name like
          * `ft:gpt-4o-mini:openai:custom-model-name:7p4lURel`.
          */
-        fun suffix(suffix: Optional<String>) = suffix(suffix.orElse(null))
+        fun suffix(suffix: Optional<String>) = suffix(suffix.getOrNull())
 
         /**
          * A string of up to 64 characters that will be added to your fine-tuned model name.
@@ -1027,7 +1026,7 @@ private constructor(
          * details.
          */
         fun validationFile(validationFile: Optional<String>) =
-            validationFile(validationFile.orElse(null))
+            validationFile(validationFile.getOrNull())
 
         /**
          * The ID of an uploaded file that contains validation data.
@@ -2239,7 +2238,7 @@ private constructor(
                  * WandB user that you would like associated with the run. If not set, the default
                  * entity for the registered WandB API key is used.
                  */
-                fun entity(entity: Optional<String>) = entity(entity.orElse(null))
+                fun entity(entity: Optional<String>) = entity(entity.getOrNull())
 
                 /**
                  * The entity to use for the run. This allows you to set the team or username of the
@@ -2258,7 +2257,7 @@ private constructor(
                  * A display name to set for the run. If not set, we will use the Job ID as the
                  * name.
                  */
-                fun name(name: Optional<String>) = name(name.orElse(null))
+                fun name(name: Optional<String>) = name(name.getOrNull())
 
                 /**
                  * A display name to set for the run. If not set, we will use the Job ID as the
