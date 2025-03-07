@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.blocking.fineTuning
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -35,7 +33,10 @@ interface JobService {
      *
      * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/fine-tuning)
      */
-    @JvmOverloads
+    fun create(params: FineTuningJobCreateParams): FineTuningJob =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(
         params: FineTuningJobCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -46,32 +47,48 @@ interface JobService {
      *
      * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/fine-tuning)
      */
-    @JvmOverloads
+    fun retrieve(params: FineTuningJobRetrieveParams): FineTuningJob =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: FineTuningJobRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FineTuningJob
 
     /** List your organization's fine-tuning jobs */
-    @JvmOverloads
+    fun list(): FineTuningJobListPage = list(FineTuningJobListParams.none())
+
+    /** @see [list] */
     fun list(
         params: FineTuningJobListParams = FineTuningJobListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FineTuningJobListPage
 
-    /** List your organization's fine-tuning jobs */
+    /** @see [list] */
+    fun list(
+        params: FineTuningJobListParams = FineTuningJobListParams.none()
+    ): FineTuningJobListPage = list(params, RequestOptions.none())
+
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): FineTuningJobListPage =
         list(FineTuningJobListParams.none(), requestOptions)
 
     /** Immediately cancel a fine-tune job. */
-    @JvmOverloads
+    fun cancel(params: FineTuningJobCancelParams): FineTuningJob =
+        cancel(params, RequestOptions.none())
+
+    /** @see [cancel] */
     fun cancel(
         params: FineTuningJobCancelParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FineTuningJob
 
     /** Get status updates for a fine-tuning job. */
-    @JvmOverloads
+    fun listEvents(params: FineTuningJobListEventsParams): FineTuningJobListEventsPage =
+        listEvents(params, RequestOptions.none())
+
+    /** @see [listEvents] */
     fun listEvents(
         params: FineTuningJobListEventsParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -86,7 +103,11 @@ interface JobService {
          * Returns a raw HTTP response for `post /fine_tuning/jobs`, but is otherwise the same as
          * [JobService.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(params: FineTuningJobCreateParams): HttpResponseFor<FineTuningJob> =
+            create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: FineTuningJobCreateParams,
@@ -97,7 +118,11 @@ interface JobService {
          * Returns a raw HTTP response for `get /fine_tuning/jobs/{fine_tuning_job_id}`, but is
          * otherwise the same as [JobService.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(params: FineTuningJobRetrieveParams): HttpResponseFor<FineTuningJob> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: FineTuningJobRetrieveParams,
@@ -108,17 +133,23 @@ interface JobService {
          * Returns a raw HTTP response for `get /fine_tuning/jobs`, but is otherwise the same as
          * [JobService.list].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun list(): HttpResponseFor<FineTuningJobListPage> = list(FineTuningJobListParams.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             params: FineTuningJobListParams = FineTuningJobListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FineTuningJobListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /fine_tuning/jobs`, but is otherwise the same as
-         * [JobService.list].
-         */
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            params: FineTuningJobListParams = FineTuningJobListParams.none()
+        ): HttpResponseFor<FineTuningJobListPage> = list(params, RequestOptions.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<FineTuningJobListPage> =
             list(FineTuningJobListParams.none(), requestOptions)
@@ -127,7 +158,11 @@ interface JobService {
          * Returns a raw HTTP response for `post /fine_tuning/jobs/{fine_tuning_job_id}/cancel`, but
          * is otherwise the same as [JobService.cancel].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun cancel(params: FineTuningJobCancelParams): HttpResponseFor<FineTuningJob> =
+            cancel(params, RequestOptions.none())
+
+        /** @see [cancel] */
         @MustBeClosed
         fun cancel(
             params: FineTuningJobCancelParams,
@@ -138,7 +173,12 @@ interface JobService {
          * Returns a raw HTTP response for `get /fine_tuning/jobs/{fine_tuning_job_id}/events`, but
          * is otherwise the same as [JobService.listEvents].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun listEvents(
+            params: FineTuningJobListEventsParams
+        ): HttpResponseFor<FineTuningJobListEventsPage> = listEvents(params, RequestOptions.none())
+
+        /** @see [listEvents] */
         @MustBeClosed
         fun listEvents(
             params: FineTuningJobListEventsParams,

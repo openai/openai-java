@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.async.beta.threads
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -25,35 +23,51 @@ interface MessageServiceAsync {
     fun withRawResponse(): WithRawResponse
 
     /** Create a message. */
-    @JvmOverloads
+    fun create(params: BetaThreadMessageCreateParams): CompletableFuture<Message> =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(
         params: BetaThreadMessageCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Message>
 
     /** Retrieve a message. */
-    @JvmOverloads
+    fun retrieve(params: BetaThreadMessageRetrieveParams): CompletableFuture<Message> =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: BetaThreadMessageRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Message>
 
     /** Modifies a message. */
-    @JvmOverloads
+    fun update(params: BetaThreadMessageUpdateParams): CompletableFuture<Message> =
+        update(params, RequestOptions.none())
+
+    /** @see [update] */
     fun update(
         params: BetaThreadMessageUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Message>
 
     /** Returns a list of messages for a given thread. */
-    @JvmOverloads
+    fun list(
+        params: BetaThreadMessageListParams
+    ): CompletableFuture<BetaThreadMessageListPageAsync> = list(params, RequestOptions.none())
+
+    /** @see [list] */
     fun list(
         params: BetaThreadMessageListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<BetaThreadMessageListPageAsync>
 
     /** Deletes a message. */
-    @JvmOverloads
+    fun delete(params: BetaThreadMessageDeleteParams): CompletableFuture<MessageDeleted> =
+        delete(params, RequestOptions.none())
+
+    /** @see [delete] */
     fun delete(
         params: BetaThreadMessageDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -68,7 +82,12 @@ interface MessageServiceAsync {
          * Returns a raw HTTP response for `post /threads/{thread_id}/messages`, but is otherwise
          * the same as [MessageServiceAsync.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(
+            params: BetaThreadMessageCreateParams
+        ): CompletableFuture<HttpResponseFor<Message>> = create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: BetaThreadMessageCreateParams,
@@ -79,7 +98,12 @@ interface MessageServiceAsync {
          * Returns a raw HTTP response for `get /threads/{thread_id}/messages/{message_id}`, but is
          * otherwise the same as [MessageServiceAsync.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(
+            params: BetaThreadMessageRetrieveParams
+        ): CompletableFuture<HttpResponseFor<Message>> = retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: BetaThreadMessageRetrieveParams,
@@ -90,7 +114,12 @@ interface MessageServiceAsync {
          * Returns a raw HTTP response for `post /threads/{thread_id}/messages/{message_id}`, but is
          * otherwise the same as [MessageServiceAsync.update].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun update(
+            params: BetaThreadMessageUpdateParams
+        ): CompletableFuture<HttpResponseFor<Message>> = update(params, RequestOptions.none())
+
+        /** @see [update] */
         @MustBeClosed
         fun update(
             params: BetaThreadMessageUpdateParams,
@@ -101,7 +130,13 @@ interface MessageServiceAsync {
          * Returns a raw HTTP response for `get /threads/{thread_id}/messages`, but is otherwise the
          * same as [MessageServiceAsync.list].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun list(
+            params: BetaThreadMessageListParams
+        ): CompletableFuture<HttpResponseFor<BetaThreadMessageListPageAsync>> =
+            list(params, RequestOptions.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             params: BetaThreadMessageListParams,
@@ -112,7 +147,13 @@ interface MessageServiceAsync {
          * Returns a raw HTTP response for `delete /threads/{thread_id}/messages/{message_id}`, but
          * is otherwise the same as [MessageServiceAsync.delete].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun delete(
+            params: BetaThreadMessageDeleteParams
+        ): CompletableFuture<HttpResponseFor<MessageDeleted>> =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
         @MustBeClosed
         fun delete(
             params: BetaThreadMessageDeleteParams,

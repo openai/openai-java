@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.async.fineTuning.jobs
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -19,7 +17,11 @@ interface CheckpointServiceAsync {
     fun withRawResponse(): WithRawResponse
 
     /** List checkpoints for a fine-tuning job. */
-    @JvmOverloads
+    fun list(
+        params: FineTuningJobCheckpointListParams
+    ): CompletableFuture<FineTuningJobCheckpointListPageAsync> = list(params, RequestOptions.none())
+
+    /** @see [list] */
     fun list(
         params: FineTuningJobCheckpointListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -35,7 +37,13 @@ interface CheckpointServiceAsync {
          * Returns a raw HTTP response for `get /fine_tuning/jobs/{fine_tuning_job_id}/checkpoints`,
          * but is otherwise the same as [CheckpointServiceAsync.list].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun list(
+            params: FineTuningJobCheckpointListParams
+        ): CompletableFuture<HttpResponseFor<FineTuningJobCheckpointListPageAsync>> =
+            list(params, RequestOptions.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             params: FineTuningJobCheckpointListParams,

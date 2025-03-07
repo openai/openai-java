@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.blocking
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -43,39 +41,54 @@ interface FileService {
      *
      * Please [contact us](https://help.openai.com/) if you need to increase these storage limits.
      */
-    @JvmOverloads
+    fun create(params: FileCreateParams): FileObject = create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(
         params: FileCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FileObject
 
     /** Returns information about a specific file. */
-    @JvmOverloads
+    fun retrieve(params: FileRetrieveParams): FileObject = retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: FileRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FileObject
 
     /** Returns a list of files. */
-    @JvmOverloads
+    fun list(): FileListPage = list(FileListParams.none())
+
+    /** @see [list] */
     fun list(
         params: FileListParams = FileListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FileListPage
 
-    /** Returns a list of files. */
+    /** @see [list] */
+    fun list(params: FileListParams = FileListParams.none()): FileListPage =
+        list(params, RequestOptions.none())
+
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): FileListPage =
         list(FileListParams.none(), requestOptions)
 
     /** Delete a file. */
-    @JvmOverloads
+    fun delete(params: FileDeleteParams): FileDeleted = delete(params, RequestOptions.none())
+
+    /** @see [delete] */
     fun delete(
         params: FileDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FileDeleted
 
     /** Returns the contents of the specified file. */
-    @JvmOverloads
+    @MustBeClosed
+    fun content(params: FileContentParams): HttpResponse = content(params, RequestOptions.none())
+
+    /** @see [content] */
     @MustBeClosed
     fun content(
         params: FileContentParams,
@@ -89,7 +102,11 @@ interface FileService {
          * Returns a raw HTTP response for `post /files`, but is otherwise the same as
          * [FileService.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(params: FileCreateParams): HttpResponseFor<FileObject> =
+            create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: FileCreateParams,
@@ -100,7 +117,11 @@ interface FileService {
          * Returns a raw HTTP response for `get /files/{file_id}`, but is otherwise the same as
          * [FileService.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(params: FileRetrieveParams): HttpResponseFor<FileObject> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: FileRetrieveParams,
@@ -111,17 +132,21 @@ interface FileService {
          * Returns a raw HTTP response for `get /files`, but is otherwise the same as
          * [FileService.list].
          */
-        @JvmOverloads
+        @MustBeClosed fun list(): HttpResponseFor<FileListPage> = list(FileListParams.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             params: FileListParams = FileListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FileListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /files`, but is otherwise the same as
-         * [FileService.list].
-         */
+        /** @see [list] */
+        @MustBeClosed
+        fun list(params: FileListParams = FileListParams.none()): HttpResponseFor<FileListPage> =
+            list(params, RequestOptions.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<FileListPage> =
             list(FileListParams.none(), requestOptions)
@@ -130,7 +155,11 @@ interface FileService {
          * Returns a raw HTTP response for `delete /files/{file_id}`, but is otherwise the same as
          * [FileService.delete].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun delete(params: FileDeleteParams): HttpResponseFor<FileDeleted> =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
         @MustBeClosed
         fun delete(
             params: FileDeleteParams,
@@ -141,7 +170,11 @@ interface FileService {
          * Returns a raw HTTP response for `get /files/{file_id}/content`, but is otherwise the same
          * as [FileService.content].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun content(params: FileContentParams): HttpResponse =
+            content(params, RequestOptions.none())
+
+        /** @see [content] */
         @MustBeClosed
         fun content(
             params: FileContentParams,

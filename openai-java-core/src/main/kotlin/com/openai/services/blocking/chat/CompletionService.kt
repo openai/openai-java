@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.blocking.chat
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -37,7 +35,10 @@ interface CompletionService {
      * models are noted below. For the current state of unsupported parameters in reasoning models,
      * [refer to the reasoning guide](https://platform.openai.com/docs/guides/reasoning).
      */
-    @JvmOverloads
+    fun create(params: ChatCompletionCreateParams): ChatCompletion =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(
         params: ChatCompletionCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -54,7 +55,11 @@ interface CompletionService {
      * models are noted below. For the current state of unsupported parameters in reasoning models,
      * [refer to the reasoning guide](https://platform.openai.com/docs/guides/reasoning).
      */
-    @JvmOverloads
+    @MustBeClosed
+    fun createStreaming(params: ChatCompletionCreateParams): StreamResponse<ChatCompletionChunk> =
+        createStreaming(params, RequestOptions.none())
+
+    /** @see [createStreaming] */
     @MustBeClosed
     fun createStreaming(
         params: ChatCompletionCreateParams,
@@ -65,7 +70,10 @@ interface CompletionService {
      * Get a stored chat completion. Only chat completions that have been created with the `store`
      * parameter set to `true` will be returned.
      */
-    @JvmOverloads
+    fun retrieve(params: ChatCompletionRetrieveParams): ChatCompletion =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: ChatCompletionRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -76,7 +84,10 @@ interface CompletionService {
      * `store` parameter set to `true` can be modified. Currently, the only supported modification
      * is to update the `metadata` field.
      */
-    @JvmOverloads
+    fun update(params: ChatCompletionUpdateParams): ChatCompletion =
+        update(params, RequestOptions.none())
+
+    /** @see [update] */
     fun update(
         params: ChatCompletionUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -86,7 +97,10 @@ interface CompletionService {
      * Delete a stored chat completion. Only chat completions that have been created with the
      * `store` parameter set to `true` can be deleted.
      */
-    @JvmOverloads
+    fun delete(params: ChatCompletionDeleteParams): ChatCompletionDeleted =
+        delete(params, RequestOptions.none())
+
+    /** @see [delete] */
     fun delete(
         params: ChatCompletionDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -101,7 +115,11 @@ interface CompletionService {
          * Returns a raw HTTP response for `post /chat/completions`, but is otherwise the same as
          * [CompletionService.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(params: ChatCompletionCreateParams): HttpResponseFor<ChatCompletion> =
+            create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: ChatCompletionCreateParams,
@@ -112,7 +130,13 @@ interface CompletionService {
          * Returns a raw HTTP response for `post /chat/completions`, but is otherwise the same as
          * [CompletionService.createStreaming].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun createStreaming(
+            params: ChatCompletionCreateParams
+        ): HttpResponseFor<StreamResponse<ChatCompletionChunk>> =
+            createStreaming(params, RequestOptions.none())
+
+        /** @see [createStreaming] */
         @MustBeClosed
         fun createStreaming(
             params: ChatCompletionCreateParams,
@@ -123,7 +147,11 @@ interface CompletionService {
          * Returns a raw HTTP response for `get /chat/completions/{completion_id}`, but is otherwise
          * the same as [CompletionService.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(params: ChatCompletionRetrieveParams): HttpResponseFor<ChatCompletion> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: ChatCompletionRetrieveParams,
@@ -134,7 +162,11 @@ interface CompletionService {
          * Returns a raw HTTP response for `post /chat/completions/{completion_id}`, but is
          * otherwise the same as [CompletionService.update].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun update(params: ChatCompletionUpdateParams): HttpResponseFor<ChatCompletion> =
+            update(params, RequestOptions.none())
+
+        /** @see [update] */
         @MustBeClosed
         fun update(
             params: ChatCompletionUpdateParams,
@@ -145,7 +177,11 @@ interface CompletionService {
          * Returns a raw HTTP response for `delete /chat/completions/{completion_id}`, but is
          * otherwise the same as [CompletionService.delete].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun delete(params: ChatCompletionDeleteParams): HttpResponseFor<ChatCompletionDeleted> =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
         @MustBeClosed
         fun delete(
             params: ChatCompletionDeleteParams,

@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.blocking.beta
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -24,39 +22,56 @@ interface AssistantService {
     fun withRawResponse(): WithRawResponse
 
     /** Create an assistant with a model and instructions. */
-    @JvmOverloads
+    fun create(params: BetaAssistantCreateParams): Assistant = create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(
         params: BetaAssistantCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Assistant
 
     /** Retrieves an assistant. */
-    @JvmOverloads
+    fun retrieve(params: BetaAssistantRetrieveParams): Assistant =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: BetaAssistantRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Assistant
 
     /** Modifies an assistant. */
-    @JvmOverloads
+    fun update(params: BetaAssistantUpdateParams): Assistant = update(params, RequestOptions.none())
+
+    /** @see [update] */
     fun update(
         params: BetaAssistantUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Assistant
 
     /** Returns a list of assistants. */
-    @JvmOverloads
+    fun list(): BetaAssistantListPage = list(BetaAssistantListParams.none())
+
+    /** @see [list] */
     fun list(
         params: BetaAssistantListParams = BetaAssistantListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): BetaAssistantListPage
 
-    /** Returns a list of assistants. */
+    /** @see [list] */
+    fun list(
+        params: BetaAssistantListParams = BetaAssistantListParams.none()
+    ): BetaAssistantListPage = list(params, RequestOptions.none())
+
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): BetaAssistantListPage =
         list(BetaAssistantListParams.none(), requestOptions)
 
     /** Delete an assistant. */
-    @JvmOverloads
+    fun delete(params: BetaAssistantDeleteParams): AssistantDeleted =
+        delete(params, RequestOptions.none())
+
+    /** @see [delete] */
     fun delete(
         params: BetaAssistantDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -69,7 +84,11 @@ interface AssistantService {
          * Returns a raw HTTP response for `post /assistants`, but is otherwise the same as
          * [AssistantService.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(params: BetaAssistantCreateParams): HttpResponseFor<Assistant> =
+            create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: BetaAssistantCreateParams,
@@ -80,7 +99,11 @@ interface AssistantService {
          * Returns a raw HTTP response for `get /assistants/{assistant_id}`, but is otherwise the
          * same as [AssistantService.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(params: BetaAssistantRetrieveParams): HttpResponseFor<Assistant> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: BetaAssistantRetrieveParams,
@@ -91,7 +114,11 @@ interface AssistantService {
          * Returns a raw HTTP response for `post /assistants/{assistant_id}`, but is otherwise the
          * same as [AssistantService.update].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun update(params: BetaAssistantUpdateParams): HttpResponseFor<Assistant> =
+            update(params, RequestOptions.none())
+
+        /** @see [update] */
         @MustBeClosed
         fun update(
             params: BetaAssistantUpdateParams,
@@ -102,17 +129,23 @@ interface AssistantService {
          * Returns a raw HTTP response for `get /assistants`, but is otherwise the same as
          * [AssistantService.list].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun list(): HttpResponseFor<BetaAssistantListPage> = list(BetaAssistantListParams.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             params: BetaAssistantListParams = BetaAssistantListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<BetaAssistantListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /assistants`, but is otherwise the same as
-         * [AssistantService.list].
-         */
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            params: BetaAssistantListParams = BetaAssistantListParams.none()
+        ): HttpResponseFor<BetaAssistantListPage> = list(params, RequestOptions.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<BetaAssistantListPage> =
             list(BetaAssistantListParams.none(), requestOptions)
@@ -121,7 +154,11 @@ interface AssistantService {
          * Returns a raw HTTP response for `delete /assistants/{assistant_id}`, but is otherwise the
          * same as [AssistantService.delete].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun delete(params: BetaAssistantDeleteParams): HttpResponseFor<AssistantDeleted> =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
         @MustBeClosed
         fun delete(
             params: BetaAssistantDeleteParams,

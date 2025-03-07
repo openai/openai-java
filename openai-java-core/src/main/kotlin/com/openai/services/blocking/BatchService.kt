@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.blocking
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -22,27 +20,37 @@ interface BatchService {
     fun withRawResponse(): WithRawResponse
 
     /** Creates and executes a batch from an uploaded file of requests */
-    @JvmOverloads
+    fun create(params: BatchCreateParams): Batch = create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(
         params: BatchCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Batch
 
     /** Retrieves a batch. */
-    @JvmOverloads
+    fun retrieve(params: BatchRetrieveParams): Batch = retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: BatchRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Batch
 
     /** List your organization's batches. */
-    @JvmOverloads
+    fun list(): BatchListPage = list(BatchListParams.none())
+
+    /** @see [list] */
     fun list(
         params: BatchListParams = BatchListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): BatchListPage
 
-    /** List your organization's batches. */
+    /** @see [list] */
+    fun list(params: BatchListParams = BatchListParams.none()): BatchListPage =
+        list(params, RequestOptions.none())
+
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): BatchListPage =
         list(BatchListParams.none(), requestOptions)
 
@@ -51,7 +59,9 @@ interface BatchService {
      * before changing to `cancelled`, where it will have partial results (if any) available in the
      * output file.
      */
-    @JvmOverloads
+    fun cancel(params: BatchCancelParams): Batch = cancel(params, RequestOptions.none())
+
+    /** @see [cancel] */
     fun cancel(
         params: BatchCancelParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -64,7 +74,11 @@ interface BatchService {
          * Returns a raw HTTP response for `post /batches`, but is otherwise the same as
          * [BatchService.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(params: BatchCreateParams): HttpResponseFor<Batch> =
+            create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: BatchCreateParams,
@@ -75,7 +89,11 @@ interface BatchService {
          * Returns a raw HTTP response for `get /batches/{batch_id}`, but is otherwise the same as
          * [BatchService.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(params: BatchRetrieveParams): HttpResponseFor<Batch> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: BatchRetrieveParams,
@@ -86,17 +104,21 @@ interface BatchService {
          * Returns a raw HTTP response for `get /batches`, but is otherwise the same as
          * [BatchService.list].
          */
-        @JvmOverloads
+        @MustBeClosed fun list(): HttpResponseFor<BatchListPage> = list(BatchListParams.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             params: BatchListParams = BatchListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<BatchListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /batches`, but is otherwise the same as
-         * [BatchService.list].
-         */
+        /** @see [list] */
+        @MustBeClosed
+        fun list(params: BatchListParams = BatchListParams.none()): HttpResponseFor<BatchListPage> =
+            list(params, RequestOptions.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<BatchListPage> =
             list(BatchListParams.none(), requestOptions)
@@ -105,7 +127,11 @@ interface BatchService {
          * Returns a raw HTTP response for `post /batches/{batch_id}/cancel`, but is otherwise the
          * same as [BatchService.cancel].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun cancel(params: BatchCancelParams): HttpResponseFor<Batch> =
+            cancel(params, RequestOptions.none())
+
+        /** @see [cancel] */
         @MustBeClosed
         fun cancel(
             params: BatchCancelParams,

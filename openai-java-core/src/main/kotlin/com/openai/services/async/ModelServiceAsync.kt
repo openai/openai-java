@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.async
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -26,7 +24,10 @@ interface ModelServiceAsync {
      * Retrieves a model instance, providing basic information about the model such as the owner and
      * permissioning.
      */
-    @JvmOverloads
+    fun retrieve(params: ModelRetrieveParams): CompletableFuture<Model> =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: ModelRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -36,16 +37,20 @@ interface ModelServiceAsync {
      * Lists the currently available models, and provides basic information about each one such as
      * the owner and availability.
      */
-    @JvmOverloads
+    fun list(): CompletableFuture<ModelListPageAsync> = list(ModelListParams.none())
+
+    /** @see [list] */
     fun list(
         params: ModelListParams = ModelListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ModelListPageAsync>
 
-    /**
-     * Lists the currently available models, and provides basic information about each one such as
-     * the owner and availability.
-     */
+    /** @see [list] */
+    fun list(
+        params: ModelListParams = ModelListParams.none()
+    ): CompletableFuture<ModelListPageAsync> = list(params, RequestOptions.none())
+
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): CompletableFuture<ModelListPageAsync> =
         list(ModelListParams.none(), requestOptions)
 
@@ -53,7 +58,10 @@ interface ModelServiceAsync {
      * Delete a fine-tuned model. You must have the Owner role in your organization to delete a
      * model.
      */
-    @JvmOverloads
+    fun delete(params: ModelDeleteParams): CompletableFuture<ModelDeleted> =
+        delete(params, RequestOptions.none())
+
+    /** @see [delete] */
     fun delete(
         params: ModelDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -66,7 +74,11 @@ interface ModelServiceAsync {
          * Returns a raw HTTP response for `get /models/{model}`, but is otherwise the same as
          * [ModelServiceAsync.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(params: ModelRetrieveParams): CompletableFuture<HttpResponseFor<Model>> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: ModelRetrieveParams,
@@ -77,17 +89,25 @@ interface ModelServiceAsync {
          * Returns a raw HTTP response for `get /models`, but is otherwise the same as
          * [ModelServiceAsync.list].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun list(): CompletableFuture<HttpResponseFor<ModelListPageAsync>> =
+            list(ModelListParams.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             params: ModelListParams = ModelListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ModelListPageAsync>>
 
-        /**
-         * Returns a raw HTTP response for `get /models`, but is otherwise the same as
-         * [ModelServiceAsync.list].
-         */
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            params: ModelListParams = ModelListParams.none()
+        ): CompletableFuture<HttpResponseFor<ModelListPageAsync>> =
+            list(params, RequestOptions.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             requestOptions: RequestOptions
@@ -98,7 +118,11 @@ interface ModelServiceAsync {
          * Returns a raw HTTP response for `delete /models/{model}`, but is otherwise the same as
          * [ModelServiceAsync.delete].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun delete(params: ModelDeleteParams): CompletableFuture<HttpResponseFor<ModelDeleted>> =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
         @MustBeClosed
         fun delete(
             params: ModelDeleteParams,

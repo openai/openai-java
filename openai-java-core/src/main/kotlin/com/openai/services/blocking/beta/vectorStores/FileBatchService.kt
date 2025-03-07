@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.blocking.beta.vectorStores
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -22,14 +20,20 @@ interface FileBatchService {
     fun withRawResponse(): WithRawResponse
 
     /** Create a vector store file batch. */
-    @JvmOverloads
+    fun create(params: BetaVectorStoreFileBatchCreateParams): VectorStoreFileBatch =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(
         params: BetaVectorStoreFileBatchCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStoreFileBatch
 
     /** Retrieves a vector store file batch. */
-    @JvmOverloads
+    fun retrieve(params: BetaVectorStoreFileBatchRetrieveParams): VectorStoreFileBatch =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: BetaVectorStoreFileBatchRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -39,14 +43,21 @@ interface FileBatchService {
      * Cancel a vector store file batch. This attempts to cancel the processing of files in this
      * batch as soon as possible.
      */
-    @JvmOverloads
+    fun cancel(params: BetaVectorStoreFileBatchCancelParams): VectorStoreFileBatch =
+        cancel(params, RequestOptions.none())
+
+    /** @see [cancel] */
     fun cancel(
         params: BetaVectorStoreFileBatchCancelParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStoreFileBatch
 
     /** Returns a list of vector store files in a batch. */
-    @JvmOverloads
+    fun listFiles(
+        params: BetaVectorStoreFileBatchListFilesParams
+    ): BetaVectorStoreFileBatchListFilesPage = listFiles(params, RequestOptions.none())
+
+    /** @see [listFiles] */
     fun listFiles(
         params: BetaVectorStoreFileBatchListFilesParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -59,7 +70,12 @@ interface FileBatchService {
          * Returns a raw HTTP response for `post /vector_stores/{vector_store_id}/file_batches`, but
          * is otherwise the same as [FileBatchService.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(
+            params: BetaVectorStoreFileBatchCreateParams
+        ): HttpResponseFor<VectorStoreFileBatch> = create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: BetaVectorStoreFileBatchCreateParams,
@@ -71,7 +87,12 @@ interface FileBatchService {
          * /vector_stores/{vector_store_id}/file_batches/{batch_id}`, but is otherwise the same as
          * [FileBatchService.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(
+            params: BetaVectorStoreFileBatchRetrieveParams
+        ): HttpResponseFor<VectorStoreFileBatch> = retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: BetaVectorStoreFileBatchRetrieveParams,
@@ -83,7 +104,12 @@ interface FileBatchService {
          * /vector_stores/{vector_store_id}/file_batches/{batch_id}/cancel`, but is otherwise the
          * same as [FileBatchService.cancel].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun cancel(
+            params: BetaVectorStoreFileBatchCancelParams
+        ): HttpResponseFor<VectorStoreFileBatch> = cancel(params, RequestOptions.none())
+
+        /** @see [cancel] */
         @MustBeClosed
         fun cancel(
             params: BetaVectorStoreFileBatchCancelParams,
@@ -95,7 +121,13 @@ interface FileBatchService {
          * /vector_stores/{vector_store_id}/file_batches/{batch_id}/files`, but is otherwise the
          * same as [FileBatchService.listFiles].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun listFiles(
+            params: BetaVectorStoreFileBatchListFilesParams
+        ): HttpResponseFor<BetaVectorStoreFileBatchListFilesPage> =
+            listFiles(params, RequestOptions.none())
+
+        /** @see [listFiles] */
         @MustBeClosed
         fun listFiles(
             params: BetaVectorStoreFileBatchListFilesParams,
