@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.blocking
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -42,14 +40,18 @@ interface UploadService {
      * documentation on
      * [creating a File](https://platform.openai.com/docs/api-reference/files/create).
      */
-    @JvmOverloads
+    fun create(params: UploadCreateParams): Upload = create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(
         params: UploadCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Upload
 
     /** Cancels the Upload. No Parts may be added after an Upload is cancelled. */
-    @JvmOverloads
+    fun cancel(params: UploadCancelParams): Upload = cancel(params, RequestOptions.none())
+
+    /** @see [cancel] */
     fun cancel(
         params: UploadCancelParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -68,7 +70,9 @@ interface UploadService {
      * specified when creating the Upload object. No Parts may be added after an Upload is
      * completed.
      */
-    @JvmOverloads
+    fun complete(params: UploadCompleteParams): Upload = complete(params, RequestOptions.none())
+
+    /** @see [complete] */
     fun complete(
         params: UploadCompleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -83,7 +87,11 @@ interface UploadService {
          * Returns a raw HTTP response for `post /uploads`, but is otherwise the same as
          * [UploadService.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(params: UploadCreateParams): HttpResponseFor<Upload> =
+            create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: UploadCreateParams,
@@ -94,7 +102,11 @@ interface UploadService {
          * Returns a raw HTTP response for `post /uploads/{upload_id}/cancel`, but is otherwise the
          * same as [UploadService.cancel].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun cancel(params: UploadCancelParams): HttpResponseFor<Upload> =
+            cancel(params, RequestOptions.none())
+
+        /** @see [cancel] */
         @MustBeClosed
         fun cancel(
             params: UploadCancelParams,
@@ -105,7 +117,11 @@ interface UploadService {
          * Returns a raw HTTP response for `post /uploads/{upload_id}/complete`, but is otherwise
          * the same as [UploadService.complete].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun complete(params: UploadCompleteParams): HttpResponseFor<Upload> =
+            complete(params, RequestOptions.none())
+
+        /** @see [complete] */
         @MustBeClosed
         fun complete(
             params: UploadCompleteParams,

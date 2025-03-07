@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.async.audio
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -18,7 +16,11 @@ interface SpeechServiceAsync {
     fun withRawResponse(): WithRawResponse
 
     /** Generates audio from the input text. */
-    @JvmOverloads
+    @MustBeClosed
+    fun create(params: AudioSpeechCreateParams): CompletableFuture<HttpResponse> =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
     @MustBeClosed
     fun create(
         params: AudioSpeechCreateParams,
@@ -34,7 +36,11 @@ interface SpeechServiceAsync {
          * Returns a raw HTTP response for `post /audio/speech`, but is otherwise the same as
          * [SpeechServiceAsync.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(params: AudioSpeechCreateParams): CompletableFuture<HttpResponse> =
+            create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: AudioSpeechCreateParams,

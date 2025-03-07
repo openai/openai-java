@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.async.beta.vectorStores
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -28,21 +26,31 @@ interface FileServiceAsync {
      * [File](https://platform.openai.com/docs/api-reference/files) to a
      * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object).
      */
-    @JvmOverloads
+    fun create(params: BetaVectorStoreFileCreateParams): CompletableFuture<VectorStoreFile> =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(
         params: BetaVectorStoreFileCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStoreFile>
 
     /** Retrieves a vector store file. */
-    @JvmOverloads
+    fun retrieve(params: BetaVectorStoreFileRetrieveParams): CompletableFuture<VectorStoreFile> =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: BetaVectorStoreFileRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStoreFile>
 
     /** Returns a list of vector store files. */
-    @JvmOverloads
+    fun list(
+        params: BetaVectorStoreFileListParams
+    ): CompletableFuture<BetaVectorStoreFileListPageAsync> = list(params, RequestOptions.none())
+
+    /** @see [list] */
     fun list(
         params: BetaVectorStoreFileListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -53,7 +61,10 @@ interface FileServiceAsync {
      * itself will not be deleted. To delete the file, use the
      * [delete file](https://platform.openai.com/docs/api-reference/files/delete) endpoint.
      */
-    @JvmOverloads
+    fun delete(params: BetaVectorStoreFileDeleteParams): CompletableFuture<VectorStoreFileDeleted> =
+        delete(params, RequestOptions.none())
+
+    /** @see [delete] */
     fun delete(
         params: BetaVectorStoreFileDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -66,7 +77,13 @@ interface FileServiceAsync {
          * Returns a raw HTTP response for `post /vector_stores/{vector_store_id}/files`, but is
          * otherwise the same as [FileServiceAsync.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(
+            params: BetaVectorStoreFileCreateParams
+        ): CompletableFuture<HttpResponseFor<VectorStoreFile>> =
+            create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: BetaVectorStoreFileCreateParams,
@@ -77,7 +94,13 @@ interface FileServiceAsync {
          * Returns a raw HTTP response for `get /vector_stores/{vector_store_id}/files/{file_id}`,
          * but is otherwise the same as [FileServiceAsync.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(
+            params: BetaVectorStoreFileRetrieveParams
+        ): CompletableFuture<HttpResponseFor<VectorStoreFile>> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: BetaVectorStoreFileRetrieveParams,
@@ -88,7 +111,13 @@ interface FileServiceAsync {
          * Returns a raw HTTP response for `get /vector_stores/{vector_store_id}/files`, but is
          * otherwise the same as [FileServiceAsync.list].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun list(
+            params: BetaVectorStoreFileListParams
+        ): CompletableFuture<HttpResponseFor<BetaVectorStoreFileListPageAsync>> =
+            list(params, RequestOptions.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             params: BetaVectorStoreFileListParams,
@@ -100,7 +129,13 @@ interface FileServiceAsync {
          * /vector_stores/{vector_store_id}/files/{file_id}`, but is otherwise the same as
          * [FileServiceAsync.delete].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun delete(
+            params: BetaVectorStoreFileDeleteParams
+        ): CompletableFuture<HttpResponseFor<VectorStoreFileDeleted>> =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
         @MustBeClosed
         fun delete(
             params: BetaVectorStoreFileDeleteParams,

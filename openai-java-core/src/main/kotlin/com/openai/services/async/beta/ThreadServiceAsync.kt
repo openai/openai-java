@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.async.beta
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -34,46 +32,70 @@ interface ThreadServiceAsync {
     fun messages(): MessageServiceAsync
 
     /** Create a thread. */
-    @JvmOverloads
+    fun create(): CompletableFuture<Thread> = create(BetaThreadCreateParams.none())
+
+    /** @see [create] */
     fun create(
         params: BetaThreadCreateParams = BetaThreadCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Thread>
 
-    /** Create a thread. */
+    /** @see [create] */
+    fun create(
+        params: BetaThreadCreateParams = BetaThreadCreateParams.none()
+    ): CompletableFuture<Thread> = create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(requestOptions: RequestOptions): CompletableFuture<Thread> =
         create(BetaThreadCreateParams.none(), requestOptions)
 
     /** Retrieves a thread. */
-    @JvmOverloads
+    fun retrieve(params: BetaThreadRetrieveParams): CompletableFuture<Thread> =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: BetaThreadRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Thread>
 
     /** Modifies a thread. */
-    @JvmOverloads
+    fun update(params: BetaThreadUpdateParams): CompletableFuture<Thread> =
+        update(params, RequestOptions.none())
+
+    /** @see [update] */
     fun update(
         params: BetaThreadUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Thread>
 
     /** Delete a thread. */
-    @JvmOverloads
+    fun delete(params: BetaThreadDeleteParams): CompletableFuture<ThreadDeleted> =
+        delete(params, RequestOptions.none())
+
+    /** @see [delete] */
     fun delete(
         params: BetaThreadDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ThreadDeleted>
 
     /** Create a thread and run it in one request. */
-    @JvmOverloads
+    fun createAndRun(params: BetaThreadCreateAndRunParams): CompletableFuture<Run> =
+        createAndRun(params, RequestOptions.none())
+
+    /** @see [createAndRun] */
     fun createAndRun(
         params: BetaThreadCreateAndRunParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Run>
 
     /** Create a thread and run it in one request. */
-    @JvmOverloads
+    fun createAndRunStreaming(
+        params: BetaThreadCreateAndRunParams
+    ): AsyncStreamResponse<AssistantStreamEvent> =
+        createAndRunStreaming(params, RequestOptions.none())
+
+    /** @see [createAndRunStreaming] */
     fun createAndRunStreaming(
         params: BetaThreadCreateAndRunParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -92,17 +114,24 @@ interface ThreadServiceAsync {
          * Returns a raw HTTP response for `post /threads`, but is otherwise the same as
          * [ThreadServiceAsync.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(): CompletableFuture<HttpResponseFor<Thread>> =
+            create(BetaThreadCreateParams.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: BetaThreadCreateParams = BetaThreadCreateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Thread>>
 
-        /**
-         * Returns a raw HTTP response for `post /threads`, but is otherwise the same as
-         * [ThreadServiceAsync.create].
-         */
+        /** @see [create] */
+        @MustBeClosed
+        fun create(
+            params: BetaThreadCreateParams = BetaThreadCreateParams.none()
+        ): CompletableFuture<HttpResponseFor<Thread>> = create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(requestOptions: RequestOptions): CompletableFuture<HttpResponseFor<Thread>> =
             create(BetaThreadCreateParams.none(), requestOptions)
@@ -111,7 +140,11 @@ interface ThreadServiceAsync {
          * Returns a raw HTTP response for `get /threads/{thread_id}`, but is otherwise the same as
          * [ThreadServiceAsync.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(params: BetaThreadRetrieveParams): CompletableFuture<HttpResponseFor<Thread>> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: BetaThreadRetrieveParams,
@@ -122,7 +155,11 @@ interface ThreadServiceAsync {
          * Returns a raw HTTP response for `post /threads/{thread_id}`, but is otherwise the same as
          * [ThreadServiceAsync.update].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun update(params: BetaThreadUpdateParams): CompletableFuture<HttpResponseFor<Thread>> =
+            update(params, RequestOptions.none())
+
+        /** @see [update] */
         @MustBeClosed
         fun update(
             params: BetaThreadUpdateParams,
@@ -133,7 +170,12 @@ interface ThreadServiceAsync {
          * Returns a raw HTTP response for `delete /threads/{thread_id}`, but is otherwise the same
          * as [ThreadServiceAsync.delete].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun delete(
+            params: BetaThreadDeleteParams
+        ): CompletableFuture<HttpResponseFor<ThreadDeleted>> = delete(params, RequestOptions.none())
+
+        /** @see [delete] */
         @MustBeClosed
         fun delete(
             params: BetaThreadDeleteParams,
@@ -144,7 +186,12 @@ interface ThreadServiceAsync {
          * Returns a raw HTTP response for `post /threads/runs`, but is otherwise the same as
          * [ThreadServiceAsync.createAndRun].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun createAndRun(
+            params: BetaThreadCreateAndRunParams
+        ): CompletableFuture<HttpResponseFor<Run>> = createAndRun(params, RequestOptions.none())
+
+        /** @see [createAndRun] */
         @MustBeClosed
         fun createAndRun(
             params: BetaThreadCreateAndRunParams,
@@ -155,7 +202,13 @@ interface ThreadServiceAsync {
          * Returns a raw HTTP response for `post /threads/runs`, but is otherwise the same as
          * [ThreadServiceAsync.createAndRunStreaming].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun createAndRunStreaming(
+            params: BetaThreadCreateAndRunParams
+        ): CompletableFuture<HttpResponseFor<StreamResponse<AssistantStreamEvent>>> =
+            createAndRunStreaming(params, RequestOptions.none())
+
+        /** @see [createAndRunStreaming] */
         @MustBeClosed
         fun createAndRunStreaming(
             params: BetaThreadCreateAndRunParams,

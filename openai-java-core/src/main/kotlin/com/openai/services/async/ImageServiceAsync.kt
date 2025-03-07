@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.async
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -21,21 +19,30 @@ interface ImageServiceAsync {
     fun withRawResponse(): WithRawResponse
 
     /** Creates a variation of a given image. */
-    @JvmOverloads
+    fun createVariation(params: ImageCreateVariationParams): CompletableFuture<ImagesResponse> =
+        createVariation(params, RequestOptions.none())
+
+    /** @see [createVariation] */
     fun createVariation(
         params: ImageCreateVariationParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ImagesResponse>
 
     /** Creates an edited or extended image given an original image and a prompt. */
-    @JvmOverloads
+    fun edit(params: ImageEditParams): CompletableFuture<ImagesResponse> =
+        edit(params, RequestOptions.none())
+
+    /** @see [edit] */
     fun edit(
         params: ImageEditParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ImagesResponse>
 
     /** Creates an image given a prompt. */
-    @JvmOverloads
+    fun generate(params: ImageGenerateParams): CompletableFuture<ImagesResponse> =
+        generate(params, RequestOptions.none())
+
+    /** @see [generate] */
     fun generate(
         params: ImageGenerateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -48,7 +55,13 @@ interface ImageServiceAsync {
          * Returns a raw HTTP response for `post /images/variations`, but is otherwise the same as
          * [ImageServiceAsync.createVariation].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun createVariation(
+            params: ImageCreateVariationParams
+        ): CompletableFuture<HttpResponseFor<ImagesResponse>> =
+            createVariation(params, RequestOptions.none())
+
+        /** @see [createVariation] */
         @MustBeClosed
         fun createVariation(
             params: ImageCreateVariationParams,
@@ -59,7 +72,11 @@ interface ImageServiceAsync {
          * Returns a raw HTTP response for `post /images/edits`, but is otherwise the same as
          * [ImageServiceAsync.edit].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun edit(params: ImageEditParams): CompletableFuture<HttpResponseFor<ImagesResponse>> =
+            edit(params, RequestOptions.none())
+
+        /** @see [edit] */
         @MustBeClosed
         fun edit(
             params: ImageEditParams,
@@ -70,7 +87,13 @@ interface ImageServiceAsync {
          * Returns a raw HTTP response for `post /images/generations`, but is otherwise the same as
          * [ImageServiceAsync.generate].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun generate(
+            params: ImageGenerateParams
+        ): CompletableFuture<HttpResponseFor<ImagesResponse>> =
+            generate(params, RequestOptions.none())
+
+        /** @see [generate] */
         @MustBeClosed
         fun generate(
             params: ImageGenerateParams,

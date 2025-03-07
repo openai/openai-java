@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.async
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -21,14 +19,20 @@ interface CompletionServiceAsync {
     fun withRawResponse(): WithRawResponse
 
     /** Creates a completion for the provided prompt and parameters. */
-    @JvmOverloads
+    fun create(params: CompletionCreateParams): CompletableFuture<Completion> =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(
         params: CompletionCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Completion>
 
     /** Creates a completion for the provided prompt and parameters. */
-    @JvmOverloads
+    fun createStreaming(params: CompletionCreateParams): AsyncStreamResponse<Completion> =
+        createStreaming(params, RequestOptions.none())
+
+    /** @see [createStreaming] */
     fun createStreaming(
         params: CompletionCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -44,7 +48,11 @@ interface CompletionServiceAsync {
          * Returns a raw HTTP response for `post /completions`, but is otherwise the same as
          * [CompletionServiceAsync.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(params: CompletionCreateParams): CompletableFuture<HttpResponseFor<Completion>> =
+            create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: CompletionCreateParams,
@@ -55,7 +63,13 @@ interface CompletionServiceAsync {
          * Returns a raw HTTP response for `post /completions`, but is otherwise the same as
          * [CompletionServiceAsync.createStreaming].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun createStreaming(
+            params: CompletionCreateParams
+        ): CompletableFuture<HttpResponseFor<StreamResponse<Completion>>> =
+            createStreaming(params, RequestOptions.none())
+
+        /** @see [createStreaming] */
         @MustBeClosed
         fun createStreaming(
             params: CompletionCreateParams,

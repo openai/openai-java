@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.blocking
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -25,7 +23,9 @@ interface ModelService {
      * Retrieves a model instance, providing basic information about the model such as the owner and
      * permissioning.
      */
-    @JvmOverloads
+    fun retrieve(params: ModelRetrieveParams): Model = retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: ModelRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -35,16 +35,19 @@ interface ModelService {
      * Lists the currently available models, and provides basic information about each one such as
      * the owner and availability.
      */
-    @JvmOverloads
+    fun list(): ModelListPage = list(ModelListParams.none())
+
+    /** @see [list] */
     fun list(
         params: ModelListParams = ModelListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ModelListPage
 
-    /**
-     * Lists the currently available models, and provides basic information about each one such as
-     * the owner and availability.
-     */
+    /** @see [list] */
+    fun list(params: ModelListParams = ModelListParams.none()): ModelListPage =
+        list(params, RequestOptions.none())
+
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): ModelListPage =
         list(ModelListParams.none(), requestOptions)
 
@@ -52,7 +55,9 @@ interface ModelService {
      * Delete a fine-tuned model. You must have the Owner role in your organization to delete a
      * model.
      */
-    @JvmOverloads
+    fun delete(params: ModelDeleteParams): ModelDeleted = delete(params, RequestOptions.none())
+
+    /** @see [delete] */
     fun delete(
         params: ModelDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -65,7 +70,11 @@ interface ModelService {
          * Returns a raw HTTP response for `get /models/{model}`, but is otherwise the same as
          * [ModelService.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(params: ModelRetrieveParams): HttpResponseFor<Model> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: ModelRetrieveParams,
@@ -76,17 +85,21 @@ interface ModelService {
          * Returns a raw HTTP response for `get /models`, but is otherwise the same as
          * [ModelService.list].
          */
-        @JvmOverloads
+        @MustBeClosed fun list(): HttpResponseFor<ModelListPage> = list(ModelListParams.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             params: ModelListParams = ModelListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ModelListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /models`, but is otherwise the same as
-         * [ModelService.list].
-         */
+        /** @see [list] */
+        @MustBeClosed
+        fun list(params: ModelListParams = ModelListParams.none()): HttpResponseFor<ModelListPage> =
+            list(params, RequestOptions.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<ModelListPage> =
             list(ModelListParams.none(), requestOptions)
@@ -95,7 +108,11 @@ interface ModelService {
          * Returns a raw HTTP response for `delete /models/{model}`, but is otherwise the same as
          * [ModelService.delete].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun delete(params: ModelDeleteParams): HttpResponseFor<ModelDeleted> =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
         @MustBeClosed
         fun delete(
             params: ModelDeleteParams,

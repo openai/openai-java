@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.blocking.audio
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -18,7 +16,10 @@ interface TranslationService {
     fun withRawResponse(): WithRawResponse
 
     /** Translates audio into English. */
-    @JvmOverloads
+    fun create(params: AudioTranslationCreateParams): AudioTranslationCreateResponse =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(
         params: AudioTranslationCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -33,7 +34,12 @@ interface TranslationService {
          * Returns a raw HTTP response for `post /audio/translations`, but is otherwise the same as
          * [TranslationService.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(
+            params: AudioTranslationCreateParams
+        ): HttpResponseFor<AudioTranslationCreateResponse> = create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: AudioTranslationCreateParams,
