@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.33.1 (2025-03-08)
+
+Full Changelog: [v0.33.0...v0.33.1](https://github.com/openai/openai-java/compare/v0.33.0...v0.33.1)
+
+### Chores
+
+* **internal:** add `.kotlin` to `.gitignore` ([#285](https://github.com/openai/openai-java/issues/285)) ([46c9b3a](https://github.com/openai/openai-java/commit/46c9b3af9d2593b679fa359df4123516a36f5c25))
+* **internal:** don't use `JvmOverloads` in interfaces ([9b04bb9](https://github.com/openai/openai-java/commit/9b04bb90bdacc38e926560e72244a677ced99991))
+* **internal:** reenable warnings as errors ([#288](https://github.com/openai/openai-java/issues/288)) ([9b04bb9](https://github.com/openai/openai-java/commit/9b04bb90bdacc38e926560e72244a677ced99991))
+* **internal:** use `getOrNull` instead of `orElse(null)` ([#287](https://github.com/openai/openai-java/issues/287)) ([8eeec84](https://github.com/openai/openai-java/commit/8eeec8405630759ffd7c02b30d4dd78b0d7df4d7))
+
+
+### Documentation
+
+* make URL purpose clearer in readme ([#289](https://github.com/openai/openai-java/issues/289)) ([88df036](https://github.com/openai/openai-java/commit/88df03664adae72f9d1fb9318a11ce73aa2c7b1e))
+
 ## 0.33.0 (2025-03-06)
 
 Full Changelog: [v0.32.0...v0.33.0](https://github.com/openai/openai-java/compare/v0.32.0...v0.33.0)
