@@ -18,6 +18,7 @@ import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.atomic.AtomicLong
+import kotlin.jvm.optionals.getOrNull
 
 class ClientOptions
 private constructor(
@@ -128,11 +129,11 @@ private constructor(
 
         fun organization(organization: String?) = apply { this.organization = organization }
 
-        fun organization(organization: Optional<String>) = organization(organization.orElse(null))
+        fun organization(organization: Optional<String>) = organization(organization.getOrNull())
 
         fun project(project: String?) = apply { this.project = project }
 
-        fun project(project: Optional<String>) = project(project.orElse(null))
+        fun project(project: Optional<String>) = project(project.getOrNull())
 
         fun headers(headers: Headers) = apply {
             this.headers.clear()

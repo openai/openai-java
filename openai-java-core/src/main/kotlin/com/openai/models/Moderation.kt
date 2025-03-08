@@ -19,6 +19,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 @NoAutoDetect
 class Moderation
@@ -548,8 +549,7 @@ private constructor(
              * execution of wrongdoing, or that gives advice or instruction on how to commit illicit
              * acts. For example, "how to shoplift" would fit this category.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun illicit(illicit: Optional<Boolean>) = illicit(illicit.orElse(null) as Boolean?)
+            fun illicit(illicit: Optional<Boolean>) = illicit(illicit.getOrNull())
 
             /**
              * Content that includes instructions or advice that facilitate the planning or
@@ -578,9 +578,8 @@ private constructor(
              * execution of wrongdoing that also includes violence, or that gives advice or
              * instruction on the procurement of any weapon.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
             fun illicitViolent(illicitViolent: Optional<Boolean>) =
-                illicitViolent(illicitViolent.orElse(null) as Boolean?)
+                illicitViolent(illicitViolent.getOrNull())
 
             /**
              * Content that includes instructions or advice that facilitate the planning or

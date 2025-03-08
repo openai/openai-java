@@ -29,6 +29,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * The `fine_tuning.job` object represents a fine-tuning job that has been created through the API.
@@ -432,7 +433,7 @@ private constructor(
          * For fine-tuning jobs that have `failed`, this will contain more information on the cause
          * of the failure.
          */
-        fun error(error: Optional<Error>) = error(error.orElse(null))
+        fun error(error: Optional<Error>) = error(error.getOrNull())
 
         /**
          * For fine-tuning jobs that have `failed`, this will contain more information on the cause
@@ -452,7 +453,7 @@ private constructor(
          * fine-tuning job is still running.
          */
         fun fineTunedModel(fineTunedModel: Optional<String>) =
-            fineTunedModel(fineTunedModel.orElse(null))
+            fineTunedModel(fineTunedModel.getOrNull())
 
         /**
          * The name of the fine-tuned model that is being created. The value will be null if the
@@ -478,8 +479,7 @@ private constructor(
          * The Unix timestamp (in seconds) for when the fine-tuning job was finished. The value will
          * be null if the fine-tuning job is still running.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun finishedAt(finishedAt: Optional<Long>) = finishedAt(finishedAt.orElse(null) as Long?)
+        fun finishedAt(finishedAt: Optional<Long>) = finishedAt(finishedAt.getOrNull())
 
         /**
          * The Unix timestamp (in seconds) for when the fine-tuning job was finished. The value will
@@ -581,9 +581,7 @@ private constructor(
          * The total number of billable tokens processed by this fine-tuning job. The value will be
          * null if the fine-tuning job is still running.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun trainedTokens(trainedTokens: Optional<Long>) =
-            trainedTokens(trainedTokens.orElse(null) as Long?)
+        fun trainedTokens(trainedTokens: Optional<Long>) = trainedTokens(trainedTokens.getOrNull())
 
         /**
          * The total number of billable tokens processed by this fine-tuning job. The value will be
@@ -619,7 +617,7 @@ private constructor(
          * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
          */
         fun validationFile(validationFile: Optional<String>) =
-            validationFile(validationFile.orElse(null))
+            validationFile(validationFile.getOrNull())
 
         /**
          * The file ID used for validation. You can retrieve the validation results with the
@@ -646,9 +644,8 @@ private constructor(
          * The Unix timestamp (in seconds) for when the fine-tuning job is estimated to finish. The
          * value will be null if the fine-tuning job is not running.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
         fun estimatedFinish(estimatedFinish: Optional<Long>) =
-            estimatedFinish(estimatedFinish.orElse(null) as Long?)
+            estimatedFinish(estimatedFinish.getOrNull())
 
         /**
          * The Unix timestamp (in seconds) for when the fine-tuning job is estimated to finish. The
@@ -664,7 +661,7 @@ private constructor(
 
         /** A list of integrations to enable for this fine-tuning job. */
         fun integrations(integrations: Optional<List<FineTuningJobWandbIntegrationObject>>) =
-            integrations(integrations.orElse(null))
+            integrations(integrations.getOrNull())
 
         /** A list of integrations to enable for this fine-tuning job. */
         fun integrations(integrations: JsonField<List<FineTuningJobWandbIntegrationObject>>) =
@@ -702,7 +699,7 @@ private constructor(
          * Keys are strings with a maximum length of 64 characters. Values are strings with a
          * maximum length of 512 characters.
          */
-        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -881,7 +878,7 @@ private constructor(
              * The parameter that was invalid, usually `training_file` or `validation_file`. This
              * field will be null if the failure was not parameter-specific.
              */
-            fun param(param: Optional<String>) = param(param.orElse(null))
+            fun param(param: Optional<String>) = param(param.getOrNull())
 
             /**
              * The parameter that was invalid, usually `training_file` or `validation_file`. This

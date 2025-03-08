@@ -18,6 +18,7 @@ import java.util.Objects
 import java.util.Optional
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Get the messages in a stored chat completion. Only chat completions that have been created with
@@ -180,7 +181,7 @@ private constructor(
                 while (index < page.data().size) {
                     yield(page.data()[index++])
                 }
-                page = page.getNextPage().orElse(null) ?: break
+                page = page.getNextPage().getOrNull() ?: break
                 index = 0
             }
         }

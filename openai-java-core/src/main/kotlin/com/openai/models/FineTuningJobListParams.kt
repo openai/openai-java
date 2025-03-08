@@ -8,6 +8,7 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** List your organization's fine-tuning jobs */
 class FineTuningJobListParams
@@ -81,7 +82,7 @@ private constructor(
         fun after(after: String?) = apply { this.after = after }
 
         /** Identifier for the last job from the previous pagination request. */
-        fun after(after: Optional<String>) = after(after.orElse(null))
+        fun after(after: Optional<String>) = after(after.getOrNull())
 
         /** Number of fine-tuning jobs to retrieve. */
         fun limit(limit: Long?) = apply { this.limit = limit }
@@ -90,8 +91,7 @@ private constructor(
         fun limit(limit: Long) = limit(limit as Long?)
 
         /** Number of fine-tuning jobs to retrieve. */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun limit(limit: Optional<Long>) = limit(limit.orElse(null) as Long?)
+        fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
 
         /**
          * Optional metadata filter. To filter, use the syntax `metadata[k]=v`. Alternatively, set
@@ -103,7 +103,7 @@ private constructor(
          * Optional metadata filter. To filter, use the syntax `metadata[k]=v`. Alternatively, set
          * `metadata=null` to indicate no metadata.
          */
-        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()

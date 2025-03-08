@@ -21,6 +21,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Creates an image given a prompt. */
 class ImageGenerateParams
@@ -346,7 +347,7 @@ private constructor(
             fun model(model: ImageModel?) = model(JsonField.ofNullable(model))
 
             /** The model to use for image generation. */
-            fun model(model: Optional<ImageModel>) = model(model.orElse(null))
+            fun model(model: Optional<ImageModel>) = model(model.getOrNull())
 
             /** The model to use for image generation. */
             fun model(model: JsonField<ImageModel>) = apply { this.model = model }
@@ -370,8 +371,7 @@ private constructor(
              * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
              * `n=1` is supported.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun n(n: Optional<Long>) = n(n.orElse(null) as Long?)
+            fun n(n: Optional<Long>) = n(n.getOrNull())
 
             /**
              * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
@@ -405,7 +405,7 @@ private constructor(
              * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
              */
             fun responseFormat(responseFormat: Optional<ResponseFormat>) =
-                responseFormat(responseFormat.orElse(null))
+                responseFormat(responseFormat.getOrNull())
 
             /**
              * The format in which the generated images are returned. Must be one of `url` or
@@ -427,7 +427,7 @@ private constructor(
              * for `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for
              * `dall-e-3` models.
              */
-            fun size(size: Optional<Size>) = size(size.orElse(null))
+            fun size(size: Optional<Size>) = size(size.getOrNull())
 
             /**
              * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`
@@ -450,7 +450,7 @@ private constructor(
              * the model to produce more natural, less hyper-real looking images. This param is only
              * supported for `dall-e-3`.
              */
-            fun style(style: Optional<Style>) = style(style.orElse(null))
+            fun style(style: Optional<Style>) = style(style.getOrNull())
 
             /**
              * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes
@@ -571,7 +571,7 @@ private constructor(
         fun model(model: ImageModel?) = apply { body.model(model) }
 
         /** The model to use for image generation. */
-        fun model(model: Optional<ImageModel>) = model(model.orElse(null))
+        fun model(model: Optional<ImageModel>) = model(model.getOrNull())
 
         /** The model to use for image generation. */
         fun model(model: JsonField<ImageModel>) = apply { body.model(model) }
@@ -595,8 +595,7 @@ private constructor(
          * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
          * supported.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun n(n: Optional<Long>) = n(n.orElse(null) as Long?)
+        fun n(n: Optional<Long>) = n(n.getOrNull())
 
         /**
          * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
@@ -629,7 +628,7 @@ private constructor(
          * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
          */
         fun responseFormat(responseFormat: Optional<ResponseFormat>) =
-            responseFormat(responseFormat.orElse(null))
+            responseFormat(responseFormat.getOrNull())
 
         /**
          * The format in which the generated images are returned. Must be one of `url` or
@@ -651,7 +650,7 @@ private constructor(
          * `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for `dall-e-3`
          * models.
          */
-        fun size(size: Optional<Size>) = size(size.orElse(null))
+        fun size(size: Optional<Size>) = size(size.getOrNull())
 
         /**
          * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024` for
@@ -674,7 +673,7 @@ private constructor(
          * to produce more natural, less hyper-real looking images. This param is only supported for
          * `dall-e-3`.
          */
-        fun style(style: Optional<Style>) = style(style.orElse(null))
+        fun style(style: Optional<Style>) = style(style.getOrNull())
 
         /**
          * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes the

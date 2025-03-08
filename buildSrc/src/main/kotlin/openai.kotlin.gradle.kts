@@ -22,11 +22,12 @@ configure<SpotlessExtension> {
 
 tasks.withType<KotlinCompile>().configureEach {
     compilerOptions {
+        allWarningsAsErrors = true
         freeCompilerArgs = listOf(
-          "-Xjvm-default=all",
-          "-Xjdk-release=1.8",
-          // Suppress deprecation warnings because we may still reference and test deprecated members.
-          "-Xsuppress-warning=DEPRECATION"
+            "-Xjvm-default=all",
+            "-Xjdk-release=1.8",
+            // Suppress deprecation warnings because we may still reference and test deprecated members.
+            "-Xsuppress-warning=DEPRECATION"
         )
         jvmTarget.set(JvmTarget.JVM_1_8)
     }

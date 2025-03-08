@@ -17,6 +17,7 @@ import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * The settings for your integration with Weights and Biases. This payload specifies the project
@@ -150,7 +151,7 @@ private constructor(
          * user that you would like associated with the run. If not set, the default entity for the
          * registered WandB API key is used.
          */
-        fun entity(entity: Optional<String>) = entity(entity.orElse(null))
+        fun entity(entity: Optional<String>) = entity(entity.getOrNull())
 
         /**
          * The entity to use for the run. This allows you to set the team or username of the WandB
@@ -163,7 +164,7 @@ private constructor(
         fun name(name: String?) = name(JsonField.ofNullable(name))
 
         /** A display name to set for the run. If not set, we will use the Job ID as the name. */
-        fun name(name: Optional<String>) = name(name.orElse(null))
+        fun name(name: Optional<String>) = name(name.getOrNull())
 
         /** A display name to set for the run. If not set, we will use the Job ID as the name. */
         fun name(name: JsonField<String>) = apply { this.name = name }

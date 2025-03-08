@@ -18,6 +18,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** A vector store is a collection of processed files can be used by the `file_search` tool. */
 @NoAutoDetect
@@ -249,9 +250,7 @@ private constructor(
         fun lastActiveAt(lastActiveAt: Long) = lastActiveAt(lastActiveAt as Long?)
 
         /** The Unix timestamp (in seconds) for when the vector store was last active. */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun lastActiveAt(lastActiveAt: Optional<Long>) =
-            lastActiveAt(lastActiveAt.orElse(null) as Long?)
+        fun lastActiveAt(lastActiveAt: Optional<Long>) = lastActiveAt(lastActiveAt.getOrNull())
 
         /** The Unix timestamp (in seconds) for when the vector store was last active. */
         fun lastActiveAt(lastActiveAt: JsonField<Long>) = apply { this.lastActiveAt = lastActiveAt }
@@ -274,7 +273,7 @@ private constructor(
          * Keys are strings with a maximum length of 64 characters. Values are strings with a
          * maximum length of 512 characters.
          */
-        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -328,8 +327,7 @@ private constructor(
         fun expiresAt(expiresAt: Long) = expiresAt(expiresAt as Long?)
 
         /** The Unix timestamp (in seconds) for when the vector store will expire. */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun expiresAt(expiresAt: Optional<Long>) = expiresAt(expiresAt.orElse(null) as Long?)
+        fun expiresAt(expiresAt: Optional<Long>) = expiresAt(expiresAt.getOrNull())
 
         /** The Unix timestamp (in seconds) for when the vector store will expire. */
         fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }

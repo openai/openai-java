@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.async.beta
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -31,39 +29,59 @@ interface VectorStoreServiceAsync {
     fun fileBatches(): FileBatchServiceAsync
 
     /** Create a vector store. */
-    @JvmOverloads
+    fun create(params: BetaVectorStoreCreateParams): CompletableFuture<VectorStore> =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(
         params: BetaVectorStoreCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStore>
 
     /** Retrieves a vector store. */
-    @JvmOverloads
+    fun retrieve(params: BetaVectorStoreRetrieveParams): CompletableFuture<VectorStore> =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: BetaVectorStoreRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStore>
 
     /** Modifies a vector store. */
-    @JvmOverloads
+    fun update(params: BetaVectorStoreUpdateParams): CompletableFuture<VectorStore> =
+        update(params, RequestOptions.none())
+
+    /** @see [update] */
     fun update(
         params: BetaVectorStoreUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStore>
 
     /** Returns a list of vector stores. */
-    @JvmOverloads
+    fun list(): CompletableFuture<BetaVectorStoreListPageAsync> =
+        list(BetaVectorStoreListParams.none())
+
+    /** @see [list] */
     fun list(
         params: BetaVectorStoreListParams = BetaVectorStoreListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<BetaVectorStoreListPageAsync>
 
-    /** Returns a list of vector stores. */
+    /** @see [list] */
+    fun list(
+        params: BetaVectorStoreListParams = BetaVectorStoreListParams.none()
+    ): CompletableFuture<BetaVectorStoreListPageAsync> = list(params, RequestOptions.none())
+
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): CompletableFuture<BetaVectorStoreListPageAsync> =
         list(BetaVectorStoreListParams.none(), requestOptions)
 
     /** Delete a vector store. */
-    @JvmOverloads
+    fun delete(params: BetaVectorStoreDeleteParams): CompletableFuture<VectorStoreDeleted> =
+        delete(params, RequestOptions.none())
+
+    /** @see [delete] */
     fun delete(
         params: BetaVectorStoreDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -83,7 +101,12 @@ interface VectorStoreServiceAsync {
          * Returns a raw HTTP response for `post /vector_stores`, but is otherwise the same as
          * [VectorStoreServiceAsync.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(
+            params: BetaVectorStoreCreateParams
+        ): CompletableFuture<HttpResponseFor<VectorStore>> = create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: BetaVectorStoreCreateParams,
@@ -94,7 +117,12 @@ interface VectorStoreServiceAsync {
          * Returns a raw HTTP response for `get /vector_stores/{vector_store_id}`, but is otherwise
          * the same as [VectorStoreServiceAsync.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(
+            params: BetaVectorStoreRetrieveParams
+        ): CompletableFuture<HttpResponseFor<VectorStore>> = retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: BetaVectorStoreRetrieveParams,
@@ -105,7 +133,12 @@ interface VectorStoreServiceAsync {
          * Returns a raw HTTP response for `post /vector_stores/{vector_store_id}`, but is otherwise
          * the same as [VectorStoreServiceAsync.update].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun update(
+            params: BetaVectorStoreUpdateParams
+        ): CompletableFuture<HttpResponseFor<VectorStore>> = update(params, RequestOptions.none())
+
+        /** @see [update] */
         @MustBeClosed
         fun update(
             params: BetaVectorStoreUpdateParams,
@@ -116,17 +149,25 @@ interface VectorStoreServiceAsync {
          * Returns a raw HTTP response for `get /vector_stores`, but is otherwise the same as
          * [VectorStoreServiceAsync.list].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun list(): CompletableFuture<HttpResponseFor<BetaVectorStoreListPageAsync>> =
+            list(BetaVectorStoreListParams.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             params: BetaVectorStoreListParams = BetaVectorStoreListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<BetaVectorStoreListPageAsync>>
 
-        /**
-         * Returns a raw HTTP response for `get /vector_stores`, but is otherwise the same as
-         * [VectorStoreServiceAsync.list].
-         */
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            params: BetaVectorStoreListParams = BetaVectorStoreListParams.none()
+        ): CompletableFuture<HttpResponseFor<BetaVectorStoreListPageAsync>> =
+            list(params, RequestOptions.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             requestOptions: RequestOptions
@@ -137,7 +178,13 @@ interface VectorStoreServiceAsync {
          * Returns a raw HTTP response for `delete /vector_stores/{vector_store_id}`, but is
          * otherwise the same as [VectorStoreServiceAsync.delete].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun delete(
+            params: BetaVectorStoreDeleteParams
+        ): CompletableFuture<HttpResponseFor<VectorStoreDeleted>> =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
         @MustBeClosed
         fun delete(
             params: BetaVectorStoreDeleteParams,

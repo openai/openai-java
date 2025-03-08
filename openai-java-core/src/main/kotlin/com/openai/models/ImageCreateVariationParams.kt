@@ -20,6 +20,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.io.path.inputStream
 import kotlin.io.path.name
+import kotlin.jvm.optionals.getOrNull
 
 /** Creates a variation of a given image. */
 class ImageCreateVariationParams
@@ -275,7 +276,7 @@ private constructor(
             fun model(model: ImageModel?) = model(MultipartField.of(model))
 
             /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
-            fun model(model: Optional<ImageModel>) = model(model.orElse(null))
+            fun model(model: Optional<ImageModel>) = model(model.getOrNull())
 
             /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
             fun model(model: MultipartField<ImageModel>) = apply { this.model = model }
@@ -299,8 +300,7 @@ private constructor(
              * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
              * `n=1` is supported.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun n(n: Optional<Long>) = n(n.orElse(null) as Long?)
+            fun n(n: Optional<Long>) = n(n.getOrNull())
 
             /**
              * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
@@ -320,7 +320,7 @@ private constructor(
              * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
              */
             fun responseFormat(responseFormat: Optional<ResponseFormat>) =
-                responseFormat(responseFormat.orElse(null))
+                responseFormat(responseFormat.getOrNull())
 
             /**
              * The format in which the generated images are returned. Must be one of `url` or
@@ -340,7 +340,7 @@ private constructor(
              * The size of the generated images. Must be one of `256x256`, `512x512`, or
              * `1024x1024`.
              */
-            fun size(size: Optional<Size>) = size(size.orElse(null))
+            fun size(size: Optional<Size>) = size(size.getOrNull())
 
             /**
              * The size of the generated images. Must be one of `256x256`, `512x512`, or
@@ -442,7 +442,7 @@ private constructor(
         fun model(model: ImageModel?) = apply { body.model(model) }
 
         /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
-        fun model(model: Optional<ImageModel>) = model(model.orElse(null))
+        fun model(model: Optional<ImageModel>) = model(model.getOrNull())
 
         /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
         fun model(model: MultipartField<ImageModel>) = apply { body.model(model) }
@@ -466,8 +466,7 @@ private constructor(
          * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
          * supported.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun n(n: Optional<Long>) = n(n.orElse(null) as Long?)
+        fun n(n: Optional<Long>) = n(n.getOrNull())
 
         /**
          * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
@@ -488,7 +487,7 @@ private constructor(
          * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
          */
         fun responseFormat(responseFormat: Optional<ResponseFormat>) =
-            responseFormat(responseFormat.orElse(null))
+            responseFormat(responseFormat.getOrNull())
 
         /**
          * The format in which the generated images are returned. Must be one of `url` or
@@ -506,7 +505,7 @@ private constructor(
         /**
          * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`.
          */
-        fun size(size: Optional<Size>) = size(size.orElse(null))
+        fun size(size: Optional<Size>) = size(size.getOrNull())
 
         /**
          * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`.

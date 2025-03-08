@@ -17,6 +17,7 @@ import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 @NoAutoDetect
 class ChatCompletionTokenLogprob
@@ -157,7 +158,7 @@ private constructor(
          * representations must be combined to generate the correct text representation. Can be
          * `null` if there is no bytes representation for the token.
          */
-        fun bytes(bytes: Optional<List<Long>>) = bytes(bytes.orElse(null))
+        fun bytes(bytes: Optional<List<Long>>) = bytes(bytes.getOrNull())
 
         /**
          * A list of integers representing the UTF-8 bytes representation of the token. Useful in
@@ -367,7 +368,7 @@ private constructor(
              * representations must be combined to generate the correct text representation. Can be
              * `null` if there is no bytes representation for the token.
              */
-            fun bytes(bytes: Optional<List<Long>>) = bytes(bytes.orElse(null))
+            fun bytes(bytes: Optional<List<Long>>) = bytes(bytes.getOrNull())
 
             /**
              * A list of integers representing the UTF-8 bytes representation of the token. Useful

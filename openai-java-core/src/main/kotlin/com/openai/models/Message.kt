@@ -29,6 +29,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Represents a message within a [thread](https://platform.openai.com/docs/api-reference/threads).
@@ -324,7 +325,7 @@ private constructor(
          * [assistant](https://platform.openai.com/docs/api-reference/assistants) that authored this
          * message.
          */
-        fun assistantId(assistantId: Optional<String>) = assistantId(assistantId.orElse(null))
+        fun assistantId(assistantId: Optional<String>) = assistantId(assistantId.getOrNull())
 
         /**
          * If applicable, the ID of the
@@ -339,7 +340,7 @@ private constructor(
 
         /** A list of files attached to the message, and the tools they were added to. */
         fun attachments(attachments: Optional<List<Attachment>>) =
-            attachments(attachments.orElse(null))
+            attachments(attachments.getOrNull())
 
         /** A list of files attached to the message, and the tools they were added to. */
         fun attachments(attachments: JsonField<List<Attachment>>) = apply {
@@ -361,9 +362,7 @@ private constructor(
         fun completedAt(completedAt: Long) = completedAt(completedAt as Long?)
 
         /** The Unix timestamp (in seconds) for when the message was completed. */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun completedAt(completedAt: Optional<Long>) =
-            completedAt(completedAt.orElse(null) as Long?)
+        fun completedAt(completedAt: Optional<Long>) = completedAt(completedAt.getOrNull())
 
         /** The Unix timestamp (in seconds) for when the message was completed. */
         fun completedAt(completedAt: JsonField<Long>) = apply { this.completedAt = completedAt }
@@ -432,9 +431,7 @@ private constructor(
         fun incompleteAt(incompleteAt: Long) = incompleteAt(incompleteAt as Long?)
 
         /** The Unix timestamp (in seconds) for when the message was marked as incomplete. */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun incompleteAt(incompleteAt: Optional<Long>) =
-            incompleteAt(incompleteAt.orElse(null) as Long?)
+        fun incompleteAt(incompleteAt: Optional<Long>) = incompleteAt(incompleteAt.getOrNull())
 
         /** The Unix timestamp (in seconds) for when the message was marked as incomplete. */
         fun incompleteAt(incompleteAt: JsonField<Long>) = apply { this.incompleteAt = incompleteAt }
@@ -445,7 +442,7 @@ private constructor(
 
         /** On an incomplete message, details about why the message is incomplete. */
         fun incompleteDetails(incompleteDetails: Optional<IncompleteDetails>) =
-            incompleteDetails(incompleteDetails.orElse(null))
+            incompleteDetails(incompleteDetails.getOrNull())
 
         /** On an incomplete message, details about why the message is incomplete. */
         fun incompleteDetails(incompleteDetails: JsonField<IncompleteDetails>) = apply {
@@ -470,7 +467,7 @@ private constructor(
          * Keys are strings with a maximum length of 64 characters. Values are strings with a
          * maximum length of 512 characters.
          */
-        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -503,7 +500,7 @@ private constructor(
          * the creation of this message. Value is `null` when messages are created manually using
          * the create message or create thread endpoints.
          */
-        fun runId(runId: Optional<String>) = runId(runId.orElse(null))
+        fun runId(runId: Optional<String>) = runId(runId.getOrNull())
 
         /**
          * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) associated with

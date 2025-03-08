@@ -16,6 +16,7 @@ import java.time.Clock
 import java.time.Duration
 import java.util.Optional
 import java.util.concurrent.Executor
+import kotlin.jvm.optionals.getOrNull
 
 class OpenAIOkHttpClientAsync private constructor() {
 
@@ -160,11 +161,11 @@ class OpenAIOkHttpClientAsync private constructor() {
 
         fun organization(organization: String?) = apply { clientOptions.organization(organization) }
 
-        fun organization(organization: Optional<String>) = organization(organization.orElse(null))
+        fun organization(organization: Optional<String>) = organization(organization.getOrNull())
 
         fun project(project: String?) = apply { clientOptions.project(project) }
 
-        fun project(project: Optional<String>) = project(project.orElse(null))
+        fun project(project: Optional<String>) = project(project.getOrNull())
 
         fun fromEnv() = apply { clientOptions.fromEnv() }
 

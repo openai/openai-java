@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.async.fineTuning
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -36,7 +34,10 @@ interface JobServiceAsync {
      *
      * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/fine-tuning)
      */
-    @JvmOverloads
+    fun create(params: FineTuningJobCreateParams): CompletableFuture<FineTuningJob> =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(
         params: FineTuningJobCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -47,32 +48,50 @@ interface JobServiceAsync {
      *
      * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/fine-tuning)
      */
-    @JvmOverloads
+    fun retrieve(params: FineTuningJobRetrieveParams): CompletableFuture<FineTuningJob> =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: FineTuningJobRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FineTuningJob>
 
     /** List your organization's fine-tuning jobs */
-    @JvmOverloads
+    fun list(): CompletableFuture<FineTuningJobListPageAsync> = list(FineTuningJobListParams.none())
+
+    /** @see [list] */
     fun list(
         params: FineTuningJobListParams = FineTuningJobListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FineTuningJobListPageAsync>
 
-    /** List your organization's fine-tuning jobs */
+    /** @see [list] */
+    fun list(
+        params: FineTuningJobListParams = FineTuningJobListParams.none()
+    ): CompletableFuture<FineTuningJobListPageAsync> = list(params, RequestOptions.none())
+
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): CompletableFuture<FineTuningJobListPageAsync> =
         list(FineTuningJobListParams.none(), requestOptions)
 
     /** Immediately cancel a fine-tune job. */
-    @JvmOverloads
+    fun cancel(params: FineTuningJobCancelParams): CompletableFuture<FineTuningJob> =
+        cancel(params, RequestOptions.none())
+
+    /** @see [cancel] */
     fun cancel(
         params: FineTuningJobCancelParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FineTuningJob>
 
     /** Get status updates for a fine-tuning job. */
-    @JvmOverloads
+    fun listEvents(
+        params: FineTuningJobListEventsParams
+    ): CompletableFuture<FineTuningJobListEventsPageAsync> =
+        listEvents(params, RequestOptions.none())
+
+    /** @see [listEvents] */
     fun listEvents(
         params: FineTuningJobListEventsParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -87,7 +106,12 @@ interface JobServiceAsync {
          * Returns a raw HTTP response for `post /fine_tuning/jobs`, but is otherwise the same as
          * [JobServiceAsync.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(
+            params: FineTuningJobCreateParams
+        ): CompletableFuture<HttpResponseFor<FineTuningJob>> = create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: FineTuningJobCreateParams,
@@ -98,7 +122,13 @@ interface JobServiceAsync {
          * Returns a raw HTTP response for `get /fine_tuning/jobs/{fine_tuning_job_id}`, but is
          * otherwise the same as [JobServiceAsync.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(
+            params: FineTuningJobRetrieveParams
+        ): CompletableFuture<HttpResponseFor<FineTuningJob>> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: FineTuningJobRetrieveParams,
@@ -109,17 +139,25 @@ interface JobServiceAsync {
          * Returns a raw HTTP response for `get /fine_tuning/jobs`, but is otherwise the same as
          * [JobServiceAsync.list].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun list(): CompletableFuture<HttpResponseFor<FineTuningJobListPageAsync>> =
+            list(FineTuningJobListParams.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             params: FineTuningJobListParams = FineTuningJobListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<FineTuningJobListPageAsync>>
 
-        /**
-         * Returns a raw HTTP response for `get /fine_tuning/jobs`, but is otherwise the same as
-         * [JobServiceAsync.list].
-         */
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            params: FineTuningJobListParams = FineTuningJobListParams.none()
+        ): CompletableFuture<HttpResponseFor<FineTuningJobListPageAsync>> =
+            list(params, RequestOptions.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             requestOptions: RequestOptions
@@ -130,7 +168,12 @@ interface JobServiceAsync {
          * Returns a raw HTTP response for `post /fine_tuning/jobs/{fine_tuning_job_id}/cancel`, but
          * is otherwise the same as [JobServiceAsync.cancel].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun cancel(
+            params: FineTuningJobCancelParams
+        ): CompletableFuture<HttpResponseFor<FineTuningJob>> = cancel(params, RequestOptions.none())
+
+        /** @see [cancel] */
         @MustBeClosed
         fun cancel(
             params: FineTuningJobCancelParams,
@@ -141,7 +184,13 @@ interface JobServiceAsync {
          * Returns a raw HTTP response for `get /fine_tuning/jobs/{fine_tuning_job_id}/events`, but
          * is otherwise the same as [JobServiceAsync.listEvents].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun listEvents(
+            params: FineTuningJobListEventsParams
+        ): CompletableFuture<HttpResponseFor<FineTuningJobListEventsPageAsync>> =
+            listEvents(params, RequestOptions.none())
+
+        /** @see [listEvents] */
         @MustBeClosed
         fun listEvents(
             params: FineTuningJobListEventsParams,

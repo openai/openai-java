@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.async
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -44,39 +42,58 @@ interface FileServiceAsync {
      *
      * Please [contact us](https://help.openai.com/) if you need to increase these storage limits.
      */
-    @JvmOverloads
+    fun create(params: FileCreateParams): CompletableFuture<FileObject> =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(
         params: FileCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FileObject>
 
     /** Returns information about a specific file. */
-    @JvmOverloads
+    fun retrieve(params: FileRetrieveParams): CompletableFuture<FileObject> =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: FileRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FileObject>
 
     /** Returns a list of files. */
-    @JvmOverloads
+    fun list(): CompletableFuture<FileListPageAsync> = list(FileListParams.none())
+
+    /** @see [list] */
     fun list(
         params: FileListParams = FileListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FileListPageAsync>
 
-    /** Returns a list of files. */
+    /** @see [list] */
+    fun list(params: FileListParams = FileListParams.none()): CompletableFuture<FileListPageAsync> =
+        list(params, RequestOptions.none())
+
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): CompletableFuture<FileListPageAsync> =
         list(FileListParams.none(), requestOptions)
 
     /** Delete a file. */
-    @JvmOverloads
+    fun delete(params: FileDeleteParams): CompletableFuture<FileDeleted> =
+        delete(params, RequestOptions.none())
+
+    /** @see [delete] */
     fun delete(
         params: FileDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FileDeleted>
 
     /** Returns the contents of the specified file. */
-    @JvmOverloads
+    @MustBeClosed
+    fun content(params: FileContentParams): CompletableFuture<HttpResponse> =
+        content(params, RequestOptions.none())
+
+    /** @see [content] */
     @MustBeClosed
     fun content(
         params: FileContentParams,
@@ -90,7 +107,11 @@ interface FileServiceAsync {
          * Returns a raw HTTP response for `post /files`, but is otherwise the same as
          * [FileServiceAsync.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(params: FileCreateParams): CompletableFuture<HttpResponseFor<FileObject>> =
+            create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: FileCreateParams,
@@ -101,7 +122,11 @@ interface FileServiceAsync {
          * Returns a raw HTTP response for `get /files/{file_id}`, but is otherwise the same as
          * [FileServiceAsync.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(params: FileRetrieveParams): CompletableFuture<HttpResponseFor<FileObject>> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: FileRetrieveParams,
@@ -112,17 +137,25 @@ interface FileServiceAsync {
          * Returns a raw HTTP response for `get /files`, but is otherwise the same as
          * [FileServiceAsync.list].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun list(): CompletableFuture<HttpResponseFor<FileListPageAsync>> =
+            list(FileListParams.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             params: FileListParams = FileListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<FileListPageAsync>>
 
-        /**
-         * Returns a raw HTTP response for `get /files`, but is otherwise the same as
-         * [FileServiceAsync.list].
-         */
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            params: FileListParams = FileListParams.none()
+        ): CompletableFuture<HttpResponseFor<FileListPageAsync>> =
+            list(params, RequestOptions.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             requestOptions: RequestOptions
@@ -133,7 +166,11 @@ interface FileServiceAsync {
          * Returns a raw HTTP response for `delete /files/{file_id}`, but is otherwise the same as
          * [FileServiceAsync.delete].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun delete(params: FileDeleteParams): CompletableFuture<HttpResponseFor<FileDeleted>> =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
         @MustBeClosed
         fun delete(
             params: FileDeleteParams,
@@ -144,7 +181,11 @@ interface FileServiceAsync {
          * Returns a raw HTTP response for `get /files/{file_id}/content`, but is otherwise the same
          * as [FileServiceAsync.content].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun content(params: FileContentParams): CompletableFuture<HttpResponse> =
+            content(params, RequestOptions.none())
+
+        /** @see [content] */
         @MustBeClosed
         fun content(
             params: FileContentParams,

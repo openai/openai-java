@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.blocking.beta.threads
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -24,35 +22,50 @@ interface MessageService {
     fun withRawResponse(): WithRawResponse
 
     /** Create a message. */
-    @JvmOverloads
+    fun create(params: BetaThreadMessageCreateParams): Message =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(
         params: BetaThreadMessageCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Message
 
     /** Retrieve a message. */
-    @JvmOverloads
+    fun retrieve(params: BetaThreadMessageRetrieveParams): Message =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: BetaThreadMessageRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Message
 
     /** Modifies a message. */
-    @JvmOverloads
+    fun update(params: BetaThreadMessageUpdateParams): Message =
+        update(params, RequestOptions.none())
+
+    /** @see [update] */
     fun update(
         params: BetaThreadMessageUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Message
 
     /** Returns a list of messages for a given thread. */
-    @JvmOverloads
+    fun list(params: BetaThreadMessageListParams): BetaThreadMessageListPage =
+        list(params, RequestOptions.none())
+
+    /** @see [list] */
     fun list(
         params: BetaThreadMessageListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): BetaThreadMessageListPage
 
     /** Deletes a message. */
-    @JvmOverloads
+    fun delete(params: BetaThreadMessageDeleteParams): MessageDeleted =
+        delete(params, RequestOptions.none())
+
+    /** @see [delete] */
     fun delete(
         params: BetaThreadMessageDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -65,7 +78,11 @@ interface MessageService {
          * Returns a raw HTTP response for `post /threads/{thread_id}/messages`, but is otherwise
          * the same as [MessageService.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(params: BetaThreadMessageCreateParams): HttpResponseFor<Message> =
+            create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: BetaThreadMessageCreateParams,
@@ -76,7 +93,11 @@ interface MessageService {
          * Returns a raw HTTP response for `get /threads/{thread_id}/messages/{message_id}`, but is
          * otherwise the same as [MessageService.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(params: BetaThreadMessageRetrieveParams): HttpResponseFor<Message> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: BetaThreadMessageRetrieveParams,
@@ -87,7 +108,11 @@ interface MessageService {
          * Returns a raw HTTP response for `post /threads/{thread_id}/messages/{message_id}`, but is
          * otherwise the same as [MessageService.update].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun update(params: BetaThreadMessageUpdateParams): HttpResponseFor<Message> =
+            update(params, RequestOptions.none())
+
+        /** @see [update] */
         @MustBeClosed
         fun update(
             params: BetaThreadMessageUpdateParams,
@@ -98,7 +123,11 @@ interface MessageService {
          * Returns a raw HTTP response for `get /threads/{thread_id}/messages`, but is otherwise the
          * same as [MessageService.list].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun list(params: BetaThreadMessageListParams): HttpResponseFor<BetaThreadMessageListPage> =
+            list(params, RequestOptions.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             params: BetaThreadMessageListParams,
@@ -109,7 +138,11 @@ interface MessageService {
          * Returns a raw HTTP response for `delete /threads/{thread_id}/messages/{message_id}`, but
          * is otherwise the same as [MessageService.delete].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun delete(params: BetaThreadMessageDeleteParams): HttpResponseFor<MessageDeleted> =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
         @MustBeClosed
         fun delete(
             params: BetaThreadMessageDeleteParams,

@@ -1,6 +1,7 @@
 .prism.log
 .gradle
 .idea
+.kotlin
 build
 codegen.log
 kls_database.db

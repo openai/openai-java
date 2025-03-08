@@ -20,6 +20,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Modifies a vector store. */
 class BetaVectorStoreUpdateParams
@@ -182,7 +183,7 @@ private constructor(
 
             /** The expiration policy for a vector store. */
             fun expiresAfter(expiresAfter: Optional<ExpiresAfter>) =
-                expiresAfter(expiresAfter.orElse(null))
+                expiresAfter(expiresAfter.getOrNull())
 
             /** The expiration policy for a vector store. */
             fun expiresAfter(expiresAfter: JsonField<ExpiresAfter>) = apply {
@@ -207,7 +208,7 @@ private constructor(
              * Keys are strings with a maximum length of 64 characters. Values are strings with a
              * maximum length of 512 characters.
              */
-            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
             /**
              * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -223,7 +224,7 @@ private constructor(
             fun name(name: String?) = name(JsonField.ofNullable(name))
 
             /** The name of the vector store. */
-            fun name(name: Optional<String>) = name(name.orElse(null))
+            fun name(name: Optional<String>) = name(name.getOrNull())
 
             /** The name of the vector store. */
             fun name(name: JsonField<String>) = apply { this.name = name }
@@ -308,7 +309,7 @@ private constructor(
 
         /** The expiration policy for a vector store. */
         fun expiresAfter(expiresAfter: Optional<ExpiresAfter>) =
-            expiresAfter(expiresAfter.orElse(null))
+            expiresAfter(expiresAfter.getOrNull())
 
         /** The expiration policy for a vector store. */
         fun expiresAfter(expiresAfter: JsonField<ExpiresAfter>) = apply {
@@ -333,7 +334,7 @@ private constructor(
          * Keys are strings with a maximum length of 64 characters. Values are strings with a
          * maximum length of 512 characters.
          */
-        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -349,7 +350,7 @@ private constructor(
         fun name(name: String?) = apply { body.name(name) }
 
         /** The name of the vector store. */
-        fun name(name: Optional<String>) = name(name.orElse(null))
+        fun name(name: Optional<String>) = name(name.getOrNull())
 
         /** The name of the vector store. */
         fun name(name: JsonField<String>) = apply { body.name(name) }

@@ -10,6 +10,7 @@ import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Retrieves a run step. */
 class BetaThreadRunStepRetrieveParams
@@ -130,7 +131,7 @@ private constructor(
          * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
          * for more information.
          */
-        fun include(include: Optional<List<RunStepInclude>>) = include(include.orElse(null))
+        fun include(include: Optional<List<RunStepInclude>>) = include(include.getOrNull())
 
         /**
          * A list of additional fields to include in the response. Currently the only supported

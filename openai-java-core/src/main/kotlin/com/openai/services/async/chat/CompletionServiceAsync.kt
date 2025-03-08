@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.async.chat
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -39,7 +37,10 @@ interface CompletionServiceAsync {
      * models are noted below. For the current state of unsupported parameters in reasoning models,
      * [refer to the reasoning guide](https://platform.openai.com/docs/guides/reasoning).
      */
-    @JvmOverloads
+    fun create(params: ChatCompletionCreateParams): CompletableFuture<ChatCompletion> =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(
         params: ChatCompletionCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -56,7 +57,11 @@ interface CompletionServiceAsync {
      * models are noted below. For the current state of unsupported parameters in reasoning models,
      * [refer to the reasoning guide](https://platform.openai.com/docs/guides/reasoning).
      */
-    @JvmOverloads
+    fun createStreaming(
+        params: ChatCompletionCreateParams
+    ): AsyncStreamResponse<ChatCompletionChunk> = createStreaming(params, RequestOptions.none())
+
+    /** @see [createStreaming] */
     fun createStreaming(
         params: ChatCompletionCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -66,7 +71,10 @@ interface CompletionServiceAsync {
      * Get a stored chat completion. Only chat completions that have been created with the `store`
      * parameter set to `true` will be returned.
      */
-    @JvmOverloads
+    fun retrieve(params: ChatCompletionRetrieveParams): CompletableFuture<ChatCompletion> =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: ChatCompletionRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -77,7 +85,10 @@ interface CompletionServiceAsync {
      * `store` parameter set to `true` can be modified. Currently, the only supported modification
      * is to update the `metadata` field.
      */
-    @JvmOverloads
+    fun update(params: ChatCompletionUpdateParams): CompletableFuture<ChatCompletion> =
+        update(params, RequestOptions.none())
+
+    /** @see [update] */
     fun update(
         params: ChatCompletionUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -87,7 +98,10 @@ interface CompletionServiceAsync {
      * Delete a stored chat completion. Only chat completions that have been created with the
      * `store` parameter set to `true` can be deleted.
      */
-    @JvmOverloads
+    fun delete(params: ChatCompletionDeleteParams): CompletableFuture<ChatCompletionDeleted> =
+        delete(params, RequestOptions.none())
+
+    /** @see [delete] */
     fun delete(
         params: ChatCompletionDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -105,7 +119,13 @@ interface CompletionServiceAsync {
          * Returns a raw HTTP response for `post /chat/completions`, but is otherwise the same as
          * [CompletionServiceAsync.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(
+            params: ChatCompletionCreateParams
+        ): CompletableFuture<HttpResponseFor<ChatCompletion>> =
+            create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: ChatCompletionCreateParams,
@@ -116,7 +136,13 @@ interface CompletionServiceAsync {
          * Returns a raw HTTP response for `post /chat/completions`, but is otherwise the same as
          * [CompletionServiceAsync.createStreaming].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun createStreaming(
+            params: ChatCompletionCreateParams
+        ): CompletableFuture<HttpResponseFor<StreamResponse<ChatCompletionChunk>>> =
+            createStreaming(params, RequestOptions.none())
+
+        /** @see [createStreaming] */
         @MustBeClosed
         fun createStreaming(
             params: ChatCompletionCreateParams,
@@ -127,7 +153,13 @@ interface CompletionServiceAsync {
          * Returns a raw HTTP response for `get /chat/completions/{completion_id}`, but is otherwise
          * the same as [CompletionServiceAsync.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(
+            params: ChatCompletionRetrieveParams
+        ): CompletableFuture<HttpResponseFor<ChatCompletion>> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: ChatCompletionRetrieveParams,
@@ -138,7 +170,13 @@ interface CompletionServiceAsync {
          * Returns a raw HTTP response for `post /chat/completions/{completion_id}`, but is
          * otherwise the same as [CompletionServiceAsync.update].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun update(
+            params: ChatCompletionUpdateParams
+        ): CompletableFuture<HttpResponseFor<ChatCompletion>> =
+            update(params, RequestOptions.none())
+
+        /** @see [update] */
         @MustBeClosed
         fun update(
             params: ChatCompletionUpdateParams,
@@ -149,7 +187,13 @@ interface CompletionServiceAsync {
          * Returns a raw HTTP response for `delete /chat/completions/{completion_id}`, but is
          * otherwise the same as [CompletionServiceAsync.delete].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun delete(
+            params: ChatCompletionDeleteParams
+        ): CompletableFuture<HttpResponseFor<ChatCompletionDeleted>> =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
         @MustBeClosed
         fun delete(
             params: ChatCompletionDeleteParams,

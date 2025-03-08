@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.blocking.beta.threads.runs
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -20,14 +18,20 @@ interface StepService {
     fun withRawResponse(): WithRawResponse
 
     /** Retrieves a run step. */
-    @JvmOverloads
+    fun retrieve(params: BetaThreadRunStepRetrieveParams): RunStep =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: BetaThreadRunStepRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): RunStep
 
     /** Returns a list of run steps belonging to a run. */
-    @JvmOverloads
+    fun list(params: BetaThreadRunStepListParams): BetaThreadRunStepListPage =
+        list(params, RequestOptions.none())
+
+    /** @see [list] */
     fun list(
         params: BetaThreadRunStepListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -40,7 +44,11 @@ interface StepService {
          * Returns a raw HTTP response for `get /threads/{thread_id}/runs/{run_id}/steps/{step_id}`,
          * but is otherwise the same as [StepService.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(params: BetaThreadRunStepRetrieveParams): HttpResponseFor<RunStep> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: BetaThreadRunStepRetrieveParams,
@@ -51,7 +59,11 @@ interface StepService {
          * Returns a raw HTTP response for `get /threads/{thread_id}/runs/{run_id}/steps`, but is
          * otherwise the same as [StepService.list].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun list(params: BetaThreadRunStepListParams): HttpResponseFor<BetaThreadRunStepListPage> =
+            list(params, RequestOptions.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             params: BetaThreadRunStepListParams,

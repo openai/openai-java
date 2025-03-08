@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.blocking
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -19,14 +17,20 @@ interface CompletionService {
     fun withRawResponse(): WithRawResponse
 
     /** Creates a completion for the provided prompt and parameters. */
-    @JvmOverloads
+    fun create(params: CompletionCreateParams): Completion = create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(
         params: CompletionCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Completion
 
     /** Creates a completion for the provided prompt and parameters. */
-    @JvmOverloads
+    @MustBeClosed
+    fun createStreaming(params: CompletionCreateParams): StreamResponse<Completion> =
+        createStreaming(params, RequestOptions.none())
+
+    /** @see [createStreaming] */
     @MustBeClosed
     fun createStreaming(
         params: CompletionCreateParams,
@@ -40,7 +44,11 @@ interface CompletionService {
          * Returns a raw HTTP response for `post /completions`, but is otherwise the same as
          * [CompletionService.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(params: CompletionCreateParams): HttpResponseFor<Completion> =
+            create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: CompletionCreateParams,
@@ -51,7 +59,13 @@ interface CompletionService {
          * Returns a raw HTTP response for `post /completions`, but is otherwise the same as
          * [CompletionService.createStreaming].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun createStreaming(
+            params: CompletionCreateParams
+        ): HttpResponseFor<StreamResponse<Completion>> =
+            createStreaming(params, RequestOptions.none())
+
+        /** @see [createStreaming] */
         @MustBeClosed
         fun createStreaming(
             params: CompletionCreateParams,

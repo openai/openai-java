@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.blocking.beta
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -32,46 +30,67 @@ interface ThreadService {
     fun messages(): MessageService
 
     /** Create a thread. */
-    @JvmOverloads
+    fun create(): Thread = create(BetaThreadCreateParams.none())
+
+    /** @see [create] */
     fun create(
         params: BetaThreadCreateParams = BetaThreadCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Thread
 
-    /** Create a thread. */
+    /** @see [create] */
+    fun create(params: BetaThreadCreateParams = BetaThreadCreateParams.none()): Thread =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(requestOptions: RequestOptions): Thread =
         create(BetaThreadCreateParams.none(), requestOptions)
 
     /** Retrieves a thread. */
-    @JvmOverloads
+    fun retrieve(params: BetaThreadRetrieveParams): Thread = retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: BetaThreadRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Thread
 
     /** Modifies a thread. */
-    @JvmOverloads
+    fun update(params: BetaThreadUpdateParams): Thread = update(params, RequestOptions.none())
+
+    /** @see [update] */
     fun update(
         params: BetaThreadUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Thread
 
     /** Delete a thread. */
-    @JvmOverloads
+    fun delete(params: BetaThreadDeleteParams): ThreadDeleted =
+        delete(params, RequestOptions.none())
+
+    /** @see [delete] */
     fun delete(
         params: BetaThreadDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ThreadDeleted
 
     /** Create a thread and run it in one request. */
-    @JvmOverloads
+    fun createAndRun(params: BetaThreadCreateAndRunParams): Run =
+        createAndRun(params, RequestOptions.none())
+
+    /** @see [createAndRun] */
     fun createAndRun(
         params: BetaThreadCreateAndRunParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Run
 
     /** Create a thread and run it in one request. */
-    @JvmOverloads
+    @MustBeClosed
+    fun createAndRunStreaming(
+        params: BetaThreadCreateAndRunParams
+    ): StreamResponse<AssistantStreamEvent> = createAndRunStreaming(params, RequestOptions.none())
+
+    /** @see [createAndRunStreaming] */
     @MustBeClosed
     fun createAndRunStreaming(
         params: BetaThreadCreateAndRunParams,
@@ -89,17 +108,22 @@ interface ThreadService {
          * Returns a raw HTTP response for `post /threads`, but is otherwise the same as
          * [ThreadService.create].
          */
-        @JvmOverloads
+        @MustBeClosed fun create(): HttpResponseFor<Thread> = create(BetaThreadCreateParams.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: BetaThreadCreateParams = BetaThreadCreateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Thread>
 
-        /**
-         * Returns a raw HTTP response for `post /threads`, but is otherwise the same as
-         * [ThreadService.create].
-         */
+        /** @see [create] */
+        @MustBeClosed
+        fun create(
+            params: BetaThreadCreateParams = BetaThreadCreateParams.none()
+        ): HttpResponseFor<Thread> = create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(requestOptions: RequestOptions): HttpResponseFor<Thread> =
             create(BetaThreadCreateParams.none(), requestOptions)
@@ -108,7 +132,11 @@ interface ThreadService {
          * Returns a raw HTTP response for `get /threads/{thread_id}`, but is otherwise the same as
          * [ThreadService.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(params: BetaThreadRetrieveParams): HttpResponseFor<Thread> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: BetaThreadRetrieveParams,
@@ -119,7 +147,11 @@ interface ThreadService {
          * Returns a raw HTTP response for `post /threads/{thread_id}`, but is otherwise the same as
          * [ThreadService.update].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun update(params: BetaThreadUpdateParams): HttpResponseFor<Thread> =
+            update(params, RequestOptions.none())
+
+        /** @see [update] */
         @MustBeClosed
         fun update(
             params: BetaThreadUpdateParams,
@@ -130,7 +162,11 @@ interface ThreadService {
          * Returns a raw HTTP response for `delete /threads/{thread_id}`, but is otherwise the same
          * as [ThreadService.delete].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun delete(params: BetaThreadDeleteParams): HttpResponseFor<ThreadDeleted> =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
         @MustBeClosed
         fun delete(
             params: BetaThreadDeleteParams,
@@ -141,7 +177,11 @@ interface ThreadService {
          * Returns a raw HTTP response for `post /threads/runs`, but is otherwise the same as
          * [ThreadService.createAndRun].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun createAndRun(params: BetaThreadCreateAndRunParams): HttpResponseFor<Run> =
+            createAndRun(params, RequestOptions.none())
+
+        /** @see [createAndRun] */
         @MustBeClosed
         fun createAndRun(
             params: BetaThreadCreateAndRunParams,
@@ -152,7 +192,13 @@ interface ThreadService {
          * Returns a raw HTTP response for `post /threads/runs`, but is otherwise the same as
          * [ThreadService.createAndRunStreaming].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun createAndRunStreaming(
+            params: BetaThreadCreateAndRunParams
+        ): HttpResponseFor<StreamResponse<AssistantStreamEvent>> =
+            createAndRunStreaming(params, RequestOptions.none())
+
+        /** @see [createAndRunStreaming] */
         @MustBeClosed
         fun createAndRunStreaming(
             params: BetaThreadCreateAndRunParams,

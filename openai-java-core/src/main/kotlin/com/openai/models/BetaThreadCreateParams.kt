@@ -259,7 +259,7 @@ private constructor(
              * Keys are strings with a maximum length of 64 characters. Values are strings with a
              * maximum length of 512 characters.
              */
-            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
             /**
              * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -287,7 +287,7 @@ private constructor(
              * vector store IDs.
              */
             fun toolResources(toolResources: Optional<ToolResources>) =
-                toolResources(toolResources.orElse(null))
+                toolResources(toolResources.getOrNull())
 
             /**
              * A set of resources that are made available to the assistant's tools in this thread.
@@ -406,7 +406,7 @@ private constructor(
          * Keys are strings with a maximum length of 64 characters. Values are strings with a
          * maximum length of 512 characters.
          */
-        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -435,7 +435,7 @@ private constructor(
          * IDs.
          */
         fun toolResources(toolResources: Optional<ToolResources>) =
-            toolResources(toolResources.orElse(null))
+            toolResources(toolResources.getOrNull())
 
         /**
          * A set of resources that are made available to the assistant's tools in this thread. The
@@ -736,7 +736,7 @@ private constructor(
 
             /** A list of files attached to the message, and the tools they should be added to. */
             fun attachments(attachments: Optional<List<Attachment>>) =
-                attachments(attachments.orElse(null))
+                attachments(attachments.getOrNull())
 
             /** A list of files attached to the message, and the tools they should be added to. */
             fun attachments(attachments: JsonField<List<Attachment>>) = apply {
@@ -769,7 +769,7 @@ private constructor(
              * Keys are strings with a maximum length of 64 characters. Values are strings with a
              * maximum length of 512 characters.
              */
-            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
             /**
              * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -2044,7 +2044,7 @@ private constructor(
                      * Keys are strings with a maximum length of 64 characters. Values are strings
                      * with a maximum length of 512 characters.
                      */
-                    fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+                    fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
                     /**
                      * Set of 16 key-value pairs that can be attached to an object. This can be

@@ -18,6 +18,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** A list of files attached to a vector store. */
 @NoAutoDetect
@@ -217,7 +218,7 @@ private constructor(
          * The last error associated with this vector store file. Will be `null` if there are no
          * errors.
          */
-        fun lastError(lastError: Optional<LastError>) = lastError(lastError.orElse(null))
+        fun lastError(lastError: Optional<LastError>) = lastError(lastError.getOrNull())
 
         /**
          * The last error associated with this vector store file. Will be `null` if there are no

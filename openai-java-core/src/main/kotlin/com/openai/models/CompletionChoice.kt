@@ -19,6 +19,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 @NoAutoDetect
 class CompletionChoice
@@ -143,7 +144,7 @@ private constructor(
 
         fun logprobs(logprobs: Logprobs?) = logprobs(JsonField.ofNullable(logprobs))
 
-        fun logprobs(logprobs: Optional<Logprobs>) = logprobs(logprobs.orElse(null))
+        fun logprobs(logprobs: Optional<Logprobs>) = logprobs(logprobs.getOrNull())
 
         fun logprobs(logprobs: JsonField<Logprobs>) = apply { this.logprobs = logprobs }
 

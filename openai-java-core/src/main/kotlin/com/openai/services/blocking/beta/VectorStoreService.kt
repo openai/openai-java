@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.blocking.beta
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -30,39 +28,58 @@ interface VectorStoreService {
     fun fileBatches(): FileBatchService
 
     /** Create a vector store. */
-    @JvmOverloads
+    fun create(params: BetaVectorStoreCreateParams): VectorStore =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(
         params: BetaVectorStoreCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStore
 
     /** Retrieves a vector store. */
-    @JvmOverloads
+    fun retrieve(params: BetaVectorStoreRetrieveParams): VectorStore =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
     fun retrieve(
         params: BetaVectorStoreRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStore
 
     /** Modifies a vector store. */
-    @JvmOverloads
+    fun update(params: BetaVectorStoreUpdateParams): VectorStore =
+        update(params, RequestOptions.none())
+
+    /** @see [update] */
     fun update(
         params: BetaVectorStoreUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStore
 
     /** Returns a list of vector stores. */
-    @JvmOverloads
+    fun list(): BetaVectorStoreListPage = list(BetaVectorStoreListParams.none())
+
+    /** @see [list] */
     fun list(
         params: BetaVectorStoreListParams = BetaVectorStoreListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): BetaVectorStoreListPage
 
-    /** Returns a list of vector stores. */
+    /** @see [list] */
+    fun list(
+        params: BetaVectorStoreListParams = BetaVectorStoreListParams.none()
+    ): BetaVectorStoreListPage = list(params, RequestOptions.none())
+
+    /** @see [list] */
     fun list(requestOptions: RequestOptions): BetaVectorStoreListPage =
         list(BetaVectorStoreListParams.none(), requestOptions)
 
     /** Delete a vector store. */
-    @JvmOverloads
+    fun delete(params: BetaVectorStoreDeleteParams): VectorStoreDeleted =
+        delete(params, RequestOptions.none())
+
+    /** @see [delete] */
     fun delete(
         params: BetaVectorStoreDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -81,7 +98,11 @@ interface VectorStoreService {
          * Returns a raw HTTP response for `post /vector_stores`, but is otherwise the same as
          * [VectorStoreService.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(params: BetaVectorStoreCreateParams): HttpResponseFor<VectorStore> =
+            create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: BetaVectorStoreCreateParams,
@@ -92,7 +113,11 @@ interface VectorStoreService {
          * Returns a raw HTTP response for `get /vector_stores/{vector_store_id}`, but is otherwise
          * the same as [VectorStoreService.retrieve].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun retrieve(params: BetaVectorStoreRetrieveParams): HttpResponseFor<VectorStore> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             params: BetaVectorStoreRetrieveParams,
@@ -103,7 +128,11 @@ interface VectorStoreService {
          * Returns a raw HTTP response for `post /vector_stores/{vector_store_id}`, but is otherwise
          * the same as [VectorStoreService.update].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun update(params: BetaVectorStoreUpdateParams): HttpResponseFor<VectorStore> =
+            update(params, RequestOptions.none())
+
+        /** @see [update] */
         @MustBeClosed
         fun update(
             params: BetaVectorStoreUpdateParams,
@@ -114,17 +143,24 @@ interface VectorStoreService {
          * Returns a raw HTTP response for `get /vector_stores`, but is otherwise the same as
          * [VectorStoreService.list].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun list(): HttpResponseFor<BetaVectorStoreListPage> =
+            list(BetaVectorStoreListParams.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(
             params: BetaVectorStoreListParams = BetaVectorStoreListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<BetaVectorStoreListPage>
 
-        /**
-         * Returns a raw HTTP response for `get /vector_stores`, but is otherwise the same as
-         * [VectorStoreService.list].
-         */
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            params: BetaVectorStoreListParams = BetaVectorStoreListParams.none()
+        ): HttpResponseFor<BetaVectorStoreListPage> = list(params, RequestOptions.none())
+
+        /** @see [list] */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<BetaVectorStoreListPage> =
             list(BetaVectorStoreListParams.none(), requestOptions)
@@ -133,7 +169,11 @@ interface VectorStoreService {
          * Returns a raw HTTP response for `delete /vector_stores/{vector_store_id}`, but is
          * otherwise the same as [VectorStoreService.delete].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun delete(params: BetaVectorStoreDeleteParams): HttpResponseFor<VectorStoreDeleted> =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
         @MustBeClosed
         fun delete(
             params: BetaVectorStoreDeleteParams,

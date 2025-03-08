@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.async
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -22,7 +20,10 @@ interface ModerationServiceAsync {
      * Classifies if text and/or image inputs are potentially harmful. Learn more in the
      * [moderation guide](https://platform.openai.com/docs/guides/moderation).
      */
-    @JvmOverloads
+    fun create(params: ModerationCreateParams): CompletableFuture<ModerationCreateResponse> =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(
         params: ModerationCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -38,7 +39,13 @@ interface ModerationServiceAsync {
          * Returns a raw HTTP response for `post /moderations`, but is otherwise the same as
          * [ModerationServiceAsync.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(
+            params: ModerationCreateParams
+        ): CompletableFuture<HttpResponseFor<ModerationCreateResponse>> =
+            create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: ModerationCreateParams,

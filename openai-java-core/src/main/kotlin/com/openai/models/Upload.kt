@@ -18,6 +18,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** The Upload object can accept byte chunks in the form of Parts. */
 @NoAutoDetect
@@ -240,7 +241,7 @@ private constructor(
         fun file(file: FileObject?) = file(JsonField.ofNullable(file))
 
         /** The `File` object represents a document that has been uploaded to OpenAI. */
-        fun file(file: Optional<FileObject>) = file(file.orElse(null))
+        fun file(file: Optional<FileObject>) = file(file.getOrNull())
 
         /** The `File` object represents a document that has been uploaded to OpenAI. */
         fun file(file: JsonField<FileObject>) = apply { this.file = file }

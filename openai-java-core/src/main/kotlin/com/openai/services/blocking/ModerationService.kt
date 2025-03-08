@@ -1,7 +1,5 @@
 // File generated from our OpenAPI spec by Stainless.
 
-@file:Suppress("OVERLOADS_INTERFACE") // See https://youtrack.jetbrains.com/issue/KT-36102
-
 package com.openai.services.blocking
 
 import com.google.errorprone.annotations.MustBeClosed
@@ -21,7 +19,10 @@ interface ModerationService {
      * Classifies if text and/or image inputs are potentially harmful. Learn more in the
      * [moderation guide](https://platform.openai.com/docs/guides/moderation).
      */
-    @JvmOverloads
+    fun create(params: ModerationCreateParams): ModerationCreateResponse =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
     fun create(
         params: ModerationCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -34,7 +35,11 @@ interface ModerationService {
          * Returns a raw HTTP response for `post /moderations`, but is otherwise the same as
          * [ModerationService.create].
          */
-        @JvmOverloads
+        @MustBeClosed
+        fun create(params: ModerationCreateParams): HttpResponseFor<ModerationCreateResponse> =
+            create(params, RequestOptions.none())
+
+        /** @see [create] */
         @MustBeClosed
         fun create(
             params: ModerationCreateParams,

@@ -744,7 +744,7 @@ private constructor(
              * the behavior on a per-run basis.
              */
             fun instructions(instructions: Optional<String>) =
-                instructions(instructions.orElse(null))
+                instructions(instructions.getOrNull())
 
             /**
              * Override the default system message of the assistant. This is useful for modifying
@@ -781,9 +781,8 @@ private constructor(
              * completion tokens specified, the run will end with status `incomplete`. See
              * `incomplete_details` for more info.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
             fun maxCompletionTokens(maxCompletionTokens: Optional<Long>) =
-                maxCompletionTokens(maxCompletionTokens.orElse(null) as Long?)
+                maxCompletionTokens(maxCompletionTokens.getOrNull())
 
             /**
              * The maximum number of completion tokens that may be used over the course of the run.
@@ -819,9 +818,8 @@ private constructor(
              * multiple turns of the run. If the run exceeds the number of prompt tokens specified,
              * the run will end with status `incomplete`. See `incomplete_details` for more info.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
             fun maxPromptTokens(maxPromptTokens: Optional<Long>) =
-                maxPromptTokens(maxPromptTokens.orElse(null) as Long?)
+                maxPromptTokens(maxPromptTokens.getOrNull())
 
             /**
              * The maximum number of prompt tokens that may be used over the course of the run. The
@@ -851,7 +849,7 @@ private constructor(
              * Keys are strings with a maximum length of 64 characters. Values are strings with a
              * maximum length of 512 characters.
              */
-            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
             /**
              * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -877,7 +875,7 @@ private constructor(
              * associated with the assistant. If not, the model associated with the assistant will
              * be used.
              */
-            fun model(model: Optional<ChatModel>) = model(model.orElse(null))
+            fun model(model: Optional<ChatModel>) = model(model.getOrNull())
 
             /**
              * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be
@@ -958,7 +956,7 @@ private constructor(
              * exceeded `max_tokens` or the conversation exceeded the max context length.
              */
             fun responseFormat(responseFormat: Optional<AssistantResponseFormatOption>) =
-                responseFormat(responseFormat.orElse(null))
+                responseFormat(responseFormat.getOrNull())
 
             /**
              * Specifies the format that the model must output. Compatible with
@@ -1089,9 +1087,7 @@ private constructor(
              * the output more random, while lower values like 0.2 will make it more focused and
              * deterministic.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun temperature(temperature: Optional<Double>) =
-                temperature(temperature.orElse(null) as Double?)
+            fun temperature(temperature: Optional<Double>) = temperature(temperature.getOrNull())
 
             /**
              * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
@@ -1134,7 +1130,7 @@ private constructor(
              * "function": {"name": "my_function"}}` forces the model to call that tool.
              */
             fun toolChoice(toolChoice: Optional<AssistantToolChoiceOption>) =
-                toolChoice(toolChoice.orElse(null))
+                toolChoice(toolChoice.getOrNull())
 
             /**
              * Controls which (if any) tool is called by the model. `none` means the model will not
@@ -1178,7 +1174,7 @@ private constructor(
              * IDs, while the `file_search` tool requires a list of vector store IDs.
              */
             fun toolResources(toolResources: Optional<ToolResources>) =
-                toolResources(toolResources.orElse(null))
+                toolResources(toolResources.getOrNull())
 
             /**
              * A set of resources that are used by the assistant's tools. The resources are specific
@@ -1199,7 +1195,7 @@ private constructor(
              * Override the tools the assistant can use for this run. This is useful for modifying
              * the behavior on a per-run basis.
              */
-            fun tools(tools: Optional<List<Tool>>) = tools(tools.orElse(null))
+            fun tools(tools: Optional<List<Tool>>) = tools(tools.getOrNull())
 
             /**
              * Override the tools the assistant can use for this run. This is useful for modifying
@@ -1264,8 +1260,7 @@ private constructor(
              *
              * We generally recommend altering this or temperature but not both.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
+            fun topP(topP: Optional<Double>) = topP(topP.getOrNull())
 
             /**
              * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -1288,7 +1283,7 @@ private constructor(
              * intial context window of the run.
              */
             fun truncationStrategy(truncationStrategy: Optional<TruncationStrategy>) =
-                truncationStrategy(truncationStrategy.orElse(null))
+                truncationStrategy(truncationStrategy.getOrNull())
 
             /**
              * Controls for how a thread will be truncated prior to the run. Use this to control the
@@ -1408,7 +1403,7 @@ private constructor(
          * Override the default system message of the assistant. This is useful for modifying the
          * behavior on a per-run basis.
          */
-        fun instructions(instructions: Optional<String>) = instructions(instructions.orElse(null))
+        fun instructions(instructions: Optional<String>) = instructions(instructions.getOrNull())
 
         /**
          * Override the default system message of the assistant. This is useful for modifying the
@@ -1443,9 +1438,8 @@ private constructor(
          * multiple turns of the run. If the run exceeds the number of completion tokens specified,
          * the run will end with status `incomplete`. See `incomplete_details` for more info.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
         fun maxCompletionTokens(maxCompletionTokens: Optional<Long>) =
-            maxCompletionTokens(maxCompletionTokens.orElse(null) as Long?)
+            maxCompletionTokens(maxCompletionTokens.getOrNull())
 
         /**
          * The maximum number of completion tokens that may be used over the course of the run. The
@@ -1481,9 +1475,8 @@ private constructor(
          * multiple turns of the run. If the run exceeds the number of prompt tokens specified, the
          * run will end with status `incomplete`. See `incomplete_details` for more info.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
         fun maxPromptTokens(maxPromptTokens: Optional<Long>) =
-            maxPromptTokens(maxPromptTokens.orElse(null) as Long?)
+            maxPromptTokens(maxPromptTokens.getOrNull())
 
         /**
          * The maximum number of prompt tokens that may be used over the course of the run. The run
@@ -1513,7 +1506,7 @@ private constructor(
          * Keys are strings with a maximum length of 64 characters. Values are strings with a
          * maximum length of 512 characters.
          */
-        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -1537,7 +1530,7 @@ private constructor(
          * to execute this run. If a value is provided here, it will override the model associated
          * with the assistant. If not, the model associated with the assistant will be used.
          */
-        fun model(model: Optional<ChatModel>) = model(model.orElse(null))
+        fun model(model: Optional<ChatModel>) = model(model.getOrNull())
 
         /**
          * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used
@@ -1616,7 +1609,7 @@ private constructor(
          * `max_tokens` or the conversation exceeded the max context length.
          */
         fun responseFormat(responseFormat: Optional<AssistantResponseFormatOption>) =
-            responseFormat(responseFormat.orElse(null))
+            responseFormat(responseFormat.getOrNull())
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -1736,9 +1729,7 @@ private constructor(
          * output more random, while lower values like 0.2 will make it more focused and
          * deterministic.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun temperature(temperature: Optional<Double>) =
-            temperature(temperature.orElse(null) as Double?)
+        fun temperature(temperature: Optional<Double>) = temperature(temperature.getOrNull())
 
         /**
          * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
@@ -1780,7 +1771,7 @@ private constructor(
          * {"name": "my_function"}}` forces the model to call that tool.
          */
         fun toolChoice(toolChoice: Optional<AssistantToolChoiceOption>) =
-            toolChoice(toolChoice.orElse(null))
+            toolChoice(toolChoice.getOrNull())
 
         /**
          * Controls which (if any) tool is called by the model. `none` means the model will not call
@@ -1823,7 +1814,7 @@ private constructor(
          * while the `file_search` tool requires a list of vector store IDs.
          */
         fun toolResources(toolResources: Optional<ToolResources>) =
-            toolResources(toolResources.orElse(null))
+            toolResources(toolResources.getOrNull())
 
         /**
          * A set of resources that are used by the assistant's tools. The resources are specific to
@@ -1844,7 +1835,7 @@ private constructor(
          * Override the tools the assistant can use for this run. This is useful for modifying the
          * behavior on a per-run basis.
          */
-        fun tools(tools: Optional<List<Tool>>) = tools(tools.orElse(null))
+        fun tools(tools: Optional<List<Tool>>) = tools(tools.getOrNull())
 
         /**
          * Override the tools the assistant can use for this run. This is useful for modifying the
@@ -1901,8 +1892,7 @@ private constructor(
          *
          * We generally recommend altering this or temperature but not both.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun topP(topP: Optional<Double>) = topP(topP.orElse(null) as Double?)
+        fun topP(topP: Optional<Double>) = topP(topP.getOrNull())
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -1926,7 +1916,7 @@ private constructor(
          * intial context window of the run.
          */
         fun truncationStrategy(truncationStrategy: Optional<TruncationStrategy>) =
-            truncationStrategy(truncationStrategy.orElse(null))
+            truncationStrategy(truncationStrategy.getOrNull())
 
         /**
          * Controls for how a thread will be truncated prior to the run. Use this to control the
@@ -2220,7 +2210,7 @@ private constructor(
              * Keys are strings with a maximum length of 64 characters. Values are strings with a
              * maximum length of 512 characters.
              */
-            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
             /**
              * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -2248,7 +2238,7 @@ private constructor(
              * vector store IDs.
              */
             fun toolResources(toolResources: Optional<ToolResources>) =
-                toolResources(toolResources.orElse(null))
+                toolResources(toolResources.getOrNull())
 
             /**
              * A set of resources that are made available to the assistant's tools in this thread.
@@ -2462,7 +2452,7 @@ private constructor(
                  * A list of files attached to the message, and the tools they should be added to.
                  */
                 fun attachments(attachments: Optional<List<Attachment>>) =
-                    attachments(attachments.orElse(null))
+                    attachments(attachments.getOrNull())
 
                 /**
                  * A list of files attached to the message, and the tools they should be added to.
@@ -2499,7 +2489,7 @@ private constructor(
                  * Keys are strings with a maximum length of 64 characters. Values are strings with
                  * a maximum length of 512 characters.
                  */
-                fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+                fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
                 /**
                  * Set of 16 key-value pairs that can be attached to an object. This can be useful
@@ -3800,7 +3790,7 @@ private constructor(
                          * Keys are strings with a maximum length of 64 characters. Values are
                          * strings with a maximum length of 512 characters.
                          */
-                        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.orElse(null))
+                        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
                         /**
                          * Set of 16 key-value pairs that can be attached to an object. This can be
@@ -4605,9 +4595,7 @@ private constructor(
              * The number of most recent messages from the thread when constructing the context for
              * the run.
              */
-            @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-            fun lastMessages(lastMessages: Optional<Long>) =
-                lastMessages(lastMessages.orElse(null) as Long?)
+            fun lastMessages(lastMessages: Optional<Long>) = lastMessages(lastMessages.getOrNull())
 
             /**
              * The number of most recent messages from the thread when constructing the context for

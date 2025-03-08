@@ -16,6 +16,7 @@ import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 @NoAutoDetect
 class ErrorObject
@@ -102,7 +103,7 @@ private constructor(
 
         fun code(code: String?) = code(JsonField.ofNullable(code))
 
-        fun code(code: Optional<String>) = code(code.orElse(null))
+        fun code(code: Optional<String>) = code(code.getOrNull())
 
         fun code(code: JsonField<String>) = apply { this.code = code }
 
@@ -112,7 +113,7 @@ private constructor(
 
         fun param(param: String?) = param(JsonField.ofNullable(param))
 
-        fun param(param: Optional<String>) = param(param.orElse(null))
+        fun param(param: Optional<String>) = param(param.getOrNull())
 
         fun param(param: JsonField<String>) = apply { this.param = param }
 

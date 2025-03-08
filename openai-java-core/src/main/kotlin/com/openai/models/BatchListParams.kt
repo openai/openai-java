@@ -8,6 +8,7 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** List your organization's batches. */
 class BatchListParams
@@ -86,7 +87,7 @@ private constructor(
          * obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page
          * of the list.
          */
-        fun after(after: Optional<String>) = after(after.orElse(null))
+        fun after(after: Optional<String>) = after(after.getOrNull())
 
         /**
          * A limit on the number of objects to be returned. Limit can range between 1 and 100, and
@@ -104,8 +105,7 @@ private constructor(
          * A limit on the number of objects to be returned. Limit can range between 1 and 100, and
          * the default is 20.
          */
-        @Suppress("USELESS_CAST") // See https://youtrack.jetbrains.com/issue/KT-74228
-        fun limit(limit: Optional<Long>) = limit(limit.orElse(null) as Long?)
+        fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
