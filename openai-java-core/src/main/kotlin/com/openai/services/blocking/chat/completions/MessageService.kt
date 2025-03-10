@@ -5,8 +5,8 @@ package com.openai.services.blocking.chat.completions
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
-import com.openai.models.ChatCompletionMessageListPage
-import com.openai.models.ChatCompletionMessageListParams
+import com.openai.models.chat.completions.messages.MessageListPage
+import com.openai.models.chat.completions.messages.MessageListParams
 
 interface MessageService {
 
@@ -19,14 +19,13 @@ interface MessageService {
      * Get the messages in a stored chat completion. Only chat completions that have been created
      * with the `store` parameter set to `true` will be returned.
      */
-    fun list(params: ChatCompletionMessageListParams): ChatCompletionMessageListPage =
-        list(params, RequestOptions.none())
+    fun list(params: MessageListParams): MessageListPage = list(params, RequestOptions.none())
 
     /** @see [list] */
     fun list(
-        params: ChatCompletionMessageListParams,
+        params: MessageListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): ChatCompletionMessageListPage
+    ): MessageListPage
 
     /** A view of [MessageService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -36,15 +35,14 @@ interface MessageService {
          * otherwise the same as [MessageService.list].
          */
         @MustBeClosed
-        fun list(
-            params: ChatCompletionMessageListParams
-        ): HttpResponseFor<ChatCompletionMessageListPage> = list(params, RequestOptions.none())
+        fun list(params: MessageListParams): HttpResponseFor<MessageListPage> =
+            list(params, RequestOptions.none())
 
         /** @see [list] */
         @MustBeClosed
         fun list(
-            params: ChatCompletionMessageListParams,
+            params: MessageListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<ChatCompletionMessageListPage>
+        ): HttpResponseFor<MessageListPage>
     }
 }

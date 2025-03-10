@@ -5,14 +5,14 @@ package com.openai.services.async.beta.threads
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
-import com.openai.models.BetaThreadMessageCreateParams
-import com.openai.models.BetaThreadMessageDeleteParams
-import com.openai.models.BetaThreadMessageListPageAsync
-import com.openai.models.BetaThreadMessageListParams
-import com.openai.models.BetaThreadMessageRetrieveParams
-import com.openai.models.BetaThreadMessageUpdateParams
-import com.openai.models.Message
-import com.openai.models.MessageDeleted
+import com.openai.models.beta.threads.messages.Message
+import com.openai.models.beta.threads.messages.MessageCreateParams
+import com.openai.models.beta.threads.messages.MessageDeleteParams
+import com.openai.models.beta.threads.messages.MessageDeleted
+import com.openai.models.beta.threads.messages.MessageListPageAsync
+import com.openai.models.beta.threads.messages.MessageListParams
+import com.openai.models.beta.threads.messages.MessageRetrieveParams
+import com.openai.models.beta.threads.messages.MessageUpdateParams
 import java.util.concurrent.CompletableFuture
 
 interface MessageServiceAsync {
@@ -23,53 +23,52 @@ interface MessageServiceAsync {
     fun withRawResponse(): WithRawResponse
 
     /** Create a message. */
-    fun create(params: BetaThreadMessageCreateParams): CompletableFuture<Message> =
+    fun create(params: MessageCreateParams): CompletableFuture<Message> =
         create(params, RequestOptions.none())
 
     /** @see [create] */
     fun create(
-        params: BetaThreadMessageCreateParams,
+        params: MessageCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Message>
 
     /** Retrieve a message. */
-    fun retrieve(params: BetaThreadMessageRetrieveParams): CompletableFuture<Message> =
+    fun retrieve(params: MessageRetrieveParams): CompletableFuture<Message> =
         retrieve(params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
-        params: BetaThreadMessageRetrieveParams,
+        params: MessageRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Message>
 
     /** Modifies a message. */
-    fun update(params: BetaThreadMessageUpdateParams): CompletableFuture<Message> =
+    fun update(params: MessageUpdateParams): CompletableFuture<Message> =
         update(params, RequestOptions.none())
 
     /** @see [update] */
     fun update(
-        params: BetaThreadMessageUpdateParams,
+        params: MessageUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Message>
 
     /** Returns a list of messages for a given thread. */
-    fun list(
-        params: BetaThreadMessageListParams
-    ): CompletableFuture<BetaThreadMessageListPageAsync> = list(params, RequestOptions.none())
+    fun list(params: MessageListParams): CompletableFuture<MessageListPageAsync> =
+        list(params, RequestOptions.none())
 
     /** @see [list] */
     fun list(
-        params: BetaThreadMessageListParams,
+        params: MessageListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<BetaThreadMessageListPageAsync>
+    ): CompletableFuture<MessageListPageAsync>
 
     /** Deletes a message. */
-    fun delete(params: BetaThreadMessageDeleteParams): CompletableFuture<MessageDeleted> =
+    fun delete(params: MessageDeleteParams): CompletableFuture<MessageDeleted> =
         delete(params, RequestOptions.none())
 
     /** @see [delete] */
     fun delete(
-        params: BetaThreadMessageDeleteParams,
+        params: MessageDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<MessageDeleted>
 
@@ -83,14 +82,13 @@ interface MessageServiceAsync {
          * the same as [MessageServiceAsync.create].
          */
         @MustBeClosed
-        fun create(
-            params: BetaThreadMessageCreateParams
-        ): CompletableFuture<HttpResponseFor<Message>> = create(params, RequestOptions.none())
+        fun create(params: MessageCreateParams): CompletableFuture<HttpResponseFor<Message>> =
+            create(params, RequestOptions.none())
 
         /** @see [create] */
         @MustBeClosed
         fun create(
-            params: BetaThreadMessageCreateParams,
+            params: MessageCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Message>>
 
@@ -99,14 +97,13 @@ interface MessageServiceAsync {
          * otherwise the same as [MessageServiceAsync.retrieve].
          */
         @MustBeClosed
-        fun retrieve(
-            params: BetaThreadMessageRetrieveParams
-        ): CompletableFuture<HttpResponseFor<Message>> = retrieve(params, RequestOptions.none())
+        fun retrieve(params: MessageRetrieveParams): CompletableFuture<HttpResponseFor<Message>> =
+            retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
-            params: BetaThreadMessageRetrieveParams,
+            params: MessageRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Message>>
 
@@ -115,14 +112,13 @@ interface MessageServiceAsync {
          * otherwise the same as [MessageServiceAsync.update].
          */
         @MustBeClosed
-        fun update(
-            params: BetaThreadMessageUpdateParams
-        ): CompletableFuture<HttpResponseFor<Message>> = update(params, RequestOptions.none())
+        fun update(params: MessageUpdateParams): CompletableFuture<HttpResponseFor<Message>> =
+            update(params, RequestOptions.none())
 
         /** @see [update] */
         @MustBeClosed
         fun update(
-            params: BetaThreadMessageUpdateParams,
+            params: MessageUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Message>>
 
@@ -132,16 +128,16 @@ interface MessageServiceAsync {
          */
         @MustBeClosed
         fun list(
-            params: BetaThreadMessageListParams
-        ): CompletableFuture<HttpResponseFor<BetaThreadMessageListPageAsync>> =
+            params: MessageListParams
+        ): CompletableFuture<HttpResponseFor<MessageListPageAsync>> =
             list(params, RequestOptions.none())
 
         /** @see [list] */
         @MustBeClosed
         fun list(
-            params: BetaThreadMessageListParams,
+            params: MessageListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<BetaThreadMessageListPageAsync>>
+        ): CompletableFuture<HttpResponseFor<MessageListPageAsync>>
 
         /**
          * Returns a raw HTTP response for `delete /threads/{thread_id}/messages/{message_id}`, but
@@ -149,14 +145,14 @@ interface MessageServiceAsync {
          */
         @MustBeClosed
         fun delete(
-            params: BetaThreadMessageDeleteParams
+            params: MessageDeleteParams
         ): CompletableFuture<HttpResponseFor<MessageDeleted>> =
             delete(params, RequestOptions.none())
 
         /** @see [delete] */
         @MustBeClosed
         fun delete(
-            params: BetaThreadMessageDeleteParams,
+            params: MessageDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<MessageDeleted>>
     }

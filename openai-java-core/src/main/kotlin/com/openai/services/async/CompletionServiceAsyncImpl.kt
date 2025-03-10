@@ -22,8 +22,8 @@ import com.openai.core.http.parseable
 import com.openai.core.http.toAsync
 import com.openai.core.prepareAsync
 import com.openai.errors.OpenAIError
-import com.openai.models.Completion
-import com.openai.models.CompletionCreateParams
+import com.openai.models.completions.Completion
+import com.openai.models.completions.CompletionCreateParams
 import java.util.concurrent.CompletableFuture
 
 class CompletionServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :

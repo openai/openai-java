@@ -4,7 +4,7 @@ package com.openai.services.blocking.uploads
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
-import com.openai.models.UploadPartCreateParams
+import com.openai.models.uploads.parts.PartCreateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -22,7 +22,7 @@ class PartServiceTest {
 
         val uploadPart =
             partService.create(
-                UploadPartCreateParams.builder()
+                PartCreateParams.builder()
                     .uploadId("upload_abc123")
                     .data("some content".toByteArray())
                     .build()

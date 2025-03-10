@@ -5,8 +5,8 @@ package com.openai.services.blocking.audio
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
-import com.openai.models.AudioTranslationCreateParams
-import com.openai.models.AudioTranslationCreateResponse
+import com.openai.models.audio.translations.TranslationCreateParams
+import com.openai.models.audio.translations.TranslationCreateResponse
 
 interface TranslationService {
 
@@ -16,14 +16,14 @@ interface TranslationService {
     fun withRawResponse(): WithRawResponse
 
     /** Translates audio into English. */
-    fun create(params: AudioTranslationCreateParams): AudioTranslationCreateResponse =
+    fun create(params: TranslationCreateParams): TranslationCreateResponse =
         create(params, RequestOptions.none())
 
     /** @see [create] */
     fun create(
-        params: AudioTranslationCreateParams,
+        params: TranslationCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): AudioTranslationCreateResponse
+    ): TranslationCreateResponse
 
     /**
      * A view of [TranslationService] that provides access to raw HTTP responses for each method.
@@ -35,15 +35,14 @@ interface TranslationService {
          * [TranslationService.create].
          */
         @MustBeClosed
-        fun create(
-            params: AudioTranslationCreateParams
-        ): HttpResponseFor<AudioTranslationCreateResponse> = create(params, RequestOptions.none())
+        fun create(params: TranslationCreateParams): HttpResponseFor<TranslationCreateResponse> =
+            create(params, RequestOptions.none())
 
         /** @see [create] */
         @MustBeClosed
         fun create(
-            params: AudioTranslationCreateParams,
+            params: TranslationCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<AudioTranslationCreateResponse>
+        ): HttpResponseFor<TranslationCreateResponse>
     }
 }

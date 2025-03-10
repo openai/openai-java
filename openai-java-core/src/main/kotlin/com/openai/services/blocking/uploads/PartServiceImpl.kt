@@ -15,8 +15,8 @@ import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
-import com.openai.models.UploadPart
-import com.openai.models.UploadPartCreateParams
+import com.openai.models.uploads.parts.PartCreateParams
+import com.openai.models.uploads.parts.UploadPart
 
 class PartServiceImpl internal constructor(private val clientOptions: ClientOptions) : PartService {
 
@@ -26,10 +26,7 @@ class PartServiceImpl internal constructor(private val clientOptions: ClientOpti
 
     override fun withRawResponse(): PartService.WithRawResponse = withRawResponse
 
-    override fun create(
-        params: UploadPartCreateParams,
-        requestOptions: RequestOptions,
-    ): UploadPart =
+    override fun create(params: PartCreateParams, requestOptions: RequestOptions): UploadPart =
         // post /uploads/{upload_id}/parts
         withRawResponse().create(params, requestOptions).parse()
 
@@ -42,7 +39,7 @@ class PartServiceImpl internal constructor(private val clientOptions: ClientOpti
             jsonHandler<UploadPart>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun create(
-            params: UploadPartCreateParams,
+            params: PartCreateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<UploadPart> {
             val request =

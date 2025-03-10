@@ -4,9 +4,9 @@ package com.openai.services.blocking.beta.threads.runs
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
-import com.openai.models.BetaThreadRunStepListParams
-import com.openai.models.BetaThreadRunStepRetrieveParams
-import com.openai.models.RunStepInclude
+import com.openai.models.beta.threads.runs.steps.RunStepInclude
+import com.openai.models.beta.threads.runs.steps.StepListParams
+import com.openai.models.beta.threads.runs.steps.StepRetrieveParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -24,7 +24,7 @@ class StepServiceTest {
 
         val runStep =
             stepService.retrieve(
-                BetaThreadRunStepRetrieveParams.builder()
+                StepRetrieveParams.builder()
                     .threadId("thread_id")
                     .runId("run_id")
                     .stepId("step_id")
@@ -45,9 +45,7 @@ class StepServiceTest {
         val stepService = client.beta().threads().runs().steps()
 
         val page =
-            stepService.list(
-                BetaThreadRunStepListParams.builder().threadId("thread_id").runId("run_id").build()
-            )
+            stepService.list(StepListParams.builder().threadId("thread_id").runId("run_id").build())
 
         page.response().validate()
     }

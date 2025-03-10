@@ -2,7 +2,7 @@
 
 package com.openai.services.blocking
 
-import com.openai.services.blocking.chat.CompletionService
+import com.openai.services.blocking.chat.ChatCompletionService
 
 interface ChatService {
 
@@ -11,11 +11,11 @@ interface ChatService {
      */
     fun withRawResponse(): WithRawResponse
 
-    fun completions(): CompletionService
+    fun completions(): ChatCompletionService
 
     /** A view of [ChatService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
-        fun completions(): CompletionService.WithRawResponse
+        fun completions(): ChatCompletionService.WithRawResponse
     }
 }

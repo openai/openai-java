@@ -5,8 +5,8 @@ package com.openai.services.blocking
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
-import com.openai.models.ChatCompletionStreamOptions
-import com.openai.models.CompletionCreateParams
+import com.openai.models.chat.completions.ChatCompletionStreamOptions
+import com.openai.models.completions.CompletionCreateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 

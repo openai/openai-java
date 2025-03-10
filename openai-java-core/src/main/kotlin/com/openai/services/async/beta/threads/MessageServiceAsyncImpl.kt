@@ -16,14 +16,14 @@ import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.errors.OpenAIError
-import com.openai.models.BetaThreadMessageCreateParams
-import com.openai.models.BetaThreadMessageDeleteParams
-import com.openai.models.BetaThreadMessageListPageAsync
-import com.openai.models.BetaThreadMessageListParams
-import com.openai.models.BetaThreadMessageRetrieveParams
-import com.openai.models.BetaThreadMessageUpdateParams
-import com.openai.models.Message
-import com.openai.models.MessageDeleted
+import com.openai.models.beta.threads.messages.Message
+import com.openai.models.beta.threads.messages.MessageCreateParams
+import com.openai.models.beta.threads.messages.MessageDeleteParams
+import com.openai.models.beta.threads.messages.MessageDeleted
+import com.openai.models.beta.threads.messages.MessageListPageAsync
+import com.openai.models.beta.threads.messages.MessageListParams
+import com.openai.models.beta.threads.messages.MessageRetrieveParams
+import com.openai.models.beta.threads.messages.MessageUpdateParams
 import java.util.concurrent.CompletableFuture
 
 class MessageServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -41,35 +41,35 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
     override fun withRawResponse(): MessageServiceAsync.WithRawResponse = withRawResponse
 
     override fun create(
-        params: BetaThreadMessageCreateParams,
+        params: MessageCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Message> =
         // post /threads/{thread_id}/messages
         withRawResponse().create(params, requestOptions).thenApply { it.parse() }
 
     override fun retrieve(
-        params: BetaThreadMessageRetrieveParams,
+        params: MessageRetrieveParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Message> =
         // get /threads/{thread_id}/messages/{message_id}
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
     override fun update(
-        params: BetaThreadMessageUpdateParams,
+        params: MessageUpdateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Message> =
         // post /threads/{thread_id}/messages/{message_id}
         withRawResponse().update(params, requestOptions).thenApply { it.parse() }
 
     override fun list(
-        params: BetaThreadMessageListParams,
+        params: MessageListParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<BetaThreadMessageListPageAsync> =
+    ): CompletableFuture<MessageListPageAsync> =
         // get /threads/{thread_id}/messages
         withRawResponse().list(params, requestOptions).thenApply { it.parse() }
 
     override fun delete(
-        params: BetaThreadMessageDeleteParams,
+        params: MessageDeleteParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<MessageDeleted> =
         // delete /threads/{thread_id}/messages/{message_id}
@@ -84,7 +84,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
             jsonHandler<Message>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun create(
-            params: BetaThreadMessageCreateParams,
+            params: MessageCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Message>> {
             val request =
@@ -115,7 +115,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
             jsonHandler<Message>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun retrieve(
-            params: BetaThreadMessageRetrieveParams,
+            params: MessageRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Message>> {
             val request =
@@ -150,7 +150,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
             jsonHandler<Message>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun update(
-            params: BetaThreadMessageUpdateParams,
+            params: MessageUpdateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Message>> {
             val request =
@@ -182,14 +182,14 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                 }
         }
 
-        private val listHandler: Handler<BetaThreadMessageListPageAsync.Response> =
-            jsonHandler<BetaThreadMessageListPageAsync.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<MessageListPageAsync.Response> =
+            jsonHandler<MessageListPageAsync.Response>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(
-            params: BetaThreadMessageListParams,
+            params: MessageListParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<BetaThreadMessageListPageAsync>> {
+        ): CompletableFuture<HttpResponseFor<MessageListPageAsync>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -210,7 +210,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                                 }
                             }
                             .let {
-                                BetaThreadMessageListPageAsync.of(
+                                MessageListPageAsync.of(
                                     MessageServiceAsyncImpl(clientOptions),
                                     params,
                                     it,
@@ -224,7 +224,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
             jsonHandler<MessageDeleted>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun delete(
-            params: BetaThreadMessageDeleteParams,
+            params: MessageDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<MessageDeleted>> {
             val request =

@@ -5,13 +5,13 @@ package com.openai.services.blocking.beta.threads
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
-import com.openai.models.BetaThreadMessageCreateParams
-import com.openai.models.BetaThreadMessageDeleteParams
-import com.openai.models.BetaThreadMessageListParams
-import com.openai.models.BetaThreadMessageRetrieveParams
-import com.openai.models.BetaThreadMessageUpdateParams
-import com.openai.models.CodeInterpreterTool
 import com.openai.models.Metadata
+import com.openai.models.beta.assistants.CodeInterpreterTool
+import com.openai.models.beta.threads.messages.MessageCreateParams
+import com.openai.models.beta.threads.messages.MessageDeleteParams
+import com.openai.models.beta.threads.messages.MessageListParams
+import com.openai.models.beta.threads.messages.MessageRetrieveParams
+import com.openai.models.beta.threads.messages.MessageUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -29,12 +29,12 @@ class MessageServiceTest {
 
         val message =
             messageService.create(
-                BetaThreadMessageCreateParams.builder()
+                MessageCreateParams.builder()
                     .threadId("thread_id")
                     .content("string")
-                    .role(BetaThreadMessageCreateParams.Role.USER)
+                    .role(MessageCreateParams.Role.USER)
                     .addAttachment(
-                        BetaThreadMessageCreateParams.Attachment.builder()
+                        MessageCreateParams.Attachment.builder()
                             .fileId("file_id")
                             .addTool(CodeInterpreterTool.builder().build())
                             .build()
@@ -61,7 +61,7 @@ class MessageServiceTest {
 
         val message =
             messageService.retrieve(
-                BetaThreadMessageRetrieveParams.builder()
+                MessageRetrieveParams.builder()
                     .threadId("thread_id")
                     .messageId("message_id")
                     .build()
@@ -81,7 +81,7 @@ class MessageServiceTest {
 
         val message =
             messageService.update(
-                BetaThreadMessageUpdateParams.builder()
+                MessageUpdateParams.builder()
                     .threadId("thread_id")
                     .messageId("message_id")
                     .metadata(
@@ -104,8 +104,7 @@ class MessageServiceTest {
                 .build()
         val messageService = client.beta().threads().messages()
 
-        val page =
-            messageService.list(BetaThreadMessageListParams.builder().threadId("thread_id").build())
+        val page = messageService.list(MessageListParams.builder().threadId("thread_id").build())
 
         page.response().validate()
     }
@@ -121,10 +120,7 @@ class MessageServiceTest {
 
         val messageDeleted =
             messageService.delete(
-                BetaThreadMessageDeleteParams.builder()
-                    .threadId("thread_id")
-                    .messageId("message_id")
-                    .build()
+                MessageDeleteParams.builder().threadId("thread_id").messageId("message_id").build()
             )
 
         messageDeleted.validate()

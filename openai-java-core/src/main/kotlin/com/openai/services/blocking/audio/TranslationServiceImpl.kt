@@ -15,8 +15,8 @@ import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
-import com.openai.models.AudioTranslationCreateParams
-import com.openai.models.AudioTranslationCreateResponse
+import com.openai.models.audio.translations.TranslationCreateParams
+import com.openai.models.audio.translations.TranslationCreateResponse
 
 class TranslationServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     TranslationService {
@@ -28,9 +28,9 @@ class TranslationServiceImpl internal constructor(private val clientOptions: Cli
     override fun withRawResponse(): TranslationService.WithRawResponse = withRawResponse
 
     override fun create(
-        params: AudioTranslationCreateParams,
+        params: TranslationCreateParams,
         requestOptions: RequestOptions,
-    ): AudioTranslationCreateResponse =
+    ): TranslationCreateResponse =
         // post /audio/translations
         withRawResponse().create(params, requestOptions).parse()
 
@@ -39,14 +39,14 @@ class TranslationServiceImpl internal constructor(private val clientOptions: Cli
 
         private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
-        private val createHandler: Handler<AudioTranslationCreateResponse> =
-            jsonHandler<AudioTranslationCreateResponse>(clientOptions.jsonMapper)
+        private val createHandler: Handler<TranslationCreateResponse> =
+            jsonHandler<TranslationCreateResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun create(
-            params: AudioTranslationCreateParams,
+            params: TranslationCreateParams,
             requestOptions: RequestOptions,
-        ): HttpResponseFor<AudioTranslationCreateResponse> {
+        ): HttpResponseFor<TranslationCreateResponse> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)

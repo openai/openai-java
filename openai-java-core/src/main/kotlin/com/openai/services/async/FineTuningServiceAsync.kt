@@ -2,7 +2,7 @@
 
 package com.openai.services.async
 
-import com.openai.services.async.fineTuning.JobServiceAsync
+import com.openai.services.async.finetuning.JobServiceAsync
 
 interface FineTuningServiceAsync {
 

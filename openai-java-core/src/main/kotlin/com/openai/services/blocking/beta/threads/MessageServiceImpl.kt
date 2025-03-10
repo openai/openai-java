@@ -16,14 +16,14 @@ import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
-import com.openai.models.BetaThreadMessageCreateParams
-import com.openai.models.BetaThreadMessageDeleteParams
-import com.openai.models.BetaThreadMessageListPage
-import com.openai.models.BetaThreadMessageListParams
-import com.openai.models.BetaThreadMessageRetrieveParams
-import com.openai.models.BetaThreadMessageUpdateParams
-import com.openai.models.Message
-import com.openai.models.MessageDeleted
+import com.openai.models.beta.threads.messages.Message
+import com.openai.models.beta.threads.messages.MessageCreateParams
+import com.openai.models.beta.threads.messages.MessageDeleteParams
+import com.openai.models.beta.threads.messages.MessageDeleted
+import com.openai.models.beta.threads.messages.MessageListPage
+import com.openai.models.beta.threads.messages.MessageListParams
+import com.openai.models.beta.threads.messages.MessageRetrieveParams
+import com.openai.models.beta.threads.messages.MessageUpdateParams
 
 class MessageServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     MessageService {
@@ -39,36 +39,24 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
 
     override fun withRawResponse(): MessageService.WithRawResponse = withRawResponse
 
-    override fun create(
-        params: BetaThreadMessageCreateParams,
-        requestOptions: RequestOptions,
-    ): Message =
+    override fun create(params: MessageCreateParams, requestOptions: RequestOptions): Message =
         // post /threads/{thread_id}/messages
         withRawResponse().create(params, requestOptions).parse()
 
-    override fun retrieve(
-        params: BetaThreadMessageRetrieveParams,
-        requestOptions: RequestOptions,
-    ): Message =
+    override fun retrieve(params: MessageRetrieveParams, requestOptions: RequestOptions): Message =
         // get /threads/{thread_id}/messages/{message_id}
         withRawResponse().retrieve(params, requestOptions).parse()
 
-    override fun update(
-        params: BetaThreadMessageUpdateParams,
-        requestOptions: RequestOptions,
-    ): Message =
+    override fun update(params: MessageUpdateParams, requestOptions: RequestOptions): Message =
         // post /threads/{thread_id}/messages/{message_id}
         withRawResponse().update(params, requestOptions).parse()
 
-    override fun list(
-        params: BetaThreadMessageListParams,
-        requestOptions: RequestOptions,
-    ): BetaThreadMessageListPage =
+    override fun list(params: MessageListParams, requestOptions: RequestOptions): MessageListPage =
         // get /threads/{thread_id}/messages
         withRawResponse().list(params, requestOptions).parse()
 
     override fun delete(
-        params: BetaThreadMessageDeleteParams,
+        params: MessageDeleteParams,
         requestOptions: RequestOptions,
     ): MessageDeleted =
         // delete /threads/{thread_id}/messages/{message_id}
@@ -83,7 +71,7 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
             jsonHandler<Message>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun create(
-            params: BetaThreadMessageCreateParams,
+            params: MessageCreateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Message> {
             val request =
@@ -111,7 +99,7 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
             jsonHandler<Message>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun retrieve(
-            params: BetaThreadMessageRetrieveParams,
+            params: MessageRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Message> {
             val request =
@@ -143,7 +131,7 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
             jsonHandler<Message>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun update(
-            params: BetaThreadMessageUpdateParams,
+            params: MessageUpdateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Message> {
             val request =
@@ -172,14 +160,14 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
             }
         }
 
-        private val listHandler: Handler<BetaThreadMessageListPage.Response> =
-            jsonHandler<BetaThreadMessageListPage.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<MessageListPage.Response> =
+            jsonHandler<MessageListPage.Response>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(
-            params: BetaThreadMessageListParams,
+            params: MessageListParams,
             requestOptions: RequestOptions,
-        ): HttpResponseFor<BetaThreadMessageListPage> {
+        ): HttpResponseFor<MessageListPage> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -197,9 +185,7 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
                             it.validate()
                         }
                     }
-                    .let {
-                        BetaThreadMessageListPage.of(MessageServiceImpl(clientOptions), params, it)
-                    }
+                    .let { MessageListPage.of(MessageServiceImpl(clientOptions), params, it) }
             }
         }
 
@@ -207,7 +193,7 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
             jsonHandler<MessageDeleted>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun delete(
-            params: BetaThreadMessageDeleteParams,
+            params: MessageDeleteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<MessageDeleted> {
             val request =

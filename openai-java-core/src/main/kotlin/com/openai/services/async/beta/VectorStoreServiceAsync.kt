@@ -5,16 +5,16 @@ package com.openai.services.async.beta
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
-import com.openai.models.BetaVectorStoreCreateParams
-import com.openai.models.BetaVectorStoreDeleteParams
-import com.openai.models.BetaVectorStoreListPageAsync
-import com.openai.models.BetaVectorStoreListParams
-import com.openai.models.BetaVectorStoreRetrieveParams
-import com.openai.models.BetaVectorStoreUpdateParams
-import com.openai.models.VectorStore
-import com.openai.models.VectorStoreDeleted
-import com.openai.services.async.beta.vectorStores.FileBatchServiceAsync
-import com.openai.services.async.beta.vectorStores.FileServiceAsync
+import com.openai.models.beta.vectorstores.VectorStore
+import com.openai.models.beta.vectorstores.VectorStoreCreateParams
+import com.openai.models.beta.vectorstores.VectorStoreDeleteParams
+import com.openai.models.beta.vectorstores.VectorStoreDeleted
+import com.openai.models.beta.vectorstores.VectorStoreListPageAsync
+import com.openai.models.beta.vectorstores.VectorStoreListParams
+import com.openai.models.beta.vectorstores.VectorStoreRetrieveParams
+import com.openai.models.beta.vectorstores.VectorStoreUpdateParams
+import com.openai.services.async.beta.vectorstores.FileBatchServiceAsync
+import com.openai.services.async.beta.vectorstores.FileServiceAsync
 import java.util.concurrent.CompletableFuture
 
 interface VectorStoreServiceAsync {
@@ -29,61 +29,60 @@ interface VectorStoreServiceAsync {
     fun fileBatches(): FileBatchServiceAsync
 
     /** Create a vector store. */
-    fun create(params: BetaVectorStoreCreateParams): CompletableFuture<VectorStore> =
+    fun create(params: VectorStoreCreateParams): CompletableFuture<VectorStore> =
         create(params, RequestOptions.none())
 
     /** @see [create] */
     fun create(
-        params: BetaVectorStoreCreateParams,
+        params: VectorStoreCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStore>
 
     /** Retrieves a vector store. */
-    fun retrieve(params: BetaVectorStoreRetrieveParams): CompletableFuture<VectorStore> =
+    fun retrieve(params: VectorStoreRetrieveParams): CompletableFuture<VectorStore> =
         retrieve(params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
-        params: BetaVectorStoreRetrieveParams,
+        params: VectorStoreRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStore>
 
     /** Modifies a vector store. */
-    fun update(params: BetaVectorStoreUpdateParams): CompletableFuture<VectorStore> =
+    fun update(params: VectorStoreUpdateParams): CompletableFuture<VectorStore> =
         update(params, RequestOptions.none())
 
     /** @see [update] */
     fun update(
-        params: BetaVectorStoreUpdateParams,
+        params: VectorStoreUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStore>
 
     /** Returns a list of vector stores. */
-    fun list(): CompletableFuture<BetaVectorStoreListPageAsync> =
-        list(BetaVectorStoreListParams.none())
+    fun list(): CompletableFuture<VectorStoreListPageAsync> = list(VectorStoreListParams.none())
 
     /** @see [list] */
     fun list(
-        params: BetaVectorStoreListParams = BetaVectorStoreListParams.none(),
+        params: VectorStoreListParams = VectorStoreListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<BetaVectorStoreListPageAsync>
+    ): CompletableFuture<VectorStoreListPageAsync>
 
     /** @see [list] */
     fun list(
-        params: BetaVectorStoreListParams = BetaVectorStoreListParams.none()
-    ): CompletableFuture<BetaVectorStoreListPageAsync> = list(params, RequestOptions.none())
+        params: VectorStoreListParams = VectorStoreListParams.none()
+    ): CompletableFuture<VectorStoreListPageAsync> = list(params, RequestOptions.none())
 
     /** @see [list] */
-    fun list(requestOptions: RequestOptions): CompletableFuture<BetaVectorStoreListPageAsync> =
-        list(BetaVectorStoreListParams.none(), requestOptions)
+    fun list(requestOptions: RequestOptions): CompletableFuture<VectorStoreListPageAsync> =
+        list(VectorStoreListParams.none(), requestOptions)
 
     /** Delete a vector store. */
-    fun delete(params: BetaVectorStoreDeleteParams): CompletableFuture<VectorStoreDeleted> =
+    fun delete(params: VectorStoreDeleteParams): CompletableFuture<VectorStoreDeleted> =
         delete(params, RequestOptions.none())
 
     /** @see [delete] */
     fun delete(
-        params: BetaVectorStoreDeleteParams,
+        params: VectorStoreDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStoreDeleted>
 
@@ -103,13 +102,13 @@ interface VectorStoreServiceAsync {
          */
         @MustBeClosed
         fun create(
-            params: BetaVectorStoreCreateParams
+            params: VectorStoreCreateParams
         ): CompletableFuture<HttpResponseFor<VectorStore>> = create(params, RequestOptions.none())
 
         /** @see [create] */
         @MustBeClosed
         fun create(
-            params: BetaVectorStoreCreateParams,
+            params: VectorStoreCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<VectorStore>>
 
@@ -119,13 +118,13 @@ interface VectorStoreServiceAsync {
          */
         @MustBeClosed
         fun retrieve(
-            params: BetaVectorStoreRetrieveParams
+            params: VectorStoreRetrieveParams
         ): CompletableFuture<HttpResponseFor<VectorStore>> = retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
-            params: BetaVectorStoreRetrieveParams,
+            params: VectorStoreRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<VectorStore>>
 
@@ -135,13 +134,13 @@ interface VectorStoreServiceAsync {
          */
         @MustBeClosed
         fun update(
-            params: BetaVectorStoreUpdateParams
+            params: VectorStoreUpdateParams
         ): CompletableFuture<HttpResponseFor<VectorStore>> = update(params, RequestOptions.none())
 
         /** @see [update] */
         @MustBeClosed
         fun update(
-            params: BetaVectorStoreUpdateParams,
+            params: VectorStoreUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<VectorStore>>
 
@@ -150,29 +149,29 @@ interface VectorStoreServiceAsync {
          * [VectorStoreServiceAsync.list].
          */
         @MustBeClosed
-        fun list(): CompletableFuture<HttpResponseFor<BetaVectorStoreListPageAsync>> =
-            list(BetaVectorStoreListParams.none())
+        fun list(): CompletableFuture<HttpResponseFor<VectorStoreListPageAsync>> =
+            list(VectorStoreListParams.none())
 
         /** @see [list] */
         @MustBeClosed
         fun list(
-            params: BetaVectorStoreListParams = BetaVectorStoreListParams.none(),
+            params: VectorStoreListParams = VectorStoreListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<BetaVectorStoreListPageAsync>>
+        ): CompletableFuture<HttpResponseFor<VectorStoreListPageAsync>>
 
         /** @see [list] */
         @MustBeClosed
         fun list(
-            params: BetaVectorStoreListParams = BetaVectorStoreListParams.none()
-        ): CompletableFuture<HttpResponseFor<BetaVectorStoreListPageAsync>> =
+            params: VectorStoreListParams = VectorStoreListParams.none()
+        ): CompletableFuture<HttpResponseFor<VectorStoreListPageAsync>> =
             list(params, RequestOptions.none())
 
         /** @see [list] */
         @MustBeClosed
         fun list(
             requestOptions: RequestOptions
-        ): CompletableFuture<HttpResponseFor<BetaVectorStoreListPageAsync>> =
-            list(BetaVectorStoreListParams.none(), requestOptions)
+        ): CompletableFuture<HttpResponseFor<VectorStoreListPageAsync>> =
+            list(VectorStoreListParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `delete /vector_stores/{vector_store_id}`, but is
@@ -180,14 +179,14 @@ interface VectorStoreServiceAsync {
          */
         @MustBeClosed
         fun delete(
-            params: BetaVectorStoreDeleteParams
+            params: VectorStoreDeleteParams
         ): CompletableFuture<HttpResponseFor<VectorStoreDeleted>> =
             delete(params, RequestOptions.none())
 
         /** @see [delete] */
         @MustBeClosed
         fun delete(
-            params: BetaVectorStoreDeleteParams,
+            params: VectorStoreDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<VectorStoreDeleted>>
     }

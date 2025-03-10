@@ -5,7 +5,7 @@ package com.openai.services.blocking.audio
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponse
-import com.openai.models.AudioSpeechCreateParams
+import com.openai.models.audio.speech.SpeechCreateParams
 
 interface SpeechService {
 
@@ -16,13 +16,12 @@ interface SpeechService {
 
     /** Generates audio from the input text. */
     @MustBeClosed
-    fun create(params: AudioSpeechCreateParams): HttpResponse =
-        create(params, RequestOptions.none())
+    fun create(params: SpeechCreateParams): HttpResponse = create(params, RequestOptions.none())
 
     /** @see [create] */
     @MustBeClosed
     fun create(
-        params: AudioSpeechCreateParams,
+        params: SpeechCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): HttpResponse
 
@@ -34,13 +33,12 @@ interface SpeechService {
          * [SpeechService.create].
          */
         @MustBeClosed
-        fun create(params: AudioSpeechCreateParams): HttpResponse =
-            create(params, RequestOptions.none())
+        fun create(params: SpeechCreateParams): HttpResponse = create(params, RequestOptions.none())
 
         /** @see [create] */
         @MustBeClosed
         fun create(
-            params: AudioSpeechCreateParams,
+            params: SpeechCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponse
     }

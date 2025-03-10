@@ -5,7 +5,7 @@ package com.openai.services.async.audio
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponse
-import com.openai.models.AudioSpeechCreateParams
+import com.openai.models.audio.speech.SpeechCreateParams
 import java.util.concurrent.CompletableFuture
 
 interface SpeechServiceAsync {
@@ -17,13 +17,13 @@ interface SpeechServiceAsync {
 
     /** Generates audio from the input text. */
     @MustBeClosed
-    fun create(params: AudioSpeechCreateParams): CompletableFuture<HttpResponse> =
+    fun create(params: SpeechCreateParams): CompletableFuture<HttpResponse> =
         create(params, RequestOptions.none())
 
     /** @see [create] */
     @MustBeClosed
     fun create(
-        params: AudioSpeechCreateParams,
+        params: SpeechCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<HttpResponse>
 
@@ -37,13 +37,13 @@ interface SpeechServiceAsync {
          * [SpeechServiceAsync.create].
          */
         @MustBeClosed
-        fun create(params: AudioSpeechCreateParams): CompletableFuture<HttpResponse> =
+        fun create(params: SpeechCreateParams): CompletableFuture<HttpResponse> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
         @MustBeClosed
         fun create(
-            params: AudioSpeechCreateParams,
+            params: SpeechCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponse>
     }

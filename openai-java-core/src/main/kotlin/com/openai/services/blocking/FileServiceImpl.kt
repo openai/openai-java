@@ -17,14 +17,14 @@ import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
-import com.openai.models.FileContentParams
-import com.openai.models.FileCreateParams
-import com.openai.models.FileDeleteParams
-import com.openai.models.FileDeleted
-import com.openai.models.FileListPage
-import com.openai.models.FileListParams
-import com.openai.models.FileObject
-import com.openai.models.FileRetrieveParams
+import com.openai.models.files.FileContentParams
+import com.openai.models.files.FileCreateParams
+import com.openai.models.files.FileDeleteParams
+import com.openai.models.files.FileDeleted
+import com.openai.models.files.FileListPage
+import com.openai.models.files.FileListParams
+import com.openai.models.files.FileObject
+import com.openai.models.files.FileRetrieveParams
 
 class FileServiceImpl internal constructor(private val clientOptions: ClientOptions) : FileService {
 

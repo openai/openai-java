@@ -5,14 +5,14 @@ package com.openai.services.blocking.beta.threads
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
-import com.openai.models.BetaThreadMessageCreateParams
-import com.openai.models.BetaThreadMessageDeleteParams
-import com.openai.models.BetaThreadMessageListPage
-import com.openai.models.BetaThreadMessageListParams
-import com.openai.models.BetaThreadMessageRetrieveParams
-import com.openai.models.BetaThreadMessageUpdateParams
-import com.openai.models.Message
-import com.openai.models.MessageDeleted
+import com.openai.models.beta.threads.messages.Message
+import com.openai.models.beta.threads.messages.MessageCreateParams
+import com.openai.models.beta.threads.messages.MessageDeleteParams
+import com.openai.models.beta.threads.messages.MessageDeleted
+import com.openai.models.beta.threads.messages.MessageListPage
+import com.openai.models.beta.threads.messages.MessageListParams
+import com.openai.models.beta.threads.messages.MessageRetrieveParams
+import com.openai.models.beta.threads.messages.MessageUpdateParams
 
 interface MessageService {
 
@@ -22,52 +22,47 @@ interface MessageService {
     fun withRawResponse(): WithRawResponse
 
     /** Create a message. */
-    fun create(params: BetaThreadMessageCreateParams): Message =
-        create(params, RequestOptions.none())
+    fun create(params: MessageCreateParams): Message = create(params, RequestOptions.none())
 
     /** @see [create] */
     fun create(
-        params: BetaThreadMessageCreateParams,
+        params: MessageCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Message
 
     /** Retrieve a message. */
-    fun retrieve(params: BetaThreadMessageRetrieveParams): Message =
-        retrieve(params, RequestOptions.none())
+    fun retrieve(params: MessageRetrieveParams): Message = retrieve(params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
-        params: BetaThreadMessageRetrieveParams,
+        params: MessageRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Message
 
     /** Modifies a message. */
-    fun update(params: BetaThreadMessageUpdateParams): Message =
-        update(params, RequestOptions.none())
+    fun update(params: MessageUpdateParams): Message = update(params, RequestOptions.none())
 
     /** @see [update] */
     fun update(
-        params: BetaThreadMessageUpdateParams,
+        params: MessageUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Message
 
     /** Returns a list of messages for a given thread. */
-    fun list(params: BetaThreadMessageListParams): BetaThreadMessageListPage =
-        list(params, RequestOptions.none())
+    fun list(params: MessageListParams): MessageListPage = list(params, RequestOptions.none())
 
     /** @see [list] */
     fun list(
-        params: BetaThreadMessageListParams,
+        params: MessageListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): BetaThreadMessageListPage
+    ): MessageListPage
 
     /** Deletes a message. */
-    fun delete(params: BetaThreadMessageDeleteParams): MessageDeleted =
-        delete(params, RequestOptions.none())
+    fun delete(params: MessageDeleteParams): MessageDeleted = delete(params, RequestOptions.none())
 
     /** @see [delete] */
     fun delete(
-        params: BetaThreadMessageDeleteParams,
+        params: MessageDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): MessageDeleted
 
@@ -79,13 +74,13 @@ interface MessageService {
          * the same as [MessageService.create].
          */
         @MustBeClosed
-        fun create(params: BetaThreadMessageCreateParams): HttpResponseFor<Message> =
+        fun create(params: MessageCreateParams): HttpResponseFor<Message> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
         @MustBeClosed
         fun create(
-            params: BetaThreadMessageCreateParams,
+            params: MessageCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Message>
 
@@ -94,13 +89,13 @@ interface MessageService {
          * otherwise the same as [MessageService.retrieve].
          */
         @MustBeClosed
-        fun retrieve(params: BetaThreadMessageRetrieveParams): HttpResponseFor<Message> =
+        fun retrieve(params: MessageRetrieveParams): HttpResponseFor<Message> =
             retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
-            params: BetaThreadMessageRetrieveParams,
+            params: MessageRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Message>
 
@@ -109,13 +104,13 @@ interface MessageService {
          * otherwise the same as [MessageService.update].
          */
         @MustBeClosed
-        fun update(params: BetaThreadMessageUpdateParams): HttpResponseFor<Message> =
+        fun update(params: MessageUpdateParams): HttpResponseFor<Message> =
             update(params, RequestOptions.none())
 
         /** @see [update] */
         @MustBeClosed
         fun update(
-            params: BetaThreadMessageUpdateParams,
+            params: MessageUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Message>
 
@@ -124,28 +119,28 @@ interface MessageService {
          * same as [MessageService.list].
          */
         @MustBeClosed
-        fun list(params: BetaThreadMessageListParams): HttpResponseFor<BetaThreadMessageListPage> =
+        fun list(params: MessageListParams): HttpResponseFor<MessageListPage> =
             list(params, RequestOptions.none())
 
         /** @see [list] */
         @MustBeClosed
         fun list(
-            params: BetaThreadMessageListParams,
+            params: MessageListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<BetaThreadMessageListPage>
+        ): HttpResponseFor<MessageListPage>
 
         /**
          * Returns a raw HTTP response for `delete /threads/{thread_id}/messages/{message_id}`, but
          * is otherwise the same as [MessageService.delete].
          */
         @MustBeClosed
-        fun delete(params: BetaThreadMessageDeleteParams): HttpResponseFor<MessageDeleted> =
+        fun delete(params: MessageDeleteParams): HttpResponseFor<MessageDeleted> =
             delete(params, RequestOptions.none())
 
         /** @see [delete] */
         @MustBeClosed
         fun delete(
-            params: BetaThreadMessageDeleteParams,
+            params: MessageDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<MessageDeleted>
     }

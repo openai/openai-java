@@ -15,12 +15,12 @@ import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.errors.OpenAIError
-import com.openai.models.Model
-import com.openai.models.ModelDeleteParams
-import com.openai.models.ModelDeleted
-import com.openai.models.ModelListPageAsync
-import com.openai.models.ModelListParams
-import com.openai.models.ModelRetrieveParams
+import com.openai.models.models.Model
+import com.openai.models.models.ModelDeleteParams
+import com.openai.models.models.ModelDeleted
+import com.openai.models.models.ModelListPageAsync
+import com.openai.models.models.ModelListParams
+import com.openai.models.models.ModelRetrieveParams
 import java.util.concurrent.CompletableFuture
 
 class ModelServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :

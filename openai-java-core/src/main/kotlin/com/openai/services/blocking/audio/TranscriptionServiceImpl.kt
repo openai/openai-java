@@ -15,8 +15,8 @@ import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
-import com.openai.models.AudioTranscriptionCreateParams
-import com.openai.models.AudioTranscriptionCreateResponse
+import com.openai.models.audio.transcriptions.TranscriptionCreateParams
+import com.openai.models.audio.transcriptions.TranscriptionCreateResponse
 
 class TranscriptionServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     TranscriptionService {
@@ -28,9 +28,9 @@ class TranscriptionServiceImpl internal constructor(private val clientOptions: C
     override fun withRawResponse(): TranscriptionService.WithRawResponse = withRawResponse
 
     override fun create(
-        params: AudioTranscriptionCreateParams,
+        params: TranscriptionCreateParams,
         requestOptions: RequestOptions,
-    ): AudioTranscriptionCreateResponse =
+    ): TranscriptionCreateResponse =
         // post /audio/transcriptions
         withRawResponse().create(params, requestOptions).parse()
 
@@ -39,14 +39,14 @@ class TranscriptionServiceImpl internal constructor(private val clientOptions: C
 
         private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
-        private val createHandler: Handler<AudioTranscriptionCreateResponse> =
-            jsonHandler<AudioTranscriptionCreateResponse>(clientOptions.jsonMapper)
+        private val createHandler: Handler<TranscriptionCreateResponse> =
+            jsonHandler<TranscriptionCreateResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun create(
-            params: AudioTranscriptionCreateParams,
+            params: TranscriptionCreateParams,
             requestOptions: RequestOptions,
-        ): HttpResponseFor<AudioTranscriptionCreateResponse> {
+        ): HttpResponseFor<TranscriptionCreateResponse> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)

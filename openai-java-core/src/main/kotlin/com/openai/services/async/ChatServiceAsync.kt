@@ -2,7 +2,7 @@
 
 package com.openai.services.async
 
-import com.openai.services.async.chat.CompletionServiceAsync
+import com.openai.services.async.chat.ChatCompletionServiceAsync
 
 interface ChatServiceAsync {
 
@@ -11,11 +11,11 @@ interface ChatServiceAsync {
      */
     fun withRawResponse(): WithRawResponse
 
-    fun completions(): CompletionServiceAsync
+    fun completions(): ChatCompletionServiceAsync
 
     /** A view of [ChatServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
-        fun completions(): CompletionServiceAsync.WithRawResponse
+        fun completions(): ChatCompletionServiceAsync.WithRawResponse
     }
 }

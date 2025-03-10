@@ -23,8 +23,8 @@ import com.openai.errors.RateLimitException
 import com.openai.errors.UnauthorizedException
 import com.openai.errors.UnexpectedStatusCodeException
 import com.openai.errors.UnprocessableEntityException
-import com.openai.models.FineTuningJobCreateParams
 import com.openai.models.Metadata
+import com.openai.models.finetuning.jobs.JobCreateParams
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.entry
 import org.junit.jupiter.api.BeforeEach
@@ -72,20 +72,20 @@ class ErrorHandlingTest {
         val e =
             assertThrows<BadRequestException> {
                 jobService.create(
-                    FineTuningJobCreateParams.builder()
-                        .model(FineTuningJobCreateParams.Model.BABBAGE_002)
+                    JobCreateParams.builder()
+                        .model(JobCreateParams.Model.BABBAGE_002)
                         .trainingFile("file-abc123")
                         .hyperparameters(
-                            FineTuningJobCreateParams.Hyperparameters.builder()
+                            JobCreateParams.Hyperparameters.builder()
                                 .batchSizeAuto()
                                 .learningRateMultiplierAuto()
                                 .nEpochsAuto()
                                 .build()
                         )
                         .addIntegration(
-                            FineTuningJobCreateParams.Integration.builder()
+                            JobCreateParams.Integration.builder()
                                 .wandb(
-                                    FineTuningJobCreateParams.Integration.Wandb.builder()
+                                    JobCreateParams.Integration.Wandb.builder()
                                         .project("my-wandb-project")
                                         .entity("entity")
                                         .name("name")
@@ -100,12 +100,11 @@ class ErrorHandlingTest {
                                 .build()
                         )
                         .method(
-                            FineTuningJobCreateParams.Method.builder()
+                            JobCreateParams.Method.builder()
                                 .dpo(
-                                    FineTuningJobCreateParams.Method.Dpo.builder()
+                                    JobCreateParams.Method.Dpo.builder()
                                         .hyperparameters(
-                                            FineTuningJobCreateParams.Method.Dpo.Hyperparameters
-                                                .builder()
+                                            JobCreateParams.Method.Dpo.Hyperparameters.builder()
                                                 .batchSizeAuto()
                                                 .betaAuto()
                                                 .learningRateMultiplierAuto()
@@ -115,10 +114,9 @@ class ErrorHandlingTest {
                                         .build()
                                 )
                                 .supervised(
-                                    FineTuningJobCreateParams.Method.Supervised.builder()
+                                    JobCreateParams.Method.Supervised.builder()
                                         .hyperparameters(
-                                            FineTuningJobCreateParams.Method.Supervised
-                                                .Hyperparameters
+                                            JobCreateParams.Method.Supervised.Hyperparameters
                                                 .builder()
                                                 .batchSizeAuto()
                                                 .learningRateMultiplierAuto()
@@ -127,7 +125,7 @@ class ErrorHandlingTest {
                                         )
                                         .build()
                                 )
-                                .type(FineTuningJobCreateParams.Method.Type.SUPERVISED)
+                                .type(JobCreateParams.Method.Type.SUPERVISED)
                                 .build()
                         )
                         .seed(42L)
@@ -153,20 +151,20 @@ class ErrorHandlingTest {
         val e =
             assertThrows<UnauthorizedException> {
                 jobService.create(
-                    FineTuningJobCreateParams.builder()
-                        .model(FineTuningJobCreateParams.Model.BABBAGE_002)
+                    JobCreateParams.builder()
+                        .model(JobCreateParams.Model.BABBAGE_002)
                         .trainingFile("file-abc123")
                         .hyperparameters(
-                            FineTuningJobCreateParams.Hyperparameters.builder()
+                            JobCreateParams.Hyperparameters.builder()
                                 .batchSizeAuto()
                                 .learningRateMultiplierAuto()
                                 .nEpochsAuto()
                                 .build()
                         )
                         .addIntegration(
-                            FineTuningJobCreateParams.Integration.builder()
+                            JobCreateParams.Integration.builder()
                                 .wandb(
-                                    FineTuningJobCreateParams.Integration.Wandb.builder()
+                                    JobCreateParams.Integration.Wandb.builder()
                                         .project("my-wandb-project")
                                         .entity("entity")
                                         .name("name")
@@ -181,12 +179,11 @@ class ErrorHandlingTest {
                                 .build()
                         )
                         .method(
-                            FineTuningJobCreateParams.Method.builder()
+                            JobCreateParams.Method.builder()
                                 .dpo(
-                                    FineTuningJobCreateParams.Method.Dpo.builder()
+                                    JobCreateParams.Method.Dpo.builder()
                                         .hyperparameters(
-                                            FineTuningJobCreateParams.Method.Dpo.Hyperparameters
-                                                .builder()
+                                            JobCreateParams.Method.Dpo.Hyperparameters.builder()
                                                 .batchSizeAuto()
                                                 .betaAuto()
                                                 .learningRateMultiplierAuto()
@@ -196,10 +193,9 @@ class ErrorHandlingTest {
                                         .build()
                                 )
                                 .supervised(
-                                    FineTuningJobCreateParams.Method.Supervised.builder()
+                                    JobCreateParams.Method.Supervised.builder()
                                         .hyperparameters(
-                                            FineTuningJobCreateParams.Method.Supervised
-                                                .Hyperparameters
+                                            JobCreateParams.Method.Supervised.Hyperparameters
                                                 .builder()
                                                 .batchSizeAuto()
                                                 .learningRateMultiplierAuto()
@@ -208,7 +204,7 @@ class ErrorHandlingTest {
                                         )
                                         .build()
                                 )
-                                .type(FineTuningJobCreateParams.Method.Type.SUPERVISED)
+                                .type(JobCreateParams.Method.Type.SUPERVISED)
                                 .build()
                         )
                         .seed(42L)
@@ -234,20 +230,20 @@ class ErrorHandlingTest {
         val e =
             assertThrows<PermissionDeniedException> {
                 jobService.create(
-                    FineTuningJobCreateParams.builder()
-                        .model(FineTuningJobCreateParams.Model.BABBAGE_002)
+                    JobCreateParams.builder()
+                        .model(JobCreateParams.Model.BABBAGE_002)
                         .trainingFile("file-abc123")
                         .hyperparameters(
-                            FineTuningJobCreateParams.Hyperparameters.builder()
+                            JobCreateParams.Hyperparameters.builder()
                                 .batchSizeAuto()
                                 .learningRateMultiplierAuto()
                                 .nEpochsAuto()
                                 .build()
                         )
                         .addIntegration(
-                            FineTuningJobCreateParams.Integration.builder()
+                            JobCreateParams.Integration.builder()
                                 .wandb(
-                                    FineTuningJobCreateParams.Integration.Wandb.builder()
+                                    JobCreateParams.Integration.Wandb.builder()
                                         .project("my-wandb-project")
                                         .entity("entity")
                                         .name("name")
@@ -262,12 +258,11 @@ class ErrorHandlingTest {
                                 .build()
                         )
                         .method(
-                            FineTuningJobCreateParams.Method.builder()
+                            JobCreateParams.Method.builder()
                                 .dpo(
-                                    FineTuningJobCreateParams.Method.Dpo.builder()
+                                    JobCreateParams.Method.Dpo.builder()
                                         .hyperparameters(
-                                            FineTuningJobCreateParams.Method.Dpo.Hyperparameters
-                                                .builder()
+                                            JobCreateParams.Method.Dpo.Hyperparameters.builder()
                                                 .batchSizeAuto()
                                                 .betaAuto()
                                                 .learningRateMultiplierAuto()
@@ -277,10 +272,9 @@ class ErrorHandlingTest {
                                         .build()
                                 )
                                 .supervised(
-                                    FineTuningJobCreateParams.Method.Supervised.builder()
+                                    JobCreateParams.Method.Supervised.builder()
                                         .hyperparameters(
-                                            FineTuningJobCreateParams.Method.Supervised
-                                                .Hyperparameters
+                                            JobCreateParams.Method.Supervised.Hyperparameters
                                                 .builder()
                                                 .batchSizeAuto()
                                                 .learningRateMultiplierAuto()
@@ -289,7 +283,7 @@ class ErrorHandlingTest {
                                         )
                                         .build()
                                 )
-                                .type(FineTuningJobCreateParams.Method.Type.SUPERVISED)
+                                .type(JobCreateParams.Method.Type.SUPERVISED)
                                 .build()
                         )
                         .seed(42L)
@@ -315,20 +309,20 @@ class ErrorHandlingTest {
         val e =
             assertThrows<NotFoundException> {
                 jobService.create(
-                    FineTuningJobCreateParams.builder()
-                        .model(FineTuningJobCreateParams.Model.BABBAGE_002)
+                    JobCreateParams.builder()
+                        .model(JobCreateParams.Model.BABBAGE_002)
                         .trainingFile("file-abc123")
                         .hyperparameters(
-                            FineTuningJobCreateParams.Hyperparameters.builder()
+                            JobCreateParams.Hyperparameters.builder()
                                 .batchSizeAuto()
                                 .learningRateMultiplierAuto()
                                 .nEpochsAuto()
                                 .build()
                         )
                         .addIntegration(
-                            FineTuningJobCreateParams.Integration.builder()
+                            JobCreateParams.Integration.builder()
                                 .wandb(
-                                    FineTuningJobCreateParams.Integration.Wandb.builder()
+                                    JobCreateParams.Integration.Wandb.builder()
                                         .project("my-wandb-project")
                                         .entity("entity")
                                         .name("name")
@@ -343,12 +337,11 @@ class ErrorHandlingTest {
                                 .build()
                         )
                         .method(
-                            FineTuningJobCreateParams.Method.builder()
+                            JobCreateParams.Method.builder()
                                 .dpo(
-                                    FineTuningJobCreateParams.Method.Dpo.builder()
+                                    JobCreateParams.Method.Dpo.builder()
                                         .hyperparameters(
-                                            FineTuningJobCreateParams.Method.Dpo.Hyperparameters
-                                                .builder()
+                                            JobCreateParams.Method.Dpo.Hyperparameters.builder()
                                                 .batchSizeAuto()
                                                 .betaAuto()
                                                 .learningRateMultiplierAuto()
@@ -358,10 +351,9 @@ class ErrorHandlingTest {
                                         .build()
                                 )
                                 .supervised(
-                                    FineTuningJobCreateParams.Method.Supervised.builder()
+                                    JobCreateParams.Method.Supervised.builder()
                                         .hyperparameters(
-                                            FineTuningJobCreateParams.Method.Supervised
-                                                .Hyperparameters
+                                            JobCreateParams.Method.Supervised.Hyperparameters
                                                 .builder()
                                                 .batchSizeAuto()
                                                 .learningRateMultiplierAuto()
@@ -370,7 +362,7 @@ class ErrorHandlingTest {
                                         )
                                         .build()
                                 )
-                                .type(FineTuningJobCreateParams.Method.Type.SUPERVISED)
+                                .type(JobCreateParams.Method.Type.SUPERVISED)
                                 .build()
                         )
                         .seed(42L)
@@ -396,20 +388,20 @@ class ErrorHandlingTest {
         val e =
             assertThrows<UnprocessableEntityException> {
                 jobService.create(
-                    FineTuningJobCreateParams.builder()
-                        .model(FineTuningJobCreateParams.Model.BABBAGE_002)
+                    JobCreateParams.builder()
+                        .model(JobCreateParams.Model.BABBAGE_002)
                         .trainingFile("file-abc123")
                         .hyperparameters(
-                            FineTuningJobCreateParams.Hyperparameters.builder()
+                            JobCreateParams.Hyperparameters.builder()
                                 .batchSizeAuto()
                                 .learningRateMultiplierAuto()
                                 .nEpochsAuto()
                                 .build()
                         )
                         .addIntegration(
-                            FineTuningJobCreateParams.Integration.builder()
+                            JobCreateParams.Integration.builder()
                                 .wandb(
-                                    FineTuningJobCreateParams.Integration.Wandb.builder()
+                                    JobCreateParams.Integration.Wandb.builder()
                                         .project("my-wandb-project")
                                         .entity("entity")
                                         .name("name")
@@ -424,12 +416,11 @@ class ErrorHandlingTest {
                                 .build()
                         )
                         .method(
-                            FineTuningJobCreateParams.Method.builder()
+                            JobCreateParams.Method.builder()
                                 .dpo(
-                                    FineTuningJobCreateParams.Method.Dpo.builder()
+                                    JobCreateParams.Method.Dpo.builder()
                                         .hyperparameters(
-                                            FineTuningJobCreateParams.Method.Dpo.Hyperparameters
-                                                .builder()
+                                            JobCreateParams.Method.Dpo.Hyperparameters.builder()
                                                 .batchSizeAuto()
                                                 .betaAuto()
                                                 .learningRateMultiplierAuto()
@@ -439,10 +430,9 @@ class ErrorHandlingTest {
                                         .build()
                                 )
                                 .supervised(
-                                    FineTuningJobCreateParams.Method.Supervised.builder()
+                                    JobCreateParams.Method.Supervised.builder()
                                         .hyperparameters(
-                                            FineTuningJobCreateParams.Method.Supervised
-                                                .Hyperparameters
+                                            JobCreateParams.Method.Supervised.Hyperparameters
                                                 .builder()
                                                 .batchSizeAuto()
                                                 .learningRateMultiplierAuto()
@@ -451,7 +441,7 @@ class ErrorHandlingTest {
                                         )
                                         .build()
                                 )
-                                .type(FineTuningJobCreateParams.Method.Type.SUPERVISED)
+                                .type(JobCreateParams.Method.Type.SUPERVISED)
                                 .build()
                         )
                         .seed(42L)
@@ -477,20 +467,20 @@ class ErrorHandlingTest {
         val e =
             assertThrows<RateLimitException> {
                 jobService.create(
-                    FineTuningJobCreateParams.builder()
-                        .model(FineTuningJobCreateParams.Model.BABBAGE_002)
+                    JobCreateParams.builder()
+                        .model(JobCreateParams.Model.BABBAGE_002)
                         .trainingFile("file-abc123")
                         .hyperparameters(
-                            FineTuningJobCreateParams.Hyperparameters.builder()
+                            JobCreateParams.Hyperparameters.builder()
                                 .batchSizeAuto()
                                 .learningRateMultiplierAuto()
                                 .nEpochsAuto()
                                 .build()
                         )
                         .addIntegration(
-                            FineTuningJobCreateParams.Integration.builder()
+                            JobCreateParams.Integration.builder()
                                 .wandb(
-                                    FineTuningJobCreateParams.Integration.Wandb.builder()
+                                    JobCreateParams.Integration.Wandb.builder()
                                         .project("my-wandb-project")
                                         .entity("entity")
                                         .name("name")
@@ -505,12 +495,11 @@ class ErrorHandlingTest {
                                 .build()
                         )
                         .method(
-                            FineTuningJobCreateParams.Method.builder()
+                            JobCreateParams.Method.builder()
                                 .dpo(
-                                    FineTuningJobCreateParams.Method.Dpo.builder()
+                                    JobCreateParams.Method.Dpo.builder()
                                         .hyperparameters(
-                                            FineTuningJobCreateParams.Method.Dpo.Hyperparameters
-                                                .builder()
+                                            JobCreateParams.Method.Dpo.Hyperparameters.builder()
                                                 .batchSizeAuto()
                                                 .betaAuto()
                                                 .learningRateMultiplierAuto()
@@ -520,10 +509,9 @@ class ErrorHandlingTest {
                                         .build()
                                 )
                                 .supervised(
-                                    FineTuningJobCreateParams.Method.Supervised.builder()
+                                    JobCreateParams.Method.Supervised.builder()
                                         .hyperparameters(
-                                            FineTuningJobCreateParams.Method.Supervised
-                                                .Hyperparameters
+                                            JobCreateParams.Method.Supervised.Hyperparameters
                                                 .builder()
                                                 .batchSizeAuto()
                                                 .learningRateMultiplierAuto()
@@ -532,7 +520,7 @@ class ErrorHandlingTest {
                                         )
                                         .build()
                                 )
-                                .type(FineTuningJobCreateParams.Method.Type.SUPERVISED)
+                                .type(JobCreateParams.Method.Type.SUPERVISED)
                                 .build()
                         )
                         .seed(42L)
@@ -558,20 +546,20 @@ class ErrorHandlingTest {
         val e =
             assertThrows<InternalServerException> {
                 jobService.create(
-                    FineTuningJobCreateParams.builder()
-                        .model(FineTuningJobCreateParams.Model.BABBAGE_002)
+                    JobCreateParams.builder()
+                        .model(JobCreateParams.Model.BABBAGE_002)
                         .trainingFile("file-abc123")
                         .hyperparameters(
-                            FineTuningJobCreateParams.Hyperparameters.builder()
+                            JobCreateParams.Hyperparameters.builder()
                                 .batchSizeAuto()
                                 .learningRateMultiplierAuto()
                                 .nEpochsAuto()
                                 .build()
                         )
                         .addIntegration(
-                            FineTuningJobCreateParams.Integration.builder()
+                            JobCreateParams.Integration.builder()
                                 .wandb(
-                                    FineTuningJobCreateParams.Integration.Wandb.builder()
+                                    JobCreateParams.Integration.Wandb.builder()
                                         .project("my-wandb-project")
                                         .entity("entity")
                                         .name("name")
@@ -586,12 +574,11 @@ class ErrorHandlingTest {
                                 .build()
                         )
                         .method(
-                            FineTuningJobCreateParams.Method.builder()
+                            JobCreateParams.Method.builder()
                                 .dpo(
-                                    FineTuningJobCreateParams.Method.Dpo.builder()
+                                    JobCreateParams.Method.Dpo.builder()
                                         .hyperparameters(
-                                            FineTuningJobCreateParams.Method.Dpo.Hyperparameters
-                                                .builder()
+                                            JobCreateParams.Method.Dpo.Hyperparameters.builder()
                                                 .batchSizeAuto()
                                                 .betaAuto()
                                                 .learningRateMultiplierAuto()
@@ -601,10 +588,9 @@ class ErrorHandlingTest {
                                         .build()
                                 )
                                 .supervised(
-                                    FineTuningJobCreateParams.Method.Supervised.builder()
+                                    JobCreateParams.Method.Supervised.builder()
                                         .hyperparameters(
-                                            FineTuningJobCreateParams.Method.Supervised
-                                                .Hyperparameters
+                                            JobCreateParams.Method.Supervised.Hyperparameters
                                                 .builder()
                                                 .batchSizeAuto()
                                                 .learningRateMultiplierAuto()
@@ -613,7 +599,7 @@ class ErrorHandlingTest {
                                         )
                                         .build()
                                 )
-                                .type(FineTuningJobCreateParams.Method.Type.SUPERVISED)
+                                .type(JobCreateParams.Method.Type.SUPERVISED)
                                 .build()
                         )
                         .seed(42L)
@@ -639,20 +625,20 @@ class ErrorHandlingTest {
         val e =
             assertThrows<UnexpectedStatusCodeException> {
                 jobService.create(
-                    FineTuningJobCreateParams.builder()
-                        .model(FineTuningJobCreateParams.Model.BABBAGE_002)
+                    JobCreateParams.builder()
+                        .model(JobCreateParams.Model.BABBAGE_002)
                         .trainingFile("file-abc123")
                         .hyperparameters(
-                            FineTuningJobCreateParams.Hyperparameters.builder()
+                            JobCreateParams.Hyperparameters.builder()
                                 .batchSizeAuto()
                                 .learningRateMultiplierAuto()
                                 .nEpochsAuto()
                                 .build()
                         )
                         .addIntegration(
-                            FineTuningJobCreateParams.Integration.builder()
+                            JobCreateParams.Integration.builder()
                                 .wandb(
-                                    FineTuningJobCreateParams.Integration.Wandb.builder()
+                                    JobCreateParams.Integration.Wandb.builder()
                                         .project("my-wandb-project")
                                         .entity("entity")
                                         .name("name")
@@ -667,12 +653,11 @@ class ErrorHandlingTest {
                                 .build()
                         )
                         .method(
-                            FineTuningJobCreateParams.Method.builder()
+                            JobCreateParams.Method.builder()
                                 .dpo(
-                                    FineTuningJobCreateParams.Method.Dpo.builder()
+                                    JobCreateParams.Method.Dpo.builder()
                                         .hyperparameters(
-                                            FineTuningJobCreateParams.Method.Dpo.Hyperparameters
-                                                .builder()
+                                            JobCreateParams.Method.Dpo.Hyperparameters.builder()
                                                 .batchSizeAuto()
                                                 .betaAuto()
                                                 .learningRateMultiplierAuto()
@@ -682,10 +667,9 @@ class ErrorHandlingTest {
                                         .build()
                                 )
                                 .supervised(
-                                    FineTuningJobCreateParams.Method.Supervised.builder()
+                                    JobCreateParams.Method.Supervised.builder()
                                         .hyperparameters(
-                                            FineTuningJobCreateParams.Method.Supervised
-                                                .Hyperparameters
+                                            JobCreateParams.Method.Supervised.Hyperparameters
                                                 .builder()
                                                 .batchSizeAuto()
                                                 .learningRateMultiplierAuto()
@@ -694,7 +678,7 @@ class ErrorHandlingTest {
                                         )
                                         .build()
                                 )
-                                .type(FineTuningJobCreateParams.Method.Type.SUPERVISED)
+                                .type(JobCreateParams.Method.Type.SUPERVISED)
                                 .build()
                         )
                         .seed(42L)
@@ -720,20 +704,20 @@ class ErrorHandlingTest {
         val e =
             assertThrows<OpenAIException> {
                 jobService.create(
-                    FineTuningJobCreateParams.builder()
-                        .model(FineTuningJobCreateParams.Model.BABBAGE_002)
+                    JobCreateParams.builder()
+                        .model(JobCreateParams.Model.BABBAGE_002)
                         .trainingFile("file-abc123")
                         .hyperparameters(
-                            FineTuningJobCreateParams.Hyperparameters.builder()
+                            JobCreateParams.Hyperparameters.builder()
                                 .batchSizeAuto()
                                 .learningRateMultiplierAuto()
                                 .nEpochsAuto()
                                 .build()
                         )
                         .addIntegration(
-                            FineTuningJobCreateParams.Integration.builder()
+                            JobCreateParams.Integration.builder()
                                 .wandb(
-                                    FineTuningJobCreateParams.Integration.Wandb.builder()
+                                    JobCreateParams.Integration.Wandb.builder()
                                         .project("my-wandb-project")
                                         .entity("entity")
                                         .name("name")
@@ -748,12 +732,11 @@ class ErrorHandlingTest {
                                 .build()
                         )
                         .method(
-                            FineTuningJobCreateParams.Method.builder()
+                            JobCreateParams.Method.builder()
                                 .dpo(
-                                    FineTuningJobCreateParams.Method.Dpo.builder()
+                                    JobCreateParams.Method.Dpo.builder()
                                         .hyperparameters(
-                                            FineTuningJobCreateParams.Method.Dpo.Hyperparameters
-                                                .builder()
+                                            JobCreateParams.Method.Dpo.Hyperparameters.builder()
                                                 .batchSizeAuto()
                                                 .betaAuto()
                                                 .learningRateMultiplierAuto()
@@ -763,10 +746,9 @@ class ErrorHandlingTest {
                                         .build()
                                 )
                                 .supervised(
-                                    FineTuningJobCreateParams.Method.Supervised.builder()
+                                    JobCreateParams.Method.Supervised.builder()
                                         .hyperparameters(
-                                            FineTuningJobCreateParams.Method.Supervised
-                                                .Hyperparameters
+                                            JobCreateParams.Method.Supervised.Hyperparameters
                                                 .builder()
                                                 .batchSizeAuto()
                                                 .learningRateMultiplierAuto()
@@ -775,7 +757,7 @@ class ErrorHandlingTest {
                                         )
                                         .build()
                                 )
-                                .type(FineTuningJobCreateParams.Method.Type.SUPERVISED)
+                                .type(JobCreateParams.Method.Type.SUPERVISED)
                                 .build()
                         )
                         .seed(42L)

@@ -5,12 +5,12 @@ package com.openai.services.async.beta
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
-import com.openai.models.AutoFileChunkingStrategyParam
-import com.openai.models.BetaVectorStoreCreateParams
-import com.openai.models.BetaVectorStoreDeleteParams
-import com.openai.models.BetaVectorStoreRetrieveParams
-import com.openai.models.BetaVectorStoreUpdateParams
 import com.openai.models.Metadata
+import com.openai.models.beta.vectorstores.AutoFileChunkingStrategyParam
+import com.openai.models.beta.vectorstores.VectorStoreCreateParams
+import com.openai.models.beta.vectorstores.VectorStoreDeleteParams
+import com.openai.models.beta.vectorstores.VectorStoreRetrieveParams
+import com.openai.models.beta.vectorstores.VectorStoreUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -28,11 +28,9 @@ class VectorStoreServiceAsyncTest {
 
         val vectorStoreFuture =
             vectorStoreServiceAsync.create(
-                BetaVectorStoreCreateParams.builder()
+                VectorStoreCreateParams.builder()
                     .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
-                    .expiresAfter(
-                        BetaVectorStoreCreateParams.ExpiresAfter.builder().days(1L).build()
-                    )
+                    .expiresAfter(VectorStoreCreateParams.ExpiresAfter.builder().days(1L).build())
                     .addFileId("string")
                     .metadata(
                         Metadata.builder()
@@ -58,7 +56,7 @@ class VectorStoreServiceAsyncTest {
 
         val vectorStoreFuture =
             vectorStoreServiceAsync.retrieve(
-                BetaVectorStoreRetrieveParams.builder().vectorStoreId("vector_store_id").build()
+                VectorStoreRetrieveParams.builder().vectorStoreId("vector_store_id").build()
             )
 
         val vectorStore = vectorStoreFuture.get()
@@ -76,11 +74,9 @@ class VectorStoreServiceAsyncTest {
 
         val vectorStoreFuture =
             vectorStoreServiceAsync.update(
-                BetaVectorStoreUpdateParams.builder()
+                VectorStoreUpdateParams.builder()
                     .vectorStoreId("vector_store_id")
-                    .expiresAfter(
-                        BetaVectorStoreUpdateParams.ExpiresAfter.builder().days(1L).build()
-                    )
+                    .expiresAfter(VectorStoreUpdateParams.ExpiresAfter.builder().days(1L).build())
                     .metadata(
                         Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -120,7 +116,7 @@ class VectorStoreServiceAsyncTest {
 
         val vectorStoreDeletedFuture =
             vectorStoreServiceAsync.delete(
-                BetaVectorStoreDeleteParams.builder().vectorStoreId("vector_store_id").build()
+                VectorStoreDeleteParams.builder().vectorStoreId("vector_store_id").build()
             )
 
         val vectorStoreDeleted = vectorStoreDeletedFuture.get()

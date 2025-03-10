@@ -21,15 +21,15 @@ import com.openai.core.http.map
 import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
-import com.openai.models.AssistantStreamEvent
-import com.openai.models.BetaThreadCreateAndRunParams
-import com.openai.models.BetaThreadCreateParams
-import com.openai.models.BetaThreadDeleteParams
-import com.openai.models.BetaThreadRetrieveParams
-import com.openai.models.BetaThreadUpdateParams
-import com.openai.models.Run
-import com.openai.models.Thread
-import com.openai.models.ThreadDeleted
+import com.openai.models.beta.assistants.AssistantStreamEvent
+import com.openai.models.beta.threads.Thread
+import com.openai.models.beta.threads.ThreadCreateAndRunParams
+import com.openai.models.beta.threads.ThreadCreateParams
+import com.openai.models.beta.threads.ThreadDeleteParams
+import com.openai.models.beta.threads.ThreadDeleted
+import com.openai.models.beta.threads.ThreadRetrieveParams
+import com.openai.models.beta.threads.ThreadUpdateParams
+import com.openai.models.beta.threads.runs.Run
 import com.openai.services.blocking.beta.threads.MessageService
 import com.openai.services.blocking.beta.threads.MessageServiceImpl
 import com.openai.services.blocking.beta.threads.RunService
@@ -57,37 +57,31 @@ class ThreadServiceImpl internal constructor(private val clientOptions: ClientOp
 
     override fun messages(): MessageService = messages
 
-    override fun create(params: BetaThreadCreateParams, requestOptions: RequestOptions): Thread =
+    override fun create(params: ThreadCreateParams, requestOptions: RequestOptions): Thread =
         // post /threads
         withRawResponse().create(params, requestOptions).parse()
 
-    override fun retrieve(
-        params: BetaThreadRetrieveParams,
-        requestOptions: RequestOptions,
-    ): Thread =
+    override fun retrieve(params: ThreadRetrieveParams, requestOptions: RequestOptions): Thread =
         // get /threads/{thread_id}
         withRawResponse().retrieve(params, requestOptions).parse()
 
-    override fun update(params: BetaThreadUpdateParams, requestOptions: RequestOptions): Thread =
+    override fun update(params: ThreadUpdateParams, requestOptions: RequestOptions): Thread =
         // post /threads/{thread_id}
         withRawResponse().update(params, requestOptions).parse()
 
-    override fun delete(
-        params: BetaThreadDeleteParams,
-        requestOptions: RequestOptions,
-    ): ThreadDeleted =
+    override fun delete(params: ThreadDeleteParams, requestOptions: RequestOptions): ThreadDeleted =
         // delete /threads/{thread_id}
         withRawResponse().delete(params, requestOptions).parse()
 
     override fun createAndRun(
-        params: BetaThreadCreateAndRunParams,
+        params: ThreadCreateAndRunParams,
         requestOptions: RequestOptions,
     ): Run =
         // post /threads/runs
         withRawResponse().createAndRun(params, requestOptions).parse()
 
     override fun createAndRunStreaming(
-        params: BetaThreadCreateAndRunParams,
+        params: ThreadCreateAndRunParams,
         requestOptions: RequestOptions,
     ): StreamResponse<AssistantStreamEvent> =
         // post /threads/runs
@@ -114,7 +108,7 @@ class ThreadServiceImpl internal constructor(private val clientOptions: ClientOp
             jsonHandler<Thread>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun create(
-            params: BetaThreadCreateParams,
+            params: ThreadCreateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Thread> {
             val request =
@@ -142,7 +136,7 @@ class ThreadServiceImpl internal constructor(private val clientOptions: ClientOp
             jsonHandler<Thread>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun retrieve(
-            params: BetaThreadRetrieveParams,
+            params: ThreadRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Thread> {
             val request =
@@ -169,7 +163,7 @@ class ThreadServiceImpl internal constructor(private val clientOptions: ClientOp
             jsonHandler<Thread>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun update(
-            params: BetaThreadUpdateParams,
+            params: ThreadUpdateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Thread> {
             val request =
@@ -197,7 +191,7 @@ class ThreadServiceImpl internal constructor(private val clientOptions: ClientOp
             jsonHandler<ThreadDeleted>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun delete(
-            params: BetaThreadDeleteParams,
+            params: ThreadDeleteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<ThreadDeleted> {
             val request =
@@ -225,7 +219,7 @@ class ThreadServiceImpl internal constructor(private val clientOptions: ClientOp
             jsonHandler<Run>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun createAndRun(
-            params: BetaThreadCreateAndRunParams,
+            params: ThreadCreateAndRunParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Run> {
             val request =
@@ -255,7 +249,7 @@ class ThreadServiceImpl internal constructor(private val clientOptions: ClientOp
                 .withErrorHandler(errorHandler)
 
         override fun createAndRunStreaming(
-            params: BetaThreadCreateAndRunParams,
+            params: ThreadCreateAndRunParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<StreamResponse<AssistantStreamEvent>> {
             val request =

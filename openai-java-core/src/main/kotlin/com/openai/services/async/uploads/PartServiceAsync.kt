@@ -5,8 +5,8 @@ package com.openai.services.async.uploads
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
-import com.openai.models.UploadPart
-import com.openai.models.UploadPartCreateParams
+import com.openai.models.uploads.parts.PartCreateParams
+import com.openai.models.uploads.parts.UploadPart
 import java.util.concurrent.CompletableFuture
 
 interface PartServiceAsync {
@@ -28,12 +28,12 @@ interface PartServiceAsync {
      * Parts when you
      * [complete the Upload](https://platform.openai.com/docs/api-reference/uploads/complete).
      */
-    fun create(params: UploadPartCreateParams): CompletableFuture<UploadPart> =
+    fun create(params: PartCreateParams): CompletableFuture<UploadPart> =
         create(params, RequestOptions.none())
 
     /** @see [create] */
     fun create(
-        params: UploadPartCreateParams,
+        params: PartCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<UploadPart>
 
@@ -45,13 +45,13 @@ interface PartServiceAsync {
          * same as [PartServiceAsync.create].
          */
         @MustBeClosed
-        fun create(params: UploadPartCreateParams): CompletableFuture<HttpResponseFor<UploadPart>> =
+        fun create(params: PartCreateParams): CompletableFuture<HttpResponseFor<UploadPart>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
         @MustBeClosed
         fun create(
-            params: UploadPartCreateParams,
+            params: PartCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<UploadPart>>
     }

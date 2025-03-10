@@ -12,7 +12,7 @@ import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.json
 import com.openai.core.prepareAsync
 import com.openai.errors.OpenAIError
-import com.openai.models.AudioSpeechCreateParams
+import com.openai.models.audio.speech.SpeechCreateParams
 import java.util.concurrent.CompletableFuture
 
 class SpeechServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -25,7 +25,7 @@ class SpeechServiceAsyncImpl internal constructor(private val clientOptions: Cli
     override fun withRawResponse(): SpeechServiceAsync.WithRawResponse = withRawResponse
 
     override fun create(
-        params: AudioSpeechCreateParams,
+        params: SpeechCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> =
         // post /audio/speech
@@ -37,7 +37,7 @@ class SpeechServiceAsyncImpl internal constructor(private val clientOptions: Cli
         private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
         override fun create(
-            params: AudioSpeechCreateParams,
+            params: SpeechCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponse> {
             val request =

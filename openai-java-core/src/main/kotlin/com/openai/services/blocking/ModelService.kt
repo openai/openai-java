@@ -5,12 +5,12 @@ package com.openai.services.blocking
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
-import com.openai.models.Model
-import com.openai.models.ModelDeleteParams
-import com.openai.models.ModelDeleted
-import com.openai.models.ModelListPage
-import com.openai.models.ModelListParams
-import com.openai.models.ModelRetrieveParams
+import com.openai.models.models.Model
+import com.openai.models.models.ModelDeleteParams
+import com.openai.models.models.ModelDeleted
+import com.openai.models.models.ModelListPage
+import com.openai.models.models.ModelListParams
+import com.openai.models.models.ModelRetrieveParams
 
 interface ModelService {
 
