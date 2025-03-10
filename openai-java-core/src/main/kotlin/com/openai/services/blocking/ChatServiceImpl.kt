@@ -3,8 +3,8 @@
 package com.openai.services.blocking
 
 import com.openai.core.ClientOptions
-import com.openai.services.blocking.chat.CompletionService
-import com.openai.services.blocking.chat.CompletionServiceImpl
+import com.openai.services.blocking.chat.ChatCompletionService
+import com.openai.services.blocking.chat.ChatCompletionServiceImpl
 
 class ChatServiceImpl internal constructor(private val clientOptions: ClientOptions) : ChatService {
 
@@ -12,19 +12,21 @@ class ChatServiceImpl internal constructor(private val clientOptions: ClientOpti
         WithRawResponseImpl(clientOptions)
     }
 
-    private val completions: CompletionService by lazy { CompletionServiceImpl(clientOptions) }
+    private val completions: ChatCompletionService by lazy {
+        ChatCompletionServiceImpl(clientOptions)
+    }
 
     override fun withRawResponse(): ChatService.WithRawResponse = withRawResponse
 
-    override fun completions(): CompletionService = completions
+    override fun completions(): ChatCompletionService = completions
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ChatService.WithRawResponse {
 
-        private val completions: CompletionService.WithRawResponse by lazy {
-            CompletionServiceImpl.WithRawResponseImpl(clientOptions)
+        private val completions: ChatCompletionService.WithRawResponse by lazy {
+            ChatCompletionServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
-        override fun completions(): CompletionService.WithRawResponse = completions
+        override fun completions(): ChatCompletionService.WithRawResponse = completions
     }
 }

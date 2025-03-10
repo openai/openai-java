@@ -15,20 +15,20 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.openai.client.OpenAIClient
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
-import com.openai.models.ChatCompletionAudioParam
-import com.openai.models.ChatCompletionCreateParams
-import com.openai.models.ChatCompletionDeveloperMessageParam
-import com.openai.models.ChatCompletionModality
-import com.openai.models.ChatCompletionPredictionContent
-import com.openai.models.ChatCompletionReasoningEffort
-import com.openai.models.ChatCompletionStreamOptions
-import com.openai.models.ChatCompletionTool
-import com.openai.models.ChatCompletionToolChoiceOption
 import com.openai.models.ChatModel
 import com.openai.models.FunctionDefinition
 import com.openai.models.FunctionParameters
 import com.openai.models.Metadata
 import com.openai.models.ResponseFormatText
+import com.openai.models.chat.completions.ChatCompletionAudioParam
+import com.openai.models.chat.completions.ChatCompletionCreateParams
+import com.openai.models.chat.completions.ChatCompletionDeveloperMessageParam
+import com.openai.models.chat.completions.ChatCompletionModality
+import com.openai.models.chat.completions.ChatCompletionPredictionContent
+import com.openai.models.chat.completions.ChatCompletionReasoningEffort
+import com.openai.models.chat.completions.ChatCompletionStreamOptions
+import com.openai.models.chat.completions.ChatCompletionTool
+import com.openai.models.chat.completions.ChatCompletionToolChoiceOption
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -48,10 +48,10 @@ internal class ServiceParamsTest {
 
     @Test
     fun create() {
-        val completionService = client.chat().completions()
+        val chatCompletionService = client.chat().completions()
         stubFor(post(anyUrl()).willReturn(ok("{}")))
 
-        completionService.create(
+        chatCompletionService.create(
             ChatCompletionCreateParams.builder()
                 .addMessage(
                     ChatCompletionDeveloperMessageParam.builder()

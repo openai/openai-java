@@ -4,8 +4,8 @@ package com.openai.services.blocking
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
-import com.openai.models.ModelDeleteParams
-import com.openai.models.ModelRetrieveParams
+import com.openai.models.models.ModelDeleteParams
+import com.openai.models.models.ModelRetrieveParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 

@@ -5,10 +5,10 @@ package com.openai.services.blocking
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
-import com.openai.models.BatchCancelParams
-import com.openai.models.BatchCreateParams
-import com.openai.models.BatchRetrieveParams
 import com.openai.models.Metadata
+import com.openai.models.batches.BatchCancelParams
+import com.openai.models.batches.BatchCreateParams
+import com.openai.models.batches.BatchRetrieveParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 

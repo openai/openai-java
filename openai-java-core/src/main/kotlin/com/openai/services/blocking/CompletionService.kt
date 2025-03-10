@@ -6,8 +6,8 @@ import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
-import com.openai.models.Completion
-import com.openai.models.CompletionCreateParams
+import com.openai.models.completions.Completion
+import com.openai.models.completions.CompletionCreateParams
 
 interface CompletionService {
 

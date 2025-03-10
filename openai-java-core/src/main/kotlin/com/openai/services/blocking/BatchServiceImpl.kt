@@ -15,12 +15,12 @@ import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
-import com.openai.models.Batch
-import com.openai.models.BatchCancelParams
-import com.openai.models.BatchCreateParams
-import com.openai.models.BatchListPage
-import com.openai.models.BatchListParams
-import com.openai.models.BatchRetrieveParams
+import com.openai.models.batches.Batch
+import com.openai.models.batches.BatchCancelParams
+import com.openai.models.batches.BatchCreateParams
+import com.openai.models.batches.BatchListPage
+import com.openai.models.batches.BatchListParams
+import com.openai.models.batches.BatchRetrieveParams
 
 class BatchServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     BatchService {

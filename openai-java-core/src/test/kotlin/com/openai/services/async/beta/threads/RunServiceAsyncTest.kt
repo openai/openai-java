@@ -5,17 +5,17 @@ package com.openai.services.async.beta.threads
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
-import com.openai.models.AssistantToolChoiceOption
-import com.openai.models.BetaThreadRunCancelParams
-import com.openai.models.BetaThreadRunCreateParams
-import com.openai.models.BetaThreadRunListParams
-import com.openai.models.BetaThreadRunRetrieveParams
-import com.openai.models.BetaThreadRunSubmitToolOutputsParams
-import com.openai.models.BetaThreadRunUpdateParams
 import com.openai.models.ChatModel
-import com.openai.models.CodeInterpreterTool
 import com.openai.models.Metadata
-import com.openai.models.RunStepInclude
+import com.openai.models.beta.assistants.CodeInterpreterTool
+import com.openai.models.beta.threads.AssistantToolChoiceOption
+import com.openai.models.beta.threads.runs.RunCancelParams
+import com.openai.models.beta.threads.runs.RunCreateParams
+import com.openai.models.beta.threads.runs.RunListParams
+import com.openai.models.beta.threads.runs.RunRetrieveParams
+import com.openai.models.beta.threads.runs.RunSubmitToolOutputsParams
+import com.openai.models.beta.threads.runs.RunUpdateParams
+import com.openai.models.beta.threads.runs.steps.RunStepInclude
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -33,17 +33,17 @@ class RunServiceAsyncTest {
 
         val runFuture =
             runServiceAsync.create(
-                BetaThreadRunCreateParams.builder()
+                RunCreateParams.builder()
                     .threadId("thread_id")
                     .addInclude(RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT)
                     .assistantId("assistant_id")
                     .additionalInstructions("additional_instructions")
                     .addAdditionalMessage(
-                        BetaThreadRunCreateParams.AdditionalMessage.builder()
+                        RunCreateParams.AdditionalMessage.builder()
                             .content("string")
-                            .role(BetaThreadRunCreateParams.AdditionalMessage.Role.USER)
+                            .role(RunCreateParams.AdditionalMessage.Role.USER)
                             .addAttachment(
-                                BetaThreadRunCreateParams.AdditionalMessage.Attachment.builder()
+                                RunCreateParams.AdditionalMessage.Attachment.builder()
                                     .fileId("file_id")
                                     .addTool(CodeInterpreterTool.builder().build())
                                     .build()
@@ -65,15 +65,15 @@ class RunServiceAsyncTest {
                     )
                     .model(ChatModel.O3_MINI)
                     .parallelToolCalls(true)
-                    .reasoningEffort(BetaThreadRunCreateParams.ReasoningEffort.LOW)
+                    .reasoningEffort(RunCreateParams.ReasoningEffort.LOW)
                     .responseFormatAuto()
                     .temperature(1.0)
                     .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                     .addTool(CodeInterpreterTool.builder().build())
                     .topP(1.0)
                     .truncationStrategy(
-                        BetaThreadRunCreateParams.TruncationStrategy.builder()
-                            .type(BetaThreadRunCreateParams.TruncationStrategy.Type.AUTO)
+                        RunCreateParams.TruncationStrategy.builder()
+                            .type(RunCreateParams.TruncationStrategy.Type.AUTO)
                             .lastMessages(1L)
                             .build()
                     )
@@ -95,17 +95,17 @@ class RunServiceAsyncTest {
 
         val runStreamResponse =
             runServiceAsync.createStreaming(
-                BetaThreadRunCreateParams.builder()
+                RunCreateParams.builder()
                     .threadId("thread_id")
                     .addInclude(RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT)
                     .assistantId("assistant_id")
                     .additionalInstructions("additional_instructions")
                     .addAdditionalMessage(
-                        BetaThreadRunCreateParams.AdditionalMessage.builder()
+                        RunCreateParams.AdditionalMessage.builder()
                             .content("string")
-                            .role(BetaThreadRunCreateParams.AdditionalMessage.Role.USER)
+                            .role(RunCreateParams.AdditionalMessage.Role.USER)
                             .addAttachment(
-                                BetaThreadRunCreateParams.AdditionalMessage.Attachment.builder()
+                                RunCreateParams.AdditionalMessage.Attachment.builder()
                                     .fileId("file_id")
                                     .addTool(CodeInterpreterTool.builder().build())
                                     .build()
@@ -127,15 +127,15 @@ class RunServiceAsyncTest {
                     )
                     .model(ChatModel.O3_MINI)
                     .parallelToolCalls(true)
-                    .reasoningEffort(BetaThreadRunCreateParams.ReasoningEffort.LOW)
+                    .reasoningEffort(RunCreateParams.ReasoningEffort.LOW)
                     .responseFormatAuto()
                     .temperature(1.0)
                     .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                     .addTool(CodeInterpreterTool.builder().build())
                     .topP(1.0)
                     .truncationStrategy(
-                        BetaThreadRunCreateParams.TruncationStrategy.builder()
-                            .type(BetaThreadRunCreateParams.TruncationStrategy.Type.AUTO)
+                        RunCreateParams.TruncationStrategy.builder()
+                            .type(RunCreateParams.TruncationStrategy.Type.AUTO)
                             .lastMessages(1L)
                             .build()
                     )
@@ -158,7 +158,7 @@ class RunServiceAsyncTest {
 
         val runFuture =
             runServiceAsync.retrieve(
-                BetaThreadRunRetrieveParams.builder().threadId("thread_id").runId("run_id").build()
+                RunRetrieveParams.builder().threadId("thread_id").runId("run_id").build()
             )
 
         val run = runFuture.get()
@@ -176,7 +176,7 @@ class RunServiceAsyncTest {
 
         val runFuture =
             runServiceAsync.update(
-                BetaThreadRunUpdateParams.builder()
+                RunUpdateParams.builder()
                     .threadId("thread_id")
                     .runId("run_id")
                     .metadata(
@@ -200,8 +200,7 @@ class RunServiceAsyncTest {
                 .build()
         val runServiceAsync = client.beta().threads().runs()
 
-        val pageFuture =
-            runServiceAsync.list(BetaThreadRunListParams.builder().threadId("thread_id").build())
+        val pageFuture = runServiceAsync.list(RunListParams.builder().threadId("thread_id").build())
 
         val page = pageFuture.get()
         page.response().validate()
@@ -218,7 +217,7 @@ class RunServiceAsyncTest {
 
         val runFuture =
             runServiceAsync.cancel(
-                BetaThreadRunCancelParams.builder().threadId("thread_id").runId("run_id").build()
+                RunCancelParams.builder().threadId("thread_id").runId("run_id").build()
             )
 
         val run = runFuture.get()
@@ -236,11 +235,11 @@ class RunServiceAsyncTest {
 
         val runFuture =
             runServiceAsync.submitToolOutputs(
-                BetaThreadRunSubmitToolOutputsParams.builder()
+                RunSubmitToolOutputsParams.builder()
                     .threadId("thread_id")
                     .runId("run_id")
                     .addToolOutput(
-                        BetaThreadRunSubmitToolOutputsParams.ToolOutput.builder()
+                        RunSubmitToolOutputsParams.ToolOutput.builder()
                             .output("output")
                             .toolCallId("tool_call_id")
                             .build()
@@ -263,11 +262,11 @@ class RunServiceAsyncTest {
 
         val runStreamResponse =
             runServiceAsync.submitToolOutputsStreaming(
-                BetaThreadRunSubmitToolOutputsParams.builder()
+                RunSubmitToolOutputsParams.builder()
                     .threadId("thread_id")
                     .runId("run_id")
                     .addToolOutput(
-                        BetaThreadRunSubmitToolOutputsParams.ToolOutput.builder()
+                        RunSubmitToolOutputsParams.ToolOutput.builder()
                             .output("output")
                             .toolCallId("tool_call_id")
                             .build()

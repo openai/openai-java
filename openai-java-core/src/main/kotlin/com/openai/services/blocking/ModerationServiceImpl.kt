@@ -15,8 +15,8 @@ import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
-import com.openai.models.ModerationCreateParams
-import com.openai.models.ModerationCreateResponse
+import com.openai.models.moderations.ModerationCreateParams
+import com.openai.models.moderations.ModerationCreateResponse
 
 class ModerationServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     ModerationService {

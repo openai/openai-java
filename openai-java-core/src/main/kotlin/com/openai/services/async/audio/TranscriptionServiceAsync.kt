@@ -5,8 +5,8 @@ package com.openai.services.async.audio
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
-import com.openai.models.AudioTranscriptionCreateParams
-import com.openai.models.AudioTranscriptionCreateResponse
+import com.openai.models.audio.transcriptions.TranscriptionCreateParams
+import com.openai.models.audio.transcriptions.TranscriptionCreateResponse
 import java.util.concurrent.CompletableFuture
 
 interface TranscriptionServiceAsync {
@@ -17,15 +17,14 @@ interface TranscriptionServiceAsync {
     fun withRawResponse(): WithRawResponse
 
     /** Transcribes audio into the input language. */
-    fun create(
-        params: AudioTranscriptionCreateParams
-    ): CompletableFuture<AudioTranscriptionCreateResponse> = create(params, RequestOptions.none())
+    fun create(params: TranscriptionCreateParams): CompletableFuture<TranscriptionCreateResponse> =
+        create(params, RequestOptions.none())
 
     /** @see [create] */
     fun create(
-        params: AudioTranscriptionCreateParams,
+        params: TranscriptionCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<AudioTranscriptionCreateResponse>
+    ): CompletableFuture<TranscriptionCreateResponse>
 
     /**
      * A view of [TranscriptionServiceAsync] that provides access to raw HTTP responses for each
@@ -39,15 +38,15 @@ interface TranscriptionServiceAsync {
          */
         @MustBeClosed
         fun create(
-            params: AudioTranscriptionCreateParams
-        ): CompletableFuture<HttpResponseFor<AudioTranscriptionCreateResponse>> =
+            params: TranscriptionCreateParams
+        ): CompletableFuture<HttpResponseFor<TranscriptionCreateResponse>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
         @MustBeClosed
         fun create(
-            params: AudioTranscriptionCreateParams,
+            params: TranscriptionCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<AudioTranscriptionCreateResponse>>
+        ): CompletableFuture<HttpResponseFor<TranscriptionCreateResponse>>
     }
 }

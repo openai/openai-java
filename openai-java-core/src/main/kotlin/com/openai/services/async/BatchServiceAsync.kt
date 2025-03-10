@@ -5,12 +5,12 @@ package com.openai.services.async
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
-import com.openai.models.Batch
-import com.openai.models.BatchCancelParams
-import com.openai.models.BatchCreateParams
-import com.openai.models.BatchListPageAsync
-import com.openai.models.BatchListParams
-import com.openai.models.BatchRetrieveParams
+import com.openai.models.batches.Batch
+import com.openai.models.batches.BatchCancelParams
+import com.openai.models.batches.BatchCreateParams
+import com.openai.models.batches.BatchListPageAsync
+import com.openai.models.batches.BatchListParams
+import com.openai.models.batches.BatchRetrieveParams
 import java.util.concurrent.CompletableFuture
 
 interface BatchServiceAsync {

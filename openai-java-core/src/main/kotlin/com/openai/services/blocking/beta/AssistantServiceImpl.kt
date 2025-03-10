@@ -16,14 +16,14 @@ import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
-import com.openai.models.Assistant
-import com.openai.models.AssistantDeleted
-import com.openai.models.BetaAssistantCreateParams
-import com.openai.models.BetaAssistantDeleteParams
-import com.openai.models.BetaAssistantListPage
-import com.openai.models.BetaAssistantListParams
-import com.openai.models.BetaAssistantRetrieveParams
-import com.openai.models.BetaAssistantUpdateParams
+import com.openai.models.beta.assistants.Assistant
+import com.openai.models.beta.assistants.AssistantCreateParams
+import com.openai.models.beta.assistants.AssistantDeleteParams
+import com.openai.models.beta.assistants.AssistantDeleted
+import com.openai.models.beta.assistants.AssistantListPage
+import com.openai.models.beta.assistants.AssistantListParams
+import com.openai.models.beta.assistants.AssistantRetrieveParams
+import com.openai.models.beta.assistants.AssistantUpdateParams
 
 class AssistantServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     AssistantService {
@@ -39,36 +39,30 @@ class AssistantServiceImpl internal constructor(private val clientOptions: Clien
 
     override fun withRawResponse(): AssistantService.WithRawResponse = withRawResponse
 
-    override fun create(
-        params: BetaAssistantCreateParams,
-        requestOptions: RequestOptions,
-    ): Assistant =
+    override fun create(params: AssistantCreateParams, requestOptions: RequestOptions): Assistant =
         // post /assistants
         withRawResponse().create(params, requestOptions).parse()
 
     override fun retrieve(
-        params: BetaAssistantRetrieveParams,
+        params: AssistantRetrieveParams,
         requestOptions: RequestOptions,
     ): Assistant =
         // get /assistants/{assistant_id}
         withRawResponse().retrieve(params, requestOptions).parse()
 
-    override fun update(
-        params: BetaAssistantUpdateParams,
-        requestOptions: RequestOptions,
-    ): Assistant =
+    override fun update(params: AssistantUpdateParams, requestOptions: RequestOptions): Assistant =
         // post /assistants/{assistant_id}
         withRawResponse().update(params, requestOptions).parse()
 
     override fun list(
-        params: BetaAssistantListParams,
+        params: AssistantListParams,
         requestOptions: RequestOptions,
-    ): BetaAssistantListPage =
+    ): AssistantListPage =
         // get /assistants
         withRawResponse().list(params, requestOptions).parse()
 
     override fun delete(
-        params: BetaAssistantDeleteParams,
+        params: AssistantDeleteParams,
         requestOptions: RequestOptions,
     ): AssistantDeleted =
         // delete /assistants/{assistant_id}
@@ -83,7 +77,7 @@ class AssistantServiceImpl internal constructor(private val clientOptions: Clien
             jsonHandler<Assistant>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun create(
-            params: BetaAssistantCreateParams,
+            params: AssistantCreateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Assistant> {
             val request =
@@ -111,7 +105,7 @@ class AssistantServiceImpl internal constructor(private val clientOptions: Clien
             jsonHandler<Assistant>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun retrieve(
-            params: BetaAssistantRetrieveParams,
+            params: AssistantRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Assistant> {
             val request =
@@ -138,7 +132,7 @@ class AssistantServiceImpl internal constructor(private val clientOptions: Clien
             jsonHandler<Assistant>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun update(
-            params: BetaAssistantUpdateParams,
+            params: AssistantUpdateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Assistant> {
             val request =
@@ -162,14 +156,14 @@ class AssistantServiceImpl internal constructor(private val clientOptions: Clien
             }
         }
 
-        private val listHandler: Handler<BetaAssistantListPage.Response> =
-            jsonHandler<BetaAssistantListPage.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<AssistantListPage.Response> =
+            jsonHandler<AssistantListPage.Response>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(
-            params: BetaAssistantListParams,
+            params: AssistantListParams,
             requestOptions: RequestOptions,
-        ): HttpResponseFor<BetaAssistantListPage> {
+        ): HttpResponseFor<AssistantListPage> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -187,9 +181,7 @@ class AssistantServiceImpl internal constructor(private val clientOptions: Clien
                             it.validate()
                         }
                     }
-                    .let {
-                        BetaAssistantListPage.of(AssistantServiceImpl(clientOptions), params, it)
-                    }
+                    .let { AssistantListPage.of(AssistantServiceImpl(clientOptions), params, it) }
             }
         }
 
@@ -197,7 +189,7 @@ class AssistantServiceImpl internal constructor(private val clientOptions: Clien
             jsonHandler<AssistantDeleted>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun delete(
-            params: BetaAssistantDeleteParams,
+            params: AssistantDeleteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<AssistantDeleted> {
             val request =

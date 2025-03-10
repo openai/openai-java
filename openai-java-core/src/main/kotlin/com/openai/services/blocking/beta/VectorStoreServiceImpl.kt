@@ -16,18 +16,18 @@ import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
-import com.openai.models.BetaVectorStoreCreateParams
-import com.openai.models.BetaVectorStoreDeleteParams
-import com.openai.models.BetaVectorStoreListPage
-import com.openai.models.BetaVectorStoreListParams
-import com.openai.models.BetaVectorStoreRetrieveParams
-import com.openai.models.BetaVectorStoreUpdateParams
-import com.openai.models.VectorStore
-import com.openai.models.VectorStoreDeleted
-import com.openai.services.blocking.beta.vectorStores.FileBatchService
-import com.openai.services.blocking.beta.vectorStores.FileBatchServiceImpl
-import com.openai.services.blocking.beta.vectorStores.FileService
-import com.openai.services.blocking.beta.vectorStores.FileServiceImpl
+import com.openai.models.beta.vectorstores.VectorStore
+import com.openai.models.beta.vectorstores.VectorStoreCreateParams
+import com.openai.models.beta.vectorstores.VectorStoreDeleteParams
+import com.openai.models.beta.vectorstores.VectorStoreDeleted
+import com.openai.models.beta.vectorstores.VectorStoreListPage
+import com.openai.models.beta.vectorstores.VectorStoreListParams
+import com.openai.models.beta.vectorstores.VectorStoreRetrieveParams
+import com.openai.models.beta.vectorstores.VectorStoreUpdateParams
+import com.openai.services.blocking.beta.vectorstores.FileBatchService
+import com.openai.services.blocking.beta.vectorstores.FileBatchServiceImpl
+import com.openai.services.blocking.beta.vectorstores.FileService
+import com.openai.services.blocking.beta.vectorstores.FileServiceImpl
 
 class VectorStoreServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     VectorStoreService {
@@ -52,35 +52,35 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
     override fun fileBatches(): FileBatchService = fileBatches
 
     override fun create(
-        params: BetaVectorStoreCreateParams,
+        params: VectorStoreCreateParams,
         requestOptions: RequestOptions,
     ): VectorStore =
         // post /vector_stores
         withRawResponse().create(params, requestOptions).parse()
 
     override fun retrieve(
-        params: BetaVectorStoreRetrieveParams,
+        params: VectorStoreRetrieveParams,
         requestOptions: RequestOptions,
     ): VectorStore =
         // get /vector_stores/{vector_store_id}
         withRawResponse().retrieve(params, requestOptions).parse()
 
     override fun update(
-        params: BetaVectorStoreUpdateParams,
+        params: VectorStoreUpdateParams,
         requestOptions: RequestOptions,
     ): VectorStore =
         // post /vector_stores/{vector_store_id}
         withRawResponse().update(params, requestOptions).parse()
 
     override fun list(
-        params: BetaVectorStoreListParams,
+        params: VectorStoreListParams,
         requestOptions: RequestOptions,
-    ): BetaVectorStoreListPage =
+    ): VectorStoreListPage =
         // get /vector_stores
         withRawResponse().list(params, requestOptions).parse()
 
     override fun delete(
-        params: BetaVectorStoreDeleteParams,
+        params: VectorStoreDeleteParams,
         requestOptions: RequestOptions,
     ): VectorStoreDeleted =
         // delete /vector_stores/{vector_store_id}
@@ -107,7 +107,7 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
             jsonHandler<VectorStore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun create(
-            params: BetaVectorStoreCreateParams,
+            params: VectorStoreCreateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<VectorStore> {
             val request =
@@ -135,7 +135,7 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
             jsonHandler<VectorStore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun retrieve(
-            params: BetaVectorStoreRetrieveParams,
+            params: VectorStoreRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<VectorStore> {
             val request =
@@ -162,7 +162,7 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
             jsonHandler<VectorStore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun update(
-            params: BetaVectorStoreUpdateParams,
+            params: VectorStoreUpdateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<VectorStore> {
             val request =
@@ -186,14 +186,14 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
             }
         }
 
-        private val listHandler: Handler<BetaVectorStoreListPage.Response> =
-            jsonHandler<BetaVectorStoreListPage.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<VectorStoreListPage.Response> =
+            jsonHandler<VectorStoreListPage.Response>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(
-            params: BetaVectorStoreListParams,
+            params: VectorStoreListParams,
             requestOptions: RequestOptions,
-        ): HttpResponseFor<BetaVectorStoreListPage> {
+        ): HttpResponseFor<VectorStoreListPage> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -212,11 +212,7 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
                         }
                     }
                     .let {
-                        BetaVectorStoreListPage.of(
-                            VectorStoreServiceImpl(clientOptions),
-                            params,
-                            it,
-                        )
+                        VectorStoreListPage.of(VectorStoreServiceImpl(clientOptions), params, it)
                     }
             }
         }
@@ -225,7 +221,7 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
             jsonHandler<VectorStoreDeleted>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun delete(
-            params: BetaVectorStoreDeleteParams,
+            params: VectorStoreDeleteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<VectorStoreDeleted> {
             val request =

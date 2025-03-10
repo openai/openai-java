@@ -5,8 +5,8 @@ package com.openai.services.async
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
-import com.openai.models.CreateEmbeddingResponse
-import com.openai.models.EmbeddingCreateParams
+import com.openai.models.embeddings.CreateEmbeddingResponse
+import com.openai.models.embeddings.EmbeddingCreateParams
 import java.util.concurrent.CompletableFuture
 
 interface EmbeddingServiceAsync {

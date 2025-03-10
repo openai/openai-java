@@ -16,18 +16,18 @@ import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.errors.OpenAIError
-import com.openai.models.BetaVectorStoreCreateParams
-import com.openai.models.BetaVectorStoreDeleteParams
-import com.openai.models.BetaVectorStoreListPageAsync
-import com.openai.models.BetaVectorStoreListParams
-import com.openai.models.BetaVectorStoreRetrieveParams
-import com.openai.models.BetaVectorStoreUpdateParams
-import com.openai.models.VectorStore
-import com.openai.models.VectorStoreDeleted
-import com.openai.services.async.beta.vectorStores.FileBatchServiceAsync
-import com.openai.services.async.beta.vectorStores.FileBatchServiceAsyncImpl
-import com.openai.services.async.beta.vectorStores.FileServiceAsync
-import com.openai.services.async.beta.vectorStores.FileServiceAsyncImpl
+import com.openai.models.beta.vectorstores.VectorStore
+import com.openai.models.beta.vectorstores.VectorStoreCreateParams
+import com.openai.models.beta.vectorstores.VectorStoreDeleteParams
+import com.openai.models.beta.vectorstores.VectorStoreDeleted
+import com.openai.models.beta.vectorstores.VectorStoreListPageAsync
+import com.openai.models.beta.vectorstores.VectorStoreListParams
+import com.openai.models.beta.vectorstores.VectorStoreRetrieveParams
+import com.openai.models.beta.vectorstores.VectorStoreUpdateParams
+import com.openai.services.async.beta.vectorstores.FileBatchServiceAsync
+import com.openai.services.async.beta.vectorstores.FileBatchServiceAsyncImpl
+import com.openai.services.async.beta.vectorstores.FileServiceAsync
+import com.openai.services.async.beta.vectorstores.FileServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 
 class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -55,35 +55,35 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
     override fun fileBatches(): FileBatchServiceAsync = fileBatches
 
     override fun create(
-        params: BetaVectorStoreCreateParams,
+        params: VectorStoreCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<VectorStore> =
         // post /vector_stores
         withRawResponse().create(params, requestOptions).thenApply { it.parse() }
 
     override fun retrieve(
-        params: BetaVectorStoreRetrieveParams,
+        params: VectorStoreRetrieveParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<VectorStore> =
         // get /vector_stores/{vector_store_id}
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
     override fun update(
-        params: BetaVectorStoreUpdateParams,
+        params: VectorStoreUpdateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<VectorStore> =
         // post /vector_stores/{vector_store_id}
         withRawResponse().update(params, requestOptions).thenApply { it.parse() }
 
     override fun list(
-        params: BetaVectorStoreListParams,
+        params: VectorStoreListParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<BetaVectorStoreListPageAsync> =
+    ): CompletableFuture<VectorStoreListPageAsync> =
         // get /vector_stores
         withRawResponse().list(params, requestOptions).thenApply { it.parse() }
 
     override fun delete(
-        params: BetaVectorStoreDeleteParams,
+        params: VectorStoreDeleteParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<VectorStoreDeleted> =
         // delete /vector_stores/{vector_store_id}
@@ -110,7 +110,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             jsonHandler<VectorStore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun create(
-            params: BetaVectorStoreCreateParams,
+            params: VectorStoreCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<VectorStore>> {
             val request =
@@ -141,7 +141,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             jsonHandler<VectorStore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun retrieve(
-            params: BetaVectorStoreRetrieveParams,
+            params: VectorStoreRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<VectorStore>> {
             val request =
@@ -171,7 +171,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             jsonHandler<VectorStore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun update(
-            params: BetaVectorStoreUpdateParams,
+            params: VectorStoreUpdateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<VectorStore>> {
             val request =
@@ -198,14 +198,14 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                 }
         }
 
-        private val listHandler: Handler<BetaVectorStoreListPageAsync.Response> =
-            jsonHandler<BetaVectorStoreListPageAsync.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<VectorStoreListPageAsync.Response> =
+            jsonHandler<VectorStoreListPageAsync.Response>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(
-            params: BetaVectorStoreListParams,
+            params: VectorStoreListParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<BetaVectorStoreListPageAsync>> {
+        ): CompletableFuture<HttpResponseFor<VectorStoreListPageAsync>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -226,7 +226,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                                 }
                             }
                             .let {
-                                BetaVectorStoreListPageAsync.of(
+                                VectorStoreListPageAsync.of(
                                     VectorStoreServiceAsyncImpl(clientOptions),
                                     params,
                                     it,
@@ -240,7 +240,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             jsonHandler<VectorStoreDeleted>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun delete(
-            params: BetaVectorStoreDeleteParams,
+            params: VectorStoreDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<VectorStoreDeleted>> {
             val request =

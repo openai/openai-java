@@ -14,8 +14,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.errors.OpenAIError
-import com.openai.models.ChatCompletionMessageListPageAsync
-import com.openai.models.ChatCompletionMessageListParams
+import com.openai.models.chat.completions.messages.MessageListPageAsync
+import com.openai.models.chat.completions.messages.MessageListParams
 import java.util.concurrent.CompletableFuture
 
 class MessageServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -28,9 +28,9 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
     override fun withRawResponse(): MessageServiceAsync.WithRawResponse = withRawResponse
 
     override fun list(
-        params: ChatCompletionMessageListParams,
+        params: MessageListParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<ChatCompletionMessageListPageAsync> =
+    ): CompletableFuture<MessageListPageAsync> =
         // get /chat/completions/{completion_id}/messages
         withRawResponse().list(params, requestOptions).thenApply { it.parse() }
 
@@ -39,14 +39,14 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
 
         private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
-        private val listHandler: Handler<ChatCompletionMessageListPageAsync.Response> =
-            jsonHandler<ChatCompletionMessageListPageAsync.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<MessageListPageAsync.Response> =
+            jsonHandler<MessageListPageAsync.Response>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(
-            params: ChatCompletionMessageListParams,
+            params: MessageListParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<ChatCompletionMessageListPageAsync>> {
+        ): CompletableFuture<HttpResponseFor<MessageListPageAsync>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -66,7 +66,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                                 }
                             }
                             .let {
-                                ChatCompletionMessageListPageAsync.of(
+                                MessageListPageAsync.of(
                                     MessageServiceAsyncImpl(clientOptions),
                                     params,
                                     it,

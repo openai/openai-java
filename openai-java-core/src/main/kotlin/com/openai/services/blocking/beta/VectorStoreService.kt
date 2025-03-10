@@ -5,16 +5,16 @@ package com.openai.services.blocking.beta
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
-import com.openai.models.BetaVectorStoreCreateParams
-import com.openai.models.BetaVectorStoreDeleteParams
-import com.openai.models.BetaVectorStoreListPage
-import com.openai.models.BetaVectorStoreListParams
-import com.openai.models.BetaVectorStoreRetrieveParams
-import com.openai.models.BetaVectorStoreUpdateParams
-import com.openai.models.VectorStore
-import com.openai.models.VectorStoreDeleted
-import com.openai.services.blocking.beta.vectorStores.FileBatchService
-import com.openai.services.blocking.beta.vectorStores.FileService
+import com.openai.models.beta.vectorstores.VectorStore
+import com.openai.models.beta.vectorstores.VectorStoreCreateParams
+import com.openai.models.beta.vectorstores.VectorStoreDeleteParams
+import com.openai.models.beta.vectorstores.VectorStoreDeleted
+import com.openai.models.beta.vectorstores.VectorStoreListPage
+import com.openai.models.beta.vectorstores.VectorStoreListParams
+import com.openai.models.beta.vectorstores.VectorStoreRetrieveParams
+import com.openai.models.beta.vectorstores.VectorStoreUpdateParams
+import com.openai.services.blocking.beta.vectorstores.FileBatchService
+import com.openai.services.blocking.beta.vectorstores.FileService
 
 interface VectorStoreService {
 
@@ -28,60 +28,57 @@ interface VectorStoreService {
     fun fileBatches(): FileBatchService
 
     /** Create a vector store. */
-    fun create(params: BetaVectorStoreCreateParams): VectorStore =
-        create(params, RequestOptions.none())
+    fun create(params: VectorStoreCreateParams): VectorStore = create(params, RequestOptions.none())
 
     /** @see [create] */
     fun create(
-        params: BetaVectorStoreCreateParams,
+        params: VectorStoreCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStore
 
     /** Retrieves a vector store. */
-    fun retrieve(params: BetaVectorStoreRetrieveParams): VectorStore =
+    fun retrieve(params: VectorStoreRetrieveParams): VectorStore =
         retrieve(params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
-        params: BetaVectorStoreRetrieveParams,
+        params: VectorStoreRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStore
 
     /** Modifies a vector store. */
-    fun update(params: BetaVectorStoreUpdateParams): VectorStore =
-        update(params, RequestOptions.none())
+    fun update(params: VectorStoreUpdateParams): VectorStore = update(params, RequestOptions.none())
 
     /** @see [update] */
     fun update(
-        params: BetaVectorStoreUpdateParams,
+        params: VectorStoreUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStore
 
     /** Returns a list of vector stores. */
-    fun list(): BetaVectorStoreListPage = list(BetaVectorStoreListParams.none())
+    fun list(): VectorStoreListPage = list(VectorStoreListParams.none())
 
     /** @see [list] */
     fun list(
-        params: BetaVectorStoreListParams = BetaVectorStoreListParams.none(),
+        params: VectorStoreListParams = VectorStoreListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): BetaVectorStoreListPage
+    ): VectorStoreListPage
 
     /** @see [list] */
-    fun list(
-        params: BetaVectorStoreListParams = BetaVectorStoreListParams.none()
-    ): BetaVectorStoreListPage = list(params, RequestOptions.none())
+    fun list(params: VectorStoreListParams = VectorStoreListParams.none()): VectorStoreListPage =
+        list(params, RequestOptions.none())
 
     /** @see [list] */
-    fun list(requestOptions: RequestOptions): BetaVectorStoreListPage =
-        list(BetaVectorStoreListParams.none(), requestOptions)
+    fun list(requestOptions: RequestOptions): VectorStoreListPage =
+        list(VectorStoreListParams.none(), requestOptions)
 
     /** Delete a vector store. */
-    fun delete(params: BetaVectorStoreDeleteParams): VectorStoreDeleted =
+    fun delete(params: VectorStoreDeleteParams): VectorStoreDeleted =
         delete(params, RequestOptions.none())
 
     /** @see [delete] */
     fun delete(
-        params: BetaVectorStoreDeleteParams,
+        params: VectorStoreDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStoreDeleted
 
@@ -99,13 +96,13 @@ interface VectorStoreService {
          * [VectorStoreService.create].
          */
         @MustBeClosed
-        fun create(params: BetaVectorStoreCreateParams): HttpResponseFor<VectorStore> =
+        fun create(params: VectorStoreCreateParams): HttpResponseFor<VectorStore> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
         @MustBeClosed
         fun create(
-            params: BetaVectorStoreCreateParams,
+            params: VectorStoreCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<VectorStore>
 
@@ -114,13 +111,13 @@ interface VectorStoreService {
          * the same as [VectorStoreService.retrieve].
          */
         @MustBeClosed
-        fun retrieve(params: BetaVectorStoreRetrieveParams): HttpResponseFor<VectorStore> =
+        fun retrieve(params: VectorStoreRetrieveParams): HttpResponseFor<VectorStore> =
             retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
-            params: BetaVectorStoreRetrieveParams,
+            params: VectorStoreRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<VectorStore>
 
@@ -129,13 +126,13 @@ interface VectorStoreService {
          * the same as [VectorStoreService.update].
          */
         @MustBeClosed
-        fun update(params: BetaVectorStoreUpdateParams): HttpResponseFor<VectorStore> =
+        fun update(params: VectorStoreUpdateParams): HttpResponseFor<VectorStore> =
             update(params, RequestOptions.none())
 
         /** @see [update] */
         @MustBeClosed
         fun update(
-            params: BetaVectorStoreUpdateParams,
+            params: VectorStoreUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<VectorStore>
 
@@ -144,39 +141,38 @@ interface VectorStoreService {
          * [VectorStoreService.list].
          */
         @MustBeClosed
-        fun list(): HttpResponseFor<BetaVectorStoreListPage> =
-            list(BetaVectorStoreListParams.none())
+        fun list(): HttpResponseFor<VectorStoreListPage> = list(VectorStoreListParams.none())
 
         /** @see [list] */
         @MustBeClosed
         fun list(
-            params: BetaVectorStoreListParams = BetaVectorStoreListParams.none(),
+            params: VectorStoreListParams = VectorStoreListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<BetaVectorStoreListPage>
+        ): HttpResponseFor<VectorStoreListPage>
 
         /** @see [list] */
         @MustBeClosed
         fun list(
-            params: BetaVectorStoreListParams = BetaVectorStoreListParams.none()
-        ): HttpResponseFor<BetaVectorStoreListPage> = list(params, RequestOptions.none())
+            params: VectorStoreListParams = VectorStoreListParams.none()
+        ): HttpResponseFor<VectorStoreListPage> = list(params, RequestOptions.none())
 
         /** @see [list] */
         @MustBeClosed
-        fun list(requestOptions: RequestOptions): HttpResponseFor<BetaVectorStoreListPage> =
-            list(BetaVectorStoreListParams.none(), requestOptions)
+        fun list(requestOptions: RequestOptions): HttpResponseFor<VectorStoreListPage> =
+            list(VectorStoreListParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `delete /vector_stores/{vector_store_id}`, but is
          * otherwise the same as [VectorStoreService.delete].
          */
         @MustBeClosed
-        fun delete(params: BetaVectorStoreDeleteParams): HttpResponseFor<VectorStoreDeleted> =
+        fun delete(params: VectorStoreDeleteParams): HttpResponseFor<VectorStoreDeleted> =
             delete(params, RequestOptions.none())
 
         /** @see [delete] */
         @MustBeClosed
         fun delete(
-            params: BetaVectorStoreDeleteParams,
+            params: VectorStoreDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<VectorStoreDeleted>
     }

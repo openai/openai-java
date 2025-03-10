@@ -5,14 +5,14 @@ package com.openai.services.blocking.beta
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
-import com.openai.models.AutoFileChunkingStrategyParam
-import com.openai.models.BetaAssistantCreateParams
-import com.openai.models.BetaAssistantDeleteParams
-import com.openai.models.BetaAssistantRetrieveParams
-import com.openai.models.BetaAssistantUpdateParams
 import com.openai.models.ChatModel
-import com.openai.models.CodeInterpreterTool
 import com.openai.models.Metadata
+import com.openai.models.beta.assistants.AssistantCreateParams
+import com.openai.models.beta.assistants.AssistantDeleteParams
+import com.openai.models.beta.assistants.AssistantRetrieveParams
+import com.openai.models.beta.assistants.AssistantUpdateParams
+import com.openai.models.beta.assistants.CodeInterpreterTool
+import com.openai.models.beta.vectorstores.AutoFileChunkingStrategyParam
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -30,7 +30,7 @@ class AssistantServiceTest {
 
         val assistant =
             assistantService.create(
-                BetaAssistantCreateParams.builder()
+                AssistantCreateParams.builder()
                     .model(ChatModel.O3_MINI)
                     .description("description")
                     .instructions("instructions")
@@ -40,22 +40,21 @@ class AssistantServiceTest {
                             .build()
                     )
                     .name("name")
-                    .reasoningEffort(BetaAssistantCreateParams.ReasoningEffort.LOW)
+                    .reasoningEffort(AssistantCreateParams.ReasoningEffort.LOW)
                     .responseFormatAuto()
                     .temperature(1.0)
                     .toolResources(
-                        BetaAssistantCreateParams.ToolResources.builder()
+                        AssistantCreateParams.ToolResources.builder()
                             .codeInterpreter(
-                                BetaAssistantCreateParams.ToolResources.CodeInterpreter.builder()
+                                AssistantCreateParams.ToolResources.CodeInterpreter.builder()
                                     .addFileId("string")
                                     .build()
                             )
                             .fileSearch(
-                                BetaAssistantCreateParams.ToolResources.FileSearch.builder()
+                                AssistantCreateParams.ToolResources.FileSearch.builder()
                                     .addVectorStoreId("string")
                                     .addVectorStore(
-                                        BetaAssistantCreateParams.ToolResources.FileSearch
-                                            .VectorStore
+                                        AssistantCreateParams.ToolResources.FileSearch.VectorStore
                                             .builder()
                                             .chunkingStrategy(
                                                 AutoFileChunkingStrategyParam.builder().build()
@@ -94,7 +93,7 @@ class AssistantServiceTest {
 
         val assistant =
             assistantService.retrieve(
-                BetaAssistantRetrieveParams.builder().assistantId("assistant_id").build()
+                AssistantRetrieveParams.builder().assistantId("assistant_id").build()
             )
 
         assistant.validate()
@@ -111,7 +110,7 @@ class AssistantServiceTest {
 
         val assistant =
             assistantService.update(
-                BetaAssistantUpdateParams.builder()
+                AssistantUpdateParams.builder()
                     .assistantId("assistant_id")
                     .description("description")
                     .instructions("instructions")
@@ -120,20 +119,20 @@ class AssistantServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(BetaAssistantUpdateParams.Model.O3_MINI)
+                    .model(AssistantUpdateParams.Model.O3_MINI)
                     .name("name")
-                    .reasoningEffort(BetaAssistantUpdateParams.ReasoningEffort.LOW)
+                    .reasoningEffort(AssistantUpdateParams.ReasoningEffort.LOW)
                     .responseFormatAuto()
                     .temperature(1.0)
                     .toolResources(
-                        BetaAssistantUpdateParams.ToolResources.builder()
+                        AssistantUpdateParams.ToolResources.builder()
                             .codeInterpreter(
-                                BetaAssistantUpdateParams.ToolResources.CodeInterpreter.builder()
+                                AssistantUpdateParams.ToolResources.CodeInterpreter.builder()
                                     .addFileId("string")
                                     .build()
                             )
                             .fileSearch(
-                                BetaAssistantUpdateParams.ToolResources.FileSearch.builder()
+                                AssistantUpdateParams.ToolResources.FileSearch.builder()
                                     .addVectorStoreId("string")
                                     .build()
                             )
@@ -172,7 +171,7 @@ class AssistantServiceTest {
 
         val assistantDeleted =
             assistantService.delete(
-                BetaAssistantDeleteParams.builder().assistantId("assistant_id").build()
+                AssistantDeleteParams.builder().assistantId("assistant_id").build()
             )
 
         assistantDeleted.validate()

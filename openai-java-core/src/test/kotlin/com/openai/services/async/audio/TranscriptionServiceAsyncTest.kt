@@ -4,9 +4,9 @@ package com.openai.services.async.audio
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
-import com.openai.models.AudioModel
-import com.openai.models.AudioResponseFormat
-import com.openai.models.AudioTranscriptionCreateParams
+import com.openai.models.audio.AudioModel
+import com.openai.models.audio.AudioResponseFormat
+import com.openai.models.audio.transcriptions.TranscriptionCreateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -24,16 +24,14 @@ class TranscriptionServiceAsyncTest {
 
         val transcriptionFuture =
             transcriptionServiceAsync.create(
-                AudioTranscriptionCreateParams.builder()
+                TranscriptionCreateParams.builder()
                     .file("some content".toByteArray())
                     .model(AudioModel.WHISPER_1)
                     .language("language")
                     .prompt("prompt")
                     .responseFormat(AudioResponseFormat.JSON)
                     .temperature(0.0)
-                    .addTimestampGranularity(
-                        AudioTranscriptionCreateParams.TimestampGranularity.WORD
-                    )
+                    .addTimestampGranularity(TranscriptionCreateParams.TimestampGranularity.WORD)
                     .build()
             )
 

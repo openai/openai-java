@@ -2,7 +2,7 @@
 
 package com.openai.services.blocking
 
-import com.openai.services.blocking.fineTuning.JobService
+import com.openai.services.blocking.finetuning.JobService
 
 interface FineTuningService {
 

@@ -5,13 +5,13 @@ package com.openai.services.async.beta.threads
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
-import com.openai.models.BetaThreadMessageCreateParams
-import com.openai.models.BetaThreadMessageDeleteParams
-import com.openai.models.BetaThreadMessageListParams
-import com.openai.models.BetaThreadMessageRetrieveParams
-import com.openai.models.BetaThreadMessageUpdateParams
-import com.openai.models.CodeInterpreterTool
 import com.openai.models.Metadata
+import com.openai.models.beta.assistants.CodeInterpreterTool
+import com.openai.models.beta.threads.messages.MessageCreateParams
+import com.openai.models.beta.threads.messages.MessageDeleteParams
+import com.openai.models.beta.threads.messages.MessageListParams
+import com.openai.models.beta.threads.messages.MessageRetrieveParams
+import com.openai.models.beta.threads.messages.MessageUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -29,12 +29,12 @@ class MessageServiceAsyncTest {
 
         val messageFuture =
             messageServiceAsync.create(
-                BetaThreadMessageCreateParams.builder()
+                MessageCreateParams.builder()
                     .threadId("thread_id")
                     .content("string")
-                    .role(BetaThreadMessageCreateParams.Role.USER)
+                    .role(MessageCreateParams.Role.USER)
                     .addAttachment(
-                        BetaThreadMessageCreateParams.Attachment.builder()
+                        MessageCreateParams.Attachment.builder()
                             .fileId("file_id")
                             .addTool(CodeInterpreterTool.builder().build())
                             .build()
@@ -62,7 +62,7 @@ class MessageServiceAsyncTest {
 
         val messageFuture =
             messageServiceAsync.retrieve(
-                BetaThreadMessageRetrieveParams.builder()
+                MessageRetrieveParams.builder()
                     .threadId("thread_id")
                     .messageId("message_id")
                     .build()
@@ -83,7 +83,7 @@ class MessageServiceAsyncTest {
 
         val messageFuture =
             messageServiceAsync.update(
-                BetaThreadMessageUpdateParams.builder()
+                MessageUpdateParams.builder()
                     .threadId("thread_id")
                     .messageId("message_id")
                     .metadata(
@@ -108,9 +108,7 @@ class MessageServiceAsyncTest {
         val messageServiceAsync = client.beta().threads().messages()
 
         val pageFuture =
-            messageServiceAsync.list(
-                BetaThreadMessageListParams.builder().threadId("thread_id").build()
-            )
+            messageServiceAsync.list(MessageListParams.builder().threadId("thread_id").build())
 
         val page = pageFuture.get()
         page.response().validate()
@@ -127,10 +125,7 @@ class MessageServiceAsyncTest {
 
         val messageDeletedFuture =
             messageServiceAsync.delete(
-                BetaThreadMessageDeleteParams.builder()
-                    .threadId("thread_id")
-                    .messageId("message_id")
-                    .build()
+                MessageDeleteParams.builder().threadId("thread_id").messageId("message_id").build()
             )
 
         val messageDeleted = messageDeletedFuture.get()

@@ -15,10 +15,10 @@ import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
-import com.openai.models.Upload
-import com.openai.models.UploadCancelParams
-import com.openai.models.UploadCompleteParams
-import com.openai.models.UploadCreateParams
+import com.openai.models.uploads.Upload
+import com.openai.models.uploads.UploadCancelParams
+import com.openai.models.uploads.UploadCompleteParams
+import com.openai.models.uploads.UploadCreateParams
 import com.openai.services.blocking.uploads.PartService
 import com.openai.services.blocking.uploads.PartServiceImpl
 

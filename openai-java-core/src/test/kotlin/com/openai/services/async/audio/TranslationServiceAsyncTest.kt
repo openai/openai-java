@@ -4,9 +4,9 @@ package com.openai.services.async.audio
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
-import com.openai.models.AudioModel
-import com.openai.models.AudioResponseFormat
-import com.openai.models.AudioTranslationCreateParams
+import com.openai.models.audio.AudioModel
+import com.openai.models.audio.AudioResponseFormat
+import com.openai.models.audio.translations.TranslationCreateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -24,7 +24,7 @@ class TranslationServiceAsyncTest {
 
         val translationFuture =
             translationServiceAsync.create(
-                AudioTranslationCreateParams.builder()
+                TranslationCreateParams.builder()
                     .file("some content".toByteArray())
                     .model(AudioModel.WHISPER_1)
                     .prompt("prompt")

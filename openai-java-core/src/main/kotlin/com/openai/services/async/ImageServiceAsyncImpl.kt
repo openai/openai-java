@@ -16,10 +16,10 @@ import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.errors.OpenAIError
-import com.openai.models.ImageCreateVariationParams
-import com.openai.models.ImageEditParams
-import com.openai.models.ImageGenerateParams
-import com.openai.models.ImagesResponse
+import com.openai.models.images.ImageCreateVariationParams
+import com.openai.models.images.ImageEditParams
+import com.openai.models.images.ImageGenerateParams
+import com.openai.models.images.ImagesResponse
 import java.util.concurrent.CompletableFuture
 
 class ImageServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :

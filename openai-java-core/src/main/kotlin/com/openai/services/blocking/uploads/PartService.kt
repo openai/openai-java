@@ -5,8 +5,8 @@ package com.openai.services.blocking.uploads
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
-import com.openai.models.UploadPart
-import com.openai.models.UploadPartCreateParams
+import com.openai.models.uploads.parts.PartCreateParams
+import com.openai.models.uploads.parts.UploadPart
 
 interface PartService {
 
@@ -27,11 +27,11 @@ interface PartService {
      * Parts when you
      * [complete the Upload](https://platform.openai.com/docs/api-reference/uploads/complete).
      */
-    fun create(params: UploadPartCreateParams): UploadPart = create(params, RequestOptions.none())
+    fun create(params: PartCreateParams): UploadPart = create(params, RequestOptions.none())
 
     /** @see [create] */
     fun create(
-        params: UploadPartCreateParams,
+        params: PartCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): UploadPart
 
@@ -43,13 +43,13 @@ interface PartService {
          * same as [PartService.create].
          */
         @MustBeClosed
-        fun create(params: UploadPartCreateParams): HttpResponseFor<UploadPart> =
+        fun create(params: PartCreateParams): HttpResponseFor<UploadPart> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
         @MustBeClosed
         fun create(
-            params: UploadPartCreateParams,
+            params: PartCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<UploadPart>
     }

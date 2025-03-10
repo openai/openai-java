@@ -5,8 +5,8 @@ package com.openai.services.async
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
-import com.openai.models.ModerationCreateParams
-import com.openai.models.ModerationCreateResponse
+import com.openai.models.moderations.ModerationCreateParams
+import com.openai.models.moderations.ModerationCreateResponse
 import java.util.concurrent.CompletableFuture
 
 interface ModerationServiceAsync {

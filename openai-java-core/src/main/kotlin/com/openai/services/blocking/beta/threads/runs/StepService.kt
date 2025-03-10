@@ -5,10 +5,10 @@ package com.openai.services.blocking.beta.threads.runs
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
-import com.openai.models.BetaThreadRunStepListPage
-import com.openai.models.BetaThreadRunStepListParams
-import com.openai.models.BetaThreadRunStepRetrieveParams
-import com.openai.models.RunStep
+import com.openai.models.beta.threads.runs.steps.RunStep
+import com.openai.models.beta.threads.runs.steps.StepListPage
+import com.openai.models.beta.threads.runs.steps.StepListParams
+import com.openai.models.beta.threads.runs.steps.StepRetrieveParams
 
 interface StepService {
 
@@ -18,24 +18,22 @@ interface StepService {
     fun withRawResponse(): WithRawResponse
 
     /** Retrieves a run step. */
-    fun retrieve(params: BetaThreadRunStepRetrieveParams): RunStep =
-        retrieve(params, RequestOptions.none())
+    fun retrieve(params: StepRetrieveParams): RunStep = retrieve(params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
-        params: BetaThreadRunStepRetrieveParams,
+        params: StepRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): RunStep
 
     /** Returns a list of run steps belonging to a run. */
-    fun list(params: BetaThreadRunStepListParams): BetaThreadRunStepListPage =
-        list(params, RequestOptions.none())
+    fun list(params: StepListParams): StepListPage = list(params, RequestOptions.none())
 
     /** @see [list] */
     fun list(
-        params: BetaThreadRunStepListParams,
+        params: StepListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): BetaThreadRunStepListPage
+    ): StepListPage
 
     /** A view of [StepService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -45,13 +43,13 @@ interface StepService {
          * but is otherwise the same as [StepService.retrieve].
          */
         @MustBeClosed
-        fun retrieve(params: BetaThreadRunStepRetrieveParams): HttpResponseFor<RunStep> =
+        fun retrieve(params: StepRetrieveParams): HttpResponseFor<RunStep> =
             retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
-            params: BetaThreadRunStepRetrieveParams,
+            params: StepRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<RunStep>
 
@@ -60,14 +58,14 @@ interface StepService {
          * otherwise the same as [StepService.list].
          */
         @MustBeClosed
-        fun list(params: BetaThreadRunStepListParams): HttpResponseFor<BetaThreadRunStepListPage> =
+        fun list(params: StepListParams): HttpResponseFor<StepListPage> =
             list(params, RequestOptions.none())
 
         /** @see [list] */
         @MustBeClosed
         fun list(
-            params: BetaThreadRunStepListParams,
+            params: StepListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<BetaThreadRunStepListPage>
+        ): HttpResponseFor<StepListPage>
     }
 }

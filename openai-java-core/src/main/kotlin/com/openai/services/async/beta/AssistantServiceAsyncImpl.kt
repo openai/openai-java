@@ -16,14 +16,14 @@ import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.errors.OpenAIError
-import com.openai.models.Assistant
-import com.openai.models.AssistantDeleted
-import com.openai.models.BetaAssistantCreateParams
-import com.openai.models.BetaAssistantDeleteParams
-import com.openai.models.BetaAssistantListPageAsync
-import com.openai.models.BetaAssistantListParams
-import com.openai.models.BetaAssistantRetrieveParams
-import com.openai.models.BetaAssistantUpdateParams
+import com.openai.models.beta.assistants.Assistant
+import com.openai.models.beta.assistants.AssistantCreateParams
+import com.openai.models.beta.assistants.AssistantDeleteParams
+import com.openai.models.beta.assistants.AssistantDeleted
+import com.openai.models.beta.assistants.AssistantListPageAsync
+import com.openai.models.beta.assistants.AssistantListParams
+import com.openai.models.beta.assistants.AssistantRetrieveParams
+import com.openai.models.beta.assistants.AssistantUpdateParams
 import java.util.concurrent.CompletableFuture
 
 class AssistantServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -41,35 +41,35 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
     override fun withRawResponse(): AssistantServiceAsync.WithRawResponse = withRawResponse
 
     override fun create(
-        params: BetaAssistantCreateParams,
+        params: AssistantCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Assistant> =
         // post /assistants
         withRawResponse().create(params, requestOptions).thenApply { it.parse() }
 
     override fun retrieve(
-        params: BetaAssistantRetrieveParams,
+        params: AssistantRetrieveParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Assistant> =
         // get /assistants/{assistant_id}
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
     override fun update(
-        params: BetaAssistantUpdateParams,
+        params: AssistantUpdateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Assistant> =
         // post /assistants/{assistant_id}
         withRawResponse().update(params, requestOptions).thenApply { it.parse() }
 
     override fun list(
-        params: BetaAssistantListParams,
+        params: AssistantListParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<BetaAssistantListPageAsync> =
+    ): CompletableFuture<AssistantListPageAsync> =
         // get /assistants
         withRawResponse().list(params, requestOptions).thenApply { it.parse() }
 
     override fun delete(
-        params: BetaAssistantDeleteParams,
+        params: AssistantDeleteParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<AssistantDeleted> =
         // delete /assistants/{assistant_id}
@@ -84,7 +84,7 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
             jsonHandler<Assistant>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun create(
-            params: BetaAssistantCreateParams,
+            params: AssistantCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Assistant>> {
             val request =
@@ -115,7 +115,7 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
             jsonHandler<Assistant>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun retrieve(
-            params: BetaAssistantRetrieveParams,
+            params: AssistantRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Assistant>> {
             val request =
@@ -145,7 +145,7 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
             jsonHandler<Assistant>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun update(
-            params: BetaAssistantUpdateParams,
+            params: AssistantUpdateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Assistant>> {
             val request =
@@ -172,14 +172,14 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
                 }
         }
 
-        private val listHandler: Handler<BetaAssistantListPageAsync.Response> =
-            jsonHandler<BetaAssistantListPageAsync.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<AssistantListPageAsync.Response> =
+            jsonHandler<AssistantListPageAsync.Response>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(
-            params: BetaAssistantListParams,
+            params: AssistantListParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<BetaAssistantListPageAsync>> {
+        ): CompletableFuture<HttpResponseFor<AssistantListPageAsync>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -200,7 +200,7 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
                                 }
                             }
                             .let {
-                                BetaAssistantListPageAsync.of(
+                                AssistantListPageAsync.of(
                                     AssistantServiceAsyncImpl(clientOptions),
                                     params,
                                     it,
@@ -214,7 +214,7 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
             jsonHandler<AssistantDeleted>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun delete(
-            params: BetaAssistantDeleteParams,
+            params: AssistantDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<AssistantDeleted>> {
             val request =

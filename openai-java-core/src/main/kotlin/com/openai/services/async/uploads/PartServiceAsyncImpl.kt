@@ -15,8 +15,8 @@ import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.errors.OpenAIError
-import com.openai.models.UploadPart
-import com.openai.models.UploadPartCreateParams
+import com.openai.models.uploads.parts.PartCreateParams
+import com.openai.models.uploads.parts.UploadPart
 import java.util.concurrent.CompletableFuture
 
 class PartServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -29,7 +29,7 @@ class PartServiceAsyncImpl internal constructor(private val clientOptions: Clien
     override fun withRawResponse(): PartServiceAsync.WithRawResponse = withRawResponse
 
     override fun create(
-        params: UploadPartCreateParams,
+        params: PartCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<UploadPart> =
         // post /uploads/{upload_id}/parts
@@ -44,7 +44,7 @@ class PartServiceAsyncImpl internal constructor(private val clientOptions: Clien
             jsonHandler<UploadPart>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun create(
-            params: UploadPartCreateParams,
+            params: PartCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<UploadPart>> {
             val request =

@@ -15,10 +15,10 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
-import com.openai.models.BetaThreadRunStepListPage
-import com.openai.models.BetaThreadRunStepListParams
-import com.openai.models.BetaThreadRunStepRetrieveParams
-import com.openai.models.RunStep
+import com.openai.models.beta.threads.runs.steps.RunStep
+import com.openai.models.beta.threads.runs.steps.StepListPage
+import com.openai.models.beta.threads.runs.steps.StepListParams
+import com.openai.models.beta.threads.runs.steps.StepRetrieveParams
 
 class StepServiceImpl internal constructor(private val clientOptions: ClientOptions) : StepService {
 
@@ -33,17 +33,11 @@ class StepServiceImpl internal constructor(private val clientOptions: ClientOpti
 
     override fun withRawResponse(): StepService.WithRawResponse = withRawResponse
 
-    override fun retrieve(
-        params: BetaThreadRunStepRetrieveParams,
-        requestOptions: RequestOptions,
-    ): RunStep =
+    override fun retrieve(params: StepRetrieveParams, requestOptions: RequestOptions): RunStep =
         // get /threads/{thread_id}/runs/{run_id}/steps/{step_id}
         withRawResponse().retrieve(params, requestOptions).parse()
 
-    override fun list(
-        params: BetaThreadRunStepListParams,
-        requestOptions: RequestOptions,
-    ): BetaThreadRunStepListPage =
+    override fun list(params: StepListParams, requestOptions: RequestOptions): StepListPage =
         // get /threads/{thread_id}/runs/{run_id}/steps
         withRawResponse().list(params, requestOptions).parse()
 
@@ -56,7 +50,7 @@ class StepServiceImpl internal constructor(private val clientOptions: ClientOpti
             jsonHandler<RunStep>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun retrieve(
-            params: BetaThreadRunStepRetrieveParams,
+            params: StepRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<RunStep> {
             val request =
@@ -86,14 +80,14 @@ class StepServiceImpl internal constructor(private val clientOptions: ClientOpti
             }
         }
 
-        private val listHandler: Handler<BetaThreadRunStepListPage.Response> =
-            jsonHandler<BetaThreadRunStepListPage.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<StepListPage.Response> =
+            jsonHandler<StepListPage.Response>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(
-            params: BetaThreadRunStepListParams,
+            params: StepListParams,
             requestOptions: RequestOptions,
-        ): HttpResponseFor<BetaThreadRunStepListPage> {
+        ): HttpResponseFor<StepListPage> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -117,9 +111,7 @@ class StepServiceImpl internal constructor(private val clientOptions: ClientOpti
                             it.validate()
                         }
                     }
-                    .let {
-                        BetaThreadRunStepListPage.of(StepServiceImpl(clientOptions), params, it)
-                    }
+                    .let { StepListPage.of(StepServiceImpl(clientOptions), params, it) }
             }
         }
     }

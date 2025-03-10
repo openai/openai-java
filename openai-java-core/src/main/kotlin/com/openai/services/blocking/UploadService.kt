@@ -5,10 +5,10 @@ package com.openai.services.blocking
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
-import com.openai.models.Upload
-import com.openai.models.UploadCancelParams
-import com.openai.models.UploadCompleteParams
-import com.openai.models.UploadCreateParams
+import com.openai.models.uploads.Upload
+import com.openai.models.uploads.UploadCancelParams
+import com.openai.models.uploads.UploadCompleteParams
+import com.openai.models.uploads.UploadCreateParams
 import com.openai.services.blocking.uploads.PartService
 
 interface UploadService {

@@ -10,8 +10,8 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
 import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
-import com.openai.models.AudioSpeechCreateParams
-import com.openai.models.SpeechModel
+import com.openai.models.audio.speech.SpeechCreateParams
+import com.openai.models.audio.speech.SpeechModel
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -32,11 +32,11 @@ class SpeechServiceTest {
 
         val speech =
             speechService.create(
-                AudioSpeechCreateParams.builder()
+                SpeechCreateParams.builder()
                     .input("input")
                     .model(SpeechModel.TTS_1)
-                    .voice(AudioSpeechCreateParams.Voice.ALLOY)
-                    .responseFormat(AudioSpeechCreateParams.ResponseFormat.MP3)
+                    .voice(SpeechCreateParams.Voice.ALLOY)
+                    .responseFormat(SpeechCreateParams.ResponseFormat.MP3)
                     .speed(0.25)
                     .build()
             )

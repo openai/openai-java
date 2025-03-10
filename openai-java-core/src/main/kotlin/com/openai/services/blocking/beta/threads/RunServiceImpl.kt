@@ -21,15 +21,15 @@ import com.openai.core.http.map
 import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
-import com.openai.models.AssistantStreamEvent
-import com.openai.models.BetaThreadRunCancelParams
-import com.openai.models.BetaThreadRunCreateParams
-import com.openai.models.BetaThreadRunListPage
-import com.openai.models.BetaThreadRunListParams
-import com.openai.models.BetaThreadRunRetrieveParams
-import com.openai.models.BetaThreadRunSubmitToolOutputsParams
-import com.openai.models.BetaThreadRunUpdateParams
-import com.openai.models.Run
+import com.openai.models.beta.assistants.AssistantStreamEvent
+import com.openai.models.beta.threads.runs.Run
+import com.openai.models.beta.threads.runs.RunCancelParams
+import com.openai.models.beta.threads.runs.RunCreateParams
+import com.openai.models.beta.threads.runs.RunListPage
+import com.openai.models.beta.threads.runs.RunListParams
+import com.openai.models.beta.threads.runs.RunRetrieveParams
+import com.openai.models.beta.threads.runs.RunSubmitToolOutputsParams
+import com.openai.models.beta.threads.runs.RunUpdateParams
 import com.openai.services.blocking.beta.threads.runs.StepService
 import com.openai.services.blocking.beta.threads.runs.StepServiceImpl
 
@@ -50,48 +50,42 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
 
     override fun steps(): StepService = steps
 
-    override fun create(params: BetaThreadRunCreateParams, requestOptions: RequestOptions): Run =
+    override fun create(params: RunCreateParams, requestOptions: RequestOptions): Run =
         // post /threads/{thread_id}/runs
         withRawResponse().create(params, requestOptions).parse()
 
     override fun createStreaming(
-        params: BetaThreadRunCreateParams,
+        params: RunCreateParams,
         requestOptions: RequestOptions,
     ): StreamResponse<AssistantStreamEvent> =
         // post /threads/{thread_id}/runs
         withRawResponse().createStreaming(params, requestOptions).parse()
 
-    override fun retrieve(
-        params: BetaThreadRunRetrieveParams,
-        requestOptions: RequestOptions,
-    ): Run =
+    override fun retrieve(params: RunRetrieveParams, requestOptions: RequestOptions): Run =
         // get /threads/{thread_id}/runs/{run_id}
         withRawResponse().retrieve(params, requestOptions).parse()
 
-    override fun update(params: BetaThreadRunUpdateParams, requestOptions: RequestOptions): Run =
+    override fun update(params: RunUpdateParams, requestOptions: RequestOptions): Run =
         // post /threads/{thread_id}/runs/{run_id}
         withRawResponse().update(params, requestOptions).parse()
 
-    override fun list(
-        params: BetaThreadRunListParams,
-        requestOptions: RequestOptions,
-    ): BetaThreadRunListPage =
+    override fun list(params: RunListParams, requestOptions: RequestOptions): RunListPage =
         // get /threads/{thread_id}/runs
         withRawResponse().list(params, requestOptions).parse()
 
-    override fun cancel(params: BetaThreadRunCancelParams, requestOptions: RequestOptions): Run =
+    override fun cancel(params: RunCancelParams, requestOptions: RequestOptions): Run =
         // post /threads/{thread_id}/runs/{run_id}/cancel
         withRawResponse().cancel(params, requestOptions).parse()
 
     override fun submitToolOutputs(
-        params: BetaThreadRunSubmitToolOutputsParams,
+        params: RunSubmitToolOutputsParams,
         requestOptions: RequestOptions,
     ): Run =
         // post /threads/{thread_id}/runs/{run_id}/submit_tool_outputs
         withRawResponse().submitToolOutputs(params, requestOptions).parse()
 
     override fun submitToolOutputsStreaming(
-        params: BetaThreadRunSubmitToolOutputsParams,
+        params: RunSubmitToolOutputsParams,
         requestOptions: RequestOptions,
     ): StreamResponse<AssistantStreamEvent> =
         // post /threads/{thread_id}/runs/{run_id}/submit_tool_outputs
@@ -112,7 +106,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             jsonHandler<Run>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun create(
-            params: BetaThreadRunCreateParams,
+            params: RunCreateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Run> {
             val request =
@@ -142,7 +136,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
                 .withErrorHandler(errorHandler)
 
         override fun createStreaming(
-            params: BetaThreadRunCreateParams,
+            params: RunCreateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<StreamResponse<AssistantStreamEvent>> {
             val request =
@@ -181,7 +175,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             jsonHandler<Run>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun retrieve(
-            params: BetaThreadRunRetrieveParams,
+            params: RunRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Run> {
             val request =
@@ -213,7 +207,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             jsonHandler<Run>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun update(
-            params: BetaThreadRunUpdateParams,
+            params: RunUpdateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Run> {
             val request =
@@ -242,14 +236,14 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             }
         }
 
-        private val listHandler: Handler<BetaThreadRunListPage.Response> =
-            jsonHandler<BetaThreadRunListPage.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<RunListPage.Response> =
+            jsonHandler<RunListPage.Response>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(
-            params: BetaThreadRunListParams,
+            params: RunListParams,
             requestOptions: RequestOptions,
-        ): HttpResponseFor<BetaThreadRunListPage> {
+        ): HttpResponseFor<RunListPage> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -267,7 +261,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
                             it.validate()
                         }
                     }
-                    .let { BetaThreadRunListPage.of(RunServiceImpl(clientOptions), params, it) }
+                    .let { RunListPage.of(RunServiceImpl(clientOptions), params, it) }
             }
         }
 
@@ -275,7 +269,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             jsonHandler<Run>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun cancel(
-            params: BetaThreadRunCancelParams,
+            params: RunCancelParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Run> {
             val request =
@@ -309,7 +303,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             jsonHandler<Run>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun submitToolOutputs(
-            params: BetaThreadRunSubmitToolOutputsParams,
+            params: RunSubmitToolOutputsParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Run> {
             val request =
@@ -346,7 +340,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
                 .withErrorHandler(errorHandler)
 
         override fun submitToolOutputsStreaming(
-            params: BetaThreadRunSubmitToolOutputsParams,
+            params: RunSubmitToolOutputsParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<StreamResponse<AssistantStreamEvent>> {
             val request =

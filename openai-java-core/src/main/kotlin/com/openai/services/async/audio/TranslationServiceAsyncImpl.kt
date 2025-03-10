@@ -15,8 +15,8 @@ import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.errors.OpenAIError
-import com.openai.models.AudioTranslationCreateParams
-import com.openai.models.AudioTranslationCreateResponse
+import com.openai.models.audio.translations.TranslationCreateParams
+import com.openai.models.audio.translations.TranslationCreateResponse
 import java.util.concurrent.CompletableFuture
 
 class TranslationServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -29,9 +29,9 @@ class TranslationServiceAsyncImpl internal constructor(private val clientOptions
     override fun withRawResponse(): TranslationServiceAsync.WithRawResponse = withRawResponse
 
     override fun create(
-        params: AudioTranslationCreateParams,
+        params: TranslationCreateParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<AudioTranslationCreateResponse> =
+    ): CompletableFuture<TranslationCreateResponse> =
         // post /audio/translations
         withRawResponse().create(params, requestOptions).thenApply { it.parse() }
 
@@ -40,14 +40,14 @@ class TranslationServiceAsyncImpl internal constructor(private val clientOptions
 
         private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
-        private val createHandler: Handler<AudioTranslationCreateResponse> =
-            jsonHandler<AudioTranslationCreateResponse>(clientOptions.jsonMapper)
+        private val createHandler: Handler<TranslationCreateResponse> =
+            jsonHandler<TranslationCreateResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun create(
-            params: AudioTranslationCreateParams,
+            params: TranslationCreateParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<AudioTranslationCreateResponse>> {
+        ): CompletableFuture<HttpResponseFor<TranslationCreateResponse>> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)

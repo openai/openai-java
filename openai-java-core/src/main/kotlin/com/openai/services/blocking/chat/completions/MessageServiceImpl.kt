@@ -14,8 +14,8 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
-import com.openai.models.ChatCompletionMessageListPage
-import com.openai.models.ChatCompletionMessageListParams
+import com.openai.models.chat.completions.messages.MessageListPage
+import com.openai.models.chat.completions.messages.MessageListParams
 
 class MessageServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     MessageService {
@@ -26,10 +26,7 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
 
     override fun withRawResponse(): MessageService.WithRawResponse = withRawResponse
 
-    override fun list(
-        params: ChatCompletionMessageListParams,
-        requestOptions: RequestOptions,
-    ): ChatCompletionMessageListPage =
+    override fun list(params: MessageListParams, requestOptions: RequestOptions): MessageListPage =
         // get /chat/completions/{completion_id}/messages
         withRawResponse().list(params, requestOptions).parse()
 
@@ -38,14 +35,14 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
 
         private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
-        private val listHandler: Handler<ChatCompletionMessageListPage.Response> =
-            jsonHandler<ChatCompletionMessageListPage.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<MessageListPage.Response> =
+            jsonHandler<MessageListPage.Response>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(
-            params: ChatCompletionMessageListParams,
+            params: MessageListParams,
             requestOptions: RequestOptions,
-        ): HttpResponseFor<ChatCompletionMessageListPage> {
+        ): HttpResponseFor<MessageListPage> {
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -62,13 +59,7 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
                             it.validate()
                         }
                     }
-                    .let {
-                        ChatCompletionMessageListPage.of(
-                            MessageServiceImpl(clientOptions),
-                            params,
-                            it,
-                        )
-                    }
+                    .let { MessageListPage.of(MessageServiceImpl(clientOptions), params, it) }
             }
         }
     }

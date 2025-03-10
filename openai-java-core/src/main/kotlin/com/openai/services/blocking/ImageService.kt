@@ -5,10 +5,10 @@ package com.openai.services.blocking
 import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
-import com.openai.models.ImageCreateVariationParams
-import com.openai.models.ImageEditParams
-import com.openai.models.ImageGenerateParams
-import com.openai.models.ImagesResponse
+import com.openai.models.images.ImageCreateVariationParams
+import com.openai.models.images.ImageEditParams
+import com.openai.models.images.ImageGenerateParams
+import com.openai.models.images.ImagesResponse
 
 interface ImageService {
 

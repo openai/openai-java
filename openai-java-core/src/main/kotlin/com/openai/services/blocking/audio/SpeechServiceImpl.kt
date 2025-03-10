@@ -12,7 +12,7 @@ import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.json
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
-import com.openai.models.AudioSpeechCreateParams
+import com.openai.models.audio.speech.SpeechCreateParams
 
 class SpeechServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     SpeechService {
@@ -23,10 +23,7 @@ class SpeechServiceImpl internal constructor(private val clientOptions: ClientOp
 
     override fun withRawResponse(): SpeechService.WithRawResponse = withRawResponse
 
-    override fun create(
-        params: AudioSpeechCreateParams,
-        requestOptions: RequestOptions,
-    ): HttpResponse =
+    override fun create(params: SpeechCreateParams, requestOptions: RequestOptions): HttpResponse =
         // post /audio/speech
         withRawResponse().create(params, requestOptions)
 
@@ -36,7 +33,7 @@ class SpeechServiceImpl internal constructor(private val clientOptions: ClientOp
         private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
 
         override fun create(
-            params: AudioSpeechCreateParams,
+            params: SpeechCreateParams,
             requestOptions: RequestOptions,
         ): HttpResponse {
             val request =

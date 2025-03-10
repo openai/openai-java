@@ -3,8 +3,8 @@
 package com.openai.services.async
 
 import com.openai.core.ClientOptions
-import com.openai.services.async.chat.CompletionServiceAsync
-import com.openai.services.async.chat.CompletionServiceAsyncImpl
+import com.openai.services.async.chat.ChatCompletionServiceAsync
+import com.openai.services.async.chat.ChatCompletionServiceAsyncImpl
 
 class ChatServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     ChatServiceAsync {
@@ -13,21 +13,21 @@ class ChatServiceAsyncImpl internal constructor(private val clientOptions: Clien
         WithRawResponseImpl(clientOptions)
     }
 
-    private val completions: CompletionServiceAsync by lazy {
-        CompletionServiceAsyncImpl(clientOptions)
+    private val completions: ChatCompletionServiceAsync by lazy {
+        ChatCompletionServiceAsyncImpl(clientOptions)
     }
 
     override fun withRawResponse(): ChatServiceAsync.WithRawResponse = withRawResponse
 
-    override fun completions(): CompletionServiceAsync = completions
+    override fun completions(): ChatCompletionServiceAsync = completions
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ChatServiceAsync.WithRawResponse {
 
-        private val completions: CompletionServiceAsync.WithRawResponse by lazy {
-            CompletionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        private val completions: ChatCompletionServiceAsync.WithRawResponse by lazy {
+            ChatCompletionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
-        override fun completions(): CompletionServiceAsync.WithRawResponse = completions
+        override fun completions(): ChatCompletionServiceAsync.WithRawResponse = completions
     }
 }

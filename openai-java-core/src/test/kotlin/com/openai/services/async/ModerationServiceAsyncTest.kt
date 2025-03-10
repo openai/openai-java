@@ -4,8 +4,8 @@ package com.openai.services.async
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
-import com.openai.models.ModerationCreateParams
-import com.openai.models.ModerationModel
+import com.openai.models.moderations.ModerationCreateParams
+import com.openai.models.moderations.ModerationModel
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 

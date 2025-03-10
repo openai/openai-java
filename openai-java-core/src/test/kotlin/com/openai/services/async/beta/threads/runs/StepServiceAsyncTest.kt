@@ -4,9 +4,9 @@ package com.openai.services.async.beta.threads.runs
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
-import com.openai.models.BetaThreadRunStepListParams
-import com.openai.models.BetaThreadRunStepRetrieveParams
-import com.openai.models.RunStepInclude
+import com.openai.models.beta.threads.runs.steps.RunStepInclude
+import com.openai.models.beta.threads.runs.steps.StepListParams
+import com.openai.models.beta.threads.runs.steps.StepRetrieveParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -24,7 +24,7 @@ class StepServiceAsyncTest {
 
         val runStepFuture =
             stepServiceAsync.retrieve(
-                BetaThreadRunStepRetrieveParams.builder()
+                StepRetrieveParams.builder()
                     .threadId("thread_id")
                     .runId("run_id")
                     .stepId("step_id")
@@ -47,7 +47,7 @@ class StepServiceAsyncTest {
 
         val pageFuture =
             stepServiceAsync.list(
-                BetaThreadRunStepListParams.builder().threadId("thread_id").runId("run_id").build()
+                StepListParams.builder().threadId("thread_id").runId("run_id").build()
             )
 
         val page = pageFuture.get()

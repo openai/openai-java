@@ -20,8 +20,8 @@ import com.openai.core.http.map
 import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.errors.OpenAIError
-import com.openai.models.Completion
-import com.openai.models.CompletionCreateParams
+import com.openai.models.completions.Completion
+import com.openai.models.completions.CompletionCreateParams
 
 class CompletionServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     CompletionService {

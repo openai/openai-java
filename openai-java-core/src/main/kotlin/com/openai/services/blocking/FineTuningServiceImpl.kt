@@ -3,8 +3,8 @@
 package com.openai.services.blocking
 
 import com.openai.core.ClientOptions
-import com.openai.services.blocking.fineTuning.JobService
-import com.openai.services.blocking.fineTuning.JobServiceImpl
+import com.openai.services.blocking.finetuning.JobService
+import com.openai.services.blocking.finetuning.JobServiceImpl
 
 class FineTuningServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     FineTuningService {

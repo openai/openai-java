@@ -4,8 +4,8 @@ package com.openai.services.blocking
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
-import com.openai.models.EmbeddingCreateParams
-import com.openai.models.EmbeddingModel
+import com.openai.models.embeddings.EmbeddingCreateParams
+import com.openai.models.embeddings.EmbeddingModel
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
