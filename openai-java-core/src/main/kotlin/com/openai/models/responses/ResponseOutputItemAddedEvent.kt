@@ -145,8 +145,7 @@ private constructor(
          * A description of the chain of thought used by a reasoning model while generating a
          * response.
          */
-        fun item(reasoning: ResponseOutputItem.Reasoning) =
-            item(ResponseOutputItem.ofReasoning(reasoning))
+        fun item(reasoning: ResponseReasoningItem) = item(ResponseOutputItem.ofReasoning(reasoning))
 
         /** The index of the output item that was added. */
         fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))

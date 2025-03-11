@@ -736,7 +736,7 @@ private constructor(
          * A description of the chain of thought used by a reasoning model while generating a
          * response.
          */
-        fun addOutput(reasoning: ResponseOutputItem.Reasoning) =
+        fun addOutput(reasoning: ResponseReasoningItem) =
             addOutput(ResponseOutputItem.ofReasoning(reasoning))
 
         /** Whether to allow the model to run tool calls in parallel. */
