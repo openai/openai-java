@@ -7,12 +7,12 @@ import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
 import com.openai.models.ChatModel
 import com.openai.models.Metadata
+import com.openai.models.ReasoningEffort
 import com.openai.models.beta.assistants.AssistantCreateParams
 import com.openai.models.beta.assistants.AssistantDeleteParams
 import com.openai.models.beta.assistants.AssistantRetrieveParams
 import com.openai.models.beta.assistants.AssistantUpdateParams
 import com.openai.models.beta.assistants.CodeInterpreterTool
-import com.openai.models.beta.vectorstores.AutoFileChunkingStrategyParam
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -40,8 +40,8 @@ class AssistantServiceAsyncTest {
                             .build()
                     )
                     .name("name")
-                    .reasoningEffort(AssistantCreateParams.ReasoningEffort.LOW)
-                    .responseFormatAuto()
+                    .reasoningEffort(ReasoningEffort.LOW)
+                    .responseFormatJsonValue()
                     .temperature(1.0)
                     .toolResources(
                         AssistantCreateParams.ToolResources.builder()
@@ -56,9 +56,7 @@ class AssistantServiceAsyncTest {
                                     .addVectorStore(
                                         AssistantCreateParams.ToolResources.FileSearch.VectorStore
                                             .builder()
-                                            .chunkingStrategy(
-                                                AutoFileChunkingStrategyParam.builder().build()
-                                            )
+                                            .chunkingStrategyAuto()
                                             .addFileId("string")
                                             .metadata(
                                                 Metadata.builder()
@@ -123,8 +121,8 @@ class AssistantServiceAsyncTest {
                     )
                     .model(AssistantUpdateParams.Model.O3_MINI)
                     .name("name")
-                    .reasoningEffort(AssistantUpdateParams.ReasoningEffort.LOW)
-                    .responseFormatAuto()
+                    .reasoningEffort(ReasoningEffort.LOW)
+                    .responseFormatJsonValue()
                     .temperature(1.0)
                     .toolResources(
                         AssistantUpdateParams.ToolResources.builder()

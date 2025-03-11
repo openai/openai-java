@@ -45,13 +45,10 @@ private constructor(
     fun file(): InputStream = body.file()
 
     /**
-     * The intended purpose of the uploaded file.
-     *
-     * Use "assistants" for [Assistants](https://platform.openai.com/docs/api-reference/assistants)
-     * and [Message](https://platform.openai.com/docs/api-reference/messages) files, "vision" for
-     * Assistants image file inputs, "batch" for
-     * [Batch API](https://platform.openai.com/docs/guides/batch), and "fine-tune" for
-     * [Fine-tuning](https://platform.openai.com/docs/api-reference/fine-tuning).
+     * The intended purpose of the uploaded file. One of: - `assistants`: Used in the Assistants
+     * API - `batch`: Used in the Batch API - `fine-tune`: Used for fine-tuning - `vision`: Images
+     * used for vision fine-tuning - `user_data`: Flexible file type for any purpose - `evals`: Used
+     * for eval data sets
      */
     fun purpose(): FilePurpose = body.purpose()
 
@@ -59,13 +56,10 @@ private constructor(
     fun _file(): MultipartField<InputStream> = body._file()
 
     /**
-     * The intended purpose of the uploaded file.
-     *
-     * Use "assistants" for [Assistants](https://platform.openai.com/docs/api-reference/assistants)
-     * and [Message](https://platform.openai.com/docs/api-reference/messages) files, "vision" for
-     * Assistants image file inputs, "batch" for
-     * [Batch API](https://platform.openai.com/docs/guides/batch), and "fine-tune" for
-     * [Fine-tuning](https://platform.openai.com/docs/api-reference/fine-tuning).
+     * The intended purpose of the uploaded file. One of: - `assistants`: Used in the Assistants
+     * API - `batch`: Used in the Batch API - `fine-tune`: Used for fine-tuning - `vision`: Images
+     * used for vision fine-tuning - `user_data`: Flexible file type for any purpose - `evals`: Used
+     * for eval data sets
      */
     fun _purpose(): MultipartField<FilePurpose> = body._purpose()
 
@@ -93,14 +87,10 @@ private constructor(
         fun file(): InputStream = file.value.getRequired("file")
 
         /**
-         * The intended purpose of the uploaded file.
-         *
-         * Use "assistants" for
-         * [Assistants](https://platform.openai.com/docs/api-reference/assistants) and
-         * [Message](https://platform.openai.com/docs/api-reference/messages) files, "vision" for
-         * Assistants image file inputs, "batch" for
-         * [Batch API](https://platform.openai.com/docs/guides/batch), and "fine-tune" for
-         * [Fine-tuning](https://platform.openai.com/docs/api-reference/fine-tuning).
+         * The intended purpose of the uploaded file. One of: - `assistants`: Used in the Assistants
+         * API - `batch`: Used in the Batch API - `fine-tune`: Used for fine-tuning - `vision`:
+         * Images used for vision fine-tuning - `user_data`: Flexible file type for any purpose -
+         * `evals`: Used for eval data sets
          */
         fun purpose(): FilePurpose = purpose.value.getRequired("purpose")
 
@@ -108,14 +98,10 @@ private constructor(
         fun _file(): MultipartField<InputStream> = file
 
         /**
-         * The intended purpose of the uploaded file.
-         *
-         * Use "assistants" for
-         * [Assistants](https://platform.openai.com/docs/api-reference/assistants) and
-         * [Message](https://platform.openai.com/docs/api-reference/messages) files, "vision" for
-         * Assistants image file inputs, "batch" for
-         * [Batch API](https://platform.openai.com/docs/guides/batch), and "fine-tune" for
-         * [Fine-tuning](https://platform.openai.com/docs/api-reference/fine-tuning).
+         * The intended purpose of the uploaded file. One of: - `assistants`: Used in the Assistants
+         * API - `batch`: Used in the Batch API - `fine-tune`: Used for fine-tuning - `vision`:
+         * Images used for vision fine-tuning - `user_data`: Flexible file type for any purpose -
+         * `evals`: Used for eval data sets
          */
         fun _purpose(): MultipartField<FilePurpose> = purpose
 
@@ -178,26 +164,18 @@ private constructor(
                 )
 
             /**
-             * The intended purpose of the uploaded file.
-             *
-             * Use "assistants" for
-             * [Assistants](https://platform.openai.com/docs/api-reference/assistants) and
-             * [Message](https://platform.openai.com/docs/api-reference/messages) files, "vision"
-             * for Assistants image file inputs, "batch" for
-             * [Batch API](https://platform.openai.com/docs/guides/batch), and "fine-tune" for
-             * [Fine-tuning](https://platform.openai.com/docs/api-reference/fine-tuning).
+             * The intended purpose of the uploaded file. One of: - `assistants`: Used in the
+             * Assistants API - `batch`: Used in the Batch API - `fine-tune`: Used for fine-tuning -
+             * `vision`: Images used for vision fine-tuning - `user_data`: Flexible file type for
+             * any purpose - `evals`: Used for eval data sets
              */
             fun purpose(purpose: FilePurpose) = purpose(MultipartField.of(purpose))
 
             /**
-             * The intended purpose of the uploaded file.
-             *
-             * Use "assistants" for
-             * [Assistants](https://platform.openai.com/docs/api-reference/assistants) and
-             * [Message](https://platform.openai.com/docs/api-reference/messages) files, "vision"
-             * for Assistants image file inputs, "batch" for
-             * [Batch API](https://platform.openai.com/docs/guides/batch), and "fine-tune" for
-             * [Fine-tuning](https://platform.openai.com/docs/api-reference/fine-tuning).
+             * The intended purpose of the uploaded file. One of: - `assistants`: Used in the
+             * Assistants API - `batch`: Used in the Batch API - `fine-tune`: Used for fine-tuning -
+             * `vision`: Images used for vision fine-tuning - `user_data`: Flexible file type for
+             * any purpose - `evals`: Used for eval data sets
              */
             fun purpose(purpose: MultipartField<FilePurpose>) = apply { this.purpose = purpose }
 
@@ -265,26 +243,18 @@ private constructor(
         fun file(file: Path) = apply { body.file(file) }
 
         /**
-         * The intended purpose of the uploaded file.
-         *
-         * Use "assistants" for
-         * [Assistants](https://platform.openai.com/docs/api-reference/assistants) and
-         * [Message](https://platform.openai.com/docs/api-reference/messages) files, "vision" for
-         * Assistants image file inputs, "batch" for
-         * [Batch API](https://platform.openai.com/docs/guides/batch), and "fine-tune" for
-         * [Fine-tuning](https://platform.openai.com/docs/api-reference/fine-tuning).
+         * The intended purpose of the uploaded file. One of: - `assistants`: Used in the Assistants
+         * API - `batch`: Used in the Batch API - `fine-tune`: Used for fine-tuning - `vision`:
+         * Images used for vision fine-tuning - `user_data`: Flexible file type for any purpose -
+         * `evals`: Used for eval data sets
          */
         fun purpose(purpose: FilePurpose) = apply { body.purpose(purpose) }
 
         /**
-         * The intended purpose of the uploaded file.
-         *
-         * Use "assistants" for
-         * [Assistants](https://platform.openai.com/docs/api-reference/assistants) and
-         * [Message](https://platform.openai.com/docs/api-reference/messages) files, "vision" for
-         * Assistants image file inputs, "batch" for
-         * [Batch API](https://platform.openai.com/docs/guides/batch), and "fine-tune" for
-         * [Fine-tuning](https://platform.openai.com/docs/api-reference/fine-tuning).
+         * The intended purpose of the uploaded file. One of: - `assistants`: Used in the Assistants
+         * API - `batch`: Used in the Batch API - `fine-tune`: Used for fine-tuning - `vision`:
+         * Images used for vision fine-tuning - `user_data`: Flexible file type for any purpose -
+         * `evals`: Used for eval data sets
          */
         fun purpose(purpose: MultipartField<FilePurpose>) = apply { body.purpose(purpose) }
 

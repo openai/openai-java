@@ -44,7 +44,7 @@ import java.util.Optional
 @JsonSerialize(using = AssistantResponseFormatOption.Serializer::class)
 class AssistantResponseFormatOption
 private constructor(
-    private val auto: JsonValue? = null,
+    private val jsonValue: JsonValue? = null,
     private val responseFormatText: ResponseFormatText? = null,
     private val responseFormatJsonObject: ResponseFormatJsonObject? = null,
     private val responseFormatJsonSchema: ResponseFormatJsonSchema? = null,
@@ -52,17 +52,27 @@ private constructor(
 ) {
 
     /** `auto` is the default value */
-    fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
+    fun jsonValue(): Optional<JsonValue> = Optional.ofNullable(jsonValue)
 
+    /** Default response format. Used to generate text responses. */
     fun responseFormatText(): Optional<ResponseFormatText> = Optional.ofNullable(responseFormatText)
 
+    /**
+     * JSON object response format. An older method of generating JSON responses. Using
+     * `json_schema` is recommended for models that support it. Note that the model will not
+     * generate JSON without a system or user message instructing it to do so.
+     */
     fun responseFormatJsonObject(): Optional<ResponseFormatJsonObject> =
         Optional.ofNullable(responseFormatJsonObject)
 
+    /**
+     * JSON Schema response format. Used to generate structured JSON responses. Learn more about
+     * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+     */
     fun responseFormatJsonSchema(): Optional<ResponseFormatJsonSchema> =
         Optional.ofNullable(responseFormatJsonSchema)
 
-    fun isAuto(): Boolean = auto != null
+    fun isJsonValue(): Boolean = jsonValue != null
 
     fun isResponseFormatText(): Boolean = responseFormatText != null
 
@@ -71,14 +81,24 @@ private constructor(
     fun isResponseFormatJsonSchema(): Boolean = responseFormatJsonSchema != null
 
     /** `auto` is the default value */
-    fun asAuto(): JsonValue = auto.getOrThrow("auto")
+    fun asJsonValue(): JsonValue = jsonValue.getOrThrow("jsonValue")
 
+    /** Default response format. Used to generate text responses. */
     fun asResponseFormatText(): ResponseFormatText =
         responseFormatText.getOrThrow("responseFormatText")
 
+    /**
+     * JSON object response format. An older method of generating JSON responses. Using
+     * `json_schema` is recommended for models that support it. Note that the model will not
+     * generate JSON without a system or user message instructing it to do so.
+     */
     fun asResponseFormatJsonObject(): ResponseFormatJsonObject =
         responseFormatJsonObject.getOrThrow("responseFormatJsonObject")
 
+    /**
+     * JSON Schema response format. Used to generate structured JSON responses. Learn more about
+     * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+     */
     fun asResponseFormatJsonSchema(): ResponseFormatJsonSchema =
         responseFormatJsonSchema.getOrThrow("responseFormatJsonSchema")
 
@@ -86,7 +106,7 @@ private constructor(
 
     fun <T> accept(visitor: Visitor<T>): T {
         return when {
-            auto != null -> visitor.visitAuto(auto)
+            jsonValue != null -> visitor.visitJsonValue(jsonValue)
             responseFormatText != null -> visitor.visitResponseFormatText(responseFormatText)
             responseFormatJsonObject != null ->
                 visitor.visitResponseFormatJsonObject(responseFormatJsonObject)
@@ -105,10 +125,10 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
-                override fun visitAuto(auto: JsonValue) {
-                    auto.let {
+                override fun visitJsonValue(jsonValue: JsonValue) {
+                    jsonValue.let {
                         if (it != JsonValue.from("auto")) {
-                            throw OpenAIInvalidDataException("'auto' is invalid, received $it")
+                            throw OpenAIInvalidDataException("'jsonValue' is invalid, received $it")
                         }
                     }
                 }
@@ -138,14 +158,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is AssistantResponseFormatOption && auto == other.auto && responseFormatText == other.responseFormatText && responseFormatJsonObject == other.responseFormatJsonObject && responseFormatJsonSchema == other.responseFormatJsonSchema /* spotless:on */
+        return /* spotless:off */ other is AssistantResponseFormatOption && jsonValue == other.jsonValue && responseFormatText == other.responseFormatText && responseFormatJsonObject == other.responseFormatJsonObject && responseFormatJsonSchema == other.responseFormatJsonSchema /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, responseFormatText, responseFormatJsonObject, responseFormatJsonSchema) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(jsonValue, responseFormatText, responseFormatJsonObject, responseFormatJsonSchema) /* spotless:on */
 
     override fun toString(): String =
         when {
-            auto != null -> "AssistantResponseFormatOption{auto=$auto}"
+            jsonValue != null -> "AssistantResponseFormatOption{jsonValue=$jsonValue}"
             responseFormatText != null ->
                 "AssistantResponseFormatOption{responseFormatText=$responseFormatText}"
             responseFormatJsonObject != null ->
@@ -159,16 +179,27 @@ private constructor(
     companion object {
 
         /** `auto` is the default value */
-        @JvmStatic fun ofAuto() = AssistantResponseFormatOption(auto = JsonValue.from("auto"))
+        @JvmStatic
+        fun ofJsonValue() = AssistantResponseFormatOption(jsonValue = JsonValue.from("auto"))
 
+        /** Default response format. Used to generate text responses. */
         @JvmStatic
         fun ofResponseFormatText(responseFormatText: ResponseFormatText) =
             AssistantResponseFormatOption(responseFormatText = responseFormatText)
 
+        /**
+         * JSON object response format. An older method of generating JSON responses. Using
+         * `json_schema` is recommended for models that support it. Note that the model will not
+         * generate JSON without a system or user message instructing it to do so.
+         */
         @JvmStatic
         fun ofResponseFormatJsonObject(responseFormatJsonObject: ResponseFormatJsonObject) =
             AssistantResponseFormatOption(responseFormatJsonObject = responseFormatJsonObject)
 
+        /**
+         * JSON Schema response format. Used to generate structured JSON responses. Learn more about
+         * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+         */
         @JvmStatic
         fun ofResponseFormatJsonSchema(responseFormatJsonSchema: ResponseFormatJsonSchema) =
             AssistantResponseFormatOption(responseFormatJsonSchema = responseFormatJsonSchema)
@@ -181,12 +212,22 @@ private constructor(
     interface Visitor<out T> {
 
         /** `auto` is the default value */
-        fun visitAuto(auto: JsonValue): T
+        fun visitJsonValue(jsonValue: JsonValue): T
 
+        /** Default response format. Used to generate text responses. */
         fun visitResponseFormatText(responseFormatText: ResponseFormatText): T
 
+        /**
+         * JSON object response format. An older method of generating JSON responses. Using
+         * `json_schema` is recommended for models that support it. Note that the model will not
+         * generate JSON without a system or user message instructing it to do so.
+         */
         fun visitResponseFormatJsonObject(responseFormatJsonObject: ResponseFormatJsonObject): T
 
+        /**
+         * JSON Schema response format. Used to generate structured JSON responses. Learn more about
+         * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+         */
         fun visitResponseFormatJsonSchema(responseFormatJsonSchema: ResponseFormatJsonSchema): T
 
         /**
@@ -213,12 +254,12 @@ private constructor(
             tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
                     it.let {
                         if (it != JsonValue.from("auto")) {
-                            throw OpenAIInvalidDataException("'auto' is invalid, received $it")
+                            throw OpenAIInvalidDataException("'jsonValue' is invalid, received $it")
                         }
                     }
                 }
                 ?.let {
-                    return AssistantResponseFormatOption(auto = it, _json = json)
+                    return AssistantResponseFormatOption(jsonValue = it, _json = json)
                 }
             tryDeserialize(node, jacksonTypeRef<ResponseFormatText>()) { it.validate() }
                 ?.let {
@@ -252,7 +293,7 @@ private constructor(
             provider: SerializerProvider,
         ) {
             when {
-                value.auto != null -> generator.writeObject(value.auto)
+                value.jsonValue != null -> generator.writeObject(value.jsonValue)
                 value.responseFormatText != null -> generator.writeObject(value.responseFormatText)
                 value.responseFormatJsonObject != null ->
                     generator.writeObject(value.responseFormatJsonObject)

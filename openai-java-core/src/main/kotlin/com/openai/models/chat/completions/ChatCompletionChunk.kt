@@ -23,8 +23,8 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Represents a streamed chunk of a chat completion response returned by model, based on the
- * provided input.
+ * Represents a streamed chunk of a chat completion response returned by the model, based on the
+ * provided input. [Learn more](https://platform.openai.com/docs/guides/streaming-responses).
  */
 @NoAutoDetect
 class ChatCompletionChunk

@@ -4,7 +4,6 @@ package com.openai.services.blocking
 
 import com.openai.services.blocking.beta.AssistantService
 import com.openai.services.blocking.beta.ThreadService
-import com.openai.services.blocking.beta.VectorStoreService
 
 interface BetaService {
 
@@ -13,16 +12,12 @@ interface BetaService {
      */
     fun withRawResponse(): WithRawResponse
 
-    fun vectorStores(): VectorStoreService
-
     fun assistants(): AssistantService
 
     fun threads(): ThreadService
 
     /** A view of [BetaService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
-
-        fun vectorStores(): VectorStoreService.WithRawResponse
 
         fun assistants(): AssistantService.WithRawResponse
 

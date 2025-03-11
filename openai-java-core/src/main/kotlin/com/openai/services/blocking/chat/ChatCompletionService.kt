@@ -25,6 +25,13 @@ interface ChatCompletionService {
     fun messages(): MessageService
 
     /**
+     * **Starting a new project?** We recommend trying
+     * [Responses](https://platform.openai.com/docs/api-reference/responses) to take advantage of
+     * the latest OpenAI platform features. Compare
+     * [Chat Completions with Responses](https://platform.openai.com/docs/guides/responses-vs-chat-completions?api-mode=responses).
+     *
+     * ---
+     *
      * Creates a model response for the given chat conversation. Learn more in the
      * [text generation](https://platform.openai.com/docs/guides/text-generation),
      * [vision](https://platform.openai.com/docs/guides/vision), and
@@ -45,6 +52,13 @@ interface ChatCompletionService {
     ): ChatCompletion
 
     /**
+     * **Starting a new project?** We recommend trying
+     * [Responses](https://platform.openai.com/docs/api-reference/responses) to take advantage of
+     * the latest OpenAI platform features. Compare
+     * [Chat Completions with Responses](https://platform.openai.com/docs/guides/responses-vs-chat-completions?api-mode=responses).
+     *
+     * ---
+     *
      * Creates a model response for the given chat conversation. Learn more in the
      * [text generation](https://platform.openai.com/docs/guides/text-generation),
      * [vision](https://platform.openai.com/docs/guides/vision), and
@@ -67,7 +81,7 @@ interface ChatCompletionService {
     ): StreamResponse<ChatCompletionChunk>
 
     /**
-     * Get a stored chat completion. Only chat completions that have been created with the `store`
+     * Get a stored chat completion. Only Chat Completions that have been created with the `store`
      * parameter set to `true` will be returned.
      */
     fun retrieve(params: ChatCompletionRetrieveParams): ChatCompletion =
@@ -80,7 +94,7 @@ interface ChatCompletionService {
     ): ChatCompletion
 
     /**
-     * Modify a stored chat completion. Only chat completions that have been created with the
+     * Modify a stored chat completion. Only Chat Completions that have been created with the
      * `store` parameter set to `true` can be modified. Currently, the only supported modification
      * is to update the `metadata` field.
      */
@@ -94,7 +108,7 @@ interface ChatCompletionService {
     ): ChatCompletion
 
     /**
-     * Delete a stored chat completion. Only chat completions that have been created with the
+     * Delete a stored chat completion. Only Chat Completions that have been created with the
      * `store` parameter set to `true` can be deleted.
      */
     fun delete(params: ChatCompletionDeleteParams): ChatCompletionDeleted =

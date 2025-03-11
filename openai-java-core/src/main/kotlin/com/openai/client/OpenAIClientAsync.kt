@@ -13,7 +13,9 @@ import com.openai.services.async.FineTuningServiceAsync
 import com.openai.services.async.ImageServiceAsync
 import com.openai.services.async.ModelServiceAsync
 import com.openai.services.async.ModerationServiceAsync
+import com.openai.services.async.ResponseServiceAsync
 import com.openai.services.async.UploadServiceAsync
+import com.openai.services.async.VectorStoreServiceAsync
 
 /**
  * A client for interacting with the OpenAI REST API asynchronously. You can also switch to
@@ -62,11 +64,15 @@ interface OpenAIClientAsync {
 
     fun fineTuning(): FineTuningServiceAsync
 
+    fun vectorStores(): VectorStoreServiceAsync
+
     fun beta(): BetaServiceAsync
 
     fun batches(): BatchServiceAsync
 
     fun uploads(): UploadServiceAsync
+
+    fun responses(): ResponseServiceAsync
 
     /**
      * Closes this client, relinquishing any underlying resources.
@@ -102,10 +108,14 @@ interface OpenAIClientAsync {
 
         fun fineTuning(): FineTuningServiceAsync.WithRawResponse
 
+        fun vectorStores(): VectorStoreServiceAsync.WithRawResponse
+
         fun beta(): BetaServiceAsync.WithRawResponse
 
         fun batches(): BatchServiceAsync.WithRawResponse
 
         fun uploads(): UploadServiceAsync.WithRawResponse
+
+        fun responses(): ResponseServiceAsync.WithRawResponse
     }
 }

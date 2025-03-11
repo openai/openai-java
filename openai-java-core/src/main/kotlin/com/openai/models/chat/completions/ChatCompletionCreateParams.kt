@@ -33,6 +33,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ChatModel
 import com.openai.models.FunctionParameters
 import com.openai.models.Metadata
+import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatJsonObject
 import com.openai.models.ResponseFormatJsonSchema
 import com.openai.models.ResponseFormatText
@@ -41,6 +42,13 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
+ * **Starting a new project?** We recommend trying
+ * [Responses](https://platform.openai.com/docs/api-reference/responses) to take advantage of the
+ * latest OpenAI platform features. Compare
+ * [Chat Completions with Responses](https://platform.openai.com/docs/guides/responses-vs-chat-completions?api-mode=responses).
+ *
+ * ---
+ *
  * Creates a model response for the given chat conversation. Learn more in the
  * [text generation](https://platform.openai.com/docs/guides/text-generation),
  * [vision](https://platform.openai.com/docs/guides/vision), and
@@ -69,9 +77,10 @@ private constructor(
     fun messages(): List<ChatCompletionMessageParam> = body.messages()
 
     /**
-     * ID of the model to use. See the
-     * [model endpoint compatibility](https://platform.openai.com/docs/models#model-endpoint-compatibility)
-     * table for details on which models work with the Chat API.
+     * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide range of
+     * models with different capabilities, performance characteristics, and price points. Refer to
+     * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
+     * models.
      */
     fun model(): ChatModel = body.model()
 
@@ -157,8 +166,8 @@ private constructor(
     fun metadata(): Optional<Metadata> = body.metadata()
 
     /**
-     * Output types that you would like the model to generate for this request. Most models are
-     * capable of generating text, which is the default:
+     * Output types that you would like the model to generate. Most models are capable of generating
+     * text, which is the default:
      *
      * `["text"]`
      *
@@ -168,7 +177,7 @@ private constructor(
      *
      * `["text", "audio"]`
      */
-    fun modalities(): Optional<List<ChatCompletionModality>> = body.modalities()
+    fun modalities(): Optional<List<Modality>> = body.modalities()
 
     /**
      * How many chat completion choices to generate for each input message. Note that you will be
@@ -197,14 +206,14 @@ private constructor(
     fun presencePenalty(): Optional<Double> = body.presencePenalty()
 
     /**
-     * **o1 and o3-mini models only**
+     * **o-series models only**
      *
      * Constrains effort on reasoning for
      * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
      * values are `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
      * responses and fewer tokens used on reasoning in a response.
      */
-    fun reasoningEffort(): Optional<ChatCompletionReasoningEffort> = body.reasoningEffort()
+    fun reasoningEffort(): Optional<ReasoningEffort> = body.reasoningEffort()
 
     /**
      * An object specifying the format that the model must output.
@@ -213,15 +222,9 @@ private constructor(
      * ensures the model will match your supplied JSON schema. Learn more in the
      * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
      *
-     * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the model
-     * generates is valid JSON.
-     *
-     * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
-     * yourself via a system or user message. Without this, the model may generate an unending
-     * stream of whitespace until the generation reaches the token limit, resulting in a
-     * long-running and seemingly "stuck" request. Also note that the message content may be
-     * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
-     * `max_tokens` or the conversation exceeded the max context length.
+     * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the message
+     * the model generates is valid JSON. Using `json_schema` is preferred for models that support
+     * it.
      */
     fun responseFormat(): Optional<ResponseFormat> = body.responseFormat()
 
@@ -239,14 +242,19 @@ private constructor(
      * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale tier
      *   credits until they are exhausted.
      * - If set to 'auto', and the Project is not Scale tier enabled, the request will be processed
-     *   using the default service tier with a lower uptime SLA and no latency guarantee.
+     *   using the default service tier with a lower uptime SLA and no latency guarentee.
      * - If set to 'default', the request will be processed using the default service tier with a
-     *   lower uptime SLA and no latency guarantee.
+     *   lower uptime SLA and no latency guarentee.
      * - When not set, the default behavior is 'auto'.
+     *
+     * When this parameter is set, the response body will include the `service_tier` utilized.
      */
     fun serviceTier(): Optional<ServiceTier> = body.serviceTier()
 
-    /** Up to 4 sequences where the API will stop generating further tokens. */
+    /**
+     * Up to 4 sequences where the API will stop generating further tokens. The returned text will
+     * not contain the stop sequence.
+     */
     fun stop(): Optional<Stop> = body.stop()
 
     /**
@@ -308,6 +316,12 @@ private constructor(
     fun user(): Optional<String> = body.user()
 
     /**
+     * This tool searches the web for relevant results to use in a response. Learn more about the
+     * [web search tool](https://platform.openai.com/docs/guides/tools-web-search?api-mode=chat).
+     */
+    fun webSearchOptions(): Optional<WebSearchOptions> = body.webSearchOptions()
+
+    /**
      * A list of messages comprising the conversation so far. Depending on the
      * [model](https://platform.openai.com/docs/models) you use, different message types
      * (modalities) are supported, like
@@ -318,9 +332,10 @@ private constructor(
     fun _messages(): JsonField<List<ChatCompletionMessageParam>> = body._messages()
 
     /**
-     * ID of the model to use. See the
-     * [model endpoint compatibility](https://platform.openai.com/docs/models#model-endpoint-compatibility)
-     * table for details on which models work with the Chat API.
+     * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide range of
+     * models with different capabilities, performance characteristics, and price points. Refer to
+     * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
+     * models.
      */
     fun _model(): JsonField<ChatModel> = body._model()
 
@@ -406,8 +421,8 @@ private constructor(
     fun _metadata(): JsonField<Metadata> = body._metadata()
 
     /**
-     * Output types that you would like the model to generate for this request. Most models are
-     * capable of generating text, which is the default:
+     * Output types that you would like the model to generate. Most models are capable of generating
+     * text, which is the default:
      *
      * `["text"]`
      *
@@ -417,7 +432,7 @@ private constructor(
      *
      * `["text", "audio"]`
      */
-    fun _modalities(): JsonField<List<ChatCompletionModality>> = body._modalities()
+    fun _modalities(): JsonField<List<Modality>> = body._modalities()
 
     /**
      * How many chat completion choices to generate for each input message. Note that you will be
@@ -446,14 +461,14 @@ private constructor(
     fun _presencePenalty(): JsonField<Double> = body._presencePenalty()
 
     /**
-     * **o1 and o3-mini models only**
+     * **o-series models only**
      *
      * Constrains effort on reasoning for
      * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
      * values are `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
      * responses and fewer tokens used on reasoning in a response.
      */
-    fun _reasoningEffort(): JsonField<ChatCompletionReasoningEffort> = body._reasoningEffort()
+    fun _reasoningEffort(): JsonField<ReasoningEffort> = body._reasoningEffort()
 
     /**
      * An object specifying the format that the model must output.
@@ -462,15 +477,9 @@ private constructor(
      * ensures the model will match your supplied JSON schema. Learn more in the
      * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
      *
-     * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the model
-     * generates is valid JSON.
-     *
-     * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
-     * yourself via a system or user message. Without this, the model may generate an unending
-     * stream of whitespace until the generation reaches the token limit, resulting in a
-     * long-running and seemingly "stuck" request. Also note that the message content may be
-     * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
-     * `max_tokens` or the conversation exceeded the max context length.
+     * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the message
+     * the model generates is valid JSON. Using `json_schema` is preferred for models that support
+     * it.
      */
     fun _responseFormat(): JsonField<ResponseFormat> = body._responseFormat()
 
@@ -488,14 +497,19 @@ private constructor(
      * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale tier
      *   credits until they are exhausted.
      * - If set to 'auto', and the Project is not Scale tier enabled, the request will be processed
-     *   using the default service tier with a lower uptime SLA and no latency guarantee.
+     *   using the default service tier with a lower uptime SLA and no latency guarentee.
      * - If set to 'default', the request will be processed using the default service tier with a
-     *   lower uptime SLA and no latency guarantee.
+     *   lower uptime SLA and no latency guarentee.
      * - When not set, the default behavior is 'auto'.
+     *
+     * When this parameter is set, the response body will include the `service_tier` utilized.
      */
     fun _serviceTier(): JsonField<ServiceTier> = body._serviceTier()
 
-    /** Up to 4 sequences where the API will stop generating further tokens. */
+    /**
+     * Up to 4 sequences where the API will stop generating further tokens. The returned text will
+     * not contain the stop sequence.
+     */
     fun _stop(): JsonField<Stop> = body._stop()
 
     /**
@@ -556,6 +570,12 @@ private constructor(
      */
     fun _user(): JsonField<String> = body._user()
 
+    /**
+     * This tool searches the web for relevant results to use in a response. Learn more about the
+     * [web search tool](https://platform.openai.com/docs/guides/tools-web-search?api-mode=chat).
+     */
+    fun _webSearchOptions(): JsonField<WebSearchOptions> = body._webSearchOptions()
+
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     fun _additionalHeaders(): Headers = additionalHeaders
@@ -607,7 +627,7 @@ private constructor(
         private val metadata: JsonField<Metadata> = JsonMissing.of(),
         @JsonProperty("modalities")
         @ExcludeMissing
-        private val modalities: JsonField<List<ChatCompletionModality>> = JsonMissing.of(),
+        private val modalities: JsonField<List<Modality>> = JsonMissing.of(),
         @JsonProperty("n") @ExcludeMissing private val n: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("parallel_tool_calls")
         @ExcludeMissing
@@ -620,7 +640,7 @@ private constructor(
         private val presencePenalty: JsonField<Double> = JsonMissing.of(),
         @JsonProperty("reasoning_effort")
         @ExcludeMissing
-        private val reasoningEffort: JsonField<ChatCompletionReasoningEffort> = JsonMissing.of(),
+        private val reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of(),
         @JsonProperty("response_format")
         @ExcludeMissing
         private val responseFormat: JsonField<ResponseFormat> = JsonMissing.of(),
@@ -653,6 +673,9 @@ private constructor(
         @JsonProperty("user")
         @ExcludeMissing
         private val user: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("web_search_options")
+        @ExcludeMissing
+        private val webSearchOptions: JsonField<WebSearchOptions> = JsonMissing.of(),
         @JsonAnySetter
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
@@ -668,9 +691,10 @@ private constructor(
         fun messages(): List<ChatCompletionMessageParam> = messages.getRequired("messages")
 
         /**
-         * ID of the model to use. See the
-         * [model endpoint compatibility](https://platform.openai.com/docs/models#model-endpoint-compatibility)
-         * table for details on which models work with the Chat API.
+         * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide range
+         * of models with different capabilities, performance characteristics, and price points.
+         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * available models.
          */
         fun model(): ChatModel = model.getRequired("model")
 
@@ -765,8 +789,8 @@ private constructor(
         fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
 
         /**
-         * Output types that you would like the model to generate for this request. Most models are
-         * capable of generating text, which is the default:
+         * Output types that you would like the model to generate. Most models are capable of
+         * generating text, which is the default:
          *
          * `["text"]`
          *
@@ -776,7 +800,7 @@ private constructor(
          *
          * `["text", "audio"]`
          */
-        fun modalities(): Optional<List<ChatCompletionModality>> =
+        fun modalities(): Optional<List<Modality>> =
             Optional.ofNullable(modalities.getNullable("modalities"))
 
         /**
@@ -809,14 +833,14 @@ private constructor(
             Optional.ofNullable(presencePenalty.getNullable("presence_penalty"))
 
         /**
-         * **o1 and o3-mini models only**
+         * **o-series models only**
          *
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
          * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
          * faster responses and fewer tokens used on reasoning in a response.
          */
-        fun reasoningEffort(): Optional<ChatCompletionReasoningEffort> =
+        fun reasoningEffort(): Optional<ReasoningEffort> =
             Optional.ofNullable(reasoningEffort.getNullable("reasoning_effort"))
 
         /**
@@ -826,15 +850,9 @@ private constructor(
          * which ensures the model will match your supplied JSON schema. Learn more in the
          * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
          *
-         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
-         * model generates is valid JSON.
-         *
-         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
-         * yourself via a system or user message. Without this, the model may generate an unending
-         * stream of whitespace until the generation reaches the token limit, resulting in a
-         * long-running and seemingly "stuck" request. Also note that the message content may be
-         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
-         * `max_tokens` or the conversation exceeded the max context length.
+         * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the
+         * message the model generates is valid JSON. Using `json_schema` is preferred for models
+         * that support it.
          */
         fun responseFormat(): Optional<ResponseFormat> =
             Optional.ofNullable(responseFormat.getNullable("response_format"))
@@ -854,15 +872,20 @@ private constructor(
          *   tier credits until they are exhausted.
          * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
          *   processed using the default service tier with a lower uptime SLA and no latency
-         *   guarantee.
+         *   guarentee.
          * - If set to 'default', the request will be processed using the default service tier with
-         *   a lower uptime SLA and no latency guarantee.
+         *   a lower uptime SLA and no latency guarentee.
          * - When not set, the default behavior is 'auto'.
+         *
+         * When this parameter is set, the response body will include the `service_tier` utilized.
          */
         fun serviceTier(): Optional<ServiceTier> =
             Optional.ofNullable(serviceTier.getNullable("service_tier"))
 
-        /** Up to 4 sequences where the API will stop generating further tokens. */
+        /**
+         * Up to 4 sequences where the API will stop generating further tokens. The returned text
+         * will not contain the stop sequence.
+         */
         fun stop(): Optional<Stop> = Optional.ofNullable(stop.getNullable("stop"))
 
         /**
@@ -930,6 +953,14 @@ private constructor(
         fun user(): Optional<String> = Optional.ofNullable(user.getNullable("user"))
 
         /**
+         * This tool searches the web for relevant results to use in a response. Learn more about
+         * the
+         * [web search tool](https://platform.openai.com/docs/guides/tools-web-search?api-mode=chat).
+         */
+        fun webSearchOptions(): Optional<WebSearchOptions> =
+            Optional.ofNullable(webSearchOptions.getNullable("web_search_options"))
+
+        /**
          * A list of messages comprising the conversation so far. Depending on the
          * [model](https://platform.openai.com/docs/models) you use, different message types
          * (modalities) are supported, like
@@ -942,9 +973,10 @@ private constructor(
         fun _messages(): JsonField<List<ChatCompletionMessageParam>> = messages
 
         /**
-         * ID of the model to use. See the
-         * [model endpoint compatibility](https://platform.openai.com/docs/models#model-endpoint-compatibility)
-         * table for details on which models work with the Chat API.
+         * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide range
+         * of models with different capabilities, performance characteristics, and price points.
+         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * available models.
          */
         @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<ChatModel> = model
 
@@ -1047,8 +1079,8 @@ private constructor(
         @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
         /**
-         * Output types that you would like the model to generate for this request. Most models are
-         * capable of generating text, which is the default:
+         * Output types that you would like the model to generate. Most models are capable of
+         * generating text, which is the default:
          *
          * `["text"]`
          *
@@ -1060,7 +1092,7 @@ private constructor(
          */
         @JsonProperty("modalities")
         @ExcludeMissing
-        fun _modalities(): JsonField<List<ChatCompletionModality>> = modalities
+        fun _modalities(): JsonField<List<Modality>> = modalities
 
         /**
          * How many chat completion choices to generate for each input message. Note that you will
@@ -1095,7 +1127,7 @@ private constructor(
         fun _presencePenalty(): JsonField<Double> = presencePenalty
 
         /**
-         * **o1 and o3-mini models only**
+         * **o-series models only**
          *
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
@@ -1104,7 +1136,7 @@ private constructor(
          */
         @JsonProperty("reasoning_effort")
         @ExcludeMissing
-        fun _reasoningEffort(): JsonField<ChatCompletionReasoningEffort> = reasoningEffort
+        fun _reasoningEffort(): JsonField<ReasoningEffort> = reasoningEffort
 
         /**
          * An object specifying the format that the model must output.
@@ -1113,15 +1145,9 @@ private constructor(
          * which ensures the model will match your supplied JSON schema. Learn more in the
          * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
          *
-         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
-         * model generates is valid JSON.
-         *
-         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
-         * yourself via a system or user message. Without this, the model may generate an unending
-         * stream of whitespace until the generation reaches the token limit, resulting in a
-         * long-running and seemingly "stuck" request. Also note that the message content may be
-         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
-         * `max_tokens` or the conversation exceeded the max context length.
+         * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the
+         * message the model generates is valid JSON. Using `json_schema` is preferred for models
+         * that support it.
          */
         @JsonProperty("response_format")
         @ExcludeMissing
@@ -1142,16 +1168,21 @@ private constructor(
          *   tier credits until they are exhausted.
          * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
          *   processed using the default service tier with a lower uptime SLA and no latency
-         *   guarantee.
+         *   guarentee.
          * - If set to 'default', the request will be processed using the default service tier with
-         *   a lower uptime SLA and no latency guarantee.
+         *   a lower uptime SLA and no latency guarentee.
          * - When not set, the default behavior is 'auto'.
+         *
+         * When this parameter is set, the response body will include the `service_tier` utilized.
          */
         @JsonProperty("service_tier")
         @ExcludeMissing
         fun _serviceTier(): JsonField<ServiceTier> = serviceTier
 
-        /** Up to 4 sequences where the API will stop generating further tokens. */
+        /**
+         * Up to 4 sequences where the API will stop generating further tokens. The returned text
+         * will not contain the stop sequence.
+         */
         @JsonProperty("stop") @ExcludeMissing fun _stop(): JsonField<Stop> = stop
 
         /**
@@ -1223,6 +1254,15 @@ private constructor(
          */
         @JsonProperty("user") @ExcludeMissing fun _user(): JsonField<String> = user
 
+        /**
+         * This tool searches the web for relevant results to use in a response. Learn more about
+         * the
+         * [web search tool](https://platform.openai.com/docs/guides/tools-web-search?api-mode=chat).
+         */
+        @JsonProperty("web_search_options")
+        @ExcludeMissing
+        fun _webSearchOptions(): JsonField<WebSearchOptions> = webSearchOptions
+
         @JsonAnyGetter
         @ExcludeMissing
         fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
@@ -1263,6 +1303,7 @@ private constructor(
             topLogprobs()
             topP()
             user()
+            webSearchOptions().ifPresent { it.validate() }
             validated = true
         }
 
@@ -1296,12 +1337,12 @@ private constructor(
             private var maxCompletionTokens: JsonField<Long> = JsonMissing.of()
             private var maxTokens: JsonField<Long> = JsonMissing.of()
             private var metadata: JsonField<Metadata> = JsonMissing.of()
-            private var modalities: JsonField<MutableList<ChatCompletionModality>>? = null
+            private var modalities: JsonField<MutableList<Modality>>? = null
             private var n: JsonField<Long> = JsonMissing.of()
             private var parallelToolCalls: JsonField<Boolean> = JsonMissing.of()
             private var prediction: JsonField<ChatCompletionPredictionContent> = JsonMissing.of()
             private var presencePenalty: JsonField<Double> = JsonMissing.of()
-            private var reasoningEffort: JsonField<ChatCompletionReasoningEffort> = JsonMissing.of()
+            private var reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of()
             private var responseFormat: JsonField<ResponseFormat> = JsonMissing.of()
             private var seed: JsonField<Long> = JsonMissing.of()
             private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
@@ -1314,6 +1355,7 @@ private constructor(
             private var topLogprobs: JsonField<Long> = JsonMissing.of()
             private var topP: JsonField<Double> = JsonMissing.of()
             private var user: JsonField<String> = JsonMissing.of()
+            private var webSearchOptions: JsonField<WebSearchOptions> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1347,6 +1389,7 @@ private constructor(
                 topLogprobs = body.topLogprobs
                 topP = body.topP
                 user = body.user
+                webSearchOptions = body.webSearchOptions
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -1515,23 +1558,26 @@ private constructor(
                 addMessage(ChatCompletionMessageParam.ofFunction(function))
 
             /**
-             * ID of the model to use. See the
-             * [model endpoint compatibility](https://platform.openai.com/docs/models#model-endpoint-compatibility)
-             * table for details on which models work with the Chat API.
+             * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide
+             * range of models with different capabilities, performance characteristics, and price
+             * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
+             * and compare available models.
              */
             fun model(model: ChatModel) = model(JsonField.of(model))
 
             /**
-             * ID of the model to use. See the
-             * [model endpoint compatibility](https://platform.openai.com/docs/models#model-endpoint-compatibility)
-             * table for details on which models work with the Chat API.
+             * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide
+             * range of models with different capabilities, performance characteristics, and price
+             * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
+             * and compare available models.
              */
             fun model(model: JsonField<ChatModel>) = apply { this.model = model }
 
             /**
-             * ID of the model to use. See the
-             * [model endpoint compatibility](https://platform.openai.com/docs/models#model-endpoint-compatibility)
-             * table for details on which models work with the Chat API.
+             * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide
+             * range of models with different capabilities, performance characteristics, and price
+             * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
+             * and compare available models.
              */
             fun model(value: String) = model(ChatModel.of(value))
 
@@ -1629,7 +1675,8 @@ private constructor(
              * `auto` means the model can pick between generating a message or calling a function.
              */
             @Deprecated("deprecated")
-            fun functionCall(auto: FunctionCall.Auto) = functionCall(FunctionCall.ofAuto(auto))
+            fun functionCall(mode: FunctionCall.FunctionCallMode) =
+                functionCall(FunctionCall.ofMode(mode))
 
             /**
              * Specifying a particular function via `{"name": "my_function"}` forces the model to
@@ -1841,8 +1888,8 @@ private constructor(
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
             /**
-             * Output types that you would like the model to generate for this request. Most models
-             * are capable of generating text, which is the default:
+             * Output types that you would like the model to generate. Most models are capable of
+             * generating text, which is the default:
              *
              * `["text"]`
              *
@@ -1852,12 +1899,12 @@ private constructor(
              *
              * `["text", "audio"]`
              */
-            fun modalities(modalities: List<ChatCompletionModality>?) =
+            fun modalities(modalities: List<Modality>?) =
                 modalities(JsonField.ofNullable(modalities))
 
             /**
-             * Output types that you would like the model to generate for this request. Most models
-             * are capable of generating text, which is the default:
+             * Output types that you would like the model to generate. Most models are capable of
+             * generating text, which is the default:
              *
              * `["text"]`
              *
@@ -1867,12 +1914,12 @@ private constructor(
              *
              * `["text", "audio"]`
              */
-            fun modalities(modalities: Optional<List<ChatCompletionModality>>) =
+            fun modalities(modalities: Optional<List<Modality>>) =
                 modalities(modalities.getOrNull())
 
             /**
-             * Output types that you would like the model to generate for this request. Most models
-             * are capable of generating text, which is the default:
+             * Output types that you would like the model to generate. Most models are capable of
+             * generating text, which is the default:
              *
              * `["text"]`
              *
@@ -1882,13 +1929,13 @@ private constructor(
              *
              * `["text", "audio"]`
              */
-            fun modalities(modalities: JsonField<List<ChatCompletionModality>>) = apply {
+            fun modalities(modalities: JsonField<List<Modality>>) = apply {
                 this.modalities = modalities.map { it.toMutableList() }
             }
 
             /**
-             * Output types that you would like the model to generate for this request. Most models
-             * are capable of generating text, which is the default:
+             * Output types that you would like the model to generate. Most models are capable of
+             * generating text, which is the default:
              *
              * `["text"]`
              *
@@ -1898,7 +1945,7 @@ private constructor(
              *
              * `["text", "audio"]`
              */
-            fun addModality(modality: ChatCompletionModality) = apply {
+            fun addModality(modality: Modality) = apply {
                 modalities =
                     (modalities ?: JsonField.of(mutableListOf())).also {
                         checkKnown("modalities", it).add(modality)
@@ -2006,36 +2053,36 @@ private constructor(
             }
 
             /**
-             * **o1 and o3-mini models only**
+             * **o-series models only**
              *
              * Constrains effort on reasoning for
              * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
              * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
              * result in faster responses and fewer tokens used on reasoning in a response.
              */
-            fun reasoningEffort(reasoningEffort: ChatCompletionReasoningEffort?) =
+            fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
                 reasoningEffort(JsonField.ofNullable(reasoningEffort))
 
             /**
-             * **o1 and o3-mini models only**
+             * **o-series models only**
              *
              * Constrains effort on reasoning for
              * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
              * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
              * result in faster responses and fewer tokens used on reasoning in a response.
              */
-            fun reasoningEffort(reasoningEffort: Optional<ChatCompletionReasoningEffort>) =
+            fun reasoningEffort(reasoningEffort: Optional<ReasoningEffort>) =
                 reasoningEffort(reasoningEffort.getOrNull())
 
             /**
-             * **o1 and o3-mini models only**
+             * **o-series models only**
              *
              * Constrains effort on reasoning for
              * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
              * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
              * result in faster responses and fewer tokens used on reasoning in a response.
              */
-            fun reasoningEffort(reasoningEffort: JsonField<ChatCompletionReasoningEffort>) = apply {
+            fun reasoningEffort(reasoningEffort: JsonField<ReasoningEffort>) = apply {
                 this.reasoningEffort = reasoningEffort
             }
 
@@ -2047,15 +2094,9 @@ private constructor(
              * the
              * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
              *
-             * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
-             * the model generates is valid JSON.
-             *
-             * **Important:** when using JSON mode, you **must** also instruct the model to produce
-             * JSON yourself via a system or user message. Without this, the model may generate an
-             * unending stream of whitespace until the generation reaches the token limit, resulting
-             * in a long-running and seemingly "stuck" request. Also note that the message content
-             * may be partially cut off if `finish_reason="length"`, which indicates the generation
-             * exceeded `max_tokens` or the conversation exceeded the max context length.
+             * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the
+             * message the model generates is valid JSON. Using `json_schema` is preferred for
+             * models that support it.
              */
             fun responseFormat(responseFormat: ResponseFormat) =
                 responseFormat(JsonField.of(responseFormat))
@@ -2068,82 +2109,33 @@ private constructor(
              * the
              * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
              *
-             * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
-             * the model generates is valid JSON.
-             *
-             * **Important:** when using JSON mode, you **must** also instruct the model to produce
-             * JSON yourself via a system or user message. Without this, the model may generate an
-             * unending stream of whitespace until the generation reaches the token limit, resulting
-             * in a long-running and seemingly "stuck" request. Also note that the message content
-             * may be partially cut off if `finish_reason="length"`, which indicates the generation
-             * exceeded `max_tokens` or the conversation exceeded the max context length.
+             * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the
+             * message the model generates is valid JSON. Using `json_schema` is preferred for
+             * models that support it.
              */
             fun responseFormat(responseFormat: JsonField<ResponseFormat>) = apply {
                 this.responseFormat = responseFormat
             }
 
-            /**
-             * An object specifying the format that the model must output.
-             *
-             * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
-             * Outputs which ensures the model will match your supplied JSON schema. Learn more in
-             * the
-             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-             *
-             * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
-             * the model generates is valid JSON.
-             *
-             * **Important:** when using JSON mode, you **must** also instruct the model to produce
-             * JSON yourself via a system or user message. Without this, the model may generate an
-             * unending stream of whitespace until the generation reaches the token limit, resulting
-             * in a long-running and seemingly "stuck" request. Also note that the message content
-             * may be partially cut off if `finish_reason="length"`, which indicates the generation
-             * exceeded `max_tokens` or the conversation exceeded the max context length.
-             */
+            /** Default response format. Used to generate text responses. */
             fun responseFormat(text: ResponseFormatText) =
                 responseFormat(ResponseFormat.ofText(text))
 
             /**
-             * An object specifying the format that the model must output.
-             *
-             * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
-             * Outputs which ensures the model will match your supplied JSON schema. Learn more in
-             * the
-             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-             *
-             * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
-             * the model generates is valid JSON.
-             *
-             * **Important:** when using JSON mode, you **must** also instruct the model to produce
-             * JSON yourself via a system or user message. Without this, the model may generate an
-             * unending stream of whitespace until the generation reaches the token limit, resulting
-             * in a long-running and seemingly "stuck" request. Also note that the message content
-             * may be partially cut off if `finish_reason="length"`, which indicates the generation
-             * exceeded `max_tokens` or the conversation exceeded the max context length.
-             */
-            fun responseFormat(jsonObject: ResponseFormatJsonObject) =
-                responseFormat(ResponseFormat.ofJsonObject(jsonObject))
-
-            /**
-             * An object specifying the format that the model must output.
-             *
-             * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
-             * Outputs which ensures the model will match your supplied JSON schema. Learn more in
-             * the
-             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-             *
-             * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
-             * the model generates is valid JSON.
-             *
-             * **Important:** when using JSON mode, you **must** also instruct the model to produce
-             * JSON yourself via a system or user message. Without this, the model may generate an
-             * unending stream of whitespace until the generation reaches the token limit, resulting
-             * in a long-running and seemingly "stuck" request. Also note that the message content
-             * may be partially cut off if `finish_reason="length"`, which indicates the generation
-             * exceeded `max_tokens` or the conversation exceeded the max context length.
+             * JSON Schema response format. Used to generate structured JSON responses. Learn more
+             * about
+             * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
              */
             fun responseFormat(jsonSchema: ResponseFormatJsonSchema) =
                 responseFormat(ResponseFormat.ofJsonSchema(jsonSchema))
+
+            /**
+             * JSON object response format. An older method of generating JSON responses. Using
+             * `json_schema` is recommended for models that support it. Note that the model will not
+             * generate JSON without a system or user message instructing it to do so.
+             */
+            fun responseFormat(jsonObject: ResponseFormatJsonObject) =
+                responseFormat(ResponseFormat.ofJsonObject(jsonObject))
 
             /**
              * This feature is in Beta. If specified, our system will make a best effort to sample
@@ -2184,10 +2176,13 @@ private constructor(
              *   scale tier credits until they are exhausted.
              * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
              *   processed using the default service tier with a lower uptime SLA and no latency
-             *   guarantee.
+             *   guarentee.
              * - If set to 'default', the request will be processed using the default service tier
-             *   with a lower uptime SLA and no latency guarantee.
+             *   with a lower uptime SLA and no latency guarentee.
              * - When not set, the default behavior is 'auto'.
+             *
+             * When this parameter is set, the response body will include the `service_tier`
+             * utilized.
              */
             fun serviceTier(serviceTier: ServiceTier?) =
                 serviceTier(JsonField.ofNullable(serviceTier))
@@ -2199,10 +2194,13 @@ private constructor(
              *   scale tier credits until they are exhausted.
              * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
              *   processed using the default service tier with a lower uptime SLA and no latency
-             *   guarantee.
+             *   guarentee.
              * - If set to 'default', the request will be processed using the default service tier
-             *   with a lower uptime SLA and no latency guarantee.
+             *   with a lower uptime SLA and no latency guarentee.
              * - When not set, the default behavior is 'auto'.
+             *
+             * When this parameter is set, the response body will include the `service_tier`
+             * utilized.
              */
             fun serviceTier(serviceTier: Optional<ServiceTier>) =
                 serviceTier(serviceTier.getOrNull())
@@ -2214,25 +2212,46 @@ private constructor(
              *   scale tier credits until they are exhausted.
              * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
              *   processed using the default service tier with a lower uptime SLA and no latency
-             *   guarantee.
+             *   guarentee.
              * - If set to 'default', the request will be processed using the default service tier
-             *   with a lower uptime SLA and no latency guarantee.
+             *   with a lower uptime SLA and no latency guarentee.
              * - When not set, the default behavior is 'auto'.
+             *
+             * When this parameter is set, the response body will include the `service_tier`
+             * utilized.
              */
             fun serviceTier(serviceTier: JsonField<ServiceTier>) = apply {
                 this.serviceTier = serviceTier
             }
 
-            /** Up to 4 sequences where the API will stop generating further tokens. */
-            fun stop(stop: Stop) = stop(JsonField.of(stop))
+            /**
+             * Up to 4 sequences where the API will stop generating further tokens. The returned
+             * text will not contain the stop sequence.
+             */
+            fun stop(stop: Stop?) = stop(JsonField.ofNullable(stop))
 
-            /** Up to 4 sequences where the API will stop generating further tokens. */
+            /**
+             * Up to 4 sequences where the API will stop generating further tokens. The returned
+             * text will not contain the stop sequence.
+             */
+            fun stop(stop: Optional<Stop>) = stop(stop.getOrNull())
+
+            /**
+             * Up to 4 sequences where the API will stop generating further tokens. The returned
+             * text will not contain the stop sequence.
+             */
             fun stop(stop: JsonField<Stop>) = apply { this.stop = stop }
 
-            /** Up to 4 sequences where the API will stop generating further tokens. */
+            /**
+             * Up to 4 sequences where the API will stop generating further tokens. The returned
+             * text will not contain the stop sequence.
+             */
             fun stop(string: String) = stop(Stop.ofString(string))
 
-            /** Up to 4 sequences where the API will stop generating further tokens. */
+            /**
+             * Up to 4 sequences where the API will stop generating further tokens. The returned
+             * text will not contain the stop sequence.
+             */
             fun stopOfStrings(strings: List<String>) = stop(Stop.ofStrings(strings))
 
             /**
@@ -2454,6 +2473,23 @@ private constructor(
              */
             fun user(user: JsonField<String>) = apply { this.user = user }
 
+            /**
+             * This tool searches the web for relevant results to use in a response. Learn more
+             * about the
+             * [web search tool](https://platform.openai.com/docs/guides/tools-web-search?api-mode=chat).
+             */
+            fun webSearchOptions(webSearchOptions: WebSearchOptions) =
+                webSearchOptions(JsonField.of(webSearchOptions))
+
+            /**
+             * This tool searches the web for relevant results to use in a response. Learn more
+             * about the
+             * [web search tool](https://platform.openai.com/docs/guides/tools-web-search?api-mode=chat).
+             */
+            fun webSearchOptions(webSearchOptions: JsonField<WebSearchOptions>) = apply {
+                this.webSearchOptions = webSearchOptions
+            }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -2504,6 +2540,7 @@ private constructor(
                     topLogprobs,
                     topP,
                     user,
+                    webSearchOptions,
                     additionalProperties.toImmutable(),
                 )
         }
@@ -2513,17 +2550,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && messages == other.messages && model == other.model && audio == other.audio && frequencyPenalty == other.frequencyPenalty && functionCall == other.functionCall && functions == other.functions && logitBias == other.logitBias && logprobs == other.logprobs && maxCompletionTokens == other.maxCompletionTokens && maxTokens == other.maxTokens && metadata == other.metadata && modalities == other.modalities && n == other.n && parallelToolCalls == other.parallelToolCalls && prediction == other.prediction && presencePenalty == other.presencePenalty && reasoningEffort == other.reasoningEffort && responseFormat == other.responseFormat && seed == other.seed && serviceTier == other.serviceTier && stop == other.stop && store == other.store && streamOptions == other.streamOptions && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topLogprobs == other.topLogprobs && topP == other.topP && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && messages == other.messages && model == other.model && audio == other.audio && frequencyPenalty == other.frequencyPenalty && functionCall == other.functionCall && functions == other.functions && logitBias == other.logitBias && logprobs == other.logprobs && maxCompletionTokens == other.maxCompletionTokens && maxTokens == other.maxTokens && metadata == other.metadata && modalities == other.modalities && n == other.n && parallelToolCalls == other.parallelToolCalls && prediction == other.prediction && presencePenalty == other.presencePenalty && reasoningEffort == other.reasoningEffort && responseFormat == other.responseFormat && seed == other.seed && serviceTier == other.serviceTier && stop == other.stop && store == other.store && streamOptions == other.streamOptions && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topLogprobs == other.topLogprobs && topP == other.topP && user == other.user && webSearchOptions == other.webSearchOptions && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(messages, model, audio, frequencyPenalty, functionCall, functions, logitBias, logprobs, maxCompletionTokens, maxTokens, metadata, modalities, n, parallelToolCalls, prediction, presencePenalty, reasoningEffort, responseFormat, seed, serviceTier, stop, store, streamOptions, temperature, toolChoice, tools, topLogprobs, topP, user, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(messages, model, audio, frequencyPenalty, functionCall, functions, logitBias, logprobs, maxCompletionTokens, maxTokens, metadata, modalities, n, parallelToolCalls, prediction, presencePenalty, reasoningEffort, responseFormat, seed, serviceTier, stop, store, streamOptions, temperature, toolChoice, tools, topLogprobs, topP, user, webSearchOptions, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, additionalProperties=$additionalProperties}"
+            "Body{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, webSearchOptions=$webSearchOptions, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -2695,23 +2732,26 @@ private constructor(
         }
 
         /**
-         * ID of the model to use. See the
-         * [model endpoint compatibility](https://platform.openai.com/docs/models#model-endpoint-compatibility)
-         * table for details on which models work with the Chat API.
+         * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide range
+         * of models with different capabilities, performance characteristics, and price points.
+         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * available models.
          */
         fun model(model: ChatModel) = apply { body.model(model) }
 
         /**
-         * ID of the model to use. See the
-         * [model endpoint compatibility](https://platform.openai.com/docs/models#model-endpoint-compatibility)
-         * table for details on which models work with the Chat API.
+         * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide range
+         * of models with different capabilities, performance characteristics, and price points.
+         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * available models.
          */
         fun model(model: JsonField<ChatModel>) = apply { body.model(model) }
 
         /**
-         * ID of the model to use. See the
-         * [model endpoint compatibility](https://platform.openai.com/docs/models#model-endpoint-compatibility)
-         * table for details on which models work with the Chat API.
+         * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide range
+         * of models with different capabilities, performance characteristics, and price points.
+         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * available models.
          */
         fun model(value: String) = apply { body.model(value) }
 
@@ -2810,7 +2850,7 @@ private constructor(
          * means the model can pick between generating a message or calling a function.
          */
         @Deprecated("deprecated")
-        fun functionCall(auto: FunctionCall.Auto) = apply { body.functionCall(auto) }
+        fun functionCall(mode: FunctionCall.FunctionCallMode) = apply { body.functionCall(mode) }
 
         /**
          * Specifying a particular function via `{"name": "my_function"}` forces the model to call
@@ -3010,8 +3050,8 @@ private constructor(
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
 
         /**
-         * Output types that you would like the model to generate for this request. Most models are
-         * capable of generating text, which is the default:
+         * Output types that you would like the model to generate. Most models are capable of
+         * generating text, which is the default:
          *
          * `["text"]`
          *
@@ -3021,13 +3061,41 @@ private constructor(
          *
          * `["text", "audio"]`
          */
-        fun modalities(modalities: List<ChatCompletionModality>?) = apply {
+        fun modalities(modalities: List<Modality>?) = apply { body.modalities(modalities) }
+
+        /**
+         * Output types that you would like the model to generate. Most models are capable of
+         * generating text, which is the default:
+         *
+         * `["text"]`
+         *
+         * The `gpt-4o-audio-preview` model can also be used to
+         * [generate audio](https://platform.openai.com/docs/guides/audio). To request that this
+         * model generate both text and audio responses, you can use:
+         *
+         * `["text", "audio"]`
+         */
+        fun modalities(modalities: Optional<List<Modality>>) = modalities(modalities.getOrNull())
+
+        /**
+         * Output types that you would like the model to generate. Most models are capable of
+         * generating text, which is the default:
+         *
+         * `["text"]`
+         *
+         * The `gpt-4o-audio-preview` model can also be used to
+         * [generate audio](https://platform.openai.com/docs/guides/audio). To request that this
+         * model generate both text and audio responses, you can use:
+         *
+         * `["text", "audio"]`
+         */
+        fun modalities(modalities: JsonField<List<Modality>>) = apply {
             body.modalities(modalities)
         }
 
         /**
-         * Output types that you would like the model to generate for this request. Most models are
-         * capable of generating text, which is the default:
+         * Output types that you would like the model to generate. Most models are capable of
+         * generating text, which is the default:
          *
          * `["text"]`
          *
@@ -3037,38 +3105,7 @@ private constructor(
          *
          * `["text", "audio"]`
          */
-        fun modalities(modalities: Optional<List<ChatCompletionModality>>) =
-            modalities(modalities.getOrNull())
-
-        /**
-         * Output types that you would like the model to generate for this request. Most models are
-         * capable of generating text, which is the default:
-         *
-         * `["text"]`
-         *
-         * The `gpt-4o-audio-preview` model can also be used to
-         * [generate audio](https://platform.openai.com/docs/guides/audio). To request that this
-         * model generate both text and audio responses, you can use:
-         *
-         * `["text", "audio"]`
-         */
-        fun modalities(modalities: JsonField<List<ChatCompletionModality>>) = apply {
-            body.modalities(modalities)
-        }
-
-        /**
-         * Output types that you would like the model to generate for this request. Most models are
-         * capable of generating text, which is the default:
-         *
-         * `["text"]`
-         *
-         * The `gpt-4o-audio-preview` model can also be used to
-         * [generate audio](https://platform.openai.com/docs/guides/audio). To request that this
-         * model generate both text and audio responses, you can use:
-         *
-         * `["text", "audio"]`
-         */
-        fun addModality(modality: ChatCompletionModality) = apply { body.addModality(modality) }
+        fun addModality(modality: Modality) = apply { body.addModality(modality) }
 
         /**
          * How many chat completion choices to generate for each input message. Note that you will
@@ -3169,37 +3206,37 @@ private constructor(
         }
 
         /**
-         * **o1 and o3-mini models only**
+         * **o-series models only**
          *
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
          * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
          * faster responses and fewer tokens used on reasoning in a response.
          */
-        fun reasoningEffort(reasoningEffort: ChatCompletionReasoningEffort?) = apply {
+        fun reasoningEffort(reasoningEffort: ReasoningEffort?) = apply {
             body.reasoningEffort(reasoningEffort)
         }
 
         /**
-         * **o1 and o3-mini models only**
+         * **o-series models only**
          *
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
          * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
          * faster responses and fewer tokens used on reasoning in a response.
          */
-        fun reasoningEffort(reasoningEffort: Optional<ChatCompletionReasoningEffort>) =
+        fun reasoningEffort(reasoningEffort: Optional<ReasoningEffort>) =
             reasoningEffort(reasoningEffort.getOrNull())
 
         /**
-         * **o1 and o3-mini models only**
+         * **o-series models only**
          *
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
          * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
          * faster responses and fewer tokens used on reasoning in a response.
          */
-        fun reasoningEffort(reasoningEffort: JsonField<ChatCompletionReasoningEffort>) = apply {
+        fun reasoningEffort(reasoningEffort: JsonField<ReasoningEffort>) = apply {
             body.reasoningEffort(reasoningEffort)
         }
 
@@ -3210,15 +3247,9 @@ private constructor(
          * which ensures the model will match your supplied JSON schema. Learn more in the
          * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
          *
-         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
-         * model generates is valid JSON.
-         *
-         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
-         * yourself via a system or user message. Without this, the model may generate an unending
-         * stream of whitespace until the generation reaches the token limit, resulting in a
-         * long-running and seemingly "stuck" request. Also note that the message content may be
-         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
-         * `max_tokens` or the conversation exceeded the max context length.
+         * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the
+         * message the model generates is valid JSON. Using `json_schema` is preferred for models
+         * that support it.
          */
         fun responseFormat(responseFormat: ResponseFormat) = apply {
             body.responseFormat(responseFormat)
@@ -3231,79 +3262,32 @@ private constructor(
          * which ensures the model will match your supplied JSON schema. Learn more in the
          * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
          *
-         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
-         * model generates is valid JSON.
-         *
-         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
-         * yourself via a system or user message. Without this, the model may generate an unending
-         * stream of whitespace until the generation reaches the token limit, resulting in a
-         * long-running and seemingly "stuck" request. Also note that the message content may be
-         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
-         * `max_tokens` or the conversation exceeded the max context length.
+         * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the
+         * message the model generates is valid JSON. Using `json_schema` is preferred for models
+         * that support it.
          */
         fun responseFormat(responseFormat: JsonField<ResponseFormat>) = apply {
             body.responseFormat(responseFormat)
         }
 
-        /**
-         * An object specifying the format that the model must output.
-         *
-         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
-         * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-         *
-         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
-         * model generates is valid JSON.
-         *
-         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
-         * yourself via a system or user message. Without this, the model may generate an unending
-         * stream of whitespace until the generation reaches the token limit, resulting in a
-         * long-running and seemingly "stuck" request. Also note that the message content may be
-         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
-         * `max_tokens` or the conversation exceeded the max context length.
-         */
+        /** Default response format. Used to generate text responses. */
         fun responseFormat(text: ResponseFormatText) = apply { body.responseFormat(text) }
 
         /**
-         * An object specifying the format that the model must output.
-         *
-         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
-         * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-         *
-         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
-         * model generates is valid JSON.
-         *
-         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
-         * yourself via a system or user message. Without this, the model may generate an unending
-         * stream of whitespace until the generation reaches the token limit, resulting in a
-         * long-running and seemingly "stuck" request. Also note that the message content may be
-         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
-         * `max_tokens` or the conversation exceeded the max context length.
-         */
-        fun responseFormat(jsonObject: ResponseFormatJsonObject) = apply {
-            body.responseFormat(jsonObject)
-        }
-
-        /**
-         * An object specifying the format that the model must output.
-         *
-         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
-         * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-         *
-         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
-         * model generates is valid JSON.
-         *
-         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
-         * yourself via a system or user message. Without this, the model may generate an unending
-         * stream of whitespace until the generation reaches the token limit, resulting in a
-         * long-running and seemingly "stuck" request. Also note that the message content may be
-         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
-         * `max_tokens` or the conversation exceeded the max context length.
+         * JSON Schema response format. Used to generate structured JSON responses. Learn more about
+         * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
          */
         fun responseFormat(jsonSchema: ResponseFormatJsonSchema) = apply {
             body.responseFormat(jsonSchema)
+        }
+
+        /**
+         * JSON object response format. An older method of generating JSON responses. Using
+         * `json_schema` is recommended for models that support it. Note that the model will not
+         * generate JSON without a system or user message instructing it to do so.
+         */
+        fun responseFormat(jsonObject: ResponseFormatJsonObject) = apply {
+            body.responseFormat(jsonObject)
         }
 
         /**
@@ -3345,10 +3329,12 @@ private constructor(
          *   tier credits until they are exhausted.
          * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
          *   processed using the default service tier with a lower uptime SLA and no latency
-         *   guarantee.
+         *   guarentee.
          * - If set to 'default', the request will be processed using the default service tier with
-         *   a lower uptime SLA and no latency guarantee.
+         *   a lower uptime SLA and no latency guarentee.
          * - When not set, the default behavior is 'auto'.
+         *
+         * When this parameter is set, the response body will include the `service_tier` utilized.
          */
         fun serviceTier(serviceTier: ServiceTier?) = apply { body.serviceTier(serviceTier) }
 
@@ -3359,10 +3345,12 @@ private constructor(
          *   tier credits until they are exhausted.
          * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
          *   processed using the default service tier with a lower uptime SLA and no latency
-         *   guarantee.
+         *   guarentee.
          * - If set to 'default', the request will be processed using the default service tier with
-         *   a lower uptime SLA and no latency guarantee.
+         *   a lower uptime SLA and no latency guarentee.
          * - When not set, the default behavior is 'auto'.
+         *
+         * When this parameter is set, the response body will include the `service_tier` utilized.
          */
         fun serviceTier(serviceTier: Optional<ServiceTier>) = serviceTier(serviceTier.getOrNull())
 
@@ -3373,25 +3361,45 @@ private constructor(
          *   tier credits until they are exhausted.
          * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
          *   processed using the default service tier with a lower uptime SLA and no latency
-         *   guarantee.
+         *   guarentee.
          * - If set to 'default', the request will be processed using the default service tier with
-         *   a lower uptime SLA and no latency guarantee.
+         *   a lower uptime SLA and no latency guarentee.
          * - When not set, the default behavior is 'auto'.
+         *
+         * When this parameter is set, the response body will include the `service_tier` utilized.
          */
         fun serviceTier(serviceTier: JsonField<ServiceTier>) = apply {
             body.serviceTier(serviceTier)
         }
 
-        /** Up to 4 sequences where the API will stop generating further tokens. */
-        fun stop(stop: Stop) = apply { body.stop(stop) }
+        /**
+         * Up to 4 sequences where the API will stop generating further tokens. The returned text
+         * will not contain the stop sequence.
+         */
+        fun stop(stop: Stop?) = apply { body.stop(stop) }
 
-        /** Up to 4 sequences where the API will stop generating further tokens. */
+        /**
+         * Up to 4 sequences where the API will stop generating further tokens. The returned text
+         * will not contain the stop sequence.
+         */
+        fun stop(stop: Optional<Stop>) = stop(stop.getOrNull())
+
+        /**
+         * Up to 4 sequences where the API will stop generating further tokens. The returned text
+         * will not contain the stop sequence.
+         */
         fun stop(stop: JsonField<Stop>) = apply { body.stop(stop) }
 
-        /** Up to 4 sequences where the API will stop generating further tokens. */
+        /**
+         * Up to 4 sequences where the API will stop generating further tokens. The returned text
+         * will not contain the stop sequence.
+         */
         fun stop(string: String) = apply { body.stop(string) }
 
-        /** Up to 4 sequences where the API will stop generating further tokens. */
+        /**
+         * Up to 4 sequences where the API will stop generating further tokens. The returned text
+         * will not contain the stop sequence.
+         */
         fun stopOfStrings(strings: List<String>) = apply { body.stopOfStrings(strings) }
 
         /**
@@ -3606,6 +3614,24 @@ private constructor(
          */
         fun user(user: JsonField<String>) = apply { body.user(user) }
 
+        /**
+         * This tool searches the web for relevant results to use in a response. Learn more about
+         * the
+         * [web search tool](https://platform.openai.com/docs/guides/tools-web-search?api-mode=chat).
+         */
+        fun webSearchOptions(webSearchOptions: WebSearchOptions) = apply {
+            body.webSearchOptions(webSearchOptions)
+        }
+
+        /**
+         * This tool searches the web for relevant results to use in a response. Learn more about
+         * the
+         * [web search tool](https://platform.openai.com/docs/guides/tools-web-search?api-mode=chat).
+         */
+        fun webSearchOptions(webSearchOptions: JsonField<WebSearchOptions>) = apply {
+            body.webSearchOptions(webSearchOptions)
+        }
+
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
         }
@@ -3751,7 +3777,7 @@ private constructor(
     @JsonSerialize(using = FunctionCall.Serializer::class)
     class FunctionCall
     private constructor(
-        private val auto: Auto? = null,
+        private val mode: FunctionCallMode? = null,
         private val functionCallOption: ChatCompletionFunctionCallOption? = null,
         private val _json: JsonValue? = null,
     ) {
@@ -3760,7 +3786,7 @@ private constructor(
          * `none` means the model will not call a function and instead generates a message. `auto`
          * means the model can pick between generating a message or calling a function.
          */
-        fun auto(): Optional<Auto> = Optional.ofNullable(auto)
+        fun mode(): Optional<FunctionCallMode> = Optional.ofNullable(mode)
 
         /**
          * Specifying a particular function via `{"name": "my_function"}` forces the model to call
@@ -3769,7 +3795,7 @@ private constructor(
         fun functionCallOption(): Optional<ChatCompletionFunctionCallOption> =
             Optional.ofNullable(functionCallOption)
 
-        fun isAuto(): Boolean = auto != null
+        fun isMode(): Boolean = mode != null
 
         fun isFunctionCallOption(): Boolean = functionCallOption != null
 
@@ -3777,7 +3803,7 @@ private constructor(
          * `none` means the model will not call a function and instead generates a message. `auto`
          * means the model can pick between generating a message or calling a function.
          */
-        fun asAuto(): Auto = auto.getOrThrow("auto")
+        fun asMode(): FunctionCallMode = mode.getOrThrow("mode")
 
         /**
          * Specifying a particular function via `{"name": "my_function"}` forces the model to call
@@ -3790,7 +3816,7 @@ private constructor(
 
         fun <T> accept(visitor: Visitor<T>): T {
             return when {
-                auto != null -> visitor.visitAuto(auto)
+                mode != null -> visitor.visitMode(mode)
                 functionCallOption != null -> visitor.visitFunctionCallOption(functionCallOption)
                 else -> visitor.unknown(_json)
             }
@@ -3805,7 +3831,7 @@ private constructor(
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitAuto(auto: Auto) {}
+                    override fun visitMode(mode: FunctionCallMode) {}
 
                     override fun visitFunctionCallOption(
                         functionCallOption: ChatCompletionFunctionCallOption
@@ -3822,14 +3848,14 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is FunctionCall && auto == other.auto && functionCallOption == other.functionCallOption /* spotless:on */
+            return /* spotless:off */ other is FunctionCall && mode == other.mode && functionCallOption == other.functionCallOption /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, functionCallOption) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(mode, functionCallOption) /* spotless:on */
 
         override fun toString(): String =
             when {
-                auto != null -> "FunctionCall{auto=$auto}"
+                mode != null -> "FunctionCall{mode=$mode}"
                 functionCallOption != null -> "FunctionCall{functionCallOption=$functionCallOption}"
                 _json != null -> "FunctionCall{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid FunctionCall")
@@ -3841,7 +3867,7 @@ private constructor(
              * `none` means the model will not call a function and instead generates a message.
              * `auto` means the model can pick between generating a message or calling a function.
              */
-            @JvmStatic fun ofAuto(auto: Auto) = FunctionCall(auto = auto)
+            @JvmStatic fun ofMode(mode: FunctionCallMode) = FunctionCall(mode = mode)
 
             /**
              * Specifying a particular function via `{"name": "my_function"}` forces the model to
@@ -3862,7 +3888,7 @@ private constructor(
              * `none` means the model will not call a function and instead generates a message.
              * `auto` means the model can pick between generating a message or calling a function.
              */
-            fun visitAuto(auto: Auto): T
+            fun visitMode(mode: FunctionCallMode): T
 
             /**
              * Specifying a particular function via `{"name": "my_function"}` forces the model to
@@ -3890,8 +3916,8 @@ private constructor(
             override fun ObjectCodec.deserialize(node: JsonNode): FunctionCall {
                 val json = JsonValue.fromJsonNode(node)
 
-                tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
-                    return FunctionCall(auto = it, _json = json)
+                tryDeserialize(node, jacksonTypeRef<FunctionCallMode>())?.let {
+                    return FunctionCall(mode = it, _json = json)
                 }
                 tryDeserialize(node, jacksonTypeRef<ChatCompletionFunctionCallOption>()) {
                         it.validate()
@@ -3912,7 +3938,7 @@ private constructor(
                 provider: SerializerProvider,
             ) {
                 when {
-                    value.auto != null -> generator.writeObject(value.auto)
+                    value.mode != null -> generator.writeObject(value.mode)
                     value.functionCallOption != null ->
                         generator.writeObject(value.functionCallOption)
                     value._json != null -> generator.writeObject(value._json)
@@ -3925,7 +3951,9 @@ private constructor(
          * `none` means the model will not call a function and instead generates a message. `auto`
          * means the model can pick between generating a message or calling a function.
          */
-        class Auto @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+        class FunctionCallMode
+        @JsonCreator
+        private constructor(private val value: JsonField<String>) : Enum {
 
             /**
              * Returns this class instance's raw value.
@@ -3943,19 +3971,20 @@ private constructor(
 
                 @JvmField val AUTO = of("auto")
 
-                @JvmStatic fun of(value: String) = Auto(JsonField.of(value))
+                @JvmStatic fun of(value: String) = FunctionCallMode(JsonField.of(value))
             }
 
-            /** An enum containing [Auto]'s known values. */
+            /** An enum containing [FunctionCallMode]'s known values. */
             enum class Known {
                 NONE,
                 AUTO,
             }
 
             /**
-             * An enum containing [Auto]'s known values, as well as an [_UNKNOWN] member.
+             * An enum containing [FunctionCallMode]'s known values, as well as an [_UNKNOWN]
+             * member.
              *
-             * An instance of [Auto] can contain an unknown value in a couple of cases:
+             * An instance of [FunctionCallMode] can contain an unknown value in a couple of cases:
              * - It was deserialized from data that doesn't match any known member. For example, if
              *   the SDK is on an older version than the API, then the API may respond with new
              *   members that the SDK is unaware of.
@@ -3964,7 +3993,10 @@ private constructor(
             enum class Value {
                 NONE,
                 AUTO,
-                /** An enum member indicating that [Auto] was instantiated with an unknown value. */
+                /**
+                 * An enum member indicating that [FunctionCallMode] was instantiated with an
+                 * unknown value.
+                 */
                 _UNKNOWN,
             }
 
@@ -3995,7 +4027,7 @@ private constructor(
                 when (this) {
                     NONE -> Known.NONE
                     AUTO -> Known.AUTO
-                    else -> throw OpenAIInvalidDataException("Unknown Auto: $value")
+                    else -> throw OpenAIInvalidDataException("Unknown FunctionCallMode: $value")
                 }
 
             /**
@@ -4017,7 +4049,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Auto && value == other.value /* spotless:on */
+                return /* spotless:off */ other is FunctionCallMode && value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -4324,6 +4356,104 @@ private constructor(
         override fun toString() = "LogitBias{additionalProperties=$additionalProperties}"
     }
 
+    class Modality @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val TEXT = of("text")
+
+            @JvmField val AUDIO = of("audio")
+
+            @JvmStatic fun of(value: String) = Modality(JsonField.of(value))
+        }
+
+        /** An enum containing [Modality]'s known values. */
+        enum class Known {
+            TEXT,
+            AUDIO,
+        }
+
+        /**
+         * An enum containing [Modality]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Modality] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            TEXT,
+            AUDIO,
+            /** An enum member indicating that [Modality] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                TEXT -> Value.TEXT
+                AUDIO -> Value.AUDIO
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                TEXT -> Known.TEXT
+                AUDIO -> Known.AUDIO
+                else -> throw OpenAIInvalidDataException("Unknown Modality: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Modality && value == other.value /* spotless:on */
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
     /**
      * An object specifying the format that the model must output.
      *
@@ -4331,51 +4461,65 @@ private constructor(
      * ensures the model will match your supplied JSON schema. Learn more in the
      * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
      *
-     * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the model
-     * generates is valid JSON.
-     *
-     * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
-     * yourself via a system or user message. Without this, the model may generate an unending
-     * stream of whitespace until the generation reaches the token limit, resulting in a
-     * long-running and seemingly "stuck" request. Also note that the message content may be
-     * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
-     * `max_tokens` or the conversation exceeded the max context length.
+     * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the message
+     * the model generates is valid JSON. Using `json_schema` is preferred for models that support
+     * it.
      */
     @JsonDeserialize(using = ResponseFormat.Deserializer::class)
     @JsonSerialize(using = ResponseFormat.Serializer::class)
     class ResponseFormat
     private constructor(
         private val text: ResponseFormatText? = null,
-        private val jsonObject: ResponseFormatJsonObject? = null,
         private val jsonSchema: ResponseFormatJsonSchema? = null,
+        private val jsonObject: ResponseFormatJsonObject? = null,
         private val _json: JsonValue? = null,
     ) {
 
+        /** Default response format. Used to generate text responses. */
         fun text(): Optional<ResponseFormatText> = Optional.ofNullable(text)
 
-        fun jsonObject(): Optional<ResponseFormatJsonObject> = Optional.ofNullable(jsonObject)
-
+        /**
+         * JSON Schema response format. Used to generate structured JSON responses. Learn more about
+         * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+         */
         fun jsonSchema(): Optional<ResponseFormatJsonSchema> = Optional.ofNullable(jsonSchema)
+
+        /**
+         * JSON object response format. An older method of generating JSON responses. Using
+         * `json_schema` is recommended for models that support it. Note that the model will not
+         * generate JSON without a system or user message instructing it to do so.
+         */
+        fun jsonObject(): Optional<ResponseFormatJsonObject> = Optional.ofNullable(jsonObject)
 
         fun isText(): Boolean = text != null
 
-        fun isJsonObject(): Boolean = jsonObject != null
-
         fun isJsonSchema(): Boolean = jsonSchema != null
 
+        fun isJsonObject(): Boolean = jsonObject != null
+
+        /** Default response format. Used to generate text responses. */
         fun asText(): ResponseFormatText = text.getOrThrow("text")
 
-        fun asJsonObject(): ResponseFormatJsonObject = jsonObject.getOrThrow("jsonObject")
-
+        /**
+         * JSON Schema response format. Used to generate structured JSON responses. Learn more about
+         * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+         */
         fun asJsonSchema(): ResponseFormatJsonSchema = jsonSchema.getOrThrow("jsonSchema")
+
+        /**
+         * JSON object response format. An older method of generating JSON responses. Using
+         * `json_schema` is recommended for models that support it. Note that the model will not
+         * generate JSON without a system or user message instructing it to do so.
+         */
+        fun asJsonObject(): ResponseFormatJsonObject = jsonObject.getOrThrow("jsonObject")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
         fun <T> accept(visitor: Visitor<T>): T {
             return when {
                 text != null -> visitor.visitText(text)
-                jsonObject != null -> visitor.visitJsonObject(jsonObject)
                 jsonSchema != null -> visitor.visitJsonSchema(jsonSchema)
+                jsonObject != null -> visitor.visitJsonObject(jsonObject)
                 else -> visitor.unknown(_json)
             }
         }
@@ -4393,12 +4537,12 @@ private constructor(
                         text.validate()
                     }
 
-                    override fun visitJsonObject(jsonObject: ResponseFormatJsonObject) {
-                        jsonObject.validate()
-                    }
-
                     override fun visitJsonSchema(jsonSchema: ResponseFormatJsonSchema) {
                         jsonSchema.validate()
+                    }
+
+                    override fun visitJsonObject(jsonObject: ResponseFormatJsonObject) {
+                        jsonObject.validate()
                     }
                 }
             )
@@ -4410,31 +4554,42 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ResponseFormat && text == other.text && jsonObject == other.jsonObject && jsonSchema == other.jsonSchema /* spotless:on */
+            return /* spotless:off */ other is ResponseFormat && text == other.text && jsonSchema == other.jsonSchema && jsonObject == other.jsonObject /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(text, jsonObject, jsonSchema) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(text, jsonSchema, jsonObject) /* spotless:on */
 
         override fun toString(): String =
             when {
                 text != null -> "ResponseFormat{text=$text}"
-                jsonObject != null -> "ResponseFormat{jsonObject=$jsonObject}"
                 jsonSchema != null -> "ResponseFormat{jsonSchema=$jsonSchema}"
+                jsonObject != null -> "ResponseFormat{jsonObject=$jsonObject}"
                 _json != null -> "ResponseFormat{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid ResponseFormat")
             }
 
         companion object {
 
+            /** Default response format. Used to generate text responses. */
             @JvmStatic fun ofText(text: ResponseFormatText) = ResponseFormat(text = text)
 
-            @JvmStatic
-            fun ofJsonObject(jsonObject: ResponseFormatJsonObject) =
-                ResponseFormat(jsonObject = jsonObject)
-
+            /**
+             * JSON Schema response format. Used to generate structured JSON responses. Learn more
+             * about
+             * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+             */
             @JvmStatic
             fun ofJsonSchema(jsonSchema: ResponseFormatJsonSchema) =
                 ResponseFormat(jsonSchema = jsonSchema)
+
+            /**
+             * JSON object response format. An older method of generating JSON responses. Using
+             * `json_schema` is recommended for models that support it. Note that the model will not
+             * generate JSON without a system or user message instructing it to do so.
+             */
+            @JvmStatic
+            fun ofJsonObject(jsonObject: ResponseFormatJsonObject) =
+                ResponseFormat(jsonObject = jsonObject)
         }
 
         /**
@@ -4443,11 +4598,22 @@ private constructor(
          */
         interface Visitor<out T> {
 
+            /** Default response format. Used to generate text responses. */
             fun visitText(text: ResponseFormatText): T
 
-            fun visitJsonObject(jsonObject: ResponseFormatJsonObject): T
-
+            /**
+             * JSON Schema response format. Used to generate structured JSON responses. Learn more
+             * about
+             * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+             */
             fun visitJsonSchema(jsonSchema: ResponseFormatJsonSchema): T
+
+            /**
+             * JSON object response format. An older method of generating JSON responses. Using
+             * `json_schema` is recommended for models that support it. Note that the model will not
+             * generate JSON without a system or user message instructing it to do so.
+             */
+            fun visitJsonObject(jsonObject: ResponseFormatJsonObject): T
 
             /**
              * Maps an unknown variant of [ResponseFormat] to a value of type [T].
@@ -4473,13 +4639,13 @@ private constructor(
                     ?.let {
                         return ResponseFormat(text = it, _json = json)
                     }
-                tryDeserialize(node, jacksonTypeRef<ResponseFormatJsonObject>()) { it.validate() }
-                    ?.let {
-                        return ResponseFormat(jsonObject = it, _json = json)
-                    }
                 tryDeserialize(node, jacksonTypeRef<ResponseFormatJsonSchema>()) { it.validate() }
                     ?.let {
                         return ResponseFormat(jsonSchema = it, _json = json)
+                    }
+                tryDeserialize(node, jacksonTypeRef<ResponseFormatJsonObject>()) { it.validate() }
+                    ?.let {
+                        return ResponseFormat(jsonObject = it, _json = json)
                     }
 
                 return ResponseFormat(_json = json)
@@ -4495,8 +4661,8 @@ private constructor(
             ) {
                 when {
                     value.text != null -> generator.writeObject(value.text)
-                    value.jsonObject != null -> generator.writeObject(value.jsonObject)
                     value.jsonSchema != null -> generator.writeObject(value.jsonSchema)
+                    value.jsonObject != null -> generator.writeObject(value.jsonObject)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid ResponseFormat")
                 }
@@ -4510,10 +4676,12 @@ private constructor(
      * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale tier
      *   credits until they are exhausted.
      * - If set to 'auto', and the Project is not Scale tier enabled, the request will be processed
-     *   using the default service tier with a lower uptime SLA and no latency guarantee.
+     *   using the default service tier with a lower uptime SLA and no latency guarentee.
      * - If set to 'default', the request will be processed using the default service tier with a
-     *   lower uptime SLA and no latency guarantee.
+     *   lower uptime SLA and no latency guarentee.
      * - When not set, the default behavior is 'auto'.
+     *
+     * When this parameter is set, the response body will include the `service_tier` utilized.
      */
     class ServiceTier @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
@@ -4616,7 +4784,10 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** Up to 4 sequences where the API will stop generating further tokens. */
+    /**
+     * Up to 4 sequences where the API will stop generating further tokens. The returned text will
+     * not contain the stop sequence.
+     */
     @JsonDeserialize(using = Stop.Deserializer::class)
     @JsonSerialize(using = Stop.Serializer::class)
     class Stop
@@ -4742,6 +4913,598 @@ private constructor(
                 }
             }
         }
+    }
+
+    /**
+     * This tool searches the web for relevant results to use in a response. Learn more about the
+     * [web search tool](https://platform.openai.com/docs/guides/tools-web-search?api-mode=chat).
+     */
+    @NoAutoDetect
+    class WebSearchOptions
+    @JsonCreator
+    private constructor(
+        @JsonProperty("search_context_size")
+        @ExcludeMissing
+        private val searchContextSize: JsonField<SearchContextSize> = JsonMissing.of(),
+        @JsonProperty("user_location")
+        @ExcludeMissing
+        private val userLocation: JsonField<UserLocation> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    ) {
+
+        /**
+         * High level guidance for the amount of context window space to use for the search. One of
+         * `low`, `medium`, or `high`. `medium` is the default.
+         */
+        fun searchContextSize(): Optional<SearchContextSize> =
+            Optional.ofNullable(searchContextSize.getNullable("search_context_size"))
+
+        /** Approximate location parameters for the search. */
+        fun userLocation(): Optional<UserLocation> =
+            Optional.ofNullable(userLocation.getNullable("user_location"))
+
+        /**
+         * High level guidance for the amount of context window space to use for the search. One of
+         * `low`, `medium`, or `high`. `medium` is the default.
+         */
+        @JsonProperty("search_context_size")
+        @ExcludeMissing
+        fun _searchContextSize(): JsonField<SearchContextSize> = searchContextSize
+
+        /** Approximate location parameters for the search. */
+        @JsonProperty("user_location")
+        @ExcludeMissing
+        fun _userLocation(): JsonField<UserLocation> = userLocation
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): WebSearchOptions = apply {
+            if (validated) {
+                return@apply
+            }
+
+            searchContextSize()
+            userLocation().ifPresent { it.validate() }
+            validated = true
+        }
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [WebSearchOptions]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [WebSearchOptions]. */
+        class Builder internal constructor() {
+
+            private var searchContextSize: JsonField<SearchContextSize> = JsonMissing.of()
+            private var userLocation: JsonField<UserLocation> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(webSearchOptions: WebSearchOptions) = apply {
+                searchContextSize = webSearchOptions.searchContextSize
+                userLocation = webSearchOptions.userLocation
+                additionalProperties = webSearchOptions.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * High level guidance for the amount of context window space to use for the search. One
+             * of `low`, `medium`, or `high`. `medium` is the default.
+             */
+            fun searchContextSize(searchContextSize: SearchContextSize) =
+                searchContextSize(JsonField.of(searchContextSize))
+
+            /**
+             * High level guidance for the amount of context window space to use for the search. One
+             * of `low`, `medium`, or `high`. `medium` is the default.
+             */
+            fun searchContextSize(searchContextSize: JsonField<SearchContextSize>) = apply {
+                this.searchContextSize = searchContextSize
+            }
+
+            /** Approximate location parameters for the search. */
+            fun userLocation(userLocation: UserLocation?) =
+                userLocation(JsonField.ofNullable(userLocation))
+
+            /** Approximate location parameters for the search. */
+            fun userLocation(userLocation: Optional<UserLocation>) =
+                userLocation(userLocation.getOrNull())
+
+            /** Approximate location parameters for the search. */
+            fun userLocation(userLocation: JsonField<UserLocation>) = apply {
+                this.userLocation = userLocation
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            fun build(): WebSearchOptions =
+                WebSearchOptions(
+                    searchContextSize,
+                    userLocation,
+                    additionalProperties.toImmutable(),
+                )
+        }
+
+        /**
+         * High level guidance for the amount of context window space to use for the search. One of
+         * `low`, `medium`, or `high`. `medium` is the default.
+         */
+        class SearchContextSize
+        @JsonCreator
+        private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val LOW = of("low")
+
+                @JvmField val MEDIUM = of("medium")
+
+                @JvmField val HIGH = of("high")
+
+                @JvmStatic fun of(value: String) = SearchContextSize(JsonField.of(value))
+            }
+
+            /** An enum containing [SearchContextSize]'s known values. */
+            enum class Known {
+                LOW,
+                MEDIUM,
+                HIGH,
+            }
+
+            /**
+             * An enum containing [SearchContextSize]'s known values, as well as an [_UNKNOWN]
+             * member.
+             *
+             * An instance of [SearchContextSize] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                LOW,
+                MEDIUM,
+                HIGH,
+                /**
+                 * An enum member indicating that [SearchContextSize] was instantiated with an
+                 * unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    LOW -> Value.LOW
+                    MEDIUM -> Value.MEDIUM
+                    HIGH -> Value.HIGH
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    LOW -> Known.LOW
+                    MEDIUM -> Known.MEDIUM
+                    HIGH -> Known.HIGH
+                    else -> throw OpenAIInvalidDataException("Unknown SearchContextSize: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is SearchContextSize && value == other.value /* spotless:on */
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        /** Approximate location parameters for the search. */
+        @NoAutoDetect
+        class UserLocation
+        @JsonCreator
+        private constructor(
+            @JsonProperty("approximate")
+            @ExcludeMissing
+            private val approximate: JsonField<Approximate> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
+            @JsonAnySetter
+            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        ) {
+
+            /** Approximate location parameters for the search. */
+            fun approximate(): Approximate = approximate.getRequired("approximate")
+
+            /** The type of location approximation. Always `approximate`. */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /** Approximate location parameters for the search. */
+            @JsonProperty("approximate")
+            @ExcludeMissing
+            fun _approximate(): JsonField<Approximate> = approximate
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            private var validated: Boolean = false
+
+            fun validate(): UserLocation = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                approximate().validate()
+                _type().let {
+                    if (it != JsonValue.from("approximate")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                validated = true
+            }
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [UserLocation].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .approximate()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [UserLocation]. */
+            class Builder internal constructor() {
+
+                private var approximate: JsonField<Approximate>? = null
+                private var type: JsonValue = JsonValue.from("approximate")
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(userLocation: UserLocation) = apply {
+                    approximate = userLocation.approximate
+                    type = userLocation.type
+                    additionalProperties = userLocation.additionalProperties.toMutableMap()
+                }
+
+                /** Approximate location parameters for the search. */
+                fun approximate(approximate: Approximate) = approximate(JsonField.of(approximate))
+
+                /** Approximate location parameters for the search. */
+                fun approximate(approximate: JsonField<Approximate>) = apply {
+                    this.approximate = approximate
+                }
+
+                /** The type of location approximation. Always `approximate`. */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                fun build(): UserLocation =
+                    UserLocation(
+                        checkRequired("approximate", approximate),
+                        type,
+                        additionalProperties.toImmutable(),
+                    )
+            }
+
+            /** Approximate location parameters for the search. */
+            @NoAutoDetect
+            class Approximate
+            @JsonCreator
+            private constructor(
+                @JsonProperty("city")
+                @ExcludeMissing
+                private val city: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("country")
+                @ExcludeMissing
+                private val country: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("region")
+                @ExcludeMissing
+                private val region: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("timezone")
+                @ExcludeMissing
+                private val timezone: JsonField<String> = JsonMissing.of(),
+                @JsonAnySetter
+                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            ) {
+
+                /** Free text input for the city of the user, e.g. `San Francisco`. */
+                fun city(): Optional<String> = Optional.ofNullable(city.getNullable("city"))
+
+                /**
+                 * The two-letter [ISO country code](https://en.wikipedia.org/wiki/ISO_3166-1) of
+                 * the user, e.g. `US`.
+                 */
+                fun country(): Optional<String> =
+                    Optional.ofNullable(country.getNullable("country"))
+
+                /** Free text input for the region of the user, e.g. `California`. */
+                fun region(): Optional<String> = Optional.ofNullable(region.getNullable("region"))
+
+                /**
+                 * The [IANA timezone](https://timeapi.io/documentation/iana-timezones) of the user,
+                 * e.g. `America/Los_Angeles`.
+                 */
+                fun timezone(): Optional<String> =
+                    Optional.ofNullable(timezone.getNullable("timezone"))
+
+                /** Free text input for the city of the user, e.g. `San Francisco`. */
+                @JsonProperty("city") @ExcludeMissing fun _city(): JsonField<String> = city
+
+                /**
+                 * The two-letter [ISO country code](https://en.wikipedia.org/wiki/ISO_3166-1) of
+                 * the user, e.g. `US`.
+                 */
+                @JsonProperty("country") @ExcludeMissing fun _country(): JsonField<String> = country
+
+                /** Free text input for the region of the user, e.g. `California`. */
+                @JsonProperty("region") @ExcludeMissing fun _region(): JsonField<String> = region
+
+                /**
+                 * The [IANA timezone](https://timeapi.io/documentation/iana-timezones) of the user,
+                 * e.g. `America/Los_Angeles`.
+                 */
+                @JsonProperty("timezone")
+                @ExcludeMissing
+                fun _timezone(): JsonField<String> = timezone
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                private var validated: Boolean = false
+
+                fun validate(): Approximate = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    city()
+                    country()
+                    region()
+                    timezone()
+                    validated = true
+                }
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /** Returns a mutable builder for constructing an instance of [Approximate]. */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [Approximate]. */
+                class Builder internal constructor() {
+
+                    private var city: JsonField<String> = JsonMissing.of()
+                    private var country: JsonField<String> = JsonMissing.of()
+                    private var region: JsonField<String> = JsonMissing.of()
+                    private var timezone: JsonField<String> = JsonMissing.of()
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(approximate: Approximate) = apply {
+                        city = approximate.city
+                        country = approximate.country
+                        region = approximate.region
+                        timezone = approximate.timezone
+                        additionalProperties = approximate.additionalProperties.toMutableMap()
+                    }
+
+                    /** Free text input for the city of the user, e.g. `San Francisco`. */
+                    fun city(city: String) = city(JsonField.of(city))
+
+                    /** Free text input for the city of the user, e.g. `San Francisco`. */
+                    fun city(city: JsonField<String>) = apply { this.city = city }
+
+                    /**
+                     * The two-letter [ISO country code](https://en.wikipedia.org/wiki/ISO_3166-1)
+                     * of the user, e.g. `US`.
+                     */
+                    fun country(country: String) = country(JsonField.of(country))
+
+                    /**
+                     * The two-letter [ISO country code](https://en.wikipedia.org/wiki/ISO_3166-1)
+                     * of the user, e.g. `US`.
+                     */
+                    fun country(country: JsonField<String>) = apply { this.country = country }
+
+                    /** Free text input for the region of the user, e.g. `California`. */
+                    fun region(region: String) = region(JsonField.of(region))
+
+                    /** Free text input for the region of the user, e.g. `California`. */
+                    fun region(region: JsonField<String>) = apply { this.region = region }
+
+                    /**
+                     * The [IANA timezone](https://timeapi.io/documentation/iana-timezones) of the
+                     * user, e.g. `America/Los_Angeles`.
+                     */
+                    fun timezone(timezone: String) = timezone(JsonField.of(timezone))
+
+                    /**
+                     * The [IANA timezone](https://timeapi.io/documentation/iana-timezones) of the
+                     * user, e.g. `America/Los_Angeles`.
+                     */
+                    fun timezone(timezone: JsonField<String>) = apply { this.timezone = timezone }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    fun build(): Approximate =
+                        Approximate(
+                            city,
+                            country,
+                            region,
+                            timezone,
+                            additionalProperties.toImmutable(),
+                        )
+                }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return /* spotless:off */ other is Approximate && city == other.city && country == other.country && region == other.region && timezone == other.timezone && additionalProperties == other.additionalProperties /* spotless:on */
+                }
+
+                /* spotless:off */
+                private val hashCode: Int by lazy { Objects.hash(city, country, region, timezone, additionalProperties) }
+                /* spotless:on */
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "Approximate{city=$city, country=$country, region=$region, timezone=$timezone, additionalProperties=$additionalProperties}"
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is UserLocation && approximate == other.approximate && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            }
+
+            /* spotless:off */
+            private val hashCode: Int by lazy { Objects.hash(approximate, type, additionalProperties) }
+            /* spotless:on */
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "UserLocation{approximate=$approximate, type=$type, additionalProperties=$additionalProperties}"
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is WebSearchOptions && searchContextSize == other.searchContextSize && userLocation == other.userLocation && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(searchContextSize, userLocation, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "WebSearchOptions{searchContextSize=$searchContextSize, userLocation=$userLocation, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

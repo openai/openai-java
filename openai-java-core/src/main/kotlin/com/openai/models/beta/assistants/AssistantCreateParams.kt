@@ -6,7 +6,15 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.Enum
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.BaseDeserializer
+import com.openai.core.BaseSerializer
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -15,6 +23,7 @@ import com.openai.core.NoAutoDetect
 import com.openai.core.Params
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.immutableEmptyMap
@@ -23,14 +32,11 @@ import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ChatModel
 import com.openai.models.FunctionDefinition
 import com.openai.models.Metadata
+import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatJsonObject
 import com.openai.models.ResponseFormatJsonSchema
 import com.openai.models.ResponseFormatText
 import com.openai.models.beta.threads.AssistantResponseFormatOption
-import com.openai.models.beta.vectorstores.AutoFileChunkingStrategyParam
-import com.openai.models.beta.vectorstores.FileChunkingStrategyParam
-import com.openai.models.beta.vectorstores.StaticFileChunkingStrategy
-import com.openai.models.beta.vectorstores.StaticFileChunkingStrategyObjectParam
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -73,7 +79,7 @@ private constructor(
     fun name(): Optional<String> = body.name()
 
     /**
-     * **o1 and o3-mini models only**
+     * **o-series models only**
      *
      * Constrains effort on reasoning for
      * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
@@ -162,7 +168,7 @@ private constructor(
     fun _name(): JsonField<String> = body._name()
 
     /**
-     * **o1 and o3-mini models only**
+     * **o-series models only**
      *
      * Constrains effort on reasoning for
      * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
@@ -307,7 +313,7 @@ private constructor(
         fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
 
         /**
-         * **o1 and o3-mini models only**
+         * **o-series models only**
          *
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
@@ -406,7 +412,7 @@ private constructor(
         @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         /**
-         * **o1 and o3-mini models only**
+         * **o-series models only**
          *
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
@@ -643,7 +649,7 @@ private constructor(
             fun name(name: JsonField<String>) = apply { this.name = name }
 
             /**
-             * **o1 and o3-mini models only**
+             * **o-series models only**
              *
              * Constrains effort on reasoning for
              * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
@@ -654,7 +660,7 @@ private constructor(
                 reasoningEffort(JsonField.ofNullable(reasoningEffort))
 
             /**
-             * **o1 and o3-mini models only**
+             * **o-series models only**
              *
              * Constrains effort on reasoning for
              * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
@@ -665,7 +671,7 @@ private constructor(
                 reasoningEffort(reasoningEffort.getOrNull())
 
             /**
-             * **o1 and o3-mini models only**
+             * **o-series models only**
              *
              * Constrains effort on reasoning for
              * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
@@ -750,54 +756,19 @@ private constructor(
             }
 
             /** `auto` is the default value */
-            fun responseFormatAuto() = responseFormat(AssistantResponseFormatOption.ofAuto())
+            fun responseFormatJsonValue() =
+                responseFormat(AssistantResponseFormatOption.ofJsonValue())
 
-            /**
-             * Specifies the format that the model must output. Compatible with
-             * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-             * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all
-             * GPT-3.5 Turbo models since `gpt-3.5-turbo-1106`.
-             *
-             * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
-             * Outputs which ensures the model will match your supplied JSON schema. Learn more in
-             * the
-             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-             *
-             * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
-             * the model generates is valid JSON.
-             *
-             * **Important:** when using JSON mode, you **must** also instruct the model to produce
-             * JSON yourself via a system or user message. Without this, the model may generate an
-             * unending stream of whitespace until the generation reaches the token limit, resulting
-             * in a long-running and seemingly "stuck" request. Also note that the message content
-             * may be partially cut off if `finish_reason="length"`, which indicates the generation
-             * exceeded `max_tokens` or the conversation exceeded the max context length.
-             */
+            /** Default response format. Used to generate text responses. */
             fun responseFormat(responseFormatText: ResponseFormatText) =
                 responseFormat(
                     AssistantResponseFormatOption.ofResponseFormatText(responseFormatText)
                 )
 
             /**
-             * Specifies the format that the model must output. Compatible with
-             * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-             * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all
-             * GPT-3.5 Turbo models since `gpt-3.5-turbo-1106`.
-             *
-             * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
-             * Outputs which ensures the model will match your supplied JSON schema. Learn more in
-             * the
-             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-             *
-             * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
-             * the model generates is valid JSON.
-             *
-             * **Important:** when using JSON mode, you **must** also instruct the model to produce
-             * JSON yourself via a system or user message. Without this, the model may generate an
-             * unending stream of whitespace until the generation reaches the token limit, resulting
-             * in a long-running and seemingly "stuck" request. Also note that the message content
-             * may be partially cut off if `finish_reason="length"`, which indicates the generation
-             * exceeded `max_tokens` or the conversation exceeded the max context length.
+             * JSON object response format. An older method of generating JSON responses. Using
+             * `json_schema` is recommended for models that support it. Note that the model will not
+             * generate JSON without a system or user message instructing it to do so.
              */
             fun responseFormat(responseFormatJsonObject: ResponseFormatJsonObject) =
                 responseFormat(
@@ -807,25 +778,9 @@ private constructor(
                 )
 
             /**
-             * Specifies the format that the model must output. Compatible with
-             * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-             * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all
-             * GPT-3.5 Turbo models since `gpt-3.5-turbo-1106`.
-             *
-             * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
-             * Outputs which ensures the model will match your supplied JSON schema. Learn more in
-             * the
-             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-             *
-             * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
-             * the model generates is valid JSON.
-             *
-             * **Important:** when using JSON mode, you **must** also instruct the model to produce
-             * JSON yourself via a system or user message. Without this, the model may generate an
-             * unending stream of whitespace until the generation reaches the token limit, resulting
-             * in a long-running and seemingly "stuck" request. Also note that the message content
-             * may be partially cut off if `finish_reason="length"`, which indicates the generation
-             * exceeded `max_tokens` or the conversation exceeded the max context length.
+             * JSON Schema response format. Used to generate structured JSON responses. Learn more
+             * about
+             * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
              */
             fun responseFormat(responseFormatJsonSchema: ResponseFormatJsonSchema) =
                 responseFormat(
@@ -1154,7 +1109,7 @@ private constructor(
         fun name(name: JsonField<String>) = apply { body.name(name) }
 
         /**
-         * **o1 and o3-mini models only**
+         * **o-series models only**
          *
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
@@ -1166,7 +1121,7 @@ private constructor(
         }
 
         /**
-         * **o1 and o3-mini models only**
+         * **o-series models only**
          *
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
@@ -1177,7 +1132,7 @@ private constructor(
             reasoningEffort(reasoningEffort.getOrNull())
 
         /**
-         * **o1 and o3-mini models only**
+         * **o-series models only**
          *
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
@@ -1260,75 +1215,25 @@ private constructor(
         }
 
         /** `auto` is the default value */
-        fun responseFormatAuto() = apply { body.responseFormatAuto() }
+        fun responseFormatJsonValue() = apply { body.responseFormatJsonValue() }
 
-        /**
-         * Specifies the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
-         * Turbo models since `gpt-3.5-turbo-1106`.
-         *
-         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
-         * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-         *
-         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
-         * model generates is valid JSON.
-         *
-         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
-         * yourself via a system or user message. Without this, the model may generate an unending
-         * stream of whitespace until the generation reaches the token limit, resulting in a
-         * long-running and seemingly "stuck" request. Also note that the message content may be
-         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
-         * `max_tokens` or the conversation exceeded the max context length.
-         */
+        /** Default response format. Used to generate text responses. */
         fun responseFormat(responseFormatText: ResponseFormatText) = apply {
             body.responseFormat(responseFormatText)
         }
 
         /**
-         * Specifies the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
-         * Turbo models since `gpt-3.5-turbo-1106`.
-         *
-         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
-         * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-         *
-         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
-         * model generates is valid JSON.
-         *
-         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
-         * yourself via a system or user message. Without this, the model may generate an unending
-         * stream of whitespace until the generation reaches the token limit, resulting in a
-         * long-running and seemingly "stuck" request. Also note that the message content may be
-         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
-         * `max_tokens` or the conversation exceeded the max context length.
+         * JSON object response format. An older method of generating JSON responses. Using
+         * `json_schema` is recommended for models that support it. Note that the model will not
+         * generate JSON without a system or user message instructing it to do so.
          */
         fun responseFormat(responseFormatJsonObject: ResponseFormatJsonObject) = apply {
             body.responseFormat(responseFormatJsonObject)
         }
 
         /**
-         * Specifies the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
-         * Turbo models since `gpt-3.5-turbo-1106`.
-         *
-         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
-         * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-         *
-         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
-         * model generates is valid JSON.
-         *
-         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
-         * yourself via a system or user message. Without this, the model may generate an unending
-         * stream of whitespace until the generation reaches the token limit, resulting in a
-         * long-running and seemingly "stuck" request. Also note that the message content may be
-         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
-         * `max_tokens` or the conversation exceeded the max context length.
+         * JSON Schema response format. Used to generate structured JSON responses. Learn more about
+         * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
          */
         fun responseFormat(responseFormatJsonSchema: ResponseFormatJsonSchema) = apply {
             body.responseFormat(responseFormatJsonSchema)
@@ -1589,122 +1494,6 @@ private constructor(
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
-    }
-
-    /**
-     * **o1 and o3-mini models only**
-     *
-     * Constrains effort on reasoning for
-     * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
-     * values are `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
-     * responses and fewer tokens used on reasoning in a response.
-     */
-    class ReasoningEffort @JsonCreator private constructor(private val value: JsonField<String>) :
-        Enum {
-
-        /**
-         * Returns this class instance's raw value.
-         *
-         * This is usually only useful if this instance was deserialized from data that doesn't
-         * match any known member, and you want to know that value. For example, if the SDK is on an
-         * older version than the API, then the API may respond with new members that the SDK is
-         * unaware of.
-         */
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val LOW = of("low")
-
-            @JvmField val MEDIUM = of("medium")
-
-            @JvmField val HIGH = of("high")
-
-            @JvmStatic fun of(value: String) = ReasoningEffort(JsonField.of(value))
-        }
-
-        /** An enum containing [ReasoningEffort]'s known values. */
-        enum class Known {
-            LOW,
-            MEDIUM,
-            HIGH,
-        }
-
-        /**
-         * An enum containing [ReasoningEffort]'s known values, as well as an [_UNKNOWN] member.
-         *
-         * An instance of [ReasoningEffort] can contain an unknown value in a couple of cases:
-         * - It was deserialized from data that doesn't match any known member. For example, if the
-         *   SDK is on an older version than the API, then the API may respond with new members that
-         *   the SDK is unaware of.
-         * - It was constructed with an arbitrary value using the [of] method.
-         */
-        enum class Value {
-            LOW,
-            MEDIUM,
-            HIGH,
-            /**
-             * An enum member indicating that [ReasoningEffort] was instantiated with an unknown
-             * value.
-             */
-            _UNKNOWN,
-        }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
-         * if the class was instantiated with an unknown value.
-         *
-         * Use the [known] method instead if you're certain the value is always known or if you want
-         * to throw for the unknown case.
-         */
-        fun value(): Value =
-            when (this) {
-                LOW -> Value.LOW
-                MEDIUM -> Value.MEDIUM
-                HIGH -> Value.HIGH
-                else -> Value._UNKNOWN
-            }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value.
-         *
-         * Use the [value] method instead if you're uncertain the value is always known and don't
-         * want to throw for the unknown case.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-         *   member.
-         */
-        fun known(): Known =
-            when (this) {
-                LOW -> Known.LOW
-                MEDIUM -> Known.MEDIUM
-                HIGH -> Known.HIGH
-                else -> throw OpenAIInvalidDataException("Unknown ReasoningEffort: $value")
-            }
-
-        /**
-         * Returns this class instance's primitive wire representation.
-         *
-         * This differs from the [toString] method because that method is primarily for debugging
-         * and generally doesn't throw.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value does not have the
-         *   expected primitive type.
-         */
-        fun asString(): String =
-            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is ReasoningEffort && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
     }
 
     /**
@@ -2142,8 +1931,7 @@ private constructor(
             private constructor(
                 @JsonProperty("chunking_strategy")
                 @ExcludeMissing
-                private val chunkingStrategy: JsonField<FileChunkingStrategyParam> =
-                    JsonMissing.of(),
+                private val chunkingStrategy: JsonField<ChunkingStrategy> = JsonMissing.of(),
                 @JsonProperty("file_ids")
                 @ExcludeMissing
                 private val fileIds: JsonField<List<String>> = JsonMissing.of(),
@@ -2156,9 +1944,9 @@ private constructor(
 
                 /**
                  * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
-                 * strategy. Only applicable if `file_ids` is non-empty.
+                 * strategy.
                  */
-                fun chunkingStrategy(): Optional<FileChunkingStrategyParam> =
+                fun chunkingStrategy(): Optional<ChunkingStrategy> =
                     Optional.ofNullable(chunkingStrategy.getNullable("chunking_strategy"))
 
                 /**
@@ -2181,11 +1969,11 @@ private constructor(
 
                 /**
                  * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
-                 * strategy. Only applicable if `file_ids` is non-empty.
+                 * strategy.
                  */
                 @JsonProperty("chunking_strategy")
                 @ExcludeMissing
-                fun _chunkingStrategy(): JsonField<FileChunkingStrategyParam> = chunkingStrategy
+                fun _chunkingStrategy(): JsonField<ChunkingStrategy> = chunkingStrategy
 
                 /**
                  * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to add
@@ -2235,8 +2023,7 @@ private constructor(
                 /** A builder for [VectorStore]. */
                 class Builder internal constructor() {
 
-                    private var chunkingStrategy: JsonField<FileChunkingStrategyParam> =
-                        JsonMissing.of()
+                    private var chunkingStrategy: JsonField<ChunkingStrategy> = JsonMissing.of()
                     private var fileIds: JsonField<MutableList<String>>? = null
                     private var metadata: JsonField<Metadata> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -2251,41 +2038,39 @@ private constructor(
 
                     /**
                      * The chunking strategy used to chunk the file(s). If not set, will use the
-                     * `auto` strategy. Only applicable if `file_ids` is non-empty.
+                     * `auto` strategy.
                      */
-                    fun chunkingStrategy(chunkingStrategy: FileChunkingStrategyParam) =
+                    fun chunkingStrategy(chunkingStrategy: ChunkingStrategy) =
                         chunkingStrategy(JsonField.of(chunkingStrategy))
 
                     /**
                      * The chunking strategy used to chunk the file(s). If not set, will use the
-                     * `auto` strategy. Only applicable if `file_ids` is non-empty.
+                     * `auto` strategy.
                      */
-                    fun chunkingStrategy(chunkingStrategy: JsonField<FileChunkingStrategyParam>) =
-                        apply {
-                            this.chunkingStrategy = chunkingStrategy
-                        }
+                    fun chunkingStrategy(chunkingStrategy: JsonField<ChunkingStrategy>) = apply {
+                        this.chunkingStrategy = chunkingStrategy
+                    }
 
                     /**
                      * The default strategy. This strategy currently uses a `max_chunk_size_tokens`
                      * of `800` and `chunk_overlap_tokens` of `400`.
                      */
-                    fun chunkingStrategy(auto: AutoFileChunkingStrategyParam) =
-                        chunkingStrategy(FileChunkingStrategyParam.ofAuto(auto))
+                    fun chunkingStrategyAuto() = chunkingStrategy(ChunkingStrategy.ofAuto())
 
                     /**
                      * The chunking strategy used to chunk the file(s). If not set, will use the
-                     * `auto` strategy. Only applicable if `file_ids` is non-empty.
+                     * `auto` strategy.
                      */
-                    fun chunkingStrategy(static_: StaticFileChunkingStrategyObjectParam) =
-                        chunkingStrategy(FileChunkingStrategyParam.ofStatic(static_))
+                    fun chunkingStrategy(static_: ChunkingStrategy.StaticObject) =
+                        chunkingStrategy(ChunkingStrategy.ofStatic(static_))
 
                     /**
                      * The chunking strategy used to chunk the file(s). If not set, will use the
-                     * `auto` strategy. Only applicable if `file_ids` is non-empty.
+                     * `auto` strategy.
                      */
-                    fun staticChunkingStrategy(static_: StaticFileChunkingStrategy) =
+                    fun staticChunkingStrategy(static_: ChunkingStrategy.StaticObject.Static) =
                         chunkingStrategy(
-                            StaticFileChunkingStrategyObjectParam.builder().static_(static_).build()
+                            ChunkingStrategy.StaticObject.builder().static_(static_).build()
                         )
 
                     /**
@@ -2375,6 +2160,517 @@ private constructor(
                             metadata,
                             additionalProperties.toImmutable(),
                         )
+                }
+
+                /**
+                 * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
+                 * strategy.
+                 */
+                @JsonDeserialize(using = ChunkingStrategy.Deserializer::class)
+                @JsonSerialize(using = ChunkingStrategy.Serializer::class)
+                class ChunkingStrategy
+                private constructor(
+                    private val auto: JsonValue? = null,
+                    private val static_: StaticObject? = null,
+                    private val _json: JsonValue? = null,
+                ) {
+
+                    /**
+                     * The default strategy. This strategy currently uses a `max_chunk_size_tokens`
+                     * of `800` and `chunk_overlap_tokens` of `400`.
+                     */
+                    fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
+
+                    fun static_(): Optional<StaticObject> = Optional.ofNullable(static_)
+
+                    fun isAuto(): Boolean = auto != null
+
+                    fun isStatic(): Boolean = static_ != null
+
+                    /**
+                     * The default strategy. This strategy currently uses a `max_chunk_size_tokens`
+                     * of `800` and `chunk_overlap_tokens` of `400`.
+                     */
+                    fun asAuto(): JsonValue = auto.getOrThrow("auto")
+
+                    fun asStatic(): StaticObject = static_.getOrThrow("static_")
+
+                    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+                    fun <T> accept(visitor: Visitor<T>): T {
+                        return when {
+                            auto != null -> visitor.visitAuto(auto)
+                            static_ != null -> visitor.visitStatic(static_)
+                            else -> visitor.unknown(_json)
+                        }
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): ChunkingStrategy = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        accept(
+                            object : Visitor<Unit> {
+                                override fun visitAuto(auto: JsonValue) {
+                                    auto.let {
+                                        if (it != JsonValue.from(mapOf("type" to "auto"))) {
+                                            throw OpenAIInvalidDataException(
+                                                "'auto' is invalid, received $it"
+                                            )
+                                        }
+                                    }
+                                }
+
+                                override fun visitStatic(static_: StaticObject) {
+                                    static_.validate()
+                                }
+                            }
+                        )
+                        validated = true
+                    }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return /* spotless:off */ other is ChunkingStrategy && auto == other.auto && static_ == other.static_ /* spotless:on */
+                    }
+
+                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, static_) /* spotless:on */
+
+                    override fun toString(): String =
+                        when {
+                            auto != null -> "ChunkingStrategy{auto=$auto}"
+                            static_ != null -> "ChunkingStrategy{static_=$static_}"
+                            _json != null -> "ChunkingStrategy{_unknown=$_json}"
+                            else -> throw IllegalStateException("Invalid ChunkingStrategy")
+                        }
+
+                    companion object {
+
+                        /**
+                         * The default strategy. This strategy currently uses a
+                         * `max_chunk_size_tokens` of `800` and `chunk_overlap_tokens` of `400`.
+                         */
+                        @JvmStatic
+                        fun ofAuto() =
+                            ChunkingStrategy(auto = JsonValue.from(mapOf("type" to "auto")))
+
+                        @JvmStatic
+                        fun ofStatic(static_: StaticObject) = ChunkingStrategy(static_ = static_)
+                    }
+
+                    /**
+                     * An interface that defines how to map each variant of [ChunkingStrategy] to a
+                     * value of type [T].
+                     */
+                    interface Visitor<out T> {
+
+                        /**
+                         * The default strategy. This strategy currently uses a
+                         * `max_chunk_size_tokens` of `800` and `chunk_overlap_tokens` of `400`.
+                         */
+                        fun visitAuto(auto: JsonValue): T
+
+                        fun visitStatic(static_: StaticObject): T
+
+                        /**
+                         * Maps an unknown variant of [ChunkingStrategy] to a value of type [T].
+                         *
+                         * An instance of [ChunkingStrategy] can contain an unknown variant if it
+                         * was deserialized from data that doesn't match any known variant. For
+                         * example, if the SDK is on an older version than the API, then the API may
+                         * respond with new variants that the SDK is unaware of.
+                         *
+                         * @throws OpenAIInvalidDataException in the default implementation.
+                         */
+                        fun unknown(json: JsonValue?): T {
+                            throw OpenAIInvalidDataException("Unknown ChunkingStrategy: $json")
+                        }
+                    }
+
+                    internal class Deserializer :
+                        BaseDeserializer<ChunkingStrategy>(ChunkingStrategy::class) {
+
+                        override fun ObjectCodec.deserialize(node: JsonNode): ChunkingStrategy {
+                            val json = JsonValue.fromJsonNode(node)
+                            val type =
+                                json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
+
+                            when (type) {
+                                "auto" -> {
+                                    tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
+                                            it.let {
+                                                if (it != JsonValue.from(mapOf("type" to "auto"))) {
+                                                    throw OpenAIInvalidDataException(
+                                                        "'auto' is invalid, received $it"
+                                                    )
+                                                }
+                                            }
+                                        }
+                                        ?.let {
+                                            return ChunkingStrategy(auto = it, _json = json)
+                                        }
+                                }
+                                "static" -> {
+                                    tryDeserialize(node, jacksonTypeRef<StaticObject>()) {
+                                            it.validate()
+                                        }
+                                        ?.let {
+                                            return ChunkingStrategy(static_ = it, _json = json)
+                                        }
+                                }
+                            }
+
+                            return ChunkingStrategy(_json = json)
+                        }
+                    }
+
+                    internal class Serializer :
+                        BaseSerializer<ChunkingStrategy>(ChunkingStrategy::class) {
+
+                        override fun serialize(
+                            value: ChunkingStrategy,
+                            generator: JsonGenerator,
+                            provider: SerializerProvider,
+                        ) {
+                            when {
+                                value.auto != null -> generator.writeObject(value.auto)
+                                value.static_ != null -> generator.writeObject(value.static_)
+                                value._json != null -> generator.writeObject(value._json)
+                                else -> throw IllegalStateException("Invalid ChunkingStrategy")
+                            }
+                        }
+                    }
+
+                    @NoAutoDetect
+                    class StaticObject
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("static")
+                        @ExcludeMissing
+                        private val static_: JsonField<Static> = JsonMissing.of(),
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        private val type: JsonValue = JsonMissing.of(),
+                        @JsonAnySetter
+                        private val additionalProperties: Map<String, JsonValue> =
+                            immutableEmptyMap(),
+                    ) {
+
+                        fun static_(): Static = static_.getRequired("static")
+
+                        /** Always `static`. */
+                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+                        @JsonProperty("static")
+                        @ExcludeMissing
+                        fun _static_(): JsonField<Static> = static_
+
+                        @JsonAnyGetter
+                        @ExcludeMissing
+                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                        private var validated: Boolean = false
+
+                        fun validate(): StaticObject = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            static_().validate()
+                            _type().let {
+                                if (it != JsonValue.from("static")) {
+                                    throw OpenAIInvalidDataException(
+                                        "'type' is invalid, received $it"
+                                    )
+                                }
+                            }
+                            validated = true
+                        }
+
+                        fun toBuilder() = Builder().from(this)
+
+                        companion object {
+
+                            /**
+                             * Returns a mutable builder for constructing an instance of
+                             * [StaticObject].
+                             *
+                             * The following fields are required:
+                             * ```java
+                             * .static_()
+                             * ```
+                             */
+                            @JvmStatic fun builder() = Builder()
+                        }
+
+                        /** A builder for [StaticObject]. */
+                        class Builder internal constructor() {
+
+                            private var static_: JsonField<Static>? = null
+                            private var type: JsonValue = JsonValue.from("static")
+                            private var additionalProperties: MutableMap<String, JsonValue> =
+                                mutableMapOf()
+
+                            @JvmSynthetic
+                            internal fun from(staticObject: StaticObject) = apply {
+                                static_ = staticObject.static_
+                                type = staticObject.type
+                                additionalProperties =
+                                    staticObject.additionalProperties.toMutableMap()
+                            }
+
+                            fun static_(static_: Static) = static_(JsonField.of(static_))
+
+                            fun static_(static_: JsonField<Static>) = apply {
+                                this.static_ = static_
+                            }
+
+                            /** Always `static`. */
+                            fun type(type: JsonValue) = apply { this.type = type }
+
+                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                                apply {
+                                    this.additionalProperties.clear()
+                                    putAllAdditionalProperties(additionalProperties)
+                                }
+
+                            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                                additionalProperties.put(key, value)
+                            }
+
+                            fun putAllAdditionalProperties(
+                                additionalProperties: Map<String, JsonValue>
+                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                            fun removeAdditionalProperty(key: String) = apply {
+                                additionalProperties.remove(key)
+                            }
+
+                            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                                keys.forEach(::removeAdditionalProperty)
+                            }
+
+                            fun build(): StaticObject =
+                                StaticObject(
+                                    checkRequired("static_", static_),
+                                    type,
+                                    additionalProperties.toImmutable(),
+                                )
+                        }
+
+                        @NoAutoDetect
+                        class Static
+                        @JsonCreator
+                        private constructor(
+                            @JsonProperty("chunk_overlap_tokens")
+                            @ExcludeMissing
+                            private val chunkOverlapTokens: JsonField<Long> = JsonMissing.of(),
+                            @JsonProperty("max_chunk_size_tokens")
+                            @ExcludeMissing
+                            private val maxChunkSizeTokens: JsonField<Long> = JsonMissing.of(),
+                            @JsonAnySetter
+                            private val additionalProperties: Map<String, JsonValue> =
+                                immutableEmptyMap(),
+                        ) {
+
+                            /**
+                             * The number of tokens that overlap between chunks. The default value
+                             * is `400`.
+                             *
+                             * Note that the overlap must not exceed half of
+                             * `max_chunk_size_tokens`.
+                             */
+                            fun chunkOverlapTokens(): Long =
+                                chunkOverlapTokens.getRequired("chunk_overlap_tokens")
+
+                            /**
+                             * The maximum number of tokens in each chunk. The default value is
+                             * `800`. The minimum value is `100` and the maximum value is `4096`.
+                             */
+                            fun maxChunkSizeTokens(): Long =
+                                maxChunkSizeTokens.getRequired("max_chunk_size_tokens")
+
+                            /**
+                             * The number of tokens that overlap between chunks. The default value
+                             * is `400`.
+                             *
+                             * Note that the overlap must not exceed half of
+                             * `max_chunk_size_tokens`.
+                             */
+                            @JsonProperty("chunk_overlap_tokens")
+                            @ExcludeMissing
+                            fun _chunkOverlapTokens(): JsonField<Long> = chunkOverlapTokens
+
+                            /**
+                             * The maximum number of tokens in each chunk. The default value is
+                             * `800`. The minimum value is `100` and the maximum value is `4096`.
+                             */
+                            @JsonProperty("max_chunk_size_tokens")
+                            @ExcludeMissing
+                            fun _maxChunkSizeTokens(): JsonField<Long> = maxChunkSizeTokens
+
+                            @JsonAnyGetter
+                            @ExcludeMissing
+                            fun _additionalProperties(): Map<String, JsonValue> =
+                                additionalProperties
+
+                            private var validated: Boolean = false
+
+                            fun validate(): Static = apply {
+                                if (validated) {
+                                    return@apply
+                                }
+
+                                chunkOverlapTokens()
+                                maxChunkSizeTokens()
+                                validated = true
+                            }
+
+                            fun toBuilder() = Builder().from(this)
+
+                            companion object {
+
+                                /**
+                                 * Returns a mutable builder for constructing an instance of
+                                 * [Static].
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .chunkOverlapTokens()
+                                 * .maxChunkSizeTokens()
+                                 * ```
+                                 */
+                                @JvmStatic fun builder() = Builder()
+                            }
+
+                            /** A builder for [Static]. */
+                            class Builder internal constructor() {
+
+                                private var chunkOverlapTokens: JsonField<Long>? = null
+                                private var maxChunkSizeTokens: JsonField<Long>? = null
+                                private var additionalProperties: MutableMap<String, JsonValue> =
+                                    mutableMapOf()
+
+                                @JvmSynthetic
+                                internal fun from(static_: Static) = apply {
+                                    chunkOverlapTokens = static_.chunkOverlapTokens
+                                    maxChunkSizeTokens = static_.maxChunkSizeTokens
+                                    additionalProperties =
+                                        static_.additionalProperties.toMutableMap()
+                                }
+
+                                /**
+                                 * The number of tokens that overlap between chunks. The default
+                                 * value is `400`.
+                                 *
+                                 * Note that the overlap must not exceed half of
+                                 * `max_chunk_size_tokens`.
+                                 */
+                                fun chunkOverlapTokens(chunkOverlapTokens: Long) =
+                                    chunkOverlapTokens(JsonField.of(chunkOverlapTokens))
+
+                                /**
+                                 * The number of tokens that overlap between chunks. The default
+                                 * value is `400`.
+                                 *
+                                 * Note that the overlap must not exceed half of
+                                 * `max_chunk_size_tokens`.
+                                 */
+                                fun chunkOverlapTokens(chunkOverlapTokens: JsonField<Long>) =
+                                    apply {
+                                        this.chunkOverlapTokens = chunkOverlapTokens
+                                    }
+
+                                /**
+                                 * The maximum number of tokens in each chunk. The default value is
+                                 * `800`. The minimum value is `100` and the maximum value is
+                                 * `4096`.
+                                 */
+                                fun maxChunkSizeTokens(maxChunkSizeTokens: Long) =
+                                    maxChunkSizeTokens(JsonField.of(maxChunkSizeTokens))
+
+                                /**
+                                 * The maximum number of tokens in each chunk. The default value is
+                                 * `800`. The minimum value is `100` and the maximum value is
+                                 * `4096`.
+                                 */
+                                fun maxChunkSizeTokens(maxChunkSizeTokens: JsonField<Long>) =
+                                    apply {
+                                        this.maxChunkSizeTokens = maxChunkSizeTokens
+                                    }
+
+                                fun additionalProperties(
+                                    additionalProperties: Map<String, JsonValue>
+                                ) = apply {
+                                    this.additionalProperties.clear()
+                                    putAllAdditionalProperties(additionalProperties)
+                                }
+
+                                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                                    additionalProperties.put(key, value)
+                                }
+
+                                fun putAllAdditionalProperties(
+                                    additionalProperties: Map<String, JsonValue>
+                                ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                                fun removeAdditionalProperty(key: String) = apply {
+                                    additionalProperties.remove(key)
+                                }
+
+                                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                                    keys.forEach(::removeAdditionalProperty)
+                                }
+
+                                fun build(): Static =
+                                    Static(
+                                        checkRequired("chunkOverlapTokens", chunkOverlapTokens),
+                                        checkRequired("maxChunkSizeTokens", maxChunkSizeTokens),
+                                        additionalProperties.toImmutable(),
+                                    )
+                            }
+
+                            override fun equals(other: Any?): Boolean {
+                                if (this === other) {
+                                    return true
+                                }
+
+                                return /* spotless:off */ other is Static && chunkOverlapTokens == other.chunkOverlapTokens && maxChunkSizeTokens == other.maxChunkSizeTokens && additionalProperties == other.additionalProperties /* spotless:on */
+                            }
+
+                            /* spotless:off */
+                            private val hashCode: Int by lazy { Objects.hash(chunkOverlapTokens, maxChunkSizeTokens, additionalProperties) }
+                            /* spotless:on */
+
+                            override fun hashCode(): Int = hashCode
+
+                            override fun toString() =
+                                "Static{chunkOverlapTokens=$chunkOverlapTokens, maxChunkSizeTokens=$maxChunkSizeTokens, additionalProperties=$additionalProperties}"
+                        }
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return /* spotless:off */ other is StaticObject && static_ == other.static_ && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                        }
+
+                        /* spotless:off */
+                        private val hashCode: Int by lazy { Objects.hash(static_, type, additionalProperties) }
+                        /* spotless:on */
+
+                        override fun hashCode(): Int = hashCode
+
+                        override fun toString() =
+                            "StaticObject{static_=$static_, type=$type, additionalProperties=$additionalProperties}"
+                    }
                 }
 
                 override fun equals(other: Any?): Boolean {
