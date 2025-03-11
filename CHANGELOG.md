@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.34.1 (2025-03-11)
+
+Full Changelog: [v0.34.0...v0.34.1](https://github.com/openai/openai-java/compare/v0.34.0...v0.34.1)
+
+### Bug Fixes
+
+* **responses:** correct computer use enum value ([#298](https://github.com/openai/openai-java/issues/298)) ([5ad3f2a](https://github.com/openai/openai-java/commit/5ad3f2a947bd67ce9260b0f25afa4c675d91ebdd))
+* **responses:** correct reasoning output type ([#300](https://github.com/openai/openai-java/issues/300)) ([77572c6](https://github.com/openai/openai-java/commit/77572c64b8712ea61f789fd42fb51a535a1512d0))
+
 ## 0.34.0 (2025-03-11)
 
 Full Changelog: [v0.33.0...v0.34.0](https://github.com/openai/openai-java/compare/v0.33.0...v0.34.0)
