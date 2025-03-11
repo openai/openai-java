@@ -26,8 +26,12 @@ import com.openai.services.blocking.ModelService
 import com.openai.services.blocking.ModelServiceImpl
 import com.openai.services.blocking.ModerationService
 import com.openai.services.blocking.ModerationServiceImpl
+import com.openai.services.blocking.ResponseService
+import com.openai.services.blocking.ResponseServiceImpl
 import com.openai.services.blocking.UploadService
 import com.openai.services.blocking.UploadServiceImpl
+import com.openai.services.blocking.VectorStoreService
+import com.openai.services.blocking.VectorStoreServiceImpl
 
 class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient {
 
@@ -72,11 +76,19 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         FineTuningServiceImpl(clientOptionsWithUserAgent)
     }
 
+    private val vectorStores: VectorStoreService by lazy {
+        VectorStoreServiceImpl(clientOptionsWithUserAgent)
+    }
+
     private val beta: BetaService by lazy { BetaServiceImpl(clientOptionsWithUserAgent) }
 
     private val batches: BatchService by lazy { BatchServiceImpl(clientOptionsWithUserAgent) }
 
     private val uploads: UploadService by lazy { UploadServiceImpl(clientOptionsWithUserAgent) }
+
+    private val responses: ResponseService by lazy {
+        ResponseServiceImpl(clientOptionsWithUserAgent)
+    }
 
     override fun async(): OpenAIClientAsync = async
 
@@ -100,11 +112,15 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
     override fun fineTuning(): FineTuningService = fineTuning
 
+    override fun vectorStores(): VectorStoreService = vectorStores
+
     override fun beta(): BetaService = beta
 
     override fun batches(): BatchService = batches
 
     override fun uploads(): UploadService = uploads
+
+    override fun responses(): ResponseService = responses
 
     override fun close() = clientOptions.httpClient.close()
 
@@ -147,6 +163,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
             FineTuningServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val vectorStores: VectorStoreService.WithRawResponse by lazy {
+            VectorStoreServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val beta: BetaService.WithRawResponse by lazy {
             BetaServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -157,6 +177,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
         private val uploads: UploadService.WithRawResponse by lazy {
             UploadServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val responses: ResponseService.WithRawResponse by lazy {
+            ResponseServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         override fun completions(): CompletionService.WithRawResponse = completions
@@ -177,10 +201,14 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
         override fun fineTuning(): FineTuningService.WithRawResponse = fineTuning
 
+        override fun vectorStores(): VectorStoreService.WithRawResponse = vectorStores
+
         override fun beta(): BetaService.WithRawResponse = beta
 
         override fun batches(): BatchService.WithRawResponse = batches
 
         override fun uploads(): UploadService.WithRawResponse = uploads
+
+        override fun responses(): ResponseService.WithRawResponse = responses
     }
 }

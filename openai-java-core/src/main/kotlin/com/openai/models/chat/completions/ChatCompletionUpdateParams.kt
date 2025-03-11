@@ -23,7 +23,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Modify a stored chat completion. Only chat completions that have been created with the `store`
+ * Modify a stored chat completion. Only Chat Completions that have been created with the `store`
  * parameter set to `true` can be modified. Currently, the only supported modification is to update
  * the `metadata` field.
  */

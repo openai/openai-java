@@ -5,7 +5,6 @@ package com.openai.models.beta.threads
 import com.openai.core.JsonValue
 import com.openai.models.Metadata
 import com.openai.models.beta.assistants.CodeInterpreterTool
-import com.openai.models.beta.vectorstores.AutoFileChunkingStrategyParam
 import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -47,9 +46,7 @@ class ThreadCreateParamsTest {
                             .addVectorStoreId("string")
                             .addVectorStore(
                                 ThreadCreateParams.ToolResources.FileSearch.VectorStore.builder()
-                                    .chunkingStrategy(
-                                        AutoFileChunkingStrategyParam.builder().build()
-                                    )
+                                    .chunkingStrategyAuto()
                                     .addFileId("string")
                                     .metadata(
                                         Metadata.builder()
@@ -104,9 +101,7 @@ class ThreadCreateParamsTest {
                                 .addVectorStore(
                                     ThreadCreateParams.ToolResources.FileSearch.VectorStore
                                         .builder()
-                                        .chunkingStrategy(
-                                            AutoFileChunkingStrategyParam.builder().build()
-                                        )
+                                        .chunkingStrategyAuto()
                                         .addFileId("string")
                                         .metadata(
                                             Metadata.builder()
@@ -164,9 +159,7 @@ class ThreadCreateParamsTest {
                             .addVectorStoreId("string")
                             .addVectorStore(
                                 ThreadCreateParams.ToolResources.FileSearch.VectorStore.builder()
-                                    .chunkingStrategy(
-                                        AutoFileChunkingStrategyParam.builder().build()
-                                    )
+                                    .chunkingStrategyAuto()
                                     .addFileId("string")
                                     .metadata(
                                         Metadata.builder()

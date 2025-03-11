@@ -16,7 +16,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Get the messages in a stored chat completion. Only chat completions that have been created with
+ * Get the messages in a stored chat completion. Only Chat Completions that have been created with
  * the `store` parameter set to `true` will be returned.
  */
 class MessageListParams

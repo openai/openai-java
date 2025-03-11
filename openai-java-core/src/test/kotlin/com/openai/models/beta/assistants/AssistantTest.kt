@@ -26,7 +26,7 @@ class AssistantTest {
                 .model("model")
                 .name("name")
                 .addTool(CodeInterpreterTool.builder().build())
-                .responseFormatAuto()
+                .responseFormatJsonValue()
                 .temperature(1.0)
                 .toolResources(
                     Assistant.ToolResources.builder()
@@ -57,7 +57,7 @@ class AssistantTest {
         assertThat(assistant.name()).contains("name")
         assertThat(assistant.tools())
             .containsExactly(AssistantTool.ofCodeInterpreter(CodeInterpreterTool.builder().build()))
-        assertThat(assistant.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
+        assertThat(assistant.responseFormat()).contains(AssistantResponseFormatOption.ofJsonValue())
         assertThat(assistant.temperature()).contains(1.0)
         assertThat(assistant.toolResources())
             .contains(

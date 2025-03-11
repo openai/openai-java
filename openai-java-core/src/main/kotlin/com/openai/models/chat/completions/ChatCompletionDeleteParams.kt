@@ -13,7 +13,7 @@ import java.util.Objects
 import java.util.Optional
 
 /**
- * Delete a stored chat completion. Only chat completions that have been created with the `store`
+ * Delete a stored chat completion. Only Chat Completions that have been created with the `store`
  * parameter set to `true` can be deleted.
  */
 class ChatCompletionDeleteParams

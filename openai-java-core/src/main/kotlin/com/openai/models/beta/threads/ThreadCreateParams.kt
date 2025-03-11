@@ -33,10 +33,6 @@ import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.Metadata
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.messages.MessageContentPartParam
-import com.openai.models.beta.vectorstores.AutoFileChunkingStrategyParam
-import com.openai.models.beta.vectorstores.FileChunkingStrategyParam
-import com.openai.models.beta.vectorstores.StaticFileChunkingStrategy
-import com.openai.models.beta.vectorstores.StaticFileChunkingStrategyObjectParam
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -1859,8 +1855,7 @@ private constructor(
             private constructor(
                 @JsonProperty("chunking_strategy")
                 @ExcludeMissing
-                private val chunkingStrategy: JsonField<FileChunkingStrategyParam> =
-                    JsonMissing.of(),
+                private val chunkingStrategy: JsonField<ChunkingStrategy> = JsonMissing.of(),
                 @JsonProperty("file_ids")
                 @ExcludeMissing
                 private val fileIds: JsonField<List<String>> = JsonMissing.of(),
@@ -1873,9 +1868,9 @@ private constructor(
 
                 /**
                  * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
-                 * strategy. Only applicable if `file_ids` is non-empty.
+                 * strategy.
                  */
-                fun chunkingStrategy(): Optional<FileChunkingStrategyParam> =
+                fun chunkingStrategy(): Optional<ChunkingStrategy> =
                     Optional.ofNullable(chunkingStrategy.getNullable("chunking_strategy"))
 
                 /**
@@ -1898,11 +1893,11 @@ private constructor(
 
                 /**
                  * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
-                 * strategy. Only applicable if `file_ids` is non-empty.
+                 * strategy.
                  */
                 @JsonProperty("chunking_strategy")
                 @ExcludeMissing
-                fun _chunkingStrategy(): JsonField<FileChunkingStrategyParam> = chunkingStrategy
+                fun _chunkingStrategy(): JsonField<ChunkingStrategy> = chunkingStrategy
 
                 /**
                  * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to add
@@ -1952,8 +1947,7 @@ private constructor(
                 /** A builder for [VectorStore]. */
                 class Builder internal constructor() {
 
-                    private var chunkingStrategy: JsonField<FileChunkingStrategyParam> =
-                        JsonMissing.of()
+                    private var chunkingStrategy: JsonField<ChunkingStrategy> = JsonMissing.of()
                     private var fileIds: JsonField<MutableList<String>>? = null
                     private var metadata: JsonField<Metadata> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -1968,41 +1962,39 @@ private constructor(
 
                     /**
                      * The chunking strategy used to chunk the file(s). If not set, will use the
-                     * `auto` strategy. Only applicable if `file_ids` is non-empty.
+                     * `auto` strategy.
                      */
-                    fun chunkingStrategy(chunkingStrategy: FileChunkingStrategyParam) =
+                    fun chunkingStrategy(chunkingStrategy: ChunkingStrategy) =
                         chunkingStrategy(JsonField.of(chunkingStrategy))
 
                     /**
                      * The chunking strategy used to chunk the file(s). If not set, will use the
-                     * `auto` strategy. Only applicable if `file_ids` is non-empty.
+                     * `auto` strategy.
                      */
-                    fun chunkingStrategy(chunkingStrategy: JsonField<FileChunkingStrategyParam>) =
-                        apply {
-                            this.chunkingStrategy = chunkingStrategy
-                        }
+                    fun chunkingStrategy(chunkingStrategy: JsonField<ChunkingStrategy>) = apply {
+                        this.chunkingStrategy = chunkingStrategy
+                    }
 
                     /**
                      * The default strategy. This strategy currently uses a `max_chunk_size_tokens`
                      * of `800` and `chunk_overlap_tokens` of `400`.
                      */
-                    fun chunkingStrategy(auto: AutoFileChunkingStrategyParam) =
-                        chunkingStrategy(FileChunkingStrategyParam.ofAuto(auto))
+                    fun chunkingStrategyAuto() = chunkingStrategy(ChunkingStrategy.ofAuto())
 
                     /**
                      * The chunking strategy used to chunk the file(s). If not set, will use the
-                     * `auto` strategy. Only applicable if `file_ids` is non-empty.
+                     * `auto` strategy.
                      */
-                    fun chunkingStrategy(static_: StaticFileChunkingStrategyObjectParam) =
-                        chunkingStrategy(FileChunkingStrategyParam.ofStatic(static_))
+                    fun chunkingStrategy(static_: ChunkingStrategy.StaticObject) =
+                        chunkingStrategy(ChunkingStrategy.ofStatic(static_))
 
                     /**
                      * The chunking strategy used to chunk the file(s). If not set, will use the
-                     * `auto` strategy. Only applicable if `file_ids` is non-empty.
+                     * `auto` strategy.
                      */
-                    fun staticChunkingStrategy(static_: StaticFileChunkingStrategy) =
+                    fun staticChunkingStrategy(static_: ChunkingStrategy.StaticObject.Static) =
                         chunkingStrategy(
-                            StaticFileChunkingStrategyObjectParam.builder().static_(static_).build()
+                            ChunkingStrategy.StaticObject.builder().static_(static_).build()
                         )
 
                     /**
@@ -2092,6 +2084,517 @@ private constructor(
                             metadata,
                             additionalProperties.toImmutable(),
                         )
+                }
+
+                /**
+                 * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
+                 * strategy.
+                 */
+                @JsonDeserialize(using = ChunkingStrategy.Deserializer::class)
+                @JsonSerialize(using = ChunkingStrategy.Serializer::class)
+                class ChunkingStrategy
+                private constructor(
+                    private val auto: JsonValue? = null,
+                    private val static_: StaticObject? = null,
+                    private val _json: JsonValue? = null,
+                ) {
+
+                    /**
+                     * The default strategy. This strategy currently uses a `max_chunk_size_tokens`
+                     * of `800` and `chunk_overlap_tokens` of `400`.
+                     */
+                    fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
+
+                    fun static_(): Optional<StaticObject> = Optional.ofNullable(static_)
+
+                    fun isAuto(): Boolean = auto != null
+
+                    fun isStatic(): Boolean = static_ != null
+
+                    /**
+                     * The default strategy. This strategy currently uses a `max_chunk_size_tokens`
+                     * of `800` and `chunk_overlap_tokens` of `400`.
+                     */
+                    fun asAuto(): JsonValue = auto.getOrThrow("auto")
+
+                    fun asStatic(): StaticObject = static_.getOrThrow("static_")
+
+                    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+                    fun <T> accept(visitor: Visitor<T>): T {
+                        return when {
+                            auto != null -> visitor.visitAuto(auto)
+                            static_ != null -> visitor.visitStatic(static_)
+                            else -> visitor.unknown(_json)
+                        }
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): ChunkingStrategy = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        accept(
+                            object : Visitor<Unit> {
+                                override fun visitAuto(auto: JsonValue) {
+                                    auto.let {
+                                        if (it != JsonValue.from(mapOf("type" to "auto"))) {
+                                            throw OpenAIInvalidDataException(
+                                                "'auto' is invalid, received $it"
+                                            )
+                                        }
+                                    }
+                                }
+
+                                override fun visitStatic(static_: StaticObject) {
+                                    static_.validate()
+                                }
+                            }
+                        )
+                        validated = true
+                    }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return /* spotless:off */ other is ChunkingStrategy && auto == other.auto && static_ == other.static_ /* spotless:on */
+                    }
+
+                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, static_) /* spotless:on */
+
+                    override fun toString(): String =
+                        when {
+                            auto != null -> "ChunkingStrategy{auto=$auto}"
+                            static_ != null -> "ChunkingStrategy{static_=$static_}"
+                            _json != null -> "ChunkingStrategy{_unknown=$_json}"
+                            else -> throw IllegalStateException("Invalid ChunkingStrategy")
+                        }
+
+                    companion object {
+
+                        /**
+                         * The default strategy. This strategy currently uses a
+                         * `max_chunk_size_tokens` of `800` and `chunk_overlap_tokens` of `400`.
+                         */
+                        @JvmStatic
+                        fun ofAuto() =
+                            ChunkingStrategy(auto = JsonValue.from(mapOf("type" to "auto")))
+
+                        @JvmStatic
+                        fun ofStatic(static_: StaticObject) = ChunkingStrategy(static_ = static_)
+                    }
+
+                    /**
+                     * An interface that defines how to map each variant of [ChunkingStrategy] to a
+                     * value of type [T].
+                     */
+                    interface Visitor<out T> {
+
+                        /**
+                         * The default strategy. This strategy currently uses a
+                         * `max_chunk_size_tokens` of `800` and `chunk_overlap_tokens` of `400`.
+                         */
+                        fun visitAuto(auto: JsonValue): T
+
+                        fun visitStatic(static_: StaticObject): T
+
+                        /**
+                         * Maps an unknown variant of [ChunkingStrategy] to a value of type [T].
+                         *
+                         * An instance of [ChunkingStrategy] can contain an unknown variant if it
+                         * was deserialized from data that doesn't match any known variant. For
+                         * example, if the SDK is on an older version than the API, then the API may
+                         * respond with new variants that the SDK is unaware of.
+                         *
+                         * @throws OpenAIInvalidDataException in the default implementation.
+                         */
+                        fun unknown(json: JsonValue?): T {
+                            throw OpenAIInvalidDataException("Unknown ChunkingStrategy: $json")
+                        }
+                    }
+
+                    internal class Deserializer :
+                        BaseDeserializer<ChunkingStrategy>(ChunkingStrategy::class) {
+
+                        override fun ObjectCodec.deserialize(node: JsonNode): ChunkingStrategy {
+                            val json = JsonValue.fromJsonNode(node)
+                            val type =
+                                json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
+
+                            when (type) {
+                                "auto" -> {
+                                    tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
+                                            it.let {
+                                                if (it != JsonValue.from(mapOf("type" to "auto"))) {
+                                                    throw OpenAIInvalidDataException(
+                                                        "'auto' is invalid, received $it"
+                                                    )
+                                                }
+                                            }
+                                        }
+                                        ?.let {
+                                            return ChunkingStrategy(auto = it, _json = json)
+                                        }
+                                }
+                                "static" -> {
+                                    tryDeserialize(node, jacksonTypeRef<StaticObject>()) {
+                                            it.validate()
+                                        }
+                                        ?.let {
+                                            return ChunkingStrategy(static_ = it, _json = json)
+                                        }
+                                }
+                            }
+
+                            return ChunkingStrategy(_json = json)
+                        }
+                    }
+
+                    internal class Serializer :
+                        BaseSerializer<ChunkingStrategy>(ChunkingStrategy::class) {
+
+                        override fun serialize(
+                            value: ChunkingStrategy,
+                            generator: JsonGenerator,
+                            provider: SerializerProvider,
+                        ) {
+                            when {
+                                value.auto != null -> generator.writeObject(value.auto)
+                                value.static_ != null -> generator.writeObject(value.static_)
+                                value._json != null -> generator.writeObject(value._json)
+                                else -> throw IllegalStateException("Invalid ChunkingStrategy")
+                            }
+                        }
+                    }
+
+                    @NoAutoDetect
+                    class StaticObject
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("static")
+                        @ExcludeMissing
+                        private val static_: JsonField<Static> = JsonMissing.of(),
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        private val type: JsonValue = JsonMissing.of(),
+                        @JsonAnySetter
+                        private val additionalProperties: Map<String, JsonValue> =
+                            immutableEmptyMap(),
+                    ) {
+
+                        fun static_(): Static = static_.getRequired("static")
+
+                        /** Always `static`. */
+                        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+                        @JsonProperty("static")
+                        @ExcludeMissing
+                        fun _static_(): JsonField<Static> = static_
+
+                        @JsonAnyGetter
+                        @ExcludeMissing
+                        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                        private var validated: Boolean = false
+
+                        fun validate(): StaticObject = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            static_().validate()
+                            _type().let {
+                                if (it != JsonValue.from("static")) {
+                                    throw OpenAIInvalidDataException(
+                                        "'type' is invalid, received $it"
+                                    )
+                                }
+                            }
+                            validated = true
+                        }
+
+                        fun toBuilder() = Builder().from(this)
+
+                        companion object {
+
+                            /**
+                             * Returns a mutable builder for constructing an instance of
+                             * [StaticObject].
+                             *
+                             * The following fields are required:
+                             * ```java
+                             * .static_()
+                             * ```
+                             */
+                            @JvmStatic fun builder() = Builder()
+                        }
+
+                        /** A builder for [StaticObject]. */
+                        class Builder internal constructor() {
+
+                            private var static_: JsonField<Static>? = null
+                            private var type: JsonValue = JsonValue.from("static")
+                            private var additionalProperties: MutableMap<String, JsonValue> =
+                                mutableMapOf()
+
+                            @JvmSynthetic
+                            internal fun from(staticObject: StaticObject) = apply {
+                                static_ = staticObject.static_
+                                type = staticObject.type
+                                additionalProperties =
+                                    staticObject.additionalProperties.toMutableMap()
+                            }
+
+                            fun static_(static_: Static) = static_(JsonField.of(static_))
+
+                            fun static_(static_: JsonField<Static>) = apply {
+                                this.static_ = static_
+                            }
+
+                            /** Always `static`. */
+                            fun type(type: JsonValue) = apply { this.type = type }
+
+                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                                apply {
+                                    this.additionalProperties.clear()
+                                    putAllAdditionalProperties(additionalProperties)
+                                }
+
+                            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                                additionalProperties.put(key, value)
+                            }
+
+                            fun putAllAdditionalProperties(
+                                additionalProperties: Map<String, JsonValue>
+                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                            fun removeAdditionalProperty(key: String) = apply {
+                                additionalProperties.remove(key)
+                            }
+
+                            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                                keys.forEach(::removeAdditionalProperty)
+                            }
+
+                            fun build(): StaticObject =
+                                StaticObject(
+                                    checkRequired("static_", static_),
+                                    type,
+                                    additionalProperties.toImmutable(),
+                                )
+                        }
+
+                        @NoAutoDetect
+                        class Static
+                        @JsonCreator
+                        private constructor(
+                            @JsonProperty("chunk_overlap_tokens")
+                            @ExcludeMissing
+                            private val chunkOverlapTokens: JsonField<Long> = JsonMissing.of(),
+                            @JsonProperty("max_chunk_size_tokens")
+                            @ExcludeMissing
+                            private val maxChunkSizeTokens: JsonField<Long> = JsonMissing.of(),
+                            @JsonAnySetter
+                            private val additionalProperties: Map<String, JsonValue> =
+                                immutableEmptyMap(),
+                        ) {
+
+                            /**
+                             * The number of tokens that overlap between chunks. The default value
+                             * is `400`.
+                             *
+                             * Note that the overlap must not exceed half of
+                             * `max_chunk_size_tokens`.
+                             */
+                            fun chunkOverlapTokens(): Long =
+                                chunkOverlapTokens.getRequired("chunk_overlap_tokens")
+
+                            /**
+                             * The maximum number of tokens in each chunk. The default value is
+                             * `800`. The minimum value is `100` and the maximum value is `4096`.
+                             */
+                            fun maxChunkSizeTokens(): Long =
+                                maxChunkSizeTokens.getRequired("max_chunk_size_tokens")
+
+                            /**
+                             * The number of tokens that overlap between chunks. The default value
+                             * is `400`.
+                             *
+                             * Note that the overlap must not exceed half of
+                             * `max_chunk_size_tokens`.
+                             */
+                            @JsonProperty("chunk_overlap_tokens")
+                            @ExcludeMissing
+                            fun _chunkOverlapTokens(): JsonField<Long> = chunkOverlapTokens
+
+                            /**
+                             * The maximum number of tokens in each chunk. The default value is
+                             * `800`. The minimum value is `100` and the maximum value is `4096`.
+                             */
+                            @JsonProperty("max_chunk_size_tokens")
+                            @ExcludeMissing
+                            fun _maxChunkSizeTokens(): JsonField<Long> = maxChunkSizeTokens
+
+                            @JsonAnyGetter
+                            @ExcludeMissing
+                            fun _additionalProperties(): Map<String, JsonValue> =
+                                additionalProperties
+
+                            private var validated: Boolean = false
+
+                            fun validate(): Static = apply {
+                                if (validated) {
+                                    return@apply
+                                }
+
+                                chunkOverlapTokens()
+                                maxChunkSizeTokens()
+                                validated = true
+                            }
+
+                            fun toBuilder() = Builder().from(this)
+
+                            companion object {
+
+                                /**
+                                 * Returns a mutable builder for constructing an instance of
+                                 * [Static].
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .chunkOverlapTokens()
+                                 * .maxChunkSizeTokens()
+                                 * ```
+                                 */
+                                @JvmStatic fun builder() = Builder()
+                            }
+
+                            /** A builder for [Static]. */
+                            class Builder internal constructor() {
+
+                                private var chunkOverlapTokens: JsonField<Long>? = null
+                                private var maxChunkSizeTokens: JsonField<Long>? = null
+                                private var additionalProperties: MutableMap<String, JsonValue> =
+                                    mutableMapOf()
+
+                                @JvmSynthetic
+                                internal fun from(static_: Static) = apply {
+                                    chunkOverlapTokens = static_.chunkOverlapTokens
+                                    maxChunkSizeTokens = static_.maxChunkSizeTokens
+                                    additionalProperties =
+                                        static_.additionalProperties.toMutableMap()
+                                }
+
+                                /**
+                                 * The number of tokens that overlap between chunks. The default
+                                 * value is `400`.
+                                 *
+                                 * Note that the overlap must not exceed half of
+                                 * `max_chunk_size_tokens`.
+                                 */
+                                fun chunkOverlapTokens(chunkOverlapTokens: Long) =
+                                    chunkOverlapTokens(JsonField.of(chunkOverlapTokens))
+
+                                /**
+                                 * The number of tokens that overlap between chunks. The default
+                                 * value is `400`.
+                                 *
+                                 * Note that the overlap must not exceed half of
+                                 * `max_chunk_size_tokens`.
+                                 */
+                                fun chunkOverlapTokens(chunkOverlapTokens: JsonField<Long>) =
+                                    apply {
+                                        this.chunkOverlapTokens = chunkOverlapTokens
+                                    }
+
+                                /**
+                                 * The maximum number of tokens in each chunk. The default value is
+                                 * `800`. The minimum value is `100` and the maximum value is
+                                 * `4096`.
+                                 */
+                                fun maxChunkSizeTokens(maxChunkSizeTokens: Long) =
+                                    maxChunkSizeTokens(JsonField.of(maxChunkSizeTokens))
+
+                                /**
+                                 * The maximum number of tokens in each chunk. The default value is
+                                 * `800`. The minimum value is `100` and the maximum value is
+                                 * `4096`.
+                                 */
+                                fun maxChunkSizeTokens(maxChunkSizeTokens: JsonField<Long>) =
+                                    apply {
+                                        this.maxChunkSizeTokens = maxChunkSizeTokens
+                                    }
+
+                                fun additionalProperties(
+                                    additionalProperties: Map<String, JsonValue>
+                                ) = apply {
+                                    this.additionalProperties.clear()
+                                    putAllAdditionalProperties(additionalProperties)
+                                }
+
+                                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                                    additionalProperties.put(key, value)
+                                }
+
+                                fun putAllAdditionalProperties(
+                                    additionalProperties: Map<String, JsonValue>
+                                ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                                fun removeAdditionalProperty(key: String) = apply {
+                                    additionalProperties.remove(key)
+                                }
+
+                                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                                    keys.forEach(::removeAdditionalProperty)
+                                }
+
+                                fun build(): Static =
+                                    Static(
+                                        checkRequired("chunkOverlapTokens", chunkOverlapTokens),
+                                        checkRequired("maxChunkSizeTokens", maxChunkSizeTokens),
+                                        additionalProperties.toImmutable(),
+                                    )
+                            }
+
+                            override fun equals(other: Any?): Boolean {
+                                if (this === other) {
+                                    return true
+                                }
+
+                                return /* spotless:off */ other is Static && chunkOverlapTokens == other.chunkOverlapTokens && maxChunkSizeTokens == other.maxChunkSizeTokens && additionalProperties == other.additionalProperties /* spotless:on */
+                            }
+
+                            /* spotless:off */
+                            private val hashCode: Int by lazy { Objects.hash(chunkOverlapTokens, maxChunkSizeTokens, additionalProperties) }
+                            /* spotless:on */
+
+                            override fun hashCode(): Int = hashCode
+
+                            override fun toString() =
+                                "Static{chunkOverlapTokens=$chunkOverlapTokens, maxChunkSizeTokens=$maxChunkSizeTokens, additionalProperties=$additionalProperties}"
+                        }
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return /* spotless:off */ other is StaticObject && static_ == other.static_ && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                        }
+
+                        /* spotless:off */
+                        private val hashCode: Int by lazy { Objects.hash(static_, type, additionalProperties) }
+                        /* spotless:on */
+
+                        override fun hashCode(): Int = hashCode
+
+                        override fun toString() =
+                            "StaticObject{static_=$static_, type=$type, additionalProperties=$additionalProperties}"
+                    }
                 }
 
                 override fun equals(other: Any?): Boolean {

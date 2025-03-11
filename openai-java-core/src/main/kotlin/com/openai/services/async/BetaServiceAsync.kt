@@ -4,7 +4,6 @@ package com.openai.services.async
 
 import com.openai.services.async.beta.AssistantServiceAsync
 import com.openai.services.async.beta.ThreadServiceAsync
-import com.openai.services.async.beta.VectorStoreServiceAsync
 
 interface BetaServiceAsync {
 
@@ -13,16 +12,12 @@ interface BetaServiceAsync {
      */
     fun withRawResponse(): WithRawResponse
 
-    fun vectorStores(): VectorStoreServiceAsync
-
     fun assistants(): AssistantServiceAsync
 
     fun threads(): ThreadServiceAsync
 
     /** A view of [BetaServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
-
-        fun vectorStores(): VectorStoreServiceAsync.WithRawResponse
 
         fun assistants(): AssistantServiceAsync.WithRawResponse
 

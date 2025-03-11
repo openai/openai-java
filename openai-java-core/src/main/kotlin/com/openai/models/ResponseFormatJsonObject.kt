@@ -15,6 +15,11 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 
+/**
+ * JSON object response format. An older method of generating JSON responses. Using `json_schema` is
+ * recommended for models that support it. Note that the model will not generate JSON without a
+ * system or user message instructing it to do so.
+ */
 @NoAutoDetect
 class ResponseFormatJsonObject
 @JsonCreator
@@ -23,7 +28,7 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The type of response format being defined: `json_object` */
+    /** The type of response format being defined. Always `json_object`. */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     @JsonAnyGetter
@@ -65,7 +70,7 @@ private constructor(
             additionalProperties = responseFormatJsonObject.additionalProperties.toMutableMap()
         }
 
-        /** The type of response format being defined: `json_object` */
+        /** The type of response format being defined. Always `json_object`. */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

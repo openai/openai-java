@@ -10,7 +10,7 @@ import com.openai.core.http.QueryParams
 import java.util.Objects
 
 /**
- * Get a stored chat completion. Only chat completions that have been created with the `store`
+ * Get a stored chat completion. Only Chat Completions that have been created with the `store`
  * parameter set to `true` will be returned.
  */
 class ChatCompletionRetrieveParams

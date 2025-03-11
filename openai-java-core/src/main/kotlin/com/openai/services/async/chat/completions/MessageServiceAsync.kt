@@ -17,7 +17,7 @@ interface MessageServiceAsync {
     fun withRawResponse(): WithRawResponse
 
     /**
-     * Get the messages in a stored chat completion. Only chat completions that have been created
+     * Get the messages in a stored chat completion. Only Chat Completions that have been created
      * with the `store` parameter set to `true` will be returned.
      */
     fun list(params: MessageListParams): CompletableFuture<MessageListPageAsync> =

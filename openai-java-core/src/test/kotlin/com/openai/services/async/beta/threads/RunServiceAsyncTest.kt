@@ -7,6 +7,7 @@ import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
 import com.openai.models.ChatModel
 import com.openai.models.Metadata
+import com.openai.models.ReasoningEffort
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.AssistantToolChoiceOption
 import com.openai.models.beta.threads.runs.RunCancelParams
@@ -65,8 +66,8 @@ class RunServiceAsyncTest {
                     )
                     .model(ChatModel.O3_MINI)
                     .parallelToolCalls(true)
-                    .reasoningEffort(RunCreateParams.ReasoningEffort.LOW)
-                    .responseFormatAuto()
+                    .reasoningEffort(ReasoningEffort.LOW)
+                    .responseFormatJsonValue()
                     .temperature(1.0)
                     .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                     .addTool(CodeInterpreterTool.builder().build())
@@ -127,8 +128,8 @@ class RunServiceAsyncTest {
                     )
                     .model(ChatModel.O3_MINI)
                     .parallelToolCalls(true)
-                    .reasoningEffort(RunCreateParams.ReasoningEffort.LOW)
-                    .responseFormatAuto()
+                    .reasoningEffort(ReasoningEffort.LOW)
+                    .responseFormatJsonValue()
                     .temperature(1.0)
                     .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                     .addTool(CodeInterpreterTool.builder().build())

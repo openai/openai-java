@@ -13,6 +13,18 @@ class ChatCompletionMessageTest {
             ChatCompletionMessage.builder()
                 .content("content")
                 .refusal("refusal")
+                .addAnnotation(
+                    ChatCompletionMessage.Annotation.builder()
+                        .urlCitation(
+                            ChatCompletionMessage.Annotation.UrlCitation.builder()
+                                .endIndex(0L)
+                                .startIndex(0L)
+                                .title("title")
+                                .url("url")
+                                .build()
+                        )
+                        .build()
+                )
                 .audio(
                     ChatCompletionAudio.builder()
                         .id("id")
@@ -42,6 +54,19 @@ class ChatCompletionMessageTest {
         assertThat(chatCompletionMessage).isNotNull
         assertThat(chatCompletionMessage.content()).contains("content")
         assertThat(chatCompletionMessage.refusal()).contains("refusal")
+        assertThat(chatCompletionMessage.annotations().get())
+            .containsExactly(
+                ChatCompletionMessage.Annotation.builder()
+                    .urlCitation(
+                        ChatCompletionMessage.Annotation.UrlCitation.builder()
+                            .endIndex(0L)
+                            .startIndex(0L)
+                            .title("title")
+                            .url("url")
+                            .build()
+                    )
+                    .build()
+            )
         assertThat(chatCompletionMessage.audio())
             .contains(
                 ChatCompletionAudio.builder()

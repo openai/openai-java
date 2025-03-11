@@ -15,6 +15,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 
+/** Default response format. Used to generate text responses. */
 @NoAutoDetect
 class ResponseFormatText
 @JsonCreator
@@ -23,7 +24,7 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The type of response format being defined: `text` */
+    /** The type of response format being defined. Always `text`. */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     @JsonAnyGetter
@@ -65,7 +66,7 @@ private constructor(
             additionalProperties = responseFormatText.additionalProperties.toMutableMap()
         }
 
-        /** The type of response format being defined: `text` */
+        /** The type of response format being defined. Always `text`. */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
