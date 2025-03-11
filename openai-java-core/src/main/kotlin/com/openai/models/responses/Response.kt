@@ -885,8 +885,8 @@ private constructor(
          * A tool that controls a virtual computer. Learn more about the
          * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
          */
-        fun addTool(computerPreview: ComputerTool) =
-            addTool(Tool.ofComputerPreview(computerPreview))
+        fun addTool(computerUsePreview: ComputerTool) =
+            addTool(Tool.ofComputerUsePreview(computerUsePreview))
 
         /**
          * This tool searches the web for relevant results to use in a response. Learn more about
