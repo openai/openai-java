@@ -271,7 +271,9 @@ private constructor(
             private var input: JsonField<Input>? = null
             private var model: JsonField<EmbeddingModel>? = null
             private var dimensions: JsonField<Long> = JsonMissing.of()
-            private var encodingFormat: JsonField<EncodingFormat> = JsonMissing.of()
+            // Default EncodingFormat value is set to BASE64 for performance improvements.
+            private var encodingFormat: JsonField<EncodingFormat> =
+                JsonField.of(EncodingFormat.BASE64)
             private var user: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
