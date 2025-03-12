@@ -81,7 +81,7 @@ private constructor(
         displayWidth()
         environment()
         _type().let {
-            if (it != JsonValue.from("computer-preview")) {
+            if (it != JsonValue.from("computer_use_preview")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
@@ -111,7 +111,7 @@ private constructor(
         private var displayHeight: JsonField<Double>? = null
         private var displayWidth: JsonField<Double>? = null
         private var environment: JsonField<Environment>? = null
-        private var type: JsonValue = JsonValue.from("computer-preview")
+        private var type: JsonValue = JsonValue.from("computer_use_preview")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic

@@ -28,7 +28,7 @@ class Tool
 private constructor(
     private val fileSearch: FileSearchTool? = null,
     private val function: FunctionTool? = null,
-    private val computerPreview: ComputerTool? = null,
+    private val computerUsePreview: ComputerTool? = null,
     private val webSearch: WebSearchTool? = null,
     private val _json: JsonValue? = null,
 ) {
@@ -49,7 +49,7 @@ private constructor(
      * A tool that controls a virtual computer. Learn more about the
      * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
      */
-    fun computerPreview(): Optional<ComputerTool> = Optional.ofNullable(computerPreview)
+    fun computerUsePreview(): Optional<ComputerTool> = Optional.ofNullable(computerUsePreview)
 
     /**
      * This tool searches the web for relevant results to use in a response. Learn more about the
@@ -61,7 +61,7 @@ private constructor(
 
     fun isFunction(): Boolean = function != null
 
-    fun isComputerPreview(): Boolean = computerPreview != null
+    fun isComputerUsePreview(): Boolean = computerUsePreview != null
 
     fun isWebSearch(): Boolean = webSearch != null
 
@@ -81,7 +81,7 @@ private constructor(
      * A tool that controls a virtual computer. Learn more about the
      * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
      */
-    fun asComputerPreview(): ComputerTool = computerPreview.getOrThrow("computerPreview")
+    fun asComputerUsePreview(): ComputerTool = computerUsePreview.getOrThrow("computerUsePreview")
 
     /**
      * This tool searches the web for relevant results to use in a response. Learn more about the
@@ -95,7 +95,7 @@ private constructor(
         return when {
             fileSearch != null -> visitor.visitFileSearch(fileSearch)
             function != null -> visitor.visitFunction(function)
-            computerPreview != null -> visitor.visitComputerPreview(computerPreview)
+            computerUsePreview != null -> visitor.visitComputerUsePreview(computerUsePreview)
             webSearch != null -> visitor.visitWebSearch(webSearch)
             else -> visitor.unknown(_json)
         }
@@ -118,8 +118,8 @@ private constructor(
                     function.validate()
                 }
 
-                override fun visitComputerPreview(computerPreview: ComputerTool) {
-                    computerPreview.validate()
+                override fun visitComputerUsePreview(computerUsePreview: ComputerTool) {
+                    computerUsePreview.validate()
                 }
 
                 override fun visitWebSearch(webSearch: WebSearchTool) {
@@ -135,16 +135,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Tool && fileSearch == other.fileSearch && function == other.function && computerPreview == other.computerPreview && webSearch == other.webSearch /* spotless:on */
+        return /* spotless:off */ other is Tool && fileSearch == other.fileSearch && function == other.function && computerUsePreview == other.computerUsePreview && webSearch == other.webSearch /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fileSearch, function, computerPreview, webSearch) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fileSearch, function, computerUsePreview, webSearch) /* spotless:on */
 
     override fun toString(): String =
         when {
             fileSearch != null -> "Tool{fileSearch=$fileSearch}"
             function != null -> "Tool{function=$function}"
-            computerPreview != null -> "Tool{computerPreview=$computerPreview}"
+            computerUsePreview != null -> "Tool{computerUsePreview=$computerUsePreview}"
             webSearch != null -> "Tool{webSearch=$webSearch}"
             _json != null -> "Tool{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid Tool")
@@ -169,8 +169,8 @@ private constructor(
          * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
          */
         @JvmStatic
-        fun ofComputerPreview(computerPreview: ComputerTool) =
-            Tool(computerPreview = computerPreview)
+        fun ofComputerUsePreview(computerUsePreview: ComputerTool) =
+            Tool(computerUsePreview = computerUsePreview)
 
         /**
          * This tool searches the web for relevant results to use in a response. Learn more about
@@ -198,7 +198,7 @@ private constructor(
          * A tool that controls a virtual computer. Learn more about the
          * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
          */
-        fun visitComputerPreview(computerPreview: ComputerTool): T
+        fun visitComputerUsePreview(computerUsePreview: ComputerTool): T
 
         /**
          * This tool searches the web for relevant results to use in a response. Learn more about
@@ -239,10 +239,10 @@ private constructor(
                             return Tool(function = it, _json = json)
                         }
                 }
-                "computer-preview" -> {
+                "computer_use_preview" -> {
                     tryDeserialize(node, jacksonTypeRef<ComputerTool>()) { it.validate() }
                         ?.let {
-                            return Tool(computerPreview = it, _json = json)
+                            return Tool(computerUsePreview = it, _json = json)
                         }
                 }
             }
@@ -266,7 +266,7 @@ private constructor(
             when {
                 value.fileSearch != null -> generator.writeObject(value.fileSearch)
                 value.function != null -> generator.writeObject(value.function)
-                value.computerPreview != null -> generator.writeObject(value.computerPreview)
+                value.computerUsePreview != null -> generator.writeObject(value.computerUsePreview)
                 value.webSearch != null -> generator.writeObject(value.webSearch)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid Tool")

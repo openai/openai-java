@@ -50,7 +50,7 @@ private constructor(
     private val webSearchCall: ResponseFunctionWebSearch? = null,
     private val functionCall: ResponseFunctionToolCall? = null,
     private val functionCallOutput: FunctionCallOutput? = null,
-    private val reasoning: Reasoning? = null,
+    private val reasoning: ResponseReasoningItem? = null,
     private val itemReference: ItemReference? = null,
     private val _json: JsonValue? = null,
 ) {
@@ -111,7 +111,7 @@ private constructor(
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
      */
-    fun reasoning(): Optional<Reasoning> = Optional.ofNullable(reasoning)
+    fun reasoning(): Optional<ResponseReasoningItem> = Optional.ofNullable(reasoning)
 
     /** An internal identifier for an item to reference. */
     fun itemReference(): Optional<ItemReference> = Optional.ofNullable(itemReference)
@@ -196,7 +196,7 @@ private constructor(
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
      */
-    fun asReasoning(): Reasoning = reasoning.getOrThrow("reasoning")
+    fun asReasoning(): ResponseReasoningItem = reasoning.getOrThrow("reasoning")
 
     /** An internal identifier for an item to reference. */
     fun asItemReference(): ItemReference = itemReference.getOrThrow("itemReference")
@@ -268,7 +268,7 @@ private constructor(
                     functionCallOutput.validate()
                 }
 
-                override fun visitReasoning(reasoning: Reasoning) {
+                override fun visitReasoning(reasoning: ResponseReasoningItem) {
                     reasoning.validate()
                 }
 
@@ -384,7 +384,8 @@ private constructor(
          * A description of the chain of thought used by a reasoning model while generating a
          * response.
          */
-        @JvmStatic fun ofReasoning(reasoning: Reasoning) = ResponseInputItem(reasoning = reasoning)
+        @JvmStatic
+        fun ofReasoning(reasoning: ResponseReasoningItem) = ResponseInputItem(reasoning = reasoning)
 
         /** An internal identifier for an item to reference. */
         @JvmStatic
@@ -454,7 +455,7 @@ private constructor(
          * A description of the chain of thought used by a reasoning model while generating a
          * response.
          */
-        fun visitReasoning(reasoning: Reasoning): T
+        fun visitReasoning(reasoning: ResponseReasoningItem): T
 
         /** An internal identifier for an item to reference. */
         fun visitItemReference(itemReference: ItemReference): T
@@ -540,7 +541,7 @@ private constructor(
                         }
                 }
                 "reasoning" -> {
-                    tryDeserialize(node, jacksonTypeRef<Reasoning>()) { it.validate() }
+                    tryDeserialize(node, jacksonTypeRef<ResponseReasoningItem>()) { it.validate() }
                         ?.let {
                             return ResponseInputItem(reasoning = it, _json = json)
                         }
@@ -2084,431 +2085,6 @@ private constructor(
 
         override fun toString() =
             "FunctionCallOutput{callId=$callId, output=$output, type=$type, id=$id, status=$status, additionalProperties=$additionalProperties}"
-    }
-
-    /**
-     * A description of the chain of thought used by a reasoning model while generating a response.
-     */
-    @NoAutoDetect
-    class Reasoning
-    @JsonCreator
-    private constructor(
-        @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("content")
-        @ExcludeMissing
-        private val content: JsonField<List<Content>> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-        @JsonProperty("status")
-        @ExcludeMissing
-        private val status: JsonField<Status> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-    ) {
-
-        /** The unique identifier of the reasoning content. */
-        fun id(): String = id.getRequired("id")
-
-        /** Reasoning text contents. */
-        fun content(): List<Content> = content.getRequired("content")
-
-        /** The type of the object. Always `reasoning`. */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
-
-        /**
-         * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated
-         * when items are returned via API.
-         */
-        fun status(): Optional<Status> = Optional.ofNullable(status.getNullable("status"))
-
-        /** The unique identifier of the reasoning content. */
-        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
-
-        /** Reasoning text contents. */
-        @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<List<Content>> = content
-
-        /**
-         * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated
-         * when items are returned via API.
-         */
-        @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Reasoning = apply {
-            if (validated) {
-                return@apply
-            }
-
-            id()
-            content().forEach { it.validate() }
-            _type().let {
-                if (it != JsonValue.from("reasoning")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
-            status()
-            validated = true
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [Reasoning].
-             *
-             * The following fields are required:
-             * ```java
-             * .id()
-             * .content()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Reasoning]. */
-        class Builder internal constructor() {
-
-            private var id: JsonField<String>? = null
-            private var content: JsonField<MutableList<Content>>? = null
-            private var type: JsonValue = JsonValue.from("reasoning")
-            private var status: JsonField<Status> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(reasoning: Reasoning) = apply {
-                id = reasoning.id
-                content = reasoning.content.map { it.toMutableList() }
-                type = reasoning.type
-                status = reasoning.status
-                additionalProperties = reasoning.additionalProperties.toMutableMap()
-            }
-
-            /** The unique identifier of the reasoning content. */
-            fun id(id: String) = id(JsonField.of(id))
-
-            /** The unique identifier of the reasoning content. */
-            fun id(id: JsonField<String>) = apply { this.id = id }
-
-            /** Reasoning text contents. */
-            fun content(content: List<Content>) = content(JsonField.of(content))
-
-            /** Reasoning text contents. */
-            fun content(content: JsonField<List<Content>>) = apply {
-                this.content = content.map { it.toMutableList() }
-            }
-
-            /** Reasoning text contents. */
-            fun addContent(content: Content) = apply {
-                this.content =
-                    (this.content ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("content", it).add(content)
-                    }
-            }
-
-            /** The type of the object. Always `reasoning`. */
-            fun type(type: JsonValue) = apply { this.type = type }
-
-            /**
-             * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated
-             * when items are returned via API.
-             */
-            fun status(status: Status) = status(JsonField.of(status))
-
-            /**
-             * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated
-             * when items are returned via API.
-             */
-            fun status(status: JsonField<Status>) = apply { this.status = status }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            fun build(): Reasoning =
-                Reasoning(
-                    checkRequired("id", id),
-                    checkRequired("content", content).map { it.toImmutable() },
-                    type,
-                    status,
-                    additionalProperties.toImmutable(),
-                )
-        }
-
-        @NoAutoDetect
-        class Content
-        @JsonCreator
-        private constructor(
-            @JsonProperty("text")
-            @ExcludeMissing
-            private val text: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-        ) {
-
-            /** A short summary of the reasoning used by the model when generating the response. */
-            fun text(): String = text.getRequired("text")
-
-            /** The type of the object. Always `text`. */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
-
-            /** A short summary of the reasoning used by the model when generating the response. */
-            @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
-
-            @JsonAnyGetter
-            @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): Content = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                text()
-                _type().let {
-                    if (it != JsonValue.from("reasoning_summary")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
-                validated = true
-            }
-
-            fun toBuilder() = Builder().from(this)
-
-            companion object {
-
-                /**
-                 * Returns a mutable builder for constructing an instance of [Content].
-                 *
-                 * The following fields are required:
-                 * ```java
-                 * .text()
-                 * ```
-                 */
-                @JvmStatic fun builder() = Builder()
-            }
-
-            /** A builder for [Content]. */
-            class Builder internal constructor() {
-
-                private var text: JsonField<String>? = null
-                private var type: JsonValue = JsonValue.from("reasoning_summary")
-                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                @JvmSynthetic
-                internal fun from(content: Content) = apply {
-                    text = content.text
-                    type = content.type
-                    additionalProperties = content.additionalProperties.toMutableMap()
-                }
-
-                /**
-                 * A short summary of the reasoning used by the model when generating the response.
-                 */
-                fun text(text: String) = text(JsonField.of(text))
-
-                /**
-                 * A short summary of the reasoning used by the model when generating the response.
-                 */
-                fun text(text: JsonField<String>) = apply { this.text = text }
-
-                /** The type of the object. Always `text`. */
-                fun type(type: JsonValue) = apply { this.type = type }
-
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
-
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
-
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
-
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
-
-                fun build(): Content =
-                    Content(checkRequired("text", text), type, additionalProperties.toImmutable())
-            }
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Content && text == other.text && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
-            }
-
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(text, type, additionalProperties) }
-            /* spotless:on */
-
-            override fun hashCode(): Int = hashCode
-
-            override fun toString() =
-                "Content{text=$text, type=$type, additionalProperties=$additionalProperties}"
-        }
-
-        /**
-         * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated
-         * when items are returned via API.
-         */
-        class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-            /**
-             * Returns this class instance's raw value.
-             *
-             * This is usually only useful if this instance was deserialized from data that doesn't
-             * match any known member, and you want to know that value. For example, if the SDK is
-             * on an older version than the API, then the API may respond with new members that the
-             * SDK is unaware of.
-             */
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val IN_PROGRESS = of("in_progress")
-
-                @JvmField val COMPLETED = of("completed")
-
-                @JvmField val INCOMPLETE = of("incomplete")
-
-                @JvmStatic fun of(value: String) = Status(JsonField.of(value))
-            }
-
-            /** An enum containing [Status]'s known values. */
-            enum class Known {
-                IN_PROGRESS,
-                COMPLETED,
-                INCOMPLETE,
-            }
-
-            /**
-             * An enum containing [Status]'s known values, as well as an [_UNKNOWN] member.
-             *
-             * An instance of [Status] can contain an unknown value in a couple of cases:
-             * - It was deserialized from data that doesn't match any known member. For example, if
-             *   the SDK is on an older version than the API, then the API may respond with new
-             *   members that the SDK is unaware of.
-             * - It was constructed with an arbitrary value using the [of] method.
-             */
-            enum class Value {
-                IN_PROGRESS,
-                COMPLETED,
-                INCOMPLETE,
-                /**
-                 * An enum member indicating that [Status] was instantiated with an unknown value.
-                 */
-                _UNKNOWN,
-            }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value, or
-             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
-             *
-             * Use the [known] method instead if you're certain the value is always known or if you
-             * want to throw for the unknown case.
-             */
-            fun value(): Value =
-                when (this) {
-                    IN_PROGRESS -> Value.IN_PROGRESS
-                    COMPLETED -> Value.COMPLETED
-                    INCOMPLETE -> Value.INCOMPLETE
-                    else -> Value._UNKNOWN
-                }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value.
-             *
-             * Use the [value] method instead if you're uncertain the value is always known and
-             * don't want to throw for the unknown case.
-             *
-             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-             *   member.
-             */
-            fun known(): Known =
-                when (this) {
-                    IN_PROGRESS -> Known.IN_PROGRESS
-                    COMPLETED -> Known.COMPLETED
-                    INCOMPLETE -> Known.INCOMPLETE
-                    else -> throw OpenAIInvalidDataException("Unknown Status: $value")
-                }
-
-            /**
-             * Returns this class instance's primitive wire representation.
-             *
-             * This differs from the [toString] method because that method is primarily for
-             * debugging and generally doesn't throw.
-             *
-             * @throws OpenAIInvalidDataException if this class instance's value does not have the
-             *   expected primitive type.
-             */
-            fun asString(): String =
-                _value().asString().orElseThrow {
-                    OpenAIInvalidDataException("Value is not a String")
-                }
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Status && value == other.value /* spotless:on */
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Reasoning && id == other.id && content == other.content && type == other.type && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
-        }
-
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(id, content, type, status, additionalProperties) }
-        /* spotless:on */
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Reasoning{id=$id, content=$content, type=$type, status=$status, additionalProperties=$additionalProperties}"
     }
 
     /** An internal identifier for an item to reference. */

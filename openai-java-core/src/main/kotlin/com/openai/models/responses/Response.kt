@@ -736,7 +736,7 @@ private constructor(
          * A description of the chain of thought used by a reasoning model while generating a
          * response.
          */
-        fun addOutput(reasoning: ResponseOutputItem.Reasoning) =
+        fun addOutput(reasoning: ResponseReasoningItem) =
             addOutput(ResponseOutputItem.ofReasoning(reasoning))
 
         /** Whether to allow the model to run tool calls in parallel. */
@@ -885,8 +885,8 @@ private constructor(
          * A tool that controls a virtual computer. Learn more about the
          * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
          */
-        fun addTool(computerPreview: ComputerTool) =
-            addTool(Tool.ofComputerPreview(computerPreview))
+        fun addTool(computerUsePreview: ComputerTool) =
+            addTool(Tool.ofComputerUsePreview(computerUsePreview))
 
         /**
          * This tool searches the web for relevant results to use in a response. Learn more about
