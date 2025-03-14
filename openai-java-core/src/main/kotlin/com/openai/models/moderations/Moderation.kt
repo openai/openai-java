@@ -18,8 +18,6 @@ import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 @NoAutoDetect
 class Moderation
@@ -259,15 +257,14 @@ private constructor(
          * wrongdoing, or that gives advice or instruction on how to commit illicit acts. For
          * example, "how to shoplift" would fit this category.
          */
-        fun illicit(): Optional<Boolean> = Optional.ofNullable(illicit.getNullable("illicit"))
+        fun illicit(): Boolean = illicit.getRequired("illicit")
 
         /**
          * Content that includes instructions or advice that facilitate the planning or execution of
          * wrongdoing that also includes violence, or that gives advice or instruction on the
          * procurement of any weapon.
          */
-        fun illicitViolent(): Optional<Boolean> =
-            Optional.ofNullable(illicitViolent.getNullable("illicit/violent"))
+        fun illicitViolent(): Boolean = illicitViolent.getRequired("illicit/violent")
 
         /**
          * Content that promotes, encourages, or depicts acts of self-harm, such as suicide,
@@ -535,21 +532,7 @@ private constructor(
              * execution of wrongdoing, or that gives advice or instruction on how to commit illicit
              * acts. For example, "how to shoplift" would fit this category.
              */
-            fun illicit(illicit: Boolean?) = illicit(JsonField.ofNullable(illicit))
-
-            /**
-             * Content that includes instructions or advice that facilitate the planning or
-             * execution of wrongdoing, or that gives advice or instruction on how to commit illicit
-             * acts. For example, "how to shoplift" would fit this category.
-             */
-            fun illicit(illicit: Boolean) = illicit(illicit as Boolean?)
-
-            /**
-             * Content that includes instructions or advice that facilitate the planning or
-             * execution of wrongdoing, or that gives advice or instruction on how to commit illicit
-             * acts. For example, "how to shoplift" would fit this category.
-             */
-            fun illicit(illicit: Optional<Boolean>) = illicit(illicit.getOrNull())
+            fun illicit(illicit: Boolean) = illicit(JsonField.of(illicit))
 
             /**
              * Content that includes instructions or advice that facilitate the planning or
@@ -563,23 +546,8 @@ private constructor(
              * execution of wrongdoing that also includes violence, or that gives advice or
              * instruction on the procurement of any weapon.
              */
-            fun illicitViolent(illicitViolent: Boolean?) =
-                illicitViolent(JsonField.ofNullable(illicitViolent))
-
-            /**
-             * Content that includes instructions or advice that facilitate the planning or
-             * execution of wrongdoing that also includes violence, or that gives advice or
-             * instruction on the procurement of any weapon.
-             */
-            fun illicitViolent(illicitViolent: Boolean) = illicitViolent(illicitViolent as Boolean?)
-
-            /**
-             * Content that includes instructions or advice that facilitate the planning or
-             * execution of wrongdoing that also includes violence, or that gives advice or
-             * instruction on the procurement of any weapon.
-             */
-            fun illicitViolent(illicitViolent: Optional<Boolean>) =
-                illicitViolent(illicitViolent.getOrNull())
+            fun illicitViolent(illicitViolent: Boolean) =
+                illicitViolent(JsonField.of(illicitViolent))
 
             /**
              * Content that includes instructions or advice that facilitate the planning or

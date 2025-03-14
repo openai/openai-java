@@ -4,7 +4,6 @@ package com.openai.models.beta.assistants
 
 import com.openai.core.JsonValue
 import com.openai.models.Metadata
-import com.openai.models.ReasoningEffort
 import com.openai.models.beta.threads.AssistantResponseFormatOption
 import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
@@ -23,8 +22,8 @@ class AssistantUpdateParamsTest {
             )
             .model(AssistantUpdateParams.Model.O3_MINI)
             .name("name")
-            .reasoningEffort(ReasoningEffort.LOW)
-            .responseFormatJsonValue()
+            .reasoningEffort(AssistantUpdateParams.ReasoningEffort.LOW)
+            .responseFormatAuto()
             .temperature(1.0)
             .toolResources(
                 AssistantUpdateParams.ToolResources.builder()
@@ -59,8 +58,8 @@ class AssistantUpdateParamsTest {
                 )
                 .model(AssistantUpdateParams.Model.O3_MINI)
                 .name("name")
-                .reasoningEffort(ReasoningEffort.LOW)
-                .responseFormatJsonValue()
+                .reasoningEffort(AssistantUpdateParams.ReasoningEffort.LOW)
+                .responseFormatAuto()
                 .temperature(1.0)
                 .toolResources(
                     AssistantUpdateParams.ToolResources.builder()
@@ -91,8 +90,8 @@ class AssistantUpdateParamsTest {
             )
         assertThat(body.model()).contains(AssistantUpdateParams.Model.O3_MINI)
         assertThat(body.name()).contains("name")
-        assertThat(body.reasoningEffort()).contains(ReasoningEffort.LOW)
-        assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofJsonValue())
+        assertThat(body.reasoningEffort()).contains(AssistantUpdateParams.ReasoningEffort.LOW)
+        assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
         assertThat(body.temperature()).contains(1.0)
         assertThat(body.toolResources())
             .contains(

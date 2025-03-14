@@ -3,12 +3,11 @@
 package com.openai.models.chat.completions
 
 import com.openai.core.JsonValue
-import com.openai.models.ChatModel
 import com.openai.models.FunctionDefinition
 import com.openai.models.FunctionParameters
 import com.openai.models.Metadata
-import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
+import com.openai.models.chat.ChatModel
 import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -29,7 +28,7 @@ class ChatCompletionCreateParamsTest {
                     .build()
             )
             .frequencyPenalty(-2.0)
-            .functionCall(ChatCompletionCreateParams.FunctionCall.FunctionCallMode.NONE)
+            .functionCall(ChatCompletionCreateParams.FunctionCall.Auto.NONE)
             .addFunction(
                 ChatCompletionCreateParams.Function.builder()
                     .name("name")
@@ -52,16 +51,16 @@ class ChatCompletionCreateParamsTest {
             .metadata(
                 Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
             )
-            .addModality(ChatCompletionCreateParams.Modality.TEXT)
+            .addModality(ChatCompletionModality.TEXT)
             .n(1L)
             .parallelToolCalls(true)
             .prediction(ChatCompletionPredictionContent.builder().content("string").build())
             .presencePenalty(-2.0)
-            .reasoningEffort(ReasoningEffort.LOW)
+            .reasoningEffort(ChatCompletionReasoningEffort.LOW)
             .responseFormat(ResponseFormatText.builder().build())
-            .seed(-9007199254740991L)
+            .seed(0L)
             .serviceTier(ChatCompletionCreateParams.ServiceTier.AUTO)
-            .stop("\n")
+            .stop("string")
             .store(true)
             .streamOptions(ChatCompletionStreamOptions.builder().includeUsage(true).build())
             .temperature(1.0)
@@ -85,26 +84,6 @@ class ChatCompletionCreateParamsTest {
             .topLogprobs(0L)
             .topP(1.0)
             .user("user-1234")
-            .webSearchOptions(
-                ChatCompletionCreateParams.WebSearchOptions.builder()
-                    .searchContextSize(
-                        ChatCompletionCreateParams.WebSearchOptions.SearchContextSize.LOW
-                    )
-                    .userLocation(
-                        ChatCompletionCreateParams.WebSearchOptions.UserLocation.builder()
-                            .approximate(
-                                ChatCompletionCreateParams.WebSearchOptions.UserLocation.Approximate
-                                    .builder()
-                                    .city("city")
-                                    .country("country")
-                                    .region("region")
-                                    .timezone("timezone")
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .build()
-            )
             .build()
     }
 
@@ -126,7 +105,7 @@ class ChatCompletionCreateParamsTest {
                         .build()
                 )
                 .frequencyPenalty(-2.0)
-                .functionCall(ChatCompletionCreateParams.FunctionCall.FunctionCallMode.NONE)
+                .functionCall(ChatCompletionCreateParams.FunctionCall.Auto.NONE)
                 .addFunction(
                     ChatCompletionCreateParams.Function.builder()
                         .name("name")
@@ -151,16 +130,16 @@ class ChatCompletionCreateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .addModality(ChatCompletionCreateParams.Modality.TEXT)
+                .addModality(ChatCompletionModality.TEXT)
                 .n(1L)
                 .parallelToolCalls(true)
                 .prediction(ChatCompletionPredictionContent.builder().content("string").build())
                 .presencePenalty(-2.0)
-                .reasoningEffort(ReasoningEffort.LOW)
+                .reasoningEffort(ChatCompletionReasoningEffort.LOW)
                 .responseFormat(ResponseFormatText.builder().build())
-                .seed(-9007199254740991L)
+                .seed(0L)
                 .serviceTier(ChatCompletionCreateParams.ServiceTier.AUTO)
-                .stop("\n")
+                .stop("string")
                 .store(true)
                 .streamOptions(ChatCompletionStreamOptions.builder().includeUsage(true).build())
                 .temperature(1.0)
@@ -184,27 +163,6 @@ class ChatCompletionCreateParamsTest {
                 .topLogprobs(0L)
                 .topP(1.0)
                 .user("user-1234")
-                .webSearchOptions(
-                    ChatCompletionCreateParams.WebSearchOptions.builder()
-                        .searchContextSize(
-                            ChatCompletionCreateParams.WebSearchOptions.SearchContextSize.LOW
-                        )
-                        .userLocation(
-                            ChatCompletionCreateParams.WebSearchOptions.UserLocation.builder()
-                                .approximate(
-                                    ChatCompletionCreateParams.WebSearchOptions.UserLocation
-                                        .Approximate
-                                        .builder()
-                                        .city("city")
-                                        .country("country")
-                                        .region("region")
-                                        .timezone("timezone")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
                 .build()
 
         val body = params._body()
@@ -232,8 +190,8 @@ class ChatCompletionCreateParamsTest {
         assertThat(body.frequencyPenalty()).contains(-2.0)
         assertThat(body.functionCall())
             .contains(
-                ChatCompletionCreateParams.FunctionCall.ofMode(
-                    ChatCompletionCreateParams.FunctionCall.FunctionCallMode.NONE
+                ChatCompletionCreateParams.FunctionCall.ofAuto(
+                    ChatCompletionCreateParams.FunctionCall.Auto.NONE
                 )
             )
         assertThat(body.functions())
@@ -263,22 +221,22 @@ class ChatCompletionCreateParamsTest {
             .contains(
                 Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
             )
-        assertThat(body.modalities()).contains(listOf(ChatCompletionCreateParams.Modality.TEXT))
+        assertThat(body.modalities()).contains(listOf(ChatCompletionModality.TEXT))
         assertThat(body.n()).contains(1L)
         assertThat(body.parallelToolCalls()).contains(true)
         assertThat(body.prediction())
             .contains(ChatCompletionPredictionContent.builder().content("string").build())
         assertThat(body.presencePenalty()).contains(-2.0)
-        assertThat(body.reasoningEffort()).contains(ReasoningEffort.LOW)
+        assertThat(body.reasoningEffort()).contains(ChatCompletionReasoningEffort.LOW)
         assertThat(body.responseFormat())
             .contains(
                 ChatCompletionCreateParams.ResponseFormat.ofText(
                     ResponseFormatText.builder().build()
                 )
             )
-        assertThat(body.seed()).contains(-9007199254740991L)
+        assertThat(body.seed()).contains(0L)
         assertThat(body.serviceTier()).contains(ChatCompletionCreateParams.ServiceTier.AUTO)
-        assertThat(body.stop()).contains(ChatCompletionCreateParams.Stop.ofString("\n"))
+        assertThat(body.stop()).contains(ChatCompletionCreateParams.Stop.ofString("string"))
         assertThat(body.store()).contains(true)
         assertThat(body.streamOptions())
             .contains(ChatCompletionStreamOptions.builder().includeUsage(true).build())
@@ -309,27 +267,6 @@ class ChatCompletionCreateParamsTest {
         assertThat(body.topLogprobs()).contains(0L)
         assertThat(body.topP()).contains(1.0)
         assertThat(body.user()).contains("user-1234")
-        assertThat(body.webSearchOptions())
-            .contains(
-                ChatCompletionCreateParams.WebSearchOptions.builder()
-                    .searchContextSize(
-                        ChatCompletionCreateParams.WebSearchOptions.SearchContextSize.LOW
-                    )
-                    .userLocation(
-                        ChatCompletionCreateParams.WebSearchOptions.UserLocation.builder()
-                            .approximate(
-                                ChatCompletionCreateParams.WebSearchOptions.UserLocation.Approximate
-                                    .builder()
-                                    .city("city")
-                                    .country("country")
-                                    .region("region")
-                                    .timezone("timezone")
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .build()
-            )
     }
 
     @Test

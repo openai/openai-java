@@ -53,18 +53,6 @@ class ChatCompletionTest {
                             ChatCompletionMessage.builder()
                                 .content("content")
                                 .refusal("refusal")
-                                .addAnnotation(
-                                    ChatCompletionMessage.Annotation.builder()
-                                        .urlCitation(
-                                            ChatCompletionMessage.Annotation.UrlCitation.builder()
-                                                .endIndex(0L)
-                                                .startIndex(0L)
-                                                .title("title")
-                                                .url("url")
-                                                .build()
-                                        )
-                                        .build()
-                                )
                                 .audio(
                                     ChatCompletionAudio.builder()
                                         .id("id")
@@ -163,18 +151,6 @@ class ChatCompletionTest {
                         ChatCompletionMessage.builder()
                             .content("content")
                             .refusal("refusal")
-                            .addAnnotation(
-                                ChatCompletionMessage.Annotation.builder()
-                                    .urlCitation(
-                                        ChatCompletionMessage.Annotation.UrlCitation.builder()
-                                            .endIndex(0L)
-                                            .startIndex(0L)
-                                            .title("title")
-                                            .url("url")
-                                            .build()
-                                    )
-                                    .build()
-                            )
                             .audio(
                                 ChatCompletionAudio.builder()
                                     .id("id")

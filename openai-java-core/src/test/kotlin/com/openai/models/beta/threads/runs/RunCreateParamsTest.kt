@@ -4,14 +4,13 @@ package com.openai.models.beta.threads.runs
 
 import com.openai.core.JsonValue
 import com.openai.core.http.QueryParams
-import com.openai.models.ChatModel
 import com.openai.models.Metadata
-import com.openai.models.ReasoningEffort
 import com.openai.models.beta.assistants.AssistantTool
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.AssistantResponseFormatOption
 import com.openai.models.beta.threads.AssistantToolChoiceOption
 import com.openai.models.beta.threads.runs.steps.RunStepInclude
+import com.openai.models.chat.ChatModel
 import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -50,8 +49,8 @@ class RunCreateParamsTest {
             )
             .model(ChatModel.O3_MINI)
             .parallelToolCalls(true)
-            .reasoningEffort(ReasoningEffort.LOW)
-            .responseFormatJsonValue()
+            .reasoningEffort(RunCreateParams.ReasoningEffort.LOW)
+            .responseFormatAuto()
             .temperature(1.0)
             .toolChoice(AssistantToolChoiceOption.Auto.NONE)
             .addTool(CodeInterpreterTool.builder().build())
@@ -100,8 +99,8 @@ class RunCreateParamsTest {
                 )
                 .model(ChatModel.O3_MINI)
                 .parallelToolCalls(true)
-                .reasoningEffort(ReasoningEffort.LOW)
-                .responseFormatJsonValue()
+                .reasoningEffort(RunCreateParams.ReasoningEffort.LOW)
+                .responseFormatAuto()
                 .temperature(1.0)
                 .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                 .addTool(CodeInterpreterTool.builder().build())
@@ -164,8 +163,8 @@ class RunCreateParamsTest {
                 )
                 .model(ChatModel.O3_MINI)
                 .parallelToolCalls(true)
-                .reasoningEffort(ReasoningEffort.LOW)
-                .responseFormatJsonValue()
+                .reasoningEffort(RunCreateParams.ReasoningEffort.LOW)
+                .responseFormatAuto()
                 .temperature(1.0)
                 .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                 .addTool(CodeInterpreterTool.builder().build())
@@ -212,8 +211,8 @@ class RunCreateParamsTest {
             )
         assertThat(body.model()).contains(ChatModel.O3_MINI)
         assertThat(body.parallelToolCalls()).contains(true)
-        assertThat(body.reasoningEffort()).contains(ReasoningEffort.LOW)
-        assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofJsonValue())
+        assertThat(body.reasoningEffort()).contains(RunCreateParams.ReasoningEffort.LOW)
+        assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
         assertThat(body.temperature()).contains(1.0)
         assertThat(body.toolChoice())
             .contains(AssistantToolChoiceOption.ofAuto(AssistantToolChoiceOption.Auto.NONE))

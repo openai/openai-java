@@ -2,14 +2,14 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/0.0.1)
-[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/0.0.1/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/0.0.1)
+[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/0.34.1)
+[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/0.34.1/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/0.34.1)
 
 <!-- x-release-please-end -->
 
 The OpenAI Java SDK provides convenient access to the OpenAI REST API from applications written in Java.
 
-The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are also available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/0.0.1).
+The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are also available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/0.34.1).
 
 ## Installation
 
@@ -18,7 +18,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:0.0.1")
+implementation("com.openai:openai-java:0.34.1")
 ```
 
 ### Maven
@@ -27,7 +27,7 @@ implementation("com.openai:openai-java:0.0.1")
 <dependency>
     <groupId>com.openai</groupId>
     <artifactId>openai-java</artifactId>
-    <version>0.0.1</version>
+    <version>0.34.1</version>
 </dependency>
 ```
 
@@ -42,7 +42,7 @@ This library requires Java 8 or later.
 ```java
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
-import com.openai.models.ChatModel;
+import com.openai.models.chat.ChatModel;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
@@ -125,7 +125,7 @@ The default client is synchronous. To switch to asynchronous execution, call the
 ```java
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
-import com.openai.models.ChatModel;
+import com.openai.models.chat.ChatModel;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import java.util.concurrent.CompletableFuture;
@@ -145,7 +145,7 @@ Or create an asynchronous client from the beginning:
 ```java
 import com.openai.client.OpenAIClientAsync;
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync;
-import com.openai.models.ChatModel;
+import com.openai.models.chat.ChatModel;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import java.util.concurrent.CompletableFuture;
@@ -254,74 +254,6 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
     .build();
 ```
 
-## File uploads
-
-The SDK defines methods that accept files.
-
-To upload a file, pass a [`Path`](https://docs.oracle.com/javase/8/docs/api/java/nio/file/Path.html):
-
-```java
-import com.openai.models.files.FileCreateParams;
-import com.openai.models.files.FileObject;
-import com.openai.models.files.FilePurpose;
-import java.nio.file.Paths;
-
-FileCreateParams params = FileCreateParams.builder()
-    .purpose(FilePurpose.FINE_TUNE)
-    .file(Paths.get("input.jsonl"))
-    .build();
-FileObject fileObject = client.files().create(params);
-```
-
-Or an arbitrary [`InputStream`](https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html):
-
-```java
-import com.openai.models.files.FileCreateParams;
-import com.openai.models.files.FileObject;
-import com.openai.models.files.FilePurpose;
-import java.net.URL;
-
-FileCreateParams params = FileCreateParams.builder()
-    .purpose(FilePurpose.FINE_TUNE)
-    .file(new URL("https://example.com/input.jsonl").openStream())
-    .build();
-FileObject fileObject = client.files().create(params);
-```
-
-Or a `byte[]` array:
-
-```java
-import com.openai.models.files.FileCreateParams;
-import com.openai.models.files.FileObject;
-import com.openai.models.files.FilePurpose;
-
-FileCreateParams params = FileCreateParams.builder()
-    .purpose(FilePurpose.FINE_TUNE)
-    .file("content".getBytes())
-    .build();
-FileObject fileObject = client.files().create(params);
-```
-
-Note that when passing a non-`Path` its filename is unknown so it will not be included in the request. To manually set a filename, pass a [`MultipartField`](openai-java-core/src/main/kotlin/com/openai/core/Values.kt):
-
-```java
-import com.openai.core.MultipartField;
-import com.openai.models.files.FileCreateParams;
-import com.openai.models.files.FileObject;
-import com.openai.models.files.FilePurpose;
-import java.io.InputStream;
-import java.net.URL;
-
-FileCreateParams params = FileCreateParams.builder()
-    .purpose(FilePurpose.FINE_TUNE)
-    .file(MultipartField.<InputStream>builder()
-        .value(new URL("https://example.com/input.jsonl").openStream())
-        .filename("input.jsonl")
-        .build())
-    .build();
-FileObject fileObject = client.files().create(params);
-```
-
 ## Binary responses
 
 The SDK defines methods that return binary responses, which are used for API responses that shouldn't necessarily be parsed, like non-JSON data.
@@ -382,7 +314,7 @@ To access this data, prefix any HTTP method call on a client or service with `wi
 ```java
 import com.openai.core.http.Headers;
 import com.openai.core.http.HttpResponseFor;
-import com.openai.models.ChatModel;
+import com.openai.models.chat.ChatModel;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
@@ -530,7 +462,7 @@ Requests time out after 10 minutes by default.
 To set a custom timeout, configure the method call using the `timeout` method:
 
 ```java
-import com.openai.models.ChatModel;
+import com.openai.models.chat.ChatModel;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
@@ -731,7 +663,7 @@ ChatCompletion chatCompletion = client.chat().completions().create(params).valid
 Or configure the method call to validate the response using the `responseValidation` method:
 
 ```java
-import com.openai.models.ChatModel;
+import com.openai.models.chat.ChatModel;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 

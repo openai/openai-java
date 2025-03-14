@@ -39,8 +39,9 @@ private constructor(
     fun format(): Format = format.getRequired("format")
 
     /**
-     * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`, `coral`,
-     * `echo`, `sage`, and `shimmer`.
+     * The voice the model uses to respond. Supported voices are `ash`, `ballad`, `coral`, `sage`,
+     * and `verse` (also supported but not recommended are `alloy`, `echo`, and `shimmer`; these
+     * voices are less expressive).
      */
     fun voice(): Voice = voice.getRequired("voice")
 
@@ -50,8 +51,9 @@ private constructor(
     @JsonProperty("format") @ExcludeMissing fun _format(): JsonField<Format> = format
 
     /**
-     * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`, `coral`,
-     * `echo`, `sage`, and `shimmer`.
+     * The voice the model uses to respond. Supported voices are `ash`, `ballad`, `coral`, `sage`,
+     * and `verse` (also supported but not recommended are `alloy`, `echo`, and `shimmer`; these
+     * voices are less expressive).
      */
     @JsonProperty("voice") @ExcludeMissing fun _voice(): JsonField<Voice> = voice
 
@@ -114,14 +116,16 @@ private constructor(
         fun format(format: JsonField<Format>) = apply { this.format = format }
 
         /**
-         * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`,
-         * `coral`, `echo`, `sage`, and `shimmer`.
+         * The voice the model uses to respond. Supported voices are `ash`, `ballad`, `coral`,
+         * `sage`, and `verse` (also supported but not recommended are `alloy`, `echo`, and
+         * `shimmer`; these voices are less expressive).
          */
         fun voice(voice: Voice) = voice(JsonField.of(voice))
 
         /**
-         * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`,
-         * `coral`, `echo`, `sage`, and `shimmer`.
+         * The voice the model uses to respond. Supported voices are `ash`, `ballad`, `coral`,
+         * `sage`, and `verse` (also supported but not recommended are `alloy`, `echo`, and
+         * `shimmer`; these voices are less expressive).
          */
         fun voice(voice: JsonField<Voice>) = apply { this.voice = voice }
 
@@ -272,8 +276,9 @@ private constructor(
     }
 
     /**
-     * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`, `coral`,
-     * `echo`, `sage`, and `shimmer`.
+     * The voice the model uses to respond. Supported voices are `ash`, `ballad`, `coral`, `sage`,
+     * and `verse` (also supported but not recommended are `alloy`, `echo`, and `shimmer`; these
+     * voices are less expressive).
      */
     class Voice @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 

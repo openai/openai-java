@@ -10,32 +10,15 @@ class JobListParamsTest {
 
     @Test
     fun create() {
-        JobListParams.builder()
-            .after("after")
-            .limit(0L)
-            .metadata(
-                JobListParams.Metadata.builder().putAdditionalProperty("foo", "string").build()
-            )
-            .build()
+        JobListParams.builder().after("after").limit(0L).build()
     }
 
     @Test
     fun queryParams() {
-        val params =
-            JobListParams.builder()
-                .after("after")
-                .limit(0L)
-                .metadata(
-                    JobListParams.Metadata.builder().putAdditionalProperty("foo", "string").build()
-                )
-                .build()
+        val params = JobListParams.builder().after("after").limit(0L).build()
         val expected = QueryParams.builder()
         expected.put("after", "after")
         expected.put("limit", "0")
-        JobListParams.Metadata.builder()
-            .putAdditionalProperty("foo", "string")
-            .build()
-            .forEachQueryParam { key, values -> expected.put("metadata[$key]", values) }
         assertThat(params._queryParams()).isEqualTo(expected.build())
     }
 

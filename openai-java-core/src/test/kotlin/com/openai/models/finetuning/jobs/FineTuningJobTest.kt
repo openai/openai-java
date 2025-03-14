@@ -2,8 +2,6 @@
 
 package com.openai.models.finetuning.jobs
 
-import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -50,11 +48,6 @@ class FineTuningJobTest {
                                 .addTag("custom-tag")
                                 .build()
                         )
-                        .build()
-                )
-                .metadata(
-                    Metadata.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
                 .method(
@@ -124,10 +117,6 @@ class FineTuningJobTest {
                             .build()
                     )
                     .build()
-            )
-        assertThat(fineTuningJob.metadata())
-            .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
             )
         assertThat(fineTuningJob.method())
             .contains(

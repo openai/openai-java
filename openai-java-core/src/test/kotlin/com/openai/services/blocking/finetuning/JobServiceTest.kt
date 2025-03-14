@@ -4,8 +4,6 @@ package com.openai.services.blocking.finetuning
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
-import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import com.openai.models.finetuning.jobs.JobCancelParams
 import com.openai.models.finetuning.jobs.JobCreateParams
 import com.openai.models.finetuning.jobs.JobListEventsParams
@@ -47,11 +45,6 @@ class JobServiceTest {
                                     .addTag("custom-tag")
                                     .build()
                             )
-                            .build()
-                    )
-                    .metadata(
-                        Metadata.builder()
-                            .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
                     .method(

@@ -3,10 +3,10 @@
 package com.openai.models.beta.assistants
 
 import com.openai.core.JsonValue
-import com.openai.models.ChatModel
 import com.openai.models.Metadata
-import com.openai.models.ReasoningEffort
 import com.openai.models.beta.threads.AssistantResponseFormatOption
+import com.openai.models.beta.vectorstores.AutoFileChunkingStrategyParam
+import com.openai.models.chat.ChatModel
 import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -23,8 +23,8 @@ class AssistantCreateParamsTest {
                 Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
             )
             .name("name")
-            .reasoningEffort(ReasoningEffort.LOW)
-            .responseFormatJsonValue()
+            .reasoningEffort(AssistantCreateParams.ReasoningEffort.LOW)
+            .responseFormatAuto()
             .temperature(1.0)
             .toolResources(
                 AssistantCreateParams.ToolResources.builder()
@@ -38,7 +38,9 @@ class AssistantCreateParamsTest {
                             .addVectorStoreId("string")
                             .addVectorStore(
                                 AssistantCreateParams.ToolResources.FileSearch.VectorStore.builder()
-                                    .chunkingStrategyAuto()
+                                    .chunkingStrategy(
+                                        AutoFileChunkingStrategyParam.builder().build()
+                                    )
                                     .addFileId("string")
                                     .metadata(
                                         Metadata.builder()
@@ -69,8 +71,8 @@ class AssistantCreateParamsTest {
                         .build()
                 )
                 .name("name")
-                .reasoningEffort(ReasoningEffort.LOW)
-                .responseFormatJsonValue()
+                .reasoningEffort(AssistantCreateParams.ReasoningEffort.LOW)
+                .responseFormatAuto()
                 .temperature(1.0)
                 .toolResources(
                     AssistantCreateParams.ToolResources.builder()
@@ -85,7 +87,9 @@ class AssistantCreateParamsTest {
                                 .addVectorStore(
                                     AssistantCreateParams.ToolResources.FileSearch.VectorStore
                                         .builder()
-                                        .chunkingStrategyAuto()
+                                        .chunkingStrategy(
+                                            AutoFileChunkingStrategyParam.builder().build()
+                                        )
                                         .addFileId("string")
                                         .metadata(
                                             Metadata.builder()
@@ -116,8 +120,8 @@ class AssistantCreateParamsTest {
                 Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
             )
         assertThat(body.name()).contains("name")
-        assertThat(body.reasoningEffort()).contains(ReasoningEffort.LOW)
-        assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofJsonValue())
+        assertThat(body.reasoningEffort()).contains(AssistantCreateParams.ReasoningEffort.LOW)
+        assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
         assertThat(body.temperature()).contains(1.0)
         assertThat(body.toolResources())
             .contains(
@@ -132,7 +136,9 @@ class AssistantCreateParamsTest {
                             .addVectorStoreId("string")
                             .addVectorStore(
                                 AssistantCreateParams.ToolResources.FileSearch.VectorStore.builder()
-                                    .chunkingStrategyAuto()
+                                    .chunkingStrategy(
+                                        AutoFileChunkingStrategyParam.builder().build()
+                                    )
                                     .addFileId("string")
                                     .metadata(
                                         Metadata.builder()

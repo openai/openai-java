@@ -15,16 +15,17 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.openai.client.OpenAIClient
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
-import com.openai.models.ChatModel
 import com.openai.models.FunctionDefinition
 import com.openai.models.FunctionParameters
 import com.openai.models.Metadata
-import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
+import com.openai.models.chat.ChatModel
 import com.openai.models.chat.completions.ChatCompletionAudioParam
 import com.openai.models.chat.completions.ChatCompletionCreateParams
 import com.openai.models.chat.completions.ChatCompletionDeveloperMessageParam
+import com.openai.models.chat.completions.ChatCompletionModality
 import com.openai.models.chat.completions.ChatCompletionPredictionContent
+import com.openai.models.chat.completions.ChatCompletionReasoningEffort
 import com.openai.models.chat.completions.ChatCompletionStreamOptions
 import com.openai.models.chat.completions.ChatCompletionTool
 import com.openai.models.chat.completions.ChatCompletionToolChoiceOption
@@ -66,7 +67,7 @@ internal class ServiceParamsTest {
                         .build()
                 )
                 .frequencyPenalty(-2.0)
-                .functionCall(ChatCompletionCreateParams.FunctionCall.FunctionCallMode.NONE)
+                .functionCall(ChatCompletionCreateParams.FunctionCall.Auto.NONE)
                 .addFunction(
                     ChatCompletionCreateParams.Function.builder()
                         .name("name")
@@ -91,16 +92,16 @@ internal class ServiceParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .addModality(ChatCompletionCreateParams.Modality.TEXT)
+                .addModality(ChatCompletionModality.TEXT)
                 .n(1L)
                 .parallelToolCalls(true)
                 .prediction(ChatCompletionPredictionContent.builder().content("string").build())
                 .presencePenalty(-2.0)
-                .reasoningEffort(ReasoningEffort.LOW)
+                .reasoningEffort(ChatCompletionReasoningEffort.LOW)
                 .responseFormat(ResponseFormatText.builder().build())
-                .seed(-9007199254740991L)
+                .seed(0L)
                 .serviceTier(ChatCompletionCreateParams.ServiceTier.AUTO)
-                .stop("\n")
+                .stop("string")
                 .store(true)
                 .streamOptions(ChatCompletionStreamOptions.builder().includeUsage(true).build())
                 .temperature(1.0)
@@ -124,27 +125,6 @@ internal class ServiceParamsTest {
                 .topLogprobs(0L)
                 .topP(1.0)
                 .user("user-1234")
-                .webSearchOptions(
-                    ChatCompletionCreateParams.WebSearchOptions.builder()
-                        .searchContextSize(
-                            ChatCompletionCreateParams.WebSearchOptions.SearchContextSize.LOW
-                        )
-                        .userLocation(
-                            ChatCompletionCreateParams.WebSearchOptions.UserLocation.builder()
-                                .approximate(
-                                    ChatCompletionCreateParams.WebSearchOptions.UserLocation
-                                        .Approximate
-                                        .builder()
-                                        .city("city")
-                                        .country("country")
-                                        .region("region")
-                                        .timezone("timezone")
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
                 .putAdditionalHeader("Secret-Header", "42")
                 .putAdditionalQueryParam("secret_query_param", "42")
                 .putAdditionalBodyProperty("secretProperty", JsonValue.from("42"))
