@@ -5,7 +5,6 @@ package com.openai.services.blocking.beta
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
-import com.openai.models.ChatModel
 import com.openai.models.Metadata
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.AssistantToolChoiceOption
@@ -14,6 +13,8 @@ import com.openai.models.beta.threads.ThreadCreateParams
 import com.openai.models.beta.threads.ThreadDeleteParams
 import com.openai.models.beta.threads.ThreadRetrieveParams
 import com.openai.models.beta.threads.ThreadUpdateParams
+import com.openai.models.beta.vectorstores.AutoFileChunkingStrategyParam
+import com.openai.models.chat.ChatModel
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -67,7 +68,9 @@ class ThreadServiceTest {
                                     .addVectorStore(
                                         ThreadCreateParams.ToolResources.FileSearch.VectorStore
                                             .builder()
-                                            .chunkingStrategyAuto()
+                                            .chunkingStrategy(
+                                                AutoFileChunkingStrategyParam.builder().build()
+                                            )
                                             .addFileId("string")
                                             .metadata(
                                                 Metadata.builder()
@@ -180,7 +183,7 @@ class ThreadServiceTest {
                     )
                     .model(ChatModel.O3_MINI)
                     .parallelToolCalls(true)
-                    .responseFormatJsonValue()
+                    .responseFormatAuto()
                     .temperature(1.0)
                     .thread(
                         ThreadCreateAndRunParams.Thread.builder()
@@ -224,7 +227,10 @@ class ThreadServiceTest {
                                                     .FileSearch
                                                     .VectorStore
                                                     .builder()
-                                                    .chunkingStrategyAuto()
+                                                    .chunkingStrategy(
+                                                        AutoFileChunkingStrategyParam.builder()
+                                                            .build()
+                                                    )
                                                     .addFileId("string")
                                                     .metadata(
                                                         Metadata.builder()
@@ -294,7 +300,7 @@ class ThreadServiceTest {
                     )
                     .model(ChatModel.O3_MINI)
                     .parallelToolCalls(true)
-                    .responseFormatJsonValue()
+                    .responseFormatAuto()
                     .temperature(1.0)
                     .thread(
                         ThreadCreateAndRunParams.Thread.builder()
@@ -338,7 +344,10 @@ class ThreadServiceTest {
                                                     .FileSearch
                                                     .VectorStore
                                                     .builder()
-                                                    .chunkingStrategyAuto()
+                                                    .chunkingStrategy(
+                                                        AutoFileChunkingStrategyParam.builder()
+                                                            .build()
+                                                    )
                                                     .addFileId("string")
                                                     .metadata(
                                                         Metadata.builder()

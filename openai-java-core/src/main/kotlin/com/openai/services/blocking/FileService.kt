@@ -7,7 +7,6 @@ import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.files.FileContentParams
-import com.openai.models.files.FileCreateParams
 import com.openai.models.files.FileDeleteParams
 import com.openai.models.files.FileDeleted
 import com.openai.models.files.FileListPage
@@ -21,33 +20,6 @@ interface FileService {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
-
-    /**
-     * Upload a file that can be used across various endpoints. Individual files can be up to 512
-     * MB, and the size of all files uploaded by one organization can be up to 100 GB.
-     *
-     * The Assistants API supports files up to 2 million tokens and of specific file types. See the
-     * [Assistants Tools guide](https://platform.openai.com/docs/assistants/tools) for details.
-     *
-     * The Fine-tuning API only supports `.jsonl` files. The input also has certain required formats
-     * for fine-tuning [chat](https://platform.openai.com/docs/api-reference/fine-tuning/chat-input)
-     * or
-     * [completions](https://platform.openai.com/docs/api-reference/fine-tuning/completions-input)
-     * models.
-     *
-     * The Batch API only supports `.jsonl` files up to 200 MB in size. The input also has a
-     * specific required
-     * [format](https://platform.openai.com/docs/api-reference/batch/request-input).
-     *
-     * Please [contact us](https://help.openai.com/) if you need to increase these storage limits.
-     */
-    fun create(params: FileCreateParams): FileObject = create(params, RequestOptions.none())
-
-    /** @see [create] */
-    fun create(
-        params: FileCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): FileObject
 
     /** Returns information about a specific file. */
     fun retrieve(params: FileRetrieveParams): FileObject = retrieve(params, RequestOptions.none())
@@ -97,21 +69,6 @@ interface FileService {
 
     /** A view of [FileService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
-
-        /**
-         * Returns a raw HTTP response for `post /files`, but is otherwise the same as
-         * [FileService.create].
-         */
-        @MustBeClosed
-        fun create(params: FileCreateParams): HttpResponseFor<FileObject> =
-            create(params, RequestOptions.none())
-
-        /** @see [create] */
-        @MustBeClosed
-        fun create(
-            params: FileCreateParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<FileObject>
 
         /**
          * Returns a raw HTTP response for `get /files/{file_id}`, but is otherwise the same as

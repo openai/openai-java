@@ -10,11 +10,6 @@ import com.openai.core.http.StreamResponse
 import com.openai.models.chat.completions.ChatCompletion
 import com.openai.models.chat.completions.ChatCompletionChunk
 import com.openai.models.chat.completions.ChatCompletionCreateParams
-import com.openai.models.chat.completions.ChatCompletionDeleteParams
-import com.openai.models.chat.completions.ChatCompletionDeleted
-import com.openai.models.chat.completions.ChatCompletionRetrieveParams
-import com.openai.models.chat.completions.ChatCompletionUpdateParams
-import com.openai.services.async.chat.completions.MessageServiceAsync
 import java.util.concurrent.CompletableFuture
 
 interface ChatCompletionServiceAsync {
@@ -24,16 +19,7 @@ interface ChatCompletionServiceAsync {
      */
     fun withRawResponse(): WithRawResponse
 
-    fun messages(): MessageServiceAsync
-
     /**
-     * **Starting a new project?** We recommend trying
-     * [Responses](https://platform.openai.com/docs/api-reference/responses) to take advantage of
-     * the latest OpenAI platform features. Compare
-     * [Chat Completions with Responses](https://platform.openai.com/docs/guides/responses-vs-chat-completions?api-mode=responses).
-     *
-     * ---
-     *
      * Creates a model response for the given chat conversation. Learn more in the
      * [text generation](https://platform.openai.com/docs/guides/text-generation),
      * [vision](https://platform.openai.com/docs/guides/vision), and
@@ -54,13 +40,6 @@ interface ChatCompletionServiceAsync {
     ): CompletableFuture<ChatCompletion>
 
     /**
-     * **Starting a new project?** We recommend trying
-     * [Responses](https://platform.openai.com/docs/api-reference/responses) to take advantage of
-     * the latest OpenAI platform features. Compare
-     * [Chat Completions with Responses](https://platform.openai.com/docs/guides/responses-vs-chat-completions?api-mode=responses).
-     *
-     * ---
-     *
      * Creates a model response for the given chat conversation. Learn more in the
      * [text generation](https://platform.openai.com/docs/guides/text-generation),
      * [vision](https://platform.openai.com/docs/guides/vision), and
@@ -82,52 +61,10 @@ interface ChatCompletionServiceAsync {
     ): AsyncStreamResponse<ChatCompletionChunk>
 
     /**
-     * Get a stored chat completion. Only Chat Completions that have been created with the `store`
-     * parameter set to `true` will be returned.
-     */
-    fun retrieve(params: ChatCompletionRetrieveParams): CompletableFuture<ChatCompletion> =
-        retrieve(params, RequestOptions.none())
-
-    /** @see [retrieve] */
-    fun retrieve(
-        params: ChatCompletionRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<ChatCompletion>
-
-    /**
-     * Modify a stored chat completion. Only Chat Completions that have been created with the
-     * `store` parameter set to `true` can be modified. Currently, the only supported modification
-     * is to update the `metadata` field.
-     */
-    fun update(params: ChatCompletionUpdateParams): CompletableFuture<ChatCompletion> =
-        update(params, RequestOptions.none())
-
-    /** @see [update] */
-    fun update(
-        params: ChatCompletionUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<ChatCompletion>
-
-    /**
-     * Delete a stored chat completion. Only Chat Completions that have been created with the
-     * `store` parameter set to `true` can be deleted.
-     */
-    fun delete(params: ChatCompletionDeleteParams): CompletableFuture<ChatCompletionDeleted> =
-        delete(params, RequestOptions.none())
-
-    /** @see [delete] */
-    fun delete(
-        params: ChatCompletionDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<ChatCompletionDeleted>
-
-    /**
      * A view of [ChatCompletionServiceAsync] that provides access to raw HTTP responses for each
      * method.
      */
     interface WithRawResponse {
-
-        fun messages(): MessageServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /chat/completions`, but is otherwise the same as
@@ -162,56 +99,5 @@ interface ChatCompletionServiceAsync {
             params: ChatCompletionCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<StreamResponse<ChatCompletionChunk>>>
-
-        /**
-         * Returns a raw HTTP response for `get /chat/completions/{completion_id}`, but is otherwise
-         * the same as [ChatCompletionServiceAsync.retrieve].
-         */
-        @MustBeClosed
-        fun retrieve(
-            params: ChatCompletionRetrieveParams
-        ): CompletableFuture<HttpResponseFor<ChatCompletion>> =
-            retrieve(params, RequestOptions.none())
-
-        /** @see [retrieve] */
-        @MustBeClosed
-        fun retrieve(
-            params: ChatCompletionRetrieveParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<ChatCompletion>>
-
-        /**
-         * Returns a raw HTTP response for `post /chat/completions/{completion_id}`, but is
-         * otherwise the same as [ChatCompletionServiceAsync.update].
-         */
-        @MustBeClosed
-        fun update(
-            params: ChatCompletionUpdateParams
-        ): CompletableFuture<HttpResponseFor<ChatCompletion>> =
-            update(params, RequestOptions.none())
-
-        /** @see [update] */
-        @MustBeClosed
-        fun update(
-            params: ChatCompletionUpdateParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<ChatCompletion>>
-
-        /**
-         * Returns a raw HTTP response for `delete /chat/completions/{completion_id}`, but is
-         * otherwise the same as [ChatCompletionServiceAsync.delete].
-         */
-        @MustBeClosed
-        fun delete(
-            params: ChatCompletionDeleteParams
-        ): CompletableFuture<HttpResponseFor<ChatCompletionDeleted>> =
-            delete(params, RequestOptions.none())
-
-        /** @see [delete] */
-        @MustBeClosed
-        fun delete(
-            params: ChatCompletionDeleteParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<ChatCompletionDeleted>>
     }
 }

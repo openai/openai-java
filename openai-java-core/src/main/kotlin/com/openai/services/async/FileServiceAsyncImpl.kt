@@ -13,12 +13,10 @@ import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
-import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.errors.OpenAIError
 import com.openai.models.files.FileContentParams
-import com.openai.models.files.FileCreateParams
 import com.openai.models.files.FileDeleteParams
 import com.openai.models.files.FileDeleted
 import com.openai.models.files.FileListPageAsync
@@ -35,13 +33,6 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
     }
 
     override fun withRawResponse(): FileServiceAsync.WithRawResponse = withRawResponse
-
-    override fun create(
-        params: FileCreateParams,
-        requestOptions: RequestOptions,
-    ): CompletableFuture<FileObject> =
-        // post /files
-        withRawResponse().create(params, requestOptions).thenApply { it.parse() }
 
     override fun retrieve(
         params: FileRetrieveParams,
@@ -75,36 +66,6 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
         FileServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
-
-        private val createHandler: Handler<FileObject> =
-            jsonHandler<FileObject>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
-
-        override fun create(
-            params: FileCreateParams,
-            requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<FileObject>> {
-            val request =
-                HttpRequest.builder()
-                    .method(HttpMethod.POST)
-                    .addPathSegments("files")
-                    .body(multipartFormData(clientOptions.jsonMapper, params._body()))
-                    .build()
-                    .prepareAsync(clientOptions, params)
-            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    response.parseable {
-                        response
-                            .use { createHandler.handle(it) }
-                            .also {
-                                if (requestOptions.responseValidation!!) {
-                                    it.validate()
-                                }
-                            }
-                    }
-                }
-        }
 
         private val retrieveHandler: Handler<FileObject> =
             jsonHandler<FileObject>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

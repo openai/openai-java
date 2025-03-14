@@ -5,9 +5,7 @@ package com.openai.services.async.beta.threads
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
-import com.openai.models.ChatModel
 import com.openai.models.Metadata
-import com.openai.models.ReasoningEffort
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.AssistantToolChoiceOption
 import com.openai.models.beta.threads.runs.RunCancelParams
@@ -17,6 +15,7 @@ import com.openai.models.beta.threads.runs.RunRetrieveParams
 import com.openai.models.beta.threads.runs.RunSubmitToolOutputsParams
 import com.openai.models.beta.threads.runs.RunUpdateParams
 import com.openai.models.beta.threads.runs.steps.RunStepInclude
+import com.openai.models.chat.ChatModel
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -66,8 +65,8 @@ class RunServiceAsyncTest {
                     )
                     .model(ChatModel.O3_MINI)
                     .parallelToolCalls(true)
-                    .reasoningEffort(ReasoningEffort.LOW)
-                    .responseFormatJsonValue()
+                    .reasoningEffort(RunCreateParams.ReasoningEffort.LOW)
+                    .responseFormatAuto()
                     .temperature(1.0)
                     .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                     .addTool(CodeInterpreterTool.builder().build())
@@ -128,8 +127,8 @@ class RunServiceAsyncTest {
                     )
                     .model(ChatModel.O3_MINI)
                     .parallelToolCalls(true)
-                    .reasoningEffort(ReasoningEffort.LOW)
-                    .responseFormatJsonValue()
+                    .reasoningEffort(RunCreateParams.ReasoningEffort.LOW)
+                    .responseFormatAuto()
                     .temperature(1.0)
                     .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                     .addTool(CodeInterpreterTool.builder().build())

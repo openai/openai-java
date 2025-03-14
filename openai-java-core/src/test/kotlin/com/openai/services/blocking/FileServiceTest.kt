@@ -11,9 +11,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.models.files.FileContentParams
-import com.openai.models.files.FileCreateParams
 import com.openai.models.files.FileDeleteParams
-import com.openai.models.files.FilePurpose
 import com.openai.models.files.FileRetrieveParams
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -22,26 +20,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(TestServerExtension::class)
 @WireMockTest
 class FileServiceTest {
-
-    @Test
-    fun create() {
-        val client =
-            OpenAIOkHttpClient.builder()
-                .baseUrl(TestServerExtension.BASE_URL)
-                .apiKey("My API Key")
-                .build()
-        val fileService = client.files()
-
-        val fileObject =
-            fileService.create(
-                FileCreateParams.builder()
-                    .file("some content".toByteArray())
-                    .purpose(FilePurpose.ASSISTANTS)
-                    .build()
-            )
-
-        fileObject.validate()
-    }
 
     @Test
     fun retrieve() {

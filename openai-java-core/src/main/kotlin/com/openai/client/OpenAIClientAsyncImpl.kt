@@ -4,8 +4,6 @@ package com.openai.client
 
 import com.openai.core.ClientOptions
 import com.openai.core.getPackageVersion
-import com.openai.services.async.AudioServiceAsync
-import com.openai.services.async.AudioServiceAsyncImpl
 import com.openai.services.async.BatchServiceAsync
 import com.openai.services.async.BatchServiceAsyncImpl
 import com.openai.services.async.BetaServiceAsync
@@ -26,12 +24,8 @@ import com.openai.services.async.ModelServiceAsync
 import com.openai.services.async.ModelServiceAsyncImpl
 import com.openai.services.async.ModerationServiceAsync
 import com.openai.services.async.ModerationServiceAsyncImpl
-import com.openai.services.async.ResponseServiceAsync
-import com.openai.services.async.ResponseServiceAsyncImpl
 import com.openai.services.async.UploadServiceAsync
 import com.openai.services.async.UploadServiceAsyncImpl
-import com.openai.services.async.VectorStoreServiceAsync
-import com.openai.services.async.VectorStoreServiceAsyncImpl
 
 class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAIClientAsync {
 
@@ -66,10 +60,6 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         ImageServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
-    private val audio: AudioServiceAsync by lazy {
-        AudioServiceAsyncImpl(clientOptionsWithUserAgent)
-    }
-
     private val moderations: ModerationServiceAsync by lazy {
         ModerationServiceAsyncImpl(clientOptionsWithUserAgent)
     }
@@ -82,10 +72,6 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         FineTuningServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
-    private val vectorStores: VectorStoreServiceAsync by lazy {
-        VectorStoreServiceAsyncImpl(clientOptionsWithUserAgent)
-    }
-
     private val beta: BetaServiceAsync by lazy { BetaServiceAsyncImpl(clientOptionsWithUserAgent) }
 
     private val batches: BatchServiceAsync by lazy {
@@ -94,10 +80,6 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
     private val uploads: UploadServiceAsync by lazy {
         UploadServiceAsyncImpl(clientOptionsWithUserAgent)
-    }
-
-    private val responses: ResponseServiceAsync by lazy {
-        ResponseServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
     override fun sync(): OpenAIClient = sync
@@ -114,23 +96,17 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
     override fun images(): ImageServiceAsync = images
 
-    override fun audio(): AudioServiceAsync = audio
-
     override fun moderations(): ModerationServiceAsync = moderations
 
     override fun models(): ModelServiceAsync = models
 
     override fun fineTuning(): FineTuningServiceAsync = fineTuning
 
-    override fun vectorStores(): VectorStoreServiceAsync = vectorStores
-
     override fun beta(): BetaServiceAsync = beta
 
     override fun batches(): BatchServiceAsync = batches
 
     override fun uploads(): UploadServiceAsync = uploads
-
-    override fun responses(): ResponseServiceAsync = responses
 
     override fun close() = clientOptions.httpClient.close()
 
@@ -157,10 +133,6 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
             ImageServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
-        private val audio: AudioServiceAsync.WithRawResponse by lazy {
-            AudioServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
-
         private val moderations: ModerationServiceAsync.WithRawResponse by lazy {
             ModerationServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -171,10 +143,6 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
         private val fineTuning: FineTuningServiceAsync.WithRawResponse by lazy {
             FineTuningServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
-
-        private val vectorStores: VectorStoreServiceAsync.WithRawResponse by lazy {
-            VectorStoreServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val beta: BetaServiceAsync.WithRawResponse by lazy {
@@ -189,10 +157,6 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
             UploadServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
-        private val responses: ResponseServiceAsync.WithRawResponse by lazy {
-            ResponseServiceAsyncImpl.WithRawResponseImpl(clientOptions)
-        }
-
         override fun completions(): CompletionServiceAsync.WithRawResponse = completions
 
         override fun chat(): ChatServiceAsync.WithRawResponse = chat
@@ -203,22 +167,16 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
         override fun images(): ImageServiceAsync.WithRawResponse = images
 
-        override fun audio(): AudioServiceAsync.WithRawResponse = audio
-
         override fun moderations(): ModerationServiceAsync.WithRawResponse = moderations
 
         override fun models(): ModelServiceAsync.WithRawResponse = models
 
         override fun fineTuning(): FineTuningServiceAsync.WithRawResponse = fineTuning
 
-        override fun vectorStores(): VectorStoreServiceAsync.WithRawResponse = vectorStores
-
         override fun beta(): BetaServiceAsync.WithRawResponse = beta
 
         override fun batches(): BatchServiceAsync.WithRawResponse = batches
 
         override fun uploads(): UploadServiceAsync.WithRawResponse = uploads
-
-        override fun responses(): ResponseServiceAsync.WithRawResponse = responses
     }
 }

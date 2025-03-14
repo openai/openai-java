@@ -9,11 +9,6 @@ import com.openai.core.http.StreamResponse
 import com.openai.models.chat.completions.ChatCompletion
 import com.openai.models.chat.completions.ChatCompletionChunk
 import com.openai.models.chat.completions.ChatCompletionCreateParams
-import com.openai.models.chat.completions.ChatCompletionDeleteParams
-import com.openai.models.chat.completions.ChatCompletionDeleted
-import com.openai.models.chat.completions.ChatCompletionRetrieveParams
-import com.openai.models.chat.completions.ChatCompletionUpdateParams
-import com.openai.services.blocking.chat.completions.MessageService
 
 interface ChatCompletionService {
 
@@ -22,16 +17,7 @@ interface ChatCompletionService {
      */
     fun withRawResponse(): WithRawResponse
 
-    fun messages(): MessageService
-
     /**
-     * **Starting a new project?** We recommend trying
-     * [Responses](https://platform.openai.com/docs/api-reference/responses) to take advantage of
-     * the latest OpenAI platform features. Compare
-     * [Chat Completions with Responses](https://platform.openai.com/docs/guides/responses-vs-chat-completions?api-mode=responses).
-     *
-     * ---
-     *
      * Creates a model response for the given chat conversation. Learn more in the
      * [text generation](https://platform.openai.com/docs/guides/text-generation),
      * [vision](https://platform.openai.com/docs/guides/vision), and
@@ -52,13 +38,6 @@ interface ChatCompletionService {
     ): ChatCompletion
 
     /**
-     * **Starting a new project?** We recommend trying
-     * [Responses](https://platform.openai.com/docs/api-reference/responses) to take advantage of
-     * the latest OpenAI platform features. Compare
-     * [Chat Completions with Responses](https://platform.openai.com/docs/guides/responses-vs-chat-completions?api-mode=responses).
-     *
-     * ---
-     *
      * Creates a model response for the given chat conversation. Learn more in the
      * [text generation](https://platform.openai.com/docs/guides/text-generation),
      * [vision](https://platform.openai.com/docs/guides/vision), and
@@ -81,51 +60,9 @@ interface ChatCompletionService {
     ): StreamResponse<ChatCompletionChunk>
 
     /**
-     * Get a stored chat completion. Only Chat Completions that have been created with the `store`
-     * parameter set to `true` will be returned.
-     */
-    fun retrieve(params: ChatCompletionRetrieveParams): ChatCompletion =
-        retrieve(params, RequestOptions.none())
-
-    /** @see [retrieve] */
-    fun retrieve(
-        params: ChatCompletionRetrieveParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): ChatCompletion
-
-    /**
-     * Modify a stored chat completion. Only Chat Completions that have been created with the
-     * `store` parameter set to `true` can be modified. Currently, the only supported modification
-     * is to update the `metadata` field.
-     */
-    fun update(params: ChatCompletionUpdateParams): ChatCompletion =
-        update(params, RequestOptions.none())
-
-    /** @see [update] */
-    fun update(
-        params: ChatCompletionUpdateParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): ChatCompletion
-
-    /**
-     * Delete a stored chat completion. Only Chat Completions that have been created with the
-     * `store` parameter set to `true` can be deleted.
-     */
-    fun delete(params: ChatCompletionDeleteParams): ChatCompletionDeleted =
-        delete(params, RequestOptions.none())
-
-    /** @see [delete] */
-    fun delete(
-        params: ChatCompletionDeleteParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): ChatCompletionDeleted
-
-    /**
      * A view of [ChatCompletionService] that provides access to raw HTTP responses for each method.
      */
     interface WithRawResponse {
-
-        fun messages(): MessageService.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /chat/completions`, but is otherwise the same as
@@ -158,50 +95,5 @@ interface ChatCompletionService {
             params: ChatCompletionCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<StreamResponse<ChatCompletionChunk>>
-
-        /**
-         * Returns a raw HTTP response for `get /chat/completions/{completion_id}`, but is otherwise
-         * the same as [ChatCompletionService.retrieve].
-         */
-        @MustBeClosed
-        fun retrieve(params: ChatCompletionRetrieveParams): HttpResponseFor<ChatCompletion> =
-            retrieve(params, RequestOptions.none())
-
-        /** @see [retrieve] */
-        @MustBeClosed
-        fun retrieve(
-            params: ChatCompletionRetrieveParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<ChatCompletion>
-
-        /**
-         * Returns a raw HTTP response for `post /chat/completions/{completion_id}`, but is
-         * otherwise the same as [ChatCompletionService.update].
-         */
-        @MustBeClosed
-        fun update(params: ChatCompletionUpdateParams): HttpResponseFor<ChatCompletion> =
-            update(params, RequestOptions.none())
-
-        /** @see [update] */
-        @MustBeClosed
-        fun update(
-            params: ChatCompletionUpdateParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<ChatCompletion>
-
-        /**
-         * Returns a raw HTTP response for `delete /chat/completions/{completion_id}`, but is
-         * otherwise the same as [ChatCompletionService.delete].
-         */
-        @MustBeClosed
-        fun delete(params: ChatCompletionDeleteParams): HttpResponseFor<ChatCompletionDeleted> =
-            delete(params, RequestOptions.none())
-
-        /** @see [delete] */
-        @MustBeClosed
-        fun delete(
-            params: ChatCompletionDeleteParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<ChatCompletionDeleted>
     }
 }

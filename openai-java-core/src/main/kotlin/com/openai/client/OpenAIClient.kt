@@ -2,7 +2,6 @@
 
 package com.openai.client
 
-import com.openai.services.blocking.AudioService
 import com.openai.services.blocking.BatchService
 import com.openai.services.blocking.BetaService
 import com.openai.services.blocking.ChatService
@@ -13,9 +12,7 @@ import com.openai.services.blocking.FineTuningService
 import com.openai.services.blocking.ImageService
 import com.openai.services.blocking.ModelService
 import com.openai.services.blocking.ModerationService
-import com.openai.services.blocking.ResponseService
 import com.openai.services.blocking.UploadService
-import com.openai.services.blocking.VectorStoreService
 
 /**
  * A client for interacting with the OpenAI REST API synchronously. You can also switch to
@@ -56,23 +53,17 @@ interface OpenAIClient {
 
     fun images(): ImageService
 
-    fun audio(): AudioService
-
     fun moderations(): ModerationService
 
     fun models(): ModelService
 
     fun fineTuning(): FineTuningService
 
-    fun vectorStores(): VectorStoreService
-
     fun beta(): BetaService
 
     fun batches(): BatchService
 
     fun uploads(): UploadService
-
-    fun responses(): ResponseService
 
     /**
      * Closes this client, relinquishing any underlying resources.
@@ -100,22 +91,16 @@ interface OpenAIClient {
 
         fun images(): ImageService.WithRawResponse
 
-        fun audio(): AudioService.WithRawResponse
-
         fun moderations(): ModerationService.WithRawResponse
 
         fun models(): ModelService.WithRawResponse
 
         fun fineTuning(): FineTuningService.WithRawResponse
 
-        fun vectorStores(): VectorStoreService.WithRawResponse
-
         fun beta(): BetaService.WithRawResponse
 
         fun batches(): BatchService.WithRawResponse
 
         fun uploads(): UploadService.WithRawResponse
-
-        fun responses(): ResponseService.WithRawResponse
     }
 }

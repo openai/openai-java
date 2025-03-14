@@ -3,9 +3,10 @@
 package com.openai.models.beta.threads
 
 import com.openai.core.JsonValue
-import com.openai.models.ChatModel
 import com.openai.models.Metadata
 import com.openai.models.beta.assistants.CodeInterpreterTool
+import com.openai.models.beta.vectorstores.AutoFileChunkingStrategyParam
+import com.openai.models.chat.ChatModel
 import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -24,7 +25,7 @@ class ThreadCreateAndRunParamsTest {
             )
             .model(ChatModel.O3_MINI)
             .parallelToolCalls(true)
-            .responseFormatJsonValue()
+            .responseFormatAuto()
             .temperature(1.0)
             .thread(
                 ThreadCreateAndRunParams.Thread.builder()
@@ -65,7 +66,9 @@ class ThreadCreateAndRunParamsTest {
                                         ThreadCreateAndRunParams.Thread.ToolResources.FileSearch
                                             .VectorStore
                                             .builder()
-                                            .chunkingStrategyAuto()
+                                            .chunkingStrategy(
+                                                AutoFileChunkingStrategyParam.builder().build()
+                                            )
                                             .addFileId("string")
                                             .metadata(
                                                 Metadata.builder()
@@ -124,7 +127,7 @@ class ThreadCreateAndRunParamsTest {
                 )
                 .model(ChatModel.O3_MINI)
                 .parallelToolCalls(true)
-                .responseFormatJsonValue()
+                .responseFormatAuto()
                 .temperature(1.0)
                 .thread(
                     ThreadCreateAndRunParams.Thread.builder()
@@ -166,7 +169,9 @@ class ThreadCreateAndRunParamsTest {
                                             ThreadCreateAndRunParams.Thread.ToolResources.FileSearch
                                                 .VectorStore
                                                 .builder()
-                                                .chunkingStrategyAuto()
+                                                .chunkingStrategy(
+                                                    AutoFileChunkingStrategyParam.builder().build()
+                                                )
                                                 .addFileId("string")
                                                 .metadata(
                                                     Metadata.builder()
@@ -222,7 +227,7 @@ class ThreadCreateAndRunParamsTest {
             )
         assertThat(body.model()).contains(ChatModel.O3_MINI)
         assertThat(body.parallelToolCalls()).contains(true)
-        assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofJsonValue())
+        assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
         assertThat(body.temperature()).contains(1.0)
         assertThat(body.thread())
             .contains(
@@ -264,7 +269,9 @@ class ThreadCreateAndRunParamsTest {
                                         ThreadCreateAndRunParams.Thread.ToolResources.FileSearch
                                             .VectorStore
                                             .builder()
-                                            .chunkingStrategyAuto()
+                                            .chunkingStrategy(
+                                                AutoFileChunkingStrategyParam.builder().build()
+                                            )
                                             .addFileId("string")
                                             .metadata(
                                                 Metadata.builder()

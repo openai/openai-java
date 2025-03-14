@@ -8,10 +8,12 @@ import com.openai.core.JsonField
 import com.openai.errors.OpenAIInvalidDataException
 
 /**
- * The intended purpose of the uploaded file. One of: - `assistants`: Used in the Assistants API -
- * `batch`: Used in the Batch API - `fine-tune`: Used for fine-tuning - `vision`: Images used for
- * vision fine-tuning - `user_data`: Flexible file type for any purpose - `evals`: Used for eval
- * data sets
+ * The intended purpose of the uploaded file.
+ *
+ * Use "assistants" for [Assistants](https://platform.openai.com/docs/api-reference/assistants) and
+ * [Message](https://platform.openai.com/docs/api-reference/messages) files, "vision" for Assistants
+ * image file inputs, "batch" for [Batch API](https://platform.openai.com/docs/guides/batch), and
+ * "fine-tune" for [Fine-tuning](https://platform.openai.com/docs/api-reference/fine-tuning).
  */
 class FilePurpose @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -34,10 +36,6 @@ class FilePurpose @JsonCreator private constructor(private val value: JsonField<
 
         @JvmField val VISION = of("vision")
 
-        @JvmField val USER_DATA = of("user_data")
-
-        @JvmField val EVALS = of("evals")
-
         @JvmStatic fun of(value: String) = FilePurpose(JsonField.of(value))
     }
 
@@ -47,8 +45,6 @@ class FilePurpose @JsonCreator private constructor(private val value: JsonField<
         BATCH,
         FINE_TUNE,
         VISION,
-        USER_DATA,
-        EVALS,
     }
 
     /**
@@ -65,8 +61,6 @@ class FilePurpose @JsonCreator private constructor(private val value: JsonField<
         BATCH,
         FINE_TUNE,
         VISION,
-        USER_DATA,
-        EVALS,
         /** An enum member indicating that [FilePurpose] was instantiated with an unknown value. */
         _UNKNOWN,
     }
@@ -84,8 +78,6 @@ class FilePurpose @JsonCreator private constructor(private val value: JsonField<
             BATCH -> Value.BATCH
             FINE_TUNE -> Value.FINE_TUNE
             VISION -> Value.VISION
-            USER_DATA -> Value.USER_DATA
-            EVALS -> Value.EVALS
             else -> Value._UNKNOWN
         }
 
@@ -103,8 +95,6 @@ class FilePurpose @JsonCreator private constructor(private val value: JsonField<
             BATCH -> Known.BATCH
             FINE_TUNE -> Known.FINE_TUNE
             VISION -> Known.VISION
-            USER_DATA -> Known.USER_DATA
-            EVALS -> Known.EVALS
             else -> throw OpenAIInvalidDataException("Unknown FilePurpose: $value")
         }
 
