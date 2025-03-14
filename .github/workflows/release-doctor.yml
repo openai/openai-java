@@ -19,6 +19,7 @@ jobs:
         run: |
           bash ./bin/check-release-environment
         env:
+          STAINLESS_API_KEY: ${{ secrets.STAINLESS_API_KEY }}
           SONATYPE_USERNAME: ${{ secrets.OPENAI_SONATYPE_USERNAME || secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.OPENAI_SONATYPE_PASSWORD || secrets.SONATYPE_PASSWORD }}
           GPG_SIGNING_KEY: ${{ secrets.OPENAI_SONATYPE_GPG_SIGNING_KEY || secrets.GPG_SIGNING_KEY }}
