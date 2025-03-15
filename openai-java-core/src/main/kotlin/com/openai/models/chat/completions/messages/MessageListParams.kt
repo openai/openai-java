@@ -106,16 +106,20 @@ private constructor(
         /** Identifier for the last message from the previous pagination request. */
         fun after(after: String?) = apply { this.after = after }
 
-        /** Identifier for the last message from the previous pagination request. */
+        /** Alias for calling [Builder.after] with `after.orElse(null)`. */
         fun after(after: Optional<String>) = after(after.getOrNull())
 
         /** Number of messages to retrieve. */
         fun limit(limit: Long?) = apply { this.limit = limit }
 
-        /** Number of messages to retrieve. */
+        /**
+         * Alias for [Builder.limit].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
         fun limit(limit: Long) = limit(limit as Long?)
 
-        /** Number of messages to retrieve. */
+        /** Alias for calling [Builder.limit] with `limit.orElse(null)`. */
         fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
 
         /**
@@ -124,10 +128,7 @@ private constructor(
          */
         fun order(order: Order?) = apply { this.order = order }
 
-        /**
-         * Sort order for messages by timestamp. Use `asc` for ascending order or `desc` for
-         * descending order. Defaults to `asc`.
-         */
+        /** Alias for calling [Builder.order] with `order.orElse(null)`. */
         fun order(order: Optional<Order>) = order(order.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
