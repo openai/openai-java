@@ -151,12 +151,7 @@ private constructor(
          */
         fun after(after: String?) = apply { this.after = after }
 
-        /**
-         * A cursor for use in pagination. `after` is an object ID that defines your place in the
-         * list. For instance, if you make a list request and receive 100 objects, ending with
-         * obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page
-         * of the list.
-         */
+        /** Alias for calling [Builder.after] with `after.orElse(null)`. */
         fun after(after: Optional<String>) = after(after.getOrNull())
 
         /**
@@ -167,12 +162,7 @@ private constructor(
          */
         fun before(before: String?) = apply { this.before = before }
 
-        /**
-         * A cursor for use in pagination. `before` is an object ID that defines your place in the
-         * list. For instance, if you make a list request and receive 100 objects, starting with
-         * obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous
-         * page of the list.
-         */
+        /** Alias for calling [Builder.before] with `before.orElse(null)`. */
         fun before(before: Optional<String>) = before(before.getOrNull())
 
         /**
@@ -188,25 +178,13 @@ private constructor(
             this.include = include?.toMutableList()
         }
 
-        /**
-         * A list of additional fields to include in the response. Currently the only supported
-         * value is `step_details.tool_calls[*].file_search.results[*].content` to fetch the file
-         * search result content.
-         *
-         * See the
-         * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
-         * for more information.
-         */
+        /** Alias for calling [Builder.include] with `include.orElse(null)`. */
         fun include(include: Optional<List<RunStepInclude>>) = include(include.getOrNull())
 
         /**
-         * A list of additional fields to include in the response. Currently the only supported
-         * value is `step_details.tool_calls[*].file_search.results[*].content` to fetch the file
-         * search result content.
+         * Adds a single [RunStepInclude] to [Builder.include].
          *
-         * See the
-         * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
-         * for more information.
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addInclude(include: RunStepInclude) = apply {
             this.include = (this.include ?: mutableListOf()).apply { add(include) }
@@ -219,15 +197,13 @@ private constructor(
         fun limit(limit: Long?) = apply { this.limit = limit }
 
         /**
-         * A limit on the number of objects to be returned. Limit can range between 1 and 100, and
-         * the default is 20.
+         * Alias for [Builder.limit].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
          */
         fun limit(limit: Long) = limit(limit as Long?)
 
-        /**
-         * A limit on the number of objects to be returned. Limit can range between 1 and 100, and
-         * the default is 20.
-         */
+        /** Alias for calling [Builder.limit] with `limit.orElse(null)`. */
         fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
 
         /**
@@ -236,10 +212,7 @@ private constructor(
          */
         fun order(order: Order?) = apply { this.order = order }
 
-        /**
-         * Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and
-         * `desc` for descending order.
-         */
+        /** Alias for calling [Builder.order] with `order.orElse(null)`. */
         fun order(order: Optional<Order>) = order(order.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
