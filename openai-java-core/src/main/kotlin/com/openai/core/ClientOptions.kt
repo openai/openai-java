@@ -129,10 +129,12 @@ private constructor(
 
         fun organization(organization: String?) = apply { this.organization = organization }
 
+        /** Alias for calling [Builder.organization] with `organization.orElse(null)`. */
         fun organization(organization: Optional<String>) = organization(organization.getOrNull())
 
         fun project(project: String?) = apply { this.project = project }
 
+        /** Alias for calling [Builder.project] with `project.orElse(null)`. */
         fun project(project: Optional<String>) = project(project.getOrNull())
 
         fun headers(headers: Headers) = apply {
