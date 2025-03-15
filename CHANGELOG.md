@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.34.2 (2025-03-15)
+
+Full Changelog: [v0.34.1...v0.34.2](https://github.com/openai/openai-java/compare/v0.34.1...v0.34.2)
+
+### Chores
+
+* **internal:** remove CI condition ([#310](https://github.com/openai/openai-java/issues/310)) ([1cb3294](https://github.com/openai/openai-java/commit/1cb3294f74fa75bca443aaa6f0f3d9127ed7ea14))
+* **internal:** update release workflows ([2b0d392](https://github.com/openai/openai-java/commit/2b0d392b57acc03b393c1052e39326606d9ad2b0))
+
+
+### Documentation
+
+* deduplicate and refine comments ([#313](https://github.com/openai/openai-java/issues/313)) ([3e0b2f5](https://github.com/openai/openai-java/commit/3e0b2f5ebea908879f2215bb648027d60e491374))
+
 ## 0.34.1 (2025-03-11)
 
 Full Changelog: [v0.34.0...v0.34.1](https://github.com/openai/openai-java/compare/v0.34.0...v0.34.1)

@@ -161,10 +161,12 @@ class OpenAIOkHttpClient private constructor() {
 
         fun organization(organization: String?) = apply { clientOptions.organization(organization) }
 
+        /** Alias for calling [Builder.organization] with `organization.orElse(null)`. */
         fun organization(organization: Optional<String>) = organization(organization.getOrNull())
 
         fun project(project: String?) = apply { clientOptions.project(project) }
 
+        /** Alias for calling [Builder.project] with `project.orElse(null)`. */
         fun project(project: Optional<String>) = project(project.getOrNull())
 
         fun fromEnv() = apply { clientOptions.fromEnv() }

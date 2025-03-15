@@ -287,8 +287,11 @@ private constructor(
             fun model(model: MultipartField<AudioModel>) = apply { this.model = model }
 
             /**
-             * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper
-             * V2 model) is currently available.
+             * Sets [model] to an arbitrary [String].
+             *
+             * You should usually call [model] with a well-typed [AudioModel] constant instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun model(value: String) = model(AudioModel.of(value))
 
@@ -437,8 +440,10 @@ private constructor(
         fun model(model: MultipartField<AudioModel>) = apply { body.model(model) }
 
         /**
-         * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2
-         * model) is currently available.
+         * Sets [model] to an arbitrary [String].
+         *
+         * You should usually call [model] with a well-typed [AudioModel] constant instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun model(value: String) = apply { body.model(value) }
 

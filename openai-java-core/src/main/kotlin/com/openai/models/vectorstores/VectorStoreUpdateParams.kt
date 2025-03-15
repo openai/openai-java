@@ -34,7 +34,12 @@ private constructor(
 
     fun vectorStoreId(): String = vectorStoreId
 
-    /** The expiration policy for a vector store. */
+    /**
+     * The expiration policy for a vector store.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun expiresAfter(): Optional<ExpiresAfter> = body.expiresAfter()
 
     /**
@@ -44,26 +49,39 @@ private constructor(
      *
      * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
      * length of 512 characters.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun metadata(): Optional<Metadata> = body.metadata()
 
-    /** The name of the vector store. */
+    /**
+     * The name of the vector store.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun name(): Optional<String> = body.name()
 
-    /** The expiration policy for a vector store. */
+    /**
+     * Returns the raw JSON value of [expiresAfter].
+     *
+     * Unlike [expiresAfter], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _expiresAfter(): JsonField<ExpiresAfter> = body._expiresAfter()
 
     /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard.
+     * Returns the raw JSON value of [metadata].
      *
-     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
-     * length of 512 characters.
+     * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _metadata(): JsonField<Metadata> = body._metadata()
 
-    /** The name of the vector store. */
+    /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _name(): JsonField<String> = body._name()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
@@ -102,7 +120,12 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The expiration policy for a vector store. */
+        /**
+         * The expiration policy for a vector store.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun expiresAfter(): Optional<ExpiresAfter> =
             Optional.ofNullable(expiresAfter.getNullable("expires_after"))
 
@@ -113,28 +136,42 @@ private constructor(
          *
          * Keys are strings with a maximum length of 64 characters. Values are strings with a
          * maximum length of 512 characters.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
 
-        /** The name of the vector store. */
+        /**
+         * The name of the vector store.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
 
-        /** The expiration policy for a vector store. */
+        /**
+         * Returns the raw JSON value of [expiresAfter].
+         *
+         * Unlike [expiresAfter], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("expires_after")
         @ExcludeMissing
         fun _expiresAfter(): JsonField<ExpiresAfter> = expiresAfter
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
+         * Returns the raw JSON value of [metadata].
          *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
+         * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
-        /** The name of the vector store. */
+        /**
+         * Returns the raw JSON value of [name].
+         *
+         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         @JsonAnyGetter
@@ -182,11 +219,17 @@ private constructor(
             fun expiresAfter(expiresAfter: ExpiresAfter?) =
                 expiresAfter(JsonField.ofNullable(expiresAfter))
 
-            /** The expiration policy for a vector store. */
+            /** Alias for calling [Builder.expiresAfter] with `expiresAfter.orElse(null)`. */
             fun expiresAfter(expiresAfter: Optional<ExpiresAfter>) =
                 expiresAfter(expiresAfter.getOrNull())
 
-            /** The expiration policy for a vector store. */
+            /**
+             * Sets [Builder.expiresAfter] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.expiresAfter] with a well-typed [ExpiresAfter] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun expiresAfter(expiresAfter: JsonField<ExpiresAfter>) = apply {
                 this.expiresAfter = expiresAfter
             }
@@ -201,33 +244,31 @@ private constructor(
              */
             fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
 
-            /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format, and querying
-             * for objects via API or the dashboard.
-             *
-             * Keys are strings with a maximum length of 64 characters. Values are strings with a
-             * maximum length of 512 characters.
-             */
+            /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
             fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
             /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format, and querying
-             * for objects via API or the dashboard.
+             * Sets [Builder.metadata] to an arbitrary JSON value.
              *
-             * Keys are strings with a maximum length of 64 characters. Values are strings with a
-             * maximum length of 512 characters.
+             * You should usually call [Builder.metadata] with a well-typed [Metadata] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
             /** The name of the vector store. */
             fun name(name: String?) = name(JsonField.ofNullable(name))
 
-            /** The name of the vector store. */
+            /** Alias for calling [Builder.name] with `name.orElse(null)`. */
             fun name(name: Optional<String>) = name(name.getOrNull())
 
-            /** The name of the vector store. */
+            /**
+             * Sets [Builder.name] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.name] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun name(name: JsonField<String>) = apply { this.name = name }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -308,11 +349,17 @@ private constructor(
         /** The expiration policy for a vector store. */
         fun expiresAfter(expiresAfter: ExpiresAfter?) = apply { body.expiresAfter(expiresAfter) }
 
-        /** The expiration policy for a vector store. */
+        /** Alias for calling [Builder.expiresAfter] with `expiresAfter.orElse(null)`. */
         fun expiresAfter(expiresAfter: Optional<ExpiresAfter>) =
             expiresAfter(expiresAfter.getOrNull())
 
-        /** The expiration policy for a vector store. */
+        /**
+         * Sets [Builder.expiresAfter] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.expiresAfter] with a well-typed [ExpiresAfter] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun expiresAfter(expiresAfter: JsonField<ExpiresAfter>) = apply {
             body.expiresAfter(expiresAfter)
         }
@@ -327,33 +374,30 @@ private constructor(
          */
         fun metadata(metadata: Metadata?) = apply { body.metadata(metadata) }
 
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
-         *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
-         */
+        /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
         fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
+         * Sets [Builder.metadata] to an arbitrary JSON value.
          *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
+         * You should usually call [Builder.metadata] with a well-typed [Metadata] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
 
         /** The name of the vector store. */
         fun name(name: String?) = apply { body.name(name) }
 
-        /** The name of the vector store. */
+        /** Alias for calling [Builder.name] with `name.orElse(null)`. */
         fun name(name: Optional<String>) = name(name.getOrNull())
 
-        /** The name of the vector store. */
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun name(name: JsonField<String>) = apply { body.name(name) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
@@ -496,13 +540,30 @@ private constructor(
         /**
          * Anchor timestamp after which the expiration policy applies. Supported anchors:
          * `last_active_at`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("last_active_at")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
          */
         @JsonProperty("anchor") @ExcludeMissing fun _anchor(): JsonValue = anchor
 
-        /** The number of days after the anchor time that the vector store will expire. */
+        /**
+         * The number of days after the anchor time that the vector store will expire.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun days(): Long = days.getRequired("days")
 
-        /** The number of days after the anchor time that the vector store will expire. */
+        /**
+         * Returns the raw JSON value of [days].
+         *
+         * Unlike [days], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("days") @ExcludeMissing fun _days(): JsonField<Long> = days
 
         @JsonAnyGetter
@@ -555,15 +616,29 @@ private constructor(
             }
 
             /**
-             * Anchor timestamp after which the expiration policy applies. Supported anchors:
-             * `last_active_at`.
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("last_active_at")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun anchor(anchor: JsonValue) = apply { this.anchor = anchor }
 
             /** The number of days after the anchor time that the vector store will expire. */
             fun days(days: Long) = days(JsonField.of(days))
 
-            /** The number of days after the anchor time that the vector store will expire. */
+            /**
+             * Sets [Builder.days] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.days] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun days(days: JsonField<Long>) = apply { this.days = days }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {

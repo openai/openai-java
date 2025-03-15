@@ -91,15 +91,13 @@ private constructor(
             this.include = include?.toMutableList()
         }
 
-        /**
-         * Additional fields to include in the response. See the `include` parameter for Response
-         * creation above for more information.
-         */
+        /** Alias for calling [Builder.include] with `include.orElse(null)`. */
         fun include(include: Optional<List<ResponseIncludable>>) = include(include.getOrNull())
 
         /**
-         * Additional fields to include in the response. See the `include` parameter for Response
-         * creation above for more information.
+         * Adds a single [ResponseIncludable] to [Builder.include].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addInclude(include: ResponseIncludable) = apply {
             this.include = (this.include ?: mutableListOf()).apply { add(include) }
