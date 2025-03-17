@@ -5,7 +5,7 @@ package com.openai.models.responses
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ResponseReasoningItemTest {
+internal class ResponseReasoningItemTest {
 
     @Test
     fun createResponseReasoningItem() {

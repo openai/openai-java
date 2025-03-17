@@ -6,7 +6,7 @@ import com.openai.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ResponseFormatJsonSchemaTest {
+internal class ResponseFormatJsonSchemaTest {
 
     @Test
     fun createResponseFormatJsonSchema() {

@@ -5,7 +5,7 @@ package com.openai.models.vectorstores.filebatches
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class VectorStoreFileBatchTest {
+internal class VectorStoreFileBatchTest {
 
     @Test
     fun createVectorStoreFileBatch() {

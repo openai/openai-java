@@ -5,7 +5,7 @@ package com.openai.models.beta.threads.messages
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class TextContentBlockParamTest {
+internal class TextContentBlockParamTest {
 
     @Test
     fun createTextContentBlockParam() {

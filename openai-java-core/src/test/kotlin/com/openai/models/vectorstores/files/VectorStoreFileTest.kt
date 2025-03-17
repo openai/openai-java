@@ -9,7 +9,7 @@ import com.openai.models.vectorstores.StaticFileChunkingStrategyObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class VectorStoreFileTest {
+internal class VectorStoreFileTest {
 
     @Test
     fun createVectorStoreFile() {

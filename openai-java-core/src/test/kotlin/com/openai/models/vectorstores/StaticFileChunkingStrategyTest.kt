@@ -5,7 +5,7 @@ package com.openai.models.vectorstores
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class StaticFileChunkingStrategyTest {
+internal class StaticFileChunkingStrategyTest {
 
     @Test
     fun createStaticFileChunkingStrategy() {

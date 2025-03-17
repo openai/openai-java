@@ -5,7 +5,7 @@ package com.openai.models.uploads
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class UploadCancelParamsTest {
+internal class UploadCancelParamsTest {
 
     @Test
     fun create() {

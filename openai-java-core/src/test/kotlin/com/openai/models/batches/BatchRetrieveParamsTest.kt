@@ -5,7 +5,7 @@ package com.openai.models.batches
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class BatchRetrieveParamsTest {
+internal class BatchRetrieveParamsTest {
 
     @Test
     fun create() {

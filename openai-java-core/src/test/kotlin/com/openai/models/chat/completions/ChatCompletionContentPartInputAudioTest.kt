@@ -5,7 +5,7 @@ package com.openai.models.chat.completions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ChatCompletionContentPartInputAudioTest {
+internal class ChatCompletionContentPartInputAudioTest {
 
     @Test
     fun createChatCompletionContentPartInputAudio() {

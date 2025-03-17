@@ -5,7 +5,7 @@ package com.openai.models.beta.assistants
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class AssistantDeletedTest {
+internal class AssistantDeletedTest {
 
     @Test
     fun createAssistantDeleted() {

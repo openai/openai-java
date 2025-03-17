@@ -5,7 +5,7 @@ package com.openai.models.models
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ModelDeletedTest {
+internal class ModelDeletedTest {
 
     @Test
     fun createModelDeleted() {

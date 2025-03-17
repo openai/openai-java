@@ -18,7 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
 @WireMockTest
-class SpeechServiceTest {
+internal class SpeechServiceTest {
 
     @Test
     fun create(wmRuntimeInfo: WireMockRuntimeInfo) {

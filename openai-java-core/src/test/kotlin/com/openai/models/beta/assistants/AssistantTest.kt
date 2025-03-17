@@ -8,7 +8,7 @@ import com.openai.models.beta.threads.AssistantResponseFormatOption
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class AssistantTest {
+internal class AssistantTest {
 
     @Test
     fun createAssistant() {

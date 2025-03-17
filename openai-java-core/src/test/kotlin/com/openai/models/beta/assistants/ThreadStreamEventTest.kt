@@ -8,7 +8,7 @@ import com.openai.models.beta.threads.Thread
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ThreadStreamEventTest {
+internal class ThreadStreamEventTest {
 
     @Test
     fun createThreadStreamEvent() {

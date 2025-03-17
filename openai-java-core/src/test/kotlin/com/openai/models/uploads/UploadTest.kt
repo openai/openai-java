@@ -6,7 +6,7 @@ import com.openai.models.files.FileObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class UploadTest {
+internal class UploadTest {
 
     @Test
     fun createUpload() {

@@ -5,7 +5,7 @@ package com.openai.models.completions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class CompletionUsageTest {
+internal class CompletionUsageTest {
 
     @Test
     fun createCompletionUsage() {

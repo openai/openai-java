@@ -12,7 +12,7 @@ import com.openai.models.ResponseFormatText
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ResponseInProgressEventTest {
+internal class ResponseInProgressEventTest {
 
     @Test
     fun createResponseInProgressEvent() {

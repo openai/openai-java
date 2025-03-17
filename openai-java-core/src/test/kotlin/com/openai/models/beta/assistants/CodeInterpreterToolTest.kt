@@ -5,7 +5,7 @@ package com.openai.models.beta.assistants
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class CodeInterpreterToolTest {
+internal class CodeInterpreterToolTest {
 
     @Test
     fun createCodeInterpreterTool() {

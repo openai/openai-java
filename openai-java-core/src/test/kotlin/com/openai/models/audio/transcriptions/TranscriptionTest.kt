@@ -5,7 +5,7 @@ package com.openai.models.audio.transcriptions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class TranscriptionTest {
+internal class TranscriptionTest {
 
     @Test
     fun createTranscription() {

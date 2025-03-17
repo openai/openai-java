@@ -6,7 +6,7 @@ import com.openai.models.audio.transcriptions.TranscriptionSegment
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class TranslationVerboseTest {
+internal class TranslationVerboseTest {
 
     @Test
     fun createTranslationVerbose() {

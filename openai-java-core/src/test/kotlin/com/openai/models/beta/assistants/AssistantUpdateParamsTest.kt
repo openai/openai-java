@@ -10,7 +10,7 @@ import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class AssistantUpdateParamsTest {
+internal class AssistantUpdateParamsTest {
 
     @Test
     fun create() {

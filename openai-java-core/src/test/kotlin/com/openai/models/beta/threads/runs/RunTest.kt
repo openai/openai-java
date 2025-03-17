@@ -11,7 +11,7 @@ import com.openai.models.beta.threads.AssistantToolChoiceOption
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class RunTest {
+internal class RunTest {
 
     @Test
     fun createRun() {

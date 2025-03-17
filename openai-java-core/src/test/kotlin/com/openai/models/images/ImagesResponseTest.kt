@@ -5,7 +5,7 @@ package com.openai.models.images
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ImagesResponseTest {
+internal class ImagesResponseTest {
 
     @Test
     fun createImagesResponse() {
