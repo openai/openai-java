@@ -21,7 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
 @WireMockTest
-class FileServiceTest {
+internal class FileServiceTest {
 
     @Test
     fun create() {

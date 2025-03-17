@@ -5,7 +5,7 @@ package com.openai.models.moderations
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ModerationImageUrlInputTest {
+internal class ModerationImageUrlInputTest {
 
     @Test
     fun createModerationImageUrlInput() {

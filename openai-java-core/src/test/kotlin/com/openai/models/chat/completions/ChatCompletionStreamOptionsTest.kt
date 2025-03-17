@@ -5,7 +5,7 @@ package com.openai.models.chat.completions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ChatCompletionStreamOptionsTest {
+internal class ChatCompletionStreamOptionsTest {
 
     @Test
     fun createChatCompletionStreamOptions() {

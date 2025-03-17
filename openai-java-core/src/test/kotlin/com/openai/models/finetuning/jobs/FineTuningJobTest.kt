@@ -7,7 +7,7 @@ import com.openai.models.Metadata
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class FineTuningJobTest {
+internal class FineTuningJobTest {
 
     @Test
     fun createFineTuningJob() {

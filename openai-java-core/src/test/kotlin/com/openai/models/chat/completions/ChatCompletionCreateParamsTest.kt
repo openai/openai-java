@@ -13,7 +13,7 @@ import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ChatCompletionCreateParamsTest {
+internal class ChatCompletionCreateParamsTest {
 
     @Test
     fun create() {

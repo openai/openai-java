@@ -5,7 +5,7 @@ package com.openai.models.models
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ModelRetrieveParamsTest {
+internal class ModelRetrieveParamsTest {
 
     @Test
     fun create() {

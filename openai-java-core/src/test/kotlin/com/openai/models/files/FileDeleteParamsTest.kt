@@ -5,7 +5,7 @@ package com.openai.models.files
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class FileDeleteParamsTest {
+internal class FileDeleteParamsTest {
 
     @Test
     fun create() {

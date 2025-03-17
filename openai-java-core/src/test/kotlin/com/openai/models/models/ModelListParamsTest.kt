@@ -4,7 +4,7 @@ package com.openai.models.models
 
 import org.junit.jupiter.api.Test
 
-class ModelListParamsTest {
+internal class ModelListParamsTest {
 
     @Test
     fun create() {

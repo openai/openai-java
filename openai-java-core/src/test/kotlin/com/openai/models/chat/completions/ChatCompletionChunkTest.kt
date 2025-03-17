@@ -6,7 +6,7 @@ import com.openai.models.completions.CompletionUsage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ChatCompletionChunkTest {
+internal class ChatCompletionChunkTest {
 
     @Test
     fun createChatCompletionChunk() {

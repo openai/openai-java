@@ -8,7 +8,7 @@ import com.openai.models.beta.assistants.CodeInterpreterTool
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class MessageTest {
+internal class MessageTest {
 
     @Test
     fun createMessage() {

@@ -5,7 +5,7 @@ package com.openai.models.beta.assistants
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class AssistantRetrieveParamsTest {
+internal class AssistantRetrieveParamsTest {
 
     @Test
     fun create() {

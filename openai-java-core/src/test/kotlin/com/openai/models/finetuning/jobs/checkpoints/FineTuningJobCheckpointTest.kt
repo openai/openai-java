@@ -5,7 +5,7 @@ package com.openai.models.finetuning.jobs.checkpoints
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class FineTuningJobCheckpointTest {
+internal class FineTuningJobCheckpointTest {
 
     @Test
     fun createFineTuningJobCheckpoint() {

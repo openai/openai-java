@@ -5,7 +5,7 @@ package com.openai.models.batches
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class BatchRequestCountsTest {
+internal class BatchRequestCountsTest {
 
     @Test
     fun createBatchRequestCounts() {
