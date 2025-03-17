@@ -33,23 +33,28 @@ internal class StepListParamsTest {
                 .limit(0L)
                 .order(StepListParams.Order.ASC)
                 .build()
-        val expected = QueryParams.builder()
-        expected.put("after", "after")
-        expected.put("before", "before")
-        expected.put(
-            "include[]",
-            RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT.toString(),
-        )
-        expected.put("limit", "0")
-        expected.put("order", StepListParams.Order.ASC.toString())
-        assertThat(params._queryParams()).isEqualTo(expected.build())
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams)
+            .isEqualTo(
+                QueryParams.builder()
+                    .put("after", "after")
+                    .put("before", "before")
+                    .put("include[]", "step_details.tool_calls[*].file_search.results[*].content")
+                    .put("limit", "0")
+                    .put("order", "asc")
+                    .build()
+            )
     }
 
     @Test
     fun queryParamsWithoutOptionalFields() {
         val params = StepListParams.builder().threadId("thread_id").runId("run_id").build()
-        val expected = QueryParams.builder()
-        assertThat(params._queryParams()).isEqualTo(expected.build())
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams).isEqualTo(QueryParams.builder().build())
     }
 
     @Test

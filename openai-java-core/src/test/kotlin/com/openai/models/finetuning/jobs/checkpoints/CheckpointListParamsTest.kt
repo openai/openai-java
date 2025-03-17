@@ -25,18 +25,21 @@ internal class CheckpointListParamsTest {
                 .after("after")
                 .limit(0L)
                 .build()
-        val expected = QueryParams.builder()
-        expected.put("after", "after")
-        expected.put("limit", "0")
-        assertThat(params._queryParams()).isEqualTo(expected.build())
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams)
+            .isEqualTo(QueryParams.builder().put("after", "after").put("limit", "0").build())
     }
 
     @Test
     fun queryParamsWithoutOptionalFields() {
         val params =
             CheckpointListParams.builder().fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F").build()
-        val expected = QueryParams.builder()
-        assertThat(params._queryParams()).isEqualTo(expected.build())
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams).isEqualTo(QueryParams.builder().build())
     }
 
     @Test
