@@ -276,6 +276,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FileCitationDeltaAnnotation].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .index()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FileCitationDeltaAnnotation =
             FileCitationDeltaAnnotation(
                 checkRequired("index", index),
@@ -413,6 +425,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [FileCitation].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): FileCitation =
                 FileCitation(fileId, quote, additionalProperties.toImmutable())
         }

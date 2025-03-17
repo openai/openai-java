@@ -346,6 +346,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .fileIds()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("fileIds", fileIds).map { it.toImmutable() },
@@ -611,6 +623,19 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [FileBatchCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .vectorStoreId()
+         * .fileIds()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FileBatchCreateParams =
             FileBatchCreateParams(
                 checkRequired("vectorStoreId", vectorStoreId),
@@ -685,6 +710,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Attributes].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Attributes = Attributes(additionalProperties.toImmutable())
         }
 

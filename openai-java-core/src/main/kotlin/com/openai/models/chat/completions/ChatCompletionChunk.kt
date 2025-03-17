@@ -407,6 +407,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ChatCompletionChunk].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .choices()
+         * .created()
+         * .model()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ChatCompletionChunk =
             ChatCompletionChunk(
                 checkRequired("id", id),
@@ -645,6 +660,20 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Choice].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .delta()
+             * .finishReason()
+             * .index()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Choice =
                 Choice(
                     checkRequired("delta", delta),
@@ -919,6 +948,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Delta].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): Delta =
                     Delta(
                         content,
@@ -1078,6 +1112,11 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [FunctionCall].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
                     fun build(): FunctionCall =
                         FunctionCall(arguments, name, additionalProperties.toImmutable())
                 }
@@ -1424,6 +1463,18 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [ToolCall].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .index()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
                     fun build(): ToolCall =
                         ToolCall(
                             checkRequired("index", index),
@@ -1578,6 +1629,11 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [Function].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         */
                         fun build(): Function =
                             Function(arguments, name, additionalProperties.toImmutable())
                     }
@@ -2046,6 +2102,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Logprobs].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .content()
+                 * .refusal()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Logprobs =
                     Logprobs(
                         checkRequired("content", content).map { it.toImmutable() },

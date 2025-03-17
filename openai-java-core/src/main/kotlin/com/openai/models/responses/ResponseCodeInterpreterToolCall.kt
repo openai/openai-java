@@ -304,6 +304,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseCodeInterpreterToolCall].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .code()
+         * .results()
+         * .status()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseCodeInterpreterToolCall =
             ResponseCodeInterpreterToolCall(
                 checkRequired("id", id),
@@ -603,6 +618,18 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Logs].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .logs()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Logs =
                     Logs(checkRequired("logs", logs), type, additionalProperties.toImmutable())
             }
@@ -775,6 +802,18 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Files].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .files()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Files =
                     Files(
                         checkRequired("files", files).map { it.toImmutable() },
@@ -925,6 +964,19 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [File].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .fileId()
+                     * .mimeType()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
                     fun build(): File =
                         File(
                             checkRequired("fileId", fileId),

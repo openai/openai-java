@@ -263,6 +263,20 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FunctionTool].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .name()
+         * .parameters()
+         * .strict()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FunctionTool =
             FunctionTool(
                 checkRequired("name", name),
@@ -334,6 +348,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Parameters].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Parameters = Parameters(additionalProperties.toImmutable())
         }
 

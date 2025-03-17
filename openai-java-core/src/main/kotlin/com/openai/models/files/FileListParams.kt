@@ -234,6 +234,11 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [FileListParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): FileListParams =
             FileListParams(
                 after,

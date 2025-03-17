@@ -513,6 +513,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadMessageCreated].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadMessageCreated =
                 ThreadMessageCreated(
                     checkRequired("data", data),
@@ -679,6 +691,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadMessageInProgress].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadMessageInProgress =
                 ThreadMessageInProgress(
                     checkRequired("data", data),
@@ -841,6 +865,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadMessageDelta].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadMessageDelta =
                 ThreadMessageDelta(
                     checkRequired("data", data),
@@ -1007,6 +1043,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadMessageCompleted].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadMessageCompleted =
                 ThreadMessageCompleted(
                     checkRequired("data", data),
@@ -1173,6 +1221,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadMessageIncomplete].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadMessageIncomplete =
                 ThreadMessageIncomplete(
                     checkRequired("data", data),

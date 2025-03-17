@@ -117,6 +117,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [OtherFileChunkingStrategyObject].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): OtherFileChunkingStrategyObject =
             OtherFileChunkingStrategyObject(type, additionalProperties.toImmutable())
     }

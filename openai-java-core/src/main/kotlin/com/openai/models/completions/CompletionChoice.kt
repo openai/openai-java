@@ -221,6 +221,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [CompletionChoice].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .finishReason()
+         * .index()
+         * .logprobs()
+         * .text()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): CompletionChoice =
             CompletionChoice(
                 checkRequired("finishReason", finishReason),
@@ -590,6 +605,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Logprobs].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Logprobs =
                 Logprobs(
                     (textOffset ?: JsonMissing.of()).map { it.toImmutable() },
@@ -662,6 +682,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [TopLogprob].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): TopLogprob = TopLogprob(additionalProperties.toImmutable())
             }
 

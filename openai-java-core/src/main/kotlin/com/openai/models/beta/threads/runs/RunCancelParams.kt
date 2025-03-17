@@ -207,6 +207,19 @@ private constructor(
             keys.forEach(::removeAdditionalBodyProperty)
         }
 
+        /**
+         * Returns an immutable instance of [RunCancelParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .threadId()
+         * .runId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): RunCancelParams =
             RunCancelParams(
                 checkRequired("threadId", threadId),

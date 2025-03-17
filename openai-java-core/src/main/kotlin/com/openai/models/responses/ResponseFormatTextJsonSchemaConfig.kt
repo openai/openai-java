@@ -284,6 +284,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseFormatTextJsonSchemaConfig].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .schema()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseFormatTextJsonSchemaConfig =
             ResponseFormatTextJsonSchemaConfig(
                 checkRequired("schema", schema),
@@ -358,6 +370,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Schema].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Schema = Schema(additionalProperties.toImmutable())
         }
 

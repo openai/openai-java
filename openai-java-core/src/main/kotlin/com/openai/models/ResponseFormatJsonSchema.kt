@@ -158,6 +158,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseFormatJsonSchema].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .jsonSchema()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseFormatJsonSchema =
             ResponseFormatJsonSchema(
                 checkRequired("jsonSchema", jsonSchema),
@@ -400,6 +412,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [JsonSchema].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .name()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): JsonSchema =
                 JsonSchema(
                     checkRequired("name", name),
@@ -476,6 +500,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Schema].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): Schema = Schema(additionalProperties.toImmutable())
             }
 

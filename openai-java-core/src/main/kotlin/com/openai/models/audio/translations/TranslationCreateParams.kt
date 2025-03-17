@@ -344,6 +344,19 @@ private constructor(
                 this.temperature = temperature
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .file()
+             * .model()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("file", file),
@@ -595,6 +608,19 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [TranslationCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .file()
+         * .model()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): TranslationCreateParams =
             TranslationCreateParams(
                 body.build(),

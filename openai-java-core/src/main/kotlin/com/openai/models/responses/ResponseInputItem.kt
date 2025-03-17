@@ -846,6 +846,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Message].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .content()
+             * .role()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Message =
                 Message(
                     checkRequired("content", content).map { it.toImmutable() },
@@ -1486,6 +1499,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ComputerCallOutput].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .callId()
+             * .output()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ComputerCallOutput =
                 ComputerCallOutput(
                     checkRequired("callId", callId),
@@ -1665,6 +1691,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Output].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): Output =
                     Output(type, fileId, imageUrl, additionalProperties.toImmutable())
             }
@@ -1863,6 +1894,20 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [AcknowledgedSafetyCheck].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .id()
+                 * .code()
+                 * .message()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): AcknowledgedSafetyCheck =
                     AcknowledgedSafetyCheck(
                         checkRequired("id", id),
@@ -2261,6 +2306,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [FunctionCallOutput].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .callId()
+             * .output()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): FunctionCallOutput =
                 FunctionCallOutput(
                     checkRequired("callId", callId),
@@ -2535,6 +2593,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ItemReference].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .id()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ItemReference =
                 ItemReference(checkRequired("id", id), type, additionalProperties.toImmutable())
         }

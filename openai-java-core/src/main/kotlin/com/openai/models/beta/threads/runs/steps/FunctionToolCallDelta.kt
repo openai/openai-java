@@ -212,6 +212,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FunctionToolCallDelta].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .index()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FunctionToolCallDelta =
             FunctionToolCallDelta(
                 checkRequired("index", index),
@@ -389,6 +401,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Function].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Function =
                 Function(arguments, name, output, additionalProperties.toImmutable())
         }

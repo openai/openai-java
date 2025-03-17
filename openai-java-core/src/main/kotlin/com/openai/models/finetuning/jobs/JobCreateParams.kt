@@ -764,6 +764,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .model()
+             * .trainingFile()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("model", model),
@@ -1154,6 +1167,19 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [JobCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .model()
+         * .trainingFile()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): JobCreateParams =
             JobCreateParams(body.build(), additionalHeaders.build(), additionalQueryParams.build())
     }
@@ -1483,6 +1509,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Hyperparameters].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Hyperparameters =
                 Hyperparameters(
                     batchSize,
@@ -2111,6 +2142,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Integration].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .wandb()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Integration =
                 Integration(type, checkRequired("wandb", wandb), additionalProperties.toImmutable())
         }
@@ -2358,6 +2401,18 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Wandb].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .project()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Wandb =
                     Wandb(
                         checkRequired("project", project),
@@ -2564,6 +2619,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Method].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Method = Method(dpo, supervised, type, additionalProperties.toImmutable())
         }
 
@@ -2670,6 +2730,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Dpo].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): Dpo = Dpo(hyperparameters, additionalProperties.toImmutable())
             }
 
@@ -2941,6 +3006,11 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [Hyperparameters].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
                     fun build(): Hyperparameters =
                         Hyperparameters(
                             batchSize,
@@ -3708,6 +3778,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Supervised].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): Supervised =
                     Supervised(hyperparameters, additionalProperties.toImmutable())
             }
@@ -3936,6 +4011,11 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [Hyperparameters].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
                     fun build(): Hyperparameters =
                         Hyperparameters(
                             batchSize,

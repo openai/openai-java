@@ -250,6 +250,19 @@ private constructor(
             }
         }
 
+        /**
+         * Returns an immutable instance of [ClientOptions].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .httpClient()
+         * .apiKey()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ClientOptions {
             val httpClient = checkRequired("httpClient", httpClient)
             val credential = checkRequired("credential", credential)

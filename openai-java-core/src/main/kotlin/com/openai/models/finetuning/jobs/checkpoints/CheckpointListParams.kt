@@ -205,6 +205,18 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [CheckpointListParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .fineTuningJobId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): CheckpointListParams =
             CheckpointListParams(
                 checkRequired("fineTuningJobId", fineTuningJobId),

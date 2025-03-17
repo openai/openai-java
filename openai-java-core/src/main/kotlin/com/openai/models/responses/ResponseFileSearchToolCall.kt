@@ -291,6 +291,20 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseFileSearchToolCall].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .queries()
+         * .status()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseFileSearchToolCall =
             ResponseFileSearchToolCall(
                 checkRequired("id", id),
@@ -664,6 +678,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Result].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Result =
                 Result(
                     attributes,
@@ -744,6 +763,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Attributes].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): Attributes = Attributes(additionalProperties.toImmutable())
             }
 

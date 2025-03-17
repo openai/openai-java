@@ -205,6 +205,18 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [JobListEventsParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .fineTuningJobId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): JobListEventsParams =
             JobListEventsParams(
                 checkRequired("fineTuningJobId", fineTuningJobId),

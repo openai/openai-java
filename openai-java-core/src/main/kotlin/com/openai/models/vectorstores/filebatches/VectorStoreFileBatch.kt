@@ -296,6 +296,22 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [VectorStoreFileBatch].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .fileCounts()
+         * .status()
+         * .vectorStoreId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): VectorStoreFileBatch =
             VectorStoreFileBatch(
                 checkRequired("id", id),
@@ -543,6 +559,22 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [FileCounts].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .cancelled()
+             * .completed()
+             * .failed()
+             * .inProgress()
+             * .total()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): FileCounts =
                 FileCounts(
                     checkRequired("cancelled", cancelled),

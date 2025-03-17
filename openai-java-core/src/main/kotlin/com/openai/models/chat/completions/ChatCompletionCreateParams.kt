@@ -2494,6 +2494,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .messages()
+             * .model()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("messages", messages).map { it.toImmutable() },
@@ -3610,6 +3623,19 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [ChatCompletionCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .messages()
+         * .model()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ChatCompletionCreateParams =
             ChatCompletionCreateParams(
                 body.build(),
@@ -4115,6 +4141,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Function].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .name()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Function =
                 Function(
                     checkRequired("name", name),
@@ -4210,6 +4248,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [LogitBias].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): LogitBias = LogitBias(additionalProperties.toImmutable())
         }
 
@@ -4940,6 +4983,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [WebSearchOptions].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): WebSearchOptions =
                 WebSearchOptions(
                     searchContextSize,
@@ -5208,6 +5256,18 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [UserLocation].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .approximate()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): UserLocation =
                     UserLocation(
                         checkRequired("approximate", approximate),
@@ -5427,6 +5487,11 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [Approximate].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
                     fun build(): Approximate =
                         Approximate(
                             city,

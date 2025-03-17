@@ -180,6 +180,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [CompoundFilter].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .filters()
+         * .type()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): CompoundFilter =
             CompoundFilter(
                 checkRequired("filters", filters).map { it.toImmutable() },

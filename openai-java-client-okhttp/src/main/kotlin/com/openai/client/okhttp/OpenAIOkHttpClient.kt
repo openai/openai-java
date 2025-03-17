@@ -171,6 +171,11 @@ class OpenAIOkHttpClient private constructor() {
 
         fun fromEnv() = apply { clientOptions.fromEnv() }
 
+        /**
+         * Returns an immutable instance of [OpenAIClient].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): OpenAIClient =
             OpenAIClientImpl(
                 clientOptions

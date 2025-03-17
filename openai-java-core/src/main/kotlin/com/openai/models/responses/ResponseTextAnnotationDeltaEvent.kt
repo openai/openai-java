@@ -320,6 +320,22 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseTextAnnotationDeltaEvent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .annotation()
+         * .annotationIndex()
+         * .contentIndex()
+         * .itemId()
+         * .outputIndex()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseTextAnnotationDeltaEvent =
             ResponseTextAnnotationDeltaEvent(
                 checkRequired("annotation", annotation),
@@ -687,6 +703,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [FileCitation].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .fileId()
+                 * .index()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): FileCitation =
                     FileCitation(
                         checkRequired("fileId", fileId),
@@ -962,6 +991,21 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [UrlCitation].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .endIndex()
+                 * .startIndex()
+                 * .title()
+                 * .url()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): UrlCitation =
                     UrlCitation(
                         checkRequired("endIndex", endIndex),
@@ -1165,6 +1209,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [FilePath].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .fileId()
+                 * .index()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): FilePath =
                     FilePath(
                         checkRequired("fileId", fileId),

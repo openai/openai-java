@@ -615,6 +615,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunStepCreated].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunStepCreated =
                 ThreadRunStepCreated(
                     checkRequired("data", data),
@@ -778,6 +790,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunStepInProgress].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunStepInProgress =
                 ThreadRunStepInProgress(
                     checkRequired("data", data),
@@ -943,6 +967,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunStepDelta].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunStepDelta =
                 ThreadRunStepDelta(
                     checkRequired("data", data),
@@ -1106,6 +1142,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunStepCompleted].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunStepCompleted =
                 ThreadRunStepCompleted(
                     checkRequired("data", data),
@@ -1268,6 +1316,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunStepFailed].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunStepFailed =
                 ThreadRunStepFailed(
                     checkRequired("data", data),
@@ -1431,6 +1491,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunStepCancelled].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunStepCancelled =
                 ThreadRunStepCancelled(
                     checkRequired("data", data),
@@ -1593,6 +1665,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunStepExpired].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunStepExpired =
                 ThreadRunStepExpired(
                     checkRequired("data", data),

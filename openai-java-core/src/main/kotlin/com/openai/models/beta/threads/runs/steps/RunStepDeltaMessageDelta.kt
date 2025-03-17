@@ -147,6 +147,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [RunStepDeltaMessageDelta].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): RunStepDeltaMessageDelta =
             RunStepDeltaMessageDelta(type, messageCreation, additionalProperties.toImmutable())
     }
@@ -243,6 +248,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [MessageCreation].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): MessageCreation =
                 MessageCreation(messageId, additionalProperties.toImmutable())
         }

@@ -912,6 +912,31 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FineTuningJob].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .error()
+         * .fineTunedModel()
+         * .finishedAt()
+         * .hyperparameters()
+         * .model()
+         * .organizationId()
+         * .resultFiles()
+         * .seed()
+         * .status()
+         * .trainedTokens()
+         * .trainingFile()
+         * .validationFile()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FineTuningJob =
             FineTuningJob(
                 checkRequired("id", id),
@@ -1115,6 +1140,20 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Error].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .code()
+             * .message()
+             * .param()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Error =
                 Error(
                     checkRequired("code", code),
@@ -1352,6 +1391,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Hyperparameters].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Hyperparameters =
                 Hyperparameters(
                     batchSize,
@@ -2123,6 +2167,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Method].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Method = Method(dpo, supervised, type, additionalProperties.toImmutable())
         }
 
@@ -2229,6 +2278,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Dpo].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): Dpo = Dpo(hyperparameters, additionalProperties.toImmutable())
             }
 
@@ -2500,6 +2554,11 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [Hyperparameters].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
                     fun build(): Hyperparameters =
                         Hyperparameters(
                             batchSize,
@@ -3267,6 +3326,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Supervised].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): Supervised =
                     Supervised(hyperparameters, additionalProperties.toImmutable())
             }
@@ -3495,6 +3559,11 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [Hyperparameters].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
                     fun build(): Hyperparameters =
                         Hyperparameters(
                             batchSize,

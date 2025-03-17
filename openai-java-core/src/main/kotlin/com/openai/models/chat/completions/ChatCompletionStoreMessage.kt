@@ -427,6 +427,20 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ChatCompletionStoreMessage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .content()
+         * .refusal()
+         * .id()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ChatCompletionStoreMessage =
             ChatCompletionStoreMessage(
                 checkRequired("content", content),

@@ -953,6 +953,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Body =
                 Body(
                     description,
@@ -1447,6 +1452,18 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [AssistantUpdateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .assistantId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): AssistantUpdateParams =
             AssistantUpdateParams(
                 checkRequired("assistantId", assistantId),
@@ -1864,6 +1881,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ToolResources].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): ToolResources =
                 ToolResources(codeInterpreter, fileSearch, additionalProperties.toImmutable())
         }
@@ -1987,6 +2009,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [CodeInterpreter].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): CodeInterpreter =
                     CodeInterpreter(
                         (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
@@ -2134,6 +2161,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [FileSearch].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): FileSearch =
                     FileSearch(
                         (vectorStoreIds ?: JsonMissing.of()).map { it.toImmutable() },

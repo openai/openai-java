@@ -403,6 +403,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ChatCompletionMessage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .content()
+         * .refusal()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ChatCompletionMessage =
             ChatCompletionMessage(
                 checkRequired("content", content),
@@ -555,6 +568,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Annotation].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .urlCitation()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Annotation =
                 Annotation(
                     type,
@@ -776,6 +801,21 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [UrlCitation].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .endIndex()
+                 * .startIndex()
+                 * .title()
+                 * .url()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): UrlCitation =
                     UrlCitation(
                         checkRequired("endIndex", endIndex),
@@ -968,6 +1008,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [FunctionCall].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .arguments()
+             * .name()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): FunctionCall =
                 FunctionCall(
                     checkRequired("arguments", arguments),

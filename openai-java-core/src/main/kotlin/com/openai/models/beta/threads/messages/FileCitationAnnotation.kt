@@ -247,6 +247,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FileCitationAnnotation].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .endIndex()
+         * .fileCitation()
+         * .startIndex()
+         * .text()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FileCitationAnnotation =
             FileCitationAnnotation(
                 checkRequired("endIndex", endIndex),
@@ -357,6 +372,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [FileCitation].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .fileId()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): FileCitation =
                 FileCitation(checkRequired("fileId", fileId), additionalProperties.toImmutable())
         }

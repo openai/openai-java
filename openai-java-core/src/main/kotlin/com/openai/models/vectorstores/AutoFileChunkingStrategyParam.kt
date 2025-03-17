@@ -115,6 +115,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [AutoFileChunkingStrategyParam].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): AutoFileChunkingStrategyParam =
             AutoFileChunkingStrategyParam(type, additionalProperties.toImmutable())
     }

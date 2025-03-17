@@ -378,6 +378,23 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseComputerToolCall].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .action()
+         * .callId()
+         * .pendingSafetyChecks()
+         * .status()
+         * .type()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseComputerToolCall =
             ResponseComputerToolCall(
                 checkRequired("id", id),
@@ -972,6 +989,20 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Click].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .button()
+                 * .x()
+                 * .y()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Click =
                     Click(
                         checkRequired("button", button),
@@ -1297,6 +1328,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [DoubleClick].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .x()
+                 * .y()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): DoubleClick =
                     DoubleClick(
                         type,
@@ -1495,6 +1539,18 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Drag].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .path()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Drag =
                     Drag(
                         checkRequired("path", path).map { it.toImmutable() },
@@ -1642,6 +1698,19 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [Path].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .x()
+                     * .y()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
                     fun build(): Path =
                         Path(
                             checkRequired("x", x),
@@ -1844,6 +1913,18 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Keypress].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .keys()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Keypress =
                     Keypress(
                         checkRequired("keys", keys).map { it.toImmutable() },
@@ -2040,6 +2121,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Move].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .x()
+                 * .y()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Move =
                     Move(
                         type,
@@ -2308,6 +2402,21 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Scroll].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .scrollX()
+                 * .scrollY()
+                 * .x()
+                 * .y()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Scroll =
                     Scroll(
                         checkRequired("scrollX", scrollX),
@@ -2476,6 +2585,18 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Type].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .text()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Type =
                     Type(checkRequired("text", text), type, additionalProperties.toImmutable())
             }
@@ -2665,6 +2786,20 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [PendingSafetyCheck].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .id()
+             * .code()
+             * .message()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): PendingSafetyCheck =
                 PendingSafetyCheck(
                     checkRequired("id", id),

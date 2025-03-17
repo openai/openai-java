@@ -201,6 +201,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [CodeInterpreterToolCall].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .codeInterpreter()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): CodeInterpreterToolCall =
             CodeInterpreterToolCall(
                 checkRequired("id", id),
@@ -392,6 +405,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [CodeInterpreter].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .input()
+             * .outputs()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): CodeInterpreter =
                 CodeInterpreter(
                     checkRequired("input", input),
@@ -689,6 +715,18 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [LogsOutput].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .logs()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
                     fun build(): LogsOutput =
                         LogsOutput(
                             checkRequired("logs", logs),
@@ -853,6 +891,18 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [ImageOutput].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .image()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
                     fun build(): ImageOutput =
                         ImageOutput(
                             checkRequired("image", image),
@@ -972,6 +1022,18 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [Image].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .fileId()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): Image =
                             Image(
                                 checkRequired("fileId", fileId),

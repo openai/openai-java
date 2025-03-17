@@ -331,6 +331,23 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FineTuningJobCheckpoint].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .fineTunedModelCheckpoint()
+         * .fineTuningJobId()
+         * .metrics()
+         * .stepNumber()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FineTuningJobCheckpoint =
             FineTuningJobCheckpoint(
                 checkRequired("id", id),
@@ -643,6 +660,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Metrics].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Metrics =
                 Metrics(
                     fullValidLoss,

@@ -155,6 +155,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ChatCompletionContentPartInputAudio].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .inputAudio()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ChatCompletionContentPartInputAudio =
             ChatCompletionContentPartInputAudio(
                 checkRequired("inputAudio", inputAudio),
@@ -296,6 +308,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [InputAudio].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * .format()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): InputAudio =
                 InputAudio(
                     checkRequired("data", data),

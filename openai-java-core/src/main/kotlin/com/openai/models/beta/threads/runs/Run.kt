@@ -1367,6 +1367,41 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [Run].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .assistantId()
+         * .cancelledAt()
+         * .completedAt()
+         * .createdAt()
+         * .expiresAt()
+         * .failedAt()
+         * .incompleteDetails()
+         * .instructions()
+         * .lastError()
+         * .maxCompletionTokens()
+         * .maxPromptTokens()
+         * .metadata()
+         * .model()
+         * .parallelToolCalls()
+         * .requiredAction()
+         * .responseFormat()
+         * .startedAt()
+         * .status()
+         * .threadId()
+         * .toolChoice()
+         * .tools()
+         * .truncationStrategy()
+         * .usage()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): Run =
             Run(
                 checkRequired("id", id),
@@ -1497,6 +1532,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [IncompleteDetails].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): IncompleteDetails =
                 IncompleteDetails(reason, additionalProperties.toImmutable())
         }
@@ -1757,6 +1797,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [LastError].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .code()
+             * .message()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): LastError =
                 LastError(
                     checkRequired("code", code),
@@ -2034,6 +2087,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [RequiredAction].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .submitToolOutputs()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): RequiredAction =
                 RequiredAction(
                     checkRequired("submitToolOutputs", submitToolOutputs),
@@ -2167,6 +2232,18 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [SubmitToolOutputs].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .toolCalls()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): SubmitToolOutputs =
                     SubmitToolOutputs(
                         checkRequired("toolCalls", toolCalls).map { it.toImmutable() },
@@ -2372,6 +2449,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [TruncationStrategy].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .type()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): TruncationStrategy =
                 TruncationStrategy(
                     checkRequired("type", type),
@@ -2688,6 +2777,20 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Usage].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .completionTokens()
+             * .promptTokens()
+             * .totalTokens()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Usage =
                 Usage(
                     checkRequired("completionTokens", completionTokens),

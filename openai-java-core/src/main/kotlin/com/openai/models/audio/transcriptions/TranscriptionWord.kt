@@ -174,6 +174,20 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [TranscriptionWord].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .end()
+         * .start()
+         * .word()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): TranscriptionWord =
             TranscriptionWord(
                 checkRequired("end", end),

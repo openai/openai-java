@@ -455,6 +455,23 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [VectorStoreFile].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .lastError()
+         * .status()
+         * .usageBytes()
+         * .vectorStoreId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): VectorStoreFile =
             VectorStoreFile(
                 checkRequired("id", id),
@@ -604,6 +621,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [LastError].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .code()
+             * .message()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): LastError =
                 LastError(
                     checkRequired("code", code),
@@ -917,6 +947,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Attributes].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Attributes = Attributes(additionalProperties.toImmutable())
         }
 

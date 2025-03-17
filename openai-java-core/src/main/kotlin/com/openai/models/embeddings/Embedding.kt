@@ -202,6 +202,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [Embedding].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .embedding()
+         * .index()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): Embedding =
             Embedding(
                 checkRequired("embedding", embedding).map { it.toImmutable() },

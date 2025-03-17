@@ -186,6 +186,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseCodeInterpreterCallCodeDeltaEvent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .delta()
+         * .outputIndex()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseCodeInterpreterCallCodeDeltaEvent =
             ResponseCodeInterpreterCallCodeDeltaEvent(
                 checkRequired("delta", delta),

@@ -227,6 +227,20 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [CreateEmbeddingResponse].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .data()
+         * .model()
+         * .usage()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): CreateEmbeddingResponse =
             CreateEmbeddingResponse(
                 checkRequired("data", data).map { it.toImmutable() },
@@ -378,6 +392,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Usage].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .promptTokens()
+             * .totalTokens()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Usage =
                 Usage(
                     checkRequired("promptTokens", promptTokens),

@@ -173,6 +173,19 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [FileRetrieveParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .vectorStoreId()
+         * .fileId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FileRetrieveParams =
             FileRetrieveParams(
                 checkRequired("vectorStoreId", vectorStoreId),

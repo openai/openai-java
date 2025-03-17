@@ -191,6 +191,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .attributes()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(checkRequired("attributes", attributes), additionalProperties.toImmutable())
         }
@@ -391,6 +403,20 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [FileUpdateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .vectorStoreId()
+         * .fileId()
+         * .attributes()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FileUpdateParams =
             FileUpdateParams(
                 checkRequired("vectorStoreId", vectorStoreId),
@@ -466,6 +492,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Attributes].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Attributes = Attributes(additionalProperties.toImmutable())
         }
 

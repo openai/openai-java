@@ -230,6 +230,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseUsage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .inputTokens()
+         * .outputTokens()
+         * .outputTokensDetails()
+         * .totalTokens()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseUsage =
             ResponseUsage(
                 checkRequired("inputTokens", inputTokens),
@@ -346,6 +361,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [OutputTokensDetails].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .reasoningTokens()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): OutputTokensDetails =
                 OutputTokensDetails(
                     checkRequired("reasoningTokens", reasoningTokens),

@@ -388,6 +388,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ChatCompletionAssistantMessageParam].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): ChatCompletionAssistantMessageParam =
             ChatCompletionAssistantMessageParam(
                 role,
@@ -502,6 +507,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Audio].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .id()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Audio = Audio(checkRequired("id", id), additionalProperties.toImmutable())
         }
 
@@ -1039,6 +1056,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [FunctionCall].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .arguments()
+             * .name()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): FunctionCall =
                 FunctionCall(
                     checkRequired("arguments", arguments),

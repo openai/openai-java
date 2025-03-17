@@ -171,6 +171,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [StaticFileChunkingStrategy].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .chunkOverlapTokens()
+         * .maxChunkSizeTokens()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): StaticFileChunkingStrategy =
             StaticFileChunkingStrategy(
                 checkRequired("chunkOverlapTokens", chunkOverlapTokens),

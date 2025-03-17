@@ -274,6 +274,20 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [CompletionUsage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .completionTokens()
+         * .promptTokens()
+         * .totalTokens()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): CompletionUsage =
             CompletionUsage(
                 checkRequired("completionTokens", completionTokens),
@@ -514,6 +528,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [CompletionTokensDetails].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): CompletionTokensDetails =
                 CompletionTokensDetails(
                     acceptedPredictionTokens,
@@ -677,6 +696,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [PromptTokensDetails].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): PromptTokensDetails =
                 PromptTokensDetails(audioTokens, cachedTokens, additionalProperties.toImmutable())
         }

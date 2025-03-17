@@ -219,6 +219,20 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseFunctionCallArgumentsDeltaEvent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .delta()
+         * .itemId()
+         * .outputIndex()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseFunctionCallArgumentsDeltaEvent =
             ResponseFunctionCallArgumentsDeltaEvent(
                 checkRequired("delta", delta),

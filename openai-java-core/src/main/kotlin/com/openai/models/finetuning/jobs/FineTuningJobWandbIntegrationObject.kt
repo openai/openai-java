@@ -164,6 +164,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FineTuningJobWandbIntegrationObject].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .wandb()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FineTuningJobWandbIntegrationObject =
             FineTuningJobWandbIntegrationObject(
                 type,

@@ -183,6 +183,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ToolCallsStepDetails].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .toolCalls()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ToolCallsStepDetails =
             ToolCallsStepDetails(
                 checkRequired("toolCalls", toolCalls).map { it.toImmutable() },

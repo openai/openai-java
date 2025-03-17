@@ -784,6 +784,23 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [Batch].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .completionWindow()
+         * .createdAt()
+         * .endpoint()
+         * .inputFileId()
+         * .status()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): Batch =
             Batch(
                 checkRequired("id", id),
@@ -1081,6 +1098,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Errors].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Errors =
                 Errors(
                     (data ?: JsonMissing.of()).map { it.toImmutable() },

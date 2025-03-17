@@ -208,6 +208,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [EasyInputMessage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .content()
+         * .role()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): EasyInputMessage =
             EasyInputMessage(
                 checkRequired("content", content),

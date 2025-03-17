@@ -251,6 +251,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseTextDeltaEvent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .contentIndex()
+         * .delta()
+         * .itemId()
+         * .outputIndex()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseTextDeltaEvent =
             ResponseTextDeltaEvent(
                 checkRequired("contentIndex", contentIndex),

@@ -188,6 +188,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseFileSearchCallInProgressEvent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .itemId()
+         * .outputIndex()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseFileSearchCallInProgressEvent =
             ResponseFileSearchCallInProgressEvent(
                 checkRequired("itemId", itemId),
