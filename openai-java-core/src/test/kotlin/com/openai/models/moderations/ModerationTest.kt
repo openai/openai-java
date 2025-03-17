@@ -5,7 +5,7 @@ package com.openai.models.moderations
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ModerationTest {
+internal class ModerationTest {
 
     @Test
     fun createModeration() {

@@ -5,7 +5,7 @@ package com.openai.models.beta.threads.messages
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class MessageRetrieveParamsTest {
+internal class MessageRetrieveParamsTest {
 
     @Test
     fun create() {

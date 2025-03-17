@@ -5,7 +5,7 @@ package com.openai.models.audio.translations
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class TranslationTest {
+internal class TranslationTest {
 
     @Test
     fun createTranslation() {

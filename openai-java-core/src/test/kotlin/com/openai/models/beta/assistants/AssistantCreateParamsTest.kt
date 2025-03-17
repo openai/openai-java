@@ -11,7 +11,7 @@ import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class AssistantCreateParamsTest {
+internal class AssistantCreateParamsTest {
 
     @Test
     fun create() {

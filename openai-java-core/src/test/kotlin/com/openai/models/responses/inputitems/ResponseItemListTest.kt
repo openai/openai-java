@@ -5,7 +5,7 @@ package com.openai.models.responses.inputitems
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ResponseItemListTest {
+internal class ResponseItemListTest {
 
     @Test
     fun createResponseItemList() {

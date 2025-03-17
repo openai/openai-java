@@ -6,7 +6,7 @@ import com.openai.core.JsonValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class FineTuningJobEventTest {
+internal class FineTuningJobEventTest {
 
     @Test
     fun createFineTuningJobEvent() {

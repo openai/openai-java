@@ -5,7 +5,7 @@ package com.openai.models.finetuning.jobs
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class FineTuningJobWandbIntegrationTest {
+internal class FineTuningJobWandbIntegrationTest {
 
     @Test
     fun createFineTuningJobWandbIntegration() {

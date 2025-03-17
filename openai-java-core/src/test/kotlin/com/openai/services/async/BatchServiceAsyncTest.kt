@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class BatchServiceAsyncTest {
+internal class BatchServiceAsyncTest {
 
     @Test
     fun create() {

@@ -8,7 +8,7 @@ import com.openai.models.FunctionParameters
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ChatCompletionToolTest {
+internal class ChatCompletionToolTest {
 
     @Test
     fun createChatCompletionTool() {

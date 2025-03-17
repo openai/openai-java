@@ -5,7 +5,7 @@ package com.openai.models.beta.threads
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class AssistantToolChoiceTest {
+internal class AssistantToolChoiceTest {
 
     @Test
     fun createAssistantToolChoice() {

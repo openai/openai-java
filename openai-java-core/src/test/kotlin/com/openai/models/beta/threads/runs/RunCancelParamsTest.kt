@@ -5,7 +5,7 @@ package com.openai.models.beta.threads.runs
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class RunCancelParamsTest {
+internal class RunCancelParamsTest {
 
     @Test
     fun create() {

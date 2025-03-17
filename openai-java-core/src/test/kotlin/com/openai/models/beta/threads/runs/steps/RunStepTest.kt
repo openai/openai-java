@@ -7,7 +7,7 @@ import com.openai.models.Metadata
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class RunStepTest {
+internal class RunStepTest {
 
     @Test
     fun createRunStep() {

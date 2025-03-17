@@ -7,7 +7,7 @@ import com.openai.models.Metadata
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ThreadTest {
+internal class ThreadTest {
 
     @Test
     fun createThread() {

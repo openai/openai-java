@@ -5,7 +5,7 @@ package com.openai.models.beta.threads.runs.steps
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class MessageCreationStepDetailsTest {
+internal class MessageCreationStepDetailsTest {
 
     @Test
     fun createMessageCreationStepDetails() {
