@@ -27,7 +27,17 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** Always `auto`. */
+    /**
+     * Always `auto`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("auto")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     @JsonAnyGetter
@@ -72,7 +82,18 @@ private constructor(
             additionalProperties = autoFileChunkingStrategyParam.additionalProperties.toMutableMap()
         }
 
-        /** Always `auto`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("auto")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -94,6 +115,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [AutoFileChunkingStrategyParam].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): AutoFileChunkingStrategyParam =
             AutoFileChunkingStrategyParam(type, additionalProperties.toImmutable())
     }

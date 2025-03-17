@@ -32,21 +32,47 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The ID of the tool call object. */
+    /**
+     * The ID of the tool call object.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** For now, this is always going to be an empty object. */
+    /**
+     * For now, this is always going to be an empty object.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun fileSearch(): FileSearch = fileSearch.getRequired("file_search")
 
     /**
      * The type of tool call. This is always going to be `file_search` for this type of tool call.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("file_search")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** The ID of the tool call object. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** For now, this is always going to be an empty object. */
+    /**
+     * Returns the raw JSON value of [fileSearch].
+     *
+     * Unlike [fileSearch], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("file_search")
     @ExcludeMissing
     fun _fileSearch(): JsonField<FileSearch> = fileSearch
@@ -107,18 +133,37 @@ private constructor(
         /** The ID of the tool call object. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The ID of the tool call object. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** For now, this is always going to be an empty object. */
         fun fileSearch(fileSearch: FileSearch) = fileSearch(JsonField.of(fileSearch))
 
-        /** For now, this is always going to be an empty object. */
+        /**
+         * Sets [Builder.fileSearch] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.fileSearch] with a well-typed [FileSearch] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun fileSearch(fileSearch: JsonField<FileSearch>) = apply { this.fileSearch = fileSearch }
 
         /**
-         * The type of tool call. This is always going to be `file_search` for this type of tool
-         * call.
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("file_search")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
@@ -141,6 +186,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FileSearchToolCall].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .fileSearch()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FileSearchToolCall =
             FileSearchToolCall(
                 checkRequired("id", id),
@@ -165,19 +223,38 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The ranking options for the file search. */
+        /**
+         * The ranking options for the file search.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun rankingOptions(): Optional<RankingOptions> =
             Optional.ofNullable(rankingOptions.getNullable("ranking_options"))
 
-        /** The results of the file search. */
+        /**
+         * The results of the file search.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun results(): Optional<List<Result>> = Optional.ofNullable(results.getNullable("results"))
 
-        /** The ranking options for the file search. */
+        /**
+         * Returns the raw JSON value of [rankingOptions].
+         *
+         * Unlike [rankingOptions], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("ranking_options")
         @ExcludeMissing
         fun _rankingOptions(): JsonField<RankingOptions> = rankingOptions
 
-        /** The results of the file search. */
+        /**
+         * Returns the raw JSON value of [results].
+         *
+         * Unlike [results], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("results") @ExcludeMissing fun _results(): JsonField<List<Result>> = results
 
         @JsonAnyGetter
@@ -222,7 +299,13 @@ private constructor(
             fun rankingOptions(rankingOptions: RankingOptions) =
                 rankingOptions(JsonField.of(rankingOptions))
 
-            /** The ranking options for the file search. */
+            /**
+             * Sets [Builder.rankingOptions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.rankingOptions] with a well-typed [RankingOptions]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
             fun rankingOptions(rankingOptions: JsonField<RankingOptions>) = apply {
                 this.rankingOptions = rankingOptions
             }
@@ -230,12 +313,22 @@ private constructor(
             /** The results of the file search. */
             fun results(results: List<Result>) = results(JsonField.of(results))
 
-            /** The results of the file search. */
+            /**
+             * Sets [Builder.results] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.results] with a well-typed `List<Result>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun results(results: JsonField<List<Result>>) = apply {
                 this.results = results.map { it.toMutableList() }
             }
 
-            /** The results of the file search. */
+            /**
+             * Adds a single [Result] to [results].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addResult(result: Result) = apply {
                 results =
                     (results ?: JsonField.of(mutableListOf())).also {
@@ -262,6 +355,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [FileSearch].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): FileSearch =
                 FileSearch(
                     rankingOptions,
@@ -287,23 +385,35 @@ private constructor(
 
             /**
              * The ranker to use for the file search. If not specified will use the `auto` ranker.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
              */
             fun ranker(): Ranker = ranker.getRequired("ranker")
 
             /**
              * The score threshold for the file search. All values must be a floating point number
              * between 0 and 1.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
              */
             fun scoreThreshold(): Double = scoreThreshold.getRequired("score_threshold")
 
             /**
-             * The ranker to use for the file search. If not specified will use the `auto` ranker.
+             * Returns the raw JSON value of [ranker].
+             *
+             * Unlike [ranker], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("ranker") @ExcludeMissing fun _ranker(): JsonField<Ranker> = ranker
 
             /**
-             * The score threshold for the file search. All values must be a floating point number
-             * between 0 and 1.
+             * Returns the raw JSON value of [scoreThreshold].
+             *
+             * Unlike [scoreThreshold], this method doesn't throw if the JSON field has an
+             * unexpected type.
              */
             @JsonProperty("score_threshold")
             @ExcludeMissing
@@ -362,8 +472,11 @@ private constructor(
                 fun ranker(ranker: Ranker) = ranker(JsonField.of(ranker))
 
                 /**
-                 * The ranker to use for the file search. If not specified will use the `auto`
-                 * ranker.
+                 * Sets [Builder.ranker] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.ranker] with a well-typed [Ranker] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
                  */
                 fun ranker(ranker: JsonField<Ranker>) = apply { this.ranker = ranker }
 
@@ -375,8 +488,11 @@ private constructor(
                     scoreThreshold(JsonField.of(scoreThreshold))
 
                 /**
-                 * The score threshold for the file search. All values must be a floating point
-                 * number between 0 and 1.
+                 * Sets [Builder.scoreThreshold] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.scoreThreshold] with a well-typed [Double] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
                  */
                 fun scoreThreshold(scoreThreshold: JsonField<Double>) = apply {
                     this.scoreThreshold = scoreThreshold
@@ -404,6 +520,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [RankingOptions].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .ranker()
+                 * .scoreThreshold()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): RankingOptions =
                     RankingOptions(
                         checkRequired("ranker", ranker),
@@ -558,38 +687,69 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
-            /** The ID of the file that result was found in. */
+            /**
+             * The ID of the file that result was found in.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun fileId(): String = fileId.getRequired("file_id")
 
-            /** The name of the file that result was found in. */
+            /**
+             * The name of the file that result was found in.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun fileName(): String = fileName.getRequired("file_name")
 
             /**
              * The score of the result. All values must be a floating point number between 0 and 1.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
              */
             fun score(): Double = score.getRequired("score")
 
             /**
              * The content of the result that was found. The content is only included if requested
              * via the include query parameter.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
              */
             fun content(): Optional<List<Content>> =
                 Optional.ofNullable(content.getNullable("content"))
 
-            /** The ID of the file that result was found in. */
+            /**
+             * Returns the raw JSON value of [fileId].
+             *
+             * Unlike [fileId], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
-            /** The name of the file that result was found in. */
+            /**
+             * Returns the raw JSON value of [fileName].
+             *
+             * Unlike [fileName], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
             @JsonProperty("file_name") @ExcludeMissing fun _fileName(): JsonField<String> = fileName
 
             /**
-             * The score of the result. All values must be a floating point number between 0 and 1.
+             * Returns the raw JSON value of [score].
+             *
+             * Unlike [score], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("score") @ExcludeMissing fun _score(): JsonField<Double> = score
 
             /**
-             * The content of the result that was found. The content is only included if requested
-             * via the include query parameter.
+             * Returns the raw JSON value of [content].
+             *
+             * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("content")
             @ExcludeMissing
@@ -651,13 +811,25 @@ private constructor(
                 /** The ID of the file that result was found in. */
                 fun fileId(fileId: String) = fileId(JsonField.of(fileId))
 
-                /** The ID of the file that result was found in. */
+                /**
+                 * Sets [Builder.fileId] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.fileId] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
                 fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
 
                 /** The name of the file that result was found in. */
                 fun fileName(fileName: String) = fileName(JsonField.of(fileName))
 
-                /** The name of the file that result was found in. */
+                /**
+                 * Sets [Builder.fileName] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.fileName] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
                 fun fileName(fileName: JsonField<String>) = apply { this.fileName = fileName }
 
                 /**
@@ -667,8 +839,11 @@ private constructor(
                 fun score(score: Double) = score(JsonField.of(score))
 
                 /**
-                 * The score of the result. All values must be a floating point number between 0
-                 * and 1.
+                 * Sets [Builder.score] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.score] with a well-typed [Double] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
                  */
                 fun score(score: JsonField<Double>) = apply { this.score = score }
 
@@ -679,16 +854,20 @@ private constructor(
                 fun content(content: List<Content>) = content(JsonField.of(content))
 
                 /**
-                 * The content of the result that was found. The content is only included if
-                 * requested via the include query parameter.
+                 * Sets [Builder.content] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.content] with a well-typed `List<Content>` value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
                  */
                 fun content(content: JsonField<List<Content>>) = apply {
                     this.content = content.map { it.toMutableList() }
                 }
 
                 /**
-                 * The content of the result that was found. The content is only included if
-                 * requested via the include query parameter.
+                 * Adds a single [Content] to [Builder.content].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
                  */
                 fun addContent(content: Content) = apply {
                     this.content =
@@ -719,6 +898,20 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Result].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .fileId()
+                 * .fileName()
+                 * .score()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Result =
                     Result(
                         checkRequired("fileId", fileId),
@@ -743,16 +936,36 @@ private constructor(
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
 
-                /** The text content of the file. */
+                /**
+                 * The text content of the file.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
                 fun text(): Optional<String> = Optional.ofNullable(text.getNullable("text"))
 
-                /** The type of the content. */
+                /**
+                 * The type of the content.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
                 fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
 
-                /** The text content of the file. */
+                /**
+                 * Returns the raw JSON value of [text].
+                 *
+                 * Unlike [text], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
                 @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
-                /** The type of the content. */
+                /**
+                 * Returns the raw JSON value of [type].
+                 *
+                 * Unlike [type], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
                 @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                 @JsonAnyGetter
@@ -796,13 +1009,25 @@ private constructor(
                     /** The text content of the file. */
                     fun text(text: String) = text(JsonField.of(text))
 
-                    /** The text content of the file. */
+                    /**
+                     * Sets [Builder.text] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.text] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
                     fun text(text: JsonField<String>) = apply { this.text = text }
 
                     /** The type of the content. */
                     fun type(type: Type) = type(JsonField.of(type))
 
-                    /** The type of the content. */
+                    /**
+                     * Sets [Builder.type] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.type] with a well-typed [Type] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
                     fun type(type: JsonField<Type>) = apply { this.type = type }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -827,6 +1052,11 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [Content].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
                     fun build(): Content = Content(text, type, additionalProperties.toImmutable())
                 }
 

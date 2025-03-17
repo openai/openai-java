@@ -17,6 +17,7 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.Metadata
 import java.util.Objects
 import java.util.Optional
@@ -43,16 +44,16 @@ private constructor(
      *
      * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
      * length of 512 characters.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun metadata(): Optional<Metadata> = body.metadata()
 
     /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard.
+     * Returns the raw JSON value of [metadata].
      *
-     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
-     * length of 512 characters.
+     * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _metadata(): JsonField<Metadata> = body._metadata()
 
@@ -94,16 +95,16 @@ private constructor(
          *
          * Keys are strings with a maximum length of 64 characters. Values are strings with a
          * maximum length of 512 characters.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
+         * Returns the raw JSON value of [metadata].
          *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
+         * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
@@ -152,23 +153,15 @@ private constructor(
              */
             fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
 
-            /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format, and querying
-             * for objects via API or the dashboard.
-             *
-             * Keys are strings with a maximum length of 64 characters. Values are strings with a
-             * maximum length of 512 characters.
-             */
+            /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
             fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
             /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format, and querying
-             * for objects via API or the dashboard.
+             * Sets [Builder.metadata] to an arbitrary JSON value.
              *
-             * Keys are strings with a maximum length of 64 characters. Values are strings with a
-             * maximum length of 512 characters.
+             * You should usually call [Builder.metadata] with a well-typed [Metadata] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
@@ -191,6 +184,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Body = Body(metadata, additionalProperties.toImmutable())
         }
 
@@ -261,23 +259,15 @@ private constructor(
          */
         fun metadata(metadata: Metadata?) = apply { body.metadata(metadata) }
 
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
-         *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
-         */
+        /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
         fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
+         * Sets [Builder.metadata] to an arbitrary JSON value.
          *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
+         * You should usually call [Builder.metadata] with a well-typed [Metadata] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
 
@@ -398,6 +388,19 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [RunUpdateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .threadId()
+         * .runId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): RunUpdateParams =
             RunUpdateParams(
                 checkRequired("threadId", threadId),

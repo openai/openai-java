@@ -14,6 +14,7 @@ import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 
 @NoAutoDetect
@@ -33,27 +34,36 @@ private constructor(
      * The number of tokens that overlap between chunks. The default value is `400`.
      *
      * Note that the overlap must not exceed half of `max_chunk_size_tokens`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun chunkOverlapTokens(): Long = chunkOverlapTokens.getRequired("chunk_overlap_tokens")
 
     /**
      * The maximum number of tokens in each chunk. The default value is `800`. The minimum value is
      * `100` and the maximum value is `4096`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun maxChunkSizeTokens(): Long = maxChunkSizeTokens.getRequired("max_chunk_size_tokens")
 
     /**
-     * The number of tokens that overlap between chunks. The default value is `400`.
+     * Returns the raw JSON value of [chunkOverlapTokens].
      *
-     * Note that the overlap must not exceed half of `max_chunk_size_tokens`.
+     * Unlike [chunkOverlapTokens], this method doesn't throw if the JSON field has an unexpected
+     * type.
      */
     @JsonProperty("chunk_overlap_tokens")
     @ExcludeMissing
     fun _chunkOverlapTokens(): JsonField<Long> = chunkOverlapTokens
 
     /**
-     * The maximum number of tokens in each chunk. The default value is `800`. The minimum value is
-     * `100` and the maximum value is `4096`.
+     * Returns the raw JSON value of [maxChunkSizeTokens].
+     *
+     * Unlike [maxChunkSizeTokens], this method doesn't throw if the JSON field has an unexpected
+     * type.
      */
     @JsonProperty("max_chunk_size_tokens")
     @ExcludeMissing
@@ -114,9 +124,11 @@ private constructor(
             chunkOverlapTokens(JsonField.of(chunkOverlapTokens))
 
         /**
-         * The number of tokens that overlap between chunks. The default value is `400`.
+         * Sets [Builder.chunkOverlapTokens] to an arbitrary JSON value.
          *
-         * Note that the overlap must not exceed half of `max_chunk_size_tokens`.
+         * You should usually call [Builder.chunkOverlapTokens] with a well-typed [Long] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun chunkOverlapTokens(chunkOverlapTokens: JsonField<Long>) = apply {
             this.chunkOverlapTokens = chunkOverlapTokens
@@ -130,8 +142,11 @@ private constructor(
             maxChunkSizeTokens(JsonField.of(maxChunkSizeTokens))
 
         /**
-         * The maximum number of tokens in each chunk. The default value is `800`. The minimum value
-         * is `100` and the maximum value is `4096`.
+         * Sets [Builder.maxChunkSizeTokens] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.maxChunkSizeTokens] with a well-typed [Long] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun maxChunkSizeTokens(maxChunkSizeTokens: JsonField<Long>) = apply {
             this.maxChunkSizeTokens = maxChunkSizeTokens
@@ -156,6 +171,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [StaticFileChunkingStrategy].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .chunkOverlapTokens()
+         * .maxChunkSizeTokens()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): StaticFileChunkingStrategy =
             StaticFileChunkingStrategy(
                 checkRequired("chunkOverlapTokens", chunkOverlapTokens),

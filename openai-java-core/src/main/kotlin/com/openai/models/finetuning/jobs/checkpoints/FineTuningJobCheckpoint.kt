@@ -46,48 +46,113 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The checkpoint identifier, which can be referenced in the API endpoints. */
+    /**
+     * The checkpoint identifier, which can be referenced in the API endpoints.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** The Unix timestamp (in seconds) for when the checkpoint was created. */
+    /**
+     * The Unix timestamp (in seconds) for when the checkpoint was created.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun createdAt(): Long = createdAt.getRequired("created_at")
 
-    /** The name of the fine-tuned checkpoint model that is created. */
+    /**
+     * The name of the fine-tuned checkpoint model that is created.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun fineTunedModelCheckpoint(): String =
         fineTunedModelCheckpoint.getRequired("fine_tuned_model_checkpoint")
 
-    /** The name of the fine-tuning job that this checkpoint was created from. */
+    /**
+     * The name of the fine-tuning job that this checkpoint was created from.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun fineTuningJobId(): String = fineTuningJobId.getRequired("fine_tuning_job_id")
 
-    /** Metrics at the step number during the fine-tuning job. */
+    /**
+     * Metrics at the step number during the fine-tuning job.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun metrics(): Metrics = metrics.getRequired("metrics")
 
-    /** The object type, which is always "fine_tuning.job.checkpoint". */
+    /**
+     * The object type, which is always "fine_tuning.job.checkpoint".
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("fine_tuning.job.checkpoint")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
-    /** The step number that the checkpoint was created at. */
+    /**
+     * The step number that the checkpoint was created at.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun stepNumber(): Long = stepNumber.getRequired("step_number")
 
-    /** The checkpoint identifier, which can be referenced in the API endpoints. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** The Unix timestamp (in seconds) for when the checkpoint was created. */
+    /**
+     * Returns the raw JSON value of [createdAt].
+     *
+     * Unlike [createdAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
-    /** The name of the fine-tuned checkpoint model that is created. */
+    /**
+     * Returns the raw JSON value of [fineTunedModelCheckpoint].
+     *
+     * Unlike [fineTunedModelCheckpoint], this method doesn't throw if the JSON field has an
+     * unexpected type.
+     */
     @JsonProperty("fine_tuned_model_checkpoint")
     @ExcludeMissing
     fun _fineTunedModelCheckpoint(): JsonField<String> = fineTunedModelCheckpoint
 
-    /** The name of the fine-tuning job that this checkpoint was created from. */
+    /**
+     * Returns the raw JSON value of [fineTuningJobId].
+     *
+     * Unlike [fineTuningJobId], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("fine_tuning_job_id")
     @ExcludeMissing
     fun _fineTuningJobId(): JsonField<String> = fineTuningJobId
 
-    /** Metrics at the step number during the fine-tuning job. */
+    /**
+     * Returns the raw JSON value of [metrics].
+     *
+     * Unlike [metrics], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("metrics") @ExcludeMissing fun _metrics(): JsonField<Metrics> = metrics
 
-    /** The step number that the checkpoint was created at. */
+    /**
+     * Returns the raw JSON value of [stepNumber].
+     *
+     * Unlike [stepNumber], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("step_number") @ExcludeMissing fun _stepNumber(): JsonField<Long> = stepNumber
 
     @JsonAnyGetter
@@ -162,20 +227,36 @@ private constructor(
         /** The checkpoint identifier, which can be referenced in the API endpoints. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The checkpoint identifier, which can be referenced in the API endpoints. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The Unix timestamp (in seconds) for when the checkpoint was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
-        /** The Unix timestamp (in seconds) for when the checkpoint was created. */
+        /**
+         * Sets [Builder.createdAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.createdAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /** The name of the fine-tuned checkpoint model that is created. */
         fun fineTunedModelCheckpoint(fineTunedModelCheckpoint: String) =
             fineTunedModelCheckpoint(JsonField.of(fineTunedModelCheckpoint))
 
-        /** The name of the fine-tuned checkpoint model that is created. */
+        /**
+         * Sets [Builder.fineTunedModelCheckpoint] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.fineTunedModelCheckpoint] with a well-typed [String]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
         fun fineTunedModelCheckpoint(fineTunedModelCheckpoint: JsonField<String>) = apply {
             this.fineTunedModelCheckpoint = fineTunedModelCheckpoint
         }
@@ -184,7 +265,13 @@ private constructor(
         fun fineTuningJobId(fineTuningJobId: String) =
             fineTuningJobId(JsonField.of(fineTuningJobId))
 
-        /** The name of the fine-tuning job that this checkpoint was created from. */
+        /**
+         * Sets [Builder.fineTuningJobId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.fineTuningJobId] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun fineTuningJobId(fineTuningJobId: JsonField<String>) = apply {
             this.fineTuningJobId = fineTuningJobId
         }
@@ -192,16 +279,37 @@ private constructor(
         /** Metrics at the step number during the fine-tuning job. */
         fun metrics(metrics: Metrics) = metrics(JsonField.of(metrics))
 
-        /** Metrics at the step number during the fine-tuning job. */
+        /**
+         * Sets [Builder.metrics] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.metrics] with a well-typed [Metrics] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun metrics(metrics: JsonField<Metrics>) = apply { this.metrics = metrics }
 
-        /** The object type, which is always "fine_tuning.job.checkpoint". */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("fine_tuning.job.checkpoint")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /** The step number that the checkpoint was created at. */
         fun stepNumber(stepNumber: Long) = stepNumber(JsonField.of(stepNumber))
 
-        /** The step number that the checkpoint was created at. */
+        /**
+         * Sets [Builder.stepNumber] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.stepNumber] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun stepNumber(stepNumber: JsonField<Long>) = apply { this.stepNumber = stepNumber }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -223,6 +331,23 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FineTuningJobCheckpoint].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .fineTunedModelCheckpoint()
+         * .fineTuningJobId()
+         * .metrics()
+         * .stepNumber()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FineTuningJobCheckpoint =
             FineTuningJobCheckpoint(
                 checkRequired("id", id),
@@ -266,44 +391,111 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun fullValidLoss(): Optional<Double> =
             Optional.ofNullable(fullValidLoss.getNullable("full_valid_loss"))
 
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun fullValidMeanTokenAccuracy(): Optional<Double> =
             Optional.ofNullable(
                 fullValidMeanTokenAccuracy.getNullable("full_valid_mean_token_accuracy")
             )
 
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun step(): Optional<Double> = Optional.ofNullable(step.getNullable("step"))
 
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun trainLoss(): Optional<Double> = Optional.ofNullable(trainLoss.getNullable("train_loss"))
 
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun trainMeanTokenAccuracy(): Optional<Double> =
             Optional.ofNullable(trainMeanTokenAccuracy.getNullable("train_mean_token_accuracy"))
 
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun validLoss(): Optional<Double> = Optional.ofNullable(validLoss.getNullable("valid_loss"))
 
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun validMeanTokenAccuracy(): Optional<Double> =
             Optional.ofNullable(validMeanTokenAccuracy.getNullable("valid_mean_token_accuracy"))
 
+        /**
+         * Returns the raw JSON value of [fullValidLoss].
+         *
+         * Unlike [fullValidLoss], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("full_valid_loss")
         @ExcludeMissing
         fun _fullValidLoss(): JsonField<Double> = fullValidLoss
 
+        /**
+         * Returns the raw JSON value of [fullValidMeanTokenAccuracy].
+         *
+         * Unlike [fullValidMeanTokenAccuracy], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
         @JsonProperty("full_valid_mean_token_accuracy")
         @ExcludeMissing
         fun _fullValidMeanTokenAccuracy(): JsonField<Double> = fullValidMeanTokenAccuracy
 
+        /**
+         * Returns the raw JSON value of [step].
+         *
+         * Unlike [step], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("step") @ExcludeMissing fun _step(): JsonField<Double> = step
 
+        /**
+         * Returns the raw JSON value of [trainLoss].
+         *
+         * Unlike [trainLoss], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("train_loss") @ExcludeMissing fun _trainLoss(): JsonField<Double> = trainLoss
 
+        /**
+         * Returns the raw JSON value of [trainMeanTokenAccuracy].
+         *
+         * Unlike [trainMeanTokenAccuracy], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
         @JsonProperty("train_mean_token_accuracy")
         @ExcludeMissing
         fun _trainMeanTokenAccuracy(): JsonField<Double> = trainMeanTokenAccuracy
 
+        /**
+         * Returns the raw JSON value of [validLoss].
+         *
+         * Unlike [validLoss], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("valid_loss") @ExcludeMissing fun _validLoss(): JsonField<Double> = validLoss
 
+        /**
+         * Returns the raw JSON value of [validMeanTokenAccuracy].
+         *
+         * Unlike [validMeanTokenAccuracy], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
         @JsonProperty("valid_mean_token_accuracy")
         @ExcludeMissing
         fun _validMeanTokenAccuracy(): JsonField<Double> = validMeanTokenAccuracy
@@ -363,6 +555,13 @@ private constructor(
 
             fun fullValidLoss(fullValidLoss: Double) = fullValidLoss(JsonField.of(fullValidLoss))
 
+            /**
+             * Sets [Builder.fullValidLoss] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.fullValidLoss] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun fullValidLoss(fullValidLoss: JsonField<Double>) = apply {
                 this.fullValidLoss = fullValidLoss
             }
@@ -370,32 +569,74 @@ private constructor(
             fun fullValidMeanTokenAccuracy(fullValidMeanTokenAccuracy: Double) =
                 fullValidMeanTokenAccuracy(JsonField.of(fullValidMeanTokenAccuracy))
 
+            /**
+             * Sets [Builder.fullValidMeanTokenAccuracy] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.fullValidMeanTokenAccuracy] with a well-typed
+             * [Double] value instead. This method is primarily for setting the field to an
+             * undocumented or not yet supported value.
+             */
             fun fullValidMeanTokenAccuracy(fullValidMeanTokenAccuracy: JsonField<Double>) = apply {
                 this.fullValidMeanTokenAccuracy = fullValidMeanTokenAccuracy
             }
 
             fun step(step: Double) = step(JsonField.of(step))
 
+            /**
+             * Sets [Builder.step] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.step] with a well-typed [Double] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun step(step: JsonField<Double>) = apply { this.step = step }
 
             fun trainLoss(trainLoss: Double) = trainLoss(JsonField.of(trainLoss))
 
+            /**
+             * Sets [Builder.trainLoss] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.trainLoss] with a well-typed [Double] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun trainLoss(trainLoss: JsonField<Double>) = apply { this.trainLoss = trainLoss }
 
             fun trainMeanTokenAccuracy(trainMeanTokenAccuracy: Double) =
                 trainMeanTokenAccuracy(JsonField.of(trainMeanTokenAccuracy))
 
+            /**
+             * Sets [Builder.trainMeanTokenAccuracy] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.trainMeanTokenAccuracy] with a well-typed [Double]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
             fun trainMeanTokenAccuracy(trainMeanTokenAccuracy: JsonField<Double>) = apply {
                 this.trainMeanTokenAccuracy = trainMeanTokenAccuracy
             }
 
             fun validLoss(validLoss: Double) = validLoss(JsonField.of(validLoss))
 
+            /**
+             * Sets [Builder.validLoss] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.validLoss] with a well-typed [Double] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun validLoss(validLoss: JsonField<Double>) = apply { this.validLoss = validLoss }
 
             fun validMeanTokenAccuracy(validMeanTokenAccuracy: Double) =
                 validMeanTokenAccuracy(JsonField.of(validMeanTokenAccuracy))
 
+            /**
+             * Sets [Builder.validMeanTokenAccuracy] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.validMeanTokenAccuracy] with a well-typed [Double]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
             fun validMeanTokenAccuracy(validMeanTokenAccuracy: JsonField<Double>) = apply {
                 this.validMeanTokenAccuracy = validMeanTokenAccuracy
             }
@@ -419,6 +660,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Metrics].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Metrics =
                 Metrics(
                     fullValidLoss,

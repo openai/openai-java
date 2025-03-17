@@ -14,6 +14,7 @@ import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 
 /**
@@ -39,33 +40,70 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The number of input tokens. */
+    /**
+     * The number of input tokens.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun inputTokens(): Long = inputTokens.getRequired("input_tokens")
 
-    /** The number of output tokens. */
+    /**
+     * The number of output tokens.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun outputTokens(): Long = outputTokens.getRequired("output_tokens")
 
-    /** A detailed breakdown of the output tokens. */
+    /**
+     * A detailed breakdown of the output tokens.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun outputTokensDetails(): OutputTokensDetails =
         outputTokensDetails.getRequired("output_tokens_details")
 
-    /** The total number of tokens used. */
+    /**
+     * The total number of tokens used.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun totalTokens(): Long = totalTokens.getRequired("total_tokens")
 
-    /** The number of input tokens. */
+    /**
+     * Returns the raw JSON value of [inputTokens].
+     *
+     * Unlike [inputTokens], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("input_tokens") @ExcludeMissing fun _inputTokens(): JsonField<Long> = inputTokens
 
-    /** The number of output tokens. */
+    /**
+     * Returns the raw JSON value of [outputTokens].
+     *
+     * Unlike [outputTokens], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("output_tokens")
     @ExcludeMissing
     fun _outputTokens(): JsonField<Long> = outputTokens
 
-    /** A detailed breakdown of the output tokens. */
+    /**
+     * Returns the raw JSON value of [outputTokensDetails].
+     *
+     * Unlike [outputTokensDetails], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
     @JsonProperty("output_tokens_details")
     @ExcludeMissing
     fun _outputTokensDetails(): JsonField<OutputTokensDetails> = outputTokensDetails
 
-    /** The total number of tokens used. */
+    /**
+     * Returns the raw JSON value of [totalTokens].
+     *
+     * Unlike [totalTokens], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("total_tokens") @ExcludeMissing fun _totalTokens(): JsonField<Long> = totalTokens
 
     @JsonAnyGetter
@@ -125,20 +163,38 @@ private constructor(
         /** The number of input tokens. */
         fun inputTokens(inputTokens: Long) = inputTokens(JsonField.of(inputTokens))
 
-        /** The number of input tokens. */
+        /**
+         * Sets [Builder.inputTokens] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.inputTokens] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun inputTokens(inputTokens: JsonField<Long>) = apply { this.inputTokens = inputTokens }
 
         /** The number of output tokens. */
         fun outputTokens(outputTokens: Long) = outputTokens(JsonField.of(outputTokens))
 
-        /** The number of output tokens. */
+        /**
+         * Sets [Builder.outputTokens] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.outputTokens] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun outputTokens(outputTokens: JsonField<Long>) = apply { this.outputTokens = outputTokens }
 
         /** A detailed breakdown of the output tokens. */
         fun outputTokensDetails(outputTokensDetails: OutputTokensDetails) =
             outputTokensDetails(JsonField.of(outputTokensDetails))
 
-        /** A detailed breakdown of the output tokens. */
+        /**
+         * Sets [Builder.outputTokensDetails] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.outputTokensDetails] with a well-typed
+         * [OutputTokensDetails] value instead. This method is primarily for setting the field to an
+         * undocumented or not yet supported value.
+         */
         fun outputTokensDetails(outputTokensDetails: JsonField<OutputTokensDetails>) = apply {
             this.outputTokensDetails = outputTokensDetails
         }
@@ -146,7 +202,13 @@ private constructor(
         /** The total number of tokens used. */
         fun totalTokens(totalTokens: Long) = totalTokens(JsonField.of(totalTokens))
 
-        /** The total number of tokens used. */
+        /**
+         * Sets [Builder.totalTokens] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.totalTokens] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun totalTokens(totalTokens: JsonField<Long>) = apply { this.totalTokens = totalTokens }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -168,6 +230,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseUsage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .inputTokens()
+         * .outputTokens()
+         * .outputTokensDetails()
+         * .totalTokens()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseUsage =
             ResponseUsage(
                 checkRequired("inputTokens", inputTokens),
@@ -190,10 +267,20 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The number of reasoning tokens. */
+        /**
+         * The number of reasoning tokens.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun reasoningTokens(): Long = reasoningTokens.getRequired("reasoning_tokens")
 
-        /** The number of reasoning tokens. */
+        /**
+         * Returns the raw JSON value of [reasoningTokens].
+         *
+         * Unlike [reasoningTokens], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("reasoning_tokens")
         @ExcludeMissing
         fun _reasoningTokens(): JsonField<Long> = reasoningTokens
@@ -244,7 +331,13 @@ private constructor(
             fun reasoningTokens(reasoningTokens: Long) =
                 reasoningTokens(JsonField.of(reasoningTokens))
 
-            /** The number of reasoning tokens. */
+            /**
+             * Sets [Builder.reasoningTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.reasoningTokens] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun reasoningTokens(reasoningTokens: JsonField<Long>) = apply {
                 this.reasoningTokens = reasoningTokens
             }
@@ -268,6 +361,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [OutputTokensDetails].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .reasoningTokens()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): OutputTokensDetails =
                 OutputTokensDetails(
                     checkRequired("reasoningTokens", reasoningTokens),

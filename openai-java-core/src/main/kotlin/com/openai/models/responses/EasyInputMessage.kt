@@ -50,25 +50,47 @@ private constructor(
     /**
      * Text, image, or audio input to the model, used to generate a response. Can also contain
      * previous assistant responses.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun content(): Content = content.getRequired("content")
 
-    /** The role of the message input. One of `user`, `assistant`, `system`, or `developer`. */
+    /**
+     * The role of the message input. One of `user`, `assistant`, `system`, or `developer`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun role(): Role = role.getRequired("role")
 
-    /** The type of the message input. Always `message`. */
+    /**
+     * The type of the message input. Always `message`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
 
     /**
-     * Text, image, or audio input to the model, used to generate a response. Can also contain
-     * previous assistant responses.
+     * Returns the raw JSON value of [content].
+     *
+     * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<Content> = content
 
-    /** The role of the message input. One of `user`, `assistant`, `system`, or `developer`. */
+    /**
+     * Returns the raw JSON value of [role].
+     *
+     * Unlike [role], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
 
-    /** The type of the message input. Always `message`. */
+    /**
+     * Returns the raw JSON value of [type].
+     *
+     * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
@@ -127,15 +149,20 @@ private constructor(
         fun content(content: Content) = content(JsonField.of(content))
 
         /**
-         * Text, image, or audio input to the model, used to generate a response. Can also contain
-         * previous assistant responses.
+         * Sets [Builder.content] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.content] with a well-typed [Content] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun content(content: JsonField<Content>) = apply { this.content = content }
 
-        /** A text input to the model. */
+        /** Alias for calling [content] with `Content.ofTextInput(textInput)`. */
         fun content(textInput: String) = content(Content.ofTextInput(textInput))
 
-        /** A list of one or many input items to the model, containing different content types. */
+        /**
+         * Alias for calling [content] with
+         * `Content.ofResponseInputMessageContentList(responseInputMessageContentList)`.
+         */
         fun contentOfResponseInputMessageContentList(
             responseInputMessageContentList: List<ResponseInputContent>
         ) = content(Content.ofResponseInputMessageContentList(responseInputMessageContentList))
@@ -143,13 +170,23 @@ private constructor(
         /** The role of the message input. One of `user`, `assistant`, `system`, or `developer`. */
         fun role(role: Role) = role(JsonField.of(role))
 
-        /** The role of the message input. One of `user`, `assistant`, `system`, or `developer`. */
+        /**
+         * Sets [Builder.role] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.role] with a well-typed [Role] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun role(role: JsonField<Role>) = apply { this.role = role }
 
         /** The type of the message input. Always `message`. */
         fun type(type: Type) = type(JsonField.of(type))
 
-        /** The type of the message input. Always `message`. */
+        /**
+         * Sets [Builder.type] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.type] with a well-typed [Type] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -171,6 +208,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [EasyInputMessage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .content()
+         * .role()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): EasyInputMessage =
             EasyInputMessage(
                 checkRequired("content", content),

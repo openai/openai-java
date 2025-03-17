@@ -34,21 +34,47 @@ private constructor(
     /** For now, this is always going to be an empty object. */
     @JsonProperty("file_search") @ExcludeMissing fun _fileSearch(): JsonValue = fileSearch
 
-    /** The index of the tool call in the tool calls array. */
+    /**
+     * The index of the tool call in the tool calls array.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun index(): Long = index.getRequired("index")
 
     /**
      * The type of tool call. This is always going to be `file_search` for this type of tool call.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("file_search")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** The ID of the tool call object. */
+    /**
+     * The ID of the tool call object.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun id(): Optional<String> = Optional.ofNullable(id.getNullable("id"))
 
-    /** The index of the tool call in the tool calls array. */
+    /**
+     * Returns the raw JSON value of [index].
+     *
+     * Unlike [index], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
-    /** The ID of the tool call object. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     @JsonAnyGetter
@@ -112,19 +138,37 @@ private constructor(
         /** The index of the tool call in the tool calls array. */
         fun index(index: Long) = index(JsonField.of(index))
 
-        /** The index of the tool call in the tool calls array. */
+        /**
+         * Sets [Builder.index] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.index] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun index(index: JsonField<Long>) = apply { this.index = index }
 
         /**
-         * The type of tool call. This is always going to be `file_search` for this type of tool
-         * call.
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("file_search")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
         /** The ID of the tool call object. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The ID of the tool call object. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -146,6 +190,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FileSearchToolCallDelta].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .fileSearch()
+         * .index()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FileSearchToolCallDelta =
             FileSearchToolCallDelta(
                 checkRequired("fileSearch", fileSearch),

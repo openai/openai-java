@@ -29,11 +29,30 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun refusal(): String = refusal.getRequired("refusal")
 
-    /** Always `refusal`. */
+    /**
+     * Always `refusal`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("refusal")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
+    /**
+     * Returns the raw JSON value of [refusal].
+     *
+     * Unlike [refusal], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("refusal") @ExcludeMissing fun _refusal(): JsonField<String> = refusal
 
     @JsonAnyGetter
@@ -87,9 +106,26 @@ private constructor(
 
         fun refusal(refusal: String) = refusal(JsonField.of(refusal))
 
+        /**
+         * Sets [Builder.refusal] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.refusal] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun refusal(refusal: JsonField<String>) = apply { this.refusal = refusal }
 
-        /** Always `refusal`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("refusal")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -111,6 +147,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [RefusalContentBlock].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .refusal()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): RefusalContentBlock =
             RefusalContentBlock(
                 checkRequired("refusal", refusal),

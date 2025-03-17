@@ -5,7 +5,7 @@ package com.openai.models.beta.threads
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ThreadDeletedTest {
+internal class ThreadDeletedTest {
 
     @Test
     fun createThreadDeleted() {

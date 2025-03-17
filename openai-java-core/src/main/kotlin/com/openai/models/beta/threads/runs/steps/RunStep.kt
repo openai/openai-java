@@ -77,34 +77,70 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The identifier of the run step, which can be referenced in API endpoints. */
+    /**
+     * The identifier of the run step, which can be referenced in API endpoints.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
     /**
      * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants)
      * associated with the run step.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun assistantId(): String = assistantId.getRequired("assistant_id")
 
-    /** The Unix timestamp (in seconds) for when the run step was cancelled. */
+    /**
+     * The Unix timestamp (in seconds) for when the run step was cancelled.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun cancelledAt(): Optional<Long> = Optional.ofNullable(cancelledAt.getNullable("cancelled_at"))
 
-    /** The Unix timestamp (in seconds) for when the run step completed. */
+    /**
+     * The Unix timestamp (in seconds) for when the run step completed.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun completedAt(): Optional<Long> = Optional.ofNullable(completedAt.getNullable("completed_at"))
 
-    /** The Unix timestamp (in seconds) for when the run step was created. */
+    /**
+     * The Unix timestamp (in seconds) for when the run step was created.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun createdAt(): Long = createdAt.getRequired("created_at")
 
     /**
      * The Unix timestamp (in seconds) for when the run step expired. A step is considered expired
      * if the parent run is expired.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun expiredAt(): Optional<Long> = Optional.ofNullable(expiredAt.getNullable("expired_at"))
 
-    /** The Unix timestamp (in seconds) for when the run step failed. */
+    /**
+     * The Unix timestamp (in seconds) for when the run step failed.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun failedAt(): Optional<Long> = Optional.ofNullable(failedAt.getNullable("failed_at"))
 
-    /** The last error associated with this run step. Will be `null` if there are no errors. */
+    /**
+     * The last error associated with this run step. Will be `null` if there are no errors.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun lastError(): Optional<LastError> = Optional.ofNullable(lastError.getNullable("last_error"))
 
     /**
@@ -114,111 +150,182 @@ private constructor(
      *
      * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
      * length of 512 characters.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
 
-    /** The object type, which is always `thread.run.step`. */
+    /**
+     * The object type, which is always `thread.run.step`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("thread.run.step")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) that this run step
      * is a part of.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun runId(): String = runId.getRequired("run_id")
 
     /**
      * The status of the run step, which can be either `in_progress`, `cancelled`, `failed`,
      * `completed`, or `expired`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun status(): Status = status.getRequired("status")
 
-    /** The details of the run step. */
+    /**
+     * The details of the run step.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun stepDetails(): StepDetails = stepDetails.getRequired("step_details")
 
     /**
      * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was run.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun threadId(): String = threadId.getRequired("thread_id")
 
-    /** The type of run step, which can be either `message_creation` or `tool_calls`. */
+    /**
+     * The type of run step, which can be either `message_creation` or `tool_calls`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun type(): Type = type.getRequired("type")
 
     /**
      * Usage statistics related to the run step. This value will be `null` while the run step's
      * status is `in_progress`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun usage(): Optional<Usage> = Optional.ofNullable(usage.getNullable("usage"))
 
-    /** The identifier of the run step, which can be referenced in API endpoints. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /**
-     * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants)
-     * associated with the run step.
+     * Returns the raw JSON value of [assistantId].
+     *
+     * Unlike [assistantId], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("assistant_id")
     @ExcludeMissing
     fun _assistantId(): JsonField<String> = assistantId
 
-    /** The Unix timestamp (in seconds) for when the run step was cancelled. */
+    /**
+     * Returns the raw JSON value of [cancelledAt].
+     *
+     * Unlike [cancelledAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("cancelled_at") @ExcludeMissing fun _cancelledAt(): JsonField<Long> = cancelledAt
 
-    /** The Unix timestamp (in seconds) for when the run step completed. */
+    /**
+     * Returns the raw JSON value of [completedAt].
+     *
+     * Unlike [completedAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("completed_at") @ExcludeMissing fun _completedAt(): JsonField<Long> = completedAt
 
-    /** The Unix timestamp (in seconds) for when the run step was created. */
+    /**
+     * Returns the raw JSON value of [createdAt].
+     *
+     * Unlike [createdAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
     /**
-     * The Unix timestamp (in seconds) for when the run step expired. A step is considered expired
-     * if the parent run is expired.
+     * Returns the raw JSON value of [expiredAt].
+     *
+     * Unlike [expiredAt], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("expired_at") @ExcludeMissing fun _expiredAt(): JsonField<Long> = expiredAt
 
-    /** The Unix timestamp (in seconds) for when the run step failed. */
+    /**
+     * Returns the raw JSON value of [failedAt].
+     *
+     * Unlike [failedAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("failed_at") @ExcludeMissing fun _failedAt(): JsonField<Long> = failedAt
 
-    /** The last error associated with this run step. Will be `null` if there are no errors. */
+    /**
+     * Returns the raw JSON value of [lastError].
+     *
+     * Unlike [lastError], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("last_error") @ExcludeMissing fun _lastError(): JsonField<LastError> = lastError
 
     /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard.
+     * Returns the raw JSON value of [metadata].
      *
-     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
-     * length of 512 characters.
+     * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
     /**
-     * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) that this run step
-     * is a part of.
+     * Returns the raw JSON value of [runId].
+     *
+     * Unlike [runId], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("run_id") @ExcludeMissing fun _runId(): JsonField<String> = runId
 
     /**
-     * The status of the run step, which can be either `in_progress`, `cancelled`, `failed`,
-     * `completed`, or `expired`.
+     * Returns the raw JSON value of [status].
+     *
+     * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
-    /** The details of the run step. */
+    /**
+     * Returns the raw JSON value of [stepDetails].
+     *
+     * Unlike [stepDetails], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("step_details")
     @ExcludeMissing
     fun _stepDetails(): JsonField<StepDetails> = stepDetails
 
     /**
-     * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was run.
+     * Returns the raw JSON value of [threadId].
+     *
+     * Unlike [threadId], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("thread_id") @ExcludeMissing fun _threadId(): JsonField<String> = threadId
 
-    /** The type of run step, which can be either `message_creation` or `tool_calls`. */
+    /**
+     * Returns the raw JSON value of [type].
+     *
+     * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     /**
-     * Usage statistics related to the run step. This value will be `null` while the run step's
-     * status is `in_progress`.
+     * Returns the raw JSON value of [usage].
+     *
+     * Unlike [usage], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<Usage> = usage
 
@@ -330,7 +437,12 @@ private constructor(
         /** The identifier of the run step, which can be referenced in API endpoints. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The identifier of the run step, which can be referenced in API endpoints. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /**
@@ -340,39 +452,67 @@ private constructor(
         fun assistantId(assistantId: String) = assistantId(JsonField.of(assistantId))
 
         /**
-         * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants)
-         * associated with the run step.
+         * Sets [Builder.assistantId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.assistantId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun assistantId(assistantId: JsonField<String>) = apply { this.assistantId = assistantId }
 
         /** The Unix timestamp (in seconds) for when the run step was cancelled. */
         fun cancelledAt(cancelledAt: Long?) = cancelledAt(JsonField.ofNullable(cancelledAt))
 
-        /** The Unix timestamp (in seconds) for when the run step was cancelled. */
+        /**
+         * Alias for [Builder.cancelledAt].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
         fun cancelledAt(cancelledAt: Long) = cancelledAt(cancelledAt as Long?)
 
-        /** The Unix timestamp (in seconds) for when the run step was cancelled. */
+        /** Alias for calling [Builder.cancelledAt] with `cancelledAt.orElse(null)`. */
         fun cancelledAt(cancelledAt: Optional<Long>) = cancelledAt(cancelledAt.getOrNull())
 
-        /** The Unix timestamp (in seconds) for when the run step was cancelled. */
+        /**
+         * Sets [Builder.cancelledAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.cancelledAt] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun cancelledAt(cancelledAt: JsonField<Long>) = apply { this.cancelledAt = cancelledAt }
 
         /** The Unix timestamp (in seconds) for when the run step completed. */
         fun completedAt(completedAt: Long?) = completedAt(JsonField.ofNullable(completedAt))
 
-        /** The Unix timestamp (in seconds) for when the run step completed. */
+        /**
+         * Alias for [Builder.completedAt].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
         fun completedAt(completedAt: Long) = completedAt(completedAt as Long?)
 
-        /** The Unix timestamp (in seconds) for when the run step completed. */
+        /** Alias for calling [Builder.completedAt] with `completedAt.orElse(null)`. */
         fun completedAt(completedAt: Optional<Long>) = completedAt(completedAt.getOrNull())
 
-        /** The Unix timestamp (in seconds) for when the run step completed. */
+        /**
+         * Sets [Builder.completedAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.completedAt] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun completedAt(completedAt: JsonField<Long>) = apply { this.completedAt = completedAt }
 
         /** The Unix timestamp (in seconds) for when the run step was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
-        /** The Unix timestamp (in seconds) for when the run step was created. */
+        /**
+         * Sets [Builder.createdAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.createdAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /**
@@ -382,42 +522,57 @@ private constructor(
         fun expiredAt(expiredAt: Long?) = expiredAt(JsonField.ofNullable(expiredAt))
 
         /**
-         * The Unix timestamp (in seconds) for when the run step expired. A step is considered
-         * expired if the parent run is expired.
+         * Alias for [Builder.expiredAt].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
          */
         fun expiredAt(expiredAt: Long) = expiredAt(expiredAt as Long?)
 
-        /**
-         * The Unix timestamp (in seconds) for when the run step expired. A step is considered
-         * expired if the parent run is expired.
-         */
+        /** Alias for calling [Builder.expiredAt] with `expiredAt.orElse(null)`. */
         fun expiredAt(expiredAt: Optional<Long>) = expiredAt(expiredAt.getOrNull())
 
         /**
-         * The Unix timestamp (in seconds) for when the run step expired. A step is considered
-         * expired if the parent run is expired.
+         * Sets [Builder.expiredAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.expiredAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun expiredAt(expiredAt: JsonField<Long>) = apply { this.expiredAt = expiredAt }
 
         /** The Unix timestamp (in seconds) for when the run step failed. */
         fun failedAt(failedAt: Long?) = failedAt(JsonField.ofNullable(failedAt))
 
-        /** The Unix timestamp (in seconds) for when the run step failed. */
+        /**
+         * Alias for [Builder.failedAt].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
         fun failedAt(failedAt: Long) = failedAt(failedAt as Long?)
 
-        /** The Unix timestamp (in seconds) for when the run step failed. */
+        /** Alias for calling [Builder.failedAt] with `failedAt.orElse(null)`. */
         fun failedAt(failedAt: Optional<Long>) = failedAt(failedAt.getOrNull())
 
-        /** The Unix timestamp (in seconds) for when the run step failed. */
+        /**
+         * Sets [Builder.failedAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.failedAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun failedAt(failedAt: JsonField<Long>) = apply { this.failedAt = failedAt }
 
         /** The last error associated with this run step. Will be `null` if there are no errors. */
         fun lastError(lastError: LastError?) = lastError(JsonField.ofNullable(lastError))
 
-        /** The last error associated with this run step. Will be `null` if there are no errors. */
+        /** Alias for calling [Builder.lastError] with `lastError.orElse(null)`. */
         fun lastError(lastError: Optional<LastError>) = lastError(lastError.getOrNull())
 
-        /** The last error associated with this run step. Will be `null` if there are no errors. */
+        /**
+         * Sets [Builder.lastError] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.lastError] with a well-typed [LastError] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun lastError(lastError: JsonField<LastError>) = apply { this.lastError = lastError }
 
         /**
@@ -430,27 +585,30 @@ private constructor(
          */
         fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
 
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
-         *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
-         */
+        /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
         fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
+         * Sets [Builder.metadata] to an arbitrary JSON value.
          *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
+         * You should usually call [Builder.metadata] with a well-typed [Metadata] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
-        /** The object type, which is always `thread.run.step`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("thread.run.step")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /**
@@ -460,8 +618,10 @@ private constructor(
         fun runId(runId: String) = runId(JsonField.of(runId))
 
         /**
-         * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) that this run
-         * step is a part of.
+         * Sets [Builder.runId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.runId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun runId(runId: JsonField<String>) = apply { this.runId = runId }
 
@@ -472,24 +632,41 @@ private constructor(
         fun status(status: Status) = status(JsonField.of(status))
 
         /**
-         * The status of the run step, which can be either `in_progress`, `cancelled`, `failed`,
-         * `completed`, or `expired`.
+         * Sets [Builder.status] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
         /** The details of the run step. */
         fun stepDetails(stepDetails: StepDetails) = stepDetails(JsonField.of(stepDetails))
 
-        /** The details of the run step. */
+        /**
+         * Sets [Builder.stepDetails] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.stepDetails] with a well-typed [StepDetails] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun stepDetails(stepDetails: JsonField<StepDetails>) = apply {
             this.stepDetails = stepDetails
         }
 
-        /** Details of the message creation by the run step. */
+        /**
+         * Alias for calling [stepDetails] with `StepDetails.ofMessageCreation(messageCreation)`.
+         */
         fun stepDetails(messageCreation: MessageCreationStepDetails) =
             stepDetails(StepDetails.ofMessageCreation(messageCreation))
 
-        /** Details of the message creation by the run step. */
+        /**
+         * Alias for calling [stepDetails] with the following:
+         * ```java
+         * MessageCreationStepDetails.builder()
+         *     .messageCreation(messageCreation)
+         *     .build()
+         * ```
+         */
         fun messageCreationStepDetails(
             messageCreation: MessageCreationStepDetails.MessageCreation
         ) =
@@ -497,11 +674,18 @@ private constructor(
                 MessageCreationStepDetails.builder().messageCreation(messageCreation).build()
             )
 
-        /** Details of the tool call. */
+        /** Alias for calling [stepDetails] with `StepDetails.ofToolCalls(toolCalls)`. */
         fun stepDetails(toolCalls: ToolCallsStepDetails) =
             stepDetails(StepDetails.ofToolCalls(toolCalls))
 
-        /** Details of the tool call. */
+        /**
+         * Alias for calling [stepDetails] with the following:
+         * ```java
+         * ToolCallsStepDetails.builder()
+         *     .toolCalls(toolCalls)
+         *     .build()
+         * ```
+         */
         fun toolCallsStepDetails(toolCalls: List<ToolCall>) =
             stepDetails(ToolCallsStepDetails.builder().toolCalls(toolCalls).build())
 
@@ -512,15 +696,22 @@ private constructor(
         fun threadId(threadId: String) = threadId(JsonField.of(threadId))
 
         /**
-         * The ID of the [thread](https://platform.openai.com/docs/api-reference/threads) that was
-         * run.
+         * Sets [Builder.threadId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.threadId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun threadId(threadId: JsonField<String>) = apply { this.threadId = threadId }
 
         /** The type of run step, which can be either `message_creation` or `tool_calls`. */
         fun type(type: Type) = type(JsonField.of(type))
 
-        /** The type of run step, which can be either `message_creation` or `tool_calls`. */
+        /**
+         * Sets [Builder.type] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.type] with a well-typed [Type] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
         /**
@@ -529,15 +720,14 @@ private constructor(
          */
         fun usage(usage: Usage?) = usage(JsonField.ofNullable(usage))
 
-        /**
-         * Usage statistics related to the run step. This value will be `null` while the run step's
-         * status is `in_progress`.
-         */
+        /** Alias for calling [Builder.usage] with `usage.orElse(null)`. */
         fun usage(usage: Optional<Usage>) = usage(usage.getOrNull())
 
         /**
-         * Usage statistics related to the run step. This value will be `null` while the run step's
-         * status is `in_progress`.
+         * Sets [Builder.usage] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.usage] with a well-typed [Usage] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun usage(usage: JsonField<Usage>) = apply { this.usage = usage }
 
@@ -560,6 +750,32 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [RunStep].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .assistantId()
+         * .cancelledAt()
+         * .completedAt()
+         * .createdAt()
+         * .expiredAt()
+         * .failedAt()
+         * .lastError()
+         * .metadata()
+         * .runId()
+         * .status()
+         * .stepDetails()
+         * .threadId()
+         * .type()
+         * .usage()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): RunStep =
             RunStep(
                 checkRequired("id", id),
@@ -595,16 +811,34 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** One of `server_error` or `rate_limit_exceeded`. */
+        /**
+         * One of `server_error` or `rate_limit_exceeded`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun code(): Code = code.getRequired("code")
 
-        /** A human-readable description of the error. */
+        /**
+         * A human-readable description of the error.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun message(): String = message.getRequired("message")
 
-        /** One of `server_error` or `rate_limit_exceeded`. */
+        /**
+         * Returns the raw JSON value of [code].
+         *
+         * Unlike [code], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("code") @ExcludeMissing fun _code(): JsonField<Code> = code
 
-        /** A human-readable description of the error. */
+        /**
+         * Returns the raw JSON value of [message].
+         *
+         * Unlike [message], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
         @JsonAnyGetter
@@ -656,13 +890,25 @@ private constructor(
             /** One of `server_error` or `rate_limit_exceeded`. */
             fun code(code: Code) = code(JsonField.of(code))
 
-            /** One of `server_error` or `rate_limit_exceeded`. */
+            /**
+             * Sets [Builder.code] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.code] with a well-typed [Code] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun code(code: JsonField<Code>) = apply { this.code = code }
 
             /** A human-readable description of the error. */
             fun message(message: String) = message(JsonField.of(message))
 
-            /** A human-readable description of the error. */
+            /**
+             * Sets [Builder.message] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.message] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun message(message: JsonField<String>) = apply { this.message = message }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -684,6 +930,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [LastError].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .code()
+             * .message()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): LastError =
                 LastError(
                     checkRequired("code", code),
@@ -1213,26 +1472,55 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** Number of completion tokens used over the course of the run step. */
+        /**
+         * Number of completion tokens used over the course of the run step.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun completionTokens(): Long = completionTokens.getRequired("completion_tokens")
 
-        /** Number of prompt tokens used over the course of the run step. */
+        /**
+         * Number of prompt tokens used over the course of the run step.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun promptTokens(): Long = promptTokens.getRequired("prompt_tokens")
 
-        /** Total number of tokens used (prompt + completion). */
+        /**
+         * Total number of tokens used (prompt + completion).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun totalTokens(): Long = totalTokens.getRequired("total_tokens")
 
-        /** Number of completion tokens used over the course of the run step. */
+        /**
+         * Returns the raw JSON value of [completionTokens].
+         *
+         * Unlike [completionTokens], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("completion_tokens")
         @ExcludeMissing
         fun _completionTokens(): JsonField<Long> = completionTokens
 
-        /** Number of prompt tokens used over the course of the run step. */
+        /**
+         * Returns the raw JSON value of [promptTokens].
+         *
+         * Unlike [promptTokens], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("prompt_tokens")
         @ExcludeMissing
         fun _promptTokens(): JsonField<Long> = promptTokens
 
-        /** Total number of tokens used (prompt + completion). */
+        /**
+         * Returns the raw JSON value of [totalTokens].
+         *
+         * Unlike [totalTokens], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("total_tokens")
         @ExcludeMissing
         fun _totalTokens(): JsonField<Long> = totalTokens
@@ -1291,7 +1579,13 @@ private constructor(
             fun completionTokens(completionTokens: Long) =
                 completionTokens(JsonField.of(completionTokens))
 
-            /** Number of completion tokens used over the course of the run step. */
+            /**
+             * Sets [Builder.completionTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.completionTokens] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun completionTokens(completionTokens: JsonField<Long>) = apply {
                 this.completionTokens = completionTokens
             }
@@ -1299,7 +1593,13 @@ private constructor(
             /** Number of prompt tokens used over the course of the run step. */
             fun promptTokens(promptTokens: Long) = promptTokens(JsonField.of(promptTokens))
 
-            /** Number of prompt tokens used over the course of the run step. */
+            /**
+             * Sets [Builder.promptTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.promptTokens] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun promptTokens(promptTokens: JsonField<Long>) = apply {
                 this.promptTokens = promptTokens
             }
@@ -1307,7 +1607,13 @@ private constructor(
             /** Total number of tokens used (prompt + completion). */
             fun totalTokens(totalTokens: Long) = totalTokens(JsonField.of(totalTokens))
 
-            /** Total number of tokens used (prompt + completion). */
+            /**
+             * Sets [Builder.totalTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.totalTokens] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun totalTokens(totalTokens: JsonField<Long>) = apply { this.totalTokens = totalTokens }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1329,6 +1635,20 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Usage].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .completionTokens()
+             * .promptTokens()
+             * .totalTokens()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Usage =
                 Usage(
                     checkRequired("completionTokens", completionTokens),

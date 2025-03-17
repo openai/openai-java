@@ -15,6 +15,7 @@ import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 
 @NoAutoDetect
@@ -30,12 +31,30 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun created(): Long = created.getRequired("created")
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun data(): List<Image> = data.getRequired("data")
 
+    /**
+     * Returns the raw JSON value of [created].
+     *
+     * Unlike [created], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("created") @ExcludeMissing fun _created(): JsonField<Long> = created
 
+    /**
+     * Returns the raw JSON value of [data].
+     *
+     * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<List<Image>> = data
 
     @JsonAnyGetter
@@ -86,14 +105,32 @@ private constructor(
 
         fun created(created: Long) = created(JsonField.of(created))
 
+        /**
+         * Sets [Builder.created] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.created] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun created(created: JsonField<Long>) = apply { this.created = created }
 
         fun data(data: List<Image>) = data(JsonField.of(data))
 
+        /**
+         * Sets [Builder.data] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.data] with a well-typed `List<Image>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun data(data: JsonField<List<Image>>) = apply {
             this.data = data.map { it.toMutableList() }
         }
 
+        /**
+         * Adds a single [Image] to [Builder.data].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addData(data: Image) = apply {
             this.data =
                 (this.data ?: JsonField.of(mutableListOf())).also {
@@ -120,6 +157,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ImagesResponse].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .created()
+         * .data()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ImagesResponse =
             ImagesResponse(
                 checkRequired("created", created),

@@ -29,14 +29,41 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun deleted(): Boolean = deleted.getRequired("deleted")
 
+    /**
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("assistant.deleted")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
+    /**
+     * Returns the raw JSON value of [deleted].
+     *
+     * Unlike [deleted], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("deleted") @ExcludeMissing fun _deleted(): JsonField<Boolean> = deleted
 
     @JsonAnyGetter
@@ -94,12 +121,36 @@ private constructor(
 
         fun id(id: String) = id(JsonField.of(id))
 
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         fun deleted(deleted: Boolean) = deleted(JsonField.of(deleted))
 
+        /**
+         * Sets [Builder.deleted] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.deleted] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun deleted(deleted: JsonField<Boolean>) = apply { this.deleted = deleted }
 
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("assistant.deleted")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -121,6 +172,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [AssistantDeleted].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .deleted()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): AssistantDeleted =
             AssistantDeleted(
                 checkRequired("id", id),

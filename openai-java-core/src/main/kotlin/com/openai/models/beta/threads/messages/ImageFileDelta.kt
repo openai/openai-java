@@ -34,6 +34,9 @@ private constructor(
     /**
      * Specifies the detail level of the image if specified by the user. `low` uses fewer tokens,
      * you can opt in to high resolution using `high`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun detail(): Optional<Detail> = Optional.ofNullable(detail.getNullable("detail"))
 
@@ -41,19 +44,23 @@ private constructor(
      * The [File](https://platform.openai.com/docs/api-reference/files) ID of the image in the
      * message content. Set `purpose="vision"` when uploading the File if you need to later display
      * the file content.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
 
     /**
-     * Specifies the detail level of the image if specified by the user. `low` uses fewer tokens,
-     * you can opt in to high resolution using `high`.
+     * Returns the raw JSON value of [detail].
+     *
+     * Unlike [detail], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("detail") @ExcludeMissing fun _detail(): JsonField<Detail> = detail
 
     /**
-     * The [File](https://platform.openai.com/docs/api-reference/files) ID of the image in the
-     * message content. Set `purpose="vision"` when uploading the File if you need to later display
-     * the file content.
+     * Returns the raw JSON value of [fileId].
+     *
+     * Unlike [fileId], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
@@ -102,8 +109,10 @@ private constructor(
         fun detail(detail: Detail) = detail(JsonField.of(detail))
 
         /**
-         * Specifies the detail level of the image if specified by the user. `low` uses fewer
-         * tokens, you can opt in to high resolution using `high`.
+         * Sets [Builder.detail] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.detail] with a well-typed [Detail] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun detail(detail: JsonField<Detail>) = apply { this.detail = detail }
 
@@ -115,9 +124,10 @@ private constructor(
         fun fileId(fileId: String) = fileId(JsonField.of(fileId))
 
         /**
-         * The [File](https://platform.openai.com/docs/api-reference/files) ID of the image in the
-         * message content. Set `purpose="vision"` when uploading the File if you need to later
-         * display the file content.
+         * Sets [Builder.fileId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.fileId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
 
@@ -140,6 +150,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ImageFileDelta].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): ImageFileDelta =
             ImageFileDelta(detail, fileId, additionalProperties.toImmutable())
     }

@@ -15,6 +15,7 @@ import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 
 @NoAutoDetect
@@ -44,84 +45,161 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** Unique identifier of the segment. */
+    /**
+     * Unique identifier of the segment.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): Long = id.getRequired("id")
 
     /**
      * Average logprob of the segment. If the value is lower than -1, consider the logprobs failed.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun avgLogprob(): Double = avgLogprob.getRequired("avg_logprob")
 
     /**
      * Compression ratio of the segment. If the value is greater than 2.4, consider the compression
      * failed.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun compressionRatio(): Double = compressionRatio.getRequired("compression_ratio")
 
-    /** End time of the segment in seconds. */
+    /**
+     * End time of the segment in seconds.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun end(): Double = end.getRequired("end")
 
     /**
      * Probability of no speech in the segment. If the value is higher than 1.0 and the
      * `avg_logprob` is below -1, consider this segment silent.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun noSpeechProb(): Double = noSpeechProb.getRequired("no_speech_prob")
 
-    /** Seek offset of the segment. */
+    /**
+     * Seek offset of the segment.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun seek(): Long = seek.getRequired("seek")
 
-    /** Start time of the segment in seconds. */
+    /**
+     * Start time of the segment in seconds.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun start(): Double = start.getRequired("start")
 
-    /** Temperature parameter used for generating the segment. */
+    /**
+     * Temperature parameter used for generating the segment.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun temperature(): Double = temperature.getRequired("temperature")
 
-    /** Text content of the segment. */
+    /**
+     * Text content of the segment.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun text(): String = text.getRequired("text")
 
-    /** Array of token IDs for the text content. */
+    /**
+     * Array of token IDs for the text content.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun tokens(): List<Long> = tokens.getRequired("tokens")
 
-    /** Unique identifier of the segment. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<Long> = id
 
     /**
-     * Average logprob of the segment. If the value is lower than -1, consider the logprobs failed.
+     * Returns the raw JSON value of [avgLogprob].
+     *
+     * Unlike [avgLogprob], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("avg_logprob") @ExcludeMissing fun _avgLogprob(): JsonField<Double> = avgLogprob
 
     /**
-     * Compression ratio of the segment. If the value is greater than 2.4, consider the compression
-     * failed.
+     * Returns the raw JSON value of [compressionRatio].
+     *
+     * Unlike [compressionRatio], this method doesn't throw if the JSON field has an unexpected
+     * type.
      */
     @JsonProperty("compression_ratio")
     @ExcludeMissing
     fun _compressionRatio(): JsonField<Double> = compressionRatio
 
-    /** End time of the segment in seconds. */
+    /**
+     * Returns the raw JSON value of [end].
+     *
+     * Unlike [end], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("end") @ExcludeMissing fun _end(): JsonField<Double> = end
 
     /**
-     * Probability of no speech in the segment. If the value is higher than 1.0 and the
-     * `avg_logprob` is below -1, consider this segment silent.
+     * Returns the raw JSON value of [noSpeechProb].
+     *
+     * Unlike [noSpeechProb], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("no_speech_prob")
     @ExcludeMissing
     fun _noSpeechProb(): JsonField<Double> = noSpeechProb
 
-    /** Seek offset of the segment. */
+    /**
+     * Returns the raw JSON value of [seek].
+     *
+     * Unlike [seek], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("seek") @ExcludeMissing fun _seek(): JsonField<Long> = seek
 
-    /** Start time of the segment in seconds. */
+    /**
+     * Returns the raw JSON value of [start].
+     *
+     * Unlike [start], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("start") @ExcludeMissing fun _start(): JsonField<Double> = start
 
-    /** Temperature parameter used for generating the segment. */
+    /**
+     * Returns the raw JSON value of [temperature].
+     *
+     * Unlike [temperature], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("temperature") @ExcludeMissing fun _temperature(): JsonField<Double> = temperature
 
-    /** Text content of the segment. */
+    /**
+     * Returns the raw JSON value of [text].
+     *
+     * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
-    /** Array of token IDs for the text content. */
+    /**
+     * Returns the raw JSON value of [tokens].
+     *
+     * Unlike [tokens], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("tokens") @ExcludeMissing fun _tokens(): JsonField<List<Long>> = tokens
 
     @JsonAnyGetter
@@ -205,7 +283,12 @@ private constructor(
         /** Unique identifier of the segment. */
         fun id(id: Long) = id(JsonField.of(id))
 
-        /** Unique identifier of the segment. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [Long] value instead. This method
+         * is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<Long>) = apply { this.id = id }
 
         /**
@@ -215,8 +298,11 @@ private constructor(
         fun avgLogprob(avgLogprob: Double) = avgLogprob(JsonField.of(avgLogprob))
 
         /**
-         * Average logprob of the segment. If the value is lower than -1, consider the logprobs
-         * failed.
+         * Sets [Builder.avgLogprob] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.avgLogprob] with a well-typed [Double] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun avgLogprob(avgLogprob: JsonField<Double>) = apply { this.avgLogprob = avgLogprob }
 
@@ -228,8 +314,11 @@ private constructor(
             compressionRatio(JsonField.of(compressionRatio))
 
         /**
-         * Compression ratio of the segment. If the value is greater than 2.4, consider the
-         * compression failed.
+         * Sets [Builder.compressionRatio] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.compressionRatio] with a well-typed [Double] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun compressionRatio(compressionRatio: JsonField<Double>) = apply {
             this.compressionRatio = compressionRatio
@@ -238,7 +327,12 @@ private constructor(
         /** End time of the segment in seconds. */
         fun end(end: Double) = end(JsonField.of(end))
 
-        /** End time of the segment in seconds. */
+        /**
+         * Sets [Builder.end] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.end] with a well-typed [Double] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun end(end: JsonField<Double>) = apply { this.end = end }
 
         /**
@@ -248,8 +342,11 @@ private constructor(
         fun noSpeechProb(noSpeechProb: Double) = noSpeechProb(JsonField.of(noSpeechProb))
 
         /**
-         * Probability of no speech in the segment. If the value is higher than 1.0 and the
-         * `avg_logprob` is below -1, consider this segment silent.
+         * Sets [Builder.noSpeechProb] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.noSpeechProb] with a well-typed [Double] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun noSpeechProb(noSpeechProb: JsonField<Double>) = apply {
             this.noSpeechProb = noSpeechProb
@@ -258,36 +355,67 @@ private constructor(
         /** Seek offset of the segment. */
         fun seek(seek: Long) = seek(JsonField.of(seek))
 
-        /** Seek offset of the segment. */
+        /**
+         * Sets [Builder.seek] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.seek] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun seek(seek: JsonField<Long>) = apply { this.seek = seek }
 
         /** Start time of the segment in seconds. */
         fun start(start: Double) = start(JsonField.of(start))
 
-        /** Start time of the segment in seconds. */
+        /**
+         * Sets [Builder.start] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.start] with a well-typed [Double] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun start(start: JsonField<Double>) = apply { this.start = start }
 
         /** Temperature parameter used for generating the segment. */
         fun temperature(temperature: Double) = temperature(JsonField.of(temperature))
 
-        /** Temperature parameter used for generating the segment. */
+        /**
+         * Sets [Builder.temperature] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.temperature] with a well-typed [Double] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun temperature(temperature: JsonField<Double>) = apply { this.temperature = temperature }
 
         /** Text content of the segment. */
         fun text(text: String) = text(JsonField.of(text))
 
-        /** Text content of the segment. */
+        /**
+         * Sets [Builder.text] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.text] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun text(text: JsonField<String>) = apply { this.text = text }
 
         /** Array of token IDs for the text content. */
         fun tokens(tokens: List<Long>) = tokens(JsonField.of(tokens))
 
-        /** Array of token IDs for the text content. */
+        /**
+         * Sets [Builder.tokens] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.tokens] with a well-typed `List<Long>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun tokens(tokens: JsonField<List<Long>>) = apply {
             this.tokens = tokens.map { it.toMutableList() }
         }
 
-        /** Array of token IDs for the text content. */
+        /**
+         * Adds a single [Long] to [tokens].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addToken(token: Long) = apply {
             tokens =
                 (tokens ?: JsonField.of(mutableListOf())).also {
@@ -314,6 +442,27 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [TranscriptionSegment].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .avgLogprob()
+         * .compressionRatio()
+         * .end()
+         * .noSpeechProb()
+         * .seek()
+         * .start()
+         * .temperature()
+         * .text()
+         * .tokens()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): TranscriptionSegment =
             TranscriptionSegment(
                 checkRequired("id", id),

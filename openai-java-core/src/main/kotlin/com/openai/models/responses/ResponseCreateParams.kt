@@ -64,6 +64,9 @@ private constructor(
      * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
      * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
      * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun input(): Input = body.input()
 
@@ -72,6 +75,9 @@ private constructor(
      * models with different capabilities, performance characteristics, and price points. Refer to
      * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
      * models.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun model(): ChatModel = body.model()
 
@@ -81,6 +87,9 @@ private constructor(
      * - `file_search_call.results`: Include the search results of the file search tool call.
      * - `message.input_image.image_url`: Include image urls from the input message.
      * - `computer_call_output.output.image_url`: Include image urls from the computer call output.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun include(): Optional<List<ResponseIncludable>> = body.include()
 
@@ -90,6 +99,9 @@ private constructor(
      * When using along with `previous_response_id`, the instructions from a previous response will
      * be not be carried over to the next response. This makes it simple to swap out system (or
      * developer) messages in new responses.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun instructions(): Optional<String> = body.instructions()
 
@@ -97,6 +109,9 @@ private constructor(
      * An upper bound for the number of tokens that can be generated for a response, including
      * visible output tokens and
      * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun maxOutputTokens(): Optional<Long> = body.maxOutputTokens()
 
@@ -107,16 +122,27 @@ private constructor(
      *
      * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
      * length of 512 characters.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun metadata(): Optional<Metadata> = body.metadata()
 
-    /** Whether to allow the model to run tool calls in parallel. */
+    /**
+     * Whether to allow the model to run tool calls in parallel.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun parallelToolCalls(): Optional<Boolean> = body.parallelToolCalls()
 
     /**
      * The unique ID of the previous response to the model. Use this to create multi-turn
      * conversations. Learn more about
      * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun previousResponseId(): Optional<String> = body.previousResponseId()
 
@@ -125,16 +151,27 @@ private constructor(
      *
      * Configuration options for
      * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun reasoning(): Optional<Reasoning> = body.reasoning()
 
-    /** Whether to store the generated model response for later retrieval via API. */
+    /**
+     * Whether to store the generated model response for later retrieval via API.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun store(): Optional<Boolean> = body.store()
 
     /**
      * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
      * output more random, while lower values like 0.2 will make it more focused and deterministic.
      * We generally recommend altering this or `top_p` but not both.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun temperature(): Optional<Double> = body.temperature()
 
@@ -143,12 +180,18 @@ private constructor(
      * JSON data. Learn more:
      * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
      * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun text(): Optional<ResponseTextConfig> = body.text()
 
     /**
      * How the model should select which tool (or tools) to use when generating a response. See the
      * `tools` parameter to see how to specify which tools the model can call.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun toolChoice(): Optional<ToolChoice> = body.toolChoice()
 
@@ -164,6 +207,9 @@ private constructor(
      * - **Function calls (custom tools)**: Functions that are defined by you, enabling the model to
      *   call your own code. Learn more about
      *   [function calling](https://platform.openai.com/docs/guides/function-calling).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun tools(): Optional<List<Tool>> = body.tools()
 
@@ -173,6 +219,9 @@ private constructor(
      * comprising the top 10% probability mass are considered.
      *
      * We generally recommend altering this or `temperature` but not both.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun topP(): Optional<Double> = body.topP()
 
@@ -183,6 +232,9 @@ private constructor(
      *   input items in the middle of the conversation.
      * - `disabled` (default): If a model response will exceed the context window size for a model,
      *   the request will fail with a 400 error.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun truncation(): Optional<Truncation> = body.truncation()
 
@@ -190,144 +242,130 @@ private constructor(
      * A unique identifier representing your end-user, which can help OpenAI to monitor and detect
      * abuse.
      * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun user(): Optional<String> = body.user()
 
     /**
-     * Text, image, or file inputs to the model, used to generate a response.
+     * Returns the raw JSON value of [input].
      *
-     * Learn more:
-     * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-     * - [Image inputs](https://platform.openai.com/docs/guides/images)
-     * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-     * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-     * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+     * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _input(): JsonField<Input> = body._input()
 
     /**
-     * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide range of
-     * models with different capabilities, performance characteristics, and price points. Refer to
-     * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
-     * models.
+     * Returns the raw JSON value of [model].
+     *
+     * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _model(): JsonField<ChatModel> = body._model()
 
     /**
-     * Specify additional output data to include in the model response. Currently supported values
-     * are:
-     * - `file_search_call.results`: Include the search results of the file search tool call.
-     * - `message.input_image.image_url`: Include image urls from the input message.
-     * - `computer_call_output.output.image_url`: Include image urls from the computer call output.
+     * Returns the raw JSON value of [include].
+     *
+     * Unlike [include], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _include(): JsonField<List<ResponseIncludable>> = body._include()
 
     /**
-     * Inserts a system (or developer) message as the first item in the model's context.
+     * Returns the raw JSON value of [instructions].
      *
-     * When using along with `previous_response_id`, the instructions from a previous response will
-     * be not be carried over to the next response. This makes it simple to swap out system (or
-     * developer) messages in new responses.
+     * Unlike [instructions], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _instructions(): JsonField<String> = body._instructions()
 
     /**
-     * An upper bound for the number of tokens that can be generated for a response, including
-     * visible output tokens and
-     * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+     * Returns the raw JSON value of [maxOutputTokens].
+     *
+     * Unlike [maxOutputTokens], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _maxOutputTokens(): JsonField<Long> = body._maxOutputTokens()
 
     /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard.
+     * Returns the raw JSON value of [metadata].
      *
-     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
-     * length of 512 characters.
+     * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _metadata(): JsonField<Metadata> = body._metadata()
 
-    /** Whether to allow the model to run tool calls in parallel. */
+    /**
+     * Returns the raw JSON value of [parallelToolCalls].
+     *
+     * Unlike [parallelToolCalls], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
     fun _parallelToolCalls(): JsonField<Boolean> = body._parallelToolCalls()
 
     /**
-     * The unique ID of the previous response to the model. Use this to create multi-turn
-     * conversations. Learn more about
-     * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
+     * Returns the raw JSON value of [previousResponseId].
+     *
+     * Unlike [previousResponseId], this method doesn't throw if the JSON field has an unexpected
+     * type.
      */
     fun _previousResponseId(): JsonField<String> = body._previousResponseId()
 
     /**
-     * **o-series models only**
+     * Returns the raw JSON value of [reasoning].
      *
-     * Configuration options for
-     * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+     * Unlike [reasoning], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _reasoning(): JsonField<Reasoning> = body._reasoning()
 
-    /** Whether to store the generated model response for later retrieval via API. */
+    /**
+     * Returns the raw JSON value of [store].
+     *
+     * Unlike [store], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _store(): JsonField<Boolean> = body._store()
 
     /**
-     * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
-     * output more random, while lower values like 0.2 will make it more focused and deterministic.
-     * We generally recommend altering this or `top_p` but not both.
+     * Returns the raw JSON value of [temperature].
+     *
+     * Unlike [temperature], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _temperature(): JsonField<Double> = body._temperature()
 
     /**
-     * Configuration options for a text response from the model. Can be plain text or structured
-     * JSON data. Learn more:
-     * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-     * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+     * Returns the raw JSON value of [text].
+     *
+     * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _text(): JsonField<ResponseTextConfig> = body._text()
 
     /**
-     * How the model should select which tool (or tools) to use when generating a response. See the
-     * `tools` parameter to see how to specify which tools the model can call.
+     * Returns the raw JSON value of [toolChoice].
+     *
+     * Unlike [toolChoice], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _toolChoice(): JsonField<ToolChoice> = body._toolChoice()
 
     /**
-     * An array of tools the model may call while generating a response. You can specify which tool
-     * to use by setting the `tool_choice` parameter.
+     * Returns the raw JSON value of [tools].
      *
-     * The two categories of tools you can provide the model are:
-     * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's capabilities,
-     *   like [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-     *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more about
-     *   [built-in tools](https://platform.openai.com/docs/guides/tools).
-     * - **Function calls (custom tools)**: Functions that are defined by you, enabling the model to
-     *   call your own code. Learn more about
-     *   [function calling](https://platform.openai.com/docs/guides/function-calling).
+     * Unlike [tools], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _tools(): JsonField<List<Tool>> = body._tools()
 
     /**
-     * An alternative to sampling with temperature, called nucleus sampling, where the model
-     * considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens
-     * comprising the top 10% probability mass are considered.
+     * Returns the raw JSON value of [topP].
      *
-     * We generally recommend altering this or `temperature` but not both.
+     * Unlike [topP], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _topP(): JsonField<Double> = body._topP()
 
     /**
-     * The truncation strategy to use for the model response.
-     * - `auto`: If the context of this response and previous ones exceeds the model's context
-     *   window size, the model will truncate the response to fit the context window by dropping
-     *   input items in the middle of the conversation.
-     * - `disabled` (default): If a model response will exceed the context window size for a model,
-     *   the request will fail with a 400 error.
+     * Returns the raw JSON value of [truncation].
+     *
+     * Unlike [truncation], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _truncation(): JsonField<Truncation> = body._truncation()
 
     /**
-     * A unique identifier representing your end-user, which can help OpenAI to monitor and detect
-     * abuse.
-     * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+     * Returns the raw JSON value of [user].
+     *
+     * Unlike [user], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _user(): JsonField<String> = body._user()
 
@@ -411,6 +449,9 @@ private constructor(
          * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
          * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
          * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun input(): Input = input.getRequired("input")
 
@@ -419,6 +460,9 @@ private constructor(
          * of models with different capabilities, performance characteristics, and price points.
          * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun model(): ChatModel = model.getRequired("model")
 
@@ -429,6 +473,9 @@ private constructor(
          * - `message.input_image.image_url`: Include image urls from the input message.
          * - `computer_call_output.output.image_url`: Include image urls from the computer call
          *   output.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun include(): Optional<List<ResponseIncludable>> =
             Optional.ofNullable(include.getNullable("include"))
@@ -439,6 +486,9 @@ private constructor(
          * When using along with `previous_response_id`, the instructions from a previous response
          * will be not be carried over to the next response. This makes it simple to swap out system
          * (or developer) messages in new responses.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun instructions(): Optional<String> =
             Optional.ofNullable(instructions.getNullable("instructions"))
@@ -447,6 +497,9 @@ private constructor(
          * An upper bound for the number of tokens that can be generated for a response, including
          * visible output tokens and
          * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun maxOutputTokens(): Optional<Long> =
             Optional.ofNullable(maxOutputTokens.getNullable("max_output_tokens"))
@@ -458,10 +511,18 @@ private constructor(
          *
          * Keys are strings with a maximum length of 64 characters. Values are strings with a
          * maximum length of 512 characters.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
 
-        /** Whether to allow the model to run tool calls in parallel. */
+        /**
+         * Whether to allow the model to run tool calls in parallel.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun parallelToolCalls(): Optional<Boolean> =
             Optional.ofNullable(parallelToolCalls.getNullable("parallel_tool_calls"))
 
@@ -469,6 +530,9 @@ private constructor(
          * The unique ID of the previous response to the model. Use this to create multi-turn
          * conversations. Learn more about
          * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun previousResponseId(): Optional<String> =
             Optional.ofNullable(previousResponseId.getNullable("previous_response_id"))
@@ -478,17 +542,28 @@ private constructor(
          *
          * Configuration options for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun reasoning(): Optional<Reasoning> =
             Optional.ofNullable(reasoning.getNullable("reasoning"))
 
-        /** Whether to store the generated model response for later retrieval via API. */
+        /**
+         * Whether to store the generated model response for later retrieval via API.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun store(): Optional<Boolean> = Optional.ofNullable(store.getNullable("store"))
 
         /**
          * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
          * output more random, while lower values like 0.2 will make it more focused and
          * deterministic. We generally recommend altering this or `top_p` but not both.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun temperature(): Optional<Double> =
             Optional.ofNullable(temperature.getNullable("temperature"))
@@ -498,12 +573,18 @@ private constructor(
          * JSON data. Learn more:
          * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
          * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun text(): Optional<ResponseTextConfig> = Optional.ofNullable(text.getNullable("text"))
 
         /**
          * How the model should select which tool (or tools) to use when generating a response. See
          * the `tools` parameter to see how to specify which tools the model can call.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun toolChoice(): Optional<ToolChoice> =
             Optional.ofNullable(toolChoice.getNullable("tool_choice"))
@@ -521,6 +602,9 @@ private constructor(
          * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
          *   model to call your own code. Learn more about
          *   [function calling](https://platform.openai.com/docs/guides/function-calling).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun tools(): Optional<List<Tool>> = Optional.ofNullable(tools.getNullable("tools"))
 
@@ -530,6 +614,9 @@ private constructor(
          * tokens comprising the top 10% probability mass are considered.
          *
          * We generally recommend altering this or `temperature` but not both.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun topP(): Optional<Double> = Optional.ofNullable(topP.getNullable("top_p"))
 
@@ -540,6 +627,9 @@ private constructor(
          *   input items in the middle of the conversation.
          * - `disabled` (default): If a model response will exceed the context window size for a
          *   model, the request will fail with a 400 error.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun truncation(): Optional<Truncation> =
             Optional.ofNullable(truncation.getNullable("truncation"))
@@ -548,164 +638,150 @@ private constructor(
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
          * detect abuse.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun user(): Optional<String> = Optional.ofNullable(user.getNullable("user"))
 
         /**
-         * Text, image, or file inputs to the model, used to generate a response.
+         * Returns the raw JSON value of [input].
          *
-         * Learn more:
-         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-         * - [Image inputs](https://platform.openai.com/docs/guides/images)
-         * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-         * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-         * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+         * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("input") @ExcludeMissing fun _input(): JsonField<Input> = input
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
-         * available models.
+         * Returns the raw JSON value of [model].
+         *
+         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<ChatModel> = model
 
         /**
-         * Specify additional output data to include in the model response. Currently supported
-         * values are:
-         * - `file_search_call.results`: Include the search results of the file search tool call.
-         * - `message.input_image.image_url`: Include image urls from the input message.
-         * - `computer_call_output.output.image_url`: Include image urls from the computer call
-         *   output.
+         * Returns the raw JSON value of [include].
+         *
+         * Unlike [include], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("include")
         @ExcludeMissing
         fun _include(): JsonField<List<ResponseIncludable>> = include
 
         /**
-         * Inserts a system (or developer) message as the first item in the model's context.
+         * Returns the raw JSON value of [instructions].
          *
-         * When using along with `previous_response_id`, the instructions from a previous response
-         * will be not be carried over to the next response. This makes it simple to swap out system
-         * (or developer) messages in new responses.
+         * Unlike [instructions], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
         @JsonProperty("instructions")
         @ExcludeMissing
         fun _instructions(): JsonField<String> = instructions
 
         /**
-         * An upper bound for the number of tokens that can be generated for a response, including
-         * visible output tokens and
-         * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+         * Returns the raw JSON value of [maxOutputTokens].
+         *
+         * Unlike [maxOutputTokens], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
         @JsonProperty("max_output_tokens")
         @ExcludeMissing
         fun _maxOutputTokens(): JsonField<Long> = maxOutputTokens
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
+         * Returns the raw JSON value of [metadata].
          *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
+         * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
-        /** Whether to allow the model to run tool calls in parallel. */
+        /**
+         * Returns the raw JSON value of [parallelToolCalls].
+         *
+         * Unlike [parallelToolCalls], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("parallel_tool_calls")
         @ExcludeMissing
         fun _parallelToolCalls(): JsonField<Boolean> = parallelToolCalls
 
         /**
-         * The unique ID of the previous response to the model. Use this to create multi-turn
-         * conversations. Learn more about
-         * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
+         * Returns the raw JSON value of [previousResponseId].
+         *
+         * Unlike [previousResponseId], this method doesn't throw if the JSON field has an
+         * unexpected type.
          */
         @JsonProperty("previous_response_id")
         @ExcludeMissing
         fun _previousResponseId(): JsonField<String> = previousResponseId
 
         /**
-         * **o-series models only**
+         * Returns the raw JSON value of [reasoning].
          *
-         * Configuration options for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+         * Unlike [reasoning], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("reasoning")
         @ExcludeMissing
         fun _reasoning(): JsonField<Reasoning> = reasoning
 
-        /** Whether to store the generated model response for later retrieval via API. */
+        /**
+         * Returns the raw JSON value of [store].
+         *
+         * Unlike [store], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("store") @ExcludeMissing fun _store(): JsonField<Boolean> = store
 
         /**
-         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
-         * output more random, while lower values like 0.2 will make it more focused and
-         * deterministic. We generally recommend altering this or `top_p` but not both.
+         * Returns the raw JSON value of [temperature].
+         *
+         * Unlike [temperature], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("temperature")
         @ExcludeMissing
         fun _temperature(): JsonField<Double> = temperature
 
         /**
-         * Configuration options for a text response from the model. Can be plain text or structured
-         * JSON data. Learn more:
-         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-         * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+         * Returns the raw JSON value of [text].
+         *
+         * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<ResponseTextConfig> = text
 
         /**
-         * How the model should select which tool (or tools) to use when generating a response. See
-         * the `tools` parameter to see how to specify which tools the model can call.
+         * Returns the raw JSON value of [toolChoice].
+         *
+         * Unlike [toolChoice], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("tool_choice")
         @ExcludeMissing
         fun _toolChoice(): JsonField<ToolChoice> = toolChoice
 
         /**
-         * An array of tools the model may call while generating a response. You can specify which
-         * tool to use by setting the `tool_choice` parameter.
+         * Returns the raw JSON value of [tools].
          *
-         * The two categories of tools you can provide the model are:
-         * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's
-         *   capabilities, like
-         *   [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-         *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more
-         *   about [built-in tools](https://platform.openai.com/docs/guides/tools).
-         * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
-         *   model to call your own code. Learn more about
-         *   [function calling](https://platform.openai.com/docs/guides/function-calling).
+         * Unlike [tools], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<Tool>> = tools
 
         /**
-         * An alternative to sampling with temperature, called nucleus sampling, where the model
-         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
-         * tokens comprising the top 10% probability mass are considered.
+         * Returns the raw JSON value of [topP].
          *
-         * We generally recommend altering this or `temperature` but not both.
+         * Unlike [topP], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("top_p") @ExcludeMissing fun _topP(): JsonField<Double> = topP
 
         /**
-         * The truncation strategy to use for the model response.
-         * - `auto`: If the context of this response and previous ones exceeds the model's context
-         *   window size, the model will truncate the response to fit the context window by dropping
-         *   input items in the middle of the conversation.
-         * - `disabled` (default): If a model response will exceed the context window size for a
-         *   model, the request will fail with a 400 error.
+         * Returns the raw JSON value of [truncation].
+         *
+         * Unlike [truncation], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("truncation")
         @ExcludeMissing
         fun _truncation(): JsonField<Truncation> = truncation
 
         /**
-         * A unique identifier representing your end-user, which can help OpenAI to monitor and
-         * detect abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         * Returns the raw JSON value of [user].
+         *
+         * Unlike [user], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("user") @ExcludeMissing fun _user(): JsonField<String> = user
 
@@ -813,23 +889,18 @@ private constructor(
             fun input(input: Input) = input(JsonField.of(input))
 
             /**
-             * Text, image, or file inputs to the model, used to generate a response.
+             * Sets [Builder.input] to an arbitrary JSON value.
              *
-             * Learn more:
-             * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-             * - [Image inputs](https://platform.openai.com/docs/guides/images)
-             * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-             * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-             * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+             * You should usually call [Builder.input] with a well-typed [Input] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun input(input: JsonField<Input>) = apply { this.input = input }
 
-            /** A text input to the model, equivalent to a text input with the `user` role. */
+            /** Alias for calling [input] with `Input.ofText(text)`. */
             fun input(text: String) = input(Input.ofText(text))
 
-            /**
-             * A list of one or many input items to the model, containing different content types.
-             */
+            /** Alias for calling [input] with `Input.ofResponse(response)`. */
             fun inputOfResponse(response: List<ResponseInputItem>) =
                 input(Input.ofResponse(response))
 
@@ -842,18 +913,20 @@ private constructor(
             fun model(model: ChatModel) = model(JsonField.of(model))
 
             /**
-             * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide
-             * range of models with different capabilities, performance characteristics, and price
-             * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
-             * and compare available models.
+             * Sets [Builder.model] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.model] with a well-typed [ChatModel] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun model(model: JsonField<ChatModel>) = apply { this.model = model }
 
             /**
-             * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide
-             * range of models with different capabilities, performance characteristics, and price
-             * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
-             * and compare available models.
+             * Sets [model] to an arbitrary [String].
+             *
+             * You should usually call [model] with a well-typed [ChatModel] constant instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun model(value: String) = model(ChatModel.of(value))
 
@@ -868,38 +941,24 @@ private constructor(
              */
             fun include(include: List<ResponseIncludable>?) = include(JsonField.ofNullable(include))
 
-            /**
-             * Specify additional output data to include in the model response. Currently supported
-             * values are:
-             * - `file_search_call.results`: Include the search results of the file search tool
-             *   call.
-             * - `message.input_image.image_url`: Include image urls from the input message.
-             * - `computer_call_output.output.image_url`: Include image urls from the computer call
-             *   output.
-             */
+            /** Alias for calling [Builder.include] with `include.orElse(null)`. */
             fun include(include: Optional<List<ResponseIncludable>>) = include(include.getOrNull())
 
             /**
-             * Specify additional output data to include in the model response. Currently supported
-             * values are:
-             * - `file_search_call.results`: Include the search results of the file search tool
-             *   call.
-             * - `message.input_image.image_url`: Include image urls from the input message.
-             * - `computer_call_output.output.image_url`: Include image urls from the computer call
-             *   output.
+             * Sets [Builder.include] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.include] with a well-typed
+             * `List<ResponseIncludable>` value instead. This method is primarily for setting the
+             * field to an undocumented or not yet supported value.
              */
             fun include(include: JsonField<List<ResponseIncludable>>) = apply {
                 this.include = include.map { it.toMutableList() }
             }
 
             /**
-             * Specify additional output data to include in the model response. Currently supported
-             * values are:
-             * - `file_search_call.results`: Include the search results of the file search tool
-             *   call.
-             * - `message.input_image.image_url`: Include image urls from the input message.
-             * - `computer_call_output.output.image_url`: Include image urls from the computer call
-             *   output.
+             * Adds a single [ResponseIncludable] to [Builder.include].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
              */
             fun addInclude(include: ResponseIncludable) = apply {
                 this.include =
@@ -918,22 +977,16 @@ private constructor(
             fun instructions(instructions: String?) =
                 instructions(JsonField.ofNullable(instructions))
 
-            /**
-             * Inserts a system (or developer) message as the first item in the model's context.
-             *
-             * When using along with `previous_response_id`, the instructions from a previous
-             * response will be not be carried over to the next response. This makes it simple to
-             * swap out system (or developer) messages in new responses.
-             */
+            /** Alias for calling [Builder.instructions] with `instructions.orElse(null)`. */
             fun instructions(instructions: Optional<String>) =
                 instructions(instructions.getOrNull())
 
             /**
-             * Inserts a system (or developer) message as the first item in the model's context.
+             * Sets [Builder.instructions] to an arbitrary JSON value.
              *
-             * When using along with `previous_response_id`, the instructions from a previous
-             * response will be not be carried over to the next response. This makes it simple to
-             * swap out system (or developer) messages in new responses.
+             * You should usually call [Builder.instructions] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun instructions(instructions: JsonField<String>) = apply {
                 this.instructions = instructions
@@ -948,24 +1001,22 @@ private constructor(
                 maxOutputTokens(JsonField.ofNullable(maxOutputTokens))
 
             /**
-             * An upper bound for the number of tokens that can be generated for a response,
-             * including visible output tokens and
-             * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+             * Alias for [Builder.maxOutputTokens].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
              */
             fun maxOutputTokens(maxOutputTokens: Long) = maxOutputTokens(maxOutputTokens as Long?)
 
-            /**
-             * An upper bound for the number of tokens that can be generated for a response,
-             * including visible output tokens and
-             * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
-             */
+            /** Alias for calling [Builder.maxOutputTokens] with `maxOutputTokens.orElse(null)`. */
             fun maxOutputTokens(maxOutputTokens: Optional<Long>) =
                 maxOutputTokens(maxOutputTokens.getOrNull())
 
             /**
-             * An upper bound for the number of tokens that can be generated for a response,
-             * including visible output tokens and
-             * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+             * Sets [Builder.maxOutputTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.maxOutputTokens] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun maxOutputTokens(maxOutputTokens: JsonField<Long>) = apply {
                 this.maxOutputTokens = maxOutputTokens
@@ -981,23 +1032,15 @@ private constructor(
              */
             fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
 
-            /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format, and querying
-             * for objects via API or the dashboard.
-             *
-             * Keys are strings with a maximum length of 64 characters. Values are strings with a
-             * maximum length of 512 characters.
-             */
+            /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
             fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
             /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format, and querying
-             * for objects via API or the dashboard.
+             * Sets [Builder.metadata] to an arbitrary JSON value.
              *
-             * Keys are strings with a maximum length of 64 characters. Values are strings with a
-             * maximum length of 512 characters.
+             * You should usually call [Builder.metadata] with a well-typed [Metadata] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
@@ -1005,15 +1048,27 @@ private constructor(
             fun parallelToolCalls(parallelToolCalls: Boolean?) =
                 parallelToolCalls(JsonField.ofNullable(parallelToolCalls))
 
-            /** Whether to allow the model to run tool calls in parallel. */
+            /**
+             * Alias for [Builder.parallelToolCalls].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
             fun parallelToolCalls(parallelToolCalls: Boolean) =
                 parallelToolCalls(parallelToolCalls as Boolean?)
 
-            /** Whether to allow the model to run tool calls in parallel. */
+            /**
+             * Alias for calling [Builder.parallelToolCalls] with `parallelToolCalls.orElse(null)`.
+             */
             fun parallelToolCalls(parallelToolCalls: Optional<Boolean>) =
                 parallelToolCalls(parallelToolCalls.getOrNull())
 
-            /** Whether to allow the model to run tool calls in parallel. */
+            /**
+             * Sets [Builder.parallelToolCalls] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.parallelToolCalls] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun parallelToolCalls(parallelToolCalls: JsonField<Boolean>) = apply {
                 this.parallelToolCalls = parallelToolCalls
             }
@@ -1027,17 +1082,18 @@ private constructor(
                 previousResponseId(JsonField.ofNullable(previousResponseId))
 
             /**
-             * The unique ID of the previous response to the model. Use this to create multi-turn
-             * conversations. Learn more about
-             * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
+             * Alias for calling [Builder.previousResponseId] with
+             * `previousResponseId.orElse(null)`.
              */
             fun previousResponseId(previousResponseId: Optional<String>) =
                 previousResponseId(previousResponseId.getOrNull())
 
             /**
-             * The unique ID of the previous response to the model. Use this to create multi-turn
-             * conversations. Learn more about
-             * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
+             * Sets [Builder.previousResponseId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.previousResponseId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun previousResponseId(previousResponseId: JsonField<String>) = apply {
                 this.previousResponseId = previousResponseId
@@ -1051,32 +1107,38 @@ private constructor(
              */
             fun reasoning(reasoning: Reasoning?) = reasoning(JsonField.ofNullable(reasoning))
 
-            /**
-             * **o-series models only**
-             *
-             * Configuration options for
-             * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
-             */
+            /** Alias for calling [Builder.reasoning] with `reasoning.orElse(null)`. */
             fun reasoning(reasoning: Optional<Reasoning>) = reasoning(reasoning.getOrNull())
 
             /**
-             * **o-series models only**
+             * Sets [Builder.reasoning] to an arbitrary JSON value.
              *
-             * Configuration options for
-             * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+             * You should usually call [Builder.reasoning] with a well-typed [Reasoning] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun reasoning(reasoning: JsonField<Reasoning>) = apply { this.reasoning = reasoning }
 
             /** Whether to store the generated model response for later retrieval via API. */
             fun store(store: Boolean?) = store(JsonField.ofNullable(store))
 
-            /** Whether to store the generated model response for later retrieval via API. */
+            /**
+             * Alias for [Builder.store].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
             fun store(store: Boolean) = store(store as Boolean?)
 
-            /** Whether to store the generated model response for later retrieval via API. */
+            /** Alias for calling [Builder.store] with `store.orElse(null)`. */
             fun store(store: Optional<Boolean>) = store(store.getOrNull())
 
-            /** Whether to store the generated model response for later retrieval via API. */
+            /**
+             * Sets [Builder.store] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.store] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun store(store: JsonField<Boolean>) = apply { this.store = store }
 
             /**
@@ -1087,23 +1149,21 @@ private constructor(
             fun temperature(temperature: Double?) = temperature(JsonField.ofNullable(temperature))
 
             /**
-             * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
-             * the output more random, while lower values like 0.2 will make it more focused and
-             * deterministic. We generally recommend altering this or `top_p` but not both.
+             * Alias for [Builder.temperature].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
              */
             fun temperature(temperature: Double) = temperature(temperature as Double?)
 
-            /**
-             * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
-             * the output more random, while lower values like 0.2 will make it more focused and
-             * deterministic. We generally recommend altering this or `top_p` but not both.
-             */
+            /** Alias for calling [Builder.temperature] with `temperature.orElse(null)`. */
             fun temperature(temperature: Optional<Double>) = temperature(temperature.getOrNull())
 
             /**
-             * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
-             * the output more random, while lower values like 0.2 will make it more focused and
-             * deterministic. We generally recommend altering this or `top_p` but not both.
+             * Sets [Builder.temperature] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.temperature] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun temperature(temperature: JsonField<Double>) = apply {
                 this.temperature = temperature
@@ -1118,10 +1178,11 @@ private constructor(
             fun text(text: ResponseTextConfig) = text(JsonField.of(text))
 
             /**
-             * Configuration options for a text response from the model. Can be plain text or
-             * structured JSON data. Learn more:
-             * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-             * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+             * Sets [Builder.text] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.text] with a well-typed [ResponseTextConfig] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun text(text: JsonField<ResponseTextConfig>) = apply { this.text = text }
 
@@ -1132,32 +1193,23 @@ private constructor(
             fun toolChoice(toolChoice: ToolChoice) = toolChoice(JsonField.of(toolChoice))
 
             /**
-             * How the model should select which tool (or tools) to use when generating a response.
-             * See the `tools` parameter to see how to specify which tools the model can call.
+             * Sets [Builder.toolChoice] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.toolChoice] with a well-typed [ToolChoice] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun toolChoice(toolChoice: JsonField<ToolChoice>) = apply {
                 this.toolChoice = toolChoice
             }
 
-            /**
-             * Controls which (if any) tool is called by the model.
-             *
-             * `none` means the model will not call any tool and instead generates a message.
-             *
-             * `auto` means the model can pick between generating a message or calling one or more
-             * tools.
-             *
-             * `required` means the model must call one or more tools.
-             */
+            /** Alias for calling [toolChoice] with `ToolChoice.ofOptions(options)`. */
             fun toolChoice(options: ToolChoiceOptions) = toolChoice(ToolChoice.ofOptions(options))
 
-            /**
-             * Indicates that the model should use a built-in tool to generate a response.
-             * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
-             */
+            /** Alias for calling [toolChoice] with `ToolChoice.ofTypes(types)`. */
             fun toolChoice(types: ToolChoiceTypes) = toolChoice(ToolChoice.ofTypes(types))
 
-            /** Use this option to force the model to call a specific function. */
+            /** Alias for calling [toolChoice] with `ToolChoice.ofFunction(function)`. */
             fun toolChoice(function: ToolChoiceFunction) =
                 toolChoice(ToolChoice.ofFunction(function))
 
@@ -1178,36 +1230,20 @@ private constructor(
             fun tools(tools: List<Tool>) = tools(JsonField.of(tools))
 
             /**
-             * An array of tools the model may call while generating a response. You can specify
-             * which tool to use by setting the `tool_choice` parameter.
+             * Sets [Builder.tools] to an arbitrary JSON value.
              *
-             * The two categories of tools you can provide the model are:
-             * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's
-             *   capabilities, like
-             *   [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-             *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn
-             *   more about [built-in tools](https://platform.openai.com/docs/guides/tools).
-             * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
-             *   model to call your own code. Learn more about
-             *   [function calling](https://platform.openai.com/docs/guides/function-calling).
+             * You should usually call [Builder.tools] with a well-typed `List<Tool>` value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun tools(tools: JsonField<List<Tool>>) = apply {
                 this.tools = tools.map { it.toMutableList() }
             }
 
             /**
-             * An array of tools the model may call while generating a response. You can specify
-             * which tool to use by setting the `tool_choice` parameter.
+             * Adds a single [Tool] to [tools].
              *
-             * The two categories of tools you can provide the model are:
-             * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's
-             *   capabilities, like
-             *   [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-             *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn
-             *   more about [built-in tools](https://platform.openai.com/docs/guides/tools).
-             * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
-             *   model to call your own code. Learn more about
-             *   [function calling](https://platform.openai.com/docs/guides/function-calling).
+             * @throws IllegalStateException if the field was previously set to a non-list.
              */
             fun addTool(tool: Tool) = apply {
                 tools =
@@ -1216,37 +1252,28 @@ private constructor(
                     }
             }
 
-            /**
-             * A tool that searches for relevant content from uploaded files. Learn more about the
-             * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
-             */
+            /** Alias for calling [addTool] with `Tool.ofFileSearch(fileSearch)`. */
             fun addTool(fileSearch: FileSearchTool) = addTool(Tool.ofFileSearch(fileSearch))
 
             /**
-             * A tool that searches for relevant content from uploaded files. Learn more about the
-             * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
+             * Alias for calling [addTool] with the following:
+             * ```java
+             * FileSearchTool.builder()
+             *     .vectorStoreIds(vectorStoreIds)
+             *     .build()
+             * ```
              */
             fun addFileSearchTool(vectorStoreIds: List<String>) =
                 addTool(FileSearchTool.builder().vectorStoreIds(vectorStoreIds).build())
 
-            /**
-             * Defines a function in your own code the model can choose to call. Learn more about
-             * [function calling](https://platform.openai.com/docs/guides/function-calling).
-             */
+            /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
             fun addTool(function: FunctionTool) = addTool(Tool.ofFunction(function))
 
-            /**
-             * A tool that controls a virtual computer. Learn more about the
-             * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
-             */
+            /** Alias for calling [addTool] with `Tool.ofComputerUsePreview(computerUsePreview)`. */
             fun addTool(computerUsePreview: ComputerTool) =
                 addTool(Tool.ofComputerUsePreview(computerUsePreview))
 
-            /**
-             * This tool searches the web for relevant results to use in a response. Learn more
-             * about the
-             * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
-             */
+            /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */
             fun addTool(webSearch: WebSearchTool) = addTool(Tool.ofWebSearch(webSearch))
 
             /**
@@ -1259,29 +1286,21 @@ private constructor(
             fun topP(topP: Double?) = topP(JsonField.ofNullable(topP))
 
             /**
-             * An alternative to sampling with temperature, called nucleus sampling, where the model
-             * considers the results of the tokens with top_p probability mass. So 0.1 means only
-             * the tokens comprising the top 10% probability mass are considered.
+             * Alias for [Builder.topP].
              *
-             * We generally recommend altering this or `temperature` but not both.
+             * This unboxed primitive overload exists for backwards compatibility.
              */
             fun topP(topP: Double) = topP(topP as Double?)
 
-            /**
-             * An alternative to sampling with temperature, called nucleus sampling, where the model
-             * considers the results of the tokens with top_p probability mass. So 0.1 means only
-             * the tokens comprising the top 10% probability mass are considered.
-             *
-             * We generally recommend altering this or `temperature` but not both.
-             */
+            /** Alias for calling [Builder.topP] with `topP.orElse(null)`. */
             fun topP(topP: Optional<Double>) = topP(topP.getOrNull())
 
             /**
-             * An alternative to sampling with temperature, called nucleus sampling, where the model
-             * considers the results of the tokens with top_p probability mass. So 0.1 means only
-             * the tokens comprising the top 10% probability mass are considered.
+             * Sets [Builder.topP] to an arbitrary JSON value.
              *
-             * We generally recommend altering this or `temperature` but not both.
+             * You should usually call [Builder.topP] with a well-typed [Double] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
 
@@ -1295,23 +1314,15 @@ private constructor(
              */
             fun truncation(truncation: Truncation?) = truncation(JsonField.ofNullable(truncation))
 
-            /**
-             * The truncation strategy to use for the model response.
-             * - `auto`: If the context of this response and previous ones exceeds the model's
-             *   context window size, the model will truncate the response to fit the context window
-             *   by dropping input items in the middle of the conversation.
-             * - `disabled` (default): If a model response will exceed the context window size for a
-             *   model, the request will fail with a 400 error.
-             */
+            /** Alias for calling [Builder.truncation] with `truncation.orElse(null)`. */
             fun truncation(truncation: Optional<Truncation>) = truncation(truncation.getOrNull())
 
             /**
-             * The truncation strategy to use for the model response.
-             * - `auto`: If the context of this response and previous ones exceeds the model's
-             *   context window size, the model will truncate the response to fit the context window
-             *   by dropping input items in the middle of the conversation.
-             * - `disabled` (default): If a model response will exceed the context window size for a
-             *   model, the request will fail with a 400 error.
+             * Sets [Builder.truncation] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.truncation] with a well-typed [Truncation] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun truncation(truncation: JsonField<Truncation>) = apply {
                 this.truncation = truncation
@@ -1325,9 +1336,11 @@ private constructor(
             fun user(user: String) = user(JsonField.of(user))
 
             /**
-             * A unique identifier representing your end-user, which can help OpenAI to monitor and
-             * detect abuse.
-             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+             * Sets [Builder.user] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.user] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun user(user: JsonField<String>) = apply { this.user = user }
 
@@ -1350,6 +1363,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .input()
+             * .model()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("input", input),
@@ -1435,21 +1461,17 @@ private constructor(
         fun input(input: Input) = apply { body.input(input) }
 
         /**
-         * Text, image, or file inputs to the model, used to generate a response.
+         * Sets [Builder.input] to an arbitrary JSON value.
          *
-         * Learn more:
-         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-         * - [Image inputs](https://platform.openai.com/docs/guides/images)
-         * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-         * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-         * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+         * You should usually call [Builder.input] with a well-typed [Input] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun input(input: JsonField<Input>) = apply { body.input(input) }
 
-        /** A text input to the model, equivalent to a text input with the `user` role. */
+        /** Alias for calling [input] with `Input.ofText(text)`. */
         fun input(text: String) = apply { body.input(text) }
 
-        /** A list of one or many input items to the model, containing different content types. */
+        /** Alias for calling [input] with `Input.ofResponse(response)`. */
         fun inputOfResponse(response: List<ResponseInputItem>) = apply {
             body.inputOfResponse(response)
         }
@@ -1463,18 +1485,18 @@ private constructor(
         fun model(model: ChatModel) = apply { body.model(model) }
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
-         * available models.
+         * Sets [Builder.model] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.model] with a well-typed [ChatModel] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun model(model: JsonField<ChatModel>) = apply { body.model(model) }
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
-         * available models.
+         * Sets [model] to an arbitrary [String].
+         *
+         * You should usually call [model] with a well-typed [ChatModel] constant instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun model(value: String) = apply { body.model(value) }
 
@@ -1488,33 +1510,22 @@ private constructor(
          */
         fun include(include: List<ResponseIncludable>?) = apply { body.include(include) }
 
-        /**
-         * Specify additional output data to include in the model response. Currently supported
-         * values are:
-         * - `file_search_call.results`: Include the search results of the file search tool call.
-         * - `message.input_image.image_url`: Include image urls from the input message.
-         * - `computer_call_output.output.image_url`: Include image urls from the computer call
-         *   output.
-         */
+        /** Alias for calling [Builder.include] with `include.orElse(null)`. */
         fun include(include: Optional<List<ResponseIncludable>>) = include(include.getOrNull())
 
         /**
-         * Specify additional output data to include in the model response. Currently supported
-         * values are:
-         * - `file_search_call.results`: Include the search results of the file search tool call.
-         * - `message.input_image.image_url`: Include image urls from the input message.
-         * - `computer_call_output.output.image_url`: Include image urls from the computer call
-         *   output.
+         * Sets [Builder.include] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.include] with a well-typed `List<ResponseIncludable>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
          */
         fun include(include: JsonField<List<ResponseIncludable>>) = apply { body.include(include) }
 
         /**
-         * Specify additional output data to include in the model response. Currently supported
-         * values are:
-         * - `file_search_call.results`: Include the search results of the file search tool call.
-         * - `message.input_image.image_url`: Include image urls from the input message.
-         * - `computer_call_output.output.image_url`: Include image urls from the computer call
-         *   output.
+         * Adds a single [ResponseIncludable] to [Builder.include].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addInclude(include: ResponseIncludable) = apply { body.addInclude(include) }
 
@@ -1527,21 +1538,15 @@ private constructor(
          */
         fun instructions(instructions: String?) = apply { body.instructions(instructions) }
 
-        /**
-         * Inserts a system (or developer) message as the first item in the model's context.
-         *
-         * When using along with `previous_response_id`, the instructions from a previous response
-         * will be not be carried over to the next response. This makes it simple to swap out system
-         * (or developer) messages in new responses.
-         */
+        /** Alias for calling [Builder.instructions] with `instructions.orElse(null)`. */
         fun instructions(instructions: Optional<String>) = instructions(instructions.getOrNull())
 
         /**
-         * Inserts a system (or developer) message as the first item in the model's context.
+         * Sets [Builder.instructions] to an arbitrary JSON value.
          *
-         * When using along with `previous_response_id`, the instructions from a previous response
-         * will be not be carried over to the next response. This makes it simple to swap out system
-         * (or developer) messages in new responses.
+         * You should usually call [Builder.instructions] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun instructions(instructions: JsonField<String>) = apply {
             body.instructions(instructions)
@@ -1557,24 +1562,22 @@ private constructor(
         }
 
         /**
-         * An upper bound for the number of tokens that can be generated for a response, including
-         * visible output tokens and
-         * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+         * Alias for [Builder.maxOutputTokens].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
          */
         fun maxOutputTokens(maxOutputTokens: Long) = maxOutputTokens(maxOutputTokens as Long?)
 
-        /**
-         * An upper bound for the number of tokens that can be generated for a response, including
-         * visible output tokens and
-         * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
-         */
+        /** Alias for calling [Builder.maxOutputTokens] with `maxOutputTokens.orElse(null)`. */
         fun maxOutputTokens(maxOutputTokens: Optional<Long>) =
             maxOutputTokens(maxOutputTokens.getOrNull())
 
         /**
-         * An upper bound for the number of tokens that can be generated for a response, including
-         * visible output tokens and
-         * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+         * Sets [Builder.maxOutputTokens] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.maxOutputTokens] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun maxOutputTokens(maxOutputTokens: JsonField<Long>) = apply {
             body.maxOutputTokens(maxOutputTokens)
@@ -1590,23 +1593,15 @@ private constructor(
          */
         fun metadata(metadata: Metadata?) = apply { body.metadata(metadata) }
 
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
-         *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
-         */
+        /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
         fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
+         * Sets [Builder.metadata] to an arbitrary JSON value.
          *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
+         * You should usually call [Builder.metadata] with a well-typed [Metadata] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
 
@@ -1615,15 +1610,25 @@ private constructor(
             body.parallelToolCalls(parallelToolCalls)
         }
 
-        /** Whether to allow the model to run tool calls in parallel. */
+        /**
+         * Alias for [Builder.parallelToolCalls].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
         fun parallelToolCalls(parallelToolCalls: Boolean) =
             parallelToolCalls(parallelToolCalls as Boolean?)
 
-        /** Whether to allow the model to run tool calls in parallel. */
+        /** Alias for calling [Builder.parallelToolCalls] with `parallelToolCalls.orElse(null)`. */
         fun parallelToolCalls(parallelToolCalls: Optional<Boolean>) =
             parallelToolCalls(parallelToolCalls.getOrNull())
 
-        /** Whether to allow the model to run tool calls in parallel. */
+        /**
+         * Sets [Builder.parallelToolCalls] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.parallelToolCalls] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun parallelToolCalls(parallelToolCalls: JsonField<Boolean>) = apply {
             body.parallelToolCalls(parallelToolCalls)
         }
@@ -1638,17 +1643,17 @@ private constructor(
         }
 
         /**
-         * The unique ID of the previous response to the model. Use this to create multi-turn
-         * conversations. Learn more about
-         * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
+         * Alias for calling [Builder.previousResponseId] with `previousResponseId.orElse(null)`.
          */
         fun previousResponseId(previousResponseId: Optional<String>) =
             previousResponseId(previousResponseId.getOrNull())
 
         /**
-         * The unique ID of the previous response to the model. Use this to create multi-turn
-         * conversations. Learn more about
-         * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
+         * Sets [Builder.previousResponseId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.previousResponseId] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun previousResponseId(previousResponseId: JsonField<String>) = apply {
             body.previousResponseId(previousResponseId)
@@ -1662,32 +1667,37 @@ private constructor(
          */
         fun reasoning(reasoning: Reasoning?) = apply { body.reasoning(reasoning) }
 
-        /**
-         * **o-series models only**
-         *
-         * Configuration options for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
-         */
+        /** Alias for calling [Builder.reasoning] with `reasoning.orElse(null)`. */
         fun reasoning(reasoning: Optional<Reasoning>) = reasoning(reasoning.getOrNull())
 
         /**
-         * **o-series models only**
+         * Sets [Builder.reasoning] to an arbitrary JSON value.
          *
-         * Configuration options for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+         * You should usually call [Builder.reasoning] with a well-typed [Reasoning] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun reasoning(reasoning: JsonField<Reasoning>) = apply { body.reasoning(reasoning) }
 
         /** Whether to store the generated model response for later retrieval via API. */
         fun store(store: Boolean?) = apply { body.store(store) }
 
-        /** Whether to store the generated model response for later retrieval via API. */
+        /**
+         * Alias for [Builder.store].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
         fun store(store: Boolean) = store(store as Boolean?)
 
-        /** Whether to store the generated model response for later retrieval via API. */
+        /** Alias for calling [Builder.store] with `store.orElse(null)`. */
         fun store(store: Optional<Boolean>) = store(store.getOrNull())
 
-        /** Whether to store the generated model response for later retrieval via API. */
+        /**
+         * Sets [Builder.store] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.store] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun store(store: JsonField<Boolean>) = apply { body.store(store) }
 
         /**
@@ -1698,23 +1708,21 @@ private constructor(
         fun temperature(temperature: Double?) = apply { body.temperature(temperature) }
 
         /**
-         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
-         * output more random, while lower values like 0.2 will make it more focused and
-         * deterministic. We generally recommend altering this or `top_p` but not both.
+         * Alias for [Builder.temperature].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
          */
         fun temperature(temperature: Double) = temperature(temperature as Double?)
 
-        /**
-         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
-         * output more random, while lower values like 0.2 will make it more focused and
-         * deterministic. We generally recommend altering this or `top_p` but not both.
-         */
+        /** Alias for calling [Builder.temperature] with `temperature.orElse(null)`. */
         fun temperature(temperature: Optional<Double>) = temperature(temperature.getOrNull())
 
         /**
-         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
-         * output more random, while lower values like 0.2 will make it more focused and
-         * deterministic. We generally recommend altering this or `top_p` but not both.
+         * Sets [Builder.temperature] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.temperature] with a well-typed [Double] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun temperature(temperature: JsonField<Double>) = apply { body.temperature(temperature) }
 
@@ -1727,10 +1735,11 @@ private constructor(
         fun text(text: ResponseTextConfig) = apply { body.text(text) }
 
         /**
-         * Configuration options for a text response from the model. Can be plain text or structured
-         * JSON data. Learn more:
-         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-         * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+         * Sets [Builder.text] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.text] with a well-typed [ResponseTextConfig] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun text(text: JsonField<ResponseTextConfig>) = apply { body.text(text) }
 
@@ -1741,30 +1750,21 @@ private constructor(
         fun toolChoice(toolChoice: ToolChoice) = apply { body.toolChoice(toolChoice) }
 
         /**
-         * How the model should select which tool (or tools) to use when generating a response. See
-         * the `tools` parameter to see how to specify which tools the model can call.
+         * Sets [Builder.toolChoice] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.toolChoice] with a well-typed [ToolChoice] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun toolChoice(toolChoice: JsonField<ToolChoice>) = apply { body.toolChoice(toolChoice) }
 
-        /**
-         * Controls which (if any) tool is called by the model.
-         *
-         * `none` means the model will not call any tool and instead generates a message.
-         *
-         * `auto` means the model can pick between generating a message or calling one or more
-         * tools.
-         *
-         * `required` means the model must call one or more tools.
-         */
+        /** Alias for calling [toolChoice] with `ToolChoice.ofOptions(options)`. */
         fun toolChoice(options: ToolChoiceOptions) = apply { body.toolChoice(options) }
 
-        /**
-         * Indicates that the model should use a built-in tool to generate a response.
-         * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
-         */
+        /** Alias for calling [toolChoice] with `ToolChoice.ofTypes(types)`. */
         fun toolChoice(types: ToolChoiceTypes) = apply { body.toolChoice(types) }
 
-        /** Use this option to force the model to call a specific function. */
+        /** Alias for calling [toolChoice] with `ToolChoice.ofFunction(function)`. */
         fun toolChoice(function: ToolChoiceFunction) = apply { body.toolChoice(function) }
 
         /**
@@ -1784,67 +1784,43 @@ private constructor(
         fun tools(tools: List<Tool>) = apply { body.tools(tools) }
 
         /**
-         * An array of tools the model may call while generating a response. You can specify which
-         * tool to use by setting the `tool_choice` parameter.
+         * Sets [Builder.tools] to an arbitrary JSON value.
          *
-         * The two categories of tools you can provide the model are:
-         * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's
-         *   capabilities, like
-         *   [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-         *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more
-         *   about [built-in tools](https://platform.openai.com/docs/guides/tools).
-         * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
-         *   model to call your own code. Learn more about
-         *   [function calling](https://platform.openai.com/docs/guides/function-calling).
+         * You should usually call [Builder.tools] with a well-typed `List<Tool>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun tools(tools: JsonField<List<Tool>>) = apply { body.tools(tools) }
 
         /**
-         * An array of tools the model may call while generating a response. You can specify which
-         * tool to use by setting the `tool_choice` parameter.
+         * Adds a single [Tool] to [tools].
          *
-         * The two categories of tools you can provide the model are:
-         * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's
-         *   capabilities, like
-         *   [web search](https://platform.openai.com/docs/guides/tools-web-search) or
-         *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more
-         *   about [built-in tools](https://platform.openai.com/docs/guides/tools).
-         * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
-         *   model to call your own code. Learn more about
-         *   [function calling](https://platform.openai.com/docs/guides/function-calling).
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addTool(tool: Tool) = apply { body.addTool(tool) }
 
-        /**
-         * A tool that searches for relevant content from uploaded files. Learn more about the
-         * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
-         */
+        /** Alias for calling [addTool] with `Tool.ofFileSearch(fileSearch)`. */
         fun addTool(fileSearch: FileSearchTool) = apply { body.addTool(fileSearch) }
 
         /**
-         * A tool that searches for relevant content from uploaded files. Learn more about the
-         * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
+         * Alias for calling [addTool] with the following:
+         * ```java
+         * FileSearchTool.builder()
+         *     .vectorStoreIds(vectorStoreIds)
+         *     .build()
+         * ```
          */
         fun addFileSearchTool(vectorStoreIds: List<String>) = apply {
             body.addFileSearchTool(vectorStoreIds)
         }
 
-        /**
-         * Defines a function in your own code the model can choose to call. Learn more about
-         * [function calling](https://platform.openai.com/docs/guides/function-calling).
-         */
+        /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
         fun addTool(function: FunctionTool) = apply { body.addTool(function) }
 
-        /**
-         * A tool that controls a virtual computer. Learn more about the
-         * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
-         */
+        /** Alias for calling [addTool] with `Tool.ofComputerUsePreview(computerUsePreview)`. */
         fun addTool(computerUsePreview: ComputerTool) = apply { body.addTool(computerUsePreview) }
 
-        /**
-         * This tool searches the web for relevant results to use in a response. Learn more about
-         * the [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
-         */
+        /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */
         fun addTool(webSearch: WebSearchTool) = apply { body.addTool(webSearch) }
 
         /**
@@ -1857,29 +1833,20 @@ private constructor(
         fun topP(topP: Double?) = apply { body.topP(topP) }
 
         /**
-         * An alternative to sampling with temperature, called nucleus sampling, where the model
-         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
-         * tokens comprising the top 10% probability mass are considered.
+         * Alias for [Builder.topP].
          *
-         * We generally recommend altering this or `temperature` but not both.
+         * This unboxed primitive overload exists for backwards compatibility.
          */
         fun topP(topP: Double) = topP(topP as Double?)
 
-        /**
-         * An alternative to sampling with temperature, called nucleus sampling, where the model
-         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
-         * tokens comprising the top 10% probability mass are considered.
-         *
-         * We generally recommend altering this or `temperature` but not both.
-         */
+        /** Alias for calling [Builder.topP] with `topP.orElse(null)`. */
         fun topP(topP: Optional<Double>) = topP(topP.getOrNull())
 
         /**
-         * An alternative to sampling with temperature, called nucleus sampling, where the model
-         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
-         * tokens comprising the top 10% probability mass are considered.
+         * Sets [Builder.topP] to an arbitrary JSON value.
          *
-         * We generally recommend altering this or `temperature` but not both.
+         * You should usually call [Builder.topP] with a well-typed [Double] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun topP(topP: JsonField<Double>) = apply { body.topP(topP) }
 
@@ -1893,23 +1860,15 @@ private constructor(
          */
         fun truncation(truncation: Truncation?) = apply { body.truncation(truncation) }
 
-        /**
-         * The truncation strategy to use for the model response.
-         * - `auto`: If the context of this response and previous ones exceeds the model's context
-         *   window size, the model will truncate the response to fit the context window by dropping
-         *   input items in the middle of the conversation.
-         * - `disabled` (default): If a model response will exceed the context window size for a
-         *   model, the request will fail with a 400 error.
-         */
+        /** Alias for calling [Builder.truncation] with `truncation.orElse(null)`. */
         fun truncation(truncation: Optional<Truncation>) = truncation(truncation.getOrNull())
 
         /**
-         * The truncation strategy to use for the model response.
-         * - `auto`: If the context of this response and previous ones exceeds the model's context
-         *   window size, the model will truncate the response to fit the context window by dropping
-         *   input items in the middle of the conversation.
-         * - `disabled` (default): If a model response will exceed the context window size for a
-         *   model, the request will fail with a 400 error.
+         * Sets [Builder.truncation] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.truncation] with a well-typed [Truncation] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun truncation(truncation: JsonField<Truncation>) = apply { body.truncation(truncation) }
 
@@ -1921,9 +1880,10 @@ private constructor(
         fun user(user: String) = apply { body.user(user) }
 
         /**
-         * A unique identifier representing your end-user, which can help OpenAI to monitor and
-         * detect abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         * Sets [Builder.user] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.user] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun user(user: JsonField<String>) = apply { body.user(user) }
 
@@ -2044,6 +2004,19 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .input()
+         * .model()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseCreateParams =
             ResponseCreateParams(
                 body.build(),

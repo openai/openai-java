@@ -57,49 +57,99 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The unique ID of the computer call. */
+    /**
+     * The unique ID of the computer call.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** A click action. */
+    /**
+     * A click action.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun action(): Action = action.getRequired("action")
 
-    /** An identifier used when responding to the tool call with output. */
+    /**
+     * An identifier used when responding to the tool call with output.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun callId(): String = callId.getRequired("call_id")
 
-    /** The pending safety checks for the computer call. */
+    /**
+     * The pending safety checks for the computer call.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun pendingSafetyChecks(): List<PendingSafetyCheck> =
         pendingSafetyChecks.getRequired("pending_safety_checks")
 
     /**
      * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated when
      * items are returned via API.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun status(): Status = status.getRequired("status")
 
-    /** The type of the computer call. Always `computer_call`. */
+    /**
+     * The type of the computer call. Always `computer_call`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun type(): Type = type.getRequired("type")
 
-    /** The unique ID of the computer call. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** A click action. */
+    /**
+     * Returns the raw JSON value of [action].
+     *
+     * Unlike [action], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("action") @ExcludeMissing fun _action(): JsonField<Action> = action
 
-    /** An identifier used when responding to the tool call with output. */
+    /**
+     * Returns the raw JSON value of [callId].
+     *
+     * Unlike [callId], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("call_id") @ExcludeMissing fun _callId(): JsonField<String> = callId
 
-    /** The pending safety checks for the computer call. */
+    /**
+     * Returns the raw JSON value of [pendingSafetyChecks].
+     *
+     * Unlike [pendingSafetyChecks], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
     @JsonProperty("pending_safety_checks")
     @ExcludeMissing
     fun _pendingSafetyChecks(): JsonField<List<PendingSafetyCheck>> = pendingSafetyChecks
 
     /**
-     * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated when
-     * items are returned via API.
+     * Returns the raw JSON value of [status].
+     *
+     * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
-    /** The type of the computer call. Always `computer_call`. */
+    /**
+     * Returns the raw JSON value of [type].
+     *
+     * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
@@ -168,69 +218,115 @@ private constructor(
         /** The unique ID of the computer call. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The unique ID of the computer call. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** A click action. */
         fun action(action: Action) = action(JsonField.of(action))
 
-        /** A click action. */
+        /**
+         * Sets [Builder.action] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.action] with a well-typed [Action] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun action(action: JsonField<Action>) = apply { this.action = action }
 
-        /** A click action. */
+        /** Alias for calling [action] with `Action.ofClick(click)`. */
         fun action(click: Action.Click) = action(Action.ofClick(click))
 
-        /** A double click action. */
+        /** Alias for calling [action] with `Action.ofDoubleClick(doubleClick)`. */
         fun action(doubleClick: Action.DoubleClick) = action(Action.ofDoubleClick(doubleClick))
 
-        /** A drag action. */
+        /** Alias for calling [action] with `Action.ofDrag(drag)`. */
         fun action(drag: Action.Drag) = action(Action.ofDrag(drag))
 
-        /** A drag action. */
+        /**
+         * Alias for calling [action] with the following:
+         * ```java
+         * Action.Drag.builder()
+         *     .path(path)
+         *     .build()
+         * ```
+         */
         fun dragAction(path: List<Action.Drag.Path>) =
             action(Action.Drag.builder().path(path).build())
 
-        /** A collection of keypresses the model would like to perform. */
+        /** Alias for calling [action] with `Action.ofKeypress(keypress)`. */
         fun action(keypress: Action.Keypress) = action(Action.ofKeypress(keypress))
 
-        /** A collection of keypresses the model would like to perform. */
+        /**
+         * Alias for calling [action] with the following:
+         * ```java
+         * Action.Keypress.builder()
+         *     .keys(keys)
+         *     .build()
+         * ```
+         */
         fun keypressAction(keys: List<String>) =
             action(Action.Keypress.builder().keys(keys).build())
 
-        /** A mouse move action. */
+        /** Alias for calling [action] with `Action.ofMove(move)`. */
         fun action(move: Action.Move) = action(Action.ofMove(move))
 
-        /** A screenshot action. */
+        /** Alias for calling [action] with `Action.ofScreenshot()`. */
         fun actionScreenshot() = action(Action.ofScreenshot())
 
-        /** A scroll action. */
+        /** Alias for calling [action] with `Action.ofScroll(scroll)`. */
         fun action(scroll: Action.Scroll) = action(Action.ofScroll(scroll))
 
-        /** An action to type in text. */
+        /** Alias for calling [action] with `Action.ofType(type)`. */
         fun action(type: Action.Type) = action(Action.ofType(type))
 
-        /** An action to type in text. */
+        /**
+         * Alias for calling [action] with the following:
+         * ```java
+         * Action.Type.builder()
+         *     .text(text)
+         *     .build()
+         * ```
+         */
         fun typeAction(text: String) = action(Action.Type.builder().text(text).build())
 
-        /** A wait action. */
+        /** Alias for calling [action] with `Action.ofWait()`. */
         fun actionWait() = action(Action.ofWait())
 
         /** An identifier used when responding to the tool call with output. */
         fun callId(callId: String) = callId(JsonField.of(callId))
 
-        /** An identifier used when responding to the tool call with output. */
+        /**
+         * Sets [Builder.callId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.callId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun callId(callId: JsonField<String>) = apply { this.callId = callId }
 
         /** The pending safety checks for the computer call. */
         fun pendingSafetyChecks(pendingSafetyChecks: List<PendingSafetyCheck>) =
             pendingSafetyChecks(JsonField.of(pendingSafetyChecks))
 
-        /** The pending safety checks for the computer call. */
+        /**
+         * Sets [Builder.pendingSafetyChecks] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.pendingSafetyChecks] with a well-typed
+         * `List<PendingSafetyCheck>` value instead. This method is primarily for setting the field
+         * to an undocumented or not yet supported value.
+         */
         fun pendingSafetyChecks(pendingSafetyChecks: JsonField<List<PendingSafetyCheck>>) = apply {
             this.pendingSafetyChecks = pendingSafetyChecks.map { it.toMutableList() }
         }
 
-        /** The pending safety checks for the computer call. */
+        /**
+         * Adds a single [PendingSafetyCheck] to [pendingSafetyChecks].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addPendingSafetyCheck(pendingSafetyCheck: PendingSafetyCheck) = apply {
             pendingSafetyChecks =
                 (pendingSafetyChecks ?: JsonField.of(mutableListOf())).also {
@@ -245,15 +341,22 @@ private constructor(
         fun status(status: Status) = status(JsonField.of(status))
 
         /**
-         * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated
-         * when items are returned via API.
+         * Sets [Builder.status] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
         /** The type of the computer call. Always `computer_call`. */
         fun type(type: Type) = type(JsonField.of(type))
 
-        /** The type of the computer call. Always `computer_call`. */
+        /**
+         * Sets [Builder.type] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.type] with a well-typed [Type] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -275,6 +378,23 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseComputerToolCall].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .action()
+         * .callId()
+         * .pendingSafetyChecks()
+         * .status()
+         * .type()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseComputerToolCall =
             ResponseComputerToolCall(
                 checkRequired("id", id),
@@ -678,30 +798,63 @@ private constructor(
             /**
              * Indicates which mouse button was pressed during the click. One of `left`, `right`,
              * `wheel`, `back`, or `forward`.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
              */
             fun button(): Button = button.getRequired("button")
 
             /**
              * Specifies the event type. For a click action, this property is always set to `click`.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("click")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
              */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-            /** The x-coordinate where the click occurred. */
+            /**
+             * The x-coordinate where the click occurred.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun x(): Long = x.getRequired("x")
 
-            /** The y-coordinate where the click occurred. */
+            /**
+             * The y-coordinate where the click occurred.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun y(): Long = y.getRequired("y")
 
             /**
-             * Indicates which mouse button was pressed during the click. One of `left`, `right`,
-             * `wheel`, `back`, or `forward`.
+             * Returns the raw JSON value of [button].
+             *
+             * Unlike [button], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("button") @ExcludeMissing fun _button(): JsonField<Button> = button
 
-            /** The x-coordinate where the click occurred. */
+            /**
+             * Returns the raw JSON value of [x].
+             *
+             * Unlike [x], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("x") @ExcludeMissing fun _x(): JsonField<Long> = x
 
-            /** The y-coordinate where the click occurred. */
+            /**
+             * Returns the raw JSON value of [y].
+             *
+             * Unlike [y], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("y") @ExcludeMissing fun _y(): JsonField<Long> = y
 
             @JsonAnyGetter
@@ -768,27 +921,50 @@ private constructor(
                 fun button(button: Button) = button(JsonField.of(button))
 
                 /**
-                 * Indicates which mouse button was pressed during the click. One of `left`,
-                 * `right`, `wheel`, `back`, or `forward`.
+                 * Sets [Builder.button] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.button] with a well-typed [Button] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
                  */
                 fun button(button: JsonField<Button>) = apply { this.button = button }
 
                 /**
-                 * Specifies the event type. For a click action, this property is always set to
-                 * `click`.
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("click")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
                  */
                 fun type(type: JsonValue) = apply { this.type = type }
 
                 /** The x-coordinate where the click occurred. */
                 fun x(x: Long) = x(JsonField.of(x))
 
-                /** The x-coordinate where the click occurred. */
+                /**
+                 * Sets [Builder.x] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.x] with a well-typed [Long] value instead. This
+                 * method is primarily for setting the field to an undocumented or not yet supported
+                 * value.
+                 */
                 fun x(x: JsonField<Long>) = apply { this.x = x }
 
                 /** The y-coordinate where the click occurred. */
                 fun y(y: Long) = y(JsonField.of(y))
 
-                /** The y-coordinate where the click occurred. */
+                /**
+                 * Sets [Builder.y] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.y] with a well-typed [Long] value instead. This
+                 * method is primarily for setting the field to an undocumented or not yet supported
+                 * value.
+                 */
                 fun y(y: JsonField<Long>) = apply { this.y = y }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -813,6 +989,20 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Click].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .button()
+                 * .x()
+                 * .y()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Click =
                     Click(
                         checkRequired("button", button),
@@ -982,19 +1172,47 @@ private constructor(
             /**
              * Specifies the event type. For a double click action, this property is always set to
              * `double_click`.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("double_click")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
              */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-            /** The x-coordinate where the double click occurred. */
+            /**
+             * The x-coordinate where the double click occurred.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun x(): Long = x.getRequired("x")
 
-            /** The y-coordinate where the double click occurred. */
+            /**
+             * The y-coordinate where the double click occurred.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun y(): Long = y.getRequired("y")
 
-            /** The x-coordinate where the double click occurred. */
+            /**
+             * Returns the raw JSON value of [x].
+             *
+             * Unlike [x], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("x") @ExcludeMissing fun _x(): JsonField<Long> = x
 
-            /** The y-coordinate where the double click occurred. */
+            /**
+             * Returns the raw JSON value of [y].
+             *
+             * Unlike [y], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("y") @ExcludeMissing fun _y(): JsonField<Long> = y
 
             @JsonAnyGetter
@@ -1051,21 +1269,41 @@ private constructor(
                 }
 
                 /**
-                 * Specifies the event type. For a double click action, this property is always set
-                 * to `double_click`.
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("double_click")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
                  */
                 fun type(type: JsonValue) = apply { this.type = type }
 
                 /** The x-coordinate where the double click occurred. */
                 fun x(x: Long) = x(JsonField.of(x))
 
-                /** The x-coordinate where the double click occurred. */
+                /**
+                 * Sets [Builder.x] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.x] with a well-typed [Long] value instead. This
+                 * method is primarily for setting the field to an undocumented or not yet supported
+                 * value.
+                 */
                 fun x(x: JsonField<Long>) = apply { this.x = x }
 
                 /** The y-coordinate where the double click occurred. */
                 fun y(y: Long) = y(JsonField.of(y))
 
-                /** The y-coordinate where the double click occurred. */
+                /**
+                 * Sets [Builder.y] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.y] with a well-typed [Long] value instead. This
+                 * method is primarily for setting the field to an undocumented or not yet supported
+                 * value.
+                 */
                 fun y(y: JsonField<Long>) = apply { this.y = y }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1090,6 +1328,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [DoubleClick].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .x()
+                 * .y()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): DoubleClick =
                     DoubleClick(
                         type,
@@ -1140,24 +1391,30 @@ private constructor(
              *   { x: 200, y: 300 }
              * ]
              * ```
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
              */
             fun path(): List<Path> = path.getRequired("path")
 
             /**
              * Specifies the event type. For a drag action, this property is always set to `drag`.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("drag")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
              */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
             /**
-             * An array of coordinates representing the path of the drag action. Coordinates will
-             * appear as an array of objects, eg
+             * Returns the raw JSON value of [path].
              *
-             * ```
-             * [
-             *   { x: 100, y: 200 },
-             *   { x: 200, y: 300 }
-             * ]
-             * ```
+             * Unlike [path], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("path") @ExcludeMissing fun _path(): JsonField<List<Path>> = path
 
@@ -1224,30 +1481,20 @@ private constructor(
                 fun path(path: List<Path>) = path(JsonField.of(path))
 
                 /**
-                 * An array of coordinates representing the path of the drag action. Coordinates
-                 * will appear as an array of objects, eg
+                 * Sets [Builder.path] to an arbitrary JSON value.
                  *
-                 * ```
-                 * [
-                 *   { x: 100, y: 200 },
-                 *   { x: 200, y: 300 }
-                 * ]
-                 * ```
+                 * You should usually call [Builder.path] with a well-typed `List<Path>` value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
                  */
                 fun path(path: JsonField<List<Path>>) = apply {
                     this.path = path.map { it.toMutableList() }
                 }
 
                 /**
-                 * An array of coordinates representing the path of the drag action. Coordinates
-                 * will appear as an array of objects, eg
+                 * Adds a single [Path] to [Builder.path].
                  *
-                 * ```
-                 * [
-                 *   { x: 100, y: 200 },
-                 *   { x: 200, y: 300 }
-                 * ]
-                 * ```
+                 * @throws IllegalStateException if the field was previously set to a non-list.
                  */
                 fun addPath(path: Path) = apply {
                     this.path =
@@ -1257,8 +1504,16 @@ private constructor(
                 }
 
                 /**
-                 * Specifies the event type. For a drag action, this property is always set to
-                 * `drag`.
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("drag")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
                  */
                 fun type(type: JsonValue) = apply { this.type = type }
 
@@ -1284,6 +1539,18 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Drag].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .path()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Drag =
                     Drag(
                         checkRequired("path", path).map { it.toImmutable() },
@@ -1307,16 +1574,36 @@ private constructor(
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
 
-                /** The x-coordinate. */
+                /**
+                 * The x-coordinate.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
                 fun x(): Long = x.getRequired("x")
 
-                /** The y-coordinate. */
+                /**
+                 * The y-coordinate.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
                 fun y(): Long = y.getRequired("y")
 
-                /** The x-coordinate. */
+                /**
+                 * Returns the raw JSON value of [x].
+                 *
+                 * Unlike [x], this method doesn't throw if the JSON field has an unexpected type.
+                 */
                 @JsonProperty("x") @ExcludeMissing fun _x(): JsonField<Long> = x
 
-                /** The y-coordinate. */
+                /**
+                 * Returns the raw JSON value of [y].
+                 *
+                 * Unlike [y], this method doesn't throw if the JSON field has an unexpected type.
+                 */
                 @JsonProperty("y") @ExcludeMissing fun _y(): JsonField<Long> = y
 
                 @JsonAnyGetter
@@ -1368,13 +1655,25 @@ private constructor(
                     /** The x-coordinate. */
                     fun x(x: Long) = x(JsonField.of(x))
 
-                    /** The x-coordinate. */
+                    /**
+                     * Sets [Builder.x] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.x] with a well-typed [Long] value instead.
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
+                     */
                     fun x(x: JsonField<Long>) = apply { this.x = x }
 
                     /** The y-coordinate. */
                     fun y(y: Long) = y(JsonField.of(y))
 
-                    /** The y-coordinate. */
+                    /**
+                     * Sets [Builder.y] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.y] with a well-typed [Long] value instead.
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
+                     */
                     fun y(y: JsonField<Long>) = apply { this.y = y }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1399,6 +1698,19 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [Path].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .x()
+                     * .y()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
                     fun build(): Path =
                         Path(
                             checkRequired("x", x),
@@ -1459,18 +1771,31 @@ private constructor(
             /**
              * The combination of keys the model is requesting to be pressed. This is an array of
              * strings, each representing a key.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
              */
             fun keys(): List<String> = keys.getRequired("keys")
 
             /**
              * Specifies the event type. For a keypress action, this property is always set to
              * `keypress`.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("keypress")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
              */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
             /**
-             * The combination of keys the model is requesting to be pressed. This is an array of
-             * strings, each representing a key.
+             * Returns the raw JSON value of [keys].
+             *
+             * Unlike [keys], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("keys") @ExcludeMissing fun _keys(): JsonField<List<String>> = keys
 
@@ -1530,16 +1855,20 @@ private constructor(
                 fun keys(keys: List<String>) = keys(JsonField.of(keys))
 
                 /**
-                 * The combination of keys the model is requesting to be pressed. This is an array
-                 * of strings, each representing a key.
+                 * Sets [Builder.keys] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.keys] with a well-typed `List<String>` value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
                  */
                 fun keys(keys: JsonField<List<String>>) = apply {
                     this.keys = keys.map { it.toMutableList() }
                 }
 
                 /**
-                 * The combination of keys the model is requesting to be pressed. This is an array
-                 * of strings, each representing a key.
+                 * Adds a single [String] to [keys].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
                  */
                 fun addKey(key: String) = apply {
                     keys =
@@ -1549,8 +1878,16 @@ private constructor(
                 }
 
                 /**
-                 * Specifies the event type. For a keypress action, this property is always set to
-                 * `keypress`.
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("keypress")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
                  */
                 fun type(type: JsonValue) = apply { this.type = type }
 
@@ -1576,6 +1913,18 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Keypress].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .keys()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Keypress =
                     Keypress(
                         checkRequired("keys", keys).map { it.toImmutable() },
@@ -1616,19 +1965,47 @@ private constructor(
 
             /**
              * Specifies the event type. For a move action, this property is always set to `move`.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("move")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
              */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-            /** The x-coordinate to move to. */
+            /**
+             * The x-coordinate to move to.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun x(): Long = x.getRequired("x")
 
-            /** The y-coordinate to move to. */
+            /**
+             * The y-coordinate to move to.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun y(): Long = y.getRequired("y")
 
-            /** The x-coordinate to move to. */
+            /**
+             * Returns the raw JSON value of [x].
+             *
+             * Unlike [x], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("x") @ExcludeMissing fun _x(): JsonField<Long> = x
 
-            /** The y-coordinate to move to. */
+            /**
+             * Returns the raw JSON value of [y].
+             *
+             * Unlike [y], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("y") @ExcludeMissing fun _y(): JsonField<Long> = y
 
             @JsonAnyGetter
@@ -1685,21 +2062,41 @@ private constructor(
                 }
 
                 /**
-                 * Specifies the event type. For a move action, this property is always set to
-                 * `move`.
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("move")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
                  */
                 fun type(type: JsonValue) = apply { this.type = type }
 
                 /** The x-coordinate to move to. */
                 fun x(x: Long) = x(JsonField.of(x))
 
-                /** The x-coordinate to move to. */
+                /**
+                 * Sets [Builder.x] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.x] with a well-typed [Long] value instead. This
+                 * method is primarily for setting the field to an undocumented or not yet supported
+                 * value.
+                 */
                 fun x(x: JsonField<Long>) = apply { this.x = x }
 
                 /** The y-coordinate to move to. */
                 fun y(y: Long) = y(JsonField.of(y))
 
-                /** The y-coordinate to move to. */
+                /**
+                 * Sets [Builder.y] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.y] with a well-typed [Long] value instead. This
+                 * method is primarily for setting the field to an undocumented or not yet supported
+                 * value.
+                 */
                 fun y(y: JsonField<Long>) = apply { this.y = y }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1724,6 +2121,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Move].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .x()
+                 * .y()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Move =
                     Move(
                         type,
@@ -1769,34 +2179,82 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
-            /** The horizontal scroll distance. */
+            /**
+             * The horizontal scroll distance.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun scrollX(): Long = scrollX.getRequired("scroll_x")
 
-            /** The vertical scroll distance. */
+            /**
+             * The vertical scroll distance.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun scrollY(): Long = scrollY.getRequired("scroll_y")
 
             /**
              * Specifies the event type. For a scroll action, this property is always set to
              * `scroll`.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("scroll")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
              */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-            /** The x-coordinate where the scroll occurred. */
+            /**
+             * The x-coordinate where the scroll occurred.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun x(): Long = x.getRequired("x")
 
-            /** The y-coordinate where the scroll occurred. */
+            /**
+             * The y-coordinate where the scroll occurred.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun y(): Long = y.getRequired("y")
 
-            /** The horizontal scroll distance. */
+            /**
+             * Returns the raw JSON value of [scrollX].
+             *
+             * Unlike [scrollX], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("scroll_x") @ExcludeMissing fun _scrollX(): JsonField<Long> = scrollX
 
-            /** The vertical scroll distance. */
+            /**
+             * Returns the raw JSON value of [scrollY].
+             *
+             * Unlike [scrollY], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("scroll_y") @ExcludeMissing fun _scrollY(): JsonField<Long> = scrollY
 
-            /** The x-coordinate where the scroll occurred. */
+            /**
+             * Returns the raw JSON value of [x].
+             *
+             * Unlike [x], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("x") @ExcludeMissing fun _x(): JsonField<Long> = x
 
-            /** The y-coordinate where the scroll occurred. */
+            /**
+             * Returns the raw JSON value of [y].
+             *
+             * Unlike [y], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("y") @ExcludeMissing fun _y(): JsonField<Long> = y
 
             @JsonAnyGetter
@@ -1863,31 +2321,63 @@ private constructor(
                 /** The horizontal scroll distance. */
                 fun scrollX(scrollX: Long) = scrollX(JsonField.of(scrollX))
 
-                /** The horizontal scroll distance. */
+                /**
+                 * Sets [Builder.scrollX] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.scrollX] with a well-typed [Long] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun scrollX(scrollX: JsonField<Long>) = apply { this.scrollX = scrollX }
 
                 /** The vertical scroll distance. */
                 fun scrollY(scrollY: Long) = scrollY(JsonField.of(scrollY))
 
-                /** The vertical scroll distance. */
+                /**
+                 * Sets [Builder.scrollY] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.scrollY] with a well-typed [Long] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun scrollY(scrollY: JsonField<Long>) = apply { this.scrollY = scrollY }
 
                 /**
-                 * Specifies the event type. For a scroll action, this property is always set to
-                 * `scroll`.
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("scroll")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
                  */
                 fun type(type: JsonValue) = apply { this.type = type }
 
                 /** The x-coordinate where the scroll occurred. */
                 fun x(x: Long) = x(JsonField.of(x))
 
-                /** The x-coordinate where the scroll occurred. */
+                /**
+                 * Sets [Builder.x] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.x] with a well-typed [Long] value instead. This
+                 * method is primarily for setting the field to an undocumented or not yet supported
+                 * value.
+                 */
                 fun x(x: JsonField<Long>) = apply { this.x = x }
 
                 /** The y-coordinate where the scroll occurred. */
                 fun y(y: Long) = y(JsonField.of(y))
 
-                /** The y-coordinate where the scroll occurred. */
+                /**
+                 * Sets [Builder.y] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.y] with a well-typed [Long] value instead. This
+                 * method is primarily for setting the field to an undocumented or not yet supported
+                 * value.
+                 */
                 fun y(y: JsonField<Long>) = apply { this.y = y }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1912,6 +2402,21 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Scroll].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .scrollX()
+                 * .scrollY()
+                 * .x()
+                 * .y()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Scroll =
                     Scroll(
                         checkRequired("scrollX", scrollX),
@@ -1954,15 +2459,33 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
-            /** The text to type. */
+            /**
+             * The text to type.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun text(): String = text.getRequired("text")
 
             /**
              * Specifies the event type. For a type action, this property is always set to `type`.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("type")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
              */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-            /** The text to type. */
+            /**
+             * Returns the raw JSON value of [text].
+             *
+             * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
             @JsonAnyGetter
@@ -2017,12 +2540,26 @@ private constructor(
                 /** The text to type. */
                 fun text(text: String) = text(JsonField.of(text))
 
-                /** The text to type. */
+                /**
+                 * Sets [Builder.text] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.text] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun text(text: JsonField<String>) = apply { this.text = text }
 
                 /**
-                 * Specifies the event type. For a type action, this property is always set to
-                 * `type`.
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("type")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
                  */
                 fun type(type: JsonValue) = apply { this.type = type }
 
@@ -2048,6 +2585,18 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Type].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .text()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Type =
                     Type(checkRequired("text", text), type, additionalProperties.toImmutable())
             }
@@ -2087,22 +2636,49 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The ID of the pending safety check. */
+        /**
+         * The ID of the pending safety check.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun id(): String = id.getRequired("id")
 
-        /** The type of the pending safety check. */
+        /**
+         * The type of the pending safety check.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun code(): String = code.getRequired("code")
 
-        /** Details about the pending safety check. */
+        /**
+         * Details about the pending safety check.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun message(): String = message.getRequired("message")
 
-        /** The ID of the pending safety check. */
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-        /** The type of the pending safety check. */
+        /**
+         * Returns the raw JSON value of [code].
+         *
+         * Unlike [code], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("code") @ExcludeMissing fun _code(): JsonField<String> = code
 
-        /** Details about the pending safety check. */
+        /**
+         * Returns the raw JSON value of [message].
+         *
+         * Unlike [message], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
         @JsonAnyGetter
@@ -2158,19 +2734,37 @@ private constructor(
             /** The ID of the pending safety check. */
             fun id(id: String) = id(JsonField.of(id))
 
-            /** The ID of the pending safety check. */
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun id(id: JsonField<String>) = apply { this.id = id }
 
             /** The type of the pending safety check. */
             fun code(code: String) = code(JsonField.of(code))
 
-            /** The type of the pending safety check. */
+            /**
+             * Sets [Builder.code] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.code] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun code(code: JsonField<String>) = apply { this.code = code }
 
             /** Details about the pending safety check. */
             fun message(message: String) = message(JsonField.of(message))
 
-            /** Details about the pending safety check. */
+            /**
+             * Sets [Builder.message] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.message] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun message(message: JsonField<String>) = apply { this.message = message }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -2192,6 +2786,20 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [PendingSafetyCheck].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .id()
+             * .code()
+             * .message()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): PendingSafetyCheck =
                 PendingSafetyCheck(
                     checkRequired("id", id),

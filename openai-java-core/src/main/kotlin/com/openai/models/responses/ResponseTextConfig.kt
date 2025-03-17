@@ -13,6 +13,7 @@ import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ResponseFormatJsonObject
 import com.openai.models.ResponseFormatText
 import java.util.Objects
@@ -48,24 +49,17 @@ private constructor(
      * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the message
      * the model generates is valid JSON. Using `json_schema` is preferred for models that support
      * it.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun format(): Optional<ResponseFormatTextConfig> =
         Optional.ofNullable(format.getNullable("format"))
 
     /**
-     * An object specifying the format that the model must output.
+     * Returns the raw JSON value of [format].
      *
-     * Configuring `{ "type": "json_schema" }` enables Structured Outputs, which ensures the model
-     * will match your supplied JSON schema. Learn more in the
-     * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-     *
-     * The default format is `{ "type": "text" }` with no additional options.
-     *
-     * **Not recommended for gpt-4o and newer models:**
-     *
-     * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the message
-     * the model generates is valid JSON. Using `json_schema` is preferred for models that support
-     * it.
+     * Unlike [format], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("format")
     @ExcludeMissing
@@ -124,44 +118,33 @@ private constructor(
         fun format(format: ResponseFormatTextConfig) = format(JsonField.of(format))
 
         /**
-         * An object specifying the format that the model must output.
+         * Sets [Builder.format] to an arbitrary JSON value.
          *
-         * Configuring `{ "type": "json_schema" }` enables Structured Outputs, which ensures the
-         * model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-         *
-         * The default format is `{ "type": "text" }` with no additional options.
-         *
-         * **Not recommended for gpt-4o and newer models:**
-         *
-         * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the
-         * message the model generates is valid JSON. Using `json_schema` is preferred for models
-         * that support it.
+         * You should usually call [Builder.format] with a well-typed [ResponseFormatTextConfig]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
          */
         fun format(format: JsonField<ResponseFormatTextConfig>) = apply { this.format = format }
 
-        /** Default response format. Used to generate text responses. */
+        /** Alias for calling [format] with `ResponseFormatTextConfig.ofText(text)`. */
         fun format(text: ResponseFormatText) = format(ResponseFormatTextConfig.ofText(text))
 
-        /**
-         * JSON Schema response format. Used to generate structured JSON responses. Learn more about
-         * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
-         */
+        /** Alias for calling [format] with `ResponseFormatTextConfig.ofJsonSchema(jsonSchema)`. */
         fun format(jsonSchema: ResponseFormatTextJsonSchemaConfig) =
             format(ResponseFormatTextConfig.ofJsonSchema(jsonSchema))
 
         /**
-         * JSON Schema response format. Used to generate structured JSON responses. Learn more about
-         * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+         * Alias for calling [format] with the following:
+         * ```java
+         * ResponseFormatTextJsonSchemaConfig.builder()
+         *     .schema(schema)
+         *     .build()
+         * ```
          */
         fun jsonSchemaFormat(schema: ResponseFormatTextJsonSchemaConfig.Schema) =
             format(ResponseFormatTextJsonSchemaConfig.builder().schema(schema).build())
 
-        /**
-         * JSON object response format. An older method of generating JSON responses. Using
-         * `json_schema` is recommended for models that support it. Note that the model will not
-         * generate JSON without a system or user message instructing it to do so.
-         */
+        /** Alias for calling [format] with `ResponseFormatTextConfig.ofJsonObject(jsonObject)`. */
         fun format(jsonObject: ResponseFormatJsonObject) =
             format(ResponseFormatTextConfig.ofJsonObject(jsonObject))
 
@@ -184,6 +167,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseTextConfig].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): ResponseTextConfig =
             ResponseTextConfig(format, additionalProperties.toImmutable())
     }

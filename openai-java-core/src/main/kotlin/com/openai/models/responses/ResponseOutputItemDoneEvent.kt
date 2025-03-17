@@ -32,19 +32,47 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The output item that was marked done. */
+    /**
+     * The output item that was marked done.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun item(): ResponseOutputItem = item.getRequired("item")
 
-    /** The index of the output item that was marked done. */
+    /**
+     * The index of the output item that was marked done.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun outputIndex(): Long = outputIndex.getRequired("output_index")
 
-    /** The type of the event. Always `response.output_item.done`. */
+    /**
+     * The type of the event. Always `response.output_item.done`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("response.output_item.done")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** The output item that was marked done. */
+    /**
+     * Returns the raw JSON value of [item].
+     *
+     * Unlike [item], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("item") @ExcludeMissing fun _item(): JsonField<ResponseOutputItem> = item
 
-    /** The index of the output item that was marked done. */
+    /**
+     * Returns the raw JSON value of [outputIndex].
+     *
+     * Unlike [outputIndex], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("output_index") @ExcludeMissing fun _outputIndex(): JsonField<Long> = outputIndex
 
     @JsonAnyGetter
@@ -103,57 +131,61 @@ private constructor(
         /** The output item that was marked done. */
         fun item(item: ResponseOutputItem) = item(JsonField.of(item))
 
-        /** The output item that was marked done. */
+        /**
+         * Sets [Builder.item] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.item] with a well-typed [ResponseOutputItem] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun item(item: JsonField<ResponseOutputItem>) = apply { this.item = item }
 
-        /** An output message from the model. */
+        /** Alias for calling [item] with `ResponseOutputItem.ofMessage(message)`. */
         fun item(message: ResponseOutputMessage) = item(ResponseOutputItem.ofMessage(message))
 
-        /**
-         * The results of a file search tool call. See the
-         * [file search guide](https://platform.openai.com/docs/guides/tools-file-search) for more
-         * information.
-         */
+        /** Alias for calling [item] with `ResponseOutputItem.ofFileSearchCall(fileSearchCall)`. */
         fun item(fileSearchCall: ResponseFileSearchToolCall) =
             item(ResponseOutputItem.ofFileSearchCall(fileSearchCall))
 
-        /**
-         * A tool call to run a function. See the
-         * [function calling guide](https://platform.openai.com/docs/guides/function-calling) for
-         * more information.
-         */
+        /** Alias for calling [item] with `ResponseOutputItem.ofFunctionCall(functionCall)`. */
         fun item(functionCall: ResponseFunctionToolCall) =
             item(ResponseOutputItem.ofFunctionCall(functionCall))
 
-        /**
-         * The results of a web search tool call. See the
-         * [web search guide](https://platform.openai.com/docs/guides/tools-web-search) for more
-         * information.
-         */
+        /** Alias for calling [item] with `ResponseOutputItem.ofWebSearchCall(webSearchCall)`. */
         fun item(webSearchCall: ResponseFunctionWebSearch) =
             item(ResponseOutputItem.ofWebSearchCall(webSearchCall))
 
-        /**
-         * A tool call to a computer use tool. See the
-         * [computer use guide](https://platform.openai.com/docs/guides/tools-computer-use) for more
-         * information.
-         */
+        /** Alias for calling [item] with `ResponseOutputItem.ofComputerCall(computerCall)`. */
         fun item(computerCall: ResponseComputerToolCall) =
             item(ResponseOutputItem.ofComputerCall(computerCall))
 
-        /**
-         * A description of the chain of thought used by a reasoning model while generating a
-         * response.
-         */
+        /** Alias for calling [item] with `ResponseOutputItem.ofReasoning(reasoning)`. */
         fun item(reasoning: ResponseReasoningItem) = item(ResponseOutputItem.ofReasoning(reasoning))
 
         /** The index of the output item that was marked done. */
         fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))
 
-        /** The index of the output item that was marked done. */
+        /**
+         * Sets [Builder.outputIndex] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.outputIndex] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun outputIndex(outputIndex: JsonField<Long>) = apply { this.outputIndex = outputIndex }
 
-        /** The type of the event. Always `response.output_item.done`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("response.output_item.done")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -175,6 +207,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseOutputItemDoneEvent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .item()
+         * .outputIndex()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseOutputItemDoneEvent =
             ResponseOutputItemDoneEvent(
                 checkRequired("item", item),

@@ -18,6 +18,7 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
@@ -39,10 +40,19 @@ private constructor(
 
     fun runId(): String = runId
 
-    /** A list of tools for which the outputs are being submitted. */
+    /**
+     * A list of tools for which the outputs are being submitted.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun toolOutputs(): List<ToolOutput> = body.toolOutputs()
 
-    /** A list of tools for which the outputs are being submitted. */
+    /**
+     * Returns the raw JSON value of [toolOutputs].
+     *
+     * Unlike [toolOutputs], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _toolOutputs(): JsonField<List<ToolOutput>> = body._toolOutputs()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
@@ -76,10 +86,19 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** A list of tools for which the outputs are being submitted. */
+        /**
+         * A list of tools for which the outputs are being submitted.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun toolOutputs(): List<ToolOutput> = toolOutputs.getRequired("tool_outputs")
 
-        /** A list of tools for which the outputs are being submitted. */
+        /**
+         * Returns the raw JSON value of [toolOutputs].
+         *
+         * Unlike [toolOutputs], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("tool_outputs")
         @ExcludeMissing
         fun _toolOutputs(): JsonField<List<ToolOutput>> = toolOutputs
@@ -129,12 +148,22 @@ private constructor(
             /** A list of tools for which the outputs are being submitted. */
             fun toolOutputs(toolOutputs: List<ToolOutput>) = toolOutputs(JsonField.of(toolOutputs))
 
-            /** A list of tools for which the outputs are being submitted. */
+            /**
+             * Sets [Builder.toolOutputs] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.toolOutputs] with a well-typed `List<ToolOutput>`
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
             fun toolOutputs(toolOutputs: JsonField<List<ToolOutput>>) = apply {
                 this.toolOutputs = toolOutputs.map { it.toMutableList() }
             }
 
-            /** A list of tools for which the outputs are being submitted. */
+            /**
+             * Adds a single [ToolOutput] to [toolOutputs].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addToolOutput(toolOutput: ToolOutput) = apply {
                 toolOutputs =
                     (toolOutputs ?: JsonField.of(mutableListOf())).also {
@@ -161,6 +190,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .toolOutputs()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("toolOutputs", toolOutputs).map { it.toImmutable() },
@@ -229,12 +270,22 @@ private constructor(
         /** A list of tools for which the outputs are being submitted. */
         fun toolOutputs(toolOutputs: List<ToolOutput>) = apply { body.toolOutputs(toolOutputs) }
 
-        /** A list of tools for which the outputs are being submitted. */
+        /**
+         * Sets [Builder.toolOutputs] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.toolOutputs] with a well-typed `List<ToolOutput>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun toolOutputs(toolOutputs: JsonField<List<ToolOutput>>) = apply {
             body.toolOutputs(toolOutputs)
         }
 
-        /** A list of tools for which the outputs are being submitted. */
+        /**
+         * Adds a single [ToolOutput] to [toolOutputs].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addToolOutput(toolOutput: ToolOutput) = apply { body.addToolOutput(toolOutput) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
@@ -354,6 +405,20 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [RunSubmitToolOutputsParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .threadId()
+         * .runId()
+         * .toolOutputs()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): RunSubmitToolOutputsParams =
             RunSubmitToolOutputsParams(
                 checkRequired("threadId", threadId),
@@ -378,22 +443,35 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The output of the tool call to be submitted to continue the run. */
+        /**
+         * The output of the tool call to be submitted to continue the run.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun output(): Optional<String> = Optional.ofNullable(output.getNullable("output"))
 
         /**
          * The ID of the tool call in the `required_action` object within the run object the output
          * is being submitted for.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun toolCallId(): Optional<String> =
             Optional.ofNullable(toolCallId.getNullable("tool_call_id"))
 
-        /** The output of the tool call to be submitted to continue the run. */
+        /**
+         * Returns the raw JSON value of [output].
+         *
+         * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<String> = output
 
         /**
-         * The ID of the tool call in the `required_action` object within the run object the output
-         * is being submitted for.
+         * Returns the raw JSON value of [toolCallId].
+         *
+         * Unlike [toolCallId], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("tool_call_id")
         @ExcludeMissing
@@ -440,7 +518,13 @@ private constructor(
             /** The output of the tool call to be submitted to continue the run. */
             fun output(output: String) = output(JsonField.of(output))
 
-            /** The output of the tool call to be submitted to continue the run. */
+            /**
+             * Sets [Builder.output] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.output] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun output(output: JsonField<String>) = apply { this.output = output }
 
             /**
@@ -450,8 +534,11 @@ private constructor(
             fun toolCallId(toolCallId: String) = toolCallId(JsonField.of(toolCallId))
 
             /**
-             * The ID of the tool call in the `required_action` object within the run object the
-             * output is being submitted for.
+             * Sets [Builder.toolCallId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.toolCallId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun toolCallId(toolCallId: JsonField<String>) = apply { this.toolCallId = toolCallId }
 
@@ -474,6 +561,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ToolOutput].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): ToolOutput =
                 ToolOutput(output, toolCallId, additionalProperties.toImmutable())
         }

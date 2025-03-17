@@ -29,19 +29,47 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The index of the output in the outputs array. */
+    /**
+     * The index of the output in the outputs array.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun index(): Long = index.getRequired("index")
 
-    /** Always `logs`. */
+    /**
+     * Always `logs`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("logs")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** The text output from the Code Interpreter tool call. */
+    /**
+     * The text output from the Code Interpreter tool call.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun logs(): Optional<String> = Optional.ofNullable(logs.getNullable("logs"))
 
-    /** The index of the output in the outputs array. */
+    /**
+     * Returns the raw JSON value of [index].
+     *
+     * Unlike [index], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
-    /** The text output from the Code Interpreter tool call. */
+    /**
+     * Returns the raw JSON value of [logs].
+     *
+     * Unlike [logs], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("logs") @ExcludeMissing fun _logs(): JsonField<String> = logs
 
     @JsonAnyGetter
@@ -99,16 +127,37 @@ private constructor(
         /** The index of the output in the outputs array. */
         fun index(index: Long) = index(JsonField.of(index))
 
-        /** The index of the output in the outputs array. */
+        /**
+         * Sets [Builder.index] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.index] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun index(index: JsonField<Long>) = apply { this.index = index }
 
-        /** Always `logs`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("logs")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         /** The text output from the Code Interpreter tool call. */
         fun logs(logs: String) = logs(JsonField.of(logs))
 
-        /** The text output from the Code Interpreter tool call. */
+        /**
+         * Sets [Builder.logs] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.logs] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun logs(logs: JsonField<String>) = apply { this.logs = logs }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -130,6 +179,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [CodeInterpreterLogs].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .index()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): CodeInterpreterLogs =
             CodeInterpreterLogs(
                 checkRequired("index", index),

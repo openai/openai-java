@@ -44,33 +44,60 @@ private constructor(
     /**
      * The detail level of the image to be sent to the model. One of `high`, `low`, or `auto`.
      * Defaults to `auto`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun detail(): Detail = detail.getRequired("detail")
 
-    /** The type of the input item. Always `input_image`. */
+    /**
+     * The type of the input item. Always `input_image`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("input_image")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** The ID of the file to be sent to the model. */
+    /**
+     * The ID of the file to be sent to the model.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
 
     /**
      * The URL of the image to be sent to the model. A fully qualified URL or base64 encoded image
      * in a data URL.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun imageUrl(): Optional<String> = Optional.ofNullable(imageUrl.getNullable("image_url"))
 
     /**
-     * The detail level of the image to be sent to the model. One of `high`, `low`, or `auto`.
-     * Defaults to `auto`.
+     * Returns the raw JSON value of [detail].
+     *
+     * Unlike [detail], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("detail") @ExcludeMissing fun _detail(): JsonField<Detail> = detail
 
-    /** The ID of the file to be sent to the model. */
+    /**
+     * Returns the raw JSON value of [fileId].
+     *
+     * Unlike [fileId], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
     /**
-     * The URL of the image to be sent to the model. A fully qualified URL or base64 encoded image
-     * in a data URL.
+     * Returns the raw JSON value of [imageUrl].
+     *
+     * Unlike [imageUrl], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("image_url") @ExcludeMissing fun _imageUrl(): JsonField<String> = imageUrl
 
@@ -136,21 +163,39 @@ private constructor(
         fun detail(detail: Detail) = detail(JsonField.of(detail))
 
         /**
-         * The detail level of the image to be sent to the model. One of `high`, `low`, or `auto`.
-         * Defaults to `auto`.
+         * Sets [Builder.detail] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.detail] with a well-typed [Detail] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun detail(detail: JsonField<Detail>) = apply { this.detail = detail }
 
-        /** The type of the input item. Always `input_image`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("input_image")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         /** The ID of the file to be sent to the model. */
         fun fileId(fileId: String?) = fileId(JsonField.ofNullable(fileId))
 
-        /** The ID of the file to be sent to the model. */
+        /** Alias for calling [Builder.fileId] with `fileId.orElse(null)`. */
         fun fileId(fileId: Optional<String>) = fileId(fileId.getOrNull())
 
-        /** The ID of the file to be sent to the model. */
+        /**
+         * Sets [Builder.fileId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.fileId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
 
         /**
@@ -159,15 +204,14 @@ private constructor(
          */
         fun imageUrl(imageUrl: String?) = imageUrl(JsonField.ofNullable(imageUrl))
 
-        /**
-         * The URL of the image to be sent to the model. A fully qualified URL or base64 encoded
-         * image in a data URL.
-         */
+        /** Alias for calling [Builder.imageUrl] with `imageUrl.orElse(null)`. */
         fun imageUrl(imageUrl: Optional<String>) = imageUrl(imageUrl.getOrNull())
 
         /**
-         * The URL of the image to be sent to the model. A fully qualified URL or base64 encoded
-         * image in a data URL.
+         * Sets [Builder.imageUrl] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.imageUrl] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun imageUrl(imageUrl: JsonField<String>) = apply { this.imageUrl = imageUrl }
 
@@ -190,6 +234,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseInputImage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .detail()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseInputImage =
             ResponseInputImage(
                 checkRequired("detail", detail),

@@ -28,17 +28,45 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The index of the output in the outputs array. */
+    /**
+     * The index of the output in the outputs array.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun index(): Long = index.getRequired("index")
 
-    /** Always `image`. */
+    /**
+     * Always `image`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("image")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun image(): Optional<Image> = Optional.ofNullable(image.getNullable("image"))
 
-    /** The index of the output in the outputs array. */
+    /**
+     * Returns the raw JSON value of [index].
+     *
+     * Unlike [index], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
+    /**
+     * Returns the raw JSON value of [image].
+     *
+     * Unlike [image], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("image") @ExcludeMissing fun _image(): JsonField<Image> = image
 
     @JsonAnyGetter
@@ -96,14 +124,36 @@ private constructor(
         /** The index of the output in the outputs array. */
         fun index(index: Long) = index(JsonField.of(index))
 
-        /** The index of the output in the outputs array. */
+        /**
+         * Sets [Builder.index] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.index] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun index(index: JsonField<Long>) = apply { this.index = index }
 
-        /** Always `image`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("image")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun image(image: Image) = image(JsonField.of(image))
 
+        /**
+         * Sets [Builder.image] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.image] with a well-typed [Image] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun image(image: JsonField<Image>) = apply { this.image = image }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -125,6 +175,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [CodeInterpreterOutputImage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .index()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): CodeInterpreterOutputImage =
             CodeInterpreterOutputImage(
                 checkRequired("index", index),
@@ -145,10 +207,19 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The [file](https://platform.openai.com/docs/api-reference/files) ID of the image. */
+        /**
+         * The [file](https://platform.openai.com/docs/api-reference/files) ID of the image.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
 
-        /** The [file](https://platform.openai.com/docs/api-reference/files) ID of the image. */
+        /**
+         * Returns the raw JSON value of [fileId].
+         *
+         * Unlike [fileId], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
         @JsonAnyGetter
@@ -189,7 +260,13 @@ private constructor(
             /** The [file](https://platform.openai.com/docs/api-reference/files) ID of the image. */
             fun fileId(fileId: String) = fileId(JsonField.of(fileId))
 
-            /** The [file](https://platform.openai.com/docs/api-reference/files) ID of the image. */
+            /**
+             * Sets [Builder.fileId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.fileId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -211,6 +288,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Image].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Image = Image(fileId, additionalProperties.toImmutable())
         }
 

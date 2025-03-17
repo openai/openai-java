@@ -31,17 +31,45 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The index of the content part in the message. */
+    /**
+     * The index of the content part in the message.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun index(): Long = index.getRequired("index")
 
-    /** Always `image_url`. */
+    /**
+     * Always `image_url`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("image_url")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun imageUrl(): Optional<ImageUrlDelta> = Optional.ofNullable(imageUrl.getNullable("image_url"))
 
-    /** The index of the content part in the message. */
+    /**
+     * Returns the raw JSON value of [index].
+     *
+     * Unlike [index], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
+    /**
+     * Returns the raw JSON value of [imageUrl].
+     *
+     * Unlike [imageUrl], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("image_url") @ExcludeMissing fun _imageUrl(): JsonField<ImageUrlDelta> = imageUrl
 
     @JsonAnyGetter
@@ -99,14 +127,37 @@ private constructor(
         /** The index of the content part in the message. */
         fun index(index: Long) = index(JsonField.of(index))
 
-        /** The index of the content part in the message. */
+        /**
+         * Sets [Builder.index] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.index] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun index(index: JsonField<Long>) = apply { this.index = index }
 
-        /** Always `image_url`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("image_url")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun imageUrl(imageUrl: ImageUrlDelta) = imageUrl(JsonField.of(imageUrl))
 
+        /**
+         * Sets [Builder.imageUrl] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.imageUrl] with a well-typed [ImageUrlDelta] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun imageUrl(imageUrl: JsonField<ImageUrlDelta>) = apply { this.imageUrl = imageUrl }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -128,6 +179,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ImageUrlDeltaBlock].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .index()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ImageUrlDeltaBlock =
             ImageUrlDeltaBlock(
                 checkRequired("index", index),

@@ -13,6 +13,7 @@ import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
@@ -31,25 +32,52 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The base64-encoded JSON of the generated image, if `response_format` is `b64_json`. */
+    /**
+     * The base64-encoded JSON of the generated image, if `response_format` is `b64_json`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun b64Json(): Optional<String> = Optional.ofNullable(b64Json.getNullable("b64_json"))
 
-    /** The prompt that was used to generate the image, if there was any revision to the prompt. */
+    /**
+     * The prompt that was used to generate the image, if there was any revision to the prompt.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun revisedPrompt(): Optional<String> =
         Optional.ofNullable(revisedPrompt.getNullable("revised_prompt"))
 
-    /** The URL of the generated image, if `response_format` is `url` (default). */
+    /**
+     * The URL of the generated image, if `response_format` is `url` (default).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun url(): Optional<String> = Optional.ofNullable(url.getNullable("url"))
 
-    /** The base64-encoded JSON of the generated image, if `response_format` is `b64_json`. */
+    /**
+     * Returns the raw JSON value of [b64Json].
+     *
+     * Unlike [b64Json], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("b64_json") @ExcludeMissing fun _b64Json(): JsonField<String> = b64Json
 
-    /** The prompt that was used to generate the image, if there was any revision to the prompt. */
+    /**
+     * Returns the raw JSON value of [revisedPrompt].
+     *
+     * Unlike [revisedPrompt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("revised_prompt")
     @ExcludeMissing
     fun _revisedPrompt(): JsonField<String> = revisedPrompt
 
-    /** The URL of the generated image, if `response_format` is `url` (default). */
+    /**
+     * Returns the raw JSON value of [url].
+     *
+     * Unlike [url], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("url") @ExcludeMissing fun _url(): JsonField<String> = url
 
     @JsonAnyGetter
@@ -96,7 +124,12 @@ private constructor(
         /** The base64-encoded JSON of the generated image, if `response_format` is `b64_json`. */
         fun b64Json(b64Json: String) = b64Json(JsonField.of(b64Json))
 
-        /** The base64-encoded JSON of the generated image, if `response_format` is `b64_json`. */
+        /**
+         * Sets [Builder.b64Json] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.b64Json] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun b64Json(b64Json: JsonField<String>) = apply { this.b64Json = b64Json }
 
         /**
@@ -105,7 +138,11 @@ private constructor(
         fun revisedPrompt(revisedPrompt: String) = revisedPrompt(JsonField.of(revisedPrompt))
 
         /**
-         * The prompt that was used to generate the image, if there was any revision to the prompt.
+         * Sets [Builder.revisedPrompt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.revisedPrompt] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun revisedPrompt(revisedPrompt: JsonField<String>) = apply {
             this.revisedPrompt = revisedPrompt
@@ -114,7 +151,12 @@ private constructor(
         /** The URL of the generated image, if `response_format` is `url` (default). */
         fun url(url: String) = url(JsonField.of(url))
 
-        /** The URL of the generated image, if `response_format` is `url` (default). */
+        /**
+         * Sets [Builder.url] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.url] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun url(url: JsonField<String>) = apply { this.url = url }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -136,6 +178,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [Image].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): Image = Image(b64Json, revisedPrompt, url, additionalProperties.toImmutable())
     }
 

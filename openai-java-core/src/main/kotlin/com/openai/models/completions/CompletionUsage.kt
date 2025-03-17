@@ -14,6 +14,7 @@ import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
@@ -40,42 +41,90 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** Number of tokens in the generated completion. */
+    /**
+     * Number of tokens in the generated completion.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun completionTokens(): Long = completionTokens.getRequired("completion_tokens")
 
-    /** Number of tokens in the prompt. */
+    /**
+     * Number of tokens in the prompt.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun promptTokens(): Long = promptTokens.getRequired("prompt_tokens")
 
-    /** Total number of tokens used in the request (prompt + completion). */
+    /**
+     * Total number of tokens used in the request (prompt + completion).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun totalTokens(): Long = totalTokens.getRequired("total_tokens")
 
-    /** Breakdown of tokens used in a completion. */
+    /**
+     * Breakdown of tokens used in a completion.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun completionTokensDetails(): Optional<CompletionTokensDetails> =
         Optional.ofNullable(completionTokensDetails.getNullable("completion_tokens_details"))
 
-    /** Breakdown of tokens used in the prompt. */
+    /**
+     * Breakdown of tokens used in the prompt.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun promptTokensDetails(): Optional<PromptTokensDetails> =
         Optional.ofNullable(promptTokensDetails.getNullable("prompt_tokens_details"))
 
-    /** Number of tokens in the generated completion. */
+    /**
+     * Returns the raw JSON value of [completionTokens].
+     *
+     * Unlike [completionTokens], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
     @JsonProperty("completion_tokens")
     @ExcludeMissing
     fun _completionTokens(): JsonField<Long> = completionTokens
 
-    /** Number of tokens in the prompt. */
+    /**
+     * Returns the raw JSON value of [promptTokens].
+     *
+     * Unlike [promptTokens], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("prompt_tokens")
     @ExcludeMissing
     fun _promptTokens(): JsonField<Long> = promptTokens
 
-    /** Total number of tokens used in the request (prompt + completion). */
+    /**
+     * Returns the raw JSON value of [totalTokens].
+     *
+     * Unlike [totalTokens], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("total_tokens") @ExcludeMissing fun _totalTokens(): JsonField<Long> = totalTokens
 
-    /** Breakdown of tokens used in a completion. */
+    /**
+     * Returns the raw JSON value of [completionTokensDetails].
+     *
+     * Unlike [completionTokensDetails], this method doesn't throw if the JSON field has an
+     * unexpected type.
+     */
     @JsonProperty("completion_tokens_details")
     @ExcludeMissing
     fun _completionTokensDetails(): JsonField<CompletionTokensDetails> = completionTokensDetails
 
-    /** Breakdown of tokens used in the prompt. */
+    /**
+     * Returns the raw JSON value of [promptTokensDetails].
+     *
+     * Unlike [promptTokensDetails], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
     @JsonProperty("prompt_tokens_details")
     @ExcludeMissing
     fun _promptTokensDetails(): JsonField<PromptTokensDetails> = promptTokensDetails
@@ -140,7 +189,13 @@ private constructor(
         fun completionTokens(completionTokens: Long) =
             completionTokens(JsonField.of(completionTokens))
 
-        /** Number of tokens in the generated completion. */
+        /**
+         * Sets [Builder.completionTokens] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.completionTokens] with a well-typed [Long] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun completionTokens(completionTokens: JsonField<Long>) = apply {
             this.completionTokens = completionTokens
         }
@@ -148,20 +203,38 @@ private constructor(
         /** Number of tokens in the prompt. */
         fun promptTokens(promptTokens: Long) = promptTokens(JsonField.of(promptTokens))
 
-        /** Number of tokens in the prompt. */
+        /**
+         * Sets [Builder.promptTokens] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.promptTokens] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun promptTokens(promptTokens: JsonField<Long>) = apply { this.promptTokens = promptTokens }
 
         /** Total number of tokens used in the request (prompt + completion). */
         fun totalTokens(totalTokens: Long) = totalTokens(JsonField.of(totalTokens))
 
-        /** Total number of tokens used in the request (prompt + completion). */
+        /**
+         * Sets [Builder.totalTokens] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.totalTokens] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun totalTokens(totalTokens: JsonField<Long>) = apply { this.totalTokens = totalTokens }
 
         /** Breakdown of tokens used in a completion. */
         fun completionTokensDetails(completionTokensDetails: CompletionTokensDetails) =
             completionTokensDetails(JsonField.of(completionTokensDetails))
 
-        /** Breakdown of tokens used in a completion. */
+        /**
+         * Sets [Builder.completionTokensDetails] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.completionTokensDetails] with a well-typed
+         * [CompletionTokensDetails] value instead. This method is primarily for setting the field
+         * to an undocumented or not yet supported value.
+         */
         fun completionTokensDetails(completionTokensDetails: JsonField<CompletionTokensDetails>) =
             apply {
                 this.completionTokensDetails = completionTokensDetails
@@ -171,7 +244,13 @@ private constructor(
         fun promptTokensDetails(promptTokensDetails: PromptTokensDetails) =
             promptTokensDetails(JsonField.of(promptTokensDetails))
 
-        /** Breakdown of tokens used in the prompt. */
+        /**
+         * Sets [Builder.promptTokensDetails] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.promptTokensDetails] with a well-typed
+         * [PromptTokensDetails] value instead. This method is primarily for setting the field to an
+         * undocumented or not yet supported value.
+         */
         fun promptTokensDetails(promptTokensDetails: JsonField<PromptTokensDetails>) = apply {
             this.promptTokensDetails = promptTokensDetails
         }
@@ -195,6 +274,20 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [CompletionUsage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .completionTokens()
+         * .promptTokens()
+         * .totalTokens()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): CompletionUsage =
             CompletionUsage(
                 checkRequired("completionTokens", completionTokens),
@@ -230,15 +323,28 @@ private constructor(
         /**
          * When using Predicted Outputs, the number of tokens in the prediction that appeared in the
          * completion.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun acceptedPredictionTokens(): Optional<Long> =
             Optional.ofNullable(acceptedPredictionTokens.getNullable("accepted_prediction_tokens"))
 
-        /** Audio input tokens generated by the model. */
+        /**
+         * Audio input tokens generated by the model.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun audioTokens(): Optional<Long> =
             Optional.ofNullable(audioTokens.getNullable("audio_tokens"))
 
-        /** Tokens generated by the model for reasoning. */
+        /**
+         * Tokens generated by the model for reasoning.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun reasoningTokens(): Optional<Long> =
             Optional.ofNullable(reasoningTokens.getNullable("reasoning_tokens"))
 
@@ -246,32 +352,47 @@ private constructor(
          * When using Predicted Outputs, the number of tokens in the prediction that did not appear
          * in the completion. However, like reasoning tokens, these tokens are still counted in the
          * total completion tokens for purposes of billing, output, and context window limits.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun rejectedPredictionTokens(): Optional<Long> =
             Optional.ofNullable(rejectedPredictionTokens.getNullable("rejected_prediction_tokens"))
 
         /**
-         * When using Predicted Outputs, the number of tokens in the prediction that appeared in the
-         * completion.
+         * Returns the raw JSON value of [acceptedPredictionTokens].
+         *
+         * Unlike [acceptedPredictionTokens], this method doesn't throw if the JSON field has an
+         * unexpected type.
          */
         @JsonProperty("accepted_prediction_tokens")
         @ExcludeMissing
         fun _acceptedPredictionTokens(): JsonField<Long> = acceptedPredictionTokens
 
-        /** Audio input tokens generated by the model. */
+        /**
+         * Returns the raw JSON value of [audioTokens].
+         *
+         * Unlike [audioTokens], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("audio_tokens")
         @ExcludeMissing
         fun _audioTokens(): JsonField<Long> = audioTokens
 
-        /** Tokens generated by the model for reasoning. */
+        /**
+         * Returns the raw JSON value of [reasoningTokens].
+         *
+         * Unlike [reasoningTokens], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("reasoning_tokens")
         @ExcludeMissing
         fun _reasoningTokens(): JsonField<Long> = reasoningTokens
 
         /**
-         * When using Predicted Outputs, the number of tokens in the prediction that did not appear
-         * in the completion. However, like reasoning tokens, these tokens are still counted in the
-         * total completion tokens for purposes of billing, output, and context window limits.
+         * Returns the raw JSON value of [rejectedPredictionTokens].
+         *
+         * Unlike [rejectedPredictionTokens], this method doesn't throw if the JSON field has an
+         * unexpected type.
          */
         @JsonProperty("rejected_prediction_tokens")
         @ExcludeMissing
@@ -331,8 +452,11 @@ private constructor(
                 acceptedPredictionTokens(JsonField.of(acceptedPredictionTokens))
 
             /**
-             * When using Predicted Outputs, the number of tokens in the prediction that appeared in
-             * the completion.
+             * Sets [Builder.acceptedPredictionTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.acceptedPredictionTokens] with a well-typed [Long]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
              */
             fun acceptedPredictionTokens(acceptedPredictionTokens: JsonField<Long>) = apply {
                 this.acceptedPredictionTokens = acceptedPredictionTokens
@@ -341,14 +465,26 @@ private constructor(
             /** Audio input tokens generated by the model. */
             fun audioTokens(audioTokens: Long) = audioTokens(JsonField.of(audioTokens))
 
-            /** Audio input tokens generated by the model. */
+            /**
+             * Sets [Builder.audioTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.audioTokens] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun audioTokens(audioTokens: JsonField<Long>) = apply { this.audioTokens = audioTokens }
 
             /** Tokens generated by the model for reasoning. */
             fun reasoningTokens(reasoningTokens: Long) =
                 reasoningTokens(JsonField.of(reasoningTokens))
 
-            /** Tokens generated by the model for reasoning. */
+            /**
+             * Sets [Builder.reasoningTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.reasoningTokens] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun reasoningTokens(reasoningTokens: JsonField<Long>) = apply {
                 this.reasoningTokens = reasoningTokens
             }
@@ -363,10 +499,11 @@ private constructor(
                 rejectedPredictionTokens(JsonField.of(rejectedPredictionTokens))
 
             /**
-             * When using Predicted Outputs, the number of tokens in the prediction that did not
-             * appear in the completion. However, like reasoning tokens, these tokens are still
-             * counted in the total completion tokens for purposes of billing, output, and context
-             * window limits.
+             * Sets [Builder.rejectedPredictionTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.rejectedPredictionTokens] with a well-typed [Long]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
              */
             fun rejectedPredictionTokens(rejectedPredictionTokens: JsonField<Long>) = apply {
                 this.rejectedPredictionTokens = rejectedPredictionTokens
@@ -391,6 +528,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [CompletionTokensDetails].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): CompletionTokensDetails =
                 CompletionTokensDetails(
                     acceptedPredictionTokens,
@@ -434,20 +576,39 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** Audio input tokens present in the prompt. */
+        /**
+         * Audio input tokens present in the prompt.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun audioTokens(): Optional<Long> =
             Optional.ofNullable(audioTokens.getNullable("audio_tokens"))
 
-        /** Cached tokens present in the prompt. */
+        /**
+         * Cached tokens present in the prompt.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun cachedTokens(): Optional<Long> =
             Optional.ofNullable(cachedTokens.getNullable("cached_tokens"))
 
-        /** Audio input tokens present in the prompt. */
+        /**
+         * Returns the raw JSON value of [audioTokens].
+         *
+         * Unlike [audioTokens], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("audio_tokens")
         @ExcludeMissing
         fun _audioTokens(): JsonField<Long> = audioTokens
 
-        /** Cached tokens present in the prompt. */
+        /**
+         * Returns the raw JSON value of [cachedTokens].
+         *
+         * Unlike [cachedTokens], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("cached_tokens")
         @ExcludeMissing
         fun _cachedTokens(): JsonField<Long> = cachedTokens
@@ -493,13 +654,25 @@ private constructor(
             /** Audio input tokens present in the prompt. */
             fun audioTokens(audioTokens: Long) = audioTokens(JsonField.of(audioTokens))
 
-            /** Audio input tokens present in the prompt. */
+            /**
+             * Sets [Builder.audioTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.audioTokens] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun audioTokens(audioTokens: JsonField<Long>) = apply { this.audioTokens = audioTokens }
 
             /** Cached tokens present in the prompt. */
             fun cachedTokens(cachedTokens: Long) = cachedTokens(JsonField.of(cachedTokens))
 
-            /** Cached tokens present in the prompt. */
+            /**
+             * Sets [Builder.cachedTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.cachedTokens] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun cachedTokens(cachedTokens: JsonField<Long>) = apply {
                 this.cachedTokens = cachedTokens
             }
@@ -523,6 +696,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [PromptTokensDetails].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): PromptTokensDetails =
                 PromptTokensDetails(audioTokens, cachedTokens, additionalProperties.toImmutable())
         }

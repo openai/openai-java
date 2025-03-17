@@ -32,19 +32,32 @@ private constructor(
     /**
      * Specifies the detail level of the image. `low` uses fewer tokens, you can opt in to high
      * resolution using `high`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun detail(): Optional<Detail> = Optional.ofNullable(detail.getNullable("detail"))
 
-    /** The URL of the image, must be a supported image types: jpeg, jpg, png, gif, webp. */
+    /**
+     * The URL of the image, must be a supported image types: jpeg, jpg, png, gif, webp.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun url(): Optional<String> = Optional.ofNullable(url.getNullable("url"))
 
     /**
-     * Specifies the detail level of the image. `low` uses fewer tokens, you can opt in to high
-     * resolution using `high`.
+     * Returns the raw JSON value of [detail].
+     *
+     * Unlike [detail], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("detail") @ExcludeMissing fun _detail(): JsonField<Detail> = detail
 
-    /** The URL of the image, must be a supported image types: jpeg, jpg, png, gif, webp. */
+    /**
+     * Returns the raw JSON value of [url].
+     *
+     * Unlike [url], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("url") @ExcludeMissing fun _url(): JsonField<String> = url
 
     @JsonAnyGetter
@@ -92,15 +105,22 @@ private constructor(
         fun detail(detail: Detail) = detail(JsonField.of(detail))
 
         /**
-         * Specifies the detail level of the image. `low` uses fewer tokens, you can opt in to high
-         * resolution using `high`.
+         * Sets [Builder.detail] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.detail] with a well-typed [Detail] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun detail(detail: JsonField<Detail>) = apply { this.detail = detail }
 
         /** The URL of the image, must be a supported image types: jpeg, jpg, png, gif, webp. */
         fun url(url: String) = url(JsonField.of(url))
 
-        /** The URL of the image, must be a supported image types: jpeg, jpg, png, gif, webp. */
+        /**
+         * Sets [Builder.url] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.url] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun url(url: JsonField<String>) = apply { this.url = url }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -122,6 +142,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ImageUrlDelta].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): ImageUrlDelta = ImageUrlDelta(detail, url, additionalProperties.toImmutable())
     }
 

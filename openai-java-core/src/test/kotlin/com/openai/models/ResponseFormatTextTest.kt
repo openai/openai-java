@@ -5,7 +5,7 @@ package com.openai.models
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ResponseFormatTextTest {
+internal class ResponseFormatTextTest {
 
     @Test
     fun createResponseFormatText() {

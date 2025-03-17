@@ -36,33 +36,79 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The index of the content part that the text delta was added to. */
+    /**
+     * The index of the content part that the text delta was added to.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun contentIndex(): Long = contentIndex.getRequired("content_index")
 
-    /** The text delta that was added. */
+    /**
+     * The text delta that was added.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun delta(): String = delta.getRequired("delta")
 
-    /** The ID of the output item that the text delta was added to. */
+    /**
+     * The ID of the output item that the text delta was added to.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun itemId(): String = itemId.getRequired("item_id")
 
-    /** The index of the output item that the text delta was added to. */
+    /**
+     * The index of the output item that the text delta was added to.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun outputIndex(): Long = outputIndex.getRequired("output_index")
 
-    /** The type of the event. Always `response.output_text.delta`. */
+    /**
+     * The type of the event. Always `response.output_text.delta`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("response.output_text.delta")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** The index of the content part that the text delta was added to. */
+    /**
+     * Returns the raw JSON value of [contentIndex].
+     *
+     * Unlike [contentIndex], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("content_index")
     @ExcludeMissing
     fun _contentIndex(): JsonField<Long> = contentIndex
 
-    /** The text delta that was added. */
+    /**
+     * Returns the raw JSON value of [delta].
+     *
+     * Unlike [delta], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("delta") @ExcludeMissing fun _delta(): JsonField<String> = delta
 
-    /** The ID of the output item that the text delta was added to. */
+    /**
+     * Returns the raw JSON value of [itemId].
+     *
+     * Unlike [itemId], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("item_id") @ExcludeMissing fun _itemId(): JsonField<String> = itemId
 
-    /** The index of the output item that the text delta was added to. */
+    /**
+     * Returns the raw JSON value of [outputIndex].
+     *
+     * Unlike [outputIndex], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("output_index") @ExcludeMissing fun _outputIndex(): JsonField<Long> = outputIndex
 
     @JsonAnyGetter
@@ -129,28 +175,61 @@ private constructor(
         /** The index of the content part that the text delta was added to. */
         fun contentIndex(contentIndex: Long) = contentIndex(JsonField.of(contentIndex))
 
-        /** The index of the content part that the text delta was added to. */
+        /**
+         * Sets [Builder.contentIndex] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.contentIndex] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun contentIndex(contentIndex: JsonField<Long>) = apply { this.contentIndex = contentIndex }
 
         /** The text delta that was added. */
         fun delta(delta: String) = delta(JsonField.of(delta))
 
-        /** The text delta that was added. */
+        /**
+         * Sets [Builder.delta] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.delta] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun delta(delta: JsonField<String>) = apply { this.delta = delta }
 
         /** The ID of the output item that the text delta was added to. */
         fun itemId(itemId: String) = itemId(JsonField.of(itemId))
 
-        /** The ID of the output item that the text delta was added to. */
+        /**
+         * Sets [Builder.itemId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.itemId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun itemId(itemId: JsonField<String>) = apply { this.itemId = itemId }
 
         /** The index of the output item that the text delta was added to. */
         fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))
 
-        /** The index of the output item that the text delta was added to. */
+        /**
+         * Sets [Builder.outputIndex] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.outputIndex] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun outputIndex(outputIndex: JsonField<Long>) = apply { this.outputIndex = outputIndex }
 
-        /** The type of the event. Always `response.output_text.delta`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("response.output_text.delta")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -172,6 +251,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseTextDeltaEvent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .contentIndex()
+         * .delta()
+         * .itemId()
+         * .outputIndex()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseTextDeltaEvent =
             ResponseTextDeltaEvent(
                 checkRequired("contentIndex", contentIndex),

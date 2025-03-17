@@ -48,33 +48,75 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The unique ID of the output message. */
+    /**
+     * The unique ID of the output message.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** The content of the output message. */
+    /**
+     * The content of the output message.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun content(): List<Content> = content.getRequired("content")
 
-    /** The role of the output message. Always `assistant`. */
+    /**
+     * The role of the output message. Always `assistant`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("assistant")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("role") @ExcludeMissing fun _role(): JsonValue = role
 
     /**
      * The status of the message input. One of `in_progress`, `completed`, or `incomplete`.
      * Populated when input items are returned via API.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun status(): Status = status.getRequired("status")
 
-    /** The type of the output message. Always `message`. */
+    /**
+     * The type of the output message. Always `message`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("message")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** The unique ID of the output message. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** The content of the output message. */
+    /**
+     * Returns the raw JSON value of [content].
+     *
+     * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<List<Content>> = content
 
     /**
-     * The status of the message input. One of `in_progress`, `completed`, or `incomplete`.
-     * Populated when input items are returned via API.
+     * Returns the raw JSON value of [status].
+     *
+     * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
@@ -145,18 +187,33 @@ private constructor(
         /** The unique ID of the output message. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The unique ID of the output message. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The content of the output message. */
         fun content(content: List<Content>) = content(JsonField.of(content))
 
-        /** The content of the output message. */
+        /**
+         * Sets [Builder.content] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.content] with a well-typed `List<Content>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun content(content: JsonField<List<Content>>) = apply {
             this.content = content.map { it.toMutableList() }
         }
 
-        /** The content of the output message. */
+        /**
+         * Adds a single [Content] to [Builder.content].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addContent(content: Content) = apply {
             this.content =
                 (this.content ?: JsonField.of(mutableListOf())).also {
@@ -164,18 +221,36 @@ private constructor(
                 }
         }
 
-        /** A text output from the model. */
+        /** Alias for calling [addContent] with `Content.ofOutputText(outputText)`. */
         fun addContent(outputText: ResponseOutputText) =
             addContent(Content.ofOutputText(outputText))
 
-        /** A refusal from the model. */
+        /** Alias for calling [addContent] with `Content.ofRefusal(refusal)`. */
         fun addContent(refusal: ResponseOutputRefusal) = addContent(Content.ofRefusal(refusal))
 
-        /** A refusal from the model. */
+        /**
+         * Alias for calling [addContent] with the following:
+         * ```java
+         * ResponseOutputRefusal.builder()
+         *     .refusal(refusal)
+         *     .build()
+         * ```
+         */
         fun addRefusalContent(refusal: String) =
             addContent(ResponseOutputRefusal.builder().refusal(refusal).build())
 
-        /** The role of the output message. Always `assistant`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("assistant")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun role(role: JsonValue) = apply { this.role = role }
 
         /**
@@ -185,12 +260,25 @@ private constructor(
         fun status(status: Status) = status(JsonField.of(status))
 
         /**
-         * The status of the message input. One of `in_progress`, `completed`, or `incomplete`.
-         * Populated when input items are returned via API.
+         * Sets [Builder.status] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
-        /** The type of the output message. Always `message`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("message")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -212,6 +300,20 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseOutputMessage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .content()
+         * .status()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseOutputMessage =
             ResponseOutputMessage(
                 checkRequired("id", id),

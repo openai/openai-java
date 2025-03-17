@@ -30,14 +30,33 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The type of tool being defined: `file_search` */
+    /**
+     * The type of tool being defined: `file_search`
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("file_search")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** Overrides for the file search tool. */
+    /**
+     * Overrides for the file search tool.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun fileSearch(): Optional<FileSearch> =
         Optional.ofNullable(fileSearch.getNullable("file_search"))
 
-    /** Overrides for the file search tool. */
+    /**
+     * Returns the raw JSON value of [fileSearch].
+     *
+     * Unlike [fileSearch], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("file_search")
     @ExcludeMissing
     fun _fileSearch(): JsonField<FileSearch> = fileSearch
@@ -84,13 +103,30 @@ private constructor(
             additionalProperties = fileSearchTool.additionalProperties.toMutableMap()
         }
 
-        /** The type of tool being defined: `file_search` */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("file_search")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         /** Overrides for the file search tool. */
         fun fileSearch(fileSearch: FileSearch) = fileSearch(JsonField.of(fileSearch))
 
-        /** Overrides for the file search tool. */
+        /**
+         * Sets [Builder.fileSearch] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.fileSearch] with a well-typed [FileSearch] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun fileSearch(fileSearch: JsonField<FileSearch>) = apply { this.fileSearch = fileSearch }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -112,6 +148,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FileSearchTool].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): FileSearchTool =
             FileSearchTool(type, fileSearch, additionalProperties.toImmutable())
     }
@@ -139,6 +180,9 @@ private constructor(
          * Note that the file search tool may output fewer than `max_num_results` results. See the
          * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
          * for more information.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun maxNumResults(): Optional<Long> =
             Optional.ofNullable(maxNumResults.getNullable("max_num_results"))
@@ -150,30 +194,28 @@ private constructor(
          * See the
          * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
          * for more information.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun rankingOptions(): Optional<RankingOptions> =
             Optional.ofNullable(rankingOptions.getNullable("ranking_options"))
 
         /**
-         * The maximum number of results the file search tool should output. The default is 20 for
-         * `gpt-4*` models and 5 for `gpt-3.5-turbo`. This number should be between 1 and 50
-         * inclusive.
+         * Returns the raw JSON value of [maxNumResults].
          *
-         * Note that the file search tool may output fewer than `max_num_results` results. See the
-         * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
-         * for more information.
+         * Unlike [maxNumResults], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
         @JsonProperty("max_num_results")
         @ExcludeMissing
         fun _maxNumResults(): JsonField<Long> = maxNumResults
 
         /**
-         * The ranking options for the file search. If not specified, the file search tool will use
-         * the `auto` ranker and a score_threshold of 0.
+         * Returns the raw JSON value of [rankingOptions].
          *
-         * See the
-         * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
-         * for more information.
+         * Unlike [rankingOptions], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
         @JsonProperty("ranking_options")
         @ExcludeMissing
@@ -230,14 +272,11 @@ private constructor(
             fun maxNumResults(maxNumResults: Long) = maxNumResults(JsonField.of(maxNumResults))
 
             /**
-             * The maximum number of results the file search tool should output. The default is 20
-             * for `gpt-4*` models and 5 for `gpt-3.5-turbo`. This number should be between 1 and 50
-             * inclusive.
+             * Sets [Builder.maxNumResults] to an arbitrary JSON value.
              *
-             * Note that the file search tool may output fewer than `max_num_results` results. See
-             * the
-             * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
-             * for more information.
+             * You should usually call [Builder.maxNumResults] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun maxNumResults(maxNumResults: JsonField<Long>) = apply {
                 this.maxNumResults = maxNumResults
@@ -255,12 +294,11 @@ private constructor(
                 rankingOptions(JsonField.of(rankingOptions))
 
             /**
-             * The ranking options for the file search. If not specified, the file search tool will
-             * use the `auto` ranker and a score_threshold of 0.
+             * Sets [Builder.rankingOptions] to an arbitrary JSON value.
              *
-             * See the
-             * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
-             * for more information.
+             * You should usually call [Builder.rankingOptions] with a well-typed [RankingOptions]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
              */
             fun rankingOptions(rankingOptions: JsonField<RankingOptions>) = apply {
                 this.rankingOptions = rankingOptions
@@ -285,6 +323,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [FileSearch].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): FileSearch =
                 FileSearch(maxNumResults, rankingOptions, additionalProperties.toImmutable())
         }
@@ -314,24 +357,35 @@ private constructor(
             /**
              * The score threshold for the file search. All values must be a floating point number
              * between 0 and 1.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
              */
             fun scoreThreshold(): Double = scoreThreshold.getRequired("score_threshold")
 
             /**
              * The ranker to use for the file search. If not specified will use the `auto` ranker.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
              */
             fun ranker(): Optional<Ranker> = Optional.ofNullable(ranker.getNullable("ranker"))
 
             /**
-             * The score threshold for the file search. All values must be a floating point number
-             * between 0 and 1.
+             * Returns the raw JSON value of [scoreThreshold].
+             *
+             * Unlike [scoreThreshold], this method doesn't throw if the JSON field has an
+             * unexpected type.
              */
             @JsonProperty("score_threshold")
             @ExcludeMissing
             fun _scoreThreshold(): JsonField<Double> = scoreThreshold
 
             /**
-             * The ranker to use for the file search. If not specified will use the `auto` ranker.
+             * Returns the raw JSON value of [ranker].
+             *
+             * Unlike [ranker], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("ranker") @ExcludeMissing fun _ranker(): JsonField<Ranker> = ranker
 
@@ -388,8 +442,11 @@ private constructor(
                     scoreThreshold(JsonField.of(scoreThreshold))
 
                 /**
-                 * The score threshold for the file search. All values must be a floating point
-                 * number between 0 and 1.
+                 * Sets [Builder.scoreThreshold] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.scoreThreshold] with a well-typed [Double] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
                  */
                 fun scoreThreshold(scoreThreshold: JsonField<Double>) = apply {
                     this.scoreThreshold = scoreThreshold
@@ -402,8 +459,11 @@ private constructor(
                 fun ranker(ranker: Ranker) = ranker(JsonField.of(ranker))
 
                 /**
-                 * The ranker to use for the file search. If not specified will use the `auto`
-                 * ranker.
+                 * Sets [Builder.ranker] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.ranker] with a well-typed [Ranker] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
                  */
                 fun ranker(ranker: JsonField<Ranker>) = apply { this.ranker = ranker }
 
@@ -429,6 +489,18 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [RankingOptions].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .scoreThreshold()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): RankingOptions =
                     RankingOptions(
                         checkRequired("scoreThreshold", scoreThreshold),

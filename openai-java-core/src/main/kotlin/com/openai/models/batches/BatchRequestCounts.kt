@@ -14,6 +14,7 @@ import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 
 /** The request counts for different statuses within the batch. */
@@ -29,22 +30,49 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** Number of requests that have been completed successfully. */
+    /**
+     * Number of requests that have been completed successfully.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun completed(): Long = completed.getRequired("completed")
 
-    /** Number of requests that have failed. */
+    /**
+     * Number of requests that have failed.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun failed(): Long = failed.getRequired("failed")
 
-    /** Total number of requests in the batch. */
+    /**
+     * Total number of requests in the batch.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun total(): Long = total.getRequired("total")
 
-    /** Number of requests that have been completed successfully. */
+    /**
+     * Returns the raw JSON value of [completed].
+     *
+     * Unlike [completed], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("completed") @ExcludeMissing fun _completed(): JsonField<Long> = completed
 
-    /** Number of requests that have failed. */
+    /**
+     * Returns the raw JSON value of [failed].
+     *
+     * Unlike [failed], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("failed") @ExcludeMissing fun _failed(): JsonField<Long> = failed
 
-    /** Total number of requests in the batch. */
+    /**
+     * Returns the raw JSON value of [total].
+     *
+     * Unlike [total], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("total") @ExcludeMissing fun _total(): JsonField<Long> = total
 
     @JsonAnyGetter
@@ -100,19 +128,34 @@ private constructor(
         /** Number of requests that have been completed successfully. */
         fun completed(completed: Long) = completed(JsonField.of(completed))
 
-        /** Number of requests that have been completed successfully. */
+        /**
+         * Sets [Builder.completed] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.completed] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun completed(completed: JsonField<Long>) = apply { this.completed = completed }
 
         /** Number of requests that have failed. */
         fun failed(failed: Long) = failed(JsonField.of(failed))
 
-        /** Number of requests that have failed. */
+        /**
+         * Sets [Builder.failed] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.failed] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun failed(failed: JsonField<Long>) = apply { this.failed = failed }
 
         /** Total number of requests in the batch. */
         fun total(total: Long) = total(JsonField.of(total))
 
-        /** Total number of requests in the batch. */
+        /**
+         * Sets [Builder.total] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.total] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun total(total: JsonField<Long>) = apply { this.total = total }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -134,6 +177,20 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [BatchRequestCounts].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .completed()
+         * .failed()
+         * .total()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): BatchRequestCounts =
             BatchRequestCounts(
                 checkRequired("completed", completed),

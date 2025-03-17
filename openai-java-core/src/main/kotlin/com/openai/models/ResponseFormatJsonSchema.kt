@@ -34,13 +34,32 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** Structured Outputs configuration options, including a JSON Schema. */
+    /**
+     * Structured Outputs configuration options, including a JSON Schema.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun jsonSchema(): JsonSchema = jsonSchema.getRequired("json_schema")
 
-    /** The type of response format being defined. Always `json_schema`. */
+    /**
+     * The type of response format being defined. Always `json_schema`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("json_schema")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** Structured Outputs configuration options, including a JSON Schema. */
+    /**
+     * Returns the raw JSON value of [jsonSchema].
+     *
+     * Unlike [jsonSchema], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("json_schema")
     @ExcludeMissing
     fun _jsonSchema(): JsonField<JsonSchema> = jsonSchema
@@ -97,10 +116,27 @@ private constructor(
         /** Structured Outputs configuration options, including a JSON Schema. */
         fun jsonSchema(jsonSchema: JsonSchema) = jsonSchema(JsonField.of(jsonSchema))
 
-        /** Structured Outputs configuration options, including a JSON Schema. */
+        /**
+         * Sets [Builder.jsonSchema] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.jsonSchema] with a well-typed [JsonSchema] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun jsonSchema(jsonSchema: JsonField<JsonSchema>) = apply { this.jsonSchema = jsonSchema }
 
-        /** The type of response format being defined. Always `json_schema`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("json_schema")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -122,6 +158,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseFormatJsonSchema].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .jsonSchema()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseFormatJsonSchema =
             ResponseFormatJsonSchema(
                 checkRequired("jsonSchema", jsonSchema),
@@ -154,12 +202,18 @@ private constructor(
         /**
          * The name of the response format. Must be a-z, A-Z, 0-9, or contain underscores and
          * dashes, with a maximum length of 64.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun name(): String = name.getRequired("name")
 
         /**
          * A description of what the response format is for, used by the model to determine how to
          * respond in the format.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun description(): Optional<String> =
             Optional.ofNullable(description.getNullable("description"))
@@ -167,6 +221,9 @@ private constructor(
         /**
          * The schema for the response format, described as a JSON Schema object. Learn how to build
          * JSON schemas [here](https://json-schema.org/).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun schema(): Optional<Schema> = Optional.ofNullable(schema.getNullable("schema"))
 
@@ -175,34 +232,39 @@ private constructor(
          * model will always follow the exact schema defined in the `schema` field. Only a subset of
          * JSON Schema is supported when `strict` is `true`. To learn more, read the
          * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun strict(): Optional<Boolean> = Optional.ofNullable(strict.getNullable("strict"))
 
         /**
-         * The name of the response format. Must be a-z, A-Z, 0-9, or contain underscores and
-         * dashes, with a maximum length of 64.
+         * Returns the raw JSON value of [name].
+         *
+         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         /**
-         * A description of what the response format is for, used by the model to determine how to
-         * respond in the format.
+         * Returns the raw JSON value of [description].
+         *
+         * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("description")
         @ExcludeMissing
         fun _description(): JsonField<String> = description
 
         /**
-         * The schema for the response format, described as a JSON Schema object. Learn how to build
-         * JSON schemas [here](https://json-schema.org/).
+         * Returns the raw JSON value of [schema].
+         *
+         * Unlike [schema], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("schema") @ExcludeMissing fun _schema(): JsonField<Schema> = schema
 
         /**
-         * Whether to enable strict schema adherence when generating the output. If set to true, the
-         * model will always follow the exact schema defined in the `schema` field. Only a subset of
-         * JSON Schema is supported when `strict` is `true`. To learn more, read the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         * Returns the raw JSON value of [strict].
+         *
+         * Unlike [strict], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("strict") @ExcludeMissing fun _strict(): JsonField<Boolean> = strict
 
@@ -264,8 +326,11 @@ private constructor(
             fun name(name: String) = name(JsonField.of(name))
 
             /**
-             * The name of the response format. Must be a-z, A-Z, 0-9, or contain underscores and
-             * dashes, with a maximum length of 64.
+             * Sets [Builder.name] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.name] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun name(name: JsonField<String>) = apply { this.name = name }
 
@@ -276,8 +341,11 @@ private constructor(
             fun description(description: String) = description(JsonField.of(description))
 
             /**
-             * A description of what the response format is for, used by the model to determine how
-             * to respond in the format.
+             * Sets [Builder.description] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.description] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun description(description: JsonField<String>) = apply {
                 this.description = description
@@ -290,8 +358,11 @@ private constructor(
             fun schema(schema: Schema) = schema(JsonField.of(schema))
 
             /**
-             * The schema for the response format, described as a JSON Schema object. Learn how to
-             * build JSON schemas [here](https://json-schema.org/).
+             * Sets [Builder.schema] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.schema] with a well-typed [Schema] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun schema(schema: JsonField<Schema>) = apply { this.schema = schema }
 
@@ -304,26 +375,21 @@ private constructor(
             fun strict(strict: Boolean?) = strict(JsonField.ofNullable(strict))
 
             /**
-             * Whether to enable strict schema adherence when generating the output. If set to true,
-             * the model will always follow the exact schema defined in the `schema` field. Only a
-             * subset of JSON Schema is supported when `strict` is `true`. To learn more, read the
-             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             * Alias for [Builder.strict].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
              */
             fun strict(strict: Boolean) = strict(strict as Boolean?)
 
-            /**
-             * Whether to enable strict schema adherence when generating the output. If set to true,
-             * the model will always follow the exact schema defined in the `schema` field. Only a
-             * subset of JSON Schema is supported when `strict` is `true`. To learn more, read the
-             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-             */
+            /** Alias for calling [Builder.strict] with `strict.orElse(null)`. */
             fun strict(strict: Optional<Boolean>) = strict(strict.getOrNull())
 
             /**
-             * Whether to enable strict schema adherence when generating the output. If set to true,
-             * the model will always follow the exact schema defined in the `schema` field. Only a
-             * subset of JSON Schema is supported when `strict` is `true`. To learn more, read the
-             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             * Sets [Builder.strict] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.strict] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun strict(strict: JsonField<Boolean>) = apply { this.strict = strict }
 
@@ -346,6 +412,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [JsonSchema].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .name()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): JsonSchema =
                 JsonSchema(
                     checkRequired("name", name),
@@ -422,6 +500,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Schema].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): Schema = Schema(additionalProperties.toImmutable())
             }
 

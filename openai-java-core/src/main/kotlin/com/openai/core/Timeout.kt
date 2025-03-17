@@ -90,13 +90,7 @@ private constructor(
          */
         fun connect(connect: Duration?) = apply { this.connect = connect }
 
-        /**
-         * The maximum time allowed to establish a connection with a host.
-         *
-         * A value of [Duration.ZERO] means there's no timeout.
-         *
-         * Defaults to `Duration.ofMinutes(1)`.
-         */
+        /** Alias for calling [Builder.connect] with `connect.orElse(null)`. */
         fun connect(connect: Optional<Duration>) = connect(connect.getOrNull())
 
         /**
@@ -108,13 +102,7 @@ private constructor(
          */
         fun read(read: Duration?) = apply { this.read = read }
 
-        /**
-         * The maximum time allowed between two data packets when waiting for the server’s response.
-         *
-         * A value of [Duration.ZERO] means there's no timeout.
-         *
-         * Defaults to `request()`.
-         */
+        /** Alias for calling [Builder.read] with `read.orElse(null)`. */
         fun read(read: Optional<Duration>) = read(read.getOrNull())
 
         /**
@@ -126,13 +114,7 @@ private constructor(
          */
         fun write(write: Duration?) = apply { this.write = write }
 
-        /**
-         * The maximum time allowed between two data packets when sending the request to the server.
-         *
-         * A value of [Duration.ZERO] means there's no timeout.
-         *
-         * Defaults to `request()`.
-         */
+        /** Alias for calling [Builder.write] with `write.orElse(null)`. */
         fun write(write: Optional<Duration>) = write(write.getOrNull())
 
         /**
@@ -147,18 +129,14 @@ private constructor(
          */
         fun request(request: Duration?) = apply { this.request = request }
 
-        /**
-         * The maximum time allowed for a complete HTTP call, not including retries.
-         *
-         * This includes resolving DNS, connecting, writing the request body, server processing, as
-         * well as reading the response body.
-         *
-         * A value of [Duration.ZERO] means there's no timeout.
-         *
-         * Defaults to `Duration.ofMinutes(10)`.
-         */
+        /** Alias for calling [Builder.request] with `request.orElse(null)`. */
         fun request(request: Optional<Duration>) = request(request.getOrNull())
 
+        /**
+         * Returns an immutable instance of [Timeout].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): Timeout = Timeout(connect, read, write, request)
     }
 

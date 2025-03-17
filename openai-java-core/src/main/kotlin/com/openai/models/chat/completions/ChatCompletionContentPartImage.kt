@@ -31,11 +31,30 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun imageUrl(): ImageUrl = imageUrl.getRequired("image_url")
 
-    /** The type of the content part. */
+    /**
+     * The type of the content part.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("image_url")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
+    /**
+     * Returns the raw JSON value of [imageUrl].
+     *
+     * Unlike [imageUrl], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("image_url") @ExcludeMissing fun _imageUrl(): JsonField<ImageUrl> = imageUrl
 
     @JsonAnyGetter
@@ -91,9 +110,27 @@ private constructor(
 
         fun imageUrl(imageUrl: ImageUrl) = imageUrl(JsonField.of(imageUrl))
 
+        /**
+         * Sets [Builder.imageUrl] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.imageUrl] with a well-typed [ImageUrl] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun imageUrl(imageUrl: JsonField<ImageUrl>) = apply { this.imageUrl = imageUrl }
 
-        /** The type of the content part. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("image_url")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -115,6 +152,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ChatCompletionContentPartImage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .imageUrl()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ChatCompletionContentPartImage =
             ChatCompletionContentPartImage(
                 checkRequired("imageUrl", imageUrl),
@@ -135,21 +184,34 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** Either a URL of the image or the base64 encoded image data. */
+        /**
+         * Either a URL of the image or the base64 encoded image data.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun url(): String = url.getRequired("url")
 
         /**
          * Specifies the detail level of the image. Learn more in the
          * [Vision guide](https://platform.openai.com/docs/guides/vision#low-or-high-fidelity-image-understanding).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun detail(): Optional<Detail> = Optional.ofNullable(detail.getNullable("detail"))
 
-        /** Either a URL of the image or the base64 encoded image data. */
+        /**
+         * Returns the raw JSON value of [url].
+         *
+         * Unlike [url], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("url") @ExcludeMissing fun _url(): JsonField<String> = url
 
         /**
-         * Specifies the detail level of the image. Learn more in the
-         * [Vision guide](https://platform.openai.com/docs/guides/vision#low-or-high-fidelity-image-understanding).
+         * Returns the raw JSON value of [detail].
+         *
+         * Unlike [detail], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("detail") @ExcludeMissing fun _detail(): JsonField<Detail> = detail
 
@@ -201,7 +263,13 @@ private constructor(
             /** Either a URL of the image or the base64 encoded image data. */
             fun url(url: String) = url(JsonField.of(url))
 
-            /** Either a URL of the image or the base64 encoded image data. */
+            /**
+             * Sets [Builder.url] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.url] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun url(url: JsonField<String>) = apply { this.url = url }
 
             /**
@@ -211,8 +279,11 @@ private constructor(
             fun detail(detail: Detail) = detail(JsonField.of(detail))
 
             /**
-             * Specifies the detail level of the image. Learn more in the
-             * [Vision guide](https://platform.openai.com/docs/guides/vision#low-or-high-fidelity-image-understanding).
+             * Sets [Builder.detail] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.detail] with a well-typed [Detail] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun detail(detail: JsonField<Detail>) = apply { this.detail = detail }
 
@@ -235,6 +306,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ImageUrl].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .url()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ImageUrl =
                 ImageUrl(checkRequired("url", url), detail, additionalProperties.toImmutable())
         }

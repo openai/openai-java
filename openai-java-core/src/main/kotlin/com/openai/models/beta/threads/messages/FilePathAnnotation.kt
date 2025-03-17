@@ -39,25 +39,71 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun endIndex(): Long = endIndex.getRequired("end_index")
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun filePath(): FilePath = filePath.getRequired("file_path")
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun startIndex(): Long = startIndex.getRequired("start_index")
 
-    /** The text in the message content that needs to be replaced. */
+    /**
+     * The text in the message content that needs to be replaced.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun text(): String = text.getRequired("text")
 
-    /** Always `file_path`. */
+    /**
+     * Always `file_path`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("file_path")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
+    /**
+     * Returns the raw JSON value of [endIndex].
+     *
+     * Unlike [endIndex], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("end_index") @ExcludeMissing fun _endIndex(): JsonField<Long> = endIndex
 
+    /**
+     * Returns the raw JSON value of [filePath].
+     *
+     * Unlike [filePath], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("file_path") @ExcludeMissing fun _filePath(): JsonField<FilePath> = filePath
 
+    /**
+     * Returns the raw JSON value of [startIndex].
+     *
+     * Unlike [startIndex], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("start_index") @ExcludeMissing fun _startIndex(): JsonField<Long> = startIndex
 
-    /** The text in the message content that needs to be replaced. */
+    /**
+     * Returns the raw JSON value of [text].
+     *
+     * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
     @JsonAnyGetter
@@ -123,23 +169,58 @@ private constructor(
 
         fun endIndex(endIndex: Long) = endIndex(JsonField.of(endIndex))
 
+        /**
+         * Sets [Builder.endIndex] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.endIndex] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun endIndex(endIndex: JsonField<Long>) = apply { this.endIndex = endIndex }
 
         fun filePath(filePath: FilePath) = filePath(JsonField.of(filePath))
 
+        /**
+         * Sets [Builder.filePath] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.filePath] with a well-typed [FilePath] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun filePath(filePath: JsonField<FilePath>) = apply { this.filePath = filePath }
 
         fun startIndex(startIndex: Long) = startIndex(JsonField.of(startIndex))
 
+        /**
+         * Sets [Builder.startIndex] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.startIndex] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun startIndex(startIndex: JsonField<Long>) = apply { this.startIndex = startIndex }
 
         /** The text in the message content that needs to be replaced. */
         fun text(text: String) = text(JsonField.of(text))
 
-        /** The text in the message content that needs to be replaced. */
+        /**
+         * Sets [Builder.text] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.text] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun text(text: JsonField<String>) = apply { this.text = text }
 
-        /** Always `file_path`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("file_path")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -161,6 +242,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FilePathAnnotation].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .endIndex()
+         * .filePath()
+         * .startIndex()
+         * .text()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FilePathAnnotation =
             FilePathAnnotation(
                 checkRequired("endIndex", endIndex),
@@ -183,10 +279,19 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The ID of the file that was generated. */
+        /**
+         * The ID of the file that was generated.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun fileId(): String = fileId.getRequired("file_id")
 
-        /** The ID of the file that was generated. */
+        /**
+         * Returns the raw JSON value of [fileId].
+         *
+         * Unlike [fileId], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
         @JsonAnyGetter
@@ -234,7 +339,13 @@ private constructor(
             /** The ID of the file that was generated. */
             fun fileId(fileId: String) = fileId(JsonField.of(fileId))
 
-            /** The ID of the file that was generated. */
+            /**
+             * Sets [Builder.fileId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.fileId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -256,6 +367,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [FilePath].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .fileId()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): FilePath =
                 FilePath(checkRequired("fileId", fileId), additionalProperties.toImmutable())
         }

@@ -38,17 +38,16 @@ private constructor(
      * - `file_search`
      * - `web_search_preview`
      * - `computer_use_preview`
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun type(): Type = type.getRequired("type")
 
     /**
-     * The type of hosted tool the model should to use. Learn more about
-     * [built-in tools](https://platform.openai.com/docs/guides/tools).
+     * Returns the raw JSON value of [type].
      *
-     * Allowed values are:
-     * - `file_search`
-     * - `web_search_preview`
-     * - `computer_use_preview`
+     * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
@@ -106,13 +105,10 @@ private constructor(
         fun type(type: Type) = type(JsonField.of(type))
 
         /**
-         * The type of hosted tool the model should to use. Learn more about
-         * [built-in tools](https://platform.openai.com/docs/guides/tools).
+         * Sets [Builder.type] to an arbitrary JSON value.
          *
-         * Allowed values are:
-         * - `file_search`
-         * - `web_search_preview`
-         * - `computer_use_preview`
+         * You should usually call [Builder.type] with a well-typed [Type] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
@@ -135,6 +131,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ToolChoiceTypes].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .type()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ToolChoiceTypes =
             ToolChoiceTypes(checkRequired("type", type), additionalProperties.toImmutable())
     }

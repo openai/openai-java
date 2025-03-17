@@ -39,11 +39,20 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The details of the run step. */
+    /**
+     * The details of the run step.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun stepDetails(): Optional<StepDetails> =
         Optional.ofNullable(stepDetails.getNullable("step_details"))
 
-    /** The details of the run step. */
+    /**
+     * Returns the raw JSON value of [stepDetails].
+     *
+     * Unlike [stepDetails], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("step_details")
     @ExcludeMissing
     fun _stepDetails(): JsonField<StepDetails> = stepDetails
@@ -86,16 +95,24 @@ private constructor(
         /** The details of the run step. */
         fun stepDetails(stepDetails: StepDetails) = stepDetails(JsonField.of(stepDetails))
 
-        /** The details of the run step. */
+        /**
+         * Sets [Builder.stepDetails] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.stepDetails] with a well-typed [StepDetails] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun stepDetails(stepDetails: JsonField<StepDetails>) = apply {
             this.stepDetails = stepDetails
         }
 
-        /** Details of the message creation by the run step. */
+        /**
+         * Alias for calling [stepDetails] with `StepDetails.ofMessageCreation(messageCreation)`.
+         */
         fun stepDetails(messageCreation: RunStepDeltaMessageDelta) =
             stepDetails(StepDetails.ofMessageCreation(messageCreation))
 
-        /** Details of the tool call. */
+        /** Alias for calling [stepDetails] with `StepDetails.ofToolCalls(toolCalls)`. */
         fun stepDetails(toolCalls: ToolCallDeltaObject) =
             stepDetails(StepDetails.ofToolCalls(toolCalls))
 
@@ -118,6 +135,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [RunStepDelta].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): RunStepDelta = RunStepDelta(stepDetails, additionalProperties.toImmutable())
     }
 

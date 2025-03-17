@@ -85,56 +85,144 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** The time frame within which the batch should be processed. */
+    /**
+     * The time frame within which the batch should be processed.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun completionWindow(): String = completionWindow.getRequired("completion_window")
 
-    /** The Unix timestamp (in seconds) for when the batch was created. */
+    /**
+     * The Unix timestamp (in seconds) for when the batch was created.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun createdAt(): Long = createdAt.getRequired("created_at")
 
-    /** The OpenAI API endpoint used by the batch. */
+    /**
+     * The OpenAI API endpoint used by the batch.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun endpoint(): String = endpoint.getRequired("endpoint")
 
-    /** The ID of the input file for the batch. */
+    /**
+     * The ID of the input file for the batch.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun inputFileId(): String = inputFileId.getRequired("input_file_id")
 
-    /** The object type, which is always `batch`. */
+    /**
+     * The object type, which is always `batch`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("batch")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
-    /** The current status of the batch. */
+    /**
+     * The current status of the batch.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun status(): Status = status.getRequired("status")
 
-    /** The Unix timestamp (in seconds) for when the batch was cancelled. */
+    /**
+     * The Unix timestamp (in seconds) for when the batch was cancelled.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun cancelledAt(): Optional<Long> = Optional.ofNullable(cancelledAt.getNullable("cancelled_at"))
 
-    /** The Unix timestamp (in seconds) for when the batch started cancelling. */
+    /**
+     * The Unix timestamp (in seconds) for when the batch started cancelling.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun cancellingAt(): Optional<Long> =
         Optional.ofNullable(cancellingAt.getNullable("cancelling_at"))
 
-    /** The Unix timestamp (in seconds) for when the batch was completed. */
+    /**
+     * The Unix timestamp (in seconds) for when the batch was completed.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun completedAt(): Optional<Long> = Optional.ofNullable(completedAt.getNullable("completed_at"))
 
-    /** The ID of the file containing the outputs of requests with errors. */
+    /**
+     * The ID of the file containing the outputs of requests with errors.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun errorFileId(): Optional<String> =
         Optional.ofNullable(errorFileId.getNullable("error_file_id"))
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun errors(): Optional<Errors> = Optional.ofNullable(errors.getNullable("errors"))
 
-    /** The Unix timestamp (in seconds) for when the batch expired. */
+    /**
+     * The Unix timestamp (in seconds) for when the batch expired.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun expiredAt(): Optional<Long> = Optional.ofNullable(expiredAt.getNullable("expired_at"))
 
-    /** The Unix timestamp (in seconds) for when the batch will expire. */
+    /**
+     * The Unix timestamp (in seconds) for when the batch will expire.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun expiresAt(): Optional<Long> = Optional.ofNullable(expiresAt.getNullable("expires_at"))
 
-    /** The Unix timestamp (in seconds) for when the batch failed. */
+    /**
+     * The Unix timestamp (in seconds) for when the batch failed.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun failedAt(): Optional<Long> = Optional.ofNullable(failedAt.getNullable("failed_at"))
 
-    /** The Unix timestamp (in seconds) for when the batch started finalizing. */
+    /**
+     * The Unix timestamp (in seconds) for when the batch started finalizing.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun finalizingAt(): Optional<Long> =
         Optional.ofNullable(finalizingAt.getNullable("finalizing_at"))
 
-    /** The Unix timestamp (in seconds) for when the batch started processing. */
+    /**
+     * The Unix timestamp (in seconds) for when the batch started processing.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun inProgressAt(): Optional<Long> =
         Optional.ofNullable(inProgressAt.getNullable("in_progress_at"))
 
@@ -145,91 +233,176 @@ private constructor(
      *
      * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
      * length of 512 characters.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
 
-    /** The ID of the file containing the outputs of successfully executed requests. */
+    /**
+     * The ID of the file containing the outputs of successfully executed requests.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun outputFileId(): Optional<String> =
         Optional.ofNullable(outputFileId.getNullable("output_file_id"))
 
-    /** The request counts for different statuses within the batch. */
+    /**
+     * The request counts for different statuses within the batch.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun requestCounts(): Optional<BatchRequestCounts> =
         Optional.ofNullable(requestCounts.getNullable("request_counts"))
 
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** The time frame within which the batch should be processed. */
+    /**
+     * Returns the raw JSON value of [completionWindow].
+     *
+     * Unlike [completionWindow], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
     @JsonProperty("completion_window")
     @ExcludeMissing
     fun _completionWindow(): JsonField<String> = completionWindow
 
-    /** The Unix timestamp (in seconds) for when the batch was created. */
+    /**
+     * Returns the raw JSON value of [createdAt].
+     *
+     * Unlike [createdAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
-    /** The OpenAI API endpoint used by the batch. */
+    /**
+     * Returns the raw JSON value of [endpoint].
+     *
+     * Unlike [endpoint], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("endpoint") @ExcludeMissing fun _endpoint(): JsonField<String> = endpoint
 
-    /** The ID of the input file for the batch. */
+    /**
+     * Returns the raw JSON value of [inputFileId].
+     *
+     * Unlike [inputFileId], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("input_file_id")
     @ExcludeMissing
     fun _inputFileId(): JsonField<String> = inputFileId
 
-    /** The current status of the batch. */
+    /**
+     * Returns the raw JSON value of [status].
+     *
+     * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
-    /** The Unix timestamp (in seconds) for when the batch was cancelled. */
+    /**
+     * Returns the raw JSON value of [cancelledAt].
+     *
+     * Unlike [cancelledAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("cancelled_at") @ExcludeMissing fun _cancelledAt(): JsonField<Long> = cancelledAt
 
-    /** The Unix timestamp (in seconds) for when the batch started cancelling. */
+    /**
+     * Returns the raw JSON value of [cancellingAt].
+     *
+     * Unlike [cancellingAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("cancelling_at")
     @ExcludeMissing
     fun _cancellingAt(): JsonField<Long> = cancellingAt
 
-    /** The Unix timestamp (in seconds) for when the batch was completed. */
+    /**
+     * Returns the raw JSON value of [completedAt].
+     *
+     * Unlike [completedAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("completed_at") @ExcludeMissing fun _completedAt(): JsonField<Long> = completedAt
 
-    /** The ID of the file containing the outputs of requests with errors. */
+    /**
+     * Returns the raw JSON value of [errorFileId].
+     *
+     * Unlike [errorFileId], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("error_file_id")
     @ExcludeMissing
     fun _errorFileId(): JsonField<String> = errorFileId
 
+    /**
+     * Returns the raw JSON value of [errors].
+     *
+     * Unlike [errors], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("errors") @ExcludeMissing fun _errors(): JsonField<Errors> = errors
 
-    /** The Unix timestamp (in seconds) for when the batch expired. */
+    /**
+     * Returns the raw JSON value of [expiredAt].
+     *
+     * Unlike [expiredAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("expired_at") @ExcludeMissing fun _expiredAt(): JsonField<Long> = expiredAt
 
-    /** The Unix timestamp (in seconds) for when the batch will expire. */
+    /**
+     * Returns the raw JSON value of [expiresAt].
+     *
+     * Unlike [expiresAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt(): JsonField<Long> = expiresAt
 
-    /** The Unix timestamp (in seconds) for when the batch failed. */
+    /**
+     * Returns the raw JSON value of [failedAt].
+     *
+     * Unlike [failedAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("failed_at") @ExcludeMissing fun _failedAt(): JsonField<Long> = failedAt
 
-    /** The Unix timestamp (in seconds) for when the batch started finalizing. */
+    /**
+     * Returns the raw JSON value of [finalizingAt].
+     *
+     * Unlike [finalizingAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("finalizing_at")
     @ExcludeMissing
     fun _finalizingAt(): JsonField<Long> = finalizingAt
 
-    /** The Unix timestamp (in seconds) for when the batch started processing. */
+    /**
+     * Returns the raw JSON value of [inProgressAt].
+     *
+     * Unlike [inProgressAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("in_progress_at")
     @ExcludeMissing
     fun _inProgressAt(): JsonField<Long> = inProgressAt
 
     /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard.
+     * Returns the raw JSON value of [metadata].
      *
-     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
-     * length of 512 characters.
+     * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
-    /** The ID of the file containing the outputs of successfully executed requests. */
+    /**
+     * Returns the raw JSON value of [outputFileId].
+     *
+     * Unlike [outputFileId], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("output_file_id")
     @ExcludeMissing
     fun _outputFileId(): JsonField<String> = outputFileId
 
-    /** The request counts for different statuses within the batch. */
+    /**
+     * Returns the raw JSON value of [requestCounts].
+     *
+     * Unlike [requestCounts], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("request_counts")
     @ExcludeMissing
     fun _requestCounts(): JsonField<BatchRequestCounts> = requestCounts
@@ -344,13 +517,25 @@ private constructor(
 
         fun id(id: String) = id(JsonField.of(id))
 
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The time frame within which the batch should be processed. */
         fun completionWindow(completionWindow: String) =
             completionWindow(JsonField.of(completionWindow))
 
-        /** The time frame within which the batch should be processed. */
+        /**
+         * Sets [Builder.completionWindow] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.completionWindow] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun completionWindow(completionWindow: JsonField<String>) = apply {
             this.completionWindow = completionWindow
         }
@@ -358,86 +543,175 @@ private constructor(
         /** The Unix timestamp (in seconds) for when the batch was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
-        /** The Unix timestamp (in seconds) for when the batch was created. */
+        /**
+         * Sets [Builder.createdAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.createdAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /** The OpenAI API endpoint used by the batch. */
         fun endpoint(endpoint: String) = endpoint(JsonField.of(endpoint))
 
-        /** The OpenAI API endpoint used by the batch. */
+        /**
+         * Sets [Builder.endpoint] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.endpoint] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun endpoint(endpoint: JsonField<String>) = apply { this.endpoint = endpoint }
 
         /** The ID of the input file for the batch. */
         fun inputFileId(inputFileId: String) = inputFileId(JsonField.of(inputFileId))
 
-        /** The ID of the input file for the batch. */
+        /**
+         * Sets [Builder.inputFileId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.inputFileId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun inputFileId(inputFileId: JsonField<String>) = apply { this.inputFileId = inputFileId }
 
-        /** The object type, which is always `batch`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("batch")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /** The current status of the batch. */
         fun status(status: Status) = status(JsonField.of(status))
 
-        /** The current status of the batch. */
+        /**
+         * Sets [Builder.status] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
         /** The Unix timestamp (in seconds) for when the batch was cancelled. */
         fun cancelledAt(cancelledAt: Long) = cancelledAt(JsonField.of(cancelledAt))
 
-        /** The Unix timestamp (in seconds) for when the batch was cancelled. */
+        /**
+         * Sets [Builder.cancelledAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.cancelledAt] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun cancelledAt(cancelledAt: JsonField<Long>) = apply { this.cancelledAt = cancelledAt }
 
         /** The Unix timestamp (in seconds) for when the batch started cancelling. */
         fun cancellingAt(cancellingAt: Long) = cancellingAt(JsonField.of(cancellingAt))
 
-        /** The Unix timestamp (in seconds) for when the batch started cancelling. */
+        /**
+         * Sets [Builder.cancellingAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.cancellingAt] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun cancellingAt(cancellingAt: JsonField<Long>) = apply { this.cancellingAt = cancellingAt }
 
         /** The Unix timestamp (in seconds) for when the batch was completed. */
         fun completedAt(completedAt: Long) = completedAt(JsonField.of(completedAt))
 
-        /** The Unix timestamp (in seconds) for when the batch was completed. */
+        /**
+         * Sets [Builder.completedAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.completedAt] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun completedAt(completedAt: JsonField<Long>) = apply { this.completedAt = completedAt }
 
         /** The ID of the file containing the outputs of requests with errors. */
         fun errorFileId(errorFileId: String) = errorFileId(JsonField.of(errorFileId))
 
-        /** The ID of the file containing the outputs of requests with errors. */
+        /**
+         * Sets [Builder.errorFileId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.errorFileId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun errorFileId(errorFileId: JsonField<String>) = apply { this.errorFileId = errorFileId }
 
         fun errors(errors: Errors) = errors(JsonField.of(errors))
 
+        /**
+         * Sets [Builder.errors] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.errors] with a well-typed [Errors] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun errors(errors: JsonField<Errors>) = apply { this.errors = errors }
 
         /** The Unix timestamp (in seconds) for when the batch expired. */
         fun expiredAt(expiredAt: Long) = expiredAt(JsonField.of(expiredAt))
 
-        /** The Unix timestamp (in seconds) for when the batch expired. */
+        /**
+         * Sets [Builder.expiredAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.expiredAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun expiredAt(expiredAt: JsonField<Long>) = apply { this.expiredAt = expiredAt }
 
         /** The Unix timestamp (in seconds) for when the batch will expire. */
         fun expiresAt(expiresAt: Long) = expiresAt(JsonField.of(expiresAt))
 
-        /** The Unix timestamp (in seconds) for when the batch will expire. */
+        /**
+         * Sets [Builder.expiresAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.expiresAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
 
         /** The Unix timestamp (in seconds) for when the batch failed. */
         fun failedAt(failedAt: Long) = failedAt(JsonField.of(failedAt))
 
-        /** The Unix timestamp (in seconds) for when the batch failed. */
+        /**
+         * Sets [Builder.failedAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.failedAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun failedAt(failedAt: JsonField<Long>) = apply { this.failedAt = failedAt }
 
         /** The Unix timestamp (in seconds) for when the batch started finalizing. */
         fun finalizingAt(finalizingAt: Long) = finalizingAt(JsonField.of(finalizingAt))
 
-        /** The Unix timestamp (in seconds) for when the batch started finalizing. */
+        /**
+         * Sets [Builder.finalizingAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.finalizingAt] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun finalizingAt(finalizingAt: JsonField<Long>) = apply { this.finalizingAt = finalizingAt }
 
         /** The Unix timestamp (in seconds) for when the batch started processing. */
         fun inProgressAt(inProgressAt: Long) = inProgressAt(JsonField.of(inProgressAt))
 
-        /** The Unix timestamp (in seconds) for when the batch started processing. */
+        /**
+         * Sets [Builder.inProgressAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.inProgressAt] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun inProgressAt(inProgressAt: JsonField<Long>) = apply { this.inProgressAt = inProgressAt }
 
         /**
@@ -450,30 +724,28 @@ private constructor(
          */
         fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
 
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
-         *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
-         */
+        /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
         fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
+         * Sets [Builder.metadata] to an arbitrary JSON value.
          *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
+         * You should usually call [Builder.metadata] with a well-typed [Metadata] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
         /** The ID of the file containing the outputs of successfully executed requests. */
         fun outputFileId(outputFileId: String) = outputFileId(JsonField.of(outputFileId))
 
-        /** The ID of the file containing the outputs of successfully executed requests. */
+        /**
+         * Sets [Builder.outputFileId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.outputFileId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun outputFileId(outputFileId: JsonField<String>) = apply {
             this.outputFileId = outputFileId
         }
@@ -482,7 +754,13 @@ private constructor(
         fun requestCounts(requestCounts: BatchRequestCounts) =
             requestCounts(JsonField.of(requestCounts))
 
-        /** The request counts for different statuses within the batch. */
+        /**
+         * Sets [Builder.requestCounts] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.requestCounts] with a well-typed [BatchRequestCounts]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
         fun requestCounts(requestCounts: JsonField<BatchRequestCounts>) = apply {
             this.requestCounts = requestCounts
         }
@@ -506,6 +784,23 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [Batch].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .completionWindow()
+         * .createdAt()
+         * .endpoint()
+         * .inputFileId()
+         * .status()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): Batch =
             Batch(
                 checkRequired("id", id),
@@ -681,14 +976,32 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun data(): Optional<List<BatchError>> = Optional.ofNullable(data.getNullable("data"))
 
-        /** The object type, which is always `list`. */
+        /**
+         * The object type, which is always `list`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun object_(): Optional<String> = Optional.ofNullable(object_.getNullable("object"))
 
+        /**
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<List<BatchError>> = data
 
-        /** The object type, which is always `list`. */
+        /**
+         * Returns the raw JSON value of [object_].
+         *
+         * Unlike [object_], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<String> = object_
 
         @JsonAnyGetter
@@ -731,10 +1044,22 @@ private constructor(
 
             fun data(data: List<BatchError>) = data(JsonField.of(data))
 
+            /**
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed `List<BatchError>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun data(data: JsonField<List<BatchError>>) = apply {
                 this.data = data.map { it.toMutableList() }
             }
 
+            /**
+             * Adds a single [BatchError] to [Builder.data].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addData(data: BatchError) = apply {
                 this.data =
                     (this.data ?: JsonField.of(mutableListOf())).also {
@@ -745,7 +1070,13 @@ private constructor(
             /** The object type, which is always `list`. */
             fun object_(object_: String) = object_(JsonField.of(object_))
 
-            /** The object type, which is always `list`. */
+            /**
+             * Sets [Builder.object_] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.object_] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun object_(object_: JsonField<String>) = apply { this.object_ = object_ }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -767,6 +1098,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Errors].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Errors =
                 Errors(
                     (data ?: JsonMissing.of()).map { it.toImmutable() },

@@ -43,22 +43,48 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The ID of the tool call. */
+    /**
+     * The ID of the tool call.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** The Code Interpreter tool call definition. */
+    /**
+     * The Code Interpreter tool call definition.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun codeInterpreter(): CodeInterpreter = codeInterpreter.getRequired("code_interpreter")
 
     /**
      * The type of tool call. This is always going to be `code_interpreter` for this type of tool
      * call.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("code_interpreter")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** The ID of the tool call. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** The Code Interpreter tool call definition. */
+    /**
+     * Returns the raw JSON value of [codeInterpreter].
+     *
+     * Unlike [codeInterpreter], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("code_interpreter")
     @ExcludeMissing
     fun _codeInterpreter(): JsonField<CodeInterpreter> = codeInterpreter
@@ -119,21 +145,40 @@ private constructor(
         /** The ID of the tool call. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The ID of the tool call. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The Code Interpreter tool call definition. */
         fun codeInterpreter(codeInterpreter: CodeInterpreter) =
             codeInterpreter(JsonField.of(codeInterpreter))
 
-        /** The Code Interpreter tool call definition. */
+        /**
+         * Sets [Builder.codeInterpreter] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.codeInterpreter] with a well-typed [CodeInterpreter]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
         fun codeInterpreter(codeInterpreter: JsonField<CodeInterpreter>) = apply {
             this.codeInterpreter = codeInterpreter
         }
 
         /**
-         * The type of tool call. This is always going to be `code_interpreter` for this type of
-         * tool call.
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("code_interpreter")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
@@ -156,6 +201,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [CodeInterpreterToolCall].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .codeInterpreter()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): CodeInterpreterToolCall =
             CodeInterpreterToolCall(
                 checkRequired("id", id),
@@ -180,23 +238,35 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The input to the Code Interpreter tool call. */
+        /**
+         * The input to the Code Interpreter tool call.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun input(): String = input.getRequired("input")
 
         /**
          * The outputs from the Code Interpreter tool call. Code Interpreter can output one or more
          * items, including text (`logs`) or images (`image`). Each of these are represented by a
          * different object type.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun outputs(): List<Output> = outputs.getRequired("outputs")
 
-        /** The input to the Code Interpreter tool call. */
+        /**
+         * Returns the raw JSON value of [input].
+         *
+         * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("input") @ExcludeMissing fun _input(): JsonField<String> = input
 
         /**
-         * The outputs from the Code Interpreter tool call. Code Interpreter can output one or more
-         * items, including text (`logs`) or images (`image`). Each of these are represented by a
-         * different object type.
+         * Returns the raw JSON value of [outputs].
+         *
+         * Unlike [outputs], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("outputs") @ExcludeMissing fun _outputs(): JsonField<List<Output>> = outputs
 
@@ -249,7 +319,13 @@ private constructor(
             /** The input to the Code Interpreter tool call. */
             fun input(input: String) = input(JsonField.of(input))
 
-            /** The input to the Code Interpreter tool call. */
+            /**
+             * Sets [Builder.input] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.input] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun input(input: JsonField<String>) = apply { this.input = input }
 
             /**
@@ -260,18 +336,20 @@ private constructor(
             fun outputs(outputs: List<Output>) = outputs(JsonField.of(outputs))
 
             /**
-             * The outputs from the Code Interpreter tool call. Code Interpreter can output one or
-             * more items, including text (`logs`) or images (`image`). Each of these are
-             * represented by a different object type.
+             * Sets [Builder.outputs] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.outputs] with a well-typed `List<Output>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun outputs(outputs: JsonField<List<Output>>) = apply {
                 this.outputs = outputs.map { it.toMutableList() }
             }
 
             /**
-             * The outputs from the Code Interpreter tool call. Code Interpreter can output one or
-             * more items, including text (`logs`) or images (`image`). Each of these are
-             * represented by a different object type.
+             * Adds a single [Output] to [outputs].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
              */
             fun addOutput(output: Output) = apply {
                 outputs =
@@ -280,24 +358,30 @@ private constructor(
                     }
             }
 
-            /** Text output from the Code Interpreter tool call as part of a run step. */
+            /** Alias for calling [addOutput] with `Output.ofLogs(logs)`. */
             fun addOutput(logs: Output.LogsOutput) = addOutput(Output.ofLogs(logs))
 
-            /** Text output from the Code Interpreter tool call as part of a run step. */
+            /**
+             * Alias for calling [addOutput] with the following:
+             * ```java
+             * Output.LogsOutput.builder()
+             *     .logs(logs)
+             *     .build()
+             * ```
+             */
             fun addLogsOutput(logs: String) =
                 addOutput(Output.LogsOutput.builder().logs(logs).build())
 
-            /**
-             * The outputs from the Code Interpreter tool call. Code Interpreter can output one or
-             * more items, including text (`logs`) or images (`image`). Each of these are
-             * represented by a different object type.
-             */
+            /** Alias for calling [addOutput] with `Output.ofImage(image)`. */
             fun addOutput(image: Output.ImageOutput) = addOutput(Output.ofImage(image))
 
             /**
-             * The outputs from the Code Interpreter tool call. Code Interpreter can output one or
-             * more items, including text (`logs`) or images (`image`). Each of these are
-             * represented by a different object type.
+             * Alias for calling [addOutput] with the following:
+             * ```java
+             * Output.ImageOutput.builder()
+             *     .image(image)
+             *     .build()
+             * ```
              */
             fun addImageOutput(image: Output.ImageOutput.Image) =
                 addOutput(Output.ImageOutput.builder().image(image).build())
@@ -321,6 +405,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [CodeInterpreter].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .input()
+             * .outputs()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): CodeInterpreter =
                 CodeInterpreter(
                     checkRequired("input", input),
@@ -491,13 +588,34 @@ private constructor(
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
 
-                /** The text output from the Code Interpreter tool call. */
+                /**
+                 * The text output from the Code Interpreter tool call.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
                 fun logs(): String = logs.getRequired("logs")
 
-                /** Always `logs`. */
+                /**
+                 * Always `logs`.
+                 *
+                 * Expected to always return the following:
+                 * ```java
+                 * JsonValue.from("logs")
+                 * ```
+                 *
+                 * However, this method can be useful for debugging and logging (e.g. if the server
+                 * responded with an unexpected value).
+                 */
                 @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-                /** The text output from the Code Interpreter tool call. */
+                /**
+                 * Returns the raw JSON value of [logs].
+                 *
+                 * Unlike [logs], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
                 @JsonProperty("logs") @ExcludeMissing fun _logs(): JsonField<String> = logs
 
                 @JsonAnyGetter
@@ -552,10 +670,27 @@ private constructor(
                     /** The text output from the Code Interpreter tool call. */
                     fun logs(logs: String) = logs(JsonField.of(logs))
 
-                    /** The text output from the Code Interpreter tool call. */
+                    /**
+                     * Sets [Builder.logs] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.logs] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
                     fun logs(logs: JsonField<String>) = apply { this.logs = logs }
 
-                    /** Always `logs`. */
+                    /**
+                     * Sets the field to an arbitrary JSON value.
+                     *
+                     * It is usually unnecessary to call this method because the field defaults to
+                     * the following:
+                     * ```java
+                     * JsonValue.from("logs")
+                     * ```
+                     *
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
+                     */
                     fun type(type: JsonValue) = apply { this.type = type }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -580,6 +715,18 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [LogsOutput].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .logs()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
                     fun build(): LogsOutput =
                         LogsOutput(
                             checkRequired("logs", logs),
@@ -620,11 +767,32 @@ private constructor(
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
 
+                /**
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
                 fun image(): Image = image.getRequired("image")
 
-                /** Always `image`. */
+                /**
+                 * Always `image`.
+                 *
+                 * Expected to always return the following:
+                 * ```java
+                 * JsonValue.from("image")
+                 * ```
+                 *
+                 * However, this method can be useful for debugging and logging (e.g. if the server
+                 * responded with an unexpected value).
+                 */
                 @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
+                /**
+                 * Returns the raw JSON value of [image].
+                 *
+                 * Unlike [image], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
                 @JsonProperty("image") @ExcludeMissing fun _image(): JsonField<Image> = image
 
                 @JsonAnyGetter
@@ -678,9 +846,27 @@ private constructor(
 
                     fun image(image: Image) = image(JsonField.of(image))
 
+                    /**
+                     * Sets [Builder.image] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.image] with a well-typed [Image] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
                     fun image(image: JsonField<Image>) = apply { this.image = image }
 
-                    /** Always `image`. */
+                    /**
+                     * Sets the field to an arbitrary JSON value.
+                     *
+                     * It is usually unnecessary to call this method because the field defaults to
+                     * the following:
+                     * ```java
+                     * JsonValue.from("image")
+                     * ```
+                     *
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
+                     */
                     fun type(type: JsonValue) = apply { this.type = type }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -705,6 +891,18 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [ImageOutput].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .image()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
                     fun build(): ImageOutput =
                         ImageOutput(
                             checkRequired("image", image),
@@ -727,12 +925,18 @@ private constructor(
                     /**
                      * The [file](https://platform.openai.com/docs/api-reference/files) ID of the
                      * image.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   or is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
                      */
                     fun fileId(): String = fileId.getRequired("file_id")
 
                     /**
-                     * The [file](https://platform.openai.com/docs/api-reference/files) ID of the
-                     * image.
+                     * Returns the raw JSON value of [fileId].
+                     *
+                     * Unlike [fileId], this method doesn't throw if the JSON field has an
+                     * unexpected type.
                      */
                     @JsonProperty("file_id")
                     @ExcludeMissing
@@ -788,8 +992,11 @@ private constructor(
                         fun fileId(fileId: String) = fileId(JsonField.of(fileId))
 
                         /**
-                         * The [file](https://platform.openai.com/docs/api-reference/files) ID of
-                         * the image.
+                         * Sets [Builder.fileId] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.fileId] with a well-typed [String] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
                          */
                         fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
 
@@ -815,6 +1022,18 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [Image].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .fileId()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
                         fun build(): Image =
                             Image(
                                 checkRequired("fileId", fileId),

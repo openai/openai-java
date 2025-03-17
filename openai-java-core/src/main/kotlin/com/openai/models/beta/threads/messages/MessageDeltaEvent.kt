@@ -30,19 +30,47 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The identifier of the message, which can be referenced in API endpoints. */
+    /**
+     * The identifier of the message, which can be referenced in API endpoints.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** The delta containing the fields that have changed on the Message. */
+    /**
+     * The delta containing the fields that have changed on the Message.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun delta(): MessageDelta = delta.getRequired("delta")
 
-    /** The object type, which is always `thread.message.delta`. */
+    /**
+     * The object type, which is always `thread.message.delta`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("thread.message.delta")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
-    /** The identifier of the message, which can be referenced in API endpoints. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** The delta containing the fields that have changed on the Message. */
+    /**
+     * Returns the raw JSON value of [delta].
+     *
+     * Unlike [delta], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("delta") @ExcludeMissing fun _delta(): JsonField<MessageDelta> = delta
 
     @JsonAnyGetter
@@ -101,16 +129,38 @@ private constructor(
         /** The identifier of the message, which can be referenced in API endpoints. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The identifier of the message, which can be referenced in API endpoints. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The delta containing the fields that have changed on the Message. */
         fun delta(delta: MessageDelta) = delta(JsonField.of(delta))
 
-        /** The delta containing the fields that have changed on the Message. */
+        /**
+         * Sets [Builder.delta] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.delta] with a well-typed [MessageDelta] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun delta(delta: JsonField<MessageDelta>) = apply { this.delta = delta }
 
-        /** The object type, which is always `thread.message.delta`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("thread.message.delta")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -132,6 +182,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [MessageDeltaEvent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .delta()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): MessageDeltaEvent =
             MessageDeltaEvent(
                 checkRequired("id", id),

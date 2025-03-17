@@ -15,6 +15,7 @@ import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 
 /** Represents if a given text input is potentially harmful. */
@@ -30,22 +31,49 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The unique identifier for the moderation request. */
+    /**
+     * The unique identifier for the moderation request.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** The model used to generate the moderation results. */
+    /**
+     * The model used to generate the moderation results.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun model(): String = model.getRequired("model")
 
-    /** A list of moderation objects. */
+    /**
+     * A list of moderation objects.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun results(): List<Moderation> = results.getRequired("results")
 
-    /** The unique identifier for the moderation request. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** The model used to generate the moderation results. */
+    /**
+     * Returns the raw JSON value of [model].
+     *
+     * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
 
-    /** A list of moderation objects. */
+    /**
+     * Returns the raw JSON value of [results].
+     *
+     * Unlike [results], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("results") @ExcludeMissing fun _results(): JsonField<List<Moderation>> = results
 
     @JsonAnyGetter
@@ -101,24 +129,44 @@ private constructor(
         /** The unique identifier for the moderation request. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The unique identifier for the moderation request. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The model used to generate the moderation results. */
         fun model(model: String) = model(JsonField.of(model))
 
-        /** The model used to generate the moderation results. */
+        /**
+         * Sets [Builder.model] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.model] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun model(model: JsonField<String>) = apply { this.model = model }
 
         /** A list of moderation objects. */
         fun results(results: List<Moderation>) = results(JsonField.of(results))
 
-        /** A list of moderation objects. */
+        /**
+         * Sets [Builder.results] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.results] with a well-typed `List<Moderation>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun results(results: JsonField<List<Moderation>>) = apply {
             this.results = results.map { it.toMutableList() }
         }
 
-        /** A list of moderation objects. */
+        /**
+         * Adds a single [Moderation] to [results].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addResult(result: Moderation) = apply {
             results =
                 (results ?: JsonField.of(mutableListOf())).also {
@@ -145,6 +193,20 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ModerationCreateResponse].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .model()
+         * .results()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ModerationCreateResponse =
             ModerationCreateResponse(
                 checkRequired("id", id),

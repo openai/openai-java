@@ -55,30 +55,59 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The identifier, which can be referenced in API endpoints. */
+    /**
+     * The identifier, which can be referenced in API endpoints.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** The Unix timestamp (in seconds) for when the vector store file was created. */
+    /**
+     * The Unix timestamp (in seconds) for when the vector store file was created.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun createdAt(): Long = createdAt.getRequired("created_at")
 
     /**
      * The last error associated with this vector store file. Will be `null` if there are no errors.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun lastError(): Optional<LastError> = Optional.ofNullable(lastError.getNullable("last_error"))
 
-    /** The object type, which is always `vector_store.file`. */
+    /**
+     * The object type, which is always `vector_store.file`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("vector_store.file")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * The status of the vector store file, which can be either `in_progress`, `completed`,
      * `cancelled`, or `failed`. The status `completed` indicates that the vector store file is
      * ready for use.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun status(): Status = status.getRequired("status")
 
     /**
      * The total vector store usage in bytes. Note that this may be different from the original file
      * size.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun usageBytes(): Long = usageBytes.getRequired("usage_bytes")
 
@@ -86,6 +115,9 @@ private constructor(
      * The ID of the
      * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that the
      * [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun vectorStoreId(): String = vectorStoreId.getRequired("vector_store_id")
 
@@ -94,58 +126,81 @@ private constructor(
      * additional information about the object in a structured format, and querying for objects via
      * API or the dashboard. Keys are strings with a maximum length of 64 characters. Values are
      * strings with a maximum length of 512 characters, booleans, or numbers.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun attributes(): Optional<Attributes> =
         Optional.ofNullable(attributes.getNullable("attributes"))
 
-    /** The strategy used to chunk the file. */
+    /**
+     * The strategy used to chunk the file.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun chunkingStrategy(): Optional<FileChunkingStrategy> =
         Optional.ofNullable(chunkingStrategy.getNullable("chunking_strategy"))
 
-    /** The identifier, which can be referenced in API endpoints. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** The Unix timestamp (in seconds) for when the vector store file was created. */
+    /**
+     * Returns the raw JSON value of [createdAt].
+     *
+     * Unlike [createdAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
     /**
-     * The last error associated with this vector store file. Will be `null` if there are no errors.
+     * Returns the raw JSON value of [lastError].
+     *
+     * Unlike [lastError], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("last_error") @ExcludeMissing fun _lastError(): JsonField<LastError> = lastError
 
     /**
-     * The status of the vector store file, which can be either `in_progress`, `completed`,
-     * `cancelled`, or `failed`. The status `completed` indicates that the vector store file is
-     * ready for use.
+     * Returns the raw JSON value of [status].
+     *
+     * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
     /**
-     * The total vector store usage in bytes. Note that this may be different from the original file
-     * size.
+     * Returns the raw JSON value of [usageBytes].
+     *
+     * Unlike [usageBytes], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("usage_bytes") @ExcludeMissing fun _usageBytes(): JsonField<Long> = usageBytes
 
     /**
-     * The ID of the
-     * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that the
-     * [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+     * Returns the raw JSON value of [vectorStoreId].
+     *
+     * Unlike [vectorStoreId], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("vector_store_id")
     @ExcludeMissing
     fun _vectorStoreId(): JsonField<String> = vectorStoreId
 
     /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard. Keys are strings with a maximum length of 64 characters. Values are
-     * strings with a maximum length of 512 characters, booleans, or numbers.
+     * Returns the raw JSON value of [attributes].
+     *
+     * Unlike [attributes], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("attributes")
     @ExcludeMissing
     fun _attributes(): JsonField<Attributes> = attributes
 
-    /** The strategy used to chunk the file. */
+    /**
+     * Returns the raw JSON value of [chunkingStrategy].
+     *
+     * Unlike [chunkingStrategy], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
     @JsonProperty("chunking_strategy")
     @ExcludeMissing
     fun _chunkingStrategy(): JsonField<FileChunkingStrategy> = chunkingStrategy
@@ -228,13 +283,23 @@ private constructor(
         /** The identifier, which can be referenced in API endpoints. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The identifier, which can be referenced in API endpoints. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The Unix timestamp (in seconds) for when the vector store file was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
-        /** The Unix timestamp (in seconds) for when the vector store file was created. */
+        /**
+         * Sets [Builder.createdAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.createdAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /**
@@ -243,19 +308,30 @@ private constructor(
          */
         fun lastError(lastError: LastError?) = lastError(JsonField.ofNullable(lastError))
 
-        /**
-         * The last error associated with this vector store file. Will be `null` if there are no
-         * errors.
-         */
+        /** Alias for calling [Builder.lastError] with `lastError.orElse(null)`. */
         fun lastError(lastError: Optional<LastError>) = lastError(lastError.getOrNull())
 
         /**
-         * The last error associated with this vector store file. Will be `null` if there are no
-         * errors.
+         * Sets [Builder.lastError] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.lastError] with a well-typed [LastError] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun lastError(lastError: JsonField<LastError>) = apply { this.lastError = lastError }
 
-        /** The object type, which is always `vector_store.file`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("vector_store.file")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /**
@@ -266,9 +342,10 @@ private constructor(
         fun status(status: Status) = status(JsonField.of(status))
 
         /**
-         * The status of the vector store file, which can be either `in_progress`, `completed`,
-         * `cancelled`, or `failed`. The status `completed` indicates that the vector store file is
-         * ready for use.
+         * Sets [Builder.status] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
@@ -279,8 +356,10 @@ private constructor(
         fun usageBytes(usageBytes: Long) = usageBytes(JsonField.of(usageBytes))
 
         /**
-         * The total vector store usage in bytes. Note that this may be different from the original
-         * file size.
+         * Sets [Builder.usageBytes] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.usageBytes] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun usageBytes(usageBytes: JsonField<Long>) = apply { this.usageBytes = usageBytes }
 
@@ -292,9 +371,11 @@ private constructor(
         fun vectorStoreId(vectorStoreId: String) = vectorStoreId(JsonField.of(vectorStoreId))
 
         /**
-         * The ID of the
-         * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that
-         * the [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+         * Sets [Builder.vectorStoreId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.vectorStoreId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun vectorStoreId(vectorStoreId: JsonField<String>) = apply {
             this.vectorStoreId = vectorStoreId
@@ -309,21 +390,15 @@ private constructor(
          */
         fun attributes(attributes: Attributes?) = attributes(JsonField.ofNullable(attributes))
 
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard. Keys are strings with a maximum length of 64
-         * characters. Values are strings with a maximum length of 512 characters, booleans, or
-         * numbers.
-         */
+        /** Alias for calling [Builder.attributes] with `attributes.orElse(null)`. */
         fun attributes(attributes: Optional<Attributes>) = attributes(attributes.getOrNull())
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard. Keys are strings with a maximum length of 64
-         * characters. Values are strings with a maximum length of 512 characters, booleans, or
-         * numbers.
+         * Sets [Builder.attributes] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.attributes] with a well-typed [Attributes] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun attributes(attributes: JsonField<Attributes>) = apply { this.attributes = attributes }
 
@@ -331,23 +406,33 @@ private constructor(
         fun chunkingStrategy(chunkingStrategy: FileChunkingStrategy) =
             chunkingStrategy(JsonField.of(chunkingStrategy))
 
-        /** The strategy used to chunk the file. */
+        /**
+         * Sets [Builder.chunkingStrategy] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.chunkingStrategy] with a well-typed
+         * [FileChunkingStrategy] value instead. This method is primarily for setting the field to
+         * an undocumented or not yet supported value.
+         */
         fun chunkingStrategy(chunkingStrategy: JsonField<FileChunkingStrategy>) = apply {
             this.chunkingStrategy = chunkingStrategy
         }
 
-        /** The strategy used to chunk the file. */
+        /** Alias for calling [chunkingStrategy] with `FileChunkingStrategy.ofStatic(static_)`. */
         fun chunkingStrategy(static_: StaticFileChunkingStrategyObject) =
             chunkingStrategy(FileChunkingStrategy.ofStatic(static_))
 
-        /** The strategy used to chunk the file. */
+        /**
+         * Alias for calling [chunkingStrategy] with the following:
+         * ```java
+         * StaticFileChunkingStrategyObject.builder()
+         *     .static_(static_)
+         *     .build()
+         * ```
+         */
         fun staticChunkingStrategy(static_: StaticFileChunkingStrategy) =
             chunkingStrategy(StaticFileChunkingStrategyObject.builder().static_(static_).build())
 
-        /**
-         * This is returned when the chunking strategy is unknown. Typically, this is because the
-         * file was indexed before the `chunking_strategy` concept was introduced in the API.
-         */
+        /** Alias for calling [chunkingStrategy] with `FileChunkingStrategy.ofOther(other)`. */
         fun chunkingStrategy(other: OtherFileChunkingStrategyObject) =
             chunkingStrategy(FileChunkingStrategy.ofOther(other))
 
@@ -370,6 +455,23 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [VectorStoreFile].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .lastError()
+         * .status()
+         * .usageBytes()
+         * .vectorStoreId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): VectorStoreFile =
             VectorStoreFile(
                 checkRequired("id", id),
@@ -400,16 +502,34 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** One of `server_error` or `rate_limit_exceeded`. */
+        /**
+         * One of `server_error` or `rate_limit_exceeded`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun code(): Code = code.getRequired("code")
 
-        /** A human-readable description of the error. */
+        /**
+         * A human-readable description of the error.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun message(): String = message.getRequired("message")
 
-        /** One of `server_error` or `rate_limit_exceeded`. */
+        /**
+         * Returns the raw JSON value of [code].
+         *
+         * Unlike [code], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("code") @ExcludeMissing fun _code(): JsonField<Code> = code
 
-        /** A human-readable description of the error. */
+        /**
+         * Returns the raw JSON value of [message].
+         *
+         * Unlike [message], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
         @JsonAnyGetter
@@ -461,13 +581,25 @@ private constructor(
             /** One of `server_error` or `rate_limit_exceeded`. */
             fun code(code: Code) = code(JsonField.of(code))
 
-            /** One of `server_error` or `rate_limit_exceeded`. */
+            /**
+             * Sets [Builder.code] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.code] with a well-typed [Code] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun code(code: JsonField<Code>) = apply { this.code = code }
 
             /** A human-readable description of the error. */
             fun message(message: String) = message(JsonField.of(message))
 
-            /** A human-readable description of the error. */
+            /**
+             * Sets [Builder.message] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.message] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun message(message: JsonField<String>) = apply { this.message = message }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -489,6 +621,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [LastError].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .code()
+             * .message()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): LastError =
                 LastError(
                     checkRequired("code", code),
@@ -802,6 +947,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Attributes].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Attributes = Attributes(additionalProperties.toImmutable())
         }
 

@@ -33,25 +33,62 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The upload Part unique identifier, which can be referenced in API endpoints. */
+    /**
+     * The upload Part unique identifier, which can be referenced in API endpoints.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** The Unix timestamp (in seconds) for when the Part was created. */
+    /**
+     * The Unix timestamp (in seconds) for when the Part was created.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun createdAt(): Long = createdAt.getRequired("created_at")
 
-    /** The object type, which is always `upload.part`. */
+    /**
+     * The object type, which is always `upload.part`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("upload.part")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
-    /** The ID of the Upload object that this Part was added to. */
+    /**
+     * The ID of the Upload object that this Part was added to.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun uploadId(): String = uploadId.getRequired("upload_id")
 
-    /** The upload Part unique identifier, which can be referenced in API endpoints. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** The Unix timestamp (in seconds) for when the Part was created. */
+    /**
+     * Returns the raw JSON value of [createdAt].
+     *
+     * Unlike [createdAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
-    /** The ID of the Upload object that this Part was added to. */
+    /**
+     * Returns the raw JSON value of [uploadId].
+     *
+     * Unlike [uploadId], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("upload_id") @ExcludeMissing fun _uploadId(): JsonField<String> = uploadId
 
     @JsonAnyGetter
@@ -114,22 +151,48 @@ private constructor(
         /** The upload Part unique identifier, which can be referenced in API endpoints. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The upload Part unique identifier, which can be referenced in API endpoints. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The Unix timestamp (in seconds) for when the Part was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
-        /** The Unix timestamp (in seconds) for when the Part was created. */
+        /**
+         * Sets [Builder.createdAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.createdAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
-        /** The object type, which is always `upload.part`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("upload.part")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /** The ID of the Upload object that this Part was added to. */
         fun uploadId(uploadId: String) = uploadId(JsonField.of(uploadId))
 
-        /** The ID of the Upload object that this Part was added to. */
+        /**
+         * Sets [Builder.uploadId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.uploadId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun uploadId(uploadId: JsonField<String>) = apply { this.uploadId = uploadId }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -151,6 +214,20 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [UploadPart].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .uploadId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): UploadPart =
             UploadPart(
                 checkRequired("id", id),

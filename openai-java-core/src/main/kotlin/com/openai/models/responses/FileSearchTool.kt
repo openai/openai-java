@@ -56,41 +56,83 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The type of the file search tool. Always `file_search`. */
+    /**
+     * The type of the file search tool. Always `file_search`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("file_search")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** The IDs of the vector stores to search. */
+    /**
+     * The IDs of the vector stores to search.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun vectorStoreIds(): List<String> = vectorStoreIds.getRequired("vector_store_ids")
 
-    /** A filter to apply based on file attributes. */
+    /**
+     * A filter to apply based on file attributes.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun filters(): Optional<Filters> = Optional.ofNullable(filters.getNullable("filters"))
 
     /**
      * The maximum number of results to return. This number should be between 1 and 50 inclusive.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun maxNumResults(): Optional<Long> =
         Optional.ofNullable(maxNumResults.getNullable("max_num_results"))
 
-    /** Ranking options for search. */
+    /**
+     * Ranking options for search.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun rankingOptions(): Optional<RankingOptions> =
         Optional.ofNullable(rankingOptions.getNullable("ranking_options"))
 
-    /** The IDs of the vector stores to search. */
+    /**
+     * Returns the raw JSON value of [vectorStoreIds].
+     *
+     * Unlike [vectorStoreIds], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("vector_store_ids")
     @ExcludeMissing
     fun _vectorStoreIds(): JsonField<List<String>> = vectorStoreIds
 
-    /** A filter to apply based on file attributes. */
+    /**
+     * Returns the raw JSON value of [filters].
+     *
+     * Unlike [filters], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonField<Filters> = filters
 
     /**
-     * The maximum number of results to return. This number should be between 1 and 50 inclusive.
+     * Returns the raw JSON value of [maxNumResults].
+     *
+     * Unlike [maxNumResults], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("max_num_results")
     @ExcludeMissing
     fun _maxNumResults(): JsonField<Long> = maxNumResults
 
-    /** Ranking options for search. */
+    /**
+     * Returns the raw JSON value of [rankingOptions].
+     *
+     * Unlike [rankingOptions], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("ranking_options")
     @ExcludeMissing
     fun _rankingOptions(): JsonField<RankingOptions> = rankingOptions
@@ -153,19 +195,40 @@ private constructor(
             additionalProperties = fileSearchTool.additionalProperties.toMutableMap()
         }
 
-        /** The type of the file search tool. Always `file_search`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("file_search")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         /** The IDs of the vector stores to search. */
         fun vectorStoreIds(vectorStoreIds: List<String>) =
             vectorStoreIds(JsonField.of(vectorStoreIds))
 
-        /** The IDs of the vector stores to search. */
+        /**
+         * Sets [Builder.vectorStoreIds] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.vectorStoreIds] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun vectorStoreIds(vectorStoreIds: JsonField<List<String>>) = apply {
             this.vectorStoreIds = vectorStoreIds.map { it.toMutableList() }
         }
 
-        /** The IDs of the vector stores to search. */
+        /**
+         * Adds a single [String] to [vectorStoreIds].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addVectorStoreId(vectorStoreId: String) = apply {
             vectorStoreIds =
                 (vectorStoreIds ?: JsonField.of(mutableListOf())).also {
@@ -176,17 +239,19 @@ private constructor(
         /** A filter to apply based on file attributes. */
         fun filters(filters: Filters) = filters(JsonField.of(filters))
 
-        /** A filter to apply based on file attributes. */
+        /**
+         * Sets [Builder.filters] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.filters] with a well-typed [Filters] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun filters(filters: JsonField<Filters>) = apply { this.filters = filters }
 
-        /**
-         * A filter used to compare a specified attribute key to a given value using a defined
-         * comparison operation.
-         */
+        /** Alias for calling [filters] with `Filters.ofComparisonFilter(comparisonFilter)`. */
         fun filters(comparisonFilter: ComparisonFilter) =
             filters(Filters.ofComparisonFilter(comparisonFilter))
 
-        /** Combine multiple filters using `and` or `or`. */
+        /** Alias for calling [filters] with `Filters.ofCompoundFilter(compoundFilter)`. */
         fun filters(compoundFilter: CompoundFilter) =
             filters(Filters.ofCompoundFilter(compoundFilter))
 
@@ -197,8 +262,11 @@ private constructor(
         fun maxNumResults(maxNumResults: Long) = maxNumResults(JsonField.of(maxNumResults))
 
         /**
-         * The maximum number of results to return. This number should be between 1 and 50
-         * inclusive.
+         * Sets [Builder.maxNumResults] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.maxNumResults] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun maxNumResults(maxNumResults: JsonField<Long>) = apply {
             this.maxNumResults = maxNumResults
@@ -208,7 +276,13 @@ private constructor(
         fun rankingOptions(rankingOptions: RankingOptions) =
             rankingOptions(JsonField.of(rankingOptions))
 
-        /** Ranking options for search. */
+        /**
+         * Sets [Builder.rankingOptions] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.rankingOptions] with a well-typed [RankingOptions] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun rankingOptions(rankingOptions: JsonField<RankingOptions>) = apply {
             this.rankingOptions = rankingOptions
         }
@@ -232,6 +306,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FileSearchTool].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .vectorStoreIds()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FileSearchTool =
             FileSearchTool(
                 type,
@@ -419,22 +505,36 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The ranker to use for the file search. */
+        /**
+         * The ranker to use for the file search.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun ranker(): Optional<Ranker> = Optional.ofNullable(ranker.getNullable("ranker"))
 
         /**
          * The score threshold for the file search, a number between 0 and 1. Numbers closer to 1
          * will attempt to return only the most relevant results, but may return fewer results.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun scoreThreshold(): Optional<Double> =
             Optional.ofNullable(scoreThreshold.getNullable("score_threshold"))
 
-        /** The ranker to use for the file search. */
+        /**
+         * Returns the raw JSON value of [ranker].
+         *
+         * Unlike [ranker], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("ranker") @ExcludeMissing fun _ranker(): JsonField<Ranker> = ranker
 
         /**
-         * The score threshold for the file search, a number between 0 and 1. Numbers closer to 1
-         * will attempt to return only the most relevant results, but may return fewer results.
+         * Returns the raw JSON value of [scoreThreshold].
+         *
+         * Unlike [scoreThreshold], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
         @JsonProperty("score_threshold")
         @ExcludeMissing
@@ -481,7 +581,13 @@ private constructor(
             /** The ranker to use for the file search. */
             fun ranker(ranker: Ranker) = ranker(JsonField.of(ranker))
 
-            /** The ranker to use for the file search. */
+            /**
+             * Sets [Builder.ranker] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.ranker] with a well-typed [Ranker] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun ranker(ranker: JsonField<Ranker>) = apply { this.ranker = ranker }
 
             /**
@@ -493,9 +599,11 @@ private constructor(
                 scoreThreshold(JsonField.of(scoreThreshold))
 
             /**
-             * The score threshold for the file search, a number between 0 and 1. Numbers closer to
-             * 1 will attempt to return only the most relevant results, but may return fewer
-             * results.
+             * Sets [Builder.scoreThreshold] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.scoreThreshold] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun scoreThreshold(scoreThreshold: JsonField<Double>) = apply {
                 this.scoreThreshold = scoreThreshold
@@ -520,6 +628,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [RankingOptions].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): RankingOptions =
                 RankingOptions(ranker, scoreThreshold, additionalProperties.toImmutable())
         }

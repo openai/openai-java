@@ -15,6 +15,7 @@ import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -36,7 +37,12 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The token. */
+    /**
+     * The token.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun token(): String = token.getRequired("token")
 
     /**
@@ -44,41 +50,55 @@ private constructor(
      * instances where characters are represented by multiple tokens and their byte representations
      * must be combined to generate the correct text representation. Can be `null` if there is no
      * bytes representation for the token.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun bytes(): Optional<List<Long>> = Optional.ofNullable(bytes.getNullable("bytes"))
 
     /**
      * The log probability of this token, if it is within the top 20 most likely tokens. Otherwise,
      * the value `-9999.0` is used to signify that the token is very unlikely.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun logprob(): Double = logprob.getRequired("logprob")
 
     /**
      * List of the most likely tokens and their log probability, at this token position. In rare
      * cases, there may be fewer than the number of requested `top_logprobs` returned.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun topLogprobs(): List<TopLogprob> = topLogprobs.getRequired("top_logprobs")
 
-    /** The token. */
+    /**
+     * Returns the raw JSON value of [token].
+     *
+     * Unlike [token], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("token") @ExcludeMissing fun _token(): JsonField<String> = token
 
     /**
-     * A list of integers representing the UTF-8 bytes representation of the token. Useful in
-     * instances where characters are represented by multiple tokens and their byte representations
-     * must be combined to generate the correct text representation. Can be `null` if there is no
-     * bytes representation for the token.
+     * Returns the raw JSON value of [bytes].
+     *
+     * Unlike [bytes], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("bytes") @ExcludeMissing fun _bytes(): JsonField<List<Long>> = bytes
 
     /**
-     * The log probability of this token, if it is within the top 20 most likely tokens. Otherwise,
-     * the value `-9999.0` is used to signify that the token is very unlikely.
+     * Returns the raw JSON value of [logprob].
+     *
+     * Unlike [logprob], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("logprob") @ExcludeMissing fun _logprob(): JsonField<Double> = logprob
 
     /**
-     * List of the most likely tokens and their log probability, at this token position. In rare
-     * cases, there may be fewer than the number of requested `top_logprobs` returned.
+     * Returns the raw JSON value of [topLogprobs].
+     *
+     * Unlike [topLogprobs], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("top_logprobs")
     @ExcludeMissing
@@ -141,7 +161,12 @@ private constructor(
         /** The token. */
         fun token(token: String) = token(JsonField.of(token))
 
-        /** The token. */
+        /**
+         * Sets [Builder.token] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.token] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun token(token: JsonField<String>) = apply { this.token = token }
 
         /**
@@ -152,29 +177,24 @@ private constructor(
          */
         fun bytes(bytes: List<Long>?) = bytes(JsonField.ofNullable(bytes))
 
-        /**
-         * A list of integers representing the UTF-8 bytes representation of the token. Useful in
-         * instances where characters are represented by multiple tokens and their byte
-         * representations must be combined to generate the correct text representation. Can be
-         * `null` if there is no bytes representation for the token.
-         */
+        /** Alias for calling [Builder.bytes] with `bytes.orElse(null)`. */
         fun bytes(bytes: Optional<List<Long>>) = bytes(bytes.getOrNull())
 
         /**
-         * A list of integers representing the UTF-8 bytes representation of the token. Useful in
-         * instances where characters are represented by multiple tokens and their byte
-         * representations must be combined to generate the correct text representation. Can be
-         * `null` if there is no bytes representation for the token.
+         * Sets [Builder.bytes] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.bytes] with a well-typed `List<Long>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun bytes(bytes: JsonField<List<Long>>) = apply {
             this.bytes = bytes.map { it.toMutableList() }
         }
 
         /**
-         * A list of integers representing the UTF-8 bytes representation of the token. Useful in
-         * instances where characters are represented by multiple tokens and their byte
-         * representations must be combined to generate the correct text representation. Can be
-         * `null` if there is no bytes representation for the token.
+         * Adds a single [Long] to [bytes].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addByte(byte_: Long) = apply {
             bytes =
@@ -188,8 +208,10 @@ private constructor(
         fun logprob(logprob: Double) = logprob(JsonField.of(logprob))
 
         /**
-         * The log probability of this token, if it is within the top 20 most likely tokens.
-         * Otherwise, the value `-9999.0` is used to signify that the token is very unlikely.
+         * Sets [Builder.logprob] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.logprob] with a well-typed [Double] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun logprob(logprob: JsonField<Double>) = apply { this.logprob = logprob }
 
@@ -200,16 +222,20 @@ private constructor(
         fun topLogprobs(topLogprobs: List<TopLogprob>) = topLogprobs(JsonField.of(topLogprobs))
 
         /**
-         * List of the most likely tokens and their log probability, at this token position. In rare
-         * cases, there may be fewer than the number of requested `top_logprobs` returned.
+         * Sets [Builder.topLogprobs] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.topLogprobs] with a well-typed `List<TopLogprob>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun topLogprobs(topLogprobs: JsonField<List<TopLogprob>>) = apply {
             this.topLogprobs = topLogprobs.map { it.toMutableList() }
         }
 
         /**
-         * List of the most likely tokens and their log probability, at this token position. In rare
-         * cases, there may be fewer than the number of requested `top_logprobs` returned.
+         * Adds a single [TopLogprob] to [topLogprobs].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addTopLogprob(topLogprob: TopLogprob) = apply {
             topLogprobs =
@@ -237,6 +263,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ChatCompletionTokenLogprob].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .token()
+         * .bytes()
+         * .logprob()
+         * .topLogprobs()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ChatCompletionTokenLogprob =
             ChatCompletionTokenLogprob(
                 checkRequired("token", token),
@@ -264,7 +305,12 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The token. */
+        /**
+         * The token.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun token(): String = token.getRequired("token")
 
         /**
@@ -272,29 +318,39 @@ private constructor(
          * instances where characters are represented by multiple tokens and their byte
          * representations must be combined to generate the correct text representation. Can be
          * `null` if there is no bytes representation for the token.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun bytes(): Optional<List<Long>> = Optional.ofNullable(bytes.getNullable("bytes"))
 
         /**
          * The log probability of this token, if it is within the top 20 most likely tokens.
          * Otherwise, the value `-9999.0` is used to signify that the token is very unlikely.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun logprob(): Double = logprob.getRequired("logprob")
 
-        /** The token. */
+        /**
+         * Returns the raw JSON value of [token].
+         *
+         * Unlike [token], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("token") @ExcludeMissing fun _token(): JsonField<String> = token
 
         /**
-         * A list of integers representing the UTF-8 bytes representation of the token. Useful in
-         * instances where characters are represented by multiple tokens and their byte
-         * representations must be combined to generate the correct text representation. Can be
-         * `null` if there is no bytes representation for the token.
+         * Returns the raw JSON value of [bytes].
+         *
+         * Unlike [bytes], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("bytes") @ExcludeMissing fun _bytes(): JsonField<List<Long>> = bytes
 
         /**
-         * The log probability of this token, if it is within the top 20 most likely tokens.
-         * Otherwise, the value `-9999.0` is used to signify that the token is very unlikely.
+         * Returns the raw JSON value of [logprob].
+         *
+         * Unlike [logprob], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("logprob") @ExcludeMissing fun _logprob(): JsonField<Double> = logprob
 
@@ -351,7 +407,13 @@ private constructor(
             /** The token. */
             fun token(token: String) = token(JsonField.of(token))
 
-            /** The token. */
+            /**
+             * Sets [Builder.token] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.token] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun token(token: JsonField<String>) = apply { this.token = token }
 
             /**
@@ -362,29 +424,24 @@ private constructor(
              */
             fun bytes(bytes: List<Long>?) = bytes(JsonField.ofNullable(bytes))
 
-            /**
-             * A list of integers representing the UTF-8 bytes representation of the token. Useful
-             * in instances where characters are represented by multiple tokens and their byte
-             * representations must be combined to generate the correct text representation. Can be
-             * `null` if there is no bytes representation for the token.
-             */
+            /** Alias for calling [Builder.bytes] with `bytes.orElse(null)`. */
             fun bytes(bytes: Optional<List<Long>>) = bytes(bytes.getOrNull())
 
             /**
-             * A list of integers representing the UTF-8 bytes representation of the token. Useful
-             * in instances where characters are represented by multiple tokens and their byte
-             * representations must be combined to generate the correct text representation. Can be
-             * `null` if there is no bytes representation for the token.
+             * Sets [Builder.bytes] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.bytes] with a well-typed `List<Long>` value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun bytes(bytes: JsonField<List<Long>>) = apply {
                 this.bytes = bytes.map { it.toMutableList() }
             }
 
             /**
-             * A list of integers representing the UTF-8 bytes representation of the token. Useful
-             * in instances where characters are represented by multiple tokens and their byte
-             * representations must be combined to generate the correct text representation. Can be
-             * `null` if there is no bytes representation for the token.
+             * Adds a single [Long] to [bytes].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
              */
             fun addByte(byte_: Long) = apply {
                 bytes =
@@ -400,8 +457,11 @@ private constructor(
             fun logprob(logprob: Double) = logprob(JsonField.of(logprob))
 
             /**
-             * The log probability of this token, if it is within the top 20 most likely tokens.
-             * Otherwise, the value `-9999.0` is used to signify that the token is very unlikely.
+             * Sets [Builder.logprob] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.logprob] with a well-typed [Double] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun logprob(logprob: JsonField<Double>) = apply { this.logprob = logprob }
 
@@ -424,6 +484,20 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [TopLogprob].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .token()
+             * .bytes()
+             * .logprob()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): TopLogprob =
                 TopLogprob(
                     checkRequired("token", token),

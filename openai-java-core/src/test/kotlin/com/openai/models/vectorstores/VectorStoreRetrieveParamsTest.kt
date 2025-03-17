@@ -5,7 +5,7 @@ package com.openai.models.vectorstores
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class VectorStoreRetrieveParamsTest {
+internal class VectorStoreRetrieveParamsTest {
 
     @Test
     fun create() {

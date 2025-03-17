@@ -27,13 +27,32 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** A chunk of Base64 encoded response audio bytes. */
+    /**
+     * A chunk of Base64 encoded response audio bytes.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun delta(): String = delta.getRequired("delta")
 
-    /** The type of the event. Always `response.audio.delta`. */
+    /**
+     * The type of the event. Always `response.audio.delta`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("response.audio.delta")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** A chunk of Base64 encoded response audio bytes. */
+    /**
+     * Returns the raw JSON value of [delta].
+     *
+     * Unlike [delta], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("delta") @ExcludeMissing fun _delta(): JsonField<String> = delta
 
     @JsonAnyGetter
@@ -88,10 +107,26 @@ private constructor(
         /** A chunk of Base64 encoded response audio bytes. */
         fun delta(delta: String) = delta(JsonField.of(delta))
 
-        /** A chunk of Base64 encoded response audio bytes. */
+        /**
+         * Sets [Builder.delta] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.delta] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun delta(delta: JsonField<String>) = apply { this.delta = delta }
 
-        /** The type of the event. Always `response.audio.delta`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("response.audio.delta")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -113,6 +148,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseAudioDeltaEvent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .delta()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseAudioDeltaEvent =
             ResponseAudioDeltaEvent(
                 checkRequired("delta", delta),

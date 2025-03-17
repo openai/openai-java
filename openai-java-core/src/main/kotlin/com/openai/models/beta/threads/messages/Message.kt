@@ -77,35 +77,73 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The identifier, which can be referenced in API endpoints. */
+    /**
+     * The identifier, which can be referenced in API endpoints.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
     /**
      * If applicable, the ID of the
      * [assistant](https://platform.openai.com/docs/api-reference/assistants) that authored this
      * message.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun assistantId(): Optional<String> =
         Optional.ofNullable(assistantId.getNullable("assistant_id"))
 
-    /** A list of files attached to the message, and the tools they were added to. */
+    /**
+     * A list of files attached to the message, and the tools they were added to.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun attachments(): Optional<List<Attachment>> =
         Optional.ofNullable(attachments.getNullable("attachments"))
 
-    /** The Unix timestamp (in seconds) for when the message was completed. */
+    /**
+     * The Unix timestamp (in seconds) for when the message was completed.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun completedAt(): Optional<Long> = Optional.ofNullable(completedAt.getNullable("completed_at"))
 
-    /** The content of the message in array of text and/or images. */
+    /**
+     * The content of the message in array of text and/or images.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun content(): List<MessageContent> = content.getRequired("content")
 
-    /** The Unix timestamp (in seconds) for when the message was created. */
+    /**
+     * The Unix timestamp (in seconds) for when the message was created.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun createdAt(): Long = createdAt.getRequired("created_at")
 
-    /** The Unix timestamp (in seconds) for when the message was marked as incomplete. */
+    /**
+     * The Unix timestamp (in seconds) for when the message was marked as incomplete.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun incompleteAt(): Optional<Long> =
         Optional.ofNullable(incompleteAt.getNullable("incomplete_at"))
 
-    /** On an incomplete message, details about why the message is incomplete. */
+    /**
+     * On an incomplete message, details about why the message is incomplete.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun incompleteDetails(): Optional<IncompleteDetails> =
         Optional.ofNullable(incompleteDetails.getNullable("incomplete_details"))
 
@@ -116,99 +154,159 @@ private constructor(
      *
      * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
      * length of 512 characters.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
 
-    /** The object type, which is always `thread.message`. */
+    /**
+     * The object type, which is always `thread.message`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("thread.message")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
-    /** The entity that produced the message. One of `user` or `assistant`. */
+    /**
+     * The entity that produced the message. One of `user` or `assistant`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun role(): Role = role.getRequired("role")
 
     /**
      * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) associated with the
      * creation of this message. Value is `null` when messages are created manually using the create
      * message or create thread endpoints.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun runId(): Optional<String> = Optional.ofNullable(runId.getNullable("run_id"))
 
     /**
      * The status of the message, which can be either `in_progress`, `incomplete`, or `completed`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun status(): Status = status.getRequired("status")
 
     /**
      * The [thread](https://platform.openai.com/docs/api-reference/threads) ID that this message
      * belongs to.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun threadId(): String = threadId.getRequired("thread_id")
 
-    /** The identifier, which can be referenced in API endpoints. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /**
-     * If applicable, the ID of the
-     * [assistant](https://platform.openai.com/docs/api-reference/assistants) that authored this
-     * message.
+     * Returns the raw JSON value of [assistantId].
+     *
+     * Unlike [assistantId], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("assistant_id")
     @ExcludeMissing
     fun _assistantId(): JsonField<String> = assistantId
 
-    /** A list of files attached to the message, and the tools they were added to. */
+    /**
+     * Returns the raw JSON value of [attachments].
+     *
+     * Unlike [attachments], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("attachments")
     @ExcludeMissing
     fun _attachments(): JsonField<List<Attachment>> = attachments
 
-    /** The Unix timestamp (in seconds) for when the message was completed. */
+    /**
+     * Returns the raw JSON value of [completedAt].
+     *
+     * Unlike [completedAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("completed_at") @ExcludeMissing fun _completedAt(): JsonField<Long> = completedAt
 
-    /** The content of the message in array of text and/or images. */
+    /**
+     * Returns the raw JSON value of [content].
+     *
+     * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("content")
     @ExcludeMissing
     fun _content(): JsonField<List<MessageContent>> = content
 
-    /** The Unix timestamp (in seconds) for when the message was created. */
+    /**
+     * Returns the raw JSON value of [createdAt].
+     *
+     * Unlike [createdAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
-    /** The Unix timestamp (in seconds) for when the message was marked as incomplete. */
+    /**
+     * Returns the raw JSON value of [incompleteAt].
+     *
+     * Unlike [incompleteAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("incomplete_at")
     @ExcludeMissing
     fun _incompleteAt(): JsonField<Long> = incompleteAt
 
-    /** On an incomplete message, details about why the message is incomplete. */
+    /**
+     * Returns the raw JSON value of [incompleteDetails].
+     *
+     * Unlike [incompleteDetails], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
     @JsonProperty("incomplete_details")
     @ExcludeMissing
     fun _incompleteDetails(): JsonField<IncompleteDetails> = incompleteDetails
 
     /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard.
+     * Returns the raw JSON value of [metadata].
      *
-     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
-     * length of 512 characters.
+     * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
-    /** The entity that produced the message. One of `user` or `assistant`. */
+    /**
+     * Returns the raw JSON value of [role].
+     *
+     * Unlike [role], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
 
     /**
-     * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) associated with the
-     * creation of this message. Value is `null` when messages are created manually using the create
-     * message or create thread endpoints.
+     * Returns the raw JSON value of [runId].
+     *
+     * Unlike [runId], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("run_id") @ExcludeMissing fun _runId(): JsonField<String> = runId
 
     /**
-     * The status of the message, which can be either `in_progress`, `incomplete`, or `completed`.
+     * Returns the raw JSON value of [status].
+     *
+     * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
     /**
-     * The [thread](https://platform.openai.com/docs/api-reference/threads) ID that this message
-     * belongs to.
+     * Returns the raw JSON value of [threadId].
+     *
+     * Unlike [threadId], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("thread_id") @ExcludeMissing fun _threadId(): JsonField<String> = threadId
 
@@ -312,7 +410,12 @@ private constructor(
         /** The identifier, which can be referenced in API endpoints. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The identifier, which can be referenced in API endpoints. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /**
@@ -322,17 +425,15 @@ private constructor(
          */
         fun assistantId(assistantId: String?) = assistantId(JsonField.ofNullable(assistantId))
 
-        /**
-         * If applicable, the ID of the
-         * [assistant](https://platform.openai.com/docs/api-reference/assistants) that authored this
-         * message.
-         */
+        /** Alias for calling [Builder.assistantId] with `assistantId.orElse(null)`. */
         fun assistantId(assistantId: Optional<String>) = assistantId(assistantId.getOrNull())
 
         /**
-         * If applicable, the ID of the
-         * [assistant](https://platform.openai.com/docs/api-reference/assistants) that authored this
-         * message.
+         * Sets [Builder.assistantId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.assistantId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun assistantId(assistantId: JsonField<String>) = apply { this.assistantId = assistantId }
 
@@ -340,16 +441,26 @@ private constructor(
         fun attachments(attachments: List<Attachment>?) =
             attachments(JsonField.ofNullable(attachments))
 
-        /** A list of files attached to the message, and the tools they were added to. */
+        /** Alias for calling [Builder.attachments] with `attachments.orElse(null)`. */
         fun attachments(attachments: Optional<List<Attachment>>) =
             attachments(attachments.getOrNull())
 
-        /** A list of files attached to the message, and the tools they were added to. */
+        /**
+         * Sets [Builder.attachments] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.attachments] with a well-typed `List<Attachment>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun attachments(attachments: JsonField<List<Attachment>>) = apply {
             this.attachments = attachments.map { it.toMutableList() }
         }
 
-        /** A list of files attached to the message, and the tools they were added to. */
+        /**
+         * Adds a single [Attachment] to [attachments].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addAttachment(attachment: Attachment) = apply {
             attachments =
                 (attachments ?: JsonField.of(mutableListOf())).also {
@@ -360,24 +471,44 @@ private constructor(
         /** The Unix timestamp (in seconds) for when the message was completed. */
         fun completedAt(completedAt: Long?) = completedAt(JsonField.ofNullable(completedAt))
 
-        /** The Unix timestamp (in seconds) for when the message was completed. */
+        /**
+         * Alias for [Builder.completedAt].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
         fun completedAt(completedAt: Long) = completedAt(completedAt as Long?)
 
-        /** The Unix timestamp (in seconds) for when the message was completed. */
+        /** Alias for calling [Builder.completedAt] with `completedAt.orElse(null)`. */
         fun completedAt(completedAt: Optional<Long>) = completedAt(completedAt.getOrNull())
 
-        /** The Unix timestamp (in seconds) for when the message was completed. */
+        /**
+         * Sets [Builder.completedAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.completedAt] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun completedAt(completedAt: JsonField<Long>) = apply { this.completedAt = completedAt }
 
         /** The content of the message in array of text and/or images. */
         fun content(content: List<MessageContent>) = content(JsonField.of(content))
 
-        /** The content of the message in array of text and/or images. */
+        /**
+         * Sets [Builder.content] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.content] with a well-typed `List<MessageContent>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun content(content: JsonField<List<MessageContent>>) = apply {
             this.content = content.map { it.toMutableList() }
         }
 
-        /** The content of the message in array of text and/or images. */
+        /**
+         * Adds a single [MessageContent] to [Builder.content].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addContent(content: MessageContent) = apply {
             this.content =
                 (this.content ?: JsonField.of(mutableListOf())).also {
@@ -385,68 +516,111 @@ private constructor(
                 }
         }
 
-        /**
-         * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
-         * content of a message.
-         */
+        /** Alias for calling [addContent] with `MessageContent.ofImageFile(imageFile)`. */
         fun addContent(imageFile: ImageFileContentBlock) =
             addContent(MessageContent.ofImageFile(imageFile))
 
         /**
-         * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
-         * content of a message.
+         * Alias for calling [addContent] with the following:
+         * ```java
+         * ImageFileContentBlock.builder()
+         *     .imageFile(imageFile)
+         *     .build()
+         * ```
          */
         fun addImageFileContent(imageFile: ImageFile) =
             addContent(ImageFileContentBlock.builder().imageFile(imageFile).build())
 
-        /** References an image URL in the content of a message. */
+        /** Alias for calling [addContent] with `MessageContent.ofImageUrl(imageUrl)`. */
         fun addContent(imageUrl: ImageUrlContentBlock) =
             addContent(MessageContent.ofImageUrl(imageUrl))
 
-        /** References an image URL in the content of a message. */
+        /**
+         * Alias for calling [addContent] with the following:
+         * ```java
+         * ImageUrlContentBlock.builder()
+         *     .imageUrl(imageUrl)
+         *     .build()
+         * ```
+         */
         fun addImageUrlContent(imageUrl: ImageUrl) =
             addContent(ImageUrlContentBlock.builder().imageUrl(imageUrl).build())
 
-        /** The text content that is part of a message. */
+        /** Alias for calling [addContent] with `MessageContent.ofText(text)`. */
         fun addContent(text: TextContentBlock) = addContent(MessageContent.ofText(text))
 
-        /** The text content that is part of a message. */
+        /**
+         * Alias for calling [addContent] with the following:
+         * ```java
+         * TextContentBlock.builder()
+         *     .text(text)
+         *     .build()
+         * ```
+         */
         fun addTextContent(text: Text) = addContent(TextContentBlock.builder().text(text).build())
 
-        /** The refusal content generated by the assistant. */
+        /** Alias for calling [addContent] with `MessageContent.ofRefusal(refusal)`. */
         fun addContent(refusal: RefusalContentBlock) = addContent(MessageContent.ofRefusal(refusal))
 
-        /** The refusal content generated by the assistant. */
+        /**
+         * Alias for calling [addContent] with the following:
+         * ```java
+         * RefusalContentBlock.builder()
+         *     .refusal(refusal)
+         *     .build()
+         * ```
+         */
         fun addRefusalContent(refusal: String) =
             addContent(RefusalContentBlock.builder().refusal(refusal).build())
 
         /** The Unix timestamp (in seconds) for when the message was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
-        /** The Unix timestamp (in seconds) for when the message was created. */
+        /**
+         * Sets [Builder.createdAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.createdAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /** The Unix timestamp (in seconds) for when the message was marked as incomplete. */
         fun incompleteAt(incompleteAt: Long?) = incompleteAt(JsonField.ofNullable(incompleteAt))
 
-        /** The Unix timestamp (in seconds) for when the message was marked as incomplete. */
+        /**
+         * Alias for [Builder.incompleteAt].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
         fun incompleteAt(incompleteAt: Long) = incompleteAt(incompleteAt as Long?)
 
-        /** The Unix timestamp (in seconds) for when the message was marked as incomplete. */
+        /** Alias for calling [Builder.incompleteAt] with `incompleteAt.orElse(null)`. */
         fun incompleteAt(incompleteAt: Optional<Long>) = incompleteAt(incompleteAt.getOrNull())
 
-        /** The Unix timestamp (in seconds) for when the message was marked as incomplete. */
+        /**
+         * Sets [Builder.incompleteAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.incompleteAt] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun incompleteAt(incompleteAt: JsonField<Long>) = apply { this.incompleteAt = incompleteAt }
 
         /** On an incomplete message, details about why the message is incomplete. */
         fun incompleteDetails(incompleteDetails: IncompleteDetails?) =
             incompleteDetails(JsonField.ofNullable(incompleteDetails))
 
-        /** On an incomplete message, details about why the message is incomplete. */
+        /** Alias for calling [Builder.incompleteDetails] with `incompleteDetails.orElse(null)`. */
         fun incompleteDetails(incompleteDetails: Optional<IncompleteDetails>) =
             incompleteDetails(incompleteDetails.getOrNull())
 
-        /** On an incomplete message, details about why the message is incomplete. */
+        /**
+         * Sets [Builder.incompleteDetails] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.incompleteDetails] with a well-typed [IncompleteDetails]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
         fun incompleteDetails(incompleteDetails: JsonField<IncompleteDetails>) = apply {
             this.incompleteDetails = incompleteDetails
         }
@@ -461,33 +635,41 @@ private constructor(
          */
         fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
 
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
-         *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
-         */
+        /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
         fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
+         * Sets [Builder.metadata] to an arbitrary JSON value.
          *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
+         * You should usually call [Builder.metadata] with a well-typed [Metadata] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
-        /** The object type, which is always `thread.message`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("thread.message")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /** The entity that produced the message. One of `user` or `assistant`. */
         fun role(role: Role) = role(JsonField.of(role))
 
-        /** The entity that produced the message. One of `user` or `assistant`. */
+        /**
+         * Sets [Builder.role] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.role] with a well-typed [Role] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun role(role: JsonField<Role>) = apply { this.role = role }
 
         /**
@@ -497,17 +679,14 @@ private constructor(
          */
         fun runId(runId: String?) = runId(JsonField.ofNullable(runId))
 
-        /**
-         * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) associated with
-         * the creation of this message. Value is `null` when messages are created manually using
-         * the create message or create thread endpoints.
-         */
+        /** Alias for calling [Builder.runId] with `runId.orElse(null)`. */
         fun runId(runId: Optional<String>) = runId(runId.getOrNull())
 
         /**
-         * The ID of the [run](https://platform.openai.com/docs/api-reference/runs) associated with
-         * the creation of this message. Value is `null` when messages are created manually using
-         * the create message or create thread endpoints.
+         * Sets [Builder.runId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.runId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun runId(runId: JsonField<String>) = apply { this.runId = runId }
 
@@ -518,8 +697,10 @@ private constructor(
         fun status(status: Status) = status(JsonField.of(status))
 
         /**
-         * The status of the message, which can be either `in_progress`, `incomplete`, or
-         * `completed`.
+         * Sets [Builder.status] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
@@ -530,8 +711,10 @@ private constructor(
         fun threadId(threadId: String) = threadId(JsonField.of(threadId))
 
         /**
-         * The [thread](https://platform.openai.com/docs/api-reference/threads) ID that this message
-         * belongs to.
+         * Sets [Builder.threadId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.threadId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun threadId(threadId: JsonField<String>) = apply { this.threadId = threadId }
 
@@ -554,6 +737,30 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [Message].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .assistantId()
+         * .attachments()
+         * .completedAt()
+         * .content()
+         * .createdAt()
+         * .incompleteAt()
+         * .incompleteDetails()
+         * .metadata()
+         * .role()
+         * .runId()
+         * .status()
+         * .threadId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): Message =
             Message(
                 checkRequired("id", id),
@@ -588,16 +795,34 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The ID of the file to attach to the message. */
+        /**
+         * The ID of the file to attach to the message.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
 
-        /** The tools to add this file to. */
+        /**
+         * The tools to add this file to.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun tools(): Optional<List<Tool>> = Optional.ofNullable(tools.getNullable("tools"))
 
-        /** The ID of the file to attach to the message. */
+        /**
+         * Returns the raw JSON value of [fileId].
+         *
+         * Unlike [fileId], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
-        /** The tools to add this file to. */
+        /**
+         * Returns the raw JSON value of [tools].
+         *
+         * Unlike [tools], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<Tool>> = tools
 
         @JsonAnyGetter
@@ -641,18 +866,34 @@ private constructor(
             /** The ID of the file to attach to the message. */
             fun fileId(fileId: String) = fileId(JsonField.of(fileId))
 
-            /** The ID of the file to attach to the message. */
+            /**
+             * Sets [Builder.fileId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.fileId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
 
             /** The tools to add this file to. */
             fun tools(tools: List<Tool>) = tools(JsonField.of(tools))
 
-            /** The tools to add this file to. */
+            /**
+             * Sets [Builder.tools] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.tools] with a well-typed `List<Tool>` value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun tools(tools: JsonField<List<Tool>>) = apply {
                 this.tools = tools.map { it.toMutableList() }
             }
 
-            /** The tools to add this file to. */
+            /**
+             * Adds a single [Tool] to [tools].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addTool(tool: Tool) = apply {
                 tools =
                     (tools ?: JsonField.of(mutableListOf())).also {
@@ -660,11 +901,11 @@ private constructor(
                     }
             }
 
-            /** The tools to add this file to. */
+            /** Alias for calling [addTool] with `Tool.ofCodeInterpreter(codeInterpreter)`. */
             fun addTool(codeInterpreter: CodeInterpreterTool) =
                 addTool(Tool.ofCodeInterpreter(codeInterpreter))
 
-            /** The tools to add this file to. */
+            /** Alias for calling [addTool] with `Tool.ofAssistantToolsFileSearchTypeOnly()`. */
             fun addToolAssistantToolsFileSearchTypeOnly() =
                 addTool(Tool.ofAssistantToolsFileSearchTypeOnly())
 
@@ -687,6 +928,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Attachment].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Attachment =
                 Attachment(
                     fileId,
@@ -897,10 +1143,19 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The reason the message is incomplete. */
+        /**
+         * The reason the message is incomplete.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun reason(): Reason = reason.getRequired("reason")
 
-        /** The reason the message is incomplete. */
+        /**
+         * Returns the raw JSON value of [reason].
+         *
+         * Unlike [reason], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("reason") @ExcludeMissing fun _reason(): JsonField<Reason> = reason
 
         @JsonAnyGetter
@@ -948,7 +1203,13 @@ private constructor(
             /** The reason the message is incomplete. */
             fun reason(reason: Reason) = reason(JsonField.of(reason))
 
-            /** The reason the message is incomplete. */
+            /**
+             * Sets [Builder.reason] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.reason] with a well-typed [Reason] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun reason(reason: JsonField<Reason>) = apply { this.reason = reason }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -970,6 +1231,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [IncompleteDetails].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .reason()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): IncompleteDetails =
                 IncompleteDetails(
                     checkRequired("reason", reason),

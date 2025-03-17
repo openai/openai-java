@@ -30,19 +30,47 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** Base64-encoded audio data from the model. */
+    /**
+     * Base64-encoded audio data from the model.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun data(): String = data.getRequired("data")
 
-    /** The transcript of the audio data from the model. */
+    /**
+     * The transcript of the audio data from the model.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun transcript(): String = transcript.getRequired("transcript")
 
-    /** The type of the output audio. Always `output_audio`. */
+    /**
+     * The type of the output audio. Always `output_audio`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("output_audio")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** Base64-encoded audio data from the model. */
+    /**
+     * Returns the raw JSON value of [data].
+     *
+     * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<String> = data
 
-    /** The transcript of the audio data from the model. */
+    /**
+     * Returns the raw JSON value of [transcript].
+     *
+     * Unlike [transcript], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("transcript") @ExcludeMissing fun _transcript(): JsonField<String> = transcript
 
     @JsonAnyGetter
@@ -101,16 +129,38 @@ private constructor(
         /** Base64-encoded audio data from the model. */
         fun data(data: String) = data(JsonField.of(data))
 
-        /** Base64-encoded audio data from the model. */
+        /**
+         * Sets [Builder.data] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.data] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun data(data: JsonField<String>) = apply { this.data = data }
 
         /** The transcript of the audio data from the model. */
         fun transcript(transcript: String) = transcript(JsonField.of(transcript))
 
-        /** The transcript of the audio data from the model. */
+        /**
+         * Sets [Builder.transcript] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.transcript] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun transcript(transcript: JsonField<String>) = apply { this.transcript = transcript }
 
-        /** The type of the output audio. Always `output_audio`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("output_audio")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -132,6 +182,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseOutputAudio].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .data()
+         * .transcript()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseOutputAudio =
             ResponseOutputAudio(
                 checkRequired("data", data),

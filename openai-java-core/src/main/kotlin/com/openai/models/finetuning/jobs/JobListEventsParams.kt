@@ -91,16 +91,20 @@ private constructor(
         /** Identifier for the last event from the previous pagination request. */
         fun after(after: String?) = apply { this.after = after }
 
-        /** Identifier for the last event from the previous pagination request. */
+        /** Alias for calling [Builder.after] with `after.orElse(null)`. */
         fun after(after: Optional<String>) = after(after.getOrNull())
 
         /** Number of events to retrieve. */
         fun limit(limit: Long?) = apply { this.limit = limit }
 
-        /** Number of events to retrieve. */
+        /**
+         * Alias for [Builder.limit].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
         fun limit(limit: Long) = limit(limit as Long?)
 
-        /** Number of events to retrieve. */
+        /** Alias for calling [Builder.limit] with `limit.orElse(null)`. */
         fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
@@ -201,6 +205,18 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [JobListEventsParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .fineTuningJobId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): JobListEventsParams =
             JobListEventsParams(
                 checkRequired("fineTuningJobId", fineTuningJobId),

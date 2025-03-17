@@ -30,19 +30,47 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The partial code snippet added by the code interpreter. */
+    /**
+     * The partial code snippet added by the code interpreter.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun delta(): String = delta.getRequired("delta")
 
-    /** The index of the output item that the code interpreter call is in progress. */
+    /**
+     * The index of the output item that the code interpreter call is in progress.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun outputIndex(): Long = outputIndex.getRequired("output_index")
 
-    /** The type of the event. Always `response.code_interpreter_call.code.delta`. */
+    /**
+     * The type of the event. Always `response.code_interpreter_call.code.delta`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("response.code_interpreter_call.code.delta")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** The partial code snippet added by the code interpreter. */
+    /**
+     * Returns the raw JSON value of [delta].
+     *
+     * Unlike [delta], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("delta") @ExcludeMissing fun _delta(): JsonField<String> = delta
 
-    /** The index of the output item that the code interpreter call is in progress. */
+    /**
+     * Returns the raw JSON value of [outputIndex].
+     *
+     * Unlike [outputIndex], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("output_index") @ExcludeMissing fun _outputIndex(): JsonField<Long> = outputIndex
 
     @JsonAnyGetter
@@ -105,16 +133,38 @@ private constructor(
         /** The partial code snippet added by the code interpreter. */
         fun delta(delta: String) = delta(JsonField.of(delta))
 
-        /** The partial code snippet added by the code interpreter. */
+        /**
+         * Sets [Builder.delta] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.delta] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun delta(delta: JsonField<String>) = apply { this.delta = delta }
 
         /** The index of the output item that the code interpreter call is in progress. */
         fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))
 
-        /** The index of the output item that the code interpreter call is in progress. */
+        /**
+         * Sets [Builder.outputIndex] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.outputIndex] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun outputIndex(outputIndex: JsonField<Long>) = apply { this.outputIndex = outputIndex }
 
-        /** The type of the event. Always `response.code_interpreter_call.code.delta`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("response.code_interpreter_call.code.delta")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -136,6 +186,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseCodeInterpreterCallCodeDeltaEvent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .delta()
+         * .outputIndex()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseCodeInterpreterCallCodeDeltaEvent =
             ResponseCodeInterpreterCallCodeDeltaEvent(
                 checkRequired("delta", delta),

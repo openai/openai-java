@@ -41,24 +41,47 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The contents of the user message. */
+    /**
+     * The contents of the user message.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun content(): Content = content.getRequired("content")
 
-    /** The role of the messages author, in this case `user`. */
+    /**
+     * The role of the messages author, in this case `user`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("user")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("role") @ExcludeMissing fun _role(): JsonValue = role
 
     /**
      * An optional name for the participant. Provides the model information to differentiate between
      * participants of the same role.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
 
-    /** The contents of the user message. */
+    /**
+     * Returns the raw JSON value of [content].
+     *
+     * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<Content> = content
 
     /**
-     * An optional name for the participant. Provides the model information to differentiate between
-     * participants of the same role.
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
@@ -119,21 +142,35 @@ private constructor(
         /** The contents of the user message. */
         fun content(content: Content) = content(JsonField.of(content))
 
-        /** The contents of the user message. */
+        /**
+         * Sets [Builder.content] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.content] with a well-typed [Content] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun content(content: JsonField<Content>) = apply { this.content = content }
 
-        /** The text contents of the message. */
+        /** Alias for calling [content] with `Content.ofText(text)`. */
         fun content(text: String) = content(Content.ofText(text))
 
         /**
-         * An array of content parts with a defined type. Supported options differ based on the
-         * [model](https://platform.openai.com/docs/models) being used to generate the response. Can
-         * contain text, image, or audio inputs.
+         * Alias for calling [content] with `Content.ofArrayOfContentParts(arrayOfContentParts)`.
          */
         fun contentOfArrayOfContentParts(arrayOfContentParts: List<ChatCompletionContentPart>) =
             content(Content.ofArrayOfContentParts(arrayOfContentParts))
 
-        /** The role of the messages author, in this case `user`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("user")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun role(role: JsonValue) = apply { this.role = role }
 
         /**
@@ -143,8 +180,10 @@ private constructor(
         fun name(name: String) = name(JsonField.of(name))
 
         /**
-         * An optional name for the participant. Provides the model information to differentiate
-         * between participants of the same role.
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun name(name: JsonField<String>) = apply { this.name = name }
 
@@ -167,6 +206,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ChatCompletionUserMessageParam].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .content()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ChatCompletionUserMessageParam =
             ChatCompletionUserMessageParam(
                 checkRequired("content", content),

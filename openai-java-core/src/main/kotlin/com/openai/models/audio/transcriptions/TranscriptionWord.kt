@@ -14,6 +14,7 @@ import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 
 @NoAutoDetect
@@ -26,22 +27,49 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** End time of the word in seconds. */
+    /**
+     * End time of the word in seconds.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun end(): Double = end.getRequired("end")
 
-    /** Start time of the word in seconds. */
+    /**
+     * Start time of the word in seconds.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun start(): Double = start.getRequired("start")
 
-    /** The text content of the word. */
+    /**
+     * The text content of the word.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun word(): String = word.getRequired("word")
 
-    /** End time of the word in seconds. */
+    /**
+     * Returns the raw JSON value of [end].
+     *
+     * Unlike [end], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("end") @ExcludeMissing fun _end(): JsonField<Double> = end
 
-    /** Start time of the word in seconds. */
+    /**
+     * Returns the raw JSON value of [start].
+     *
+     * Unlike [start], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("start") @ExcludeMissing fun _start(): JsonField<Double> = start
 
-    /** The text content of the word. */
+    /**
+     * Returns the raw JSON value of [word].
+     *
+     * Unlike [word], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("word") @ExcludeMissing fun _word(): JsonField<String> = word
 
     @JsonAnyGetter
@@ -97,19 +125,34 @@ private constructor(
         /** End time of the word in seconds. */
         fun end(end: Double) = end(JsonField.of(end))
 
-        /** End time of the word in seconds. */
+        /**
+         * Sets [Builder.end] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.end] with a well-typed [Double] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun end(end: JsonField<Double>) = apply { this.end = end }
 
         /** Start time of the word in seconds. */
         fun start(start: Double) = start(JsonField.of(start))
 
-        /** Start time of the word in seconds. */
+        /**
+         * Sets [Builder.start] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.start] with a well-typed [Double] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun start(start: JsonField<Double>) = apply { this.start = start }
 
         /** The text content of the word. */
         fun word(word: String) = word(JsonField.of(word))
 
-        /** The text content of the word. */
+        /**
+         * Sets [Builder.word] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.word] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun word(word: JsonField<String>) = apply { this.word = word }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -131,6 +174,20 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [TranscriptionWord].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .end()
+         * .start()
+         * .word()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): TranscriptionWord =
             TranscriptionWord(
                 checkRequired("end", end),

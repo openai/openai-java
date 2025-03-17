@@ -367,8 +367,11 @@ private constructor(
             fun model(model: MultipartField<AudioModel>) = apply { this.model = model }
 
             /**
-             * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper
-             * V2 model) is currently available.
+             * Sets [model] to an arbitrary [String].
+             *
+             * You should usually call [model] with a well-typed [AudioModel] constant instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun model(value: String) = model(AudioModel.of(value))
 
@@ -457,10 +460,9 @@ private constructor(
             }
 
             /**
-             * The timestamp granularities to populate for this transcription. `response_format`
-             * must be set `verbose_json` to use timestamp granularities. Either or both of these
-             * options are supported: `word`, or `segment`. Note: There is no additional latency for
-             * segment timestamps, but generating word timestamps incurs additional latency.
+             * Adds a single [TimestampGranularity] to [timestampGranularities].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
              */
             fun addTimestampGranularity(timestampGranularity: TimestampGranularity) = apply {
                 timestampGranularities =
@@ -469,6 +471,19 @@ private constructor(
                     }
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .file()
+             * .model()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("file", file),
@@ -567,8 +582,10 @@ private constructor(
         fun model(model: MultipartField<AudioModel>) = apply { body.model(model) }
 
         /**
-         * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2
-         * model) is currently available.
+         * Sets [model] to an arbitrary [String].
+         *
+         * You should usually call [model] with a well-typed [AudioModel] constant instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun model(value: String) = apply { body.model(value) }
 
@@ -657,10 +674,9 @@ private constructor(
         ) = apply { body.timestampGranularities(timestampGranularities) }
 
         /**
-         * The timestamp granularities to populate for this transcription. `response_format` must be
-         * set `verbose_json` to use timestamp granularities. Either or both of these options are
-         * supported: `word`, or `segment`. Note: There is no additional latency for segment
-         * timestamps, but generating word timestamps incurs additional latency.
+         * Adds a single [TimestampGranularity] to [timestampGranularities].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addTimestampGranularity(timestampGranularity: TimestampGranularity) = apply {
             body.addTimestampGranularity(timestampGranularity)
@@ -764,6 +780,19 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [TranscriptionCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .file()
+         * .model()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): TranscriptionCreateParams =
             TranscriptionCreateParams(
                 body.build(),

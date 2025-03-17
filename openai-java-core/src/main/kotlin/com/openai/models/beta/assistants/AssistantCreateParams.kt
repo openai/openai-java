@@ -54,14 +54,25 @@ private constructor(
      * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all of
      * your available models, or see our [Model overview](https://platform.openai.com/docs/models)
      * for descriptions of them.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun model(): ChatModel = body.model()
 
-    /** The description of the assistant. The maximum length is 512 characters. */
+    /**
+     * The description of the assistant. The maximum length is 512 characters.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun description(): Optional<String> = body.description()
 
     /**
      * The system instructions that the assistant uses. The maximum length is 256,000 characters.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun instructions(): Optional<String> = body.instructions()
 
@@ -72,10 +83,18 @@ private constructor(
      *
      * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
      * length of 512 characters.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun metadata(): Optional<Metadata> = body.metadata()
 
-    /** The name of the assistant. The maximum length is 256 characters. */
+    /**
+     * The name of the assistant. The maximum length is 256 characters.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun name(): Optional<String> = body.name()
 
     /**
@@ -85,6 +104,9 @@ private constructor(
      * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
      * values are `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
      * responses and fewer tokens used on reasoning in a response.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun reasoningEffort(): Optional<ReasoningEffort> = body.reasoningEffort()
 
@@ -107,12 +129,18 @@ private constructor(
      * long-running and seemingly "stuck" request. Also note that the message content may be
      * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
      * `max_tokens` or the conversation exceeded the max context length.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun responseFormat(): Optional<AssistantResponseFormatOption> = body.responseFormat()
 
     /**
      * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
      * output more random, while lower values like 0.2 will make it more focused and deterministic.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun temperature(): Optional<Double> = body.temperature()
 
@@ -120,12 +148,18 @@ private constructor(
      * A set of resources that are used by the assistant's tools. The resources are specific to the
      * type of tool. For example, the `code_interpreter` tool requires a list of file IDs, while the
      * `file_search` tool requires a list of vector store IDs.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun toolResources(): Optional<ToolResources> = body.toolResources()
 
     /**
      * A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant.
      * Tools can be of types `code_interpreter`, `file_search`, or `function`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun tools(): Optional<List<AssistantTool>> = body.tools()
 
@@ -135,95 +169,86 @@ private constructor(
      * comprising the top 10% probability mass are considered.
      *
      * We generally recommend altering this or temperature but not both.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun topP(): Optional<Double> = body.topP()
 
     /**
-     * ID of the model to use. You can use the
-     * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all of
-     * your available models, or see our [Model overview](https://platform.openai.com/docs/models)
-     * for descriptions of them.
+     * Returns the raw JSON value of [model].
+     *
+     * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _model(): JsonField<ChatModel> = body._model()
 
-    /** The description of the assistant. The maximum length is 512 characters. */
+    /**
+     * Returns the raw JSON value of [description].
+     *
+     * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _description(): JsonField<String> = body._description()
 
     /**
-     * The system instructions that the assistant uses. The maximum length is 256,000 characters.
+     * Returns the raw JSON value of [instructions].
+     *
+     * Unlike [instructions], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _instructions(): JsonField<String> = body._instructions()
 
     /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard.
+     * Returns the raw JSON value of [metadata].
      *
-     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
-     * length of 512 characters.
+     * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _metadata(): JsonField<Metadata> = body._metadata()
 
-    /** The name of the assistant. The maximum length is 256 characters. */
+    /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _name(): JsonField<String> = body._name()
 
     /**
-     * **o-series models only**
+     * Returns the raw JSON value of [reasoningEffort].
      *
-     * Constrains effort on reasoning for
-     * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
-     * values are `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
-     * responses and fewer tokens used on reasoning in a response.
+     * Unlike [reasoningEffort], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _reasoningEffort(): JsonField<ReasoningEffort> = body._reasoningEffort()
 
     /**
-     * Specifies the format that the model must output. Compatible with
-     * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-     * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5 Turbo
-     * models since `gpt-3.5-turbo-1106`.
+     * Returns the raw JSON value of [responseFormat].
      *
-     * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs which
-     * ensures the model will match your supplied JSON schema. Learn more in the
-     * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-     *
-     * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the model
-     * generates is valid JSON.
-     *
-     * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
-     * yourself via a system or user message. Without this, the model may generate an unending
-     * stream of whitespace until the generation reaches the token limit, resulting in a
-     * long-running and seemingly "stuck" request. Also note that the message content may be
-     * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
-     * `max_tokens` or the conversation exceeded the max context length.
+     * Unlike [responseFormat], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _responseFormat(): JsonField<AssistantResponseFormatOption> = body._responseFormat()
 
     /**
-     * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
-     * output more random, while lower values like 0.2 will make it more focused and deterministic.
+     * Returns the raw JSON value of [temperature].
+     *
+     * Unlike [temperature], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _temperature(): JsonField<Double> = body._temperature()
 
     /**
-     * A set of resources that are used by the assistant's tools. The resources are specific to the
-     * type of tool. For example, the `code_interpreter` tool requires a list of file IDs, while the
-     * `file_search` tool requires a list of vector store IDs.
+     * Returns the raw JSON value of [toolResources].
+     *
+     * Unlike [toolResources], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _toolResources(): JsonField<ToolResources> = body._toolResources()
 
     /**
-     * A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant.
-     * Tools can be of types `code_interpreter`, `file_search`, or `function`.
+     * Returns the raw JSON value of [tools].
+     *
+     * Unlike [tools], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _tools(): JsonField<List<AssistantTool>> = body._tools()
 
     /**
-     * An alternative to sampling with temperature, called nucleus sampling, where the model
-     * considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens
-     * comprising the top 10% probability mass are considered.
+     * Returns the raw JSON value of [topP].
      *
-     * We generally recommend altering this or temperature but not both.
+     * Unlike [topP], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _topP(): JsonField<Double> = body._topP()
 
@@ -285,16 +310,27 @@ private constructor(
          * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all
          * of your available models, or see our
          * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun model(): ChatModel = model.getRequired("model")
 
-        /** The description of the assistant. The maximum length is 512 characters. */
+        /**
+         * The description of the assistant. The maximum length is 512 characters.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun description(): Optional<String> =
             Optional.ofNullable(description.getNullable("description"))
 
         /**
          * The system instructions that the assistant uses. The maximum length is 256,000
          * characters.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun instructions(): Optional<String> =
             Optional.ofNullable(instructions.getNullable("instructions"))
@@ -306,10 +342,18 @@ private constructor(
          *
          * Keys are strings with a maximum length of 64 characters. Values are strings with a
          * maximum length of 512 characters.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
 
-        /** The name of the assistant. The maximum length is 256 characters. */
+        /**
+         * The name of the assistant. The maximum length is 256 characters.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
 
         /**
@@ -319,6 +363,9 @@ private constructor(
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
          * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
          * faster responses and fewer tokens used on reasoning in a response.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun reasoningEffort(): Optional<ReasoningEffort> =
             Optional.ofNullable(reasoningEffort.getNullable("reasoning_effort"))
@@ -342,6 +389,9 @@ private constructor(
          * long-running and seemingly "stuck" request. Also note that the message content may be
          * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
          * `max_tokens` or the conversation exceeded the max context length.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun responseFormat(): Optional<AssistantResponseFormatOption> =
             Optional.ofNullable(responseFormat.getNullable("response_format"))
@@ -350,6 +400,9 @@ private constructor(
          * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
          * output more random, while lower values like 0.2 will make it more focused and
          * deterministic.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun temperature(): Optional<Double> =
             Optional.ofNullable(temperature.getNullable("temperature"))
@@ -358,6 +411,9 @@ private constructor(
          * A set of resources that are used by the assistant's tools. The resources are specific to
          * the type of tool. For example, the `code_interpreter` tool requires a list of file IDs,
          * while the `file_search` tool requires a list of vector store IDs.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun toolResources(): Optional<ToolResources> =
             Optional.ofNullable(toolResources.getNullable("tool_resources"))
@@ -365,6 +421,9 @@ private constructor(
         /**
          * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
          * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun tools(): Optional<List<AssistantTool>> = Optional.ofNullable(tools.getNullable("tools"))
 
@@ -374,109 +433,102 @@ private constructor(
          * tokens comprising the top 10% probability mass are considered.
          *
          * We generally recommend altering this or temperature but not both.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun topP(): Optional<Double> = Optional.ofNullable(topP.getNullable("top_p"))
 
         /**
-         * ID of the model to use. You can use the
-         * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all
-         * of your available models, or see our
-         * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+         * Returns the raw JSON value of [model].
+         *
+         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<ChatModel> = model
 
-        /** The description of the assistant. The maximum length is 512 characters. */
+        /**
+         * Returns the raw JSON value of [description].
+         *
+         * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("description")
         @ExcludeMissing
         fun _description(): JsonField<String> = description
 
         /**
-         * The system instructions that the assistant uses. The maximum length is 256,000
-         * characters.
+         * Returns the raw JSON value of [instructions].
+         *
+         * Unlike [instructions], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
         @JsonProperty("instructions")
         @ExcludeMissing
         fun _instructions(): JsonField<String> = instructions
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
+         * Returns the raw JSON value of [metadata].
          *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
+         * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
-        /** The name of the assistant. The maximum length is 256 characters. */
+        /**
+         * Returns the raw JSON value of [name].
+         *
+         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         /**
-         * **o-series models only**
+         * Returns the raw JSON value of [reasoningEffort].
          *
-         * Constrains effort on reasoning for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
-         * faster responses and fewer tokens used on reasoning in a response.
+         * Unlike [reasoningEffort], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
         @JsonProperty("reasoning_effort")
         @ExcludeMissing
         fun _reasoningEffort(): JsonField<ReasoningEffort> = reasoningEffort
 
         /**
-         * Specifies the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
-         * Turbo models since `gpt-3.5-turbo-1106`.
+         * Returns the raw JSON value of [responseFormat].
          *
-         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
-         * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-         *
-         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
-         * model generates is valid JSON.
-         *
-         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
-         * yourself via a system or user message. Without this, the model may generate an unending
-         * stream of whitespace until the generation reaches the token limit, resulting in a
-         * long-running and seemingly "stuck" request. Also note that the message content may be
-         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
-         * `max_tokens` or the conversation exceeded the max context length.
+         * Unlike [responseFormat], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
         @JsonProperty("response_format")
         @ExcludeMissing
         fun _responseFormat(): JsonField<AssistantResponseFormatOption> = responseFormat
 
         /**
-         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
-         * output more random, while lower values like 0.2 will make it more focused and
-         * deterministic.
+         * Returns the raw JSON value of [temperature].
+         *
+         * Unlike [temperature], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("temperature")
         @ExcludeMissing
         fun _temperature(): JsonField<Double> = temperature
 
         /**
-         * A set of resources that are used by the assistant's tools. The resources are specific to
-         * the type of tool. For example, the `code_interpreter` tool requires a list of file IDs,
-         * while the `file_search` tool requires a list of vector store IDs.
+         * Returns the raw JSON value of [toolResources].
+         *
+         * Unlike [toolResources], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
         @JsonProperty("tool_resources")
         @ExcludeMissing
         fun _toolResources(): JsonField<ToolResources> = toolResources
 
         /**
-         * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
-         * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+         * Returns the raw JSON value of [tools].
+         *
+         * Unlike [tools], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<AssistantTool>> = tools
 
         /**
-         * An alternative to sampling with temperature, called nucleus sampling, where the model
-         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
-         * tokens comprising the top 10% probability mass are considered.
+         * Returns the raw JSON value of [topP].
          *
-         * We generally recommend altering this or temperature but not both.
+         * Unlike [topP], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("top_p") @ExcludeMissing fun _topP(): JsonField<Double> = topP
 
@@ -561,28 +613,36 @@ private constructor(
             fun model(model: ChatModel) = model(JsonField.of(model))
 
             /**
-             * ID of the model to use. You can use the
-             * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see
-             * all of your available models, or see our
-             * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+             * Sets [Builder.model] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.model] with a well-typed [ChatModel] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun model(model: JsonField<ChatModel>) = apply { this.model = model }
 
             /**
-             * ID of the model to use. You can use the
-             * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see
-             * all of your available models, or see our
-             * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+             * Sets [model] to an arbitrary [String].
+             *
+             * You should usually call [model] with a well-typed [ChatModel] constant instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun model(value: String) = model(ChatModel.of(value))
 
             /** The description of the assistant. The maximum length is 512 characters. */
             fun description(description: String?) = description(JsonField.ofNullable(description))
 
-            /** The description of the assistant. The maximum length is 512 characters. */
+            /** Alias for calling [Builder.description] with `description.orElse(null)`. */
             fun description(description: Optional<String>) = description(description.getOrNull())
 
-            /** The description of the assistant. The maximum length is 512 characters. */
+            /**
+             * Sets [Builder.description] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.description] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun description(description: JsonField<String>) = apply {
                 this.description = description
             }
@@ -594,16 +654,16 @@ private constructor(
             fun instructions(instructions: String?) =
                 instructions(JsonField.ofNullable(instructions))
 
-            /**
-             * The system instructions that the assistant uses. The maximum length is 256,000
-             * characters.
-             */
+            /** Alias for calling [Builder.instructions] with `instructions.orElse(null)`. */
             fun instructions(instructions: Optional<String>) =
                 instructions(instructions.getOrNull())
 
             /**
-             * The system instructions that the assistant uses. The maximum length is 256,000
-             * characters.
+             * Sets [Builder.instructions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.instructions] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun instructions(instructions: JsonField<String>) = apply {
                 this.instructions = instructions
@@ -619,33 +679,31 @@ private constructor(
              */
             fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
 
-            /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format, and querying
-             * for objects via API or the dashboard.
-             *
-             * Keys are strings with a maximum length of 64 characters. Values are strings with a
-             * maximum length of 512 characters.
-             */
+            /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
             fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
             /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format, and querying
-             * for objects via API or the dashboard.
+             * Sets [Builder.metadata] to an arbitrary JSON value.
              *
-             * Keys are strings with a maximum length of 64 characters. Values are strings with a
-             * maximum length of 512 characters.
+             * You should usually call [Builder.metadata] with a well-typed [Metadata] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
             /** The name of the assistant. The maximum length is 256 characters. */
             fun name(name: String?) = name(JsonField.ofNullable(name))
 
-            /** The name of the assistant. The maximum length is 256 characters. */
+            /** Alias for calling [Builder.name] with `name.orElse(null)`. */
             fun name(name: Optional<String>) = name(name.getOrNull())
 
-            /** The name of the assistant. The maximum length is 256 characters. */
+            /**
+             * Sets [Builder.name] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.name] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun name(name: JsonField<String>) = apply { this.name = name }
 
             /**
@@ -659,24 +717,16 @@ private constructor(
             fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
                 reasoningEffort(JsonField.ofNullable(reasoningEffort))
 
-            /**
-             * **o-series models only**
-             *
-             * Constrains effort on reasoning for
-             * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-             * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
-             * result in faster responses and fewer tokens used on reasoning in a response.
-             */
+            /** Alias for calling [Builder.reasoningEffort] with `reasoningEffort.orElse(null)`. */
             fun reasoningEffort(reasoningEffort: Optional<ReasoningEffort>) =
                 reasoningEffort(reasoningEffort.getOrNull())
 
             /**
-             * **o-series models only**
+             * Sets [Builder.reasoningEffort] to an arbitrary JSON value.
              *
-             * Constrains effort on reasoning for
-             * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-             * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
-             * result in faster responses and fewer tokens used on reasoning in a response.
+             * You should usually call [Builder.reasoningEffort] with a well-typed [ReasoningEffort]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
              */
             fun reasoningEffort(reasoningEffort: JsonField<ReasoningEffort>) = apply {
                 this.reasoningEffort = reasoningEffort
@@ -706,69 +756,40 @@ private constructor(
             fun responseFormat(responseFormat: AssistantResponseFormatOption?) =
                 responseFormat(JsonField.ofNullable(responseFormat))
 
-            /**
-             * Specifies the format that the model must output. Compatible with
-             * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-             * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all
-             * GPT-3.5 Turbo models since `gpt-3.5-turbo-1106`.
-             *
-             * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
-             * Outputs which ensures the model will match your supplied JSON schema. Learn more in
-             * the
-             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-             *
-             * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
-             * the model generates is valid JSON.
-             *
-             * **Important:** when using JSON mode, you **must** also instruct the model to produce
-             * JSON yourself via a system or user message. Without this, the model may generate an
-             * unending stream of whitespace until the generation reaches the token limit, resulting
-             * in a long-running and seemingly "stuck" request. Also note that the message content
-             * may be partially cut off if `finish_reason="length"`, which indicates the generation
-             * exceeded `max_tokens` or the conversation exceeded the max context length.
-             */
+            /** Alias for calling [Builder.responseFormat] with `responseFormat.orElse(null)`. */
             fun responseFormat(responseFormat: Optional<AssistantResponseFormatOption>) =
                 responseFormat(responseFormat.getOrNull())
 
             /**
-             * Specifies the format that the model must output. Compatible with
-             * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-             * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all
-             * GPT-3.5 Turbo models since `gpt-3.5-turbo-1106`.
+             * Sets [Builder.responseFormat] to an arbitrary JSON value.
              *
-             * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
-             * Outputs which ensures the model will match your supplied JSON schema. Learn more in
-             * the
-             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-             *
-             * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
-             * the model generates is valid JSON.
-             *
-             * **Important:** when using JSON mode, you **must** also instruct the model to produce
-             * JSON yourself via a system or user message. Without this, the model may generate an
-             * unending stream of whitespace until the generation reaches the token limit, resulting
-             * in a long-running and seemingly "stuck" request. Also note that the message content
-             * may be partially cut off if `finish_reason="length"`, which indicates the generation
-             * exceeded `max_tokens` or the conversation exceeded the max context length.
+             * You should usually call [Builder.responseFormat] with a well-typed
+             * [AssistantResponseFormatOption] value instead. This method is primarily for setting
+             * the field to an undocumented or not yet supported value.
              */
             fun responseFormat(responseFormat: JsonField<AssistantResponseFormatOption>) = apply {
                 this.responseFormat = responseFormat
             }
 
-            /** `auto` is the default value */
+            /**
+             * Alias for calling [responseFormat] with
+             * `AssistantResponseFormatOption.ofJsonValue()`.
+             */
             fun responseFormatJsonValue() =
                 responseFormat(AssistantResponseFormatOption.ofJsonValue())
 
-            /** Default response format. Used to generate text responses. */
+            /**
+             * Alias for calling [responseFormat] with
+             * `AssistantResponseFormatOption.ofResponseFormatText(responseFormatText)`.
+             */
             fun responseFormat(responseFormatText: ResponseFormatText) =
                 responseFormat(
                     AssistantResponseFormatOption.ofResponseFormatText(responseFormatText)
                 )
 
             /**
-             * JSON object response format. An older method of generating JSON responses. Using
-             * `json_schema` is recommended for models that support it. Note that the model will not
-             * generate JSON without a system or user message instructing it to do so.
+             * Alias for calling [responseFormat] with
+             * `AssistantResponseFormatOption.ofResponseFormatJsonObject(responseFormatJsonObject)`.
              */
             fun responseFormat(responseFormatJsonObject: ResponseFormatJsonObject) =
                 responseFormat(
@@ -778,9 +799,8 @@ private constructor(
                 )
 
             /**
-             * JSON Schema response format. Used to generate structured JSON responses. Learn more
-             * about
-             * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+             * Alias for calling [responseFormat] with
+             * `AssistantResponseFormatOption.ofResponseFormatJsonSchema(responseFormatJsonSchema)`.
              */
             fun responseFormat(responseFormatJsonSchema: ResponseFormatJsonSchema) =
                 responseFormat(
@@ -797,23 +817,21 @@ private constructor(
             fun temperature(temperature: Double?) = temperature(JsonField.ofNullable(temperature))
 
             /**
-             * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
-             * the output more random, while lower values like 0.2 will make it more focused and
-             * deterministic.
+             * Alias for [Builder.temperature].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
              */
             fun temperature(temperature: Double) = temperature(temperature as Double?)
 
-            /**
-             * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
-             * the output more random, while lower values like 0.2 will make it more focused and
-             * deterministic.
-             */
+            /** Alias for calling [Builder.temperature] with `temperature.orElse(null)`. */
             fun temperature(temperature: Optional<Double>) = temperature(temperature.getOrNull())
 
             /**
-             * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
-             * the output more random, while lower values like 0.2 will make it more focused and
-             * deterministic.
+             * Sets [Builder.temperature] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.temperature] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun temperature(temperature: JsonField<Double>) = apply {
                 this.temperature = temperature
@@ -827,18 +845,16 @@ private constructor(
             fun toolResources(toolResources: ToolResources?) =
                 toolResources(JsonField.ofNullable(toolResources))
 
-            /**
-             * A set of resources that are used by the assistant's tools. The resources are specific
-             * to the type of tool. For example, the `code_interpreter` tool requires a list of file
-             * IDs, while the `file_search` tool requires a list of vector store IDs.
-             */
+            /** Alias for calling [Builder.toolResources] with `toolResources.orElse(null)`. */
             fun toolResources(toolResources: Optional<ToolResources>) =
                 toolResources(toolResources.getOrNull())
 
             /**
-             * A set of resources that are used by the assistant's tools. The resources are specific
-             * to the type of tool. For example, the `code_interpreter` tool requires a list of file
-             * IDs, while the `file_search` tool requires a list of vector store IDs.
+             * Sets [Builder.toolResources] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.toolResources] with a well-typed [ToolResources]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
              */
             fun toolResources(toolResources: JsonField<ToolResources>) = apply {
                 this.toolResources = toolResources
@@ -851,16 +867,20 @@ private constructor(
             fun tools(tools: List<AssistantTool>) = tools(JsonField.of(tools))
 
             /**
-             * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
-             * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+             * Sets [Builder.tools] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.tools] with a well-typed `List<AssistantTool>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun tools(tools: JsonField<List<AssistantTool>>) = apply {
                 this.tools = tools.map { it.toMutableList() }
             }
 
             /**
-             * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
-             * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+             * Adds a single [AssistantTool] to [tools].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
              */
             fun addTool(tool: AssistantTool) = apply {
                 tools =
@@ -870,28 +890,25 @@ private constructor(
             }
 
             /**
-             * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
-             * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+             * Alias for calling [addTool] with `AssistantTool.ofCodeInterpreter(codeInterpreter)`.
              */
             fun addTool(codeInterpreter: CodeInterpreterTool) =
                 addTool(AssistantTool.ofCodeInterpreter(codeInterpreter))
 
-            /**
-             * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
-             * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
-             */
+            /** Alias for calling [addTool] with `AssistantTool.ofFileSearch(fileSearch)`. */
             fun addTool(fileSearch: FileSearchTool) =
                 addTool(AssistantTool.ofFileSearch(fileSearch))
 
-            /**
-             * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
-             * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
-             */
+            /** Alias for calling [addTool] with `AssistantTool.ofFunction(function)`. */
             fun addTool(function: FunctionTool) = addTool(AssistantTool.ofFunction(function))
 
             /**
-             * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
-             * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+             * Alias for calling [addTool] with the following:
+             * ```java
+             * FunctionTool.builder()
+             *     .function(function)
+             *     .build()
+             * ```
              */
             fun addFunctionTool(function: FunctionDefinition) =
                 addTool(FunctionTool.builder().function(function).build())
@@ -906,29 +923,21 @@ private constructor(
             fun topP(topP: Double?) = topP(JsonField.ofNullable(topP))
 
             /**
-             * An alternative to sampling with temperature, called nucleus sampling, where the model
-             * considers the results of the tokens with top_p probability mass. So 0.1 means only
-             * the tokens comprising the top 10% probability mass are considered.
+             * Alias for [Builder.topP].
              *
-             * We generally recommend altering this or temperature but not both.
+             * This unboxed primitive overload exists for backwards compatibility.
              */
             fun topP(topP: Double) = topP(topP as Double?)
 
-            /**
-             * An alternative to sampling with temperature, called nucleus sampling, where the model
-             * considers the results of the tokens with top_p probability mass. So 0.1 means only
-             * the tokens comprising the top 10% probability mass are considered.
-             *
-             * We generally recommend altering this or temperature but not both.
-             */
+            /** Alias for calling [Builder.topP] with `topP.orElse(null)`. */
             fun topP(topP: Optional<Double>) = topP(topP.getOrNull())
 
             /**
-             * An alternative to sampling with temperature, called nucleus sampling, where the model
-             * considers the results of the tokens with top_p probability mass. So 0.1 means only
-             * the tokens comprising the top 10% probability mass are considered.
+             * Sets [Builder.topP] to an arbitrary JSON value.
              *
-             * We generally recommend altering this or temperature but not both.
+             * You should usually call [Builder.topP] with a well-typed [Double] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
 
@@ -951,6 +960,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .model()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("model", model),
@@ -1025,28 +1046,34 @@ private constructor(
         fun model(model: ChatModel) = apply { body.model(model) }
 
         /**
-         * ID of the model to use. You can use the
-         * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all
-         * of your available models, or see our
-         * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+         * Sets [Builder.model] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.model] with a well-typed [ChatModel] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun model(model: JsonField<ChatModel>) = apply { body.model(model) }
 
         /**
-         * ID of the model to use. You can use the
-         * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all
-         * of your available models, or see our
-         * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+         * Sets [model] to an arbitrary [String].
+         *
+         * You should usually call [model] with a well-typed [ChatModel] constant instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun model(value: String) = apply { body.model(value) }
 
         /** The description of the assistant. The maximum length is 512 characters. */
         fun description(description: String?) = apply { body.description(description) }
 
-        /** The description of the assistant. The maximum length is 512 characters. */
+        /** Alias for calling [Builder.description] with `description.orElse(null)`. */
         fun description(description: Optional<String>) = description(description.getOrNull())
 
-        /** The description of the assistant. The maximum length is 512 characters. */
+        /**
+         * Sets [Builder.description] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.description] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun description(description: JsonField<String>) = apply { body.description(description) }
 
         /**
@@ -1055,15 +1082,15 @@ private constructor(
          */
         fun instructions(instructions: String?) = apply { body.instructions(instructions) }
 
-        /**
-         * The system instructions that the assistant uses. The maximum length is 256,000
-         * characters.
-         */
+        /** Alias for calling [Builder.instructions] with `instructions.orElse(null)`. */
         fun instructions(instructions: Optional<String>) = instructions(instructions.getOrNull())
 
         /**
-         * The system instructions that the assistant uses. The maximum length is 256,000
-         * characters.
+         * Sets [Builder.instructions] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.instructions] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun instructions(instructions: JsonField<String>) = apply {
             body.instructions(instructions)
@@ -1079,33 +1106,30 @@ private constructor(
          */
         fun metadata(metadata: Metadata?) = apply { body.metadata(metadata) }
 
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
-         *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
-         */
+        /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
         fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
+         * Sets [Builder.metadata] to an arbitrary JSON value.
          *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
+         * You should usually call [Builder.metadata] with a well-typed [Metadata] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
 
         /** The name of the assistant. The maximum length is 256 characters. */
         fun name(name: String?) = apply { body.name(name) }
 
-        /** The name of the assistant. The maximum length is 256 characters. */
+        /** Alias for calling [Builder.name] with `name.orElse(null)`. */
         fun name(name: Optional<String>) = name(name.getOrNull())
 
-        /** The name of the assistant. The maximum length is 256 characters. */
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun name(name: JsonField<String>) = apply { body.name(name) }
 
         /**
@@ -1120,24 +1144,16 @@ private constructor(
             body.reasoningEffort(reasoningEffort)
         }
 
-        /**
-         * **o-series models only**
-         *
-         * Constrains effort on reasoning for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
-         * faster responses and fewer tokens used on reasoning in a response.
-         */
+        /** Alias for calling [Builder.reasoningEffort] with `reasoningEffort.orElse(null)`. */
         fun reasoningEffort(reasoningEffort: Optional<ReasoningEffort>) =
             reasoningEffort(reasoningEffort.getOrNull())
 
         /**
-         * **o-series models only**
+         * Sets [Builder.reasoningEffort] to an arbitrary JSON value.
          *
-         * Constrains effort on reasoning for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
-         * faster responses and fewer tokens used on reasoning in a response.
+         * You should usually call [Builder.reasoningEffort] with a well-typed [ReasoningEffort]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
          */
         fun reasoningEffort(reasoningEffort: JsonField<ReasoningEffort>) = apply {
             body.reasoningEffort(reasoningEffort)
@@ -1167,73 +1183,45 @@ private constructor(
             body.responseFormat(responseFormat)
         }
 
-        /**
-         * Specifies the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
-         * Turbo models since `gpt-3.5-turbo-1106`.
-         *
-         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
-         * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-         *
-         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
-         * model generates is valid JSON.
-         *
-         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
-         * yourself via a system or user message. Without this, the model may generate an unending
-         * stream of whitespace until the generation reaches the token limit, resulting in a
-         * long-running and seemingly "stuck" request. Also note that the message content may be
-         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
-         * `max_tokens` or the conversation exceeded the max context length.
-         */
+        /** Alias for calling [Builder.responseFormat] with `responseFormat.orElse(null)`. */
         fun responseFormat(responseFormat: Optional<AssistantResponseFormatOption>) =
             responseFormat(responseFormat.getOrNull())
 
         /**
-         * Specifies the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
-         * Turbo models since `gpt-3.5-turbo-1106`.
+         * Sets [Builder.responseFormat] to an arbitrary JSON value.
          *
-         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
-         * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-         *
-         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
-         * model generates is valid JSON.
-         *
-         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
-         * yourself via a system or user message. Without this, the model may generate an unending
-         * stream of whitespace until the generation reaches the token limit, resulting in a
-         * long-running and seemingly "stuck" request. Also note that the message content may be
-         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
-         * `max_tokens` or the conversation exceeded the max context length.
+         * You should usually call [Builder.responseFormat] with a well-typed
+         * [AssistantResponseFormatOption] value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
          */
         fun responseFormat(responseFormat: JsonField<AssistantResponseFormatOption>) = apply {
             body.responseFormat(responseFormat)
         }
 
-        /** `auto` is the default value */
+        /**
+         * Alias for calling [responseFormat] with `AssistantResponseFormatOption.ofJsonValue()`.
+         */
         fun responseFormatJsonValue() = apply { body.responseFormatJsonValue() }
 
-        /** Default response format. Used to generate text responses. */
+        /**
+         * Alias for calling [responseFormat] with
+         * `AssistantResponseFormatOption.ofResponseFormatText(responseFormatText)`.
+         */
         fun responseFormat(responseFormatText: ResponseFormatText) = apply {
             body.responseFormat(responseFormatText)
         }
 
         /**
-         * JSON object response format. An older method of generating JSON responses. Using
-         * `json_schema` is recommended for models that support it. Note that the model will not
-         * generate JSON without a system or user message instructing it to do so.
+         * Alias for calling [responseFormat] with
+         * `AssistantResponseFormatOption.ofResponseFormatJsonObject(responseFormatJsonObject)`.
          */
         fun responseFormat(responseFormatJsonObject: ResponseFormatJsonObject) = apply {
             body.responseFormat(responseFormatJsonObject)
         }
 
         /**
-         * JSON Schema response format. Used to generate structured JSON responses. Learn more about
-         * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+         * Alias for calling [responseFormat] with
+         * `AssistantResponseFormatOption.ofResponseFormatJsonSchema(responseFormatJsonSchema)`.
          */
         fun responseFormat(responseFormatJsonSchema: ResponseFormatJsonSchema) = apply {
             body.responseFormat(responseFormatJsonSchema)
@@ -1247,23 +1235,21 @@ private constructor(
         fun temperature(temperature: Double?) = apply { body.temperature(temperature) }
 
         /**
-         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
-         * output more random, while lower values like 0.2 will make it more focused and
-         * deterministic.
+         * Alias for [Builder.temperature].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
          */
         fun temperature(temperature: Double) = temperature(temperature as Double?)
 
-        /**
-         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
-         * output more random, while lower values like 0.2 will make it more focused and
-         * deterministic.
-         */
+        /** Alias for calling [Builder.temperature] with `temperature.orElse(null)`. */
         fun temperature(temperature: Optional<Double>) = temperature(temperature.getOrNull())
 
         /**
-         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
-         * output more random, while lower values like 0.2 will make it more focused and
-         * deterministic.
+         * Sets [Builder.temperature] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.temperature] with a well-typed [Double] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun temperature(temperature: JsonField<Double>) = apply { body.temperature(temperature) }
 
@@ -1276,18 +1262,16 @@ private constructor(
             body.toolResources(toolResources)
         }
 
-        /**
-         * A set of resources that are used by the assistant's tools. The resources are specific to
-         * the type of tool. For example, the `code_interpreter` tool requires a list of file IDs,
-         * while the `file_search` tool requires a list of vector store IDs.
-         */
+        /** Alias for calling [Builder.toolResources] with `toolResources.orElse(null)`. */
         fun toolResources(toolResources: Optional<ToolResources>) =
             toolResources(toolResources.getOrNull())
 
         /**
-         * A set of resources that are used by the assistant's tools. The resources are specific to
-         * the type of tool. For example, the `code_interpreter` tool requires a list of file IDs,
-         * while the `file_search` tool requires a list of vector store IDs.
+         * Sets [Builder.toolResources] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.toolResources] with a well-typed [ToolResources] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun toolResources(toolResources: JsonField<ToolResources>) = apply {
             body.toolResources(toolResources)
@@ -1300,38 +1284,37 @@ private constructor(
         fun tools(tools: List<AssistantTool>) = apply { body.tools(tools) }
 
         /**
-         * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
-         * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+         * Sets [Builder.tools] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.tools] with a well-typed `List<AssistantTool>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun tools(tools: JsonField<List<AssistantTool>>) = apply { body.tools(tools) }
 
         /**
-         * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
-         * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+         * Adds a single [AssistantTool] to [tools].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addTool(tool: AssistantTool) = apply { body.addTool(tool) }
 
-        /**
-         * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
-         * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
-         */
+        /** Alias for calling [addTool] with `AssistantTool.ofCodeInterpreter(codeInterpreter)`. */
         fun addTool(codeInterpreter: CodeInterpreterTool) = apply { body.addTool(codeInterpreter) }
 
-        /**
-         * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
-         * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
-         */
+        /** Alias for calling [addTool] with `AssistantTool.ofFileSearch(fileSearch)`. */
         fun addTool(fileSearch: FileSearchTool) = apply { body.addTool(fileSearch) }
 
-        /**
-         * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
-         * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
-         */
+        /** Alias for calling [addTool] with `AssistantTool.ofFunction(function)`. */
         fun addTool(function: FunctionTool) = apply { body.addTool(function) }
 
         /**
-         * A list of tool enabled on the assistant. There can be a maximum of 128 tools per
-         * assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.
+         * Alias for calling [addTool] with the following:
+         * ```java
+         * FunctionTool.builder()
+         *     .function(function)
+         *     .build()
+         * ```
          */
         fun addFunctionTool(function: FunctionDefinition) = apply { body.addFunctionTool(function) }
 
@@ -1345,29 +1328,20 @@ private constructor(
         fun topP(topP: Double?) = apply { body.topP(topP) }
 
         /**
-         * An alternative to sampling with temperature, called nucleus sampling, where the model
-         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
-         * tokens comprising the top 10% probability mass are considered.
+         * Alias for [Builder.topP].
          *
-         * We generally recommend altering this or temperature but not both.
+         * This unboxed primitive overload exists for backwards compatibility.
          */
         fun topP(topP: Double) = topP(topP as Double?)
 
-        /**
-         * An alternative to sampling with temperature, called nucleus sampling, where the model
-         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
-         * tokens comprising the top 10% probability mass are considered.
-         *
-         * We generally recommend altering this or temperature but not both.
-         */
+        /** Alias for calling [Builder.topP] with `topP.orElse(null)`. */
         fun topP(topP: Optional<Double>) = topP(topP.getOrNull())
 
         /**
-         * An alternative to sampling with temperature, called nucleus sampling, where the model
-         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
-         * tokens comprising the top 10% probability mass are considered.
+         * Sets [Builder.topP] to an arbitrary JSON value.
          *
-         * We generally recommend altering this or temperature but not both.
+         * You should usually call [Builder.topP] with a well-typed [Double] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun topP(topP: JsonField<Double>) = apply { body.topP(topP) }
 
@@ -1488,6 +1462,18 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [AssistantCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .model()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): AssistantCreateParams =
             AssistantCreateParams(
                 body.build(),
@@ -1515,16 +1501,35 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun codeInterpreter(): Optional<CodeInterpreter> =
             Optional.ofNullable(codeInterpreter.getNullable("code_interpreter"))
 
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun fileSearch(): Optional<FileSearch> =
             Optional.ofNullable(fileSearch.getNullable("file_search"))
 
+        /**
+         * Returns the raw JSON value of [codeInterpreter].
+         *
+         * Unlike [codeInterpreter], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("code_interpreter")
         @ExcludeMissing
         fun _codeInterpreter(): JsonField<CodeInterpreter> = codeInterpreter
 
+        /**
+         * Returns the raw JSON value of [fileSearch].
+         *
+         * Unlike [fileSearch], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("file_search")
         @ExcludeMissing
         fun _fileSearch(): JsonField<FileSearch> = fileSearch
@@ -1570,12 +1575,26 @@ private constructor(
             fun codeInterpreter(codeInterpreter: CodeInterpreter) =
                 codeInterpreter(JsonField.of(codeInterpreter))
 
+            /**
+             * Sets [Builder.codeInterpreter] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.codeInterpreter] with a well-typed [CodeInterpreter]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
             fun codeInterpreter(codeInterpreter: JsonField<CodeInterpreter>) = apply {
                 this.codeInterpreter = codeInterpreter
             }
 
             fun fileSearch(fileSearch: FileSearch) = fileSearch(JsonField.of(fileSearch))
 
+            /**
+             * Sets [Builder.fileSearch] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.fileSearch] with a well-typed [FileSearch] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun fileSearch(fileSearch: JsonField<FileSearch>) = apply {
                 this.fileSearch = fileSearch
             }
@@ -1599,6 +1618,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ToolResources].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): ToolResources =
                 ToolResources(codeInterpreter, fileSearch, additionalProperties.toImmutable())
         }
@@ -1618,14 +1642,17 @@ private constructor(
              * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
              * available to the `code_interpreter` tool. There can be a maximum of 20 files
              * associated with the tool.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
              */
             fun fileIds(): Optional<List<String>> =
                 Optional.ofNullable(fileIds.getNullable("file_ids"))
 
             /**
-             * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
-             * available to the `code_interpreter` tool. There can be a maximum of 20 files
-             * associated with the tool.
+             * Returns the raw JSON value of [fileIds].
+             *
+             * Unlike [fileIds], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("file_ids")
             @ExcludeMissing
@@ -1674,18 +1701,20 @@ private constructor(
                 fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
 
                 /**
-                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
-                 * available to the `code_interpreter` tool. There can be a maximum of 20 files
-                 * associated with the tool.
+                 * Sets [Builder.fileIds] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.fileIds] with a well-typed `List<String>` value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
                  */
                 fun fileIds(fileIds: JsonField<List<String>>) = apply {
                     this.fileIds = fileIds.map { it.toMutableList() }
                 }
 
                 /**
-                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
-                 * available to the `code_interpreter` tool. There can be a maximum of 20 files
-                 * associated with the tool.
+                 * Adds a single [String] to [fileIds].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
                  */
                 fun addFileId(fileId: String) = apply {
                     fileIds =
@@ -1716,6 +1745,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [CodeInterpreter].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): CodeInterpreter =
                     CodeInterpreter(
                         (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
@@ -1760,6 +1794,9 @@ private constructor(
              * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
              * attached to this assistant. There can be a maximum of 1 vector store attached to the
              * assistant.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
              */
             fun vectorStoreIds(): Optional<List<String>> =
                 Optional.ofNullable(vectorStoreIds.getNullable("vector_store_ids"))
@@ -1769,25 +1806,28 @@ private constructor(
              * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
              * with file_ids and attach it to this assistant. There can be a maximum of 1 vector
              * store attached to the assistant.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
              */
             fun vectorStores(): Optional<List<VectorStore>> =
                 Optional.ofNullable(vectorStores.getNullable("vector_stores"))
 
             /**
-             * The
-             * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
-             * attached to this assistant. There can be a maximum of 1 vector store attached to the
-             * assistant.
+             * Returns the raw JSON value of [vectorStoreIds].
+             *
+             * Unlike [vectorStoreIds], this method doesn't throw if the JSON field has an
+             * unexpected type.
              */
             @JsonProperty("vector_store_ids")
             @ExcludeMissing
             fun _vectorStoreIds(): JsonField<List<String>> = vectorStoreIds
 
             /**
-             * A helper to create a
-             * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
-             * with file_ids and attach it to this assistant. There can be a maximum of 1 vector
-             * store attached to the assistant.
+             * Returns the raw JSON value of [vectorStores].
+             *
+             * Unlike [vectorStores], this method doesn't throw if the JSON field has an unexpected
+             * type.
              */
             @JsonProperty("vector_stores")
             @ExcludeMissing
@@ -1841,20 +1881,20 @@ private constructor(
                     vectorStoreIds(JsonField.of(vectorStoreIds))
 
                 /**
-                 * The
-                 * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
-                 * attached to this assistant. There can be a maximum of 1 vector store attached to
-                 * the assistant.
+                 * Sets [Builder.vectorStoreIds] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.vectorStoreIds] with a well-typed `List<String>`
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
                  */
                 fun vectorStoreIds(vectorStoreIds: JsonField<List<String>>) = apply {
                     this.vectorStoreIds = vectorStoreIds.map { it.toMutableList() }
                 }
 
                 /**
-                 * The
-                 * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
-                 * attached to this assistant. There can be a maximum of 1 vector store attached to
-                 * the assistant.
+                 * Adds a single [String] to [vectorStoreIds].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
                  */
                 fun addVectorStoreId(vectorStoreId: String) = apply {
                     vectorStoreIds =
@@ -1873,20 +1913,20 @@ private constructor(
                     vectorStores(JsonField.of(vectorStores))
 
                 /**
-                 * A helper to create a
-                 * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
-                 * with file_ids and attach it to this assistant. There can be a maximum of 1 vector
-                 * store attached to the assistant.
+                 * Sets [Builder.vectorStores] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.vectorStores] with a well-typed
+                 * `List<VectorStore>` value instead. This method is primarily for setting the field
+                 * to an undocumented or not yet supported value.
                  */
                 fun vectorStores(vectorStores: JsonField<List<VectorStore>>) = apply {
                     this.vectorStores = vectorStores.map { it.toMutableList() }
                 }
 
                 /**
-                 * A helper to create a
-                 * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
-                 * with file_ids and attach it to this assistant. There can be a maximum of 1 vector
-                 * store attached to the assistant.
+                 * Adds a single [VectorStore] to [vectorStores].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
                  */
                 fun addVectorStore(vectorStore: VectorStore) = apply {
                     vectorStores =
@@ -1917,6 +1957,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [FileSearch].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): FileSearch =
                     FileSearch(
                         (vectorStoreIds ?: JsonMissing.of()).map { it.toImmutable() },
@@ -1945,6 +1990,9 @@ private constructor(
                 /**
                  * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
                  * strategy.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
                  */
                 fun chunkingStrategy(): Optional<ChunkingStrategy> =
                     Optional.ofNullable(chunkingStrategy.getNullable("chunking_strategy"))
@@ -1952,6 +2000,9 @@ private constructor(
                 /**
                  * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to add
                  * to the vector store. There can be a maximum of 10000 files in a vector store.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
                  */
                 fun fileIds(): Optional<List<String>> =
                     Optional.ofNullable(fileIds.getNullable("file_ids"))
@@ -1963,33 +2014,38 @@ private constructor(
                  *
                  * Keys are strings with a maximum length of 64 characters. Values are strings with
                  * a maximum length of 512 characters.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
                  */
                 fun metadata(): Optional<Metadata> =
                     Optional.ofNullable(metadata.getNullable("metadata"))
 
                 /**
-                 * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
-                 * strategy.
+                 * Returns the raw JSON value of [chunkingStrategy].
+                 *
+                 * Unlike [chunkingStrategy], this method doesn't throw if the JSON field has an
+                 * unexpected type.
                  */
                 @JsonProperty("chunking_strategy")
                 @ExcludeMissing
                 fun _chunkingStrategy(): JsonField<ChunkingStrategy> = chunkingStrategy
 
                 /**
-                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to add
-                 * to the vector store. There can be a maximum of 10000 files in a vector store.
+                 * Returns the raw JSON value of [fileIds].
+                 *
+                 * Unlike [fileIds], this method doesn't throw if the JSON field has an unexpected
+                 * type.
                  */
                 @JsonProperty("file_ids")
                 @ExcludeMissing
                 fun _fileIds(): JsonField<List<String>> = fileIds
 
                 /**
-                 * Set of 16 key-value pairs that can be attached to an object. This can be useful
-                 * for storing additional information about the object in a structured format, and
-                 * querying for objects via API or the dashboard.
+                 * Returns the raw JSON value of [metadata].
                  *
-                 * Keys are strings with a maximum length of 64 characters. Values are strings with
-                 * a maximum length of 512 characters.
+                 * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected
+                 * type.
                  */
                 @JsonProperty("metadata")
                 @ExcludeMissing
@@ -2044,29 +2100,33 @@ private constructor(
                         chunkingStrategy(JsonField.of(chunkingStrategy))
 
                     /**
-                     * The chunking strategy used to chunk the file(s). If not set, will use the
-                     * `auto` strategy.
+                     * Sets [Builder.chunkingStrategy] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.chunkingStrategy] with a well-typed
+                     * [ChunkingStrategy] value instead. This method is primarily for setting the
+                     * field to an undocumented or not yet supported value.
                      */
                     fun chunkingStrategy(chunkingStrategy: JsonField<ChunkingStrategy>) = apply {
                         this.chunkingStrategy = chunkingStrategy
                     }
 
-                    /**
-                     * The default strategy. This strategy currently uses a `max_chunk_size_tokens`
-                     * of `800` and `chunk_overlap_tokens` of `400`.
-                     */
+                    /** Alias for calling [chunkingStrategy] with `ChunkingStrategy.ofAuto()`. */
                     fun chunkingStrategyAuto() = chunkingStrategy(ChunkingStrategy.ofAuto())
 
                     /**
-                     * The chunking strategy used to chunk the file(s). If not set, will use the
-                     * `auto` strategy.
+                     * Alias for calling [chunkingStrategy] with
+                     * `ChunkingStrategy.ofStatic(static_)`.
                      */
                     fun chunkingStrategy(static_: ChunkingStrategy.StaticObject) =
                         chunkingStrategy(ChunkingStrategy.ofStatic(static_))
 
                     /**
-                     * The chunking strategy used to chunk the file(s). If not set, will use the
-                     * `auto` strategy.
+                     * Alias for calling [chunkingStrategy] with the following:
+                     * ```java
+                     * ChunkingStrategy.StaticObject.builder()
+                     *     .static_(static_)
+                     *     .build()
+                     * ```
                      */
                     fun staticChunkingStrategy(static_: ChunkingStrategy.StaticObject.Static) =
                         chunkingStrategy(
@@ -2081,18 +2141,20 @@ private constructor(
                     fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
 
                     /**
-                     * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to
-                     * add to the vector store. There can be a maximum of 10000 files in a vector
-                     * store.
+                     * Sets [Builder.fileIds] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.fileIds] with a well-typed `List<String>`
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
                      */
                     fun fileIds(fileIds: JsonField<List<String>>) = apply {
                         this.fileIds = fileIds.map { it.toMutableList() }
                     }
 
                     /**
-                     * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to
-                     * add to the vector store. There can be a maximum of 10000 files in a vector
-                     * store.
+                     * Adds a single [String] to [fileIds].
+                     *
+                     * @throws IllegalStateException if the field was previously set to a non-list.
                      */
                     fun addFileId(fileId: String) = apply {
                         fileIds =
@@ -2111,23 +2173,15 @@ private constructor(
                      */
                     fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
 
-                    /**
-                     * Set of 16 key-value pairs that can be attached to an object. This can be
-                     * useful for storing additional information about the object in a structured
-                     * format, and querying for objects via API or the dashboard.
-                     *
-                     * Keys are strings with a maximum length of 64 characters. Values are strings
-                     * with a maximum length of 512 characters.
-                     */
+                    /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
                     fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
                     /**
-                     * Set of 16 key-value pairs that can be attached to an object. This can be
-                     * useful for storing additional information about the object in a structured
-                     * format, and querying for objects via API or the dashboard.
+                     * Sets [Builder.metadata] to an arbitrary JSON value.
                      *
-                     * Keys are strings with a maximum length of 64 characters. Values are strings
-                     * with a maximum length of 512 characters.
+                     * You should usually call [Builder.metadata] with a well-typed [Metadata] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
                      */
                     fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
@@ -2153,6 +2207,11 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [VectorStore].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
                     fun build(): VectorStore =
                         VectorStore(
                             chunkingStrategy,
@@ -2362,11 +2421,32 @@ private constructor(
                             immutableEmptyMap(),
                     ) {
 
+                        /**
+                         * @throws OpenAIInvalidDataException if the JSON field has an unexpected
+                         *   type or is unexpectedly missing or null (e.g. if the server responded
+                         *   with an unexpected value).
+                         */
                         fun static_(): Static = static_.getRequired("static")
 
-                        /** Always `static`. */
+                        /**
+                         * Always `static`.
+                         *
+                         * Expected to always return the following:
+                         * ```java
+                         * JsonValue.from("static")
+                         * ```
+                         *
+                         * However, this method can be useful for debugging and logging (e.g. if the
+                         * server responded with an unexpected value).
+                         */
                         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
+                        /**
+                         * Returns the raw JSON value of [static_].
+                         *
+                         * Unlike [static_], this method doesn't throw if the JSON field has an
+                         * unexpected type.
+                         */
                         @JsonProperty("static")
                         @ExcludeMissing
                         fun _static_(): JsonField<Static> = static_
@@ -2427,11 +2507,29 @@ private constructor(
 
                             fun static_(static_: Static) = static_(JsonField.of(static_))
 
+                            /**
+                             * Sets [Builder.static_] to an arbitrary JSON value.
+                             *
+                             * You should usually call [Builder.static_] with a well-typed [Static]
+                             * value instead. This method is primarily for setting the field to an
+                             * undocumented or not yet supported value.
+                             */
                             fun static_(static_: JsonField<Static>) = apply {
                                 this.static_ = static_
                             }
 
-                            /** Always `static`. */
+                            /**
+                             * Sets the field to an arbitrary JSON value.
+                             *
+                             * It is usually unnecessary to call this method because the field
+                             * defaults to the following:
+                             * ```java
+                             * JsonValue.from("static")
+                             * ```
+                             *
+                             * This method is primarily for setting the field to an undocumented or
+                             * not yet supported value.
+                             */
                             fun type(type: JsonValue) = apply { this.type = type }
 
                             fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -2456,6 +2554,19 @@ private constructor(
                                 keys.forEach(::removeAdditionalProperty)
                             }
 
+                            /**
+                             * Returns an immutable instance of [StaticObject].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             *
+                             * The following fields are required:
+                             * ```java
+                             * .static_()
+                             * ```
+                             *
+                             * @throws IllegalStateException if any required field is unset.
+                             */
                             fun build(): StaticObject =
                                 StaticObject(
                                     checkRequired("static_", static_),
@@ -2485,6 +2596,10 @@ private constructor(
                              *
                              * Note that the overlap must not exceed half of
                              * `max_chunk_size_tokens`.
+                             *
+                             * @throws OpenAIInvalidDataException if the JSON field has an
+                             *   unexpected type or is unexpectedly missing or null (e.g. if the
+                             *   server responded with an unexpected value).
                              */
                             fun chunkOverlapTokens(): Long =
                                 chunkOverlapTokens.getRequired("chunk_overlap_tokens")
@@ -2492,24 +2607,29 @@ private constructor(
                             /**
                              * The maximum number of tokens in each chunk. The default value is
                              * `800`. The minimum value is `100` and the maximum value is `4096`.
+                             *
+                             * @throws OpenAIInvalidDataException if the JSON field has an
+                             *   unexpected type or is unexpectedly missing or null (e.g. if the
+                             *   server responded with an unexpected value).
                              */
                             fun maxChunkSizeTokens(): Long =
                                 maxChunkSizeTokens.getRequired("max_chunk_size_tokens")
 
                             /**
-                             * The number of tokens that overlap between chunks. The default value
-                             * is `400`.
+                             * Returns the raw JSON value of [chunkOverlapTokens].
                              *
-                             * Note that the overlap must not exceed half of
-                             * `max_chunk_size_tokens`.
+                             * Unlike [chunkOverlapTokens], this method doesn't throw if the JSON
+                             * field has an unexpected type.
                              */
                             @JsonProperty("chunk_overlap_tokens")
                             @ExcludeMissing
                             fun _chunkOverlapTokens(): JsonField<Long> = chunkOverlapTokens
 
                             /**
-                             * The maximum number of tokens in each chunk. The default value is
-                             * `800`. The minimum value is `100` and the maximum value is `4096`.
+                             * Returns the raw JSON value of [maxChunkSizeTokens].
+                             *
+                             * Unlike [maxChunkSizeTokens], this method doesn't throw if the JSON
+                             * field has an unexpected type.
                              */
                             @JsonProperty("max_chunk_size_tokens")
                             @ExcludeMissing
@@ -2576,11 +2696,11 @@ private constructor(
                                     chunkOverlapTokens(JsonField.of(chunkOverlapTokens))
 
                                 /**
-                                 * The number of tokens that overlap between chunks. The default
-                                 * value is `400`.
+                                 * Sets [Builder.chunkOverlapTokens] to an arbitrary JSON value.
                                  *
-                                 * Note that the overlap must not exceed half of
-                                 * `max_chunk_size_tokens`.
+                                 * You should usually call [Builder.chunkOverlapTokens] with a
+                                 * well-typed [Long] value instead. This method is primarily for
+                                 * setting the field to an undocumented or not yet supported value.
                                  */
                                 fun chunkOverlapTokens(chunkOverlapTokens: JsonField<Long>) =
                                     apply {
@@ -2596,9 +2716,11 @@ private constructor(
                                     maxChunkSizeTokens(JsonField.of(maxChunkSizeTokens))
 
                                 /**
-                                 * The maximum number of tokens in each chunk. The default value is
-                                 * `800`. The minimum value is `100` and the maximum value is
-                                 * `4096`.
+                                 * Sets [Builder.maxChunkSizeTokens] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.maxChunkSizeTokens] with a
+                                 * well-typed [Long] value instead. This method is primarily for
+                                 * setting the field to an undocumented or not yet supported value.
                                  */
                                 fun maxChunkSizeTokens(maxChunkSizeTokens: JsonField<Long>) =
                                     apply {
@@ -2628,6 +2750,20 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of [Static].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .chunkOverlapTokens()
+                                 * .maxChunkSizeTokens()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): Static =
                                     Static(
                                         checkRequired("chunkOverlapTokens", chunkOverlapTokens),

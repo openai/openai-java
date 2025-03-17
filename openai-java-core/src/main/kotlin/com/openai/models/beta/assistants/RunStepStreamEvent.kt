@@ -495,12 +495,30 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** Represents a step in execution of a run. */
+        /**
+         * Represents a step in execution of a run.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun data(): RunStep = data.getRequired("data")
 
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("thread.run.step.created")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
-        /** Represents a step in execution of a run. */
+        /**
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<RunStep> = data
 
         @JsonAnyGetter
@@ -555,9 +573,27 @@ private constructor(
             /** Represents a step in execution of a run. */
             fun data(data: RunStep) = data(JsonField.of(data))
 
-            /** Represents a step in execution of a run. */
+            /**
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [RunStep] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun data(data: JsonField<RunStep>) = apply { this.data = data }
 
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("thread.run.step.created")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -579,6 +615,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunStepCreated].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunStepCreated =
                 ThreadRunStepCreated(
                     checkRequired("data", data),
@@ -622,12 +670,30 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** Represents a step in execution of a run. */
+        /**
+         * Represents a step in execution of a run.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun data(): RunStep = data.getRequired("data")
 
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("thread.run.step.in_progress")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
-        /** Represents a step in execution of a run. */
+        /**
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<RunStep> = data
 
         @JsonAnyGetter
@@ -682,9 +748,27 @@ private constructor(
             /** Represents a step in execution of a run. */
             fun data(data: RunStep) = data(JsonField.of(data))
 
-            /** Represents a step in execution of a run. */
+            /**
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [RunStep] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun data(data: JsonField<RunStep>) = apply { this.data = data }
 
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("thread.run.step.in_progress")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -706,6 +790,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunStepInProgress].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunStepInProgress =
                 ThreadRunStepInProgress(
                     checkRequired("data", data),
@@ -749,12 +845,30 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** Represents a run step delta i.e. any changed fields on a run step during streaming. */
+        /**
+         * Represents a run step delta i.e. any changed fields on a run step during streaming.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun data(): RunStepDeltaEvent = data.getRequired("data")
 
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("thread.run.step.delta")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
-        /** Represents a run step delta i.e. any changed fields on a run step during streaming. */
+        /**
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<RunStepDeltaEvent> = data
 
         @JsonAnyGetter
@@ -812,10 +926,26 @@ private constructor(
             fun data(data: RunStepDeltaEvent) = data(JsonField.of(data))
 
             /**
-             * Represents a run step delta i.e. any changed fields on a run step during streaming.
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [RunStepDeltaEvent] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun data(data: JsonField<RunStepDeltaEvent>) = apply { this.data = data }
 
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("thread.run.step.delta")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -837,6 +967,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunStepDelta].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunStepDelta =
                 ThreadRunStepDelta(
                     checkRequired("data", data),
@@ -880,12 +1022,30 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** Represents a step in execution of a run. */
+        /**
+         * Represents a step in execution of a run.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun data(): RunStep = data.getRequired("data")
 
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("thread.run.step.completed")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
-        /** Represents a step in execution of a run. */
+        /**
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<RunStep> = data
 
         @JsonAnyGetter
@@ -940,9 +1100,27 @@ private constructor(
             /** Represents a step in execution of a run. */
             fun data(data: RunStep) = data(JsonField.of(data))
 
-            /** Represents a step in execution of a run. */
+            /**
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [RunStep] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun data(data: JsonField<RunStep>) = apply { this.data = data }
 
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("thread.run.step.completed")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -964,6 +1142,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunStepCompleted].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunStepCompleted =
                 ThreadRunStepCompleted(
                     checkRequired("data", data),
@@ -1006,12 +1196,30 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** Represents a step in execution of a run. */
+        /**
+         * Represents a step in execution of a run.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun data(): RunStep = data.getRequired("data")
 
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("thread.run.step.failed")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
-        /** Represents a step in execution of a run. */
+        /**
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<RunStep> = data
 
         @JsonAnyGetter
@@ -1066,9 +1274,27 @@ private constructor(
             /** Represents a step in execution of a run. */
             fun data(data: RunStep) = data(JsonField.of(data))
 
-            /** Represents a step in execution of a run. */
+            /**
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [RunStep] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun data(data: JsonField<RunStep>) = apply { this.data = data }
 
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("thread.run.step.failed")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1090,6 +1316,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunStepFailed].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunStepFailed =
                 ThreadRunStepFailed(
                     checkRequired("data", data),
@@ -1133,12 +1371,30 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** Represents a step in execution of a run. */
+        /**
+         * Represents a step in execution of a run.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun data(): RunStep = data.getRequired("data")
 
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("thread.run.step.cancelled")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
-        /** Represents a step in execution of a run. */
+        /**
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<RunStep> = data
 
         @JsonAnyGetter
@@ -1193,9 +1449,27 @@ private constructor(
             /** Represents a step in execution of a run. */
             fun data(data: RunStep) = data(JsonField.of(data))
 
-            /** Represents a step in execution of a run. */
+            /**
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [RunStep] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun data(data: JsonField<RunStep>) = apply { this.data = data }
 
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("thread.run.step.cancelled")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1217,6 +1491,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunStepCancelled].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunStepCancelled =
                 ThreadRunStepCancelled(
                     checkRequired("data", data),
@@ -1259,12 +1545,30 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** Represents a step in execution of a run. */
+        /**
+         * Represents a step in execution of a run.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun data(): RunStep = data.getRequired("data")
 
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("thread.run.step.expired")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
-        /** Represents a step in execution of a run. */
+        /**
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<RunStep> = data
 
         @JsonAnyGetter
@@ -1319,9 +1623,27 @@ private constructor(
             /** Represents a step in execution of a run. */
             fun data(data: RunStep) = data(JsonField.of(data))
 
-            /** Represents a step in execution of a run. */
+            /**
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [RunStep] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun data(data: JsonField<RunStep>) = apply { this.data = data }
 
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("thread.run.step.expired")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1343,6 +1665,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunStepExpired].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunStepExpired =
                 ThreadRunStepExpired(
                     checkRequired("data", data),

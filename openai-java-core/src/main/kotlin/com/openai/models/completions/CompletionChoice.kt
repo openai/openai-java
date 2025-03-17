@@ -41,29 +41,58 @@ private constructor(
      * natural stop point or a provided stop sequence, `length` if the maximum number of tokens
      * specified in the request was reached, or `content_filter` if content was omitted due to a
      * flag from our content filters.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun finishReason(): FinishReason = finishReason.getRequired("finish_reason")
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun index(): Long = index.getRequired("index")
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun logprobs(): Optional<Logprobs> = Optional.ofNullable(logprobs.getNullable("logprobs"))
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun text(): String = text.getRequired("text")
 
     /**
-     * The reason the model stopped generating tokens. This will be `stop` if the model hit a
-     * natural stop point or a provided stop sequence, `length` if the maximum number of tokens
-     * specified in the request was reached, or `content_filter` if content was omitted due to a
-     * flag from our content filters.
+     * Returns the raw JSON value of [finishReason].
+     *
+     * Unlike [finishReason], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("finish_reason")
     @ExcludeMissing
     fun _finishReason(): JsonField<FinishReason> = finishReason
 
+    /**
+     * Returns the raw JSON value of [index].
+     *
+     * Unlike [index], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
+    /**
+     * Returns the raw JSON value of [logprobs].
+     *
+     * Unlike [logprobs], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("logprobs") @ExcludeMissing fun _logprobs(): JsonField<Logprobs> = logprobs
 
+    /**
+     * Returns the raw JSON value of [text].
+     *
+     * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
     @JsonAnyGetter
@@ -129,10 +158,11 @@ private constructor(
         fun finishReason(finishReason: FinishReason) = finishReason(JsonField.of(finishReason))
 
         /**
-         * The reason the model stopped generating tokens. This will be `stop` if the model hit a
-         * natural stop point or a provided stop sequence, `length` if the maximum number of tokens
-         * specified in the request was reached, or `content_filter` if content was omitted due to a
-         * flag from our content filters.
+         * Sets [Builder.finishReason] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.finishReason] with a well-typed [FinishReason] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun finishReason(finishReason: JsonField<FinishReason>) = apply {
             this.finishReason = finishReason
@@ -140,16 +170,36 @@ private constructor(
 
         fun index(index: Long) = index(JsonField.of(index))
 
+        /**
+         * Sets [Builder.index] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.index] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun index(index: JsonField<Long>) = apply { this.index = index }
 
         fun logprobs(logprobs: Logprobs?) = logprobs(JsonField.ofNullable(logprobs))
 
+        /** Alias for calling [Builder.logprobs] with `logprobs.orElse(null)`. */
         fun logprobs(logprobs: Optional<Logprobs>) = logprobs(logprobs.getOrNull())
 
+        /**
+         * Sets [Builder.logprobs] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.logprobs] with a well-typed [Logprobs] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun logprobs(logprobs: JsonField<Logprobs>) = apply { this.logprobs = logprobs }
 
         fun text(text: String) = text(JsonField.of(text))
 
+        /**
+         * Sets [Builder.text] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.text] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun text(text: JsonField<String>) = apply { this.text = text }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -171,6 +221,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [CompletionChoice].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .finishReason()
+         * .index()
+         * .logprobs()
+         * .text()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): CompletionChoice =
             CompletionChoice(
                 checkRequired("finishReason", finishReason),
@@ -314,27 +379,64 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun textOffset(): Optional<List<Long>> =
             Optional.ofNullable(textOffset.getNullable("text_offset"))
 
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun tokenLogprobs(): Optional<List<Double>> =
             Optional.ofNullable(tokenLogprobs.getNullable("token_logprobs"))
 
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun tokens(): Optional<List<String>> = Optional.ofNullable(tokens.getNullable("tokens"))
 
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun topLogprobs(): Optional<List<TopLogprob>> =
             Optional.ofNullable(topLogprobs.getNullable("top_logprobs"))
 
+        /**
+         * Returns the raw JSON value of [textOffset].
+         *
+         * Unlike [textOffset], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("text_offset")
         @ExcludeMissing
         fun _textOffset(): JsonField<List<Long>> = textOffset
 
+        /**
+         * Returns the raw JSON value of [tokenLogprobs].
+         *
+         * Unlike [tokenLogprobs], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("token_logprobs")
         @ExcludeMissing
         fun _tokenLogprobs(): JsonField<List<Double>> = tokenLogprobs
 
+        /**
+         * Returns the raw JSON value of [tokens].
+         *
+         * Unlike [tokens], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("tokens") @ExcludeMissing fun _tokens(): JsonField<List<String>> = tokens
 
+        /**
+         * Returns the raw JSON value of [topLogprobs].
+         *
+         * Unlike [topLogprobs], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("top_logprobs")
         @ExcludeMissing
         fun _topLogprobs(): JsonField<List<TopLogprob>> = topLogprobs
@@ -385,10 +487,22 @@ private constructor(
 
             fun textOffset(textOffset: List<Long>) = textOffset(JsonField.of(textOffset))
 
+            /**
+             * Sets [Builder.textOffset] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.textOffset] with a well-typed `List<Long>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun textOffset(textOffset: JsonField<List<Long>>) = apply {
                 this.textOffset = textOffset.map { it.toMutableList() }
             }
 
+            /**
+             * Adds a single [Long] to [Builder.textOffset].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addTextOffset(textOffset: Long) = apply {
                 this.textOffset =
                     (this.textOffset ?: JsonField.of(mutableListOf())).also {
@@ -399,10 +513,22 @@ private constructor(
             fun tokenLogprobs(tokenLogprobs: List<Double>) =
                 tokenLogprobs(JsonField.of(tokenLogprobs))
 
+            /**
+             * Sets [Builder.tokenLogprobs] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.tokenLogprobs] with a well-typed `List<Double>`
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
             fun tokenLogprobs(tokenLogprobs: JsonField<List<Double>>) = apply {
                 this.tokenLogprobs = tokenLogprobs.map { it.toMutableList() }
             }
 
+            /**
+             * Adds a single [Double] to [tokenLogprobs].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addTokenLogprob(tokenLogprob: Double) = apply {
                 tokenLogprobs =
                     (tokenLogprobs ?: JsonField.of(mutableListOf())).also {
@@ -412,10 +538,22 @@ private constructor(
 
             fun tokens(tokens: List<String>) = tokens(JsonField.of(tokens))
 
+            /**
+             * Sets [Builder.tokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.tokens] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun tokens(tokens: JsonField<List<String>>) = apply {
                 this.tokens = tokens.map { it.toMutableList() }
             }
 
+            /**
+             * Adds a single [String] to [tokens].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addToken(token: String) = apply {
                 tokens =
                     (tokens ?: JsonField.of(mutableListOf())).also {
@@ -425,10 +563,22 @@ private constructor(
 
             fun topLogprobs(topLogprobs: List<TopLogprob>) = topLogprobs(JsonField.of(topLogprobs))
 
+            /**
+             * Sets [Builder.topLogprobs] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.topLogprobs] with a well-typed `List<TopLogprob>`
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
             fun topLogprobs(topLogprobs: JsonField<List<TopLogprob>>) = apply {
                 this.topLogprobs = topLogprobs.map { it.toMutableList() }
             }
 
+            /**
+             * Adds a single [TopLogprob] to [topLogprobs].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addTopLogprob(topLogprob: TopLogprob) = apply {
                 topLogprobs =
                     (topLogprobs ?: JsonField.of(mutableListOf())).also {
@@ -455,6 +605,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Logprobs].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Logprobs =
                 Logprobs(
                     (textOffset ?: JsonMissing.of()).map { it.toImmutable() },
@@ -527,6 +682,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [TopLogprob].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): TopLogprob = TopLogprob(additionalProperties.toImmutable())
             }
 

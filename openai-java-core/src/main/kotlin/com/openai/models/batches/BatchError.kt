@@ -13,6 +13,7 @@ import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -30,28 +31,64 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** An error code identifying the error type. */
+    /**
+     * An error code identifying the error type.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun code(): Optional<String> = Optional.ofNullable(code.getNullable("code"))
 
-    /** The line number of the input file where the error occurred, if applicable. */
+    /**
+     * The line number of the input file where the error occurred, if applicable.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun line(): Optional<Long> = Optional.ofNullable(line.getNullable("line"))
 
-    /** A human-readable message providing more details about the error. */
+    /**
+     * A human-readable message providing more details about the error.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun message(): Optional<String> = Optional.ofNullable(message.getNullable("message"))
 
-    /** The name of the parameter that caused the error, if applicable. */
+    /**
+     * The name of the parameter that caused the error, if applicable.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun param(): Optional<String> = Optional.ofNullable(param.getNullable("param"))
 
-    /** An error code identifying the error type. */
+    /**
+     * Returns the raw JSON value of [code].
+     *
+     * Unlike [code], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("code") @ExcludeMissing fun _code(): JsonField<String> = code
 
-    /** The line number of the input file where the error occurred, if applicable. */
+    /**
+     * Returns the raw JSON value of [line].
+     *
+     * Unlike [line], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("line") @ExcludeMissing fun _line(): JsonField<Long> = line
 
-    /** A human-readable message providing more details about the error. */
+    /**
+     * Returns the raw JSON value of [message].
+     *
+     * Unlike [message], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
-    /** The name of the parameter that caused the error, if applicable. */
+    /**
+     * Returns the raw JSON value of [param].
+     *
+     * Unlike [param], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("param") @ExcludeMissing fun _param(): JsonField<String> = param
 
     @JsonAnyGetter
@@ -101,34 +138,58 @@ private constructor(
         /** An error code identifying the error type. */
         fun code(code: String) = code(JsonField.of(code))
 
-        /** An error code identifying the error type. */
+        /**
+         * Sets [Builder.code] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.code] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun code(code: JsonField<String>) = apply { this.code = code }
 
         /** The line number of the input file where the error occurred, if applicable. */
         fun line(line: Long?) = line(JsonField.ofNullable(line))
 
-        /** The line number of the input file where the error occurred, if applicable. */
+        /**
+         * Alias for [Builder.line].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
         fun line(line: Long) = line(line as Long?)
 
-        /** The line number of the input file where the error occurred, if applicable. */
+        /** Alias for calling [Builder.line] with `line.orElse(null)`. */
         fun line(line: Optional<Long>) = line(line.getOrNull())
 
-        /** The line number of the input file where the error occurred, if applicable. */
+        /**
+         * Sets [Builder.line] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.line] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun line(line: JsonField<Long>) = apply { this.line = line }
 
         /** A human-readable message providing more details about the error. */
         fun message(message: String) = message(JsonField.of(message))
 
-        /** A human-readable message providing more details about the error. */
+        /**
+         * Sets [Builder.message] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.message] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun message(message: JsonField<String>) = apply { this.message = message }
 
         /** The name of the parameter that caused the error, if applicable. */
         fun param(param: String?) = param(JsonField.ofNullable(param))
 
-        /** The name of the parameter that caused the error, if applicable. */
+        /** Alias for calling [Builder.param] with `param.orElse(null)`. */
         fun param(param: Optional<String>) = param(param.getOrNull())
 
-        /** The name of the parameter that caused the error, if applicable. */
+        /**
+         * Sets [Builder.param] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.param] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun param(param: JsonField<String>) = apply { this.param = param }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -150,6 +211,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [BatchError].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): BatchError =
             BatchError(code, line, message, param, additionalProperties.toImmutable())
     }

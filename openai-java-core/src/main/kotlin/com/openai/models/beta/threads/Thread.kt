@@ -43,10 +43,20 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The identifier, which can be referenced in API endpoints. */
+    /**
+     * The identifier, which can be referenced in API endpoints.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** The Unix timestamp (in seconds) for when the thread was created. */
+    /**
+     * The Unix timestamp (in seconds) for when the thread was created.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun createdAt(): Long = createdAt.getRequired("created_at")
 
     /**
@@ -56,40 +66,61 @@ private constructor(
      *
      * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
      * length of 512 characters.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
 
-    /** The object type, which is always `thread`. */
+    /**
+     * The object type, which is always `thread`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("thread")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * A set of resources that are made available to the assistant's tools in this thread. The
      * resources are specific to the type of tool. For example, the `code_interpreter` tool requires
      * a list of file IDs, while the `file_search` tool requires a list of vector store IDs.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun toolResources(): Optional<ToolResources> =
         Optional.ofNullable(toolResources.getNullable("tool_resources"))
 
-    /** The identifier, which can be referenced in API endpoints. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** The Unix timestamp (in seconds) for when the thread was created. */
+    /**
+     * Returns the raw JSON value of [createdAt].
+     *
+     * Unlike [createdAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
     /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard.
+     * Returns the raw JSON value of [metadata].
      *
-     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
-     * length of 512 characters.
+     * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
     /**
-     * A set of resources that are made available to the assistant's tools in this thread. The
-     * resources are specific to the type of tool. For example, the `code_interpreter` tool requires
-     * a list of file IDs, while the `file_search` tool requires a list of vector store IDs.
+     * Returns the raw JSON value of [toolResources].
+     *
+     * Unlike [toolResources], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("tool_resources")
     @ExcludeMissing
@@ -159,13 +190,23 @@ private constructor(
         /** The identifier, which can be referenced in API endpoints. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The identifier, which can be referenced in API endpoints. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The Unix timestamp (in seconds) for when the thread was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
-        /** The Unix timestamp (in seconds) for when the thread was created. */
+        /**
+         * Sets [Builder.createdAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.createdAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /**
@@ -178,27 +219,30 @@ private constructor(
          */
         fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
 
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
-         *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
-         */
+        /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
         fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
+         * Sets [Builder.metadata] to an arbitrary JSON value.
          *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
+         * You should usually call [Builder.metadata] with a well-typed [Metadata] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
-        /** The object type, which is always `thread`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("thread")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /**
@@ -210,20 +254,16 @@ private constructor(
         fun toolResources(toolResources: ToolResources?) =
             toolResources(JsonField.ofNullable(toolResources))
 
-        /**
-         * A set of resources that are made available to the assistant's tools in this thread. The
-         * resources are specific to the type of tool. For example, the `code_interpreter` tool
-         * requires a list of file IDs, while the `file_search` tool requires a list of vector store
-         * IDs.
-         */
+        /** Alias for calling [Builder.toolResources] with `toolResources.orElse(null)`. */
         fun toolResources(toolResources: Optional<ToolResources>) =
             toolResources(toolResources.getOrNull())
 
         /**
-         * A set of resources that are made available to the assistant's tools in this thread. The
-         * resources are specific to the type of tool. For example, the `code_interpreter` tool
-         * requires a list of file IDs, while the `file_search` tool requires a list of vector store
-         * IDs.
+         * Sets [Builder.toolResources] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.toolResources] with a well-typed [ToolResources] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun toolResources(toolResources: JsonField<ToolResources>) = apply {
             this.toolResources = toolResources
@@ -248,6 +288,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [Thread].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .metadata()
+         * .toolResources()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): Thread =
             Thread(
                 checkRequired("id", id),
@@ -278,16 +333,35 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun codeInterpreter(): Optional<CodeInterpreter> =
             Optional.ofNullable(codeInterpreter.getNullable("code_interpreter"))
 
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun fileSearch(): Optional<FileSearch> =
             Optional.ofNullable(fileSearch.getNullable("file_search"))
 
+        /**
+         * Returns the raw JSON value of [codeInterpreter].
+         *
+         * Unlike [codeInterpreter], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("code_interpreter")
         @ExcludeMissing
         fun _codeInterpreter(): JsonField<CodeInterpreter> = codeInterpreter
 
+        /**
+         * Returns the raw JSON value of [fileSearch].
+         *
+         * Unlike [fileSearch], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("file_search")
         @ExcludeMissing
         fun _fileSearch(): JsonField<FileSearch> = fileSearch
@@ -333,12 +407,26 @@ private constructor(
             fun codeInterpreter(codeInterpreter: CodeInterpreter) =
                 codeInterpreter(JsonField.of(codeInterpreter))
 
+            /**
+             * Sets [Builder.codeInterpreter] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.codeInterpreter] with a well-typed [CodeInterpreter]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
             fun codeInterpreter(codeInterpreter: JsonField<CodeInterpreter>) = apply {
                 this.codeInterpreter = codeInterpreter
             }
 
             fun fileSearch(fileSearch: FileSearch) = fileSearch(JsonField.of(fileSearch))
 
+            /**
+             * Sets [Builder.fileSearch] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.fileSearch] with a well-typed [FileSearch] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun fileSearch(fileSearch: JsonField<FileSearch>) = apply {
                 this.fileSearch = fileSearch
             }
@@ -362,6 +450,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ToolResources].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): ToolResources =
                 ToolResources(codeInterpreter, fileSearch, additionalProperties.toImmutable())
         }
@@ -381,14 +474,17 @@ private constructor(
              * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
              * available to the `code_interpreter` tool. There can be a maximum of 20 files
              * associated with the tool.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
              */
             fun fileIds(): Optional<List<String>> =
                 Optional.ofNullable(fileIds.getNullable("file_ids"))
 
             /**
-             * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
-             * available to the `code_interpreter` tool. There can be a maximum of 20 files
-             * associated with the tool.
+             * Returns the raw JSON value of [fileIds].
+             *
+             * Unlike [fileIds], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("file_ids")
             @ExcludeMissing
@@ -437,18 +533,20 @@ private constructor(
                 fun fileIds(fileIds: List<String>) = fileIds(JsonField.of(fileIds))
 
                 /**
-                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
-                 * available to the `code_interpreter` tool. There can be a maximum of 20 files
-                 * associated with the tool.
+                 * Sets [Builder.fileIds] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.fileIds] with a well-typed `List<String>` value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
                  */
                 fun fileIds(fileIds: JsonField<List<String>>) = apply {
                     this.fileIds = fileIds.map { it.toMutableList() }
                 }
 
                 /**
-                 * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
-                 * available to the `code_interpreter` tool. There can be a maximum of 20 files
-                 * associated with the tool.
+                 * Adds a single [String] to [fileIds].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
                  */
                 fun addFileId(fileId: String) = apply {
                     fileIds =
@@ -479,6 +577,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [CodeInterpreter].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): CodeInterpreter =
                     CodeInterpreter(
                         (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
@@ -520,15 +623,18 @@ private constructor(
              * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
              * attached to this thread. There can be a maximum of 1 vector store attached to the
              * thread.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
              */
             fun vectorStoreIds(): Optional<List<String>> =
                 Optional.ofNullable(vectorStoreIds.getNullable("vector_store_ids"))
 
             /**
-             * The
-             * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
-             * attached to this thread. There can be a maximum of 1 vector store attached to the
-             * thread.
+             * Returns the raw JSON value of [vectorStoreIds].
+             *
+             * Unlike [vectorStoreIds], this method doesn't throw if the JSON field has an
+             * unexpected type.
              */
             @JsonProperty("vector_store_ids")
             @ExcludeMissing
@@ -579,20 +685,20 @@ private constructor(
                     vectorStoreIds(JsonField.of(vectorStoreIds))
 
                 /**
-                 * The
-                 * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
-                 * attached to this thread. There can be a maximum of 1 vector store attached to the
-                 * thread.
+                 * Sets [Builder.vectorStoreIds] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.vectorStoreIds] with a well-typed `List<String>`
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
                  */
                 fun vectorStoreIds(vectorStoreIds: JsonField<List<String>>) = apply {
                     this.vectorStoreIds = vectorStoreIds.map { it.toMutableList() }
                 }
 
                 /**
-                 * The
-                 * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object)
-                 * attached to this thread. There can be a maximum of 1 vector store attached to the
-                 * thread.
+                 * Adds a single [String] to [vectorStoreIds].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
                  */
                 fun addVectorStoreId(vectorStoreId: String) = apply {
                     vectorStoreIds =
@@ -623,6 +729,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [FileSearch].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): FileSearch =
                     FileSearch(
                         (vectorStoreIds ?: JsonMissing.of()).map { it.toImmutable() },

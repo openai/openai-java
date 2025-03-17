@@ -32,22 +32,51 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** A tool call to run code. */
+    /**
+     * A tool call to run code.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun codeInterpreterCall(): ResponseCodeInterpreterToolCall =
         codeInterpreterCall.getRequired("code_interpreter_call")
 
-    /** The index of the output item that the code interpreter call is in progress. */
+    /**
+     * The index of the output item that the code interpreter call is in progress.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun outputIndex(): Long = outputIndex.getRequired("output_index")
 
-    /** The type of the event. Always `response.code_interpreter_call.interpreting`. */
+    /**
+     * The type of the event. Always `response.code_interpreter_call.interpreting`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("response.code_interpreter_call.interpreting")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** A tool call to run code. */
+    /**
+     * Returns the raw JSON value of [codeInterpreterCall].
+     *
+     * Unlike [codeInterpreterCall], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
     @JsonProperty("code_interpreter_call")
     @ExcludeMissing
     fun _codeInterpreterCall(): JsonField<ResponseCodeInterpreterToolCall> = codeInterpreterCall
 
-    /** The index of the output item that the code interpreter call is in progress. */
+    /**
+     * Returns the raw JSON value of [outputIndex].
+     *
+     * Unlike [outputIndex], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("output_index") @ExcludeMissing fun _outputIndex(): JsonField<Long> = outputIndex
 
     @JsonAnyGetter
@@ -112,7 +141,13 @@ private constructor(
         fun codeInterpreterCall(codeInterpreterCall: ResponseCodeInterpreterToolCall) =
             codeInterpreterCall(JsonField.of(codeInterpreterCall))
 
-        /** A tool call to run code. */
+        /**
+         * Sets [Builder.codeInterpreterCall] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.codeInterpreterCall] with a well-typed
+         * [ResponseCodeInterpreterToolCall] value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
+         */
         fun codeInterpreterCall(codeInterpreterCall: JsonField<ResponseCodeInterpreterToolCall>) =
             apply {
                 this.codeInterpreterCall = codeInterpreterCall
@@ -121,10 +156,27 @@ private constructor(
         /** The index of the output item that the code interpreter call is in progress. */
         fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))
 
-        /** The index of the output item that the code interpreter call is in progress. */
+        /**
+         * Sets [Builder.outputIndex] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.outputIndex] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun outputIndex(outputIndex: JsonField<Long>) = apply { this.outputIndex = outputIndex }
 
-        /** The type of the event. Always `response.code_interpreter_call.interpreting`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("response.code_interpreter_call.interpreting")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -146,6 +198,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseCodeInterpreterCallInterpretingEvent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .codeInterpreterCall()
+         * .outputIndex()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseCodeInterpreterCallInterpretingEvent =
             ResponseCodeInterpreterCallInterpretingEvent(
                 checkRequired("codeInterpreterCall", codeInterpreterCall),

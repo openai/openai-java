@@ -35,25 +35,62 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The type of the input item. Always `input_file`. */
+    /**
+     * The type of the input item. Always `input_file`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("input_file")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** The content of the file to be sent to the model. */
+    /**
+     * The content of the file to be sent to the model.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun fileData(): Optional<String> = Optional.ofNullable(fileData.getNullable("file_data"))
 
-    /** The ID of the file to be sent to the model. */
+    /**
+     * The ID of the file to be sent to the model.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
 
-    /** The name of the file to be sent to the model. */
+    /**
+     * The name of the file to be sent to the model.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun filename(): Optional<String> = Optional.ofNullable(filename.getNullable("filename"))
 
-    /** The content of the file to be sent to the model. */
+    /**
+     * Returns the raw JSON value of [fileData].
+     *
+     * Unlike [fileData], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("file_data") @ExcludeMissing fun _fileData(): JsonField<String> = fileData
 
-    /** The ID of the file to be sent to the model. */
+    /**
+     * Returns the raw JSON value of [fileId].
+     *
+     * Unlike [fileId], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
-    /** The name of the file to be sent to the model. */
+    /**
+     * Returns the raw JSON value of [filename].
+     *
+     * Unlike [filename], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("filename") @ExcludeMissing fun _filename(): JsonField<String> = filename
 
     @JsonAnyGetter
@@ -104,25 +141,51 @@ private constructor(
             additionalProperties = responseInputFile.additionalProperties.toMutableMap()
         }
 
-        /** The type of the input item. Always `input_file`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("input_file")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         /** The content of the file to be sent to the model. */
         fun fileData(fileData: String) = fileData(JsonField.of(fileData))
 
-        /** The content of the file to be sent to the model. */
+        /**
+         * Sets [Builder.fileData] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.fileData] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun fileData(fileData: JsonField<String>) = apply { this.fileData = fileData }
 
         /** The ID of the file to be sent to the model. */
         fun fileId(fileId: String) = fileId(JsonField.of(fileId))
 
-        /** The ID of the file to be sent to the model. */
+        /**
+         * Sets [Builder.fileId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.fileId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
 
         /** The name of the file to be sent to the model. */
         fun filename(filename: String) = filename(JsonField.of(filename))
 
-        /** The name of the file to be sent to the model. */
+        /**
+         * Sets [Builder.filename] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.filename] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun filename(filename: JsonField<String>) = apply { this.filename = filename }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -144,6 +207,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseInputFile].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): ResponseInputFile =
             ResponseInputFile(type, fileData, fileId, filename, additionalProperties.toImmutable())
     }

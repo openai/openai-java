@@ -6,7 +6,7 @@ import com.openai.core.http.QueryParams
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class JobListParamsTest {
+internal class JobListParamsTest {
 
     @Test
     fun create() {

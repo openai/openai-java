@@ -32,19 +32,47 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** Unique ID for the output item associated with the web search call. */
+    /**
+     * Unique ID for the output item associated with the web search call.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun itemId(): String = itemId.getRequired("item_id")
 
-    /** The index of the output item that the web search call is associated with. */
+    /**
+     * The index of the output item that the web search call is associated with.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun outputIndex(): Long = outputIndex.getRequired("output_index")
 
-    /** The type of the event. Always `response.web_search_call.completed`. */
+    /**
+     * The type of the event. Always `response.web_search_call.completed`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("response.web_search_call.completed")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** Unique ID for the output item associated with the web search call. */
+    /**
+     * Returns the raw JSON value of [itemId].
+     *
+     * Unlike [itemId], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("item_id") @ExcludeMissing fun _itemId(): JsonField<String> = itemId
 
-    /** The index of the output item that the web search call is associated with. */
+    /**
+     * Returns the raw JSON value of [outputIndex].
+     *
+     * Unlike [outputIndex], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("output_index") @ExcludeMissing fun _outputIndex(): JsonField<Long> = outputIndex
 
     @JsonAnyGetter
@@ -107,16 +135,38 @@ private constructor(
         /** Unique ID for the output item associated with the web search call. */
         fun itemId(itemId: String) = itemId(JsonField.of(itemId))
 
-        /** Unique ID for the output item associated with the web search call. */
+        /**
+         * Sets [Builder.itemId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.itemId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun itemId(itemId: JsonField<String>) = apply { this.itemId = itemId }
 
         /** The index of the output item that the web search call is associated with. */
         fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))
 
-        /** The index of the output item that the web search call is associated with. */
+        /**
+         * Sets [Builder.outputIndex] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.outputIndex] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun outputIndex(outputIndex: JsonField<Long>) = apply { this.outputIndex = outputIndex }
 
-        /** The type of the event. Always `response.web_search_call.completed`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("response.web_search_call.completed")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -138,6 +188,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseWebSearchCallCompletedEvent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .itemId()
+         * .outputIndex()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseWebSearchCallCompletedEvent =
             ResponseWebSearchCallCompletedEvent(
                 checkRequired("itemId", itemId),

@@ -42,34 +42,89 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The index of the annotation in the text content part. */
+    /**
+     * The index of the annotation in the text content part.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun index(): Long = index.getRequired("index")
 
-    /** Always `file_citation`. */
+    /**
+     * Always `file_citation`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("file_citation")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun endIndex(): Optional<Long> = Optional.ofNullable(endIndex.getNullable("end_index"))
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun fileCitation(): Optional<FileCitation> =
         Optional.ofNullable(fileCitation.getNullable("file_citation"))
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun startIndex(): Optional<Long> = Optional.ofNullable(startIndex.getNullable("start_index"))
 
-    /** The text in the message content that needs to be replaced. */
+    /**
+     * The text in the message content that needs to be replaced.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun text(): Optional<String> = Optional.ofNullable(text.getNullable("text"))
 
-    /** The index of the annotation in the text content part. */
+    /**
+     * Returns the raw JSON value of [index].
+     *
+     * Unlike [index], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
+    /**
+     * Returns the raw JSON value of [endIndex].
+     *
+     * Unlike [endIndex], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("end_index") @ExcludeMissing fun _endIndex(): JsonField<Long> = endIndex
 
+    /**
+     * Returns the raw JSON value of [fileCitation].
+     *
+     * Unlike [fileCitation], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("file_citation")
     @ExcludeMissing
     fun _fileCitation(): JsonField<FileCitation> = fileCitation
 
+    /**
+     * Returns the raw JSON value of [startIndex].
+     *
+     * Unlike [startIndex], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("start_index") @ExcludeMissing fun _startIndex(): JsonField<Long> = startIndex
 
-    /** The text in the message content that needs to be replaced. */
+    /**
+     * Returns the raw JSON value of [text].
+     *
+     * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
     @JsonAnyGetter
@@ -136,30 +191,70 @@ private constructor(
         /** The index of the annotation in the text content part. */
         fun index(index: Long) = index(JsonField.of(index))
 
-        /** The index of the annotation in the text content part. */
+        /**
+         * Sets [Builder.index] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.index] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun index(index: JsonField<Long>) = apply { this.index = index }
 
-        /** Always `file_citation`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("file_citation")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun endIndex(endIndex: Long) = endIndex(JsonField.of(endIndex))
 
+        /**
+         * Sets [Builder.endIndex] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.endIndex] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun endIndex(endIndex: JsonField<Long>) = apply { this.endIndex = endIndex }
 
         fun fileCitation(fileCitation: FileCitation) = fileCitation(JsonField.of(fileCitation))
 
+        /**
+         * Sets [Builder.fileCitation] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.fileCitation] with a well-typed [FileCitation] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun fileCitation(fileCitation: JsonField<FileCitation>) = apply {
             this.fileCitation = fileCitation
         }
 
         fun startIndex(startIndex: Long) = startIndex(JsonField.of(startIndex))
 
+        /**
+         * Sets [Builder.startIndex] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.startIndex] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun startIndex(startIndex: JsonField<Long>) = apply { this.startIndex = startIndex }
 
         /** The text in the message content that needs to be replaced. */
         fun text(text: String) = text(JsonField.of(text))
 
-        /** The text in the message content that needs to be replaced. */
+        /**
+         * Sets [Builder.text] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.text] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun text(text: JsonField<String>) = apply { this.text = text }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -181,6 +276,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FileCitationDeltaAnnotation].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .index()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FileCitationDeltaAnnotation =
             FileCitationDeltaAnnotation(
                 checkRequired("index", index),
@@ -207,16 +314,34 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The ID of the specific File the citation is from. */
+        /**
+         * The ID of the specific File the citation is from.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
 
-        /** The specific quote in the file. */
+        /**
+         * The specific quote in the file.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun quote(): Optional<String> = Optional.ofNullable(quote.getNullable("quote"))
 
-        /** The ID of the specific File the citation is from. */
+        /**
+         * Returns the raw JSON value of [fileId].
+         *
+         * Unlike [fileId], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
-        /** The specific quote in the file. */
+        /**
+         * Returns the raw JSON value of [quote].
+         *
+         * Unlike [quote], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("quote") @ExcludeMissing fun _quote(): JsonField<String> = quote
 
         @JsonAnyGetter
@@ -260,13 +385,25 @@ private constructor(
             /** The ID of the specific File the citation is from. */
             fun fileId(fileId: String) = fileId(JsonField.of(fileId))
 
-            /** The ID of the specific File the citation is from. */
+            /**
+             * Sets [Builder.fileId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.fileId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
 
             /** The specific quote in the file. */
             fun quote(quote: String) = quote(JsonField.of(quote))
 
-            /** The specific quote in the file. */
+            /**
+             * Sets [Builder.quote] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.quote] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun quote(quote: JsonField<String>) = apply { this.quote = quote }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -288,6 +425,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [FileCitation].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): FileCitation =
                 FileCitation(fileId, quote, additionalProperties.toImmutable())
         }

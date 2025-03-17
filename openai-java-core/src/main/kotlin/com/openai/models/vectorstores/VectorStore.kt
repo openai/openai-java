@@ -56,15 +56,34 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The identifier, which can be referenced in API endpoints. */
+    /**
+     * The identifier, which can be referenced in API endpoints.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** The Unix timestamp (in seconds) for when the vector store was created. */
+    /**
+     * The Unix timestamp (in seconds) for when the vector store was created.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun createdAt(): Long = createdAt.getRequired("created_at")
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun fileCounts(): FileCounts = fileCounts.getRequired("file_counts")
 
-    /** The Unix timestamp (in seconds) for when the vector store was last active. */
+    /**
+     * The Unix timestamp (in seconds) for when the vector store was last active.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun lastActiveAt(): Optional<Long> =
         Optional.ofNullable(lastActiveAt.getNullable("last_active_at"))
 
@@ -75,74 +94,141 @@ private constructor(
      *
      * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
      * length of 512 characters.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
 
-    /** The name of the vector store. */
+    /**
+     * The name of the vector store.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun name(): String = name.getRequired("name")
 
-    /** The object type, which is always `vector_store`. */
+    /**
+     * The object type, which is always `vector_store`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("vector_store")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * The status of the vector store, which can be either `expired`, `in_progress`, or `completed`.
      * A status of `completed` indicates that the vector store is ready for use.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun status(): Status = status.getRequired("status")
 
-    /** The total number of bytes used by the files in the vector store. */
+    /**
+     * The total number of bytes used by the files in the vector store.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun usageBytes(): Long = usageBytes.getRequired("usage_bytes")
 
-    /** The expiration policy for a vector store. */
+    /**
+     * The expiration policy for a vector store.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun expiresAfter(): Optional<ExpiresAfter> =
         Optional.ofNullable(expiresAfter.getNullable("expires_after"))
 
-    /** The Unix timestamp (in seconds) for when the vector store will expire. */
+    /**
+     * The Unix timestamp (in seconds) for when the vector store will expire.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun expiresAt(): Optional<Long> = Optional.ofNullable(expiresAt.getNullable("expires_at"))
 
-    /** The identifier, which can be referenced in API endpoints. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** The Unix timestamp (in seconds) for when the vector store was created. */
+    /**
+     * Returns the raw JSON value of [createdAt].
+     *
+     * Unlike [createdAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
+    /**
+     * Returns the raw JSON value of [fileCounts].
+     *
+     * Unlike [fileCounts], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("file_counts")
     @ExcludeMissing
     fun _fileCounts(): JsonField<FileCounts> = fileCounts
 
-    /** The Unix timestamp (in seconds) for when the vector store was last active. */
+    /**
+     * Returns the raw JSON value of [lastActiveAt].
+     *
+     * Unlike [lastActiveAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("last_active_at")
     @ExcludeMissing
     fun _lastActiveAt(): JsonField<Long> = lastActiveAt
 
     /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard.
+     * Returns the raw JSON value of [metadata].
      *
-     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
-     * length of 512 characters.
+     * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
-    /** The name of the vector store. */
+    /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
     /**
-     * The status of the vector store, which can be either `expired`, `in_progress`, or `completed`.
-     * A status of `completed` indicates that the vector store is ready for use.
+     * Returns the raw JSON value of [status].
+     *
+     * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
-    /** The total number of bytes used by the files in the vector store. */
+    /**
+     * Returns the raw JSON value of [usageBytes].
+     *
+     * Unlike [usageBytes], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("usage_bytes") @ExcludeMissing fun _usageBytes(): JsonField<Long> = usageBytes
 
-    /** The expiration policy for a vector store. */
+    /**
+     * Returns the raw JSON value of [expiresAfter].
+     *
+     * Unlike [expiresAfter], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("expires_after")
     @ExcludeMissing
     fun _expiresAfter(): JsonField<ExpiresAfter> = expiresAfter
 
-    /** The Unix timestamp (in seconds) for when the vector store will expire. */
+    /**
+     * Returns the raw JSON value of [expiresAt].
+     *
+     * Unlike [expiresAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt(): JsonField<Long> = expiresAt
 
     @JsonAnyGetter
@@ -231,29 +317,56 @@ private constructor(
         /** The identifier, which can be referenced in API endpoints. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The identifier, which can be referenced in API endpoints. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The Unix timestamp (in seconds) for when the vector store was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
-        /** The Unix timestamp (in seconds) for when the vector store was created. */
+        /**
+         * Sets [Builder.createdAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.createdAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         fun fileCounts(fileCounts: FileCounts) = fileCounts(JsonField.of(fileCounts))
 
+        /**
+         * Sets [Builder.fileCounts] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.fileCounts] with a well-typed [FileCounts] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun fileCounts(fileCounts: JsonField<FileCounts>) = apply { this.fileCounts = fileCounts }
 
         /** The Unix timestamp (in seconds) for when the vector store was last active. */
         fun lastActiveAt(lastActiveAt: Long?) = lastActiveAt(JsonField.ofNullable(lastActiveAt))
 
-        /** The Unix timestamp (in seconds) for when the vector store was last active. */
+        /**
+         * Alias for [Builder.lastActiveAt].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
         fun lastActiveAt(lastActiveAt: Long) = lastActiveAt(lastActiveAt as Long?)
 
-        /** The Unix timestamp (in seconds) for when the vector store was last active. */
+        /** Alias for calling [Builder.lastActiveAt] with `lastActiveAt.orElse(null)`. */
         fun lastActiveAt(lastActiveAt: Optional<Long>) = lastActiveAt(lastActiveAt.getOrNull())
 
-        /** The Unix timestamp (in seconds) for when the vector store was last active. */
+        /**
+         * Sets [Builder.lastActiveAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.lastActiveAt] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun lastActiveAt(lastActiveAt: JsonField<Long>) = apply { this.lastActiveAt = lastActiveAt }
 
         /**
@@ -266,33 +379,41 @@ private constructor(
          */
         fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
 
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
-         *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
-         */
+        /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
         fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
+         * Sets [Builder.metadata] to an arbitrary JSON value.
          *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
+         * You should usually call [Builder.metadata] with a well-typed [Metadata] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
         /** The name of the vector store. */
         fun name(name: String) = name(JsonField.of(name))
 
-        /** The name of the vector store. */
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun name(name: JsonField<String>) = apply { this.name = name }
 
-        /** The object type, which is always `vector_store`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("vector_store")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /**
@@ -302,21 +423,34 @@ private constructor(
         fun status(status: Status) = status(JsonField.of(status))
 
         /**
-         * The status of the vector store, which can be either `expired`, `in_progress`, or
-         * `completed`. A status of `completed` indicates that the vector store is ready for use.
+         * Sets [Builder.status] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
         /** The total number of bytes used by the files in the vector store. */
         fun usageBytes(usageBytes: Long) = usageBytes(JsonField.of(usageBytes))
 
-        /** The total number of bytes used by the files in the vector store. */
+        /**
+         * Sets [Builder.usageBytes] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.usageBytes] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun usageBytes(usageBytes: JsonField<Long>) = apply { this.usageBytes = usageBytes }
 
         /** The expiration policy for a vector store. */
         fun expiresAfter(expiresAfter: ExpiresAfter) = expiresAfter(JsonField.of(expiresAfter))
 
-        /** The expiration policy for a vector store. */
+        /**
+         * Sets [Builder.expiresAfter] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.expiresAfter] with a well-typed [ExpiresAfter] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun expiresAfter(expiresAfter: JsonField<ExpiresAfter>) = apply {
             this.expiresAfter = expiresAfter
         }
@@ -324,13 +458,22 @@ private constructor(
         /** The Unix timestamp (in seconds) for when the vector store will expire. */
         fun expiresAt(expiresAt: Long?) = expiresAt(JsonField.ofNullable(expiresAt))
 
-        /** The Unix timestamp (in seconds) for when the vector store will expire. */
+        /**
+         * Alias for [Builder.expiresAt].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
         fun expiresAt(expiresAt: Long) = expiresAt(expiresAt as Long?)
 
-        /** The Unix timestamp (in seconds) for when the vector store will expire. */
+        /** Alias for calling [Builder.expiresAt] with `expiresAt.orElse(null)`. */
         fun expiresAt(expiresAt: Optional<Long>) = expiresAt(expiresAt.getOrNull())
 
-        /** The Unix timestamp (in seconds) for when the vector store will expire. */
+        /**
+         * Sets [Builder.expiresAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.expiresAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -352,6 +495,25 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [VectorStore].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .fileCounts()
+         * .lastActiveAt()
+         * .metadata()
+         * .name()
+         * .status()
+         * .usageBytes()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): VectorStore =
             VectorStore(
                 checkRequired("id", id),
@@ -392,34 +554,79 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The number of files that were cancelled. */
+        /**
+         * The number of files that were cancelled.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun cancelled(): Long = cancelled.getRequired("cancelled")
 
-        /** The number of files that have been successfully processed. */
+        /**
+         * The number of files that have been successfully processed.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun completed(): Long = completed.getRequired("completed")
 
-        /** The number of files that have failed to process. */
+        /**
+         * The number of files that have failed to process.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun failed(): Long = failed.getRequired("failed")
 
-        /** The number of files that are currently being processed. */
+        /**
+         * The number of files that are currently being processed.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun inProgress(): Long = inProgress.getRequired("in_progress")
 
-        /** The total number of files. */
+        /**
+         * The total number of files.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun total(): Long = total.getRequired("total")
 
-        /** The number of files that were cancelled. */
+        /**
+         * Returns the raw JSON value of [cancelled].
+         *
+         * Unlike [cancelled], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("cancelled") @ExcludeMissing fun _cancelled(): JsonField<Long> = cancelled
 
-        /** The number of files that have been successfully processed. */
+        /**
+         * Returns the raw JSON value of [completed].
+         *
+         * Unlike [completed], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("completed") @ExcludeMissing fun _completed(): JsonField<Long> = completed
 
-        /** The number of files that have failed to process. */
+        /**
+         * Returns the raw JSON value of [failed].
+         *
+         * Unlike [failed], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("failed") @ExcludeMissing fun _failed(): JsonField<Long> = failed
 
-        /** The number of files that are currently being processed. */
+        /**
+         * Returns the raw JSON value of [inProgress].
+         *
+         * Unlike [inProgress], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("in_progress") @ExcludeMissing fun _inProgress(): JsonField<Long> = inProgress
 
-        /** The total number of files. */
+        /**
+         * Returns the raw JSON value of [total].
+         *
+         * Unlike [total], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("total") @ExcludeMissing fun _total(): JsonField<Long> = total
 
         @JsonAnyGetter
@@ -483,31 +690,61 @@ private constructor(
             /** The number of files that were cancelled. */
             fun cancelled(cancelled: Long) = cancelled(JsonField.of(cancelled))
 
-            /** The number of files that were cancelled. */
+            /**
+             * Sets [Builder.cancelled] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.cancelled] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun cancelled(cancelled: JsonField<Long>) = apply { this.cancelled = cancelled }
 
             /** The number of files that have been successfully processed. */
             fun completed(completed: Long) = completed(JsonField.of(completed))
 
-            /** The number of files that have been successfully processed. */
+            /**
+             * Sets [Builder.completed] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.completed] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun completed(completed: JsonField<Long>) = apply { this.completed = completed }
 
             /** The number of files that have failed to process. */
             fun failed(failed: Long) = failed(JsonField.of(failed))
 
-            /** The number of files that have failed to process. */
+            /**
+             * Sets [Builder.failed] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.failed] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun failed(failed: JsonField<Long>) = apply { this.failed = failed }
 
             /** The number of files that are currently being processed. */
             fun inProgress(inProgress: Long) = inProgress(JsonField.of(inProgress))
 
-            /** The number of files that are currently being processed. */
+            /**
+             * Sets [Builder.inProgress] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.inProgress] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun inProgress(inProgress: JsonField<Long>) = apply { this.inProgress = inProgress }
 
             /** The total number of files. */
             fun total(total: Long) = total(JsonField.of(total))
 
-            /** The total number of files. */
+            /**
+             * Sets [Builder.total] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.total] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun total(total: JsonField<Long>) = apply { this.total = total }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -529,6 +766,22 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [FileCounts].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .cancelled()
+             * .completed()
+             * .failed()
+             * .inProgress()
+             * .total()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): FileCounts =
                 FileCounts(
                     checkRequired("cancelled", cancelled),
@@ -680,13 +933,30 @@ private constructor(
         /**
          * Anchor timestamp after which the expiration policy applies. Supported anchors:
          * `last_active_at`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("last_active_at")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
          */
         @JsonProperty("anchor") @ExcludeMissing fun _anchor(): JsonValue = anchor
 
-        /** The number of days after the anchor time that the vector store will expire. */
+        /**
+         * The number of days after the anchor time that the vector store will expire.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun days(): Long = days.getRequired("days")
 
-        /** The number of days after the anchor time that the vector store will expire. */
+        /**
+         * Returns the raw JSON value of [days].
+         *
+         * Unlike [days], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("days") @ExcludeMissing fun _days(): JsonField<Long> = days
 
         @JsonAnyGetter
@@ -739,15 +1009,29 @@ private constructor(
             }
 
             /**
-             * Anchor timestamp after which the expiration policy applies. Supported anchors:
-             * `last_active_at`.
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("last_active_at")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun anchor(anchor: JsonValue) = apply { this.anchor = anchor }
 
             /** The number of days after the anchor time that the vector store will expire. */
             fun days(days: Long) = days(JsonField.of(days))
 
-            /** The number of days after the anchor time that the vector store will expire. */
+            /**
+             * Sets [Builder.days] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.days] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun days(days: JsonField<Long>) = apply { this.days = days }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -769,6 +1053,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ExpiresAfter].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .days()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ExpiresAfter =
                 ExpiresAfter(
                     anchor,

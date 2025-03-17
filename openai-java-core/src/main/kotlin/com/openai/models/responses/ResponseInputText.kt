@@ -27,13 +27,32 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The text input to the model. */
+    /**
+     * The text input to the model.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun text(): String = text.getRequired("text")
 
-    /** The type of the input item. Always `input_text`. */
+    /**
+     * The type of the input item. Always `input_text`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("input_text")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** The text input to the model. */
+    /**
+     * Returns the raw JSON value of [text].
+     *
+     * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
     @JsonAnyGetter
@@ -88,10 +107,26 @@ private constructor(
         /** The text input to the model. */
         fun text(text: String) = text(JsonField.of(text))
 
-        /** The text input to the model. */
+        /**
+         * Sets [Builder.text] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.text] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun text(text: JsonField<String>) = apply { this.text = text }
 
-        /** The type of the input item. Always `input_text`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("input_text")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -113,6 +148,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseInputText].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .text()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseInputText =
             ResponseInputText(checkRequired("text", text), type, additionalProperties.toImmutable())
     }

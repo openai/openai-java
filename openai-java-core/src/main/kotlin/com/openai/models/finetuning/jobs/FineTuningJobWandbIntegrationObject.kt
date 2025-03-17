@@ -28,7 +28,17 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The type of the integration being enabled for the fine-tuning job */
+    /**
+     * The type of the integration being enabled for the fine-tuning job
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("wandb")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
@@ -36,14 +46,16 @@ private constructor(
      * that metrics will be sent to. Optionally, you can set an explicit display name for your run,
      * add tags to your run, and set a default entity (team, username, etc) to be associated with
      * your run.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun wandb(): FineTuningJobWandbIntegration = wandb.getRequired("wandb")
 
     /**
-     * The settings for your integration with Weights and Biases. This payload specifies the project
-     * that metrics will be sent to. Optionally, you can set an explicit display name for your run,
-     * add tags to your run, and set a default entity (team, username, etc) to be associated with
-     * your run.
+     * Returns the raw JSON value of [wandb].
+     *
+     * Unlike [wandb], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("wandb")
     @ExcludeMissing
@@ -102,7 +114,18 @@ private constructor(
                 fineTuningJobWandbIntegrationObject.additionalProperties.toMutableMap()
         }
 
-        /** The type of the integration being enabled for the fine-tuning job */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("wandb")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         /**
@@ -114,10 +137,11 @@ private constructor(
         fun wandb(wandb: FineTuningJobWandbIntegration) = wandb(JsonField.of(wandb))
 
         /**
-         * The settings for your integration with Weights and Biases. This payload specifies the
-         * project that metrics will be sent to. Optionally, you can set an explicit display name
-         * for your run, add tags to your run, and set a default entity (team, username, etc) to be
-         * associated with your run.
+         * Sets [Builder.wandb] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.wandb] with a well-typed [FineTuningJobWandbIntegration]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
          */
         fun wandb(wandb: JsonField<FineTuningJobWandbIntegration>) = apply { this.wandb = wandb }
 
@@ -140,6 +164,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FineTuningJobWandbIntegrationObject].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .wandb()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FineTuningJobWandbIntegrationObject =
             FineTuningJobWandbIntegrationObject(
                 type,

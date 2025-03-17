@@ -605,36 +605,67 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** A list of one or many input items to the model, containing different content types. */
+        /**
+         * A list of one or many input items to the model, containing different content types.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun content(): List<ResponseInputContent> = content.getRequired("content")
 
-        /** The role of the message input. One of `user`, `system`, or `developer`. */
+        /**
+         * The role of the message input. One of `user`, `system`, or `developer`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun role(): Role = role.getRequired("role")
 
         /**
          * The status of item. One of `in_progress`, `completed`, or `incomplete`. Populated when
          * items are returned via API.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun status(): Optional<Status> = Optional.ofNullable(status.getNullable("status"))
 
-        /** The type of the message input. Always set to `message`. */
+        /**
+         * The type of the message input. Always set to `message`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
 
-        /** A list of one or many input items to the model, containing different content types. */
+        /**
+         * Returns the raw JSON value of [content].
+         *
+         * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("content")
         @ExcludeMissing
         fun _content(): JsonField<List<ResponseInputContent>> = content
 
-        /** The role of the message input. One of `user`, `system`, or `developer`. */
+        /**
+         * Returns the raw JSON value of [role].
+         *
+         * Unlike [role], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
 
         /**
-         * The status of item. One of `in_progress`, `completed`, or `incomplete`. Populated when
-         * items are returned via API.
+         * Returns the raw JSON value of [status].
+         *
+         * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
-        /** The type of the message input. Always set to `message`. */
+        /**
+         * Returns the raw JSON value of [type].
+         *
+         * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
         @JsonAnyGetter
@@ -695,14 +726,20 @@ private constructor(
             fun content(content: List<ResponseInputContent>) = content(JsonField.of(content))
 
             /**
-             * A list of one or many input items to the model, containing different content types.
+             * Sets [Builder.content] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.content] with a well-typed
+             * `List<ResponseInputContent>` value instead. This method is primarily for setting the
+             * field to an undocumented or not yet supported value.
              */
             fun content(content: JsonField<List<ResponseInputContent>>) = apply {
                 this.content = content.map { it.toMutableList() }
             }
 
             /**
-             * A list of one or many input items to the model, containing different content types.
+             * Adds a single [ResponseInputContent] to [Builder.content].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
              */
             fun addContent(content: ResponseInputContent) = apply {
                 this.content =
@@ -711,36 +748,56 @@ private constructor(
                     }
             }
 
-            /** A text input to the model. */
+            /**
+             * Alias for calling [addContent] with `ResponseInputContent.ofInputText(inputText)`.
+             */
             fun addContent(inputText: ResponseInputText) =
                 addContent(ResponseInputContent.ofInputText(inputText))
 
-            /** A text input to the model. */
+            /**
+             * Alias for calling [addContent] with the following:
+             * ```java
+             * ResponseInputText.builder()
+             *     .text(text)
+             *     .build()
+             * ```
+             */
             fun addInputTextContent(text: String) =
                 addContent(ResponseInputText.builder().text(text).build())
 
             /**
-             * An image input to the model. Learn about
-             * [image inputs](https://platform.openai.com/docs/guides/vision).
+             * Alias for calling [addContent] with `ResponseInputContent.ofInputImage(inputImage)`.
              */
             fun addContent(inputImage: ResponseInputImage) =
                 addContent(ResponseInputContent.ofInputImage(inputImage))
 
             /**
-             * An image input to the model. Learn about
-             * [image inputs](https://platform.openai.com/docs/guides/vision).
+             * Alias for calling [addContent] with the following:
+             * ```java
+             * ResponseInputImage.builder()
+             *     .detail(detail)
+             *     .build()
+             * ```
              */
             fun addInputImageContent(detail: ResponseInputImage.Detail) =
                 addContent(ResponseInputImage.builder().detail(detail).build())
 
-            /** A file input to the model. */
+            /**
+             * Alias for calling [addContent] with `ResponseInputContent.ofInputFile(inputFile)`.
+             */
             fun addContent(inputFile: ResponseInputFile) =
                 addContent(ResponseInputContent.ofInputFile(inputFile))
 
             /** The role of the message input. One of `user`, `system`, or `developer`. */
             fun role(role: Role) = role(JsonField.of(role))
 
-            /** The role of the message input. One of `user`, `system`, or `developer`. */
+            /**
+             * Sets [Builder.role] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.role] with a well-typed [Role] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun role(role: JsonField<Role>) = apply { this.role = role }
 
             /**
@@ -750,15 +807,24 @@ private constructor(
             fun status(status: Status) = status(JsonField.of(status))
 
             /**
-             * The status of item. One of `in_progress`, `completed`, or `incomplete`. Populated
-             * when items are returned via API.
+             * Sets [Builder.status] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.status] with a well-typed [Status] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun status(status: JsonField<Status>) = apply { this.status = status }
 
             /** The type of the message input. Always set to `message`. */
             fun type(type: Type) = type(JsonField.of(type))
 
-            /** The type of the message input. Always set to `message`. */
+            /**
+             * Sets [Builder.type] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.type] with a well-typed [Type] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun type(type: JsonField<Type>) = apply { this.type = type }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -780,6 +846,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Message].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .content()
+             * .role()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Message =
                 Message(
                     checkRequired("content", content).map { it.toImmutable() },
@@ -1146,46 +1225,97 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The ID of the computer tool call that produced the output. */
+        /**
+         * The ID of the computer tool call that produced the output.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun callId(): String = callId.getRequired("call_id")
 
-        /** A computer screenshot image used with the computer use tool. */
+        /**
+         * A computer screenshot image used with the computer use tool.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun output(): Output = output.getRequired("output")
 
-        /** The type of the computer tool call output. Always `computer_call_output`. */
+        /**
+         * The type of the computer tool call output. Always `computer_call_output`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("computer_call_output")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-        /** The ID of the computer tool call output. */
+        /**
+         * The ID of the computer tool call output.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun id(): Optional<String> = Optional.ofNullable(id.getNullable("id"))
 
-        /** The safety checks reported by the API that have been acknowledged by the developer. */
+        /**
+         * The safety checks reported by the API that have been acknowledged by the developer.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun acknowledgedSafetyChecks(): Optional<List<AcknowledgedSafetyCheck>> =
             Optional.ofNullable(acknowledgedSafetyChecks.getNullable("acknowledged_safety_checks"))
 
         /**
          * The status of the message input. One of `in_progress`, `completed`, or `incomplete`.
          * Populated when input items are returned via API.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun status(): Optional<Status> = Optional.ofNullable(status.getNullable("status"))
 
-        /** The ID of the computer tool call that produced the output. */
+        /**
+         * Returns the raw JSON value of [callId].
+         *
+         * Unlike [callId], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("call_id") @ExcludeMissing fun _callId(): JsonField<String> = callId
 
-        /** A computer screenshot image used with the computer use tool. */
+        /**
+         * Returns the raw JSON value of [output].
+         *
+         * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<Output> = output
 
-        /** The ID of the computer tool call output. */
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-        /** The safety checks reported by the API that have been acknowledged by the developer. */
+        /**
+         * Returns the raw JSON value of [acknowledgedSafetyChecks].
+         *
+         * Unlike [acknowledgedSafetyChecks], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
         @JsonProperty("acknowledged_safety_checks")
         @ExcludeMissing
         fun _acknowledgedSafetyChecks(): JsonField<List<AcknowledgedSafetyCheck>> =
             acknowledgedSafetyChecks
 
         /**
-         * The status of the message input. One of `in_progress`, `completed`, or `incomplete`.
-         * Populated when input items are returned via API.
+         * Returns the raw JSON value of [status].
+         *
+         * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
@@ -1256,22 +1386,51 @@ private constructor(
             /** The ID of the computer tool call that produced the output. */
             fun callId(callId: String) = callId(JsonField.of(callId))
 
-            /** The ID of the computer tool call that produced the output. */
+            /**
+             * Sets [Builder.callId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.callId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun callId(callId: JsonField<String>) = apply { this.callId = callId }
 
             /** A computer screenshot image used with the computer use tool. */
             fun output(output: Output) = output(JsonField.of(output))
 
-            /** A computer screenshot image used with the computer use tool. */
+            /**
+             * Sets [Builder.output] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.output] with a well-typed [Output] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun output(output: JsonField<Output>) = apply { this.output = output }
 
-            /** The type of the computer tool call output. Always `computer_call_output`. */
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("computer_call_output")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun type(type: JsonValue) = apply { this.type = type }
 
             /** The ID of the computer tool call output. */
             fun id(id: String) = id(JsonField.of(id))
 
-            /** The ID of the computer tool call output. */
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun id(id: JsonField<String>) = apply { this.id = id }
 
             /**
@@ -1281,7 +1440,11 @@ private constructor(
                 acknowledgedSafetyChecks(JsonField.of(acknowledgedSafetyChecks))
 
             /**
-             * The safety checks reported by the API that have been acknowledged by the developer.
+             * Sets [Builder.acknowledgedSafetyChecks] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.acknowledgedSafetyChecks] with a well-typed
+             * `List<AcknowledgedSafetyCheck>` value instead. This method is primarily for setting
+             * the field to an undocumented or not yet supported value.
              */
             fun acknowledgedSafetyChecks(
                 acknowledgedSafetyChecks: JsonField<List<AcknowledgedSafetyCheck>>
@@ -1290,7 +1453,9 @@ private constructor(
             }
 
             /**
-             * The safety checks reported by the API that have been acknowledged by the developer.
+             * Adds a single [AcknowledgedSafetyCheck] to [acknowledgedSafetyChecks].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
              */
             fun addAcknowledgedSafetyCheck(acknowledgedSafetyCheck: AcknowledgedSafetyCheck) =
                 apply {
@@ -1307,8 +1472,11 @@ private constructor(
             fun status(status: Status) = status(JsonField.of(status))
 
             /**
-             * The status of the message input. One of `in_progress`, `completed`, or `incomplete`.
-             * Populated when input items are returned via API.
+             * Sets [Builder.status] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.status] with a well-typed [Status] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun status(status: JsonField<Status>) = apply { this.status = status }
 
@@ -1331,6 +1499,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ComputerCallOutput].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .callId()
+             * .output()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ComputerCallOutput =
                 ComputerCallOutput(
                     checkRequired("callId", callId),
@@ -1362,20 +1543,47 @@ private constructor(
             /**
              * Specifies the event type. For a computer screenshot, this property is always set to
              * `computer_screenshot`.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("computer_screenshot")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
              */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-            /** The identifier of an uploaded file that contains the screenshot. */
+            /**
+             * The identifier of an uploaded file that contains the screenshot.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
             fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
 
-            /** The URL of the screenshot image. */
+            /**
+             * The URL of the screenshot image.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
             fun imageUrl(): Optional<String> =
                 Optional.ofNullable(imageUrl.getNullable("image_url"))
 
-            /** The identifier of an uploaded file that contains the screenshot. */
+            /**
+             * Returns the raw JSON value of [fileId].
+             *
+             * Unlike [fileId], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
-            /** The URL of the screenshot image. */
+            /**
+             * Returns the raw JSON value of [imageUrl].
+             *
+             * Unlike [imageUrl], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
             @JsonProperty("image_url") @ExcludeMissing fun _imageUrl(): JsonField<String> = imageUrl
 
             @JsonAnyGetter
@@ -1424,21 +1632,41 @@ private constructor(
                 }
 
                 /**
-                 * Specifies the event type. For a computer screenshot, this property is always set
-                 * to `computer_screenshot`.
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("computer_screenshot")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
                  */
                 fun type(type: JsonValue) = apply { this.type = type }
 
                 /** The identifier of an uploaded file that contains the screenshot. */
                 fun fileId(fileId: String) = fileId(JsonField.of(fileId))
 
-                /** The identifier of an uploaded file that contains the screenshot. */
+                /**
+                 * Sets [Builder.fileId] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.fileId] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
                 fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
 
                 /** The URL of the screenshot image. */
                 fun imageUrl(imageUrl: String) = imageUrl(JsonField.of(imageUrl))
 
-                /** The URL of the screenshot image. */
+                /**
+                 * Sets [Builder.imageUrl] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.imageUrl] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
                 fun imageUrl(imageUrl: JsonField<String>) = apply { this.imageUrl = imageUrl }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1463,6 +1691,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Output].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): Output =
                     Output(type, fileId, imageUrl, additionalProperties.toImmutable())
             }
@@ -1503,22 +1736,52 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
-            /** The ID of the pending safety check. */
+            /**
+             * The ID of the pending safety check.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun id(): String = id.getRequired("id")
 
-            /** The type of the pending safety check. */
+            /**
+             * The type of the pending safety check.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun code(): String = code.getRequired("code")
 
-            /** Details about the pending safety check. */
+            /**
+             * Details about the pending safety check.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun message(): String = message.getRequired("message")
 
-            /** The ID of the pending safety check. */
+            /**
+             * Returns the raw JSON value of [id].
+             *
+             * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-            /** The type of the pending safety check. */
+            /**
+             * Returns the raw JSON value of [code].
+             *
+             * Unlike [code], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("code") @ExcludeMissing fun _code(): JsonField<String> = code
 
-            /** Details about the pending safety check. */
+            /**
+             * Returns the raw JSON value of [message].
+             *
+             * Unlike [message], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
             @JsonAnyGetter
@@ -1576,19 +1839,37 @@ private constructor(
                 /** The ID of the pending safety check. */
                 fun id(id: String) = id(JsonField.of(id))
 
-                /** The ID of the pending safety check. */
+                /**
+                 * Sets [Builder.id] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.id] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun id(id: JsonField<String>) = apply { this.id = id }
 
                 /** The type of the pending safety check. */
                 fun code(code: String) = code(JsonField.of(code))
 
-                /** The type of the pending safety check. */
+                /**
+                 * Sets [Builder.code] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.code] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun code(code: JsonField<String>) = apply { this.code = code }
 
                 /** Details about the pending safety check. */
                 fun message(message: String) = message(JsonField.of(message))
 
-                /** Details about the pending safety check. */
+                /**
+                 * Sets [Builder.message] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.message] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
                 fun message(message: JsonField<String>) = apply { this.message = message }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1613,6 +1894,20 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [AcknowledgedSafetyCheck].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .id()
+                 * .code()
+                 * .message()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): AcknowledgedSafetyCheck =
                     AcknowledgedSafetyCheck(
                         checkRequired("id", id),
@@ -1790,42 +2085,78 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The unique ID of the function tool call generated by the model. */
+        /**
+         * The unique ID of the function tool call generated by the model.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun callId(): String = callId.getRequired("call_id")
 
-        /** A JSON string of the output of the function tool call. */
+        /**
+         * A JSON string of the output of the function tool call.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun output(): String = output.getRequired("output")
 
-        /** The type of the function tool call output. Always `function_call_output`. */
+        /**
+         * The type of the function tool call output. Always `function_call_output`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("function_call_output")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
         /**
          * The unique ID of the function tool call output. Populated when this item is returned via
          * API.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun id(): Optional<String> = Optional.ofNullable(id.getNullable("id"))
 
         /**
          * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated
          * when items are returned via API.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun status(): Optional<Status> = Optional.ofNullable(status.getNullable("status"))
 
-        /** The unique ID of the function tool call generated by the model. */
+        /**
+         * Returns the raw JSON value of [callId].
+         *
+         * Unlike [callId], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("call_id") @ExcludeMissing fun _callId(): JsonField<String> = callId
 
-        /** A JSON string of the output of the function tool call. */
+        /**
+         * Returns the raw JSON value of [output].
+         *
+         * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<String> = output
 
         /**
-         * The unique ID of the function tool call output. Populated when this item is returned via
-         * API.
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
         /**
-         * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated
-         * when items are returned via API.
+         * Returns the raw JSON value of [status].
+         *
+         * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
@@ -1891,16 +2222,39 @@ private constructor(
             /** The unique ID of the function tool call generated by the model. */
             fun callId(callId: String) = callId(JsonField.of(callId))
 
-            /** The unique ID of the function tool call generated by the model. */
+            /**
+             * Sets [Builder.callId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.callId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun callId(callId: JsonField<String>) = apply { this.callId = callId }
 
             /** A JSON string of the output of the function tool call. */
             fun output(output: String) = output(JsonField.of(output))
 
-            /** A JSON string of the output of the function tool call. */
+            /**
+             * Sets [Builder.output] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.output] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun output(output: JsonField<String>) = apply { this.output = output }
 
-            /** The type of the function tool call output. Always `function_call_output`. */
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("function_call_output")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun type(type: JsonValue) = apply { this.type = type }
 
             /**
@@ -1910,8 +2264,11 @@ private constructor(
             fun id(id: String) = id(JsonField.of(id))
 
             /**
-             * The unique ID of the function tool call output. Populated when this item is returned
-             * via API.
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun id(id: JsonField<String>) = apply { this.id = id }
 
@@ -1922,8 +2279,11 @@ private constructor(
             fun status(status: Status) = status(JsonField.of(status))
 
             /**
-             * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated
-             * when items are returned via API.
+             * Sets [Builder.status] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.status] with a well-typed [Status] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun status(status: JsonField<Status>) = apply { this.status = status }
 
@@ -1946,6 +2306,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [FunctionCallOutput].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .callId()
+             * .output()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): FunctionCallOutput =
                 FunctionCallOutput(
                     checkRequired("callId", callId),
@@ -2098,13 +2471,32 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The ID of the item to reference. */
+        /**
+         * The ID of the item to reference.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun id(): String = id.getRequired("id")
 
-        /** The type of item to reference. Always `item_reference`. */
+        /**
+         * The type of item to reference. Always `item_reference`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("item_reference")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-        /** The ID of the item to reference. */
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
         @JsonAnyGetter
@@ -2159,10 +2551,27 @@ private constructor(
             /** The ID of the item to reference. */
             fun id(id: String) = id(JsonField.of(id))
 
-            /** The ID of the item to reference. */
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun id(id: JsonField<String>) = apply { this.id = id }
 
-            /** The type of item to reference. Always `item_reference`. */
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("item_reference")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun type(type: JsonValue) = apply { this.type = type }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -2184,6 +2593,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ItemReference].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .id()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ItemReference =
                 ItemReference(checkRequired("id", id), type, additionalProperties.toImmutable())
         }

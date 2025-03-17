@@ -31,17 +31,45 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The index of the refusal part in the message. */
+    /**
+     * The index of the refusal part in the message.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun index(): Long = index.getRequired("index")
 
-    /** Always `refusal`. */
+    /**
+     * Always `refusal`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("refusal")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun refusal(): Optional<String> = Optional.ofNullable(refusal.getNullable("refusal"))
 
-    /** The index of the refusal part in the message. */
+    /**
+     * Returns the raw JSON value of [index].
+     *
+     * Unlike [index], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
+    /**
+     * Returns the raw JSON value of [refusal].
+     *
+     * Unlike [refusal], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("refusal") @ExcludeMissing fun _refusal(): JsonField<String> = refusal
 
     @JsonAnyGetter
@@ -99,14 +127,36 @@ private constructor(
         /** The index of the refusal part in the message. */
         fun index(index: Long) = index(JsonField.of(index))
 
-        /** The index of the refusal part in the message. */
+        /**
+         * Sets [Builder.index] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.index] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun index(index: JsonField<Long>) = apply { this.index = index }
 
-        /** Always `refusal`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("refusal")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun refusal(refusal: String) = refusal(JsonField.of(refusal))
 
+        /**
+         * Sets [Builder.refusal] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.refusal] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun refusal(refusal: JsonField<String>) = apply { this.refusal = refusal }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -128,6 +178,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [RefusalDeltaBlock].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .index()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): RefusalDeltaBlock =
             RefusalDeltaBlock(
                 checkRequired("index", index),

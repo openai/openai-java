@@ -51,29 +51,60 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** A unique identifier for the chat completion. Each chunk has the same ID. */
+    /**
+     * A unique identifier for the chat completion. Each chunk has the same ID.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
     /**
      * A list of chat completion choices. Can contain more than one elements if `n` is greater
      * than 1. Can also be empty for the last chunk if you set `stream_options: {"include_usage":
      * true}`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun choices(): List<Choice> = choices.getRequired("choices")
 
     /**
      * The Unix timestamp (in seconds) of when the chat completion was created. Each chunk has the
      * same timestamp.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun created(): Long = created.getRequired("created")
 
-    /** The model to generate the completion. */
+    /**
+     * The model to generate the completion.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun model(): String = model.getRequired("model")
 
-    /** The object type, which is always `chat.completion.chunk`. */
+    /**
+     * The object type, which is always `chat.completion.chunk`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("chat.completion.chunk")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
-    /** The service tier used for processing the request. */
+    /**
+     * The service tier used for processing the request.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun serviceTier(): Optional<ServiceTier> =
         Optional.ofNullable(serviceTier.getNullable("service_tier"))
 
@@ -81,6 +112,9 @@ private constructor(
      * This fingerprint represents the backend configuration that the model runs with. Can be used
      * in conjunction with the `seed` request parameter to understand when backend changes have been
      * made that might impact determinism.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun systemFingerprint(): Optional<String> =
         Optional.ofNullable(systemFingerprint.getNullable("system_fingerprint"))
@@ -89,46 +123,63 @@ private constructor(
      * An optional field that will only be present when you set `stream_options: {"include_usage":
      * true}` in your request. When present, it contains a null value except for the last chunk
      * which contains the token usage statistics for the entire request.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun usage(): Optional<CompletionUsage> = Optional.ofNullable(usage.getNullable("usage"))
 
-    /** A unique identifier for the chat completion. Each chunk has the same ID. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /**
-     * A list of chat completion choices. Can contain more than one elements if `n` is greater
-     * than 1. Can also be empty for the last chunk if you set `stream_options: {"include_usage":
-     * true}`.
+     * Returns the raw JSON value of [choices].
+     *
+     * Unlike [choices], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("choices") @ExcludeMissing fun _choices(): JsonField<List<Choice>> = choices
 
     /**
-     * The Unix timestamp (in seconds) of when the chat completion was created. Each chunk has the
-     * same timestamp.
+     * Returns the raw JSON value of [created].
+     *
+     * Unlike [created], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("created") @ExcludeMissing fun _created(): JsonField<Long> = created
 
-    /** The model to generate the completion. */
+    /**
+     * Returns the raw JSON value of [model].
+     *
+     * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
 
-    /** The service tier used for processing the request. */
+    /**
+     * Returns the raw JSON value of [serviceTier].
+     *
+     * Unlike [serviceTier], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("service_tier")
     @ExcludeMissing
     fun _serviceTier(): JsonField<ServiceTier> = serviceTier
 
     /**
-     * This fingerprint represents the backend configuration that the model runs with. Can be used
-     * in conjunction with the `seed` request parameter to understand when backend changes have been
-     * made that might impact determinism.
+     * Returns the raw JSON value of [systemFingerprint].
+     *
+     * Unlike [systemFingerprint], this method doesn't throw if the JSON field has an unexpected
+     * type.
      */
     @JsonProperty("system_fingerprint")
     @ExcludeMissing
     fun _systemFingerprint(): JsonField<String> = systemFingerprint
 
     /**
-     * An optional field that will only be present when you set `stream_options: {"include_usage":
-     * true}` in your request. When present, it contains a null value except for the last chunk
-     * which contains the token usage statistics for the entire request.
+     * Returns the raw JSON value of [usage].
+     *
+     * Unlike [usage], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<CompletionUsage> = usage
 
@@ -205,7 +256,12 @@ private constructor(
         /** A unique identifier for the chat completion. Each chunk has the same ID. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** A unique identifier for the chat completion. Each chunk has the same ID. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /**
@@ -216,18 +272,20 @@ private constructor(
         fun choices(choices: List<Choice>) = choices(JsonField.of(choices))
 
         /**
-         * A list of chat completion choices. Can contain more than one elements if `n` is greater
-         * than 1. Can also be empty for the last chunk if you set `stream_options:
-         * {"include_usage": true}`.
+         * Sets [Builder.choices] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.choices] with a well-typed `List<Choice>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun choices(choices: JsonField<List<Choice>>) = apply {
             this.choices = choices.map { it.toMutableList() }
         }
 
         /**
-         * A list of chat completion choices. Can contain more than one elements if `n` is greater
-         * than 1. Can also be empty for the last chunk if you set `stream_options:
-         * {"include_usage": true}`.
+         * Adds a single [Choice] to [choices].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addChoice(choice: Choice) = apply {
             choices =
@@ -243,27 +301,51 @@ private constructor(
         fun created(created: Long) = created(JsonField.of(created))
 
         /**
-         * The Unix timestamp (in seconds) of when the chat completion was created. Each chunk has
-         * the same timestamp.
+         * Sets [Builder.created] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.created] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun created(created: JsonField<Long>) = apply { this.created = created }
 
         /** The model to generate the completion. */
         fun model(model: String) = model(JsonField.of(model))
 
-        /** The model to generate the completion. */
+        /**
+         * Sets [Builder.model] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.model] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun model(model: JsonField<String>) = apply { this.model = model }
 
-        /** The object type, which is always `chat.completion.chunk`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("chat.completion.chunk")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /** The service tier used for processing the request. */
         fun serviceTier(serviceTier: ServiceTier?) = serviceTier(JsonField.ofNullable(serviceTier))
 
-        /** The service tier used for processing the request. */
+        /** Alias for calling [Builder.serviceTier] with `serviceTier.orElse(null)`. */
         fun serviceTier(serviceTier: Optional<ServiceTier>) = serviceTier(serviceTier.getOrNull())
 
-        /** The service tier used for processing the request. */
+        /**
+         * Sets [Builder.serviceTier] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.serviceTier] with a well-typed [ServiceTier] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun serviceTier(serviceTier: JsonField<ServiceTier>) = apply {
             this.serviceTier = serviceTier
         }
@@ -277,9 +359,11 @@ private constructor(
             systemFingerprint(JsonField.of(systemFingerprint))
 
         /**
-         * This fingerprint represents the backend configuration that the model runs with. Can be
-         * used in conjunction with the `seed` request parameter to understand when backend changes
-         * have been made that might impact determinism.
+         * Sets [Builder.systemFingerprint] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.systemFingerprint] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun systemFingerprint(systemFingerprint: JsonField<String>) = apply {
             this.systemFingerprint = systemFingerprint
@@ -292,17 +376,15 @@ private constructor(
          */
         fun usage(usage: CompletionUsage?) = usage(JsonField.ofNullable(usage))
 
-        /**
-         * An optional field that will only be present when you set `stream_options:
-         * {"include_usage": true}` in your request. When present, it contains a null value except
-         * for the last chunk which contains the token usage statistics for the entire request.
-         */
+        /** Alias for calling [Builder.usage] with `usage.orElse(null)`. */
         fun usage(usage: Optional<CompletionUsage>) = usage(usage.getOrNull())
 
         /**
-         * An optional field that will only be present when you set `stream_options:
-         * {"include_usage": true}` in your request. When present, it contains a null value except
-         * for the last chunk which contains the token usage statistics for the entire request.
+         * Sets [Builder.usage] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.usage] with a well-typed [CompletionUsage] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun usage(usage: JsonField<CompletionUsage>) = apply { this.usage = usage }
 
@@ -325,6 +407,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ChatCompletionChunk].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .choices()
+         * .created()
+         * .model()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ChatCompletionChunk =
             ChatCompletionChunk(
                 checkRequired("id", id),
@@ -359,7 +456,12 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** A chat completion delta generated by streamed model responses. */
+        /**
+         * A chat completion delta generated by streamed model responses.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun delta(): Delta = delta.getRequired("delta")
 
         /**
@@ -368,34 +470,58 @@ private constructor(
          * specified in the request was reached, `content_filter` if content was omitted due to a
          * flag from our content filters, `tool_calls` if the model called a tool, or
          * `function_call` (deprecated) if the model called a function.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun finishReason(): Optional<FinishReason> =
             Optional.ofNullable(finishReason.getNullable("finish_reason"))
 
-        /** The index of the choice in the list of choices. */
+        /**
+         * The index of the choice in the list of choices.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun index(): Long = index.getRequired("index")
 
-        /** Log probability information for the choice. */
+        /**
+         * Log probability information for the choice.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun logprobs(): Optional<Logprobs> = Optional.ofNullable(logprobs.getNullable("logprobs"))
 
-        /** A chat completion delta generated by streamed model responses. */
+        /**
+         * Returns the raw JSON value of [delta].
+         *
+         * Unlike [delta], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("delta") @ExcludeMissing fun _delta(): JsonField<Delta> = delta
 
         /**
-         * The reason the model stopped generating tokens. This will be `stop` if the model hit a
-         * natural stop point or a provided stop sequence, `length` if the maximum number of tokens
-         * specified in the request was reached, `content_filter` if content was omitted due to a
-         * flag from our content filters, `tool_calls` if the model called a tool, or
-         * `function_call` (deprecated) if the model called a function.
+         * Returns the raw JSON value of [finishReason].
+         *
+         * Unlike [finishReason], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
         @JsonProperty("finish_reason")
         @ExcludeMissing
         fun _finishReason(): JsonField<FinishReason> = finishReason
 
-        /** The index of the choice in the list of choices. */
+        /**
+         * Returns the raw JSON value of [index].
+         *
+         * Unlike [index], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
-        /** Log probability information for the choice. */
+        /**
+         * Returns the raw JSON value of [logprobs].
+         *
+         * Unlike [logprobs], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("logprobs") @ExcludeMissing fun _logprobs(): JsonField<Logprobs> = logprobs
 
         @JsonAnyGetter
@@ -454,7 +580,13 @@ private constructor(
             /** A chat completion delta generated by streamed model responses. */
             fun delta(delta: Delta) = delta(JsonField.of(delta))
 
-            /** A chat completion delta generated by streamed model responses. */
+            /**
+             * Sets [Builder.delta] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.delta] with a well-typed [Delta] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun delta(delta: JsonField<Delta>) = apply { this.delta = delta }
 
             /**
@@ -467,22 +599,16 @@ private constructor(
             fun finishReason(finishReason: FinishReason?) =
                 finishReason(JsonField.ofNullable(finishReason))
 
-            /**
-             * The reason the model stopped generating tokens. This will be `stop` if the model hit
-             * a natural stop point or a provided stop sequence, `length` if the maximum number of
-             * tokens specified in the request was reached, `content_filter` if content was omitted
-             * due to a flag from our content filters, `tool_calls` if the model called a tool, or
-             * `function_call` (deprecated) if the model called a function.
-             */
+            /** Alias for calling [Builder.finishReason] with `finishReason.orElse(null)`. */
             fun finishReason(finishReason: Optional<FinishReason>) =
                 finishReason(finishReason.getOrNull())
 
             /**
-             * The reason the model stopped generating tokens. This will be `stop` if the model hit
-             * a natural stop point or a provided stop sequence, `length` if the maximum number of
-             * tokens specified in the request was reached, `content_filter` if content was omitted
-             * due to a flag from our content filters, `tool_calls` if the model called a tool, or
-             * `function_call` (deprecated) if the model called a function.
+             * Sets [Builder.finishReason] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.finishReason] with a well-typed [FinishReason] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun finishReason(finishReason: JsonField<FinishReason>) = apply {
                 this.finishReason = finishReason
@@ -491,16 +617,28 @@ private constructor(
             /** The index of the choice in the list of choices. */
             fun index(index: Long) = index(JsonField.of(index))
 
-            /** The index of the choice in the list of choices. */
+            /**
+             * Sets [Builder.index] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.index] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun index(index: JsonField<Long>) = apply { this.index = index }
 
             /** Log probability information for the choice. */
             fun logprobs(logprobs: Logprobs?) = logprobs(JsonField.ofNullable(logprobs))
 
-            /** Log probability information for the choice. */
+            /** Alias for calling [Builder.logprobs] with `logprobs.orElse(null)`. */
             fun logprobs(logprobs: Optional<Logprobs>) = logprobs(logprobs.getOrNull())
 
-            /** Log probability information for the choice. */
+            /**
+             * Sets [Builder.logprobs] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.logprobs] with a well-typed [Logprobs] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun logprobs(logprobs: JsonField<Logprobs>) = apply { this.logprobs = logprobs }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -522,6 +660,20 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Choice].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .delta()
+             * .finishReason()
+             * .index()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Choice =
                 Choice(
                     checkRequired("delta", delta),
@@ -556,44 +708,86 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
-            /** The contents of the chunk message. */
+            /**
+             * The contents of the chunk message.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
             fun content(): Optional<String> = Optional.ofNullable(content.getNullable("content"))
 
             /**
              * Deprecated and replaced by `tool_calls`. The name and arguments of a function that
              * should be called, as generated by the model.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
              */
             @Deprecated("deprecated")
             fun functionCall(): Optional<FunctionCall> =
                 Optional.ofNullable(functionCall.getNullable("function_call"))
 
-            /** The refusal message generated by the model. */
+            /**
+             * The refusal message generated by the model.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
             fun refusal(): Optional<String> = Optional.ofNullable(refusal.getNullable("refusal"))
 
-            /** The role of the author of this message. */
+            /**
+             * The role of the author of this message.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
             fun role(): Optional<Role> = Optional.ofNullable(role.getNullable("role"))
 
+            /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
             fun toolCalls(): Optional<List<ToolCall>> =
                 Optional.ofNullable(toolCalls.getNullable("tool_calls"))
 
-            /** The contents of the chunk message. */
+            /**
+             * Returns the raw JSON value of [content].
+             *
+             * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<String> = content
 
             /**
-             * Deprecated and replaced by `tool_calls`. The name and arguments of a function that
-             * should be called, as generated by the model.
+             * Returns the raw JSON value of [functionCall].
+             *
+             * Unlike [functionCall], this method doesn't throw if the JSON field has an unexpected
+             * type.
              */
             @Deprecated("deprecated")
             @JsonProperty("function_call")
             @ExcludeMissing
             fun _functionCall(): JsonField<FunctionCall> = functionCall
 
-            /** The refusal message generated by the model. */
+            /**
+             * Returns the raw JSON value of [refusal].
+             *
+             * Unlike [refusal], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("refusal") @ExcludeMissing fun _refusal(): JsonField<String> = refusal
 
-            /** The role of the author of this message. */
+            /**
+             * Returns the raw JSON value of [role].
+             *
+             * Unlike [role], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
 
+            /**
+             * Returns the raw JSON value of [toolCalls].
+             *
+             * Unlike [toolCalls], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
             @JsonProperty("tool_calls")
             @ExcludeMissing
             fun _toolCalls(): JsonField<List<ToolCall>> = toolCalls
@@ -648,10 +842,16 @@ private constructor(
                 /** The contents of the chunk message. */
                 fun content(content: String?) = content(JsonField.ofNullable(content))
 
-                /** The contents of the chunk message. */
+                /** Alias for calling [Builder.content] with `content.orElse(null)`. */
                 fun content(content: Optional<String>) = content(content.getOrNull())
 
-                /** The contents of the chunk message. */
+                /**
+                 * Sets [Builder.content] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.content] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
                 fun content(content: JsonField<String>) = apply { this.content = content }
 
                 /**
@@ -663,8 +863,11 @@ private constructor(
                     functionCall(JsonField.of(functionCall))
 
                 /**
-                 * Deprecated and replaced by `tool_calls`. The name and arguments of a function
-                 * that should be called, as generated by the model.
+                 * Sets [Builder.functionCall] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.functionCall] with a well-typed [FunctionCall]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
                  */
                 @Deprecated("deprecated")
                 fun functionCall(functionCall: JsonField<FunctionCall>) = apply {
@@ -674,24 +877,48 @@ private constructor(
                 /** The refusal message generated by the model. */
                 fun refusal(refusal: String?) = refusal(JsonField.ofNullable(refusal))
 
-                /** The refusal message generated by the model. */
+                /** Alias for calling [Builder.refusal] with `refusal.orElse(null)`. */
                 fun refusal(refusal: Optional<String>) = refusal(refusal.getOrNull())
 
-                /** The refusal message generated by the model. */
+                /**
+                 * Sets [Builder.refusal] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.refusal] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
                 fun refusal(refusal: JsonField<String>) = apply { this.refusal = refusal }
 
                 /** The role of the author of this message. */
                 fun role(role: Role) = role(JsonField.of(role))
 
-                /** The role of the author of this message. */
+                /**
+                 * Sets [Builder.role] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.role] with a well-typed [Role] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun role(role: JsonField<Role>) = apply { this.role = role }
 
                 fun toolCalls(toolCalls: List<ToolCall>) = toolCalls(JsonField.of(toolCalls))
 
+                /**
+                 * Sets [Builder.toolCalls] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.toolCalls] with a well-typed `List<ToolCall>`
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
                 fun toolCalls(toolCalls: JsonField<List<ToolCall>>) = apply {
                     this.toolCalls = toolCalls.map { it.toMutableList() }
                 }
 
+                /**
+                 * Adds a single [ToolCall] to [toolCalls].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
                 fun addToolCall(toolCall: ToolCall) = apply {
                     toolCalls =
                         (toolCalls ?: JsonField.of(mutableListOf())).also {
@@ -721,6 +948,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Delta].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): Delta =
                     Delta(
                         content,
@@ -756,24 +988,37 @@ private constructor(
                  * format. Note that the model does not always generate valid JSON, and may
                  * hallucinate parameters not defined by your function schema. Validate the
                  * arguments in your code before calling your function.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
                  */
                 fun arguments(): Optional<String> =
                     Optional.ofNullable(arguments.getNullable("arguments"))
 
-                /** The name of the function to call. */
+                /**
+                 * The name of the function to call.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
                 fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
 
                 /**
-                 * The arguments to call the function with, as generated by the model in JSON
-                 * format. Note that the model does not always generate valid JSON, and may
-                 * hallucinate parameters not defined by your function schema. Validate the
-                 * arguments in your code before calling your function.
+                 * Returns the raw JSON value of [arguments].
+                 *
+                 * Unlike [arguments], this method doesn't throw if the JSON field has an unexpected
+                 * type.
                  */
                 @JsonProperty("arguments")
                 @ExcludeMissing
                 fun _arguments(): JsonField<String> = arguments
 
-                /** The name of the function to call. */
+                /**
+                 * Returns the raw JSON value of [name].
+                 *
+                 * Unlike [name], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
                 @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
                 @JsonAnyGetter
@@ -823,10 +1068,11 @@ private constructor(
                     fun arguments(arguments: String) = arguments(JsonField.of(arguments))
 
                     /**
-                     * The arguments to call the function with, as generated by the model in JSON
-                     * format. Note that the model does not always generate valid JSON, and may
-                     * hallucinate parameters not defined by your function schema. Validate the
-                     * arguments in your code before calling your function.
+                     * Sets [Builder.arguments] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.arguments] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
                      */
                     fun arguments(arguments: JsonField<String>) = apply {
                         this.arguments = arguments
@@ -835,7 +1081,13 @@ private constructor(
                     /** The name of the function to call. */
                     fun name(name: String) = name(JsonField.of(name))
 
-                    /** The name of the function to call. */
+                    /**
+                     * Sets [Builder.name] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.name] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
                     fun name(name: JsonField<String>) = apply { this.name = name }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -860,6 +1112,11 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [FunctionCall].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
                     fun build(): FunctionCall =
                         FunctionCall(arguments, name, additionalProperties.toImmutable())
                 }
@@ -1024,27 +1281,67 @@ private constructor(
                 private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
             ) {
 
+                /**
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
                 fun index(): Long = index.getRequired("index")
 
-                /** The ID of the tool call. */
+                /**
+                 * The ID of the tool call.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
                 fun id(): Optional<String> = Optional.ofNullable(id.getNullable("id"))
 
+                /**
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
                 fun function(): Optional<Function> =
                     Optional.ofNullable(function.getNullable("function"))
 
-                /** The type of the tool. Currently, only `function` is supported. */
+                /**
+                 * The type of the tool. Currently, only `function` is supported.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
                 fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
 
+                /**
+                 * Returns the raw JSON value of [index].
+                 *
+                 * Unlike [index], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
                 @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
-                /** The ID of the tool call. */
+                /**
+                 * Returns the raw JSON value of [id].
+                 *
+                 * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+                 */
                 @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
+                /**
+                 * Returns the raw JSON value of [function].
+                 *
+                 * Unlike [function], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
                 @JsonProperty("function")
                 @ExcludeMissing
                 fun _function(): JsonField<Function> = function
 
-                /** The type of the tool. Currently, only `function` is supported. */
+                /**
+                 * Returns the raw JSON value of [type].
+                 *
+                 * Unlike [type], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
                 @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
                 @JsonAnyGetter
@@ -1100,22 +1397,48 @@ private constructor(
 
                     fun index(index: Long) = index(JsonField.of(index))
 
+                    /**
+                     * Sets [Builder.index] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.index] with a well-typed [Long] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
                     fun index(index: JsonField<Long>) = apply { this.index = index }
 
                     /** The ID of the tool call. */
                     fun id(id: String) = id(JsonField.of(id))
 
-                    /** The ID of the tool call. */
+                    /**
+                     * Sets [Builder.id] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.id] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
                     fun id(id: JsonField<String>) = apply { this.id = id }
 
                     fun function(function: Function) = function(JsonField.of(function))
 
+                    /**
+                     * Sets [Builder.function] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.function] with a well-typed [Function] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
                     fun function(function: JsonField<Function>) = apply { this.function = function }
 
                     /** The type of the tool. Currently, only `function` is supported. */
                     fun type(type: Type) = type(JsonField.of(type))
 
-                    /** The type of the tool. Currently, only `function` is supported. */
+                    /**
+                     * Sets [Builder.type] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.type] with a well-typed [Type] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
                     fun type(type: JsonField<Type>) = apply { this.type = type }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1140,6 +1463,18 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [ToolCall].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .index()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
                     fun build(): ToolCall =
                         ToolCall(
                             checkRequired("index", index),
@@ -1169,24 +1504,37 @@ private constructor(
                      * format. Note that the model does not always generate valid JSON, and may
                      * hallucinate parameters not defined by your function schema. Validate the
                      * arguments in your code before calling your function.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
                      */
                     fun arguments(): Optional<String> =
                         Optional.ofNullable(arguments.getNullable("arguments"))
 
-                    /** The name of the function to call. */
+                    /**
+                     * The name of the function to call.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
                     fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
 
                     /**
-                     * The arguments to call the function with, as generated by the model in JSON
-                     * format. Note that the model does not always generate valid JSON, and may
-                     * hallucinate parameters not defined by your function schema. Validate the
-                     * arguments in your code before calling your function.
+                     * Returns the raw JSON value of [arguments].
+                     *
+                     * Unlike [arguments], this method doesn't throw if the JSON field has an
+                     * unexpected type.
                      */
                     @JsonProperty("arguments")
                     @ExcludeMissing
                     fun _arguments(): JsonField<String> = arguments
 
-                    /** The name of the function to call. */
+                    /**
+                     * Returns the raw JSON value of [name].
+                     *
+                     * Unlike [name], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
                     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
                     @JsonAnyGetter
@@ -1237,10 +1585,11 @@ private constructor(
                         fun arguments(arguments: String) = arguments(JsonField.of(arguments))
 
                         /**
-                         * The arguments to call the function with, as generated by the model in
-                         * JSON format. Note that the model does not always generate valid JSON, and
-                         * may hallucinate parameters not defined by your function schema. Validate
-                         * the arguments in your code before calling your function.
+                         * Sets [Builder.arguments] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.arguments] with a well-typed [String]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
                          */
                         fun arguments(arguments: JsonField<String>) = apply {
                             this.arguments = arguments
@@ -1249,7 +1598,13 @@ private constructor(
                         /** The name of the function to call. */
                         fun name(name: String) = name(JsonField.of(name))
 
-                        /** The name of the function to call. */
+                        /**
+                         * Sets [Builder.name] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.name] with a well-typed [String] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
                         fun name(name: JsonField<String>) = apply { this.name = name }
 
                         fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
@@ -1274,6 +1629,11 @@ private constructor(
                             keys.forEach(::removeAdditionalProperty)
                         }
 
+                        /**
+                         * Returns an immutable instance of [Function].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         */
                         fun build(): Function =
                             Function(arguments, name, additionalProperties.toImmutable())
                     }
@@ -1576,20 +1936,38 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
-            /** A list of message content tokens with log probability information. */
+            /**
+             * A list of message content tokens with log probability information.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
             fun content(): Optional<List<ChatCompletionTokenLogprob>> =
                 Optional.ofNullable(content.getNullable("content"))
 
-            /** A list of message refusal tokens with log probability information. */
+            /**
+             * A list of message refusal tokens with log probability information.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
             fun refusal(): Optional<List<ChatCompletionTokenLogprob>> =
                 Optional.ofNullable(refusal.getNullable("refusal"))
 
-            /** A list of message content tokens with log probability information. */
+            /**
+             * Returns the raw JSON value of [content].
+             *
+             * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("content")
             @ExcludeMissing
             fun _content(): JsonField<List<ChatCompletionTokenLogprob>> = content
 
-            /** A list of message refusal tokens with log probability information. */
+            /**
+             * Returns the raw JSON value of [refusal].
+             *
+             * Unlike [refusal], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("refusal")
             @ExcludeMissing
             fun _refusal(): JsonField<List<ChatCompletionTokenLogprob>> = refusal
@@ -1644,16 +2022,26 @@ private constructor(
                 fun content(content: List<ChatCompletionTokenLogprob>?) =
                     content(JsonField.ofNullable(content))
 
-                /** A list of message content tokens with log probability information. */
+                /** Alias for calling [Builder.content] with `content.orElse(null)`. */
                 fun content(content: Optional<List<ChatCompletionTokenLogprob>>) =
                     content(content.getOrNull())
 
-                /** A list of message content tokens with log probability information. */
+                /**
+                 * Sets [Builder.content] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.content] with a well-typed
+                 * `List<ChatCompletionTokenLogprob>` value instead. This method is primarily for
+                 * setting the field to an undocumented or not yet supported value.
+                 */
                 fun content(content: JsonField<List<ChatCompletionTokenLogprob>>) = apply {
                     this.content = content.map { it.toMutableList() }
                 }
 
-                /** A list of message content tokens with log probability information. */
+                /**
+                 * Adds a single [ChatCompletionTokenLogprob] to [Builder.content].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
                 fun addContent(content: ChatCompletionTokenLogprob) = apply {
                     this.content =
                         (this.content ?: JsonField.of(mutableListOf())).also {
@@ -1665,16 +2053,26 @@ private constructor(
                 fun refusal(refusal: List<ChatCompletionTokenLogprob>?) =
                     refusal(JsonField.ofNullable(refusal))
 
-                /** A list of message refusal tokens with log probability information. */
+                /** Alias for calling [Builder.refusal] with `refusal.orElse(null)`. */
                 fun refusal(refusal: Optional<List<ChatCompletionTokenLogprob>>) =
                     refusal(refusal.getOrNull())
 
-                /** A list of message refusal tokens with log probability information. */
+                /**
+                 * Sets [Builder.refusal] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.refusal] with a well-typed
+                 * `List<ChatCompletionTokenLogprob>` value instead. This method is primarily for
+                 * setting the field to an undocumented or not yet supported value.
+                 */
                 fun refusal(refusal: JsonField<List<ChatCompletionTokenLogprob>>) = apply {
                     this.refusal = refusal.map { it.toMutableList() }
                 }
 
-                /** A list of message refusal tokens with log probability information. */
+                /**
+                 * Adds a single [ChatCompletionTokenLogprob] to [Builder.refusal].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
                 fun addRefusal(refusal: ChatCompletionTokenLogprob) = apply {
                     this.refusal =
                         (this.refusal ?: JsonField.of(mutableListOf())).also {
@@ -1704,6 +2102,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Logprobs].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .content()
+                 * .refusal()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Logprobs =
                     Logprobs(
                         checkRequired("content", content).map { it.toImmutable() },

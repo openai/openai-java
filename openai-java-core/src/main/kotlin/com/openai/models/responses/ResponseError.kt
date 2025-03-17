@@ -30,16 +30,34 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The error code for the response. */
+    /**
+     * The error code for the response.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun code(): Code = code.getRequired("code")
 
-    /** A human-readable description of the error. */
+    /**
+     * A human-readable description of the error.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun message(): String = message.getRequired("message")
 
-    /** The error code for the response. */
+    /**
+     * Returns the raw JSON value of [code].
+     *
+     * Unlike [code], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("code") @ExcludeMissing fun _code(): JsonField<Code> = code
 
-    /** A human-readable description of the error. */
+    /**
+     * Returns the raw JSON value of [message].
+     *
+     * Unlike [message], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
     @JsonAnyGetter
@@ -91,13 +109,23 @@ private constructor(
         /** The error code for the response. */
         fun code(code: Code) = code(JsonField.of(code))
 
-        /** The error code for the response. */
+        /**
+         * Sets [Builder.code] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.code] with a well-typed [Code] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun code(code: JsonField<Code>) = apply { this.code = code }
 
         /** A human-readable description of the error. */
         fun message(message: String) = message(JsonField.of(message))
 
-        /** A human-readable description of the error. */
+        /**
+         * Sets [Builder.message] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.message] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun message(message: JsonField<String>) = apply { this.message = message }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -119,6 +147,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseError].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .code()
+         * .message()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseError =
             ResponseError(
                 checkRequired("code", code),

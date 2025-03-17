@@ -50,63 +50,139 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The Upload unique identifier, which can be referenced in API endpoints. */
+    /**
+     * The Upload unique identifier, which can be referenced in API endpoints.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** The intended number of bytes to be uploaded. */
+    /**
+     * The intended number of bytes to be uploaded.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun bytes(): Long = bytes.getRequired("bytes")
 
-    /** The Unix timestamp (in seconds) for when the Upload was created. */
+    /**
+     * The Unix timestamp (in seconds) for when the Upload was created.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun createdAt(): Long = createdAt.getRequired("created_at")
 
-    /** The Unix timestamp (in seconds) for when the Upload will expire. */
+    /**
+     * The Unix timestamp (in seconds) for when the Upload will expire.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun expiresAt(): Long = expiresAt.getRequired("expires_at")
 
-    /** The name of the file to be uploaded. */
+    /**
+     * The name of the file to be uploaded.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun filename(): String = filename.getRequired("filename")
 
-    /** The object type, which is always "upload". */
+    /**
+     * The object type, which is always "upload".
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("upload")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * The intended purpose of the file.
      * [Please refer here](https://platform.openai.com/docs/api-reference/files/object#files/object-purpose)
      * for acceptable values.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun purpose(): String = purpose.getRequired("purpose")
 
-    /** The status of the Upload. */
+    /**
+     * The status of the Upload.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun status(): Status = status.getRequired("status")
 
-    /** The `File` object represents a document that has been uploaded to OpenAI. */
+    /**
+     * The `File` object represents a document that has been uploaded to OpenAI.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun file(): Optional<FileObject> = Optional.ofNullable(file.getNullable("file"))
 
-    /** The Upload unique identifier, which can be referenced in API endpoints. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** The intended number of bytes to be uploaded. */
+    /**
+     * Returns the raw JSON value of [bytes].
+     *
+     * Unlike [bytes], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("bytes") @ExcludeMissing fun _bytes(): JsonField<Long> = bytes
 
-    /** The Unix timestamp (in seconds) for when the Upload was created. */
+    /**
+     * Returns the raw JSON value of [createdAt].
+     *
+     * Unlike [createdAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
-    /** The Unix timestamp (in seconds) for when the Upload will expire. */
+    /**
+     * Returns the raw JSON value of [expiresAt].
+     *
+     * Unlike [expiresAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt(): JsonField<Long> = expiresAt
 
-    /** The name of the file to be uploaded. */
+    /**
+     * Returns the raw JSON value of [filename].
+     *
+     * Unlike [filename], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("filename") @ExcludeMissing fun _filename(): JsonField<String> = filename
 
     /**
-     * The intended purpose of the file.
-     * [Please refer here](https://platform.openai.com/docs/api-reference/files/object#files/object-purpose)
-     * for acceptable values.
+     * Returns the raw JSON value of [purpose].
+     *
+     * Unlike [purpose], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("purpose") @ExcludeMissing fun _purpose(): JsonField<String> = purpose
 
-    /** The status of the Upload. */
+    /**
+     * Returns the raw JSON value of [status].
+     *
+     * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
-    /** The `File` object represents a document that has been uploaded to OpenAI. */
+    /**
+     * Returns the raw JSON value of [file].
+     *
+     * Unlike [file], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("file") @ExcludeMissing fun _file(): JsonField<FileObject> = file
 
     @JsonAnyGetter
@@ -188,34 +264,70 @@ private constructor(
         /** The Upload unique identifier, which can be referenced in API endpoints. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The Upload unique identifier, which can be referenced in API endpoints. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The intended number of bytes to be uploaded. */
         fun bytes(bytes: Long) = bytes(JsonField.of(bytes))
 
-        /** The intended number of bytes to be uploaded. */
+        /**
+         * Sets [Builder.bytes] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.bytes] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun bytes(bytes: JsonField<Long>) = apply { this.bytes = bytes }
 
         /** The Unix timestamp (in seconds) for when the Upload was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
-        /** The Unix timestamp (in seconds) for when the Upload was created. */
+        /**
+         * Sets [Builder.createdAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.createdAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /** The Unix timestamp (in seconds) for when the Upload will expire. */
         fun expiresAt(expiresAt: Long) = expiresAt(JsonField.of(expiresAt))
 
-        /** The Unix timestamp (in seconds) for when the Upload will expire. */
+        /**
+         * Sets [Builder.expiresAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.expiresAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
 
         /** The name of the file to be uploaded. */
         fun filename(filename: String) = filename(JsonField.of(filename))
 
-        /** The name of the file to be uploaded. */
+        /**
+         * Sets [Builder.filename] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.filename] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun filename(filename: JsonField<String>) = apply { this.filename = filename }
 
-        /** The object type, which is always "upload". */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("upload")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /**
@@ -226,25 +338,36 @@ private constructor(
         fun purpose(purpose: String) = purpose(JsonField.of(purpose))
 
         /**
-         * The intended purpose of the file.
-         * [Please refer here](https://platform.openai.com/docs/api-reference/files/object#files/object-purpose)
-         * for acceptable values.
+         * Sets [Builder.purpose] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.purpose] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun purpose(purpose: JsonField<String>) = apply { this.purpose = purpose }
 
         /** The status of the Upload. */
         fun status(status: Status) = status(JsonField.of(status))
 
-        /** The status of the Upload. */
+        /**
+         * Sets [Builder.status] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
         /** The `File` object represents a document that has been uploaded to OpenAI. */
         fun file(file: FileObject?) = file(JsonField.ofNullable(file))
 
-        /** The `File` object represents a document that has been uploaded to OpenAI. */
+        /** Alias for calling [Builder.file] with `file.orElse(null)`. */
         fun file(file: Optional<FileObject>) = file(file.getOrNull())
 
-        /** The `File` object represents a document that has been uploaded to OpenAI. */
+        /**
+         * Sets [Builder.file] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.file] with a well-typed [FileObject] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun file(file: JsonField<FileObject>) = apply { this.file = file }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -266,6 +389,24 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [Upload].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .bytes()
+         * .createdAt()
+         * .expiresAt()
+         * .filename()
+         * .purpose()
+         * .status()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): Upload =
             Upload(
                 checkRequired("id", id),

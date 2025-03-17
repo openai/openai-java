@@ -14,6 +14,7 @@ import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -38,12 +39,18 @@ private constructor(
     /**
      * The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and
      * dashes, with a maximum length of 64.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun name(): String = name.getRequired("name")
 
     /**
      * A description of what the function does, used by the model to choose when and how to call the
      * function.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun description(): Optional<String> =
         Optional.ofNullable(description.getNullable("description"))
@@ -55,6 +62,9 @@ private constructor(
      * about the format.
      *
      * Omitting `parameters` defines a function with an empty parameter list.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun parameters(): Optional<FunctionParameters> =
         Optional.ofNullable(parameters.getNullable("parameters"))
@@ -64,38 +74,39 @@ private constructor(
      * the model will follow the exact schema defined in the `parameters` field. Only a subset of
      * JSON Schema is supported when `strict` is `true`. Learn more about Structured Outputs in the
      * [function calling guide](docs/guides/function-calling).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun strict(): Optional<Boolean> = Optional.ofNullable(strict.getNullable("strict"))
 
     /**
-     * The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and
-     * dashes, with a maximum length of 64.
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
     /**
-     * A description of what the function does, used by the model to choose when and how to call the
-     * function.
+     * Returns the raw JSON value of [description].
+     *
+     * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("description") @ExcludeMissing fun _description(): JsonField<String> = description
 
     /**
-     * The parameters the functions accepts, described as a JSON Schema object. See the
-     * [guide](https://platform.openai.com/docs/guides/function-calling) for examples, and the
-     * [JSON Schema reference](https://json-schema.org/understanding-json-schema/) for documentation
-     * about the format.
+     * Returns the raw JSON value of [parameters].
      *
-     * Omitting `parameters` defines a function with an empty parameter list.
+     * Unlike [parameters], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("parameters")
     @ExcludeMissing
     fun _parameters(): JsonField<FunctionParameters> = parameters
 
     /**
-     * Whether to enable strict schema adherence when generating the function call. If set to true,
-     * the model will follow the exact schema defined in the `parameters` field. Only a subset of
-     * JSON Schema is supported when `strict` is `true`. Learn more about Structured Outputs in the
-     * [function calling guide](docs/guides/function-calling).
+     * Returns the raw JSON value of [strict].
+     *
+     * Unlike [strict], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("strict") @ExcludeMissing fun _strict(): JsonField<Boolean> = strict
 
@@ -157,8 +168,10 @@ private constructor(
         fun name(name: String) = name(JsonField.of(name))
 
         /**
-         * The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and
-         * dashes, with a maximum length of 64.
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun name(name: JsonField<String>) = apply { this.name = name }
 
@@ -169,8 +182,11 @@ private constructor(
         fun description(description: String) = description(JsonField.of(description))
 
         /**
-         * A description of what the function does, used by the model to choose when and how to call
-         * the function.
+         * Sets [Builder.description] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.description] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun description(description: JsonField<String>) = apply { this.description = description }
 
@@ -185,12 +201,11 @@ private constructor(
         fun parameters(parameters: FunctionParameters) = parameters(JsonField.of(parameters))
 
         /**
-         * The parameters the functions accepts, described as a JSON Schema object. See the
-         * [guide](https://platform.openai.com/docs/guides/function-calling) for examples, and the
-         * [JSON Schema reference](https://json-schema.org/understanding-json-schema/) for
-         * documentation about the format.
+         * Sets [Builder.parameters] to an arbitrary JSON value.
          *
-         * Omitting `parameters` defines a function with an empty parameter list.
+         * You should usually call [Builder.parameters] with a well-typed [FunctionParameters] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun parameters(parameters: JsonField<FunctionParameters>) = apply {
             this.parameters = parameters
@@ -205,26 +220,20 @@ private constructor(
         fun strict(strict: Boolean?) = strict(JsonField.ofNullable(strict))
 
         /**
-         * Whether to enable strict schema adherence when generating the function call. If set to
-         * true, the model will follow the exact schema defined in the `parameters` field. Only a
-         * subset of JSON Schema is supported when `strict` is `true`. Learn more about Structured
-         * Outputs in the [function calling guide](docs/guides/function-calling).
+         * Alias for [Builder.strict].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
          */
         fun strict(strict: Boolean) = strict(strict as Boolean?)
 
-        /**
-         * Whether to enable strict schema adherence when generating the function call. If set to
-         * true, the model will follow the exact schema defined in the `parameters` field. Only a
-         * subset of JSON Schema is supported when `strict` is `true`. Learn more about Structured
-         * Outputs in the [function calling guide](docs/guides/function-calling).
-         */
+        /** Alias for calling [Builder.strict] with `strict.orElse(null)`. */
         fun strict(strict: Optional<Boolean>) = strict(strict.getOrNull())
 
         /**
-         * Whether to enable strict schema adherence when generating the function call. If set to
-         * true, the model will follow the exact schema defined in the `parameters` field. Only a
-         * subset of JSON Schema is supported when `strict` is `true`. Learn more about Structured
-         * Outputs in the [function calling guide](docs/guides/function-calling).
+         * Sets [Builder.strict] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.strict] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun strict(strict: JsonField<Boolean>) = apply { this.strict = strict }
 
@@ -247,6 +256,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FunctionDefinition].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .name()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FunctionDefinition =
             FunctionDefinition(
                 checkRequired("name", name),

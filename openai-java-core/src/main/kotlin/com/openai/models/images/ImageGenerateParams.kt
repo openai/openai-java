@@ -34,33 +34,53 @@ private constructor(
     /**
      * A text description of the desired image(s). The maximum length is 1000 characters for
      * `dall-e-2` and 4000 characters for `dall-e-3`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun prompt(): String = body.prompt()
 
-    /** The model to use for image generation. */
+    /**
+     * The model to use for image generation.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun model(): Optional<ImageModel> = body.model()
 
     /**
      * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
      * supported.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun n(): Optional<Long> = body.n()
 
     /**
      * The quality of the image that will be generated. `hd` creates images with finer details and
      * greater consistency across the image. This param is only supported for `dall-e-3`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun quality(): Optional<Quality> = body.quality()
 
     /**
      * The format in which the generated images are returned. Must be one of `url` or `b64_json`.
      * URLs are only valid for 60 minutes after the image has been generated.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun responseFormat(): Optional<ResponseFormat> = body.responseFormat()
 
     /**
      * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024` for
      * `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for `dall-e-3` models.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun size(): Optional<Size> = body.size()
 
@@ -69,6 +89,9 @@ private constructor(
      * model to lean towards generating hyper-real and dramatic images. Natural causes the model to
      * produce more natural, less hyper-real looking images. This param is only supported for
      * `dall-e-3`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun style(): Optional<Style> = body.style()
 
@@ -76,54 +99,65 @@ private constructor(
      * A unique identifier representing your end-user, which can help OpenAI to monitor and detect
      * abuse.
      * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun user(): Optional<String> = body.user()
 
     /**
-     * A text description of the desired image(s). The maximum length is 1000 characters for
-     * `dall-e-2` and 4000 characters for `dall-e-3`.
+     * Returns the raw JSON value of [prompt].
+     *
+     * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _prompt(): JsonField<String> = body._prompt()
 
-    /** The model to use for image generation. */
+    /**
+     * Returns the raw JSON value of [model].
+     *
+     * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _model(): JsonField<ImageModel> = body._model()
 
     /**
-     * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
-     * supported.
+     * Returns the raw JSON value of [n].
+     *
+     * Unlike [n], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _n(): JsonField<Long> = body._n()
 
     /**
-     * The quality of the image that will be generated. `hd` creates images with finer details and
-     * greater consistency across the image. This param is only supported for `dall-e-3`.
+     * Returns the raw JSON value of [quality].
+     *
+     * Unlike [quality], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _quality(): JsonField<Quality> = body._quality()
 
     /**
-     * The format in which the generated images are returned. Must be one of `url` or `b64_json`.
-     * URLs are only valid for 60 minutes after the image has been generated.
+     * Returns the raw JSON value of [responseFormat].
+     *
+     * Unlike [responseFormat], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _responseFormat(): JsonField<ResponseFormat> = body._responseFormat()
 
     /**
-     * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024` for
-     * `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for `dall-e-3` models.
+     * Returns the raw JSON value of [size].
+     *
+     * Unlike [size], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _size(): JsonField<Size> = body._size()
 
     /**
-     * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes the
-     * model to lean towards generating hyper-real and dramatic images. Natural causes the model to
-     * produce more natural, less hyper-real looking images. This param is only supported for
-     * `dall-e-3`.
+     * Returns the raw JSON value of [style].
+     *
+     * Unlike [style], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _style(): JsonField<Style> = body._style()
 
     /**
-     * A unique identifier representing your end-user, which can help OpenAI to monitor and detect
-     * abuse.
-     * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+     * Returns the raw JSON value of [user].
+     *
+     * Unlike [user], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _user(): JsonField<String> = body._user()
 
@@ -170,27 +204,44 @@ private constructor(
         /**
          * A text description of the desired image(s). The maximum length is 1000 characters for
          * `dall-e-2` and 4000 characters for `dall-e-3`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun prompt(): String = prompt.getRequired("prompt")
 
-        /** The model to use for image generation. */
+        /**
+         * The model to use for image generation.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun model(): Optional<ImageModel> = Optional.ofNullable(model.getNullable("model"))
 
         /**
          * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
          * supported.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun n(): Optional<Long> = Optional.ofNullable(n.getNullable("n"))
 
         /**
          * The quality of the image that will be generated. `hd` creates images with finer details
          * and greater consistency across the image. This param is only supported for `dall-e-3`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun quality(): Optional<Quality> = Optional.ofNullable(quality.getNullable("quality"))
 
         /**
          * The format in which the generated images are returned. Must be one of `url` or
          * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun responseFormat(): Optional<ResponseFormat> =
             Optional.ofNullable(responseFormat.getNullable("response_format"))
@@ -199,6 +250,9 @@ private constructor(
          * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024` for
          * `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for `dall-e-3`
          * models.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun size(): Optional<Size> = Optional.ofNullable(size.getNullable("size"))
 
@@ -207,6 +261,9 @@ private constructor(
          * model to lean towards generating hyper-real and dramatic images. Natural causes the model
          * to produce more natural, less hyper-real looking images. This param is only supported for
          * `dall-e-3`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun style(): Optional<Style> = Optional.ofNullable(style.getNullable("style"))
 
@@ -214,57 +271,68 @@ private constructor(
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
          * detect abuse.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun user(): Optional<String> = Optional.ofNullable(user.getNullable("user"))
 
         /**
-         * A text description of the desired image(s). The maximum length is 1000 characters for
-         * `dall-e-2` and 4000 characters for `dall-e-3`.
+         * Returns the raw JSON value of [prompt].
+         *
+         * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<String> = prompt
 
-        /** The model to use for image generation. */
+        /**
+         * Returns the raw JSON value of [model].
+         *
+         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<ImageModel> = model
 
         /**
-         * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
-         * supported.
+         * Returns the raw JSON value of [n].
+         *
+         * Unlike [n], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("n") @ExcludeMissing fun _n(): JsonField<Long> = n
 
         /**
-         * The quality of the image that will be generated. `hd` creates images with finer details
-         * and greater consistency across the image. This param is only supported for `dall-e-3`.
+         * Returns the raw JSON value of [quality].
+         *
+         * Unlike [quality], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("quality") @ExcludeMissing fun _quality(): JsonField<Quality> = quality
 
         /**
-         * The format in which the generated images are returned. Must be one of `url` or
-         * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
+         * Returns the raw JSON value of [responseFormat].
+         *
+         * Unlike [responseFormat], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
         @JsonProperty("response_format")
         @ExcludeMissing
         fun _responseFormat(): JsonField<ResponseFormat> = responseFormat
 
         /**
-         * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024` for
-         * `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for `dall-e-3`
-         * models.
+         * Returns the raw JSON value of [size].
+         *
+         * Unlike [size], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("size") @ExcludeMissing fun _size(): JsonField<Size> = size
 
         /**
-         * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes the
-         * model to lean towards generating hyper-real and dramatic images. Natural causes the model
-         * to produce more natural, less hyper-real looking images. This param is only supported for
-         * `dall-e-3`.
+         * Returns the raw JSON value of [style].
+         *
+         * Unlike [style], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("style") @ExcludeMissing fun _style(): JsonField<Style> = style
 
         /**
-         * A unique identifier representing your end-user, which can help OpenAI to monitor and
-         * detect abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         * Returns the raw JSON value of [user].
+         *
+         * Unlike [user], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("user") @ExcludeMissing fun _user(): JsonField<String> = user
 
@@ -338,21 +406,36 @@ private constructor(
             fun prompt(prompt: String) = prompt(JsonField.of(prompt))
 
             /**
-             * A text description of the desired image(s). The maximum length is 1000 characters for
-             * `dall-e-2` and 4000 characters for `dall-e-3`.
+             * Sets [Builder.prompt] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.prompt] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun prompt(prompt: JsonField<String>) = apply { this.prompt = prompt }
 
             /** The model to use for image generation. */
             fun model(model: ImageModel?) = model(JsonField.ofNullable(model))
 
-            /** The model to use for image generation. */
+            /** Alias for calling [Builder.model] with `model.orElse(null)`. */
             fun model(model: Optional<ImageModel>) = model(model.getOrNull())
 
-            /** The model to use for image generation. */
+            /**
+             * Sets [Builder.model] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.model] with a well-typed [ImageModel] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun model(model: JsonField<ImageModel>) = apply { this.model = model }
 
-            /** The model to use for image generation. */
+            /**
+             * Sets [model] to an arbitrary [String].
+             *
+             * You should usually call [model] with a well-typed [ImageModel] constant instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun model(value: String) = model(ImageModel.of(value))
 
             /**
@@ -362,20 +445,21 @@ private constructor(
             fun n(n: Long?) = n(JsonField.ofNullable(n))
 
             /**
-             * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
-             * `n=1` is supported.
+             * Alias for [Builder.n].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
              */
             fun n(n: Long) = n(n as Long?)
 
-            /**
-             * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
-             * `n=1` is supported.
-             */
+            /** Alias for calling [Builder.n] with `n.orElse(null)`. */
             fun n(n: Optional<Long>) = n(n.getOrNull())
 
             /**
-             * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
-             * `n=1` is supported.
+             * Sets [Builder.n] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.n] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun n(n: JsonField<Long>) = apply { this.n = n }
 
@@ -387,9 +471,11 @@ private constructor(
             fun quality(quality: Quality) = quality(JsonField.of(quality))
 
             /**
-             * The quality of the image that will be generated. `hd` creates images with finer
-             * details and greater consistency across the image. This param is only supported for
-             * `dall-e-3`.
+             * Sets [Builder.quality] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.quality] with a well-typed [Quality] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun quality(quality: JsonField<Quality>) = apply { this.quality = quality }
 
@@ -400,16 +486,16 @@ private constructor(
             fun responseFormat(responseFormat: ResponseFormat?) =
                 responseFormat(JsonField.ofNullable(responseFormat))
 
-            /**
-             * The format in which the generated images are returned. Must be one of `url` or
-             * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
-             */
+            /** Alias for calling [Builder.responseFormat] with `responseFormat.orElse(null)`. */
             fun responseFormat(responseFormat: Optional<ResponseFormat>) =
                 responseFormat(responseFormat.getOrNull())
 
             /**
-             * The format in which the generated images are returned. Must be one of `url` or
-             * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
+             * Sets [Builder.responseFormat] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.responseFormat] with a well-typed [ResponseFormat]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
              */
             fun responseFormat(responseFormat: JsonField<ResponseFormat>) = apply {
                 this.responseFormat = responseFormat
@@ -422,17 +508,15 @@ private constructor(
              */
             fun size(size: Size?) = size(JsonField.ofNullable(size))
 
-            /**
-             * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`
-             * for `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for
-             * `dall-e-3` models.
-             */
+            /** Alias for calling [Builder.size] with `size.orElse(null)`. */
             fun size(size: Optional<Size>) = size(size.getOrNull())
 
             /**
-             * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`
-             * for `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for
-             * `dall-e-3` models.
+             * Sets [Builder.size] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.size] with a well-typed [Size] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun size(size: JsonField<Size>) = apply { this.size = size }
 
@@ -444,19 +528,15 @@ private constructor(
              */
             fun style(style: Style?) = style(JsonField.ofNullable(style))
 
-            /**
-             * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes
-             * the model to lean towards generating hyper-real and dramatic images. Natural causes
-             * the model to produce more natural, less hyper-real looking images. This param is only
-             * supported for `dall-e-3`.
-             */
+            /** Alias for calling [Builder.style] with `style.orElse(null)`. */
             fun style(style: Optional<Style>) = style(style.getOrNull())
 
             /**
-             * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes
-             * the model to lean towards generating hyper-real and dramatic images. Natural causes
-             * the model to produce more natural, less hyper-real looking images. This param is only
-             * supported for `dall-e-3`.
+             * Sets [Builder.style] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.style] with a well-typed [Style] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun style(style: JsonField<Style>) = apply { this.style = style }
 
@@ -468,9 +548,11 @@ private constructor(
             fun user(user: String) = user(JsonField.of(user))
 
             /**
-             * A unique identifier representing your end-user, which can help OpenAI to monitor and
-             * detect abuse.
-             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+             * Sets [Builder.user] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.user] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun user(user: JsonField<String>) = apply { this.user = user }
 
@@ -493,6 +575,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .prompt()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("prompt", prompt),
@@ -562,21 +656,34 @@ private constructor(
         fun prompt(prompt: String) = apply { body.prompt(prompt) }
 
         /**
-         * A text description of the desired image(s). The maximum length is 1000 characters for
-         * `dall-e-2` and 4000 characters for `dall-e-3`.
+         * Sets [Builder.prompt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.prompt] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun prompt(prompt: JsonField<String>) = apply { body.prompt(prompt) }
 
         /** The model to use for image generation. */
         fun model(model: ImageModel?) = apply { body.model(model) }
 
-        /** The model to use for image generation. */
+        /** Alias for calling [Builder.model] with `model.orElse(null)`. */
         fun model(model: Optional<ImageModel>) = model(model.getOrNull())
 
-        /** The model to use for image generation. */
+        /**
+         * Sets [Builder.model] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.model] with a well-typed [ImageModel] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun model(model: JsonField<ImageModel>) = apply { body.model(model) }
 
-        /** The model to use for image generation. */
+        /**
+         * Sets [model] to an arbitrary [String].
+         *
+         * You should usually call [model] with a well-typed [ImageModel] constant instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun model(value: String) = apply { body.model(value) }
 
         /**
@@ -586,20 +693,20 @@ private constructor(
         fun n(n: Long?) = apply { body.n(n) }
 
         /**
-         * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
-         * supported.
+         * Alias for [Builder.n].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
          */
         fun n(n: Long) = n(n as Long?)
 
-        /**
-         * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
-         * supported.
-         */
+        /** Alias for calling [Builder.n] with `n.orElse(null)`. */
         fun n(n: Optional<Long>) = n(n.getOrNull())
 
         /**
-         * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
-         * supported.
+         * Sets [Builder.n] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.n] with a well-typed [Long] value instead. This method
+         * is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun n(n: JsonField<Long>) = apply { body.n(n) }
 
@@ -610,8 +717,10 @@ private constructor(
         fun quality(quality: Quality) = apply { body.quality(quality) }
 
         /**
-         * The quality of the image that will be generated. `hd` creates images with finer details
-         * and greater consistency across the image. This param is only supported for `dall-e-3`.
+         * Sets [Builder.quality] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.quality] with a well-typed [Quality] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun quality(quality: JsonField<Quality>) = apply { body.quality(quality) }
 
@@ -623,16 +732,16 @@ private constructor(
             body.responseFormat(responseFormat)
         }
 
-        /**
-         * The format in which the generated images are returned. Must be one of `url` or
-         * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
-         */
+        /** Alias for calling [Builder.responseFormat] with `responseFormat.orElse(null)`. */
         fun responseFormat(responseFormat: Optional<ResponseFormat>) =
             responseFormat(responseFormat.getOrNull())
 
         /**
-         * The format in which the generated images are returned. Must be one of `url` or
-         * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
+         * Sets [Builder.responseFormat] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.responseFormat] with a well-typed [ResponseFormat] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun responseFormat(responseFormat: JsonField<ResponseFormat>) = apply {
             body.responseFormat(responseFormat)
@@ -645,17 +754,14 @@ private constructor(
          */
         fun size(size: Size?) = apply { body.size(size) }
 
-        /**
-         * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024` for
-         * `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for `dall-e-3`
-         * models.
-         */
+        /** Alias for calling [Builder.size] with `size.orElse(null)`. */
         fun size(size: Optional<Size>) = size(size.getOrNull())
 
         /**
-         * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024` for
-         * `dall-e-2`. Must be one of `1024x1024`, `1792x1024`, or `1024x1792` for `dall-e-3`
-         * models.
+         * Sets [Builder.size] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.size] with a well-typed [Size] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun size(size: JsonField<Size>) = apply { body.size(size) }
 
@@ -667,19 +773,14 @@ private constructor(
          */
         fun style(style: Style?) = apply { body.style(style) }
 
-        /**
-         * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes the
-         * model to lean towards generating hyper-real and dramatic images. Natural causes the model
-         * to produce more natural, less hyper-real looking images. This param is only supported for
-         * `dall-e-3`.
-         */
+        /** Alias for calling [Builder.style] with `style.orElse(null)`. */
         fun style(style: Optional<Style>) = style(style.getOrNull())
 
         /**
-         * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes the
-         * model to lean towards generating hyper-real and dramatic images. Natural causes the model
-         * to produce more natural, less hyper-real looking images. This param is only supported for
-         * `dall-e-3`.
+         * Sets [Builder.style] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.style] with a well-typed [Style] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun style(style: JsonField<Style>) = apply { body.style(style) }
 
@@ -691,9 +792,10 @@ private constructor(
         fun user(user: String) = apply { body.user(user) }
 
         /**
-         * A unique identifier representing your end-user, which can help OpenAI to monitor and
-         * detect abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         * Sets [Builder.user] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.user] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun user(user: JsonField<String>) = apply { body.user(user) }
 
@@ -814,6 +916,18 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [ImageGenerateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .prompt()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ImageGenerateParams =
             ImageGenerateParams(
                 body.build(),

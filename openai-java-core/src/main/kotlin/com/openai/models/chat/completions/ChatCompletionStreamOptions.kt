@@ -13,6 +13,7 @@ import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
@@ -32,15 +33,17 @@ private constructor(
      * field on this chunk shows the token usage statistics for the entire request, and the
      * `choices` field will always be an empty array. All other chunks will also include a `usage`
      * field, but with a null value.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun includeUsage(): Optional<Boolean> =
         Optional.ofNullable(includeUsage.getNullable("include_usage"))
 
     /**
-     * If set, an additional chunk will be streamed before the `data: [DONE]` message. The `usage`
-     * field on this chunk shows the token usage statistics for the entire request, and the
-     * `choices` field will always be an empty array. All other chunks will also include a `usage`
-     * field, but with a null value.
+     * Returns the raw JSON value of [includeUsage].
+     *
+     * Unlike [includeUsage], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("include_usage")
     @ExcludeMissing
@@ -92,10 +95,11 @@ private constructor(
         fun includeUsage(includeUsage: Boolean) = includeUsage(JsonField.of(includeUsage))
 
         /**
-         * If set, an additional chunk will be streamed before the `data: [DONE]` message. The
-         * `usage` field on this chunk shows the token usage statistics for the entire request, and
-         * the `choices` field will always be an empty array. All other chunks will also include a
-         * `usage` field, but with a null value.
+         * Sets [Builder.includeUsage] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.includeUsage] with a well-typed [Boolean] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun includeUsage(includeUsage: JsonField<Boolean>) = apply {
             this.includeUsage = includeUsage
@@ -120,6 +124,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ChatCompletionStreamOptions].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): ChatCompletionStreamOptions =
             ChatCompletionStreamOptions(includeUsage, additionalProperties.toImmutable())
     }

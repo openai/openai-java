@@ -23,7 +23,17 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The type of tool being defined: `code_interpreter` */
+    /**
+     * The type of tool being defined: `code_interpreter`
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("code_interpreter")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     @JsonAnyGetter
@@ -65,7 +75,18 @@ private constructor(
             additionalProperties = codeInterpreterTool.additionalProperties.toMutableMap()
         }
 
-        /** The type of tool being defined: `code_interpreter` */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("code_interpreter")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -87,6 +108,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [CodeInterpreterTool].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): CodeInterpreterTool =
             CodeInterpreterTool(type, additionalProperties.toImmutable())
     }

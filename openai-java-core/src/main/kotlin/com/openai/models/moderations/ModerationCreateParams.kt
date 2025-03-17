@@ -45,6 +45,9 @@ private constructor(
     /**
      * Input (or inputs) to classify. Can be a single string, an array of strings, or an array of
      * multi-modal input objects similar to other models.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun input(): Input = body.input()
 
@@ -52,19 +55,23 @@ private constructor(
      * The content moderation model you would like to use. Learn more in
      * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn about
      * available models [here](https://platform.openai.com/docs/models#moderation).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun model(): Optional<ModerationModel> = body.model()
 
     /**
-     * Input (or inputs) to classify. Can be a single string, an array of strings, or an array of
-     * multi-modal input objects similar to other models.
+     * Returns the raw JSON value of [input].
+     *
+     * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _input(): JsonField<Input> = body._input()
 
     /**
-     * The content moderation model you would like to use. Learn more in
-     * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn about
-     * available models [here](https://platform.openai.com/docs/models#moderation).
+     * Returns the raw JSON value of [model].
+     *
+     * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _model(): JsonField<ModerationModel> = body._model()
 
@@ -97,6 +104,9 @@ private constructor(
         /**
          * Input (or inputs) to classify. Can be a single string, an array of strings, or an array
          * of multi-modal input objects similar to other models.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun input(): Input = input.getRequired("input")
 
@@ -104,19 +114,23 @@ private constructor(
          * The content moderation model you would like to use. Learn more in
          * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
          * about available models [here](https://platform.openai.com/docs/models#moderation).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun model(): Optional<ModerationModel> = Optional.ofNullable(model.getNullable("model"))
 
         /**
-         * Input (or inputs) to classify. Can be a single string, an array of strings, or an array
-         * of multi-modal input objects similar to other models.
+         * Returns the raw JSON value of [input].
+         *
+         * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("input") @ExcludeMissing fun _input(): JsonField<Input> = input
 
         /**
-         * The content moderation model you would like to use. Learn more in
-         * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
-         * about available models [here](https://platform.openai.com/docs/models#moderation).
+         * Returns the raw JSON value of [model].
+         *
+         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<ModerationModel> = model
 
@@ -172,18 +186,24 @@ private constructor(
             fun input(input: Input) = input(JsonField.of(input))
 
             /**
-             * Input (or inputs) to classify. Can be a single string, an array of strings, or an
-             * array of multi-modal input objects similar to other models.
+             * Sets [Builder.input] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.input] with a well-typed [Input] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun input(input: JsonField<Input>) = apply { this.input = input }
 
-            /** A string of text to classify for moderation. */
+            /** Alias for calling [input] with `Input.ofString(string)`. */
             fun input(string: String) = input(Input.ofString(string))
 
-            /** An array of strings to classify for moderation. */
+            /** Alias for calling [input] with `Input.ofStrings(strings)`. */
             fun inputOfStrings(strings: List<String>) = input(Input.ofStrings(strings))
 
-            /** An array of multi-modal inputs to the moderation model. */
+            /**
+             * Alias for calling [input] with
+             * `Input.ofModerationMultiModalArray(moderationMultiModalArray)`.
+             */
             fun inputOfModerationMultiModalArray(
                 moderationMultiModalArray: List<ModerationMultiModalInput>
             ) = input(Input.ofModerationMultiModalArray(moderationMultiModalArray))
@@ -196,16 +216,20 @@ private constructor(
             fun model(model: ModerationModel) = model(JsonField.of(model))
 
             /**
-             * The content moderation model you would like to use. Learn more in
-             * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
-             * about available models [here](https://platform.openai.com/docs/models#moderation).
+             * Sets [Builder.model] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.model] with a well-typed [ModerationModel] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun model(model: JsonField<ModerationModel>) = apply { this.model = model }
 
             /**
-             * The content moderation model you would like to use. Learn more in
-             * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
-             * about available models [here](https://platform.openai.com/docs/models#moderation).
+             * Sets [model] to an arbitrary [String].
+             *
+             * You should usually call [model] with a well-typed [ModerationModel] constant instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun model(value: String) = model(ModerationModel.of(value))
 
@@ -228,6 +252,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .input()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(checkRequired("input", input), model, additionalProperties.toImmutable())
         }
@@ -287,18 +323,23 @@ private constructor(
         fun input(input: Input) = apply { body.input(input) }
 
         /**
-         * Input (or inputs) to classify. Can be a single string, an array of strings, or an array
-         * of multi-modal input objects similar to other models.
+         * Sets [Builder.input] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.input] with a well-typed [Input] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun input(input: JsonField<Input>) = apply { body.input(input) }
 
-        /** A string of text to classify for moderation. */
+        /** Alias for calling [input] with `Input.ofString(string)`. */
         fun input(string: String) = apply { body.input(string) }
 
-        /** An array of strings to classify for moderation. */
+        /** Alias for calling [input] with `Input.ofStrings(strings)`. */
         fun inputOfStrings(strings: List<String>) = apply { body.inputOfStrings(strings) }
 
-        /** An array of multi-modal inputs to the moderation model. */
+        /**
+         * Alias for calling [input] with
+         * `Input.ofModerationMultiModalArray(moderationMultiModalArray)`.
+         */
         fun inputOfModerationMultiModalArray(
             moderationMultiModalArray: List<ModerationMultiModalInput>
         ) = apply { body.inputOfModerationMultiModalArray(moderationMultiModalArray) }
@@ -311,16 +352,20 @@ private constructor(
         fun model(model: ModerationModel) = apply { body.model(model) }
 
         /**
-         * The content moderation model you would like to use. Learn more in
-         * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
-         * about available models [here](https://platform.openai.com/docs/models#moderation).
+         * Sets [Builder.model] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.model] with a well-typed [ModerationModel] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun model(model: JsonField<ModerationModel>) = apply { body.model(model) }
 
         /**
-         * The content moderation model you would like to use. Learn more in
-         * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
-         * about available models [here](https://platform.openai.com/docs/models#moderation).
+         * Sets [model] to an arbitrary [String].
+         *
+         * You should usually call [model] with a well-typed [ModerationModel] constant instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun model(value: String) = apply { body.model(value) }
 
@@ -441,6 +486,18 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [ModerationCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .input()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ModerationCreateParams =
             ModerationCreateParams(
                 body.build(),

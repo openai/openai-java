@@ -32,25 +32,62 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The index of the tool call in the tool calls array. */
+    /**
+     * The index of the tool call in the tool calls array.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun index(): Long = index.getRequired("index")
 
-    /** The type of tool call. This is always going to be `function` for this type of tool call. */
+    /**
+     * The type of tool call. This is always going to be `function` for this type of tool call.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("function")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** The ID of the tool call object. */
+    /**
+     * The ID of the tool call object.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun id(): Optional<String> = Optional.ofNullable(id.getNullable("id"))
 
-    /** The definition of the function that was called. */
+    /**
+     * The definition of the function that was called.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun function(): Optional<Function> = Optional.ofNullable(function.getNullable("function"))
 
-    /** The index of the tool call in the tool calls array. */
+    /**
+     * Returns the raw JSON value of [index].
+     *
+     * Unlike [index], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
-    /** The ID of the tool call object. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** The definition of the function that was called. */
+    /**
+     * Returns the raw JSON value of [function].
+     *
+     * Unlike [function], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("function") @ExcludeMissing fun _function(): JsonField<Function> = function
 
     @JsonAnyGetter
@@ -111,24 +148,49 @@ private constructor(
         /** The index of the tool call in the tool calls array. */
         fun index(index: Long) = index(JsonField.of(index))
 
-        /** The index of the tool call in the tool calls array. */
+        /**
+         * Sets [Builder.index] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.index] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun index(index: JsonField<Long>) = apply { this.index = index }
 
         /**
-         * The type of tool call. This is always going to be `function` for this type of tool call.
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("function")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
         /** The ID of the tool call object. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The ID of the tool call object. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The definition of the function that was called. */
         fun function(function: Function) = function(JsonField.of(function))
 
-        /** The definition of the function that was called. */
+        /**
+         * Sets [Builder.function] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.function] with a well-typed [Function] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun function(function: JsonField<Function>) = apply { this.function = function }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -150,6 +212,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FunctionToolCallDelta].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .index()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FunctionToolCallDelta =
             FunctionToolCallDelta(
                 checkRequired("index", index),
@@ -178,27 +252,49 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The arguments passed to the function. */
+        /**
+         * The arguments passed to the function.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun arguments(): Optional<String> = Optional.ofNullable(arguments.getNullable("arguments"))
 
-        /** The name of the function. */
+        /**
+         * The name of the function.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
 
         /**
          * The output of the function. This will be `null` if the outputs have not been
          * [submitted](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs) yet.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun output(): Optional<String> = Optional.ofNullable(output.getNullable("output"))
 
-        /** The arguments passed to the function. */
+        /**
+         * Returns the raw JSON value of [arguments].
+         *
+         * Unlike [arguments], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("arguments") @ExcludeMissing fun _arguments(): JsonField<String> = arguments
 
-        /** The name of the function. */
+        /**
+         * Returns the raw JSON value of [name].
+         *
+         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         /**
-         * The output of the function. This will be `null` if the outputs have not been
-         * [submitted](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs) yet.
+         * Returns the raw JSON value of [output].
+         *
+         * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<String> = output
 
@@ -246,13 +342,25 @@ private constructor(
             /** The arguments passed to the function. */
             fun arguments(arguments: String) = arguments(JsonField.of(arguments))
 
-            /** The arguments passed to the function. */
+            /**
+             * Sets [Builder.arguments] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.arguments] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun arguments(arguments: JsonField<String>) = apply { this.arguments = arguments }
 
             /** The name of the function. */
             fun name(name: String) = name(JsonField.of(name))
 
-            /** The name of the function. */
+            /**
+             * Sets [Builder.name] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.name] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun name(name: JsonField<String>) = apply { this.name = name }
 
             /**
@@ -262,17 +370,15 @@ private constructor(
              */
             fun output(output: String?) = output(JsonField.ofNullable(output))
 
-            /**
-             * The output of the function. This will be `null` if the outputs have not been
-             * [submitted](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs)
-             * yet.
-             */
+            /** Alias for calling [Builder.output] with `output.orElse(null)`. */
             fun output(output: Optional<String>) = output(output.getOrNull())
 
             /**
-             * The output of the function. This will be `null` if the outputs have not been
-             * [submitted](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs)
-             * yet.
+             * Sets [Builder.output] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.output] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun output(output: JsonField<String>) = apply { this.output = output }
 
@@ -295,6 +401,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Function].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Function =
                 Function(arguments, name, output, additionalProperties.toImmutable())
         }

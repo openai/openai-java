@@ -5,7 +5,7 @@ package com.openai.models.responses
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ResponseFunctionToolCallTest {
+internal class ResponseFunctionToolCallTest {
 
     @Test
     fun createResponseFunctionToolCall() {

@@ -5,7 +5,7 @@ package com.openai.models.vectorstores.files
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class FileContentResponseTest {
+internal class FileContentResponseTest {
 
     @Test
     fun createFileContentResponse() {

@@ -29,13 +29,32 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The response that is in progress. */
+    /**
+     * The response that is in progress.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun response(): Response = response.getRequired("response")
 
-    /** The type of the event. Always `response.in_progress`. */
+    /**
+     * The type of the event. Always `response.in_progress`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("response.in_progress")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** The response that is in progress. */
+    /**
+     * Returns the raw JSON value of [response].
+     *
+     * Unlike [response], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("response") @ExcludeMissing fun _response(): JsonField<Response> = response
 
     @JsonAnyGetter
@@ -90,10 +109,27 @@ private constructor(
         /** The response that is in progress. */
         fun response(response: Response) = response(JsonField.of(response))
 
-        /** The response that is in progress. */
+        /**
+         * Sets [Builder.response] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.response] with a well-typed [Response] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun response(response: JsonField<Response>) = apply { this.response = response }
 
-        /** The type of the event. Always `response.in_progress`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("response.in_progress")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -115,6 +151,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseInProgressEvent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseInProgressEvent =
             ResponseInProgressEvent(
                 checkRequired("response", response),

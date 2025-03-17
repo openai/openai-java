@@ -133,12 +133,7 @@ private constructor(
          */
         fun after(after: String?) = apply { this.after = after }
 
-        /**
-         * A cursor for use in pagination. `after` is an object ID that defines your place in the
-         * list. For instance, if you make a list request and receive 100 objects, ending with
-         * obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page
-         * of the list.
-         */
+        /** Alias for calling [Builder.after] with `after.orElse(null)`. */
         fun after(after: Optional<String>) = after(after.getOrNull())
 
         /**
@@ -149,12 +144,7 @@ private constructor(
          */
         fun before(before: String?) = apply { this.before = before }
 
-        /**
-         * A cursor for use in pagination. `before` is an object ID that defines your place in the
-         * list. For instance, if you make a list request and receive 100 objects, starting with
-         * obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous
-         * page of the list.
-         */
+        /** Alias for calling [Builder.before] with `before.orElse(null)`. */
         fun before(before: Optional<String>) = before(before.getOrNull())
 
         /**
@@ -164,15 +154,13 @@ private constructor(
         fun limit(limit: Long?) = apply { this.limit = limit }
 
         /**
-         * A limit on the number of objects to be returned. Limit can range between 1 and 100, and
-         * the default is 20.
+         * Alias for [Builder.limit].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
          */
         fun limit(limit: Long) = limit(limit as Long?)
 
-        /**
-         * A limit on the number of objects to be returned. Limit can range between 1 and 100, and
-         * the default is 20.
-         */
+        /** Alias for calling [Builder.limit] with `limit.orElse(null)`. */
         fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
 
         /**
@@ -181,16 +169,13 @@ private constructor(
          */
         fun order(order: Order?) = apply { this.order = order }
 
-        /**
-         * Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and
-         * `desc` for descending order.
-         */
+        /** Alias for calling [Builder.order] with `order.orElse(null)`. */
         fun order(order: Optional<Order>) = order(order.getOrNull())
 
         /** Filter messages by the run ID that generated them. */
         fun runId(runId: String?) = apply { this.runId = runId }
 
-        /** Filter messages by the run ID that generated them. */
+        /** Alias for calling [Builder.runId] with `runId.orElse(null)`. */
         fun runId(runId: Optional<String>) = runId(runId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
@@ -291,6 +276,18 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [MessageListParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .threadId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): MessageListParams =
             MessageListParams(
                 checkRequired("threadId", threadId),

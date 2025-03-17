@@ -14,6 +14,7 @@ import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
@@ -28,17 +29,35 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun annotations(): Optional<List<AnnotationDelta>> =
         Optional.ofNullable(annotations.getNullable("annotations"))
 
-    /** The data that makes up the text. */
+    /**
+     * The data that makes up the text.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun value(): Optional<String> = Optional.ofNullable(value.getNullable("value"))
 
+    /**
+     * Returns the raw JSON value of [annotations].
+     *
+     * Unlike [annotations], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("annotations")
     @ExcludeMissing
     fun _annotations(): JsonField<List<AnnotationDelta>> = annotations
 
-    /** The data that makes up the text. */
+    /**
+     * Returns the raw JSON value of [value].
+     *
+     * Unlike [value], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("value") @ExcludeMissing fun _value(): JsonField<String> = value
 
     @JsonAnyGetter
@@ -81,10 +100,22 @@ private constructor(
 
         fun annotations(annotations: List<AnnotationDelta>) = annotations(JsonField.of(annotations))
 
+        /**
+         * Sets [Builder.annotations] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.annotations] with a well-typed `List<AnnotationDelta>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
         fun annotations(annotations: JsonField<List<AnnotationDelta>>) = apply {
             this.annotations = annotations.map { it.toMutableList() }
         }
 
+        /**
+         * Adds a single [AnnotationDelta] to [annotations].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addAnnotation(annotation: AnnotationDelta) = apply {
             annotations =
                 (annotations ?: JsonField.of(mutableListOf())).also {
@@ -93,31 +124,33 @@ private constructor(
         }
 
         /**
-         * A citation within the message that points to a specific quote from a specific File
-         * associated with the assistant or the message. Generated when the assistant uses the
-         * "file_search" tool to search files.
+         * Alias for calling [addAnnotation] with `AnnotationDelta.ofFileCitation(fileCitation)`.
          */
         fun addAnnotation(fileCitation: FileCitationDeltaAnnotation) =
             addAnnotation(AnnotationDelta.ofFileCitation(fileCitation))
 
         /**
-         * A citation within the message that points to a specific quote from a specific File
-         * associated with the assistant or the message. Generated when the assistant uses the
-         * "file_search" tool to search files.
+         * Alias for calling [addAnnotation] with the following:
+         * ```java
+         * FileCitationDeltaAnnotation.builder()
+         *     .index(index)
+         *     .build()
+         * ```
          */
         fun addFileCitationAnnotation(index: Long) =
             addAnnotation(FileCitationDeltaAnnotation.builder().index(index).build())
 
-        /**
-         * A URL for the file that's generated when the assistant used the `code_interpreter` tool
-         * to generate a file.
-         */
+        /** Alias for calling [addAnnotation] with `AnnotationDelta.ofFilePath(filePath)`. */
         fun addAnnotation(filePath: FilePathDeltaAnnotation) =
             addAnnotation(AnnotationDelta.ofFilePath(filePath))
 
         /**
-         * A URL for the file that's generated when the assistant used the `code_interpreter` tool
-         * to generate a file.
+         * Alias for calling [addAnnotation] with the following:
+         * ```java
+         * FilePathDeltaAnnotation.builder()
+         *     .index(index)
+         *     .build()
+         * ```
          */
         fun addFilePathAnnotation(index: Long) =
             addAnnotation(FilePathDeltaAnnotation.builder().index(index).build())
@@ -125,7 +158,12 @@ private constructor(
         /** The data that makes up the text. */
         fun value(value: String) = value(JsonField.of(value))
 
-        /** The data that makes up the text. */
+        /**
+         * Sets [Builder.value] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.value] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun value(value: JsonField<String>) = apply { this.value = value }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -147,6 +185,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [TextDelta].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): TextDelta =
             TextDelta(
                 (annotations ?: JsonMissing.of()).map { it.toImmutable() },

@@ -31,19 +31,37 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The content of the message in array of text and/or images. */
+    /**
+     * The content of the message in array of text and/or images.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun content(): Optional<List<MessageContentDelta>> =
         Optional.ofNullable(content.getNullable("content"))
 
-    /** The entity that produced the message. One of `user` or `assistant`. */
+    /**
+     * The entity that produced the message. One of `user` or `assistant`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun role(): Optional<Role> = Optional.ofNullable(role.getNullable("role"))
 
-    /** The content of the message in array of text and/or images. */
+    /**
+     * Returns the raw JSON value of [content].
+     *
+     * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("content")
     @ExcludeMissing
     fun _content(): JsonField<List<MessageContentDelta>> = content
 
-    /** The entity that produced the message. One of `user` or `assistant`. */
+    /**
+     * Returns the raw JSON value of [role].
+     *
+     * Unlike [role], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
 
     @JsonAnyGetter
@@ -87,12 +105,22 @@ private constructor(
         /** The content of the message in array of text and/or images. */
         fun content(content: List<MessageContentDelta>) = content(JsonField.of(content))
 
-        /** The content of the message in array of text and/or images. */
+        /**
+         * Sets [Builder.content] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.content] with a well-typed `List<MessageContentDelta>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
         fun content(content: JsonField<List<MessageContentDelta>>) = apply {
             this.content = content.map { it.toMutableList() }
         }
 
-        /** The content of the message in array of text and/or images. */
+        /**
+         * Adds a single [MessageContentDelta] to [Builder.content].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addContent(content: MessageContentDelta) = apply {
             this.content =
                 (this.content ?: JsonField.of(mutableListOf())).also {
@@ -100,46 +128,73 @@ private constructor(
                 }
         }
 
-        /**
-         * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
-         * content of a message.
-         */
+        /** Alias for calling [addContent] with `MessageContentDelta.ofImageFile(imageFile)`. */
         fun addContent(imageFile: ImageFileDeltaBlock) =
             addContent(MessageContentDelta.ofImageFile(imageFile))
 
         /**
-         * References an image [File](https://platform.openai.com/docs/api-reference/files) in the
-         * content of a message.
+         * Alias for calling [addContent] with the following:
+         * ```java
+         * ImageFileDeltaBlock.builder()
+         *     .index(index)
+         *     .build()
+         * ```
          */
         fun addImageFileContent(index: Long) =
             addContent(ImageFileDeltaBlock.builder().index(index).build())
 
-        /** The text content that is part of a message. */
+        /** Alias for calling [addContent] with `MessageContentDelta.ofText(text)`. */
         fun addContent(text: TextDeltaBlock) = addContent(MessageContentDelta.ofText(text))
 
-        /** The text content that is part of a message. */
+        /**
+         * Alias for calling [addContent] with the following:
+         * ```java
+         * TextDeltaBlock.builder()
+         *     .index(index)
+         *     .build()
+         * ```
+         */
         fun addTextContent(index: Long) = addContent(TextDeltaBlock.builder().index(index).build())
 
-        /** The refusal content that is part of a message. */
+        /** Alias for calling [addContent] with `MessageContentDelta.ofRefusal(refusal)`. */
         fun addContent(refusal: RefusalDeltaBlock) =
             addContent(MessageContentDelta.ofRefusal(refusal))
 
-        /** The refusal content that is part of a message. */
+        /**
+         * Alias for calling [addContent] with the following:
+         * ```java
+         * RefusalDeltaBlock.builder()
+         *     .index(index)
+         *     .build()
+         * ```
+         */
         fun addRefusalContent(index: Long) =
             addContent(RefusalDeltaBlock.builder().index(index).build())
 
-        /** References an image URL in the content of a message. */
+        /** Alias for calling [addContent] with `MessageContentDelta.ofImageUrl(imageUrl)`. */
         fun addContent(imageUrl: ImageUrlDeltaBlock) =
             addContent(MessageContentDelta.ofImageUrl(imageUrl))
 
-        /** References an image URL in the content of a message. */
+        /**
+         * Alias for calling [addContent] with the following:
+         * ```java
+         * ImageUrlDeltaBlock.builder()
+         *     .index(index)
+         *     .build()
+         * ```
+         */
         fun addImageUrlContent(index: Long) =
             addContent(ImageUrlDeltaBlock.builder().index(index).build())
 
         /** The entity that produced the message. One of `user` or `assistant`. */
         fun role(role: Role) = role(JsonField.of(role))
 
-        /** The entity that produced the message. One of `user` or `assistant`. */
+        /**
+         * Sets [Builder.role] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.role] with a well-typed [Role] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun role(role: JsonField<Role>) = apply { this.role = role }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -161,6 +216,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [MessageDelta].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): MessageDelta =
             MessageDelta(
                 (content ?: JsonMissing.of()).map { it.toImmutable() },

@@ -41,39 +41,80 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The name of the function to call. */
+    /**
+     * The name of the function to call.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun name(): String = name.getRequired("name")
 
-    /** A JSON schema object describing the parameters of the function. */
+    /**
+     * A JSON schema object describing the parameters of the function.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun parameters(): Parameters = parameters.getRequired("parameters")
 
-    /** Whether to enforce strict parameter validation. Default `true`. */
+    /**
+     * Whether to enforce strict parameter validation. Default `true`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun strict(): Boolean = strict.getRequired("strict")
 
-    /** The type of the function tool. Always `function`. */
+    /**
+     * The type of the function tool. Always `function`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("function")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
      * A description of the function. Used by the model to determine whether or not to call the
      * function.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun description(): Optional<String> =
         Optional.ofNullable(description.getNullable("description"))
 
-    /** The name of the function to call. */
+    /**
+     * Returns the raw JSON value of [name].
+     *
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
-    /** A JSON schema object describing the parameters of the function. */
+    /**
+     * Returns the raw JSON value of [parameters].
+     *
+     * Unlike [parameters], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("parameters")
     @ExcludeMissing
     fun _parameters(): JsonField<Parameters> = parameters
 
-    /** Whether to enforce strict parameter validation. Default `true`. */
+    /**
+     * Returns the raw JSON value of [strict].
+     *
+     * Unlike [strict], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("strict") @ExcludeMissing fun _strict(): JsonField<Boolean> = strict
 
     /**
-     * A description of the function. Used by the model to determine whether or not to call the
-     * function.
+     * Returns the raw JSON value of [description].
+     *
+     * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("description") @ExcludeMissing fun _description(): JsonField<String> = description
 
@@ -140,22 +181,49 @@ private constructor(
         /** The name of the function to call. */
         fun name(name: String) = name(JsonField.of(name))
 
-        /** The name of the function to call. */
+        /**
+         * Sets [Builder.name] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun name(name: JsonField<String>) = apply { this.name = name }
 
         /** A JSON schema object describing the parameters of the function. */
         fun parameters(parameters: Parameters) = parameters(JsonField.of(parameters))
 
-        /** A JSON schema object describing the parameters of the function. */
+        /**
+         * Sets [Builder.parameters] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.parameters] with a well-typed [Parameters] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun parameters(parameters: JsonField<Parameters>) = apply { this.parameters = parameters }
 
         /** Whether to enforce strict parameter validation. Default `true`. */
         fun strict(strict: Boolean) = strict(JsonField.of(strict))
 
-        /** Whether to enforce strict parameter validation. Default `true`. */
+        /**
+         * Sets [Builder.strict] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.strict] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun strict(strict: JsonField<Boolean>) = apply { this.strict = strict }
 
-        /** The type of the function tool. Always `function`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("function")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         /**
@@ -164,15 +232,15 @@ private constructor(
          */
         fun description(description: String?) = description(JsonField.ofNullable(description))
 
-        /**
-         * A description of the function. Used by the model to determine whether or not to call the
-         * function.
-         */
+        /** Alias for calling [Builder.description] with `description.orElse(null)`. */
         fun description(description: Optional<String>) = description(description.getOrNull())
 
         /**
-         * A description of the function. Used by the model to determine whether or not to call the
-         * function.
+         * Sets [Builder.description] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.description] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun description(description: JsonField<String>) = apply { this.description = description }
 
@@ -195,6 +263,20 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FunctionTool].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .name()
+         * .parameters()
+         * .strict()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FunctionTool =
             FunctionTool(
                 checkRequired("name", name),
@@ -266,6 +348,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Parameters].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Parameters = Parameters(additionalProperties.toImmutable())
         }
 

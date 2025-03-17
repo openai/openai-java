@@ -46,42 +46,80 @@ private constructor(
      * additional information about the object in a structured format, and querying for objects via
      * API or the dashboard. Keys are strings with a maximum length of 64 characters. Values are
      * strings with a maximum length of 512 characters, booleans, or numbers.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun attributes(): Optional<Attributes> =
         Optional.ofNullable(attributes.getNullable("attributes"))
 
-    /** Content chunks from the file. */
+    /**
+     * Content chunks from the file.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun content(): List<Content> = content.getRequired("content")
 
-    /** The ID of the vector store file. */
+    /**
+     * The ID of the vector store file.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun fileId(): String = fileId.getRequired("file_id")
 
-    /** The name of the vector store file. */
+    /**
+     * The name of the vector store file.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun filename(): String = filename.getRequired("filename")
 
-    /** The similarity score for the result. */
+    /**
+     * The similarity score for the result.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun score(): Double = score.getRequired("score")
 
     /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard. Keys are strings with a maximum length of 64 characters. Values are
-     * strings with a maximum length of 512 characters, booleans, or numbers.
+     * Returns the raw JSON value of [attributes].
+     *
+     * Unlike [attributes], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("attributes")
     @ExcludeMissing
     fun _attributes(): JsonField<Attributes> = attributes
 
-    /** Content chunks from the file. */
+    /**
+     * Returns the raw JSON value of [content].
+     *
+     * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<List<Content>> = content
 
-    /** The ID of the vector store file. */
+    /**
+     * Returns the raw JSON value of [fileId].
+     *
+     * Unlike [fileId], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
-    /** The name of the vector store file. */
+    /**
+     * Returns the raw JSON value of [filename].
+     *
+     * Unlike [filename], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("filename") @ExcludeMissing fun _filename(): JsonField<String> = filename
 
-    /** The similarity score for the result. */
+    /**
+     * Returns the raw JSON value of [score].
+     *
+     * Unlike [score], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("score") @ExcludeMissing fun _score(): JsonField<Double> = score
 
     @JsonAnyGetter
@@ -151,33 +189,37 @@ private constructor(
          */
         fun attributes(attributes: Attributes?) = attributes(JsonField.ofNullable(attributes))
 
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard. Keys are strings with a maximum length of 64
-         * characters. Values are strings with a maximum length of 512 characters, booleans, or
-         * numbers.
-         */
+        /** Alias for calling [Builder.attributes] with `attributes.orElse(null)`. */
         fun attributes(attributes: Optional<Attributes>) = attributes(attributes.getOrNull())
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard. Keys are strings with a maximum length of 64
-         * characters. Values are strings with a maximum length of 512 characters, booleans, or
-         * numbers.
+         * Sets [Builder.attributes] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.attributes] with a well-typed [Attributes] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun attributes(attributes: JsonField<Attributes>) = apply { this.attributes = attributes }
 
         /** Content chunks from the file. */
         fun content(content: List<Content>) = content(JsonField.of(content))
 
-        /** Content chunks from the file. */
+        /**
+         * Sets [Builder.content] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.content] with a well-typed `List<Content>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun content(content: JsonField<List<Content>>) = apply {
             this.content = content.map { it.toMutableList() }
         }
 
-        /** Content chunks from the file. */
+        /**
+         * Adds a single [Content] to [Builder.content].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addContent(content: Content) = apply {
             this.content =
                 (this.content ?: JsonField.of(mutableListOf())).also {
@@ -188,19 +230,34 @@ private constructor(
         /** The ID of the vector store file. */
         fun fileId(fileId: String) = fileId(JsonField.of(fileId))
 
-        /** The ID of the vector store file. */
+        /**
+         * Sets [Builder.fileId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.fileId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
 
         /** The name of the vector store file. */
         fun filename(filename: String) = filename(JsonField.of(filename))
 
-        /** The name of the vector store file. */
+        /**
+         * Sets [Builder.filename] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.filename] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun filename(filename: JsonField<String>) = apply { this.filename = filename }
 
         /** The similarity score for the result. */
         fun score(score: Double) = score(JsonField.of(score))
 
-        /** The similarity score for the result. */
+        /**
+         * Sets [Builder.score] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.score] with a well-typed [Double] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun score(score: JsonField<Double>) = apply { this.score = score }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -222,6 +279,22 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [VectorStoreSearchResponse].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .attributes()
+         * .content()
+         * .fileId()
+         * .filename()
+         * .score()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): VectorStoreSearchResponse =
             VectorStoreSearchResponse(
                 checkRequired("attributes", attributes),
@@ -298,6 +371,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Attributes].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Attributes = Attributes(additionalProperties.toImmutable())
         }
 
@@ -330,16 +408,34 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The text content returned from search. */
+        /**
+         * The text content returned from search.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun text(): String = text.getRequired("text")
 
-        /** The type of content. */
+        /**
+         * The type of content.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun type(): Type = type.getRequired("type")
 
-        /** The text content returned from search. */
+        /**
+         * Returns the raw JSON value of [text].
+         *
+         * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
-        /** The type of content. */
+        /**
+         * Returns the raw JSON value of [type].
+         *
+         * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
         @JsonAnyGetter
@@ -391,13 +487,25 @@ private constructor(
             /** The text content returned from search. */
             fun text(text: String) = text(JsonField.of(text))
 
-            /** The text content returned from search. */
+            /**
+             * Sets [Builder.text] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.text] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun text(text: JsonField<String>) = apply { this.text = text }
 
             /** The type of content. */
             fun type(type: Type) = type(JsonField.of(type))
 
-            /** The type of content. */
+            /**
+             * Sets [Builder.type] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.type] with a well-typed [Type] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun type(type: JsonField<Type>) = apply { this.type = type }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -419,6 +527,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Content].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .text()
+             * .type()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Content =
                 Content(
                     checkRequired("text", text),

@@ -275,13 +275,19 @@ private constructor(
             /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
             fun model(model: ImageModel?) = model(MultipartField.of(model))
 
-            /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
+            /** Alias for calling [Builder.model] with `model.orElse(null)`. */
             fun model(model: Optional<ImageModel>) = model(model.getOrNull())
 
             /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
             fun model(model: MultipartField<ImageModel>) = apply { this.model = model }
 
-            /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
+            /**
+             * Sets [model] to an arbitrary [String].
+             *
+             * You should usually call [model] with a well-typed [ImageModel] constant instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun model(value: String) = model(ImageModel.of(value))
 
             /**
@@ -291,15 +297,13 @@ private constructor(
             fun n(n: Long?) = n(MultipartField.of(n))
 
             /**
-             * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
-             * `n=1` is supported.
+             * Alias for [Builder.n].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
              */
             fun n(n: Long) = n(n as Long?)
 
-            /**
-             * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
-             * `n=1` is supported.
-             */
+            /** Alias for calling [Builder.n] with `n.orElse(null)`. */
             fun n(n: Optional<Long>) = n(n.getOrNull())
 
             /**
@@ -315,10 +319,7 @@ private constructor(
             fun responseFormat(responseFormat: ResponseFormat?) =
                 responseFormat(MultipartField.of(responseFormat))
 
-            /**
-             * The format in which the generated images are returned. Must be one of `url` or
-             * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
-             */
+            /** Alias for calling [Builder.responseFormat] with `responseFormat.orElse(null)`. */
             fun responseFormat(responseFormat: Optional<ResponseFormat>) =
                 responseFormat(responseFormat.getOrNull())
 
@@ -336,10 +337,7 @@ private constructor(
              */
             fun size(size: Size?) = size(MultipartField.of(size))
 
-            /**
-             * The size of the generated images. Must be one of `256x256`, `512x512`, or
-             * `1024x1024`.
-             */
+            /** Alias for calling [Builder.size] with `size.orElse(null)`. */
             fun size(size: Optional<Size>) = size(size.getOrNull())
 
             /**
@@ -362,6 +360,18 @@ private constructor(
              */
             fun user(user: MultipartField<String>) = apply { this.user = user }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .image()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(checkRequired("image", image), model, n, responseFormat, size, user)
         }
@@ -441,13 +451,18 @@ private constructor(
         /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
         fun model(model: ImageModel?) = apply { body.model(model) }
 
-        /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
+        /** Alias for calling [Builder.model] with `model.orElse(null)`. */
         fun model(model: Optional<ImageModel>) = model(model.getOrNull())
 
         /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
         fun model(model: MultipartField<ImageModel>) = apply { body.model(model) }
 
-        /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
+        /**
+         * Sets [model] to an arbitrary [String].
+         *
+         * You should usually call [model] with a well-typed [ImageModel] constant instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun model(value: String) = apply { body.model(value) }
 
         /**
@@ -457,15 +472,13 @@ private constructor(
         fun n(n: Long?) = apply { body.n(n) }
 
         /**
-         * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
-         * supported.
+         * Alias for [Builder.n].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
          */
         fun n(n: Long) = n(n as Long?)
 
-        /**
-         * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
-         * supported.
-         */
+        /** Alias for calling [Builder.n] with `n.orElse(null)`. */
         fun n(n: Optional<Long>) = n(n.getOrNull())
 
         /**
@@ -482,10 +495,7 @@ private constructor(
             body.responseFormat(responseFormat)
         }
 
-        /**
-         * The format in which the generated images are returned. Must be one of `url` or
-         * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
-         */
+        /** Alias for calling [Builder.responseFormat] with `responseFormat.orElse(null)`. */
         fun responseFormat(responseFormat: Optional<ResponseFormat>) =
             responseFormat(responseFormat.getOrNull())
 
@@ -502,9 +512,7 @@ private constructor(
          */
         fun size(size: Size?) = apply { body.size(size) }
 
-        /**
-         * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`.
-         */
+        /** Alias for calling [Builder.size] with `size.orElse(null)`. */
         fun size(size: Optional<Size>) = size(size.getOrNull())
 
         /**
@@ -624,6 +632,18 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [ImageCreateVariationParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .image()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ImageCreateVariationParams =
             ImageCreateVariationParams(
                 body.build(),

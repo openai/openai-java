@@ -13,6 +13,7 @@ import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
@@ -25,16 +26,34 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The text content */
+    /**
+     * The text content
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun text(): Optional<String> = Optional.ofNullable(text.getNullable("text"))
 
-    /** The content type (currently only `"text"`) */
+    /**
+     * The content type (currently only `"text"`)
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun type(): Optional<String> = Optional.ofNullable(type.getNullable("type"))
 
-    /** The text content */
+    /**
+     * Returns the raw JSON value of [text].
+     *
+     * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
-    /** The content type (currently only `"text"`) */
+    /**
+     * Returns the raw JSON value of [type].
+     *
+     * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<String> = type
 
     @JsonAnyGetter
@@ -78,13 +97,23 @@ private constructor(
         /** The text content */
         fun text(text: String) = text(JsonField.of(text))
 
-        /** The text content */
+        /**
+         * Sets [Builder.text] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.text] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun text(text: JsonField<String>) = apply { this.text = text }
 
         /** The content type (currently only `"text"`) */
         fun type(type: String) = type(JsonField.of(type))
 
-        /** The content type (currently only `"text"`) */
+        /**
+         * Sets [Builder.type] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.type] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun type(type: JsonField<String>) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -106,6 +135,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FileContentResponse].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): FileContentResponse =
             FileContentResponse(text, type, additionalProperties.toImmutable())
     }

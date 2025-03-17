@@ -40,20 +40,47 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The identifier, which can be referenced in API endpoints. */
+    /**
+     * The identifier, which can be referenced in API endpoints.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** The Unix timestamp (in seconds) for when the vector store files batch was created. */
+    /**
+     * The Unix timestamp (in seconds) for when the vector store files batch was created.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun createdAt(): Long = createdAt.getRequired("created_at")
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun fileCounts(): FileCounts = fileCounts.getRequired("file_counts")
 
-    /** The object type, which is always `vector_store.file_batch`. */
+    /**
+     * The object type, which is always `vector_store.file_batch`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("vector_store.files_batch")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
      * The status of the vector store files batch, which can be either `in_progress`, `completed`,
      * `cancelled` or `failed`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun status(): Status = status.getRequired("status")
 
@@ -61,29 +88,46 @@ private constructor(
      * The ID of the
      * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that the
      * [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun vectorStoreId(): String = vectorStoreId.getRequired("vector_store_id")
 
-    /** The identifier, which can be referenced in API endpoints. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** The Unix timestamp (in seconds) for when the vector store files batch was created. */
+    /**
+     * Returns the raw JSON value of [createdAt].
+     *
+     * Unlike [createdAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
+    /**
+     * Returns the raw JSON value of [fileCounts].
+     *
+     * Unlike [fileCounts], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("file_counts")
     @ExcludeMissing
     fun _fileCounts(): JsonField<FileCounts> = fileCounts
 
     /**
-     * The status of the vector store files batch, which can be either `in_progress`, `completed`,
-     * `cancelled` or `failed`.
+     * Returns the raw JSON value of [status].
+     *
+     * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
     /**
-     * The ID of the
-     * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that the
-     * [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+     * Returns the raw JSON value of [vectorStoreId].
+     *
+     * Unlike [vectorStoreId], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("vector_store_id")
     @ExcludeMissing
@@ -157,20 +201,48 @@ private constructor(
         /** The identifier, which can be referenced in API endpoints. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The identifier, which can be referenced in API endpoints. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The Unix timestamp (in seconds) for when the vector store files batch was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
-        /** The Unix timestamp (in seconds) for when the vector store files batch was created. */
+        /**
+         * Sets [Builder.createdAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.createdAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         fun fileCounts(fileCounts: FileCounts) = fileCounts(JsonField.of(fileCounts))
 
+        /**
+         * Sets [Builder.fileCounts] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.fileCounts] with a well-typed [FileCounts] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun fileCounts(fileCounts: JsonField<FileCounts>) = apply { this.fileCounts = fileCounts }
 
-        /** The object type, which is always `vector_store.file_batch`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("vector_store.files_batch")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /**
@@ -180,8 +252,10 @@ private constructor(
         fun status(status: Status) = status(JsonField.of(status))
 
         /**
-         * The status of the vector store files batch, which can be either `in_progress`,
-         * `completed`, `cancelled` or `failed`.
+         * Sets [Builder.status] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
@@ -193,9 +267,11 @@ private constructor(
         fun vectorStoreId(vectorStoreId: String) = vectorStoreId(JsonField.of(vectorStoreId))
 
         /**
-         * The ID of the
-         * [vector store](https://platform.openai.com/docs/api-reference/vector-stores/object) that
-         * the [File](https://platform.openai.com/docs/api-reference/files) is attached to.
+         * Sets [Builder.vectorStoreId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.vectorStoreId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun vectorStoreId(vectorStoreId: JsonField<String>) = apply {
             this.vectorStoreId = vectorStoreId
@@ -220,6 +296,22 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [VectorStoreFileBatch].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .fileCounts()
+         * .status()
+         * .vectorStoreId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): VectorStoreFileBatch =
             VectorStoreFileBatch(
                 checkRequired("id", id),
@@ -255,34 +347,79 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The number of files that where cancelled. */
+        /**
+         * The number of files that where cancelled.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun cancelled(): Long = cancelled.getRequired("cancelled")
 
-        /** The number of files that have been processed. */
+        /**
+         * The number of files that have been processed.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun completed(): Long = completed.getRequired("completed")
 
-        /** The number of files that have failed to process. */
+        /**
+         * The number of files that have failed to process.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun failed(): Long = failed.getRequired("failed")
 
-        /** The number of files that are currently being processed. */
+        /**
+         * The number of files that are currently being processed.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun inProgress(): Long = inProgress.getRequired("in_progress")
 
-        /** The total number of files. */
+        /**
+         * The total number of files.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun total(): Long = total.getRequired("total")
 
-        /** The number of files that where cancelled. */
+        /**
+         * Returns the raw JSON value of [cancelled].
+         *
+         * Unlike [cancelled], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("cancelled") @ExcludeMissing fun _cancelled(): JsonField<Long> = cancelled
 
-        /** The number of files that have been processed. */
+        /**
+         * Returns the raw JSON value of [completed].
+         *
+         * Unlike [completed], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("completed") @ExcludeMissing fun _completed(): JsonField<Long> = completed
 
-        /** The number of files that have failed to process. */
+        /**
+         * Returns the raw JSON value of [failed].
+         *
+         * Unlike [failed], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("failed") @ExcludeMissing fun _failed(): JsonField<Long> = failed
 
-        /** The number of files that are currently being processed. */
+        /**
+         * Returns the raw JSON value of [inProgress].
+         *
+         * Unlike [inProgress], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("in_progress") @ExcludeMissing fun _inProgress(): JsonField<Long> = inProgress
 
-        /** The total number of files. */
+        /**
+         * Returns the raw JSON value of [total].
+         *
+         * Unlike [total], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("total") @ExcludeMissing fun _total(): JsonField<Long> = total
 
         @JsonAnyGetter
@@ -346,31 +483,61 @@ private constructor(
             /** The number of files that where cancelled. */
             fun cancelled(cancelled: Long) = cancelled(JsonField.of(cancelled))
 
-            /** The number of files that where cancelled. */
+            /**
+             * Sets [Builder.cancelled] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.cancelled] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun cancelled(cancelled: JsonField<Long>) = apply { this.cancelled = cancelled }
 
             /** The number of files that have been processed. */
             fun completed(completed: Long) = completed(JsonField.of(completed))
 
-            /** The number of files that have been processed. */
+            /**
+             * Sets [Builder.completed] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.completed] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun completed(completed: JsonField<Long>) = apply { this.completed = completed }
 
             /** The number of files that have failed to process. */
             fun failed(failed: Long) = failed(JsonField.of(failed))
 
-            /** The number of files that have failed to process. */
+            /**
+             * Sets [Builder.failed] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.failed] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun failed(failed: JsonField<Long>) = apply { this.failed = failed }
 
             /** The number of files that are currently being processed. */
             fun inProgress(inProgress: Long) = inProgress(JsonField.of(inProgress))
 
-            /** The number of files that are currently being processed. */
+            /**
+             * Sets [Builder.inProgress] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.inProgress] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun inProgress(inProgress: JsonField<Long>) = apply { this.inProgress = inProgress }
 
             /** The total number of files. */
             fun total(total: Long) = total(JsonField.of(total))
 
-            /** The total number of files. */
+            /**
+             * Sets [Builder.total] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.total] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun total(total: JsonField<Long>) = apply { this.total = total }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -392,6 +559,22 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [FileCounts].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .cancelled()
+             * .completed()
+             * .failed()
+             * .inProgress()
+             * .total()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): FileCounts =
                 FileCounts(
                     checkRequired("cancelled", cancelled),

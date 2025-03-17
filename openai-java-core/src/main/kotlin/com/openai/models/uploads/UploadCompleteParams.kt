@@ -18,6 +18,7 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
@@ -43,21 +44,34 @@ private constructor(
 
     fun uploadId(): String = uploadId
 
-    /** The ordered list of Part IDs. */
+    /**
+     * The ordered list of Part IDs.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun partIds(): List<String> = body.partIds()
 
     /**
      * The optional md5 checksum for the file contents to verify if the bytes uploaded matches what
      * you expect.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun md5(): Optional<String> = body.md5()
 
-    /** The ordered list of Part IDs. */
+    /**
+     * Returns the raw JSON value of [partIds].
+     *
+     * Unlike [partIds], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _partIds(): JsonField<List<String>> = body._partIds()
 
     /**
-     * The optional md5 checksum for the file contents to verify if the bytes uploaded matches what
-     * you expect.
+     * Returns the raw JSON value of [md5].
+     *
+     * Unlike [md5], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _md5(): JsonField<String> = body._md5()
 
@@ -92,21 +106,34 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The ordered list of Part IDs. */
+        /**
+         * The ordered list of Part IDs.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun partIds(): List<String> = partIds.getRequired("part_ids")
 
         /**
          * The optional md5 checksum for the file contents to verify if the bytes uploaded matches
          * what you expect.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun md5(): Optional<String> = Optional.ofNullable(md5.getNullable("md5"))
 
-        /** The ordered list of Part IDs. */
+        /**
+         * Returns the raw JSON value of [partIds].
+         *
+         * Unlike [partIds], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("part_ids") @ExcludeMissing fun _partIds(): JsonField<List<String>> = partIds
 
         /**
-         * The optional md5 checksum for the file contents to verify if the bytes uploaded matches
-         * what you expect.
+         * Returns the raw JSON value of [md5].
+         *
+         * Unlike [md5], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("md5") @ExcludeMissing fun _md5(): JsonField<String> = md5
 
@@ -158,12 +185,22 @@ private constructor(
             /** The ordered list of Part IDs. */
             fun partIds(partIds: List<String>) = partIds(JsonField.of(partIds))
 
-            /** The ordered list of Part IDs. */
+            /**
+             * Sets [Builder.partIds] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.partIds] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun partIds(partIds: JsonField<List<String>>) = apply {
                 this.partIds = partIds.map { it.toMutableList() }
             }
 
-            /** The ordered list of Part IDs. */
+            /**
+             * Adds a single [String] to [partIds].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addPartId(partId: String) = apply {
                 partIds =
                     (partIds ?: JsonField.of(mutableListOf())).also {
@@ -178,8 +215,11 @@ private constructor(
             fun md5(md5: String) = md5(JsonField.of(md5))
 
             /**
-             * The optional md5 checksum for the file contents to verify if the bytes uploaded
-             * matches what you expect.
+             * Sets [Builder.md5] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.md5] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun md5(md5: JsonField<String>) = apply { this.md5 = md5 }
 
@@ -202,6 +242,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .partIds()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("partIds", partIds).map { it.toImmutable() },
@@ -266,10 +318,20 @@ private constructor(
         /** The ordered list of Part IDs. */
         fun partIds(partIds: List<String>) = apply { body.partIds(partIds) }
 
-        /** The ordered list of Part IDs. */
+        /**
+         * Sets [Builder.partIds] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.partIds] with a well-typed `List<String>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun partIds(partIds: JsonField<List<String>>) = apply { body.partIds(partIds) }
 
-        /** The ordered list of Part IDs. */
+        /**
+         * Adds a single [String] to [partIds].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addPartId(partId: String) = apply { body.addPartId(partId) }
 
         /**
@@ -279,8 +341,10 @@ private constructor(
         fun md5(md5: String) = apply { body.md5(md5) }
 
         /**
-         * The optional md5 checksum for the file contents to verify if the bytes uploaded matches
-         * what you expect.
+         * Sets [Builder.md5] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.md5] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun md5(md5: JsonField<String>) = apply { body.md5(md5) }
 
@@ -401,6 +465,19 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [UploadCompleteParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .uploadId()
+         * .partIds()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): UploadCompleteParams =
             UploadCompleteParams(
                 checkRequired("uploadId", uploadId),

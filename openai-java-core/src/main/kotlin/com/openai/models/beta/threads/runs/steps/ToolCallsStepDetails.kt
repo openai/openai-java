@@ -33,15 +33,29 @@ private constructor(
     /**
      * An array of tool calls the run step was involved in. These can be associated with one of
      * three types of tools: `code_interpreter`, `file_search`, or `function`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun toolCalls(): List<ToolCall> = toolCalls.getRequired("tool_calls")
 
-    /** Always `tool_calls`. */
+    /**
+     * Always `tool_calls`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("tool_calls")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
-     * An array of tool calls the run step was involved in. These can be associated with one of
-     * three types of tools: `code_interpreter`, `file_search`, or `function`.
+     * Returns the raw JSON value of [toolCalls].
+     *
+     * Unlike [toolCalls], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("tool_calls")
     @ExcludeMissing
@@ -103,16 +117,20 @@ private constructor(
         fun toolCalls(toolCalls: List<ToolCall>) = toolCalls(JsonField.of(toolCalls))
 
         /**
-         * An array of tool calls the run step was involved in. These can be associated with one of
-         * three types of tools: `code_interpreter`, `file_search`, or `function`.
+         * Sets [Builder.toolCalls] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.toolCalls] with a well-typed `List<ToolCall>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun toolCalls(toolCalls: JsonField<List<ToolCall>>) = apply {
             this.toolCalls = toolCalls.map { it.toMutableList() }
         }
 
         /**
-         * An array of tool calls the run step was involved in. These can be associated with one of
-         * three types of tools: `code_interpreter`, `file_search`, or `function`.
+         * Adds a single [ToolCall] to [toolCalls].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addToolCall(toolCall: ToolCall) = apply {
             toolCalls =
@@ -121,24 +139,29 @@ private constructor(
                 }
         }
 
-        /** Details of the Code Interpreter tool call the run step was involved in. */
+        /** Alias for calling [addToolCall] with `ToolCall.ofCodeInterpreter(codeInterpreter)`. */
         fun addToolCall(codeInterpreter: CodeInterpreterToolCall) =
             addToolCall(ToolCall.ofCodeInterpreter(codeInterpreter))
 
-        /**
-         * An array of tool calls the run step was involved in. These can be associated with one of
-         * three types of tools: `code_interpreter`, `file_search`, or `function`.
-         */
+        /** Alias for calling [addToolCall] with `ToolCall.ofFileSearch(fileSearch)`. */
         fun addToolCall(fileSearch: FileSearchToolCall) =
             addToolCall(ToolCall.ofFileSearch(fileSearch))
 
-        /**
-         * An array of tool calls the run step was involved in. These can be associated with one of
-         * three types of tools: `code_interpreter`, `file_search`, or `function`.
-         */
+        /** Alias for calling [addToolCall] with `ToolCall.ofFunction(function)`. */
         fun addToolCall(function: FunctionToolCall) = addToolCall(ToolCall.ofFunction(function))
 
-        /** Always `tool_calls`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("tool_calls")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -160,6 +183,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ToolCallsStepDetails].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .toolCalls()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ToolCallsStepDetails =
             ToolCallsStepDetails(
                 checkRequired("toolCalls", toolCalls).map { it.toImmutable() },

@@ -14,6 +14,7 @@ import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -31,20 +32,56 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun code(): Optional<String> = Optional.ofNullable(code.getNullable("code"))
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun message(): String = message.getRequired("message")
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun param(): Optional<String> = Optional.ofNullable(param.getNullable("param"))
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun type(): String = type.getRequired("type")
 
+    /**
+     * Returns the raw JSON value of [code].
+     *
+     * Unlike [code], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("code") @ExcludeMissing fun _code(): JsonField<String> = code
 
+    /**
+     * Returns the raw JSON value of [message].
+     *
+     * Unlike [message], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
+    /**
+     * Returns the raw JSON value of [param].
+     *
+     * Unlike [param], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("param") @ExcludeMissing fun _param(): JsonField<String> = param
 
+    /**
+     * Returns the raw JSON value of [type].
+     *
+     * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<String> = type
 
     @JsonAnyGetter
@@ -103,22 +140,48 @@ private constructor(
 
         fun code(code: String?) = code(JsonField.ofNullable(code))
 
+        /** Alias for calling [Builder.code] with `code.orElse(null)`. */
         fun code(code: Optional<String>) = code(code.getOrNull())
 
+        /**
+         * Sets [Builder.code] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.code] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun code(code: JsonField<String>) = apply { this.code = code }
 
         fun message(message: String) = message(JsonField.of(message))
 
+        /**
+         * Sets [Builder.message] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.message] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun message(message: JsonField<String>) = apply { this.message = message }
 
         fun param(param: String?) = param(JsonField.ofNullable(param))
 
+        /** Alias for calling [Builder.param] with `param.orElse(null)`. */
         fun param(param: Optional<String>) = param(param.getOrNull())
 
+        /**
+         * Sets [Builder.param] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.param] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun param(param: JsonField<String>) = apply { this.param = param }
 
         fun type(type: String) = type(JsonField.of(type))
 
+        /**
+         * Sets [Builder.type] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.type] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun type(type: JsonField<String>) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -140,6 +203,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ErrorObject].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .code()
+         * .message()
+         * .param()
+         * .type()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ErrorObject =
             ErrorObject(
                 checkRequired("code", code),

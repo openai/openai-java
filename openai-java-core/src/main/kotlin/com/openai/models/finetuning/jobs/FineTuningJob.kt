@@ -90,21 +90,37 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The object identifier, which can be referenced in the API endpoints. */
+    /**
+     * The object identifier, which can be referenced in the API endpoints.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** The Unix timestamp (in seconds) for when the fine-tuning job was created. */
+    /**
+     * The Unix timestamp (in seconds) for when the fine-tuning job was created.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun createdAt(): Long = createdAt.getRequired("created_at")
 
     /**
      * For fine-tuning jobs that have `failed`, this will contain more information on the cause of
      * the failure.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun error(): Optional<Error> = Optional.ofNullable(error.getNullable("error"))
 
     /**
      * The name of the fine-tuned model that is being created. The value will be null if the
      * fine-tuning job is still running.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun fineTunedModel(): Optional<String> =
         Optional.ofNullable(fineTunedModel.getNullable("fine_tuned_model"))
@@ -112,42 +128,82 @@ private constructor(
     /**
      * The Unix timestamp (in seconds) for when the fine-tuning job was finished. The value will be
      * null if the fine-tuning job is still running.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun finishedAt(): Optional<Long> = Optional.ofNullable(finishedAt.getNullable("finished_at"))
 
     /**
      * The hyperparameters used for the fine-tuning job. This value will only be returned when
      * running `supervised` jobs.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun hyperparameters(): Hyperparameters = hyperparameters.getRequired("hyperparameters")
 
-    /** The base model that is being fine-tuned. */
+    /**
+     * The base model that is being fine-tuned.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun model(): String = model.getRequired("model")
 
-    /** The object type, which is always "fine_tuning.job". */
+    /**
+     * The object type, which is always "fine_tuning.job".
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("fine_tuning.job")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
-    /** The organization that owns the fine-tuning job. */
+    /**
+     * The organization that owns the fine-tuning job.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun organizationId(): String = organizationId.getRequired("organization_id")
 
     /**
      * The compiled results file ID(s) for the fine-tuning job. You can retrieve the results with
      * the [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun resultFiles(): List<String> = resultFiles.getRequired("result_files")
 
-    /** The seed used for the fine-tuning job. */
+    /**
+     * The seed used for the fine-tuning job.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun seed(): Long = seed.getRequired("seed")
 
     /**
      * The current status of the fine-tuning job, which can be either `validating_files`, `queued`,
      * `running`, `succeeded`, `failed`, or `cancelled`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun status(): Status = status.getRequired("status")
 
     /**
      * The total number of billable tokens processed by this fine-tuning job. The value will be null
      * if the fine-tuning job is still running.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun trainedTokens(): Optional<Long> =
         Optional.ofNullable(trainedTokens.getNullable("trained_tokens"))
@@ -155,12 +211,18 @@ private constructor(
     /**
      * The file ID used for training. You can retrieve the training data with the
      * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun trainingFile(): String = trainingFile.getRequired("training_file")
 
     /**
      * The file ID used for validation. You can retrieve the validation results with the
      * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun validationFile(): Optional<String> =
         Optional.ofNullable(validationFile.getNullable("validation_file"))
@@ -168,11 +230,19 @@ private constructor(
     /**
      * The Unix timestamp (in seconds) for when the fine-tuning job is estimated to finish. The
      * value will be null if the fine-tuning job is not running.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun estimatedFinish(): Optional<Long> =
         Optional.ofNullable(estimatedFinish.getNullable("estimated_finish"))
 
-    /** A list of integrations to enable for this fine-tuning job. */
+    /**
+     * A list of integrations to enable for this fine-tuning job.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun integrations(): Optional<List<FineTuningJobWandbIntegrationObject>> =
         Optional.ofNullable(integrations.getNullable("integrations"))
 
@@ -183,119 +253,162 @@ private constructor(
      *
      * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
      * length of 512 characters.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
 
-    /** The method used for fine-tuning. */
+    /**
+     * The method used for fine-tuning.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun method(): Optional<Method> = Optional.ofNullable(method.getNullable("method"))
 
-    /** The object identifier, which can be referenced in the API endpoints. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** The Unix timestamp (in seconds) for when the fine-tuning job was created. */
+    /**
+     * Returns the raw JSON value of [createdAt].
+     *
+     * Unlike [createdAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
     /**
-     * For fine-tuning jobs that have `failed`, this will contain more information on the cause of
-     * the failure.
+     * Returns the raw JSON value of [error].
+     *
+     * Unlike [error], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<Error> = error
 
     /**
-     * The name of the fine-tuned model that is being created. The value will be null if the
-     * fine-tuning job is still running.
+     * Returns the raw JSON value of [fineTunedModel].
+     *
+     * Unlike [fineTunedModel], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("fine_tuned_model")
     @ExcludeMissing
     fun _fineTunedModel(): JsonField<String> = fineTunedModel
 
     /**
-     * The Unix timestamp (in seconds) for when the fine-tuning job was finished. The value will be
-     * null if the fine-tuning job is still running.
+     * Returns the raw JSON value of [finishedAt].
+     *
+     * Unlike [finishedAt], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("finished_at") @ExcludeMissing fun _finishedAt(): JsonField<Long> = finishedAt
 
     /**
-     * The hyperparameters used for the fine-tuning job. This value will only be returned when
-     * running `supervised` jobs.
+     * Returns the raw JSON value of [hyperparameters].
+     *
+     * Unlike [hyperparameters], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("hyperparameters")
     @ExcludeMissing
     fun _hyperparameters(): JsonField<Hyperparameters> = hyperparameters
 
-    /** The base model that is being fine-tuned. */
+    /**
+     * Returns the raw JSON value of [model].
+     *
+     * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
 
-    /** The organization that owns the fine-tuning job. */
+    /**
+     * Returns the raw JSON value of [organizationId].
+     *
+     * Unlike [organizationId], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("organization_id")
     @ExcludeMissing
     fun _organizationId(): JsonField<String> = organizationId
 
     /**
-     * The compiled results file ID(s) for the fine-tuning job. You can retrieve the results with
-     * the [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+     * Returns the raw JSON value of [resultFiles].
+     *
+     * Unlike [resultFiles], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("result_files")
     @ExcludeMissing
     fun _resultFiles(): JsonField<List<String>> = resultFiles
 
-    /** The seed used for the fine-tuning job. */
+    /**
+     * Returns the raw JSON value of [seed].
+     *
+     * Unlike [seed], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("seed") @ExcludeMissing fun _seed(): JsonField<Long> = seed
 
     /**
-     * The current status of the fine-tuning job, which can be either `validating_files`, `queued`,
-     * `running`, `succeeded`, `failed`, or `cancelled`.
+     * Returns the raw JSON value of [status].
+     *
+     * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
     /**
-     * The total number of billable tokens processed by this fine-tuning job. The value will be null
-     * if the fine-tuning job is still running.
+     * Returns the raw JSON value of [trainedTokens].
+     *
+     * Unlike [trainedTokens], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("trained_tokens")
     @ExcludeMissing
     fun _trainedTokens(): JsonField<Long> = trainedTokens
 
     /**
-     * The file ID used for training. You can retrieve the training data with the
-     * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+     * Returns the raw JSON value of [trainingFile].
+     *
+     * Unlike [trainingFile], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("training_file")
     @ExcludeMissing
     fun _trainingFile(): JsonField<String> = trainingFile
 
     /**
-     * The file ID used for validation. You can retrieve the validation results with the
-     * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+     * Returns the raw JSON value of [validationFile].
+     *
+     * Unlike [validationFile], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("validation_file")
     @ExcludeMissing
     fun _validationFile(): JsonField<String> = validationFile
 
     /**
-     * The Unix timestamp (in seconds) for when the fine-tuning job is estimated to finish. The
-     * value will be null if the fine-tuning job is not running.
+     * Returns the raw JSON value of [estimatedFinish].
+     *
+     * Unlike [estimatedFinish], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("estimated_finish")
     @ExcludeMissing
     fun _estimatedFinish(): JsonField<Long> = estimatedFinish
 
-    /** A list of integrations to enable for this fine-tuning job. */
+    /**
+     * Returns the raw JSON value of [integrations].
+     *
+     * Unlike [integrations], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("integrations")
     @ExcludeMissing
     fun _integrations(): JsonField<List<FineTuningJobWandbIntegrationObject>> = integrations
 
     /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard.
+     * Returns the raw JSON value of [metadata].
      *
-     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
-     * length of 512 characters.
+     * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
-    /** The method used for fine-tuning. */
+    /**
+     * Returns the raw JSON value of [method].
+     *
+     * Unlike [method], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("method") @ExcludeMissing fun _method(): JsonField<Method> = method
 
     @JsonAnyGetter
@@ -415,13 +528,23 @@ private constructor(
         /** The object identifier, which can be referenced in the API endpoints. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The object identifier, which can be referenced in the API endpoints. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The Unix timestamp (in seconds) for when the fine-tuning job was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
-        /** The Unix timestamp (in seconds) for when the fine-tuning job was created. */
+        /**
+         * Sets [Builder.createdAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.createdAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /**
@@ -430,15 +553,14 @@ private constructor(
          */
         fun error(error: Error?) = error(JsonField.ofNullable(error))
 
-        /**
-         * For fine-tuning jobs that have `failed`, this will contain more information on the cause
-         * of the failure.
-         */
+        /** Alias for calling [Builder.error] with `error.orElse(null)`. */
         fun error(error: Optional<Error>) = error(error.getOrNull())
 
         /**
-         * For fine-tuning jobs that have `failed`, this will contain more information on the cause
-         * of the failure.
+         * Sets [Builder.error] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.error] with a well-typed [Error] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun error(error: JsonField<Error>) = apply { this.error = error }
 
@@ -449,16 +571,16 @@ private constructor(
         fun fineTunedModel(fineTunedModel: String?) =
             fineTunedModel(JsonField.ofNullable(fineTunedModel))
 
-        /**
-         * The name of the fine-tuned model that is being created. The value will be null if the
-         * fine-tuning job is still running.
-         */
+        /** Alias for calling [Builder.fineTunedModel] with `fineTunedModel.orElse(null)`. */
         fun fineTunedModel(fineTunedModel: Optional<String>) =
             fineTunedModel(fineTunedModel.getOrNull())
 
         /**
-         * The name of the fine-tuned model that is being created. The value will be null if the
-         * fine-tuning job is still running.
+         * Sets [Builder.fineTunedModel] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.fineTunedModel] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun fineTunedModel(fineTunedModel: JsonField<String>) = apply {
             this.fineTunedModel = fineTunedModel
@@ -471,20 +593,20 @@ private constructor(
         fun finishedAt(finishedAt: Long?) = finishedAt(JsonField.ofNullable(finishedAt))
 
         /**
-         * The Unix timestamp (in seconds) for when the fine-tuning job was finished. The value will
-         * be null if the fine-tuning job is still running.
+         * Alias for [Builder.finishedAt].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
          */
         fun finishedAt(finishedAt: Long) = finishedAt(finishedAt as Long?)
 
-        /**
-         * The Unix timestamp (in seconds) for when the fine-tuning job was finished. The value will
-         * be null if the fine-tuning job is still running.
-         */
+        /** Alias for calling [Builder.finishedAt] with `finishedAt.orElse(null)`. */
         fun finishedAt(finishedAt: Optional<Long>) = finishedAt(finishedAt.getOrNull())
 
         /**
-         * The Unix timestamp (in seconds) for when the fine-tuning job was finished. The value will
-         * be null if the fine-tuning job is still running.
+         * Sets [Builder.finishedAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.finishedAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun finishedAt(finishedAt: JsonField<Long>) = apply { this.finishedAt = finishedAt }
 
@@ -496,8 +618,11 @@ private constructor(
             hyperparameters(JsonField.of(hyperparameters))
 
         /**
-         * The hyperparameters used for the fine-tuning job. This value will only be returned when
-         * running `supervised` jobs.
+         * Sets [Builder.hyperparameters] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.hyperparameters] with a well-typed [Hyperparameters]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
          */
         fun hyperparameters(hyperparameters: JsonField<Hyperparameters>) = apply {
             this.hyperparameters = hyperparameters
@@ -506,16 +631,38 @@ private constructor(
         /** The base model that is being fine-tuned. */
         fun model(model: String) = model(JsonField.of(model))
 
-        /** The base model that is being fine-tuned. */
+        /**
+         * Sets [Builder.model] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.model] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun model(model: JsonField<String>) = apply { this.model = model }
 
-        /** The object type, which is always "fine_tuning.job". */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("fine_tuning.job")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /** The organization that owns the fine-tuning job. */
         fun organizationId(organizationId: String) = organizationId(JsonField.of(organizationId))
 
-        /** The organization that owns the fine-tuning job. */
+        /**
+         * Sets [Builder.organizationId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.organizationId] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun organizationId(organizationId: JsonField<String>) = apply {
             this.organizationId = organizationId
         }
@@ -528,18 +675,20 @@ private constructor(
         fun resultFiles(resultFiles: List<String>) = resultFiles(JsonField.of(resultFiles))
 
         /**
-         * The compiled results file ID(s) for the fine-tuning job. You can retrieve the results
-         * with the
-         * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+         * Sets [Builder.resultFiles] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.resultFiles] with a well-typed `List<String>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun resultFiles(resultFiles: JsonField<List<String>>) = apply {
             this.resultFiles = resultFiles.map { it.toMutableList() }
         }
 
         /**
-         * The compiled results file ID(s) for the fine-tuning job. You can retrieve the results
-         * with the
-         * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+         * Adds a single [String] to [resultFiles].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addResultFile(resultFile: String) = apply {
             resultFiles =
@@ -551,7 +700,12 @@ private constructor(
         /** The seed used for the fine-tuning job. */
         fun seed(seed: Long) = seed(JsonField.of(seed))
 
-        /** The seed used for the fine-tuning job. */
+        /**
+         * Sets [Builder.seed] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.seed] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun seed(seed: JsonField<Long>) = apply { this.seed = seed }
 
         /**
@@ -561,8 +715,10 @@ private constructor(
         fun status(status: Status) = status(JsonField.of(status))
 
         /**
-         * The current status of the fine-tuning job, which can be either `validating_files`,
-         * `queued`, `running`, `succeeded`, `failed`, or `cancelled`.
+         * Sets [Builder.status] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
@@ -573,20 +729,21 @@ private constructor(
         fun trainedTokens(trainedTokens: Long?) = trainedTokens(JsonField.ofNullable(trainedTokens))
 
         /**
-         * The total number of billable tokens processed by this fine-tuning job. The value will be
-         * null if the fine-tuning job is still running.
+         * Alias for [Builder.trainedTokens].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
          */
         fun trainedTokens(trainedTokens: Long) = trainedTokens(trainedTokens as Long?)
 
-        /**
-         * The total number of billable tokens processed by this fine-tuning job. The value will be
-         * null if the fine-tuning job is still running.
-         */
+        /** Alias for calling [Builder.trainedTokens] with `trainedTokens.orElse(null)`. */
         fun trainedTokens(trainedTokens: Optional<Long>) = trainedTokens(trainedTokens.getOrNull())
 
         /**
-         * The total number of billable tokens processed by this fine-tuning job. The value will be
-         * null if the fine-tuning job is still running.
+         * Sets [Builder.trainedTokens] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.trainedTokens] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun trainedTokens(trainedTokens: JsonField<Long>) = apply {
             this.trainedTokens = trainedTokens
@@ -599,8 +756,11 @@ private constructor(
         fun trainingFile(trainingFile: String) = trainingFile(JsonField.of(trainingFile))
 
         /**
-         * The file ID used for training. You can retrieve the training data with the
-         * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+         * Sets [Builder.trainingFile] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.trainingFile] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun trainingFile(trainingFile: JsonField<String>) = apply {
             this.trainingFile = trainingFile
@@ -613,16 +773,16 @@ private constructor(
         fun validationFile(validationFile: String?) =
             validationFile(JsonField.ofNullable(validationFile))
 
-        /**
-         * The file ID used for validation. You can retrieve the validation results with the
-         * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
-         */
+        /** Alias for calling [Builder.validationFile] with `validationFile.orElse(null)`. */
         fun validationFile(validationFile: Optional<String>) =
             validationFile(validationFile.getOrNull())
 
         /**
-         * The file ID used for validation. You can retrieve the validation results with the
-         * [Files API](https://platform.openai.com/docs/api-reference/files/retrieve-contents).
+         * Sets [Builder.validationFile] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.validationFile] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun validationFile(validationFile: JsonField<String>) = apply {
             this.validationFile = validationFile
@@ -636,21 +796,22 @@ private constructor(
             estimatedFinish(JsonField.ofNullable(estimatedFinish))
 
         /**
-         * The Unix timestamp (in seconds) for when the fine-tuning job is estimated to finish. The
-         * value will be null if the fine-tuning job is not running.
+         * Alias for [Builder.estimatedFinish].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
          */
         fun estimatedFinish(estimatedFinish: Long) = estimatedFinish(estimatedFinish as Long?)
 
-        /**
-         * The Unix timestamp (in seconds) for when the fine-tuning job is estimated to finish. The
-         * value will be null if the fine-tuning job is not running.
-         */
+        /** Alias for calling [Builder.estimatedFinish] with `estimatedFinish.orElse(null)`. */
         fun estimatedFinish(estimatedFinish: Optional<Long>) =
             estimatedFinish(estimatedFinish.getOrNull())
 
         /**
-         * The Unix timestamp (in seconds) for when the fine-tuning job is estimated to finish. The
-         * value will be null if the fine-tuning job is not running.
+         * Sets [Builder.estimatedFinish] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.estimatedFinish] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun estimatedFinish(estimatedFinish: JsonField<Long>) = apply {
             this.estimatedFinish = estimatedFinish
@@ -660,17 +821,27 @@ private constructor(
         fun integrations(integrations: List<FineTuningJobWandbIntegrationObject>?) =
             integrations(JsonField.ofNullable(integrations))
 
-        /** A list of integrations to enable for this fine-tuning job. */
+        /** Alias for calling [Builder.integrations] with `integrations.orElse(null)`. */
         fun integrations(integrations: Optional<List<FineTuningJobWandbIntegrationObject>>) =
             integrations(integrations.getOrNull())
 
-        /** A list of integrations to enable for this fine-tuning job. */
+        /**
+         * Sets [Builder.integrations] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.integrations] with a well-typed
+         * `List<FineTuningJobWandbIntegrationObject>` value instead. This method is primarily for
+         * setting the field to an undocumented or not yet supported value.
+         */
         fun integrations(integrations: JsonField<List<FineTuningJobWandbIntegrationObject>>) =
             apply {
                 this.integrations = integrations.map { it.toMutableList() }
             }
 
-        /** A list of integrations to enable for this fine-tuning job. */
+        /**
+         * Adds a single [FineTuningJobWandbIntegrationObject] to [integrations].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addIntegration(integration: FineTuningJobWandbIntegrationObject) = apply {
             integrations =
                 (integrations ?: JsonField.of(mutableListOf())).also {
@@ -678,7 +849,14 @@ private constructor(
                 }
         }
 
-        /** A list of integrations to enable for this fine-tuning job. */
+        /**
+         * Alias for calling [addIntegration] with the following:
+         * ```java
+         * FineTuningJobWandbIntegrationObject.builder()
+         *     .wandb(wandb)
+         *     .build()
+         * ```
+         */
         fun addWandbIntegration(wandb: FineTuningJobWandbIntegration) =
             addIntegration(FineTuningJobWandbIntegrationObject.builder().wandb(wandb).build())
 
@@ -692,30 +870,27 @@ private constructor(
          */
         fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
 
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
-         *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
-         */
+        /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
         fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
+         * Sets [Builder.metadata] to an arbitrary JSON value.
          *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
+         * You should usually call [Builder.metadata] with a well-typed [Metadata] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
         /** The method used for fine-tuning. */
         fun method(method: Method) = method(JsonField.of(method))
 
-        /** The method used for fine-tuning. */
+        /**
+         * Sets [Builder.method] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.method] with a well-typed [Method] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun method(method: JsonField<Method>) = apply { this.method = method }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -737,6 +912,31 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FineTuningJob].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .error()
+         * .fineTunedModel()
+         * .finishedAt()
+         * .hyperparameters()
+         * .model()
+         * .organizationId()
+         * .resultFiles()
+         * .seed()
+         * .status()
+         * .trainedTokens()
+         * .trainingFile()
+         * .validationFile()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FineTuningJob =
             FineTuningJob(
                 checkRequired("id", id),
@@ -783,27 +983,49 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** A machine-readable error code. */
+        /**
+         * A machine-readable error code.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun code(): String = code.getRequired("code")
 
-        /** A human-readable error message. */
+        /**
+         * A human-readable error message.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun message(): String = message.getRequired("message")
 
         /**
          * The parameter that was invalid, usually `training_file` or `validation_file`. This field
          * will be null if the failure was not parameter-specific.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun param(): Optional<String> = Optional.ofNullable(param.getNullable("param"))
 
-        /** A machine-readable error code. */
+        /**
+         * Returns the raw JSON value of [code].
+         *
+         * Unlike [code], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("code") @ExcludeMissing fun _code(): JsonField<String> = code
 
-        /** A human-readable error message. */
+        /**
+         * Returns the raw JSON value of [message].
+         *
+         * Unlike [message], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
         /**
-         * The parameter that was invalid, usually `training_file` or `validation_file`. This field
-         * will be null if the failure was not parameter-specific.
+         * Returns the raw JSON value of [param].
+         *
+         * Unlike [param], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("param") @ExcludeMissing fun _param(): JsonField<String> = param
 
@@ -860,13 +1082,25 @@ private constructor(
             /** A machine-readable error code. */
             fun code(code: String) = code(JsonField.of(code))
 
-            /** A machine-readable error code. */
+            /**
+             * Sets [Builder.code] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.code] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun code(code: JsonField<String>) = apply { this.code = code }
 
             /** A human-readable error message. */
             fun message(message: String) = message(JsonField.of(message))
 
-            /** A human-readable error message. */
+            /**
+             * Sets [Builder.message] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.message] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun message(message: JsonField<String>) = apply { this.message = message }
 
             /**
@@ -875,15 +1109,15 @@ private constructor(
              */
             fun param(param: String?) = param(JsonField.ofNullable(param))
 
-            /**
-             * The parameter that was invalid, usually `training_file` or `validation_file`. This
-             * field will be null if the failure was not parameter-specific.
-             */
+            /** Alias for calling [Builder.param] with `param.orElse(null)`. */
             fun param(param: Optional<String>) = param(param.getOrNull())
 
             /**
-             * The parameter that was invalid, usually `training_file` or `validation_file`. This
-             * field will be null if the failure was not parameter-specific.
+             * Sets [Builder.param] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.param] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun param(param: JsonField<String>) = apply { this.param = param }
 
@@ -906,6 +1140,20 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Error].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .code()
+             * .message()
+             * .param()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Error =
                 Error(
                     checkRequired("code", code),
@@ -957,6 +1205,9 @@ private constructor(
         /**
          * Number of examples in each batch. A larger batch size means that model parameters are
          * updated less frequently, but with lower variance.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun batchSize(): Optional<BatchSize> =
             Optional.ofNullable(batchSize.getNullable("batch_size"))
@@ -964,6 +1215,9 @@ private constructor(
         /**
          * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
          * overfitting.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun learningRateMultiplier(): Optional<LearningRateMultiplier> =
             Optional.ofNullable(learningRateMultiplier.getNullable("learning_rate_multiplier"))
@@ -971,28 +1225,35 @@ private constructor(
         /**
          * The number of epochs to train the model for. An epoch refers to one full cycle through
          * the training dataset.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun nEpochs(): Optional<NEpochs> = Optional.ofNullable(nEpochs.getNullable("n_epochs"))
 
         /**
-         * Number of examples in each batch. A larger batch size means that model parameters are
-         * updated less frequently, but with lower variance.
+         * Returns the raw JSON value of [batchSize].
+         *
+         * Unlike [batchSize], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("batch_size")
         @ExcludeMissing
         fun _batchSize(): JsonField<BatchSize> = batchSize
 
         /**
-         * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
-         * overfitting.
+         * Returns the raw JSON value of [learningRateMultiplier].
+         *
+         * Unlike [learningRateMultiplier], this method doesn't throw if the JSON field has an
+         * unexpected type.
          */
         @JsonProperty("learning_rate_multiplier")
         @ExcludeMissing
         fun _learningRateMultiplier(): JsonField<LearningRateMultiplier> = learningRateMultiplier
 
         /**
-         * The number of epochs to train the model for. An epoch refers to one full cycle through
-         * the training dataset.
+         * Returns the raw JSON value of [nEpochs].
+         *
+         * Unlike [nEpochs], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("n_epochs") @ExcludeMissing fun _nEpochs(): JsonField<NEpochs> = nEpochs
 
@@ -1044,21 +1305,18 @@ private constructor(
             fun batchSize(batchSize: BatchSize) = batchSize(JsonField.of(batchSize))
 
             /**
-             * Number of examples in each batch. A larger batch size means that model parameters are
-             * updated less frequently, but with lower variance.
+             * Sets [Builder.batchSize] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.batchSize] with a well-typed [BatchSize] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun batchSize(batchSize: JsonField<BatchSize>) = apply { this.batchSize = batchSize }
 
-            /**
-             * Number of examples in each batch. A larger batch size means that model parameters are
-             * updated less frequently, but with lower variance.
-             */
+            /** Alias for calling [batchSize] with `BatchSize.ofAuto()`. */
             fun batchSizeAuto() = batchSize(BatchSize.ofAuto())
 
-            /**
-             * Number of examples in each batch. A larger batch size means that model parameters are
-             * updated less frequently, but with lower variance.
-             */
+            /** Alias for calling [batchSize] with `BatchSize.ofManual(manual)`. */
             fun batchSize(manual: Long) = batchSize(BatchSize.ofManual(manual))
 
             /**
@@ -1069,8 +1327,11 @@ private constructor(
                 learningRateMultiplier(JsonField.of(learningRateMultiplier))
 
             /**
-             * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
-             * overfitting.
+             * Sets [Builder.learningRateMultiplier] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.learningRateMultiplier] with a well-typed
+             * [LearningRateMultiplier] value instead. This method is primarily for setting the
+             * field to an undocumented or not yet supported value.
              */
             fun learningRateMultiplier(learningRateMultiplier: JsonField<LearningRateMultiplier>) =
                 apply {
@@ -1078,15 +1339,14 @@ private constructor(
                 }
 
             /**
-             * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
-             * overfitting.
+             * Alias for calling [learningRateMultiplier] with `LearningRateMultiplier.ofAuto()`.
              */
             fun learningRateMultiplierAuto() =
                 learningRateMultiplier(LearningRateMultiplier.ofAuto())
 
             /**
-             * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
-             * overfitting.
+             * Alias for calling [learningRateMultiplier] with
+             * `LearningRateMultiplier.ofNumber(number)`.
              */
             fun learningRateMultiplier(number: Double) =
                 learningRateMultiplier(LearningRateMultiplier.ofNumber(number))
@@ -1098,21 +1358,18 @@ private constructor(
             fun nEpochs(nEpochs: NEpochs) = nEpochs(JsonField.of(nEpochs))
 
             /**
-             * The number of epochs to train the model for. An epoch refers to one full cycle
-             * through the training dataset.
+             * Sets [Builder.nEpochs] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.nEpochs] with a well-typed [NEpochs] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun nEpochs(nEpochs: JsonField<NEpochs>) = apply { this.nEpochs = nEpochs }
 
-            /**
-             * The number of epochs to train the model for. An epoch refers to one full cycle
-             * through the training dataset.
-             */
+            /** Alias for calling [nEpochs] with `NEpochs.ofAuto()`. */
             fun nEpochsAuto() = nEpochs(NEpochs.ofAuto())
 
-            /**
-             * The number of epochs to train the model for. An epoch refers to one full cycle
-             * through the training dataset.
-             */
+            /** Alias for calling [nEpochs] with `NEpochs.ofInteger(integer)`. */
             fun nEpochs(integer: Long) = nEpochs(NEpochs.ofInteger(integer))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1134,6 +1391,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Hyperparameters].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Hyperparameters =
                 Hyperparameters(
                     batchSize,
@@ -1759,25 +2021,52 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** Configuration for the DPO fine-tuning method. */
+        /**
+         * Configuration for the DPO fine-tuning method.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun dpo(): Optional<Dpo> = Optional.ofNullable(dpo.getNullable("dpo"))
 
-        /** Configuration for the supervised fine-tuning method. */
+        /**
+         * Configuration for the supervised fine-tuning method.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun supervised(): Optional<Supervised> =
             Optional.ofNullable(supervised.getNullable("supervised"))
 
-        /** The type of method. Is either `supervised` or `dpo`. */
+        /**
+         * The type of method. Is either `supervised` or `dpo`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
 
-        /** Configuration for the DPO fine-tuning method. */
+        /**
+         * Returns the raw JSON value of [dpo].
+         *
+         * Unlike [dpo], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("dpo") @ExcludeMissing fun _dpo(): JsonField<Dpo> = dpo
 
-        /** Configuration for the supervised fine-tuning method. */
+        /**
+         * Returns the raw JSON value of [supervised].
+         *
+         * Unlike [supervised], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("supervised")
         @ExcludeMissing
         fun _supervised(): JsonField<Supervised> = supervised
 
-        /** The type of method. Is either `supervised` or `dpo`. */
+        /**
+         * Returns the raw JSON value of [type].
+         *
+         * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
         @JsonAnyGetter
@@ -1824,13 +2113,25 @@ private constructor(
             /** Configuration for the DPO fine-tuning method. */
             fun dpo(dpo: Dpo) = dpo(JsonField.of(dpo))
 
-            /** Configuration for the DPO fine-tuning method. */
+            /**
+             * Sets [Builder.dpo] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.dpo] with a well-typed [Dpo] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun dpo(dpo: JsonField<Dpo>) = apply { this.dpo = dpo }
 
             /** Configuration for the supervised fine-tuning method. */
             fun supervised(supervised: Supervised) = supervised(JsonField.of(supervised))
 
-            /** Configuration for the supervised fine-tuning method. */
+            /**
+             * Sets [Builder.supervised] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.supervised] with a well-typed [Supervised] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun supervised(supervised: JsonField<Supervised>) = apply {
                 this.supervised = supervised
             }
@@ -1838,7 +2139,13 @@ private constructor(
             /** The type of method. Is either `supervised` or `dpo`. */
             fun type(type: Type) = type(JsonField.of(type))
 
-            /** The type of method. Is either `supervised` or `dpo`. */
+            /**
+             * Sets [Builder.type] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.type] with a well-typed [Type] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun type(type: JsonField<Type>) = apply { this.type = type }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1860,6 +2167,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Method].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Method = Method(dpo, supervised, type, additionalProperties.toImmutable())
         }
 
@@ -1875,11 +2187,21 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
-            /** The hyperparameters used for the fine-tuning job. */
+            /**
+             * The hyperparameters used for the fine-tuning job.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
             fun hyperparameters(): Optional<Hyperparameters> =
                 Optional.ofNullable(hyperparameters.getNullable("hyperparameters"))
 
-            /** The hyperparameters used for the fine-tuning job. */
+            /**
+             * Returns the raw JSON value of [hyperparameters].
+             *
+             * Unlike [hyperparameters], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
             @JsonProperty("hyperparameters")
             @ExcludeMissing
             fun _hyperparameters(): JsonField<Hyperparameters> = hyperparameters
@@ -1923,7 +2245,13 @@ private constructor(
                 fun hyperparameters(hyperparameters: Hyperparameters) =
                     hyperparameters(JsonField.of(hyperparameters))
 
-                /** The hyperparameters used for the fine-tuning job. */
+                /**
+                 * Sets [Builder.hyperparameters] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.hyperparameters] with a well-typed
+                 * [Hyperparameters] value instead. This method is primarily for setting the field
+                 * to an undocumented or not yet supported value.
+                 */
                 fun hyperparameters(hyperparameters: JsonField<Hyperparameters>) = apply {
                     this.hyperparameters = hyperparameters
                 }
@@ -1950,6 +2278,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Dpo].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): Dpo = Dpo(hyperparameters, additionalProperties.toImmutable())
             }
 
@@ -1978,6 +2311,9 @@ private constructor(
                 /**
                  * Number of examples in each batch. A larger batch size means that model parameters
                  * are updated less frequently, but with lower variance.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
                  */
                 fun batchSize(): Optional<BatchSize> =
                     Optional.ofNullable(batchSize.getNullable("batch_size"))
@@ -1985,12 +2321,18 @@ private constructor(
                 /**
                  * The beta value for the DPO method. A higher beta value will increase the weight
                  * of the penalty between the policy and reference model.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
                  */
                 fun beta(): Optional<Beta> = Optional.ofNullable(beta.getNullable("beta"))
 
                 /**
                  * Scaling factor for the learning rate. A smaller learning rate may be useful to
                  * avoid overfitting.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
                  */
                 fun learningRateMultiplier(): Optional<LearningRateMultiplier> =
                     Optional.ofNullable(
@@ -2000,27 +2342,36 @@ private constructor(
                 /**
                  * The number of epochs to train the model for. An epoch refers to one full cycle
                  * through the training dataset.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
                  */
                 fun nEpochs(): Optional<NEpochs> =
                     Optional.ofNullable(nEpochs.getNullable("n_epochs"))
 
                 /**
-                 * Number of examples in each batch. A larger batch size means that model parameters
-                 * are updated less frequently, but with lower variance.
+                 * Returns the raw JSON value of [batchSize].
+                 *
+                 * Unlike [batchSize], this method doesn't throw if the JSON field has an unexpected
+                 * type.
                  */
                 @JsonProperty("batch_size")
                 @ExcludeMissing
                 fun _batchSize(): JsonField<BatchSize> = batchSize
 
                 /**
-                 * The beta value for the DPO method. A higher beta value will increase the weight
-                 * of the penalty between the policy and reference model.
+                 * Returns the raw JSON value of [beta].
+                 *
+                 * Unlike [beta], this method doesn't throw if the JSON field has an unexpected
+                 * type.
                  */
                 @JsonProperty("beta") @ExcludeMissing fun _beta(): JsonField<Beta> = beta
 
                 /**
-                 * Scaling factor for the learning rate. A smaller learning rate may be useful to
-                 * avoid overfitting.
+                 * Returns the raw JSON value of [learningRateMultiplier].
+                 *
+                 * Unlike [learningRateMultiplier], this method doesn't throw if the JSON field has
+                 * an unexpected type.
                  */
                 @JsonProperty("learning_rate_multiplier")
                 @ExcludeMissing
@@ -2028,8 +2379,10 @@ private constructor(
                     learningRateMultiplier
 
                 /**
-                 * The number of epochs to train the model for. An epoch refers to one full cycle
-                 * through the training dataset.
+                 * Returns the raw JSON value of [nEpochs].
+                 *
+                 * Unlike [nEpochs], this method doesn't throw if the JSON field has an unexpected
+                 * type.
                  */
                 @JsonProperty("n_epochs")
                 @ExcludeMissing
@@ -2089,23 +2442,20 @@ private constructor(
                     fun batchSize(batchSize: BatchSize) = batchSize(JsonField.of(batchSize))
 
                     /**
-                     * Number of examples in each batch. A larger batch size means that model
-                     * parameters are updated less frequently, but with lower variance.
+                     * Sets [Builder.batchSize] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.batchSize] with a well-typed [BatchSize]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
                      */
                     fun batchSize(batchSize: JsonField<BatchSize>) = apply {
                         this.batchSize = batchSize
                     }
 
-                    /**
-                     * Number of examples in each batch. A larger batch size means that model
-                     * parameters are updated less frequently, but with lower variance.
-                     */
+                    /** Alias for calling [batchSize] with `BatchSize.ofAuto()`. */
                     fun batchSizeAuto() = batchSize(BatchSize.ofAuto())
 
-                    /**
-                     * Number of examples in each batch. A larger batch size means that model
-                     * parameters are updated less frequently, but with lower variance.
-                     */
+                    /** Alias for calling [batchSize] with `BatchSize.ofManual(manual)`. */
                     fun batchSize(manual: Long) = batchSize(BatchSize.ofManual(manual))
 
                     /**
@@ -2115,21 +2465,18 @@ private constructor(
                     fun beta(beta: Beta) = beta(JsonField.of(beta))
 
                     /**
-                     * The beta value for the DPO method. A higher beta value will increase the
-                     * weight of the penalty between the policy and reference model.
+                     * Sets [Builder.beta] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.beta] with a well-typed [Beta] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
                      */
                     fun beta(beta: JsonField<Beta>) = apply { this.beta = beta }
 
-                    /**
-                     * The beta value for the DPO method. A higher beta value will increase the
-                     * weight of the penalty between the policy and reference model.
-                     */
+                    /** Alias for calling [beta] with `Beta.ofAuto()`. */
                     fun betaAuto() = beta(Beta.ofAuto())
 
-                    /**
-                     * The beta value for the DPO method. A higher beta value will increase the
-                     * weight of the penalty between the policy and reference model.
-                     */
+                    /** Alias for calling [beta] with `Beta.ofManual(manual)`. */
                     fun beta(manual: Double) = beta(Beta.ofManual(manual))
 
                     /**
@@ -2140,23 +2487,26 @@ private constructor(
                         learningRateMultiplier(JsonField.of(learningRateMultiplier))
 
                     /**
-                     * Scaling factor for the learning rate. A smaller learning rate may be useful
-                     * to avoid overfitting.
+                     * Sets [Builder.learningRateMultiplier] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.learningRateMultiplier] with a well-typed
+                     * [LearningRateMultiplier] value instead. This method is primarily for setting
+                     * the field to an undocumented or not yet supported value.
                      */
                     fun learningRateMultiplier(
                         learningRateMultiplier: JsonField<LearningRateMultiplier>
                     ) = apply { this.learningRateMultiplier = learningRateMultiplier }
 
                     /**
-                     * Scaling factor for the learning rate. A smaller learning rate may be useful
-                     * to avoid overfitting.
+                     * Alias for calling [learningRateMultiplier] with
+                     * `LearningRateMultiplier.ofAuto()`.
                      */
                     fun learningRateMultiplierAuto() =
                         learningRateMultiplier(LearningRateMultiplier.ofAuto())
 
                     /**
-                     * Scaling factor for the learning rate. A smaller learning rate may be useful
-                     * to avoid overfitting.
+                     * Alias for calling [learningRateMultiplier] with
+                     * `LearningRateMultiplier.ofManual(manual)`.
                      */
                     fun learningRateMultiplier(manual: Double) =
                         learningRateMultiplier(LearningRateMultiplier.ofManual(manual))
@@ -2168,21 +2518,18 @@ private constructor(
                     fun nEpochs(nEpochs: NEpochs) = nEpochs(JsonField.of(nEpochs))
 
                     /**
-                     * The number of epochs to train the model for. An epoch refers to one full
-                     * cycle through the training dataset.
+                     * Sets [Builder.nEpochs] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.nEpochs] with a well-typed [NEpochs] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
                      */
                     fun nEpochs(nEpochs: JsonField<NEpochs>) = apply { this.nEpochs = nEpochs }
 
-                    /**
-                     * The number of epochs to train the model for. An epoch refers to one full
-                     * cycle through the training dataset.
-                     */
+                    /** Alias for calling [nEpochs] with `NEpochs.ofAuto()`. */
                     fun nEpochsAuto() = nEpochs(NEpochs.ofAuto())
 
-                    /**
-                     * The number of epochs to train the model for. An epoch refers to one full
-                     * cycle through the training dataset.
-                     */
+                    /** Alias for calling [nEpochs] with `NEpochs.ofManual(manual)`. */
                     fun nEpochs(manual: Long) = nEpochs(NEpochs.ofManual(manual))
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -2207,6 +2554,11 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [Hyperparameters].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
                     fun build(): Hyperparameters =
                         Hyperparameters(
                             batchSize,
@@ -2883,11 +3235,21 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
-            /** The hyperparameters used for the fine-tuning job. */
+            /**
+             * The hyperparameters used for the fine-tuning job.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
             fun hyperparameters(): Optional<Hyperparameters> =
                 Optional.ofNullable(hyperparameters.getNullable("hyperparameters"))
 
-            /** The hyperparameters used for the fine-tuning job. */
+            /**
+             * Returns the raw JSON value of [hyperparameters].
+             *
+             * Unlike [hyperparameters], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
             @JsonProperty("hyperparameters")
             @ExcludeMissing
             fun _hyperparameters(): JsonField<Hyperparameters> = hyperparameters
@@ -2931,7 +3293,13 @@ private constructor(
                 fun hyperparameters(hyperparameters: Hyperparameters) =
                     hyperparameters(JsonField.of(hyperparameters))
 
-                /** The hyperparameters used for the fine-tuning job. */
+                /**
+                 * Sets [Builder.hyperparameters] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.hyperparameters] with a well-typed
+                 * [Hyperparameters] value instead. This method is primarily for setting the field
+                 * to an undocumented or not yet supported value.
+                 */
                 fun hyperparameters(hyperparameters: JsonField<Hyperparameters>) = apply {
                     this.hyperparameters = hyperparameters
                 }
@@ -2958,6 +3326,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Supervised].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): Supervised =
                     Supervised(hyperparameters, additionalProperties.toImmutable())
             }
@@ -2984,6 +3357,9 @@ private constructor(
                 /**
                  * Number of examples in each batch. A larger batch size means that model parameters
                  * are updated less frequently, but with lower variance.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
                  */
                 fun batchSize(): Optional<BatchSize> =
                     Optional.ofNullable(batchSize.getNullable("batch_size"))
@@ -2991,6 +3367,9 @@ private constructor(
                 /**
                  * Scaling factor for the learning rate. A smaller learning rate may be useful to
                  * avoid overfitting.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
                  */
                 fun learningRateMultiplier(): Optional<LearningRateMultiplier> =
                     Optional.ofNullable(
@@ -3000,21 +3379,28 @@ private constructor(
                 /**
                  * The number of epochs to train the model for. An epoch refers to one full cycle
                  * through the training dataset.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
                  */
                 fun nEpochs(): Optional<NEpochs> =
                     Optional.ofNullable(nEpochs.getNullable("n_epochs"))
 
                 /**
-                 * Number of examples in each batch. A larger batch size means that model parameters
-                 * are updated less frequently, but with lower variance.
+                 * Returns the raw JSON value of [batchSize].
+                 *
+                 * Unlike [batchSize], this method doesn't throw if the JSON field has an unexpected
+                 * type.
                  */
                 @JsonProperty("batch_size")
                 @ExcludeMissing
                 fun _batchSize(): JsonField<BatchSize> = batchSize
 
                 /**
-                 * Scaling factor for the learning rate. A smaller learning rate may be useful to
-                 * avoid overfitting.
+                 * Returns the raw JSON value of [learningRateMultiplier].
+                 *
+                 * Unlike [learningRateMultiplier], this method doesn't throw if the JSON field has
+                 * an unexpected type.
                  */
                 @JsonProperty("learning_rate_multiplier")
                 @ExcludeMissing
@@ -3022,8 +3408,10 @@ private constructor(
                     learningRateMultiplier
 
                 /**
-                 * The number of epochs to train the model for. An epoch refers to one full cycle
-                 * through the training dataset.
+                 * Returns the raw JSON value of [nEpochs].
+                 *
+                 * Unlike [nEpochs], this method doesn't throw if the JSON field has an unexpected
+                 * type.
                  */
                 @JsonProperty("n_epochs")
                 @ExcludeMissing
@@ -3080,23 +3468,20 @@ private constructor(
                     fun batchSize(batchSize: BatchSize) = batchSize(JsonField.of(batchSize))
 
                     /**
-                     * Number of examples in each batch. A larger batch size means that model
-                     * parameters are updated less frequently, but with lower variance.
+                     * Sets [Builder.batchSize] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.batchSize] with a well-typed [BatchSize]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
                      */
                     fun batchSize(batchSize: JsonField<BatchSize>) = apply {
                         this.batchSize = batchSize
                     }
 
-                    /**
-                     * Number of examples in each batch. A larger batch size means that model
-                     * parameters are updated less frequently, but with lower variance.
-                     */
+                    /** Alias for calling [batchSize] with `BatchSize.ofAuto()`. */
                     fun batchSizeAuto() = batchSize(BatchSize.ofAuto())
 
-                    /**
-                     * Number of examples in each batch. A larger batch size means that model
-                     * parameters are updated less frequently, but with lower variance.
-                     */
+                    /** Alias for calling [batchSize] with `BatchSize.ofManual(manual)`. */
                     fun batchSize(manual: Long) = batchSize(BatchSize.ofManual(manual))
 
                     /**
@@ -3107,23 +3492,26 @@ private constructor(
                         learningRateMultiplier(JsonField.of(learningRateMultiplier))
 
                     /**
-                     * Scaling factor for the learning rate. A smaller learning rate may be useful
-                     * to avoid overfitting.
+                     * Sets [Builder.learningRateMultiplier] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.learningRateMultiplier] with a well-typed
+                     * [LearningRateMultiplier] value instead. This method is primarily for setting
+                     * the field to an undocumented or not yet supported value.
                      */
                     fun learningRateMultiplier(
                         learningRateMultiplier: JsonField<LearningRateMultiplier>
                     ) = apply { this.learningRateMultiplier = learningRateMultiplier }
 
                     /**
-                     * Scaling factor for the learning rate. A smaller learning rate may be useful
-                     * to avoid overfitting.
+                     * Alias for calling [learningRateMultiplier] with
+                     * `LearningRateMultiplier.ofAuto()`.
                      */
                     fun learningRateMultiplierAuto() =
                         learningRateMultiplier(LearningRateMultiplier.ofAuto())
 
                     /**
-                     * Scaling factor for the learning rate. A smaller learning rate may be useful
-                     * to avoid overfitting.
+                     * Alias for calling [learningRateMultiplier] with
+                     * `LearningRateMultiplier.ofManual(manual)`.
                      */
                     fun learningRateMultiplier(manual: Double) =
                         learningRateMultiplier(LearningRateMultiplier.ofManual(manual))
@@ -3135,21 +3523,18 @@ private constructor(
                     fun nEpochs(nEpochs: NEpochs) = nEpochs(JsonField.of(nEpochs))
 
                     /**
-                     * The number of epochs to train the model for. An epoch refers to one full
-                     * cycle through the training dataset.
+                     * Sets [Builder.nEpochs] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.nEpochs] with a well-typed [NEpochs] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
                      */
                     fun nEpochs(nEpochs: JsonField<NEpochs>) = apply { this.nEpochs = nEpochs }
 
-                    /**
-                     * The number of epochs to train the model for. An epoch refers to one full
-                     * cycle through the training dataset.
-                     */
+                    /** Alias for calling [nEpochs] with `NEpochs.ofAuto()`. */
                     fun nEpochsAuto() = nEpochs(NEpochs.ofAuto())
 
-                    /**
-                     * The number of epochs to train the model for. An epoch refers to one full
-                     * cycle through the training dataset.
-                     */
+                    /** Alias for calling [nEpochs] with `NEpochs.ofManual(manual)`. */
                     fun nEpochs(manual: Long) = nEpochs(NEpochs.ofManual(manual))
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -3174,6 +3559,11 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [Hyperparameters].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
                     fun build(): Hyperparameters =
                         Hyperparameters(
                             batchSize,

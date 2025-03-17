@@ -45,19 +45,49 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** A unique identifier for the completion. */
+    /**
+     * A unique identifier for the completion.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** The list of completion choices the model generated for the input prompt. */
+    /**
+     * The list of completion choices the model generated for the input prompt.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun choices(): List<CompletionChoice> = choices.getRequired("choices")
 
-    /** The Unix timestamp (in seconds) of when the completion was created. */
+    /**
+     * The Unix timestamp (in seconds) of when the completion was created.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun created(): Long = created.getRequired("created")
 
-    /** The model used for completion. */
+    /**
+     * The model used for completion.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun model(): String = model.getRequired("model")
 
-    /** The object type, which is always "text_completion" */
+    /**
+     * The object type, which is always "text_completion"
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("text_completion")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
@@ -65,38 +95,66 @@ private constructor(
      *
      * Can be used in conjunction with the `seed` request parameter to understand when backend
      * changes have been made that might impact determinism.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun systemFingerprint(): Optional<String> =
         Optional.ofNullable(systemFingerprint.getNullable("system_fingerprint"))
 
-    /** Usage statistics for the completion request. */
+    /**
+     * Usage statistics for the completion request.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun usage(): Optional<CompletionUsage> = Optional.ofNullable(usage.getNullable("usage"))
 
-    /** A unique identifier for the completion. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** The list of completion choices the model generated for the input prompt. */
+    /**
+     * Returns the raw JSON value of [choices].
+     *
+     * Unlike [choices], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("choices")
     @ExcludeMissing
     fun _choices(): JsonField<List<CompletionChoice>> = choices
 
-    /** The Unix timestamp (in seconds) of when the completion was created. */
+    /**
+     * Returns the raw JSON value of [created].
+     *
+     * Unlike [created], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("created") @ExcludeMissing fun _created(): JsonField<Long> = created
 
-    /** The model used for completion. */
+    /**
+     * Returns the raw JSON value of [model].
+     *
+     * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
 
     /**
-     * This fingerprint represents the backend configuration that the model runs with.
+     * Returns the raw JSON value of [systemFingerprint].
      *
-     * Can be used in conjunction with the `seed` request parameter to understand when backend
-     * changes have been made that might impact determinism.
+     * Unlike [systemFingerprint], this method doesn't throw if the JSON field has an unexpected
+     * type.
      */
     @JsonProperty("system_fingerprint")
     @ExcludeMissing
     fun _systemFingerprint(): JsonField<String> = systemFingerprint
 
-    /** Usage statistics for the completion request. */
+    /**
+     * Returns the raw JSON value of [usage].
+     *
+     * Unlike [usage], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<CompletionUsage> = usage
 
     @JsonAnyGetter
@@ -169,18 +227,33 @@ private constructor(
         /** A unique identifier for the completion. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** A unique identifier for the completion. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The list of completion choices the model generated for the input prompt. */
         fun choices(choices: List<CompletionChoice>) = choices(JsonField.of(choices))
 
-        /** The list of completion choices the model generated for the input prompt. */
+        /**
+         * Sets [Builder.choices] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.choices] with a well-typed `List<CompletionChoice>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
         fun choices(choices: JsonField<List<CompletionChoice>>) = apply {
             this.choices = choices.map { it.toMutableList() }
         }
 
-        /** The list of completion choices the model generated for the input prompt. */
+        /**
+         * Adds a single [CompletionChoice] to [choices].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addChoice(choice: CompletionChoice) = apply {
             choices =
                 (choices ?: JsonField.of(mutableListOf())).also {
@@ -191,16 +264,37 @@ private constructor(
         /** The Unix timestamp (in seconds) of when the completion was created. */
         fun created(created: Long) = created(JsonField.of(created))
 
-        /** The Unix timestamp (in seconds) of when the completion was created. */
+        /**
+         * Sets [Builder.created] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.created] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun created(created: JsonField<Long>) = apply { this.created = created }
 
         /** The model used for completion. */
         fun model(model: String) = model(JsonField.of(model))
 
-        /** The model used for completion. */
+        /**
+         * Sets [Builder.model] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.model] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun model(model: JsonField<String>) = apply { this.model = model }
 
-        /** The object type, which is always "text_completion" */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("text_completion")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /**
@@ -213,10 +307,11 @@ private constructor(
             systemFingerprint(JsonField.of(systemFingerprint))
 
         /**
-         * This fingerprint represents the backend configuration that the model runs with.
+         * Sets [Builder.systemFingerprint] to an arbitrary JSON value.
          *
-         * Can be used in conjunction with the `seed` request parameter to understand when backend
-         * changes have been made that might impact determinism.
+         * You should usually call [Builder.systemFingerprint] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun systemFingerprint(systemFingerprint: JsonField<String>) = apply {
             this.systemFingerprint = systemFingerprint
@@ -225,7 +320,13 @@ private constructor(
         /** Usage statistics for the completion request. */
         fun usage(usage: CompletionUsage) = usage(JsonField.of(usage))
 
-        /** Usage statistics for the completion request. */
+        /**
+         * Sets [Builder.usage] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.usage] with a well-typed [CompletionUsage] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun usage(usage: JsonField<CompletionUsage>) = apply { this.usage = usage }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -247,6 +348,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [Completion].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .choices()
+         * .created()
+         * .model()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): Completion =
             Completion(
                 checkRequired("id", id),

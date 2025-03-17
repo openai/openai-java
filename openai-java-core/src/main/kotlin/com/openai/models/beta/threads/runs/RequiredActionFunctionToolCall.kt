@@ -35,24 +35,45 @@ private constructor(
      * the
      * [Submit tool outputs to run](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs)
      * endpoint.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun id(): String = id.getRequired("id")
 
-    /** The function definition. */
+    /**
+     * The function definition.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun function(): Function = function.getRequired("function")
 
-    /** The type of tool call the output is required for. For now, this is always `function`. */
+    /**
+     * The type of tool call the output is required for. For now, this is always `function`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("function")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
-     * The ID of the tool call. This ID must be referenced when you submit the tool outputs in using
-     * the
-     * [Submit tool outputs to run](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs)
-     * endpoint.
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** The function definition. */
+    /**
+     * Returns the raw JSON value of [function].
+     *
+     * Unlike [function], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("function") @ExcludeMissing fun _function(): JsonField<Function> = function
 
     @JsonAnyGetter
@@ -119,20 +140,37 @@ private constructor(
         fun id(id: String) = id(JsonField.of(id))
 
         /**
-         * The ID of the tool call. This ID must be referenced when you submit the tool outputs in
-         * using the
-         * [Submit tool outputs to run](https://platform.openai.com/docs/api-reference/runs/submitToolOutputs)
-         * endpoint.
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The function definition. */
         fun function(function: Function) = function(JsonField.of(function))
 
-        /** The function definition. */
+        /**
+         * Sets [Builder.function] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.function] with a well-typed [Function] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun function(function: JsonField<Function>) = apply { this.function = function }
 
-        /** The type of tool call the output is required for. For now, this is always `function`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("function")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -154,6 +192,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [RequiredActionFunctionToolCall].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .function()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): RequiredActionFunctionToolCall =
             RequiredActionFunctionToolCall(
                 checkRequired("id", id),
@@ -178,16 +229,34 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The arguments that the model expects you to pass to the function. */
+        /**
+         * The arguments that the model expects you to pass to the function.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun arguments(): String = arguments.getRequired("arguments")
 
-        /** The name of the function. */
+        /**
+         * The name of the function.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun name(): String = name.getRequired("name")
 
-        /** The arguments that the model expects you to pass to the function. */
+        /**
+         * Returns the raw JSON value of [arguments].
+         *
+         * Unlike [arguments], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("arguments") @ExcludeMissing fun _arguments(): JsonField<String> = arguments
 
-        /** The name of the function. */
+        /**
+         * Returns the raw JSON value of [name].
+         *
+         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         @JsonAnyGetter
@@ -239,13 +308,25 @@ private constructor(
             /** The arguments that the model expects you to pass to the function. */
             fun arguments(arguments: String) = arguments(JsonField.of(arguments))
 
-            /** The arguments that the model expects you to pass to the function. */
+            /**
+             * Sets [Builder.arguments] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.arguments] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun arguments(arguments: JsonField<String>) = apply { this.arguments = arguments }
 
             /** The name of the function. */
             fun name(name: String) = name(JsonField.of(name))
 
-            /** The name of the function. */
+            /**
+             * Sets [Builder.name] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.name] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun name(name: JsonField<String>) = apply { this.name = name }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -267,6 +348,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Function].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .arguments()
+             * .name()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Function =
                 Function(
                     checkRequired("arguments", arguments),

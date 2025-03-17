@@ -17,6 +17,7 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -40,14 +41,16 @@ private constructor(
      * additional information about the object in a structured format, and querying for objects via
      * API or the dashboard. Keys are strings with a maximum length of 64 characters. Values are
      * strings with a maximum length of 512 characters, booleans, or numbers.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun attributes(): Optional<Attributes> = body.attributes()
 
     /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard. Keys are strings with a maximum length of 64 characters. Values are
-     * strings with a maximum length of 512 characters, booleans, or numbers.
+     * Returns the raw JSON value of [attributes].
+     *
+     * Unlike [attributes], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _attributes(): JsonField<Attributes> = body._attributes()
 
@@ -88,16 +91,17 @@ private constructor(
          * objects via API or the dashboard. Keys are strings with a maximum length of 64
          * characters. Values are strings with a maximum length of 512 characters, booleans, or
          * numbers.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun attributes(): Optional<Attributes> =
             Optional.ofNullable(attributes.getNullable("attributes"))
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard. Keys are strings with a maximum length of 64
-         * characters. Values are strings with a maximum length of 512 characters, booleans, or
-         * numbers.
+         * Returns the raw JSON value of [attributes].
+         *
+         * Unlike [attributes], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("attributes")
         @ExcludeMissing
@@ -154,21 +158,15 @@ private constructor(
              */
             fun attributes(attributes: Attributes?) = attributes(JsonField.ofNullable(attributes))
 
-            /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format, and querying
-             * for objects via API or the dashboard. Keys are strings with a maximum length of 64
-             * characters. Values are strings with a maximum length of 512 characters, booleans, or
-             * numbers.
-             */
+            /** Alias for calling [Builder.attributes] with `attributes.orElse(null)`. */
             fun attributes(attributes: Optional<Attributes>) = attributes(attributes.getOrNull())
 
             /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format, and querying
-             * for objects via API or the dashboard. Keys are strings with a maximum length of 64
-             * characters. Values are strings with a maximum length of 512 characters, booleans, or
-             * numbers.
+             * Sets [Builder.attributes] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.attributes] with a well-typed [Attributes] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun attributes(attributes: JsonField<Attributes>) = apply {
                 this.attributes = attributes
@@ -193,6 +191,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .attributes()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(checkRequired("attributes", attributes), additionalProperties.toImmutable())
         }
@@ -264,21 +274,15 @@ private constructor(
          */
         fun attributes(attributes: Attributes?) = apply { body.attributes(attributes) }
 
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard. Keys are strings with a maximum length of 64
-         * characters. Values are strings with a maximum length of 512 characters, booleans, or
-         * numbers.
-         */
+        /** Alias for calling [Builder.attributes] with `attributes.orElse(null)`. */
         fun attributes(attributes: Optional<Attributes>) = attributes(attributes.getOrNull())
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard. Keys are strings with a maximum length of 64
-         * characters. Values are strings with a maximum length of 512 characters, booleans, or
-         * numbers.
+         * Sets [Builder.attributes] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.attributes] with a well-typed [Attributes] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun attributes(attributes: JsonField<Attributes>) = apply { body.attributes(attributes) }
 
@@ -399,6 +403,20 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [FileUpdateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .vectorStoreId()
+         * .fileId()
+         * .attributes()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FileUpdateParams =
             FileUpdateParams(
                 checkRequired("vectorStoreId", vectorStoreId),
@@ -474,6 +492,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Attributes].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Attributes = Attributes(additionalProperties.toImmutable())
         }
 

@@ -45,6 +45,9 @@ private constructor(
      * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
      * values are `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
      * responses and fewer tokens used on reasoning in a response.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun effort(): Optional<ReasoningEffort> = Optional.ofNullable(effort.getNullable("effort"))
 
@@ -53,25 +56,24 @@ private constructor(
      *
      * A summary of the reasoning performed by the model. This can be useful for debugging and
      * understanding the model's reasoning process. One of `concise` or `detailed`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun generateSummary(): Optional<GenerateSummary> =
         Optional.ofNullable(generateSummary.getNullable("generate_summary"))
 
     /**
-     * **o-series models only**
+     * Returns the raw JSON value of [effort].
      *
-     * Constrains effort on reasoning for
-     * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
-     * values are `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
-     * responses and fewer tokens used on reasoning in a response.
+     * Unlike [effort], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("effort") @ExcludeMissing fun _effort(): JsonField<ReasoningEffort> = effort
 
     /**
-     * **o-series models only**
+     * Returns the raw JSON value of [generateSummary].
      *
-     * A summary of the reasoning performed by the model. This can be useful for debugging and
-     * understanding the model's reasoning process. One of `concise` or `detailed`.
+     * Unlike [generateSummary], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("generate_summary")
     @ExcludeMissing
@@ -132,23 +134,15 @@ private constructor(
          */
         fun effort(effort: ReasoningEffort?) = effort(JsonField.ofNullable(effort))
 
-        /**
-         * **o-series models only**
-         *
-         * Constrains effort on reasoning for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
-         * faster responses and fewer tokens used on reasoning in a response.
-         */
+        /** Alias for calling [Builder.effort] with `effort.orElse(null)`. */
         fun effort(effort: Optional<ReasoningEffort>) = effort(effort.getOrNull())
 
         /**
-         * **o-series models only**
+         * Sets [Builder.effort] to an arbitrary JSON value.
          *
-         * Constrains effort on reasoning for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
-         * faster responses and fewer tokens used on reasoning in a response.
+         * You should usually call [Builder.effort] with a well-typed [ReasoningEffort] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun effort(effort: JsonField<ReasoningEffort>) = apply { this.effort = effort }
 
@@ -161,20 +155,16 @@ private constructor(
         fun generateSummary(generateSummary: GenerateSummary?) =
             generateSummary(JsonField.ofNullable(generateSummary))
 
-        /**
-         * **o-series models only**
-         *
-         * A summary of the reasoning performed by the model. This can be useful for debugging and
-         * understanding the model's reasoning process. One of `concise` or `detailed`.
-         */
+        /** Alias for calling [Builder.generateSummary] with `generateSummary.orElse(null)`. */
         fun generateSummary(generateSummary: Optional<GenerateSummary>) =
             generateSummary(generateSummary.getOrNull())
 
         /**
-         * **o-series models only**
+         * Sets [Builder.generateSummary] to an arbitrary JSON value.
          *
-         * A summary of the reasoning performed by the model. This can be useful for debugging and
-         * understanding the model's reasoning process. One of `concise` or `detailed`.
+         * You should usually call [Builder.generateSummary] with a well-typed [GenerateSummary]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
          */
         fun generateSummary(generateSummary: JsonField<GenerateSummary>) = apply {
             this.generateSummary = generateSummary
@@ -199,6 +189,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [Reasoning].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .effort()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): Reasoning =
             Reasoning(
                 checkRequired("effort", effort),

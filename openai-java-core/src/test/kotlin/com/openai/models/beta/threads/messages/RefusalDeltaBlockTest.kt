@@ -5,7 +5,7 @@ package com.openai.models.beta.threads.messages
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class RefusalDeltaBlockTest {
+internal class RefusalDeltaBlockTest {
 
     @Test
     fun createRefusalDeltaBlock() {

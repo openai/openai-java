@@ -29,11 +29,30 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun function(): Function = function.getRequired("function")
 
-    /** The type of the tool. Currently, only `function` is supported. */
+    /**
+     * The type of the tool. Currently, only `function` is supported.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("function")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
+    /**
+     * Returns the raw JSON value of [function].
+     *
+     * Unlike [function], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("function") @ExcludeMissing fun _function(): JsonField<Function> = function
 
     @JsonAnyGetter
@@ -88,9 +107,27 @@ private constructor(
 
         fun function(function: Function) = function(JsonField.of(function))
 
+        /**
+         * Sets [Builder.function] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.function] with a well-typed [Function] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun function(function: JsonField<Function>) = apply { this.function = function }
 
-        /** The type of the tool. Currently, only `function` is supported. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("function")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -112,6 +149,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ChatCompletionNamedToolChoice].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .function()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ChatCompletionNamedToolChoice =
             ChatCompletionNamedToolChoice(
                 checkRequired("function", function),
@@ -131,10 +180,19 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The name of the function to call. */
+        /**
+         * The name of the function to call.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun name(): String = name.getRequired("name")
 
-        /** The name of the function to call. */
+        /**
+         * Returns the raw JSON value of [name].
+         *
+         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         @JsonAnyGetter
@@ -182,7 +240,13 @@ private constructor(
             /** The name of the function to call. */
             fun name(name: String) = name(JsonField.of(name))
 
-            /** The name of the function to call. */
+            /**
+             * Sets [Builder.name] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.name] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun name(name: JsonField<String>) = apply { this.name = name }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -204,6 +268,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Function].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .name()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Function =
                 Function(checkRequired("name", name), additionalProperties.toImmutable())
         }

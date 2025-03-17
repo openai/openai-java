@@ -35,23 +35,32 @@ private constructor(
 
     /**
      * Specifies the output audio format. Must be one of `wav`, `mp3`, `flac`, `opus`, or `pcm16`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun format(): Format = format.getRequired("format")
 
     /**
      * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`, `coral`,
      * `echo`, `sage`, and `shimmer`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun voice(): Voice = voice.getRequired("voice")
 
     /**
-     * Specifies the output audio format. Must be one of `wav`, `mp3`, `flac`, `opus`, or `pcm16`.
+     * Returns the raw JSON value of [format].
+     *
+     * Unlike [format], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("format") @ExcludeMissing fun _format(): JsonField<Format> = format
 
     /**
-     * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`, `coral`,
-     * `echo`, `sage`, and `shimmer`.
+     * Returns the raw JSON value of [voice].
+     *
+     * Unlike [voice], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("voice") @ExcludeMissing fun _voice(): JsonField<Voice> = voice
 
@@ -108,8 +117,10 @@ private constructor(
         fun format(format: Format) = format(JsonField.of(format))
 
         /**
-         * Specifies the output audio format. Must be one of `wav`, `mp3`, `flac`, `opus`, or
-         * `pcm16`.
+         * Sets [Builder.format] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.format] with a well-typed [Format] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun format(format: JsonField<Format>) = apply { this.format = format }
 
@@ -120,8 +131,10 @@ private constructor(
         fun voice(voice: Voice) = voice(JsonField.of(voice))
 
         /**
-         * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`,
-         * `coral`, `echo`, `sage`, and `shimmer`.
+         * Sets [Builder.voice] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.voice] with a well-typed [Voice] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun voice(voice: JsonField<Voice>) = apply { this.voice = voice }
 
@@ -144,6 +157,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ChatCompletionAudioParam].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .format()
+         * .voice()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ChatCompletionAudioParam =
             ChatCompletionAudioParam(
                 checkRequired("format", format),

@@ -119,25 +119,13 @@ private constructor(
             this.include = include?.toMutableList()
         }
 
-        /**
-         * A list of additional fields to include in the response. Currently the only supported
-         * value is `step_details.tool_calls[*].file_search.results[*].content` to fetch the file
-         * search result content.
-         *
-         * See the
-         * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
-         * for more information.
-         */
+        /** Alias for calling [Builder.include] with `include.orElse(null)`. */
         fun include(include: Optional<List<RunStepInclude>>) = include(include.getOrNull())
 
         /**
-         * A list of additional fields to include in the response. Currently the only supported
-         * value is `step_details.tool_calls[*].file_search.results[*].content` to fetch the file
-         * search result content.
+         * Adds a single [RunStepInclude] to [Builder.include].
          *
-         * See the
-         * [file search tool documentation](https://platform.openai.com/docs/assistants/tools/file-search#customizing-file-search-settings)
-         * for more information.
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addInclude(include: RunStepInclude) = apply {
             this.include = (this.include ?: mutableListOf()).apply { add(include) }
@@ -241,6 +229,20 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [StepRetrieveParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .threadId()
+         * .runId()
+         * .stepId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): StepRetrieveParams =
             StepRetrieveParams(
                 checkRequired("threadId", threadId),

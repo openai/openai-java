@@ -35,24 +35,60 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The function-call arguments. */
+    /**
+     * The function-call arguments.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun arguments(): String = arguments.getRequired("arguments")
 
-    /** The ID of the item. */
+    /**
+     * The ID of the item.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun itemId(): String = itemId.getRequired("item_id")
 
-    /** The index of the output item. */
+    /**
+     * The index of the output item.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun outputIndex(): Long = outputIndex.getRequired("output_index")
 
+    /**
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("response.function_call_arguments.done")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** The function-call arguments. */
+    /**
+     * Returns the raw JSON value of [arguments].
+     *
+     * Unlike [arguments], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("arguments") @ExcludeMissing fun _arguments(): JsonField<String> = arguments
 
-    /** The ID of the item. */
+    /**
+     * Returns the raw JSON value of [itemId].
+     *
+     * Unlike [itemId], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("item_id") @ExcludeMissing fun _itemId(): JsonField<String> = itemId
 
-    /** The index of the output item. */
+    /**
+     * Returns the raw JSON value of [outputIndex].
+     *
+     * Unlike [outputIndex], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("output_index") @ExcludeMissing fun _outputIndex(): JsonField<Long> = outputIndex
 
     @JsonAnyGetter
@@ -119,21 +155,50 @@ private constructor(
         /** The function-call arguments. */
         fun arguments(arguments: String) = arguments(JsonField.of(arguments))
 
-        /** The function-call arguments. */
+        /**
+         * Sets [Builder.arguments] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.arguments] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun arguments(arguments: JsonField<String>) = apply { this.arguments = arguments }
 
         /** The ID of the item. */
         fun itemId(itemId: String) = itemId(JsonField.of(itemId))
 
-        /** The ID of the item. */
+        /**
+         * Sets [Builder.itemId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.itemId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun itemId(itemId: JsonField<String>) = apply { this.itemId = itemId }
 
         /** The index of the output item. */
         fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))
 
-        /** The index of the output item. */
+        /**
+         * Sets [Builder.outputIndex] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.outputIndex] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun outputIndex(outputIndex: JsonField<Long>) = apply { this.outputIndex = outputIndex }
 
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("response.function_call_arguments.done")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -155,6 +220,20 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseFunctionCallArgumentsDoneEvent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .arguments()
+         * .itemId()
+         * .outputIndex()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseFunctionCallArgumentsDoneEvent =
             ResponseFunctionCallArgumentsDoneEvent(
                 checkRequired("arguments", arguments),

@@ -29,12 +29,31 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** Always `message_creation`. */
+    /**
+     * Always `message_creation`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("message_creation")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun messageCreation(): Optional<MessageCreation> =
         Optional.ofNullable(messageCreation.getNullable("message_creation"))
 
+    /**
+     * Returns the raw JSON value of [messageCreation].
+     *
+     * Unlike [messageCreation], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("message_creation")
     @ExcludeMissing
     fun _messageCreation(): JsonField<MessageCreation> = messageCreation
@@ -81,12 +100,30 @@ private constructor(
             additionalProperties = runStepDeltaMessageDelta.additionalProperties.toMutableMap()
         }
 
-        /** Always `message_creation`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("message_creation")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun messageCreation(messageCreation: MessageCreation) =
             messageCreation(JsonField.of(messageCreation))
 
+        /**
+         * Sets [Builder.messageCreation] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.messageCreation] with a well-typed [MessageCreation]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
         fun messageCreation(messageCreation: JsonField<MessageCreation>) = apply {
             this.messageCreation = messageCreation
         }
@@ -110,6 +147,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [RunStepDeltaMessageDelta].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): RunStepDeltaMessageDelta =
             RunStepDeltaMessageDelta(type, messageCreation, additionalProperties.toImmutable())
     }
@@ -125,10 +167,19 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The ID of the message that was created by this run step. */
+        /**
+         * The ID of the message that was created by this run step.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun messageId(): Optional<String> = Optional.ofNullable(messageId.getNullable("message_id"))
 
-        /** The ID of the message that was created by this run step. */
+        /**
+         * Returns the raw JSON value of [messageId].
+         *
+         * Unlike [messageId], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("message_id") @ExcludeMissing fun _messageId(): JsonField<String> = messageId
 
         @JsonAnyGetter
@@ -169,7 +220,13 @@ private constructor(
             /** The ID of the message that was created by this run step. */
             fun messageId(messageId: String) = messageId(JsonField.of(messageId))
 
-            /** The ID of the message that was created by this run step. */
+            /**
+             * Sets [Builder.messageId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.messageId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun messageId(messageId: JsonField<String>) = apply { this.messageId = messageId }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -191,6 +248,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [MessageCreation].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): MessageCreation =
                 MessageCreation(messageId, additionalProperties.toImmutable())
         }

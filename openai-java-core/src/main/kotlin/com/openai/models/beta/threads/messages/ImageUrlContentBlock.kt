@@ -29,11 +29,30 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun imageUrl(): ImageUrl = imageUrl.getRequired("image_url")
 
-    /** The type of the content part. */
+    /**
+     * The type of the content part.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("image_url")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
+    /**
+     * Returns the raw JSON value of [imageUrl].
+     *
+     * Unlike [imageUrl], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("image_url") @ExcludeMissing fun _imageUrl(): JsonField<ImageUrl> = imageUrl
 
     @JsonAnyGetter
@@ -87,9 +106,27 @@ private constructor(
 
         fun imageUrl(imageUrl: ImageUrl) = imageUrl(JsonField.of(imageUrl))
 
+        /**
+         * Sets [Builder.imageUrl] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.imageUrl] with a well-typed [ImageUrl] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun imageUrl(imageUrl: JsonField<ImageUrl>) = apply { this.imageUrl = imageUrl }
 
-        /** The type of the content part. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("image_url")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -111,6 +148,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ImageUrlContentBlock].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .imageUrl()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ImageUrlContentBlock =
             ImageUrlContentBlock(
                 checkRequired("imageUrl", imageUrl),

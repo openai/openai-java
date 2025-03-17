@@ -30,19 +30,33 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** Always `tool_calls`. */
+    /**
+     * Always `tool_calls`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("tool_calls")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
      * An array of tool calls the run step was involved in. These can be associated with one of
      * three types of tools: `code_interpreter`, `file_search`, or `function`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun toolCalls(): Optional<List<ToolCallDelta>> =
         Optional.ofNullable(toolCalls.getNullable("tool_calls"))
 
     /**
-     * An array of tool calls the run step was involved in. These can be associated with one of
-     * three types of tools: `code_interpreter`, `file_search`, or `function`.
+     * Returns the raw JSON value of [toolCalls].
+     *
+     * Unlike [toolCalls], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("tool_calls")
     @ExcludeMissing
@@ -90,7 +104,18 @@ private constructor(
             additionalProperties = toolCallDeltaObject.additionalProperties.toMutableMap()
         }
 
-        /** Always `tool_calls`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("tool_calls")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         /**
@@ -100,16 +125,20 @@ private constructor(
         fun toolCalls(toolCalls: List<ToolCallDelta>) = toolCalls(JsonField.of(toolCalls))
 
         /**
-         * An array of tool calls the run step was involved in. These can be associated with one of
-         * three types of tools: `code_interpreter`, `file_search`, or `function`.
+         * Sets [Builder.toolCalls] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.toolCalls] with a well-typed `List<ToolCallDelta>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun toolCalls(toolCalls: JsonField<List<ToolCallDelta>>) = apply {
             this.toolCalls = toolCalls.map { it.toMutableList() }
         }
 
         /**
-         * An array of tool calls the run step was involved in. These can be associated with one of
-         * three types of tools: `code_interpreter`, `file_search`, or `function`.
+         * Adds a single [ToolCallDelta] to [toolCalls].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addToolCall(toolCall: ToolCallDelta) = apply {
             toolCalls =
@@ -118,31 +147,38 @@ private constructor(
                 }
         }
 
-        /** Details of the Code Interpreter tool call the run step was involved in. */
+        /**
+         * Alias for calling [addToolCall] with `ToolCallDelta.ofCodeInterpreter(codeInterpreter)`.
+         */
         fun addToolCall(codeInterpreter: CodeInterpreterToolCallDelta) =
             addToolCall(ToolCallDelta.ofCodeInterpreter(codeInterpreter))
 
-        /** Details of the Code Interpreter tool call the run step was involved in. */
+        /**
+         * Alias for calling [addToolCall] with the following:
+         * ```java
+         * CodeInterpreterToolCallDelta.builder()
+         *     .index(index)
+         *     .build()
+         * ```
+         */
         fun addCodeInterpreterToolCall(index: Long) =
             addToolCall(CodeInterpreterToolCallDelta.builder().index(index).build())
 
-        /**
-         * An array of tool calls the run step was involved in. These can be associated with one of
-         * three types of tools: `code_interpreter`, `file_search`, or `function`.
-         */
+        /** Alias for calling [addToolCall] with `ToolCallDelta.ofFileSearch(fileSearch)`. */
         fun addToolCall(fileSearch: FileSearchToolCallDelta) =
             addToolCall(ToolCallDelta.ofFileSearch(fileSearch))
 
-        /**
-         * An array of tool calls the run step was involved in. These can be associated with one of
-         * three types of tools: `code_interpreter`, `file_search`, or `function`.
-         */
+        /** Alias for calling [addToolCall] with `ToolCallDelta.ofFunction(function)`. */
         fun addToolCall(function: FunctionToolCallDelta) =
             addToolCall(ToolCallDelta.ofFunction(function))
 
         /**
-         * An array of tool calls the run step was involved in. These can be associated with one of
-         * three types of tools: `code_interpreter`, `file_search`, or `function`.
+         * Alias for calling [addToolCall] with the following:
+         * ```java
+         * FunctionToolCallDelta.builder()
+         *     .index(index)
+         *     .build()
+         * ```
          */
         fun addFunctionToolCall(index: Long) =
             addToolCall(FunctionToolCallDelta.builder().index(index).build())
@@ -166,6 +202,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ToolCallDeltaObject].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): ToolCallDeltaObject =
             ToolCallDeltaObject(
                 type,

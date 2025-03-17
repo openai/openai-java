@@ -38,21 +38,43 @@ private constructor(
     /**
      * Represents a thread that contains
      * [messages](https://platform.openai.com/docs/api-reference/messages).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun data(): Thread = data.getRequired("data")
 
+    /**
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("thread.created")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
-    /** Whether to enable input audio transcription. */
+    /**
+     * Whether to enable input audio transcription.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun enabled(): Optional<Boolean> = Optional.ofNullable(enabled.getNullable("enabled"))
 
     /**
-     * Represents a thread that contains
-     * [messages](https://platform.openai.com/docs/api-reference/messages).
+     * Returns the raw JSON value of [data].
+     *
+     * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Thread> = data
 
-    /** Whether to enable input audio transcription. */
+    /**
+     * Returns the raw JSON value of [enabled].
+     *
+     * Unlike [enabled], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("enabled") @ExcludeMissing fun _enabled(): JsonField<Boolean> = enabled
 
     @JsonAnyGetter
@@ -114,17 +136,36 @@ private constructor(
         fun data(data: Thread) = data(JsonField.of(data))
 
         /**
-         * Represents a thread that contains
-         * [messages](https://platform.openai.com/docs/api-reference/messages).
+         * Sets [Builder.data] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.data] with a well-typed [Thread] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun data(data: JsonField<Thread>) = apply { this.data = data }
 
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("thread.created")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun event(event: JsonValue) = apply { this.event = event }
 
         /** Whether to enable input audio transcription. */
         fun enabled(enabled: Boolean) = enabled(JsonField.of(enabled))
 
-        /** Whether to enable input audio transcription. */
+        /**
+         * Sets [Builder.enabled] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.enabled] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun enabled(enabled: JsonField<Boolean>) = apply { this.enabled = enabled }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -146,6 +187,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ThreadStreamEvent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .data()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ThreadStreamEvent =
             ThreadStreamEvent(
                 checkRequired("data", data),

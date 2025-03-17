@@ -17,6 +17,7 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.vectorstores.AutoFileChunkingStrategyParam
 import com.openai.models.vectorstores.FileChunkingStrategyParam
 import com.openai.models.vectorstores.StaticFileChunkingStrategy
@@ -43,6 +44,9 @@ private constructor(
     /**
      * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector store
      * should use. Useful for tools like `file_search` that can access files.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun fileId(): String = body.fileId()
 
@@ -51,32 +55,40 @@ private constructor(
      * additional information about the object in a structured format, and querying for objects via
      * API or the dashboard. Keys are strings with a maximum length of 64 characters. Values are
      * strings with a maximum length of 512 characters, booleans, or numbers.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun attributes(): Optional<Attributes> = body.attributes()
 
     /**
      * The chunking strategy used to chunk the file(s). If not set, will use the `auto` strategy.
      * Only applicable if `file_ids` is non-empty.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun chunkingStrategy(): Optional<FileChunkingStrategyParam> = body.chunkingStrategy()
 
     /**
-     * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector store
-     * should use. Useful for tools like `file_search` that can access files.
+     * Returns the raw JSON value of [fileId].
+     *
+     * Unlike [fileId], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _fileId(): JsonField<String> = body._fileId()
 
     /**
-     * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
-     * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard. Keys are strings with a maximum length of 64 characters. Values are
-     * strings with a maximum length of 512 characters, booleans, or numbers.
+     * Returns the raw JSON value of [attributes].
+     *
+     * Unlike [attributes], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _attributes(): JsonField<Attributes> = body._attributes()
 
     /**
-     * The chunking strategy used to chunk the file(s). If not set, will use the `auto` strategy.
-     * Only applicable if `file_ids` is non-empty.
+     * Returns the raw JSON value of [chunkingStrategy].
+     *
+     * Unlike [chunkingStrategy], this method doesn't throw if the JSON field has an unexpected
+     * type.
      */
     fun _chunkingStrategy(): JsonField<FileChunkingStrategyParam> = body._chunkingStrategy()
 
@@ -119,6 +131,9 @@ private constructor(
         /**
          * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector store
          * should use. Useful for tools like `file_search` that can access files.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun fileId(): String = fileId.getRequired("file_id")
 
@@ -128,6 +143,9 @@ private constructor(
          * objects via API or the dashboard. Keys are strings with a maximum length of 64
          * characters. Values are strings with a maximum length of 512 characters, booleans, or
          * numbers.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun attributes(): Optional<Attributes> =
             Optional.ofNullable(attributes.getNullable("attributes"))
@@ -135,30 +153,34 @@ private constructor(
         /**
          * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
          * strategy. Only applicable if `file_ids` is non-empty.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun chunkingStrategy(): Optional<FileChunkingStrategyParam> =
             Optional.ofNullable(chunkingStrategy.getNullable("chunking_strategy"))
 
         /**
-         * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector store
-         * should use. Useful for tools like `file_search` that can access files.
+         * Returns the raw JSON value of [fileId].
+         *
+         * Unlike [fileId], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard. Keys are strings with a maximum length of 64
-         * characters. Values are strings with a maximum length of 512 characters, booleans, or
-         * numbers.
+         * Returns the raw JSON value of [attributes].
+         *
+         * Unlike [attributes], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("attributes")
         @ExcludeMissing
         fun _attributes(): JsonField<Attributes> = attributes
 
         /**
-         * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
-         * strategy. Only applicable if `file_ids` is non-empty.
+         * Returns the raw JSON value of [chunkingStrategy].
+         *
+         * Unlike [chunkingStrategy], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
         @JsonProperty("chunking_strategy")
         @ExcludeMissing
@@ -219,8 +241,11 @@ private constructor(
             fun fileId(fileId: String) = fileId(JsonField.of(fileId))
 
             /**
-             * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector
-             * store should use. Useful for tools like `file_search` that can access files.
+             * Sets [Builder.fileId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.fileId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
 
@@ -233,21 +258,15 @@ private constructor(
              */
             fun attributes(attributes: Attributes?) = attributes(JsonField.ofNullable(attributes))
 
-            /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format, and querying
-             * for objects via API or the dashboard. Keys are strings with a maximum length of 64
-             * characters. Values are strings with a maximum length of 512 characters, booleans, or
-             * numbers.
-             */
+            /** Alias for calling [Builder.attributes] with `attributes.orElse(null)`. */
             fun attributes(attributes: Optional<Attributes>) = attributes(attributes.getOrNull())
 
             /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format, and querying
-             * for objects via API or the dashboard. Keys are strings with a maximum length of 64
-             * characters. Values are strings with a maximum length of 512 characters, booleans, or
-             * numbers.
+             * Sets [Builder.attributes] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.attributes] with a well-typed [Attributes] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun attributes(attributes: JsonField<Attributes>) = apply {
                 this.attributes = attributes
@@ -261,25 +280,37 @@ private constructor(
                 chunkingStrategy(JsonField.of(chunkingStrategy))
 
             /**
-             * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
-             * strategy. Only applicable if `file_ids` is non-empty.
+             * Sets [Builder.chunkingStrategy] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.chunkingStrategy] with a well-typed
+             * [FileChunkingStrategyParam] value instead. This method is primarily for setting the
+             * field to an undocumented or not yet supported value.
              */
             fun chunkingStrategy(chunkingStrategy: JsonField<FileChunkingStrategyParam>) = apply {
                 this.chunkingStrategy = chunkingStrategy
             }
 
             /**
-             * The default strategy. This strategy currently uses a `max_chunk_size_tokens` of `800`
-             * and `chunk_overlap_tokens` of `400`.
+             * Alias for calling [chunkingStrategy] with `FileChunkingStrategyParam.ofAuto(auto)`.
              */
             fun chunkingStrategy(auto: AutoFileChunkingStrategyParam) =
                 chunkingStrategy(FileChunkingStrategyParam.ofAuto(auto))
 
-            /** Customize your own chunking strategy by setting chunk size and chunk overlap. */
+            /**
+             * Alias for calling [chunkingStrategy] with
+             * `FileChunkingStrategyParam.ofStatic(static_)`.
+             */
             fun chunkingStrategy(static_: StaticFileChunkingStrategyObjectParam) =
                 chunkingStrategy(FileChunkingStrategyParam.ofStatic(static_))
 
-            /** Customize your own chunking strategy by setting chunk size and chunk overlap. */
+            /**
+             * Alias for calling [chunkingStrategy] with the following:
+             * ```java
+             * StaticFileChunkingStrategyObjectParam.builder()
+             *     .static_(static_)
+             *     .build()
+             * ```
+             */
             fun staticChunkingStrategy(static_: StaticFileChunkingStrategy) =
                 chunkingStrategy(
                     StaticFileChunkingStrategyObjectParam.builder().static_(static_).build()
@@ -304,6 +335,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .fileId()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("fileId", fileId),
@@ -373,8 +416,10 @@ private constructor(
         fun fileId(fileId: String) = apply { body.fileId(fileId) }
 
         /**
-         * A [File](https://platform.openai.com/docs/api-reference/files) ID that the vector store
-         * should use. Useful for tools like `file_search` that can access files.
+         * Sets [Builder.fileId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.fileId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun fileId(fileId: JsonField<String>) = apply { body.fileId(fileId) }
 
@@ -387,21 +432,15 @@ private constructor(
          */
         fun attributes(attributes: Attributes?) = apply { body.attributes(attributes) }
 
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard. Keys are strings with a maximum length of 64
-         * characters. Values are strings with a maximum length of 512 characters, booleans, or
-         * numbers.
-         */
+        /** Alias for calling [Builder.attributes] with `attributes.orElse(null)`. */
         fun attributes(attributes: Optional<Attributes>) = attributes(attributes.getOrNull())
 
         /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard. Keys are strings with a maximum length of 64
-         * characters. Values are strings with a maximum length of 512 characters, booleans, or
-         * numbers.
+         * Sets [Builder.attributes] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.attributes] with a well-typed [Attributes] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun attributes(attributes: JsonField<Attributes>) = apply { body.attributes(attributes) }
 
@@ -414,27 +453,36 @@ private constructor(
         }
 
         /**
-         * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
-         * strategy. Only applicable if `file_ids` is non-empty.
+         * Sets [Builder.chunkingStrategy] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.chunkingStrategy] with a well-typed
+         * [FileChunkingStrategyParam] value instead. This method is primarily for setting the field
+         * to an undocumented or not yet supported value.
          */
         fun chunkingStrategy(chunkingStrategy: JsonField<FileChunkingStrategyParam>) = apply {
             body.chunkingStrategy(chunkingStrategy)
         }
 
-        /**
-         * The default strategy. This strategy currently uses a `max_chunk_size_tokens` of `800` and
-         * `chunk_overlap_tokens` of `400`.
-         */
+        /** Alias for calling [chunkingStrategy] with `FileChunkingStrategyParam.ofAuto(auto)`. */
         fun chunkingStrategy(auto: AutoFileChunkingStrategyParam) = apply {
             body.chunkingStrategy(auto)
         }
 
-        /** Customize your own chunking strategy by setting chunk size and chunk overlap. */
+        /**
+         * Alias for calling [chunkingStrategy] with `FileChunkingStrategyParam.ofStatic(static_)`.
+         */
         fun chunkingStrategy(static_: StaticFileChunkingStrategyObjectParam) = apply {
             body.chunkingStrategy(static_)
         }
 
-        /** Customize your own chunking strategy by setting chunk size and chunk overlap. */
+        /**
+         * Alias for calling [chunkingStrategy] with the following:
+         * ```java
+         * StaticFileChunkingStrategyObjectParam.builder()
+         *     .static_(static_)
+         *     .build()
+         * ```
+         */
         fun staticChunkingStrategy(static_: StaticFileChunkingStrategy) = apply {
             body.staticChunkingStrategy(static_)
         }
@@ -556,6 +604,19 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [FileCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .vectorStoreId()
+         * .fileId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FileCreateParams =
             FileCreateParams(
                 checkRequired("vectorStoreId", vectorStoreId),
@@ -630,6 +691,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Attributes].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Attributes = Attributes(additionalProperties.toImmutable())
         }
 

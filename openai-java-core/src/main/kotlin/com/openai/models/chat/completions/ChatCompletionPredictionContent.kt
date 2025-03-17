@@ -45,18 +45,30 @@ private constructor(
     /**
      * The content that should be matched when generating a model response. If generated tokens
      * would match this content, the entire model response can be returned much more quickly.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun content(): Content = content.getRequired("content")
 
     /**
      * The type of the predicted content you want to provide. This type is currently always
      * `content`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("content")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
-     * The content that should be matched when generating a model response. If generated tokens
-     * would match this content, the entire model response can be returned much more quickly.
+     * Returns the raw JSON value of [content].
+     *
+     * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<Content> = content
 
@@ -119,28 +131,33 @@ private constructor(
         fun content(content: Content) = content(JsonField.of(content))
 
         /**
-         * The content that should be matched when generating a model response. If generated tokens
-         * would match this content, the entire model response can be returned much more quickly.
+         * Sets [Builder.content] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.content] with a well-typed [Content] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun content(content: JsonField<Content>) = apply { this.content = content }
 
-        /**
-         * The content used for a Predicted Output. This is often the text of a file you are
-         * regenerating with minor changes.
-         */
+        /** Alias for calling [content] with `Content.ofText(text)`. */
         fun content(text: String) = content(Content.ofText(text))
 
         /**
-         * An array of content parts with a defined type. Supported options differ based on the
-         * [model](https://platform.openai.com/docs/models) being used to generate the response. Can
-         * contain text inputs.
+         * Alias for calling [content] with `Content.ofArrayOfContentParts(arrayOfContentParts)`.
          */
         fun contentOfArrayOfContentParts(arrayOfContentParts: List<ChatCompletionContentPartText>) =
             content(Content.ofArrayOfContentParts(arrayOfContentParts))
 
         /**
-         * The type of the predicted content you want to provide. This type is currently always
-         * `content`.
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("content")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
@@ -163,6 +180,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ChatCompletionPredictionContent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .content()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ChatCompletionPredictionContent =
             ChatCompletionPredictionContent(
                 checkRequired("content", content),

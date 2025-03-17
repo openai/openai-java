@@ -43,7 +43,12 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The key to compare against the value. */
+    /**
+     * The key to compare against the value.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun key(): String = key.getRequired("key")
 
     /**
@@ -54,30 +59,38 @@ private constructor(
      * - `gte`: greater than or equal
      * - `lt`: less than
      * - `lte`: less than or equal
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun type(): Type = type.getRequired("type")
 
     /**
      * The value to compare against the attribute key; supports string, number, or boolean types.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun value(): Value = value.getRequired("value")
 
-    /** The key to compare against the value. */
+    /**
+     * Returns the raw JSON value of [key].
+     *
+     * Unlike [key], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("key") @ExcludeMissing fun _key(): JsonField<String> = key
 
     /**
-     * Specifies the comparison operator: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`.
-     * - `eq`: equals
-     * - `ne`: not equal
-     * - `gt`: greater than
-     * - `gte`: greater than or equal
-     * - `lt`: less than
-     * - `lte`: less than or equal
+     * Returns the raw JSON value of [type].
+     *
+     * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     /**
-     * The value to compare against the attribute key; supports string, number, or boolean types.
+     * Returns the raw JSON value of [value].
+     *
+     * Unlike [value], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("value") @ExcludeMissing fun _value(): JsonField<Value> = value
 
@@ -134,7 +147,12 @@ private constructor(
         /** The key to compare against the value. */
         fun key(key: String) = key(JsonField.of(key))
 
-        /** The key to compare against the value. */
+        /**
+         * Sets [Builder.key] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.key] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun key(key: JsonField<String>) = apply { this.key = key }
 
         /**
@@ -149,13 +167,10 @@ private constructor(
         fun type(type: Type) = type(JsonField.of(type))
 
         /**
-         * Specifies the comparison operator: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`.
-         * - `eq`: equals
-         * - `ne`: not equal
-         * - `gt`: greater than
-         * - `gte`: greater than or equal
-         * - `lt`: less than
-         * - `lte`: less than or equal
+         * Sets [Builder.type] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.type] with a well-typed [Type] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
@@ -166,27 +181,20 @@ private constructor(
         fun value(value: Value) = value(JsonField.of(value))
 
         /**
-         * The value to compare against the attribute key; supports string, number, or boolean
-         * types.
+         * Sets [Builder.value] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.value] with a well-typed [Value] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun value(value: JsonField<Value>) = apply { this.value = value }
 
-        /**
-         * The value to compare against the attribute key; supports string, number, or boolean
-         * types.
-         */
+        /** Alias for calling [value] with `Value.ofString(string)`. */
         fun value(string: String) = value(Value.ofString(string))
 
-        /**
-         * The value to compare against the attribute key; supports string, number, or boolean
-         * types.
-         */
+        /** Alias for calling [value] with `Value.ofNumber(number)`. */
         fun value(number: Double) = value(Value.ofNumber(number))
 
-        /**
-         * The value to compare against the attribute key; supports string, number, or boolean
-         * types.
-         */
+        /** Alias for calling [value] with `Value.ofBool(bool)`. */
         fun value(bool: Boolean) = value(Value.ofBool(bool))
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -208,6 +216,20 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ComparisonFilter].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .key()
+         * .type()
+         * .value()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ComparisonFilter =
             ComparisonFilter(
                 checkRequired("key", key),

@@ -15,6 +15,7 @@ import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
@@ -41,37 +42,82 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The duration of the input audio. */
+    /**
+     * The duration of the input audio.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun duration(): Double = duration.getRequired("duration")
 
-    /** The language of the input audio. */
+    /**
+     * The language of the input audio.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun language(): String = language.getRequired("language")
 
-    /** The transcribed text. */
+    /**
+     * The transcribed text.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun text(): String = text.getRequired("text")
 
-    /** Segments of the transcribed text and their corresponding details. */
+    /**
+     * Segments of the transcribed text and their corresponding details.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun segments(): Optional<List<TranscriptionSegment>> =
         Optional.ofNullable(segments.getNullable("segments"))
 
-    /** Extracted words and their corresponding timestamps. */
+    /**
+     * Extracted words and their corresponding timestamps.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun words(): Optional<List<TranscriptionWord>> = Optional.ofNullable(words.getNullable("words"))
 
-    /** The duration of the input audio. */
+    /**
+     * Returns the raw JSON value of [duration].
+     *
+     * Unlike [duration], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("duration") @ExcludeMissing fun _duration(): JsonField<Double> = duration
 
-    /** The language of the input audio. */
+    /**
+     * Returns the raw JSON value of [language].
+     *
+     * Unlike [language], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("language") @ExcludeMissing fun _language(): JsonField<String> = language
 
-    /** The transcribed text. */
+    /**
+     * Returns the raw JSON value of [text].
+     *
+     * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
-    /** Segments of the transcribed text and their corresponding details. */
+    /**
+     * Returns the raw JSON value of [segments].
+     *
+     * Unlike [segments], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("segments")
     @ExcludeMissing
     fun _segments(): JsonField<List<TranscriptionSegment>> = segments
 
-    /** Extracted words and their corresponding timestamps. */
+    /**
+     * Returns the raw JSON value of [words].
+     *
+     * Unlike [words], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("words") @ExcludeMissing fun _words(): JsonField<List<TranscriptionWord>> = words
 
     @JsonAnyGetter
@@ -133,30 +179,55 @@ private constructor(
         /** The duration of the input audio. */
         fun duration(duration: Double) = duration(JsonField.of(duration))
 
-        /** The duration of the input audio. */
+        /**
+         * Sets [Builder.duration] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.duration] with a well-typed [Double] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun duration(duration: JsonField<Double>) = apply { this.duration = duration }
 
         /** The language of the input audio. */
         fun language(language: String) = language(JsonField.of(language))
 
-        /** The language of the input audio. */
+        /**
+         * Sets [Builder.language] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.language] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun language(language: JsonField<String>) = apply { this.language = language }
 
         /** The transcribed text. */
         fun text(text: String) = text(JsonField.of(text))
 
-        /** The transcribed text. */
+        /**
+         * Sets [Builder.text] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.text] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun text(text: JsonField<String>) = apply { this.text = text }
 
         /** Segments of the transcribed text and their corresponding details. */
         fun segments(segments: List<TranscriptionSegment>) = segments(JsonField.of(segments))
 
-        /** Segments of the transcribed text and their corresponding details. */
+        /**
+         * Sets [Builder.segments] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.segments] with a well-typed `List<TranscriptionSegment>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
         fun segments(segments: JsonField<List<TranscriptionSegment>>) = apply {
             this.segments = segments.map { it.toMutableList() }
         }
 
-        /** Segments of the transcribed text and their corresponding details. */
+        /**
+         * Adds a single [TranscriptionSegment] to [segments].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addSegment(segment: TranscriptionSegment) = apply {
             segments =
                 (segments ?: JsonField.of(mutableListOf())).also {
@@ -167,12 +238,22 @@ private constructor(
         /** Extracted words and their corresponding timestamps. */
         fun words(words: List<TranscriptionWord>) = words(JsonField.of(words))
 
-        /** Extracted words and their corresponding timestamps. */
+        /**
+         * Sets [Builder.words] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.words] with a well-typed `List<TranscriptionWord>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun words(words: JsonField<List<TranscriptionWord>>) = apply {
             this.words = words.map { it.toMutableList() }
         }
 
-        /** Extracted words and their corresponding timestamps. */
+        /**
+         * Adds a single [TranscriptionWord] to [words].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addWord(word: TranscriptionWord) = apply {
             words =
                 (words ?: JsonField.of(mutableListOf())).also { checkKnown("words", it).add(word) }
@@ -197,6 +278,20 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [TranscriptionVerbose].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .duration()
+         * .language()
+         * .text()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): TranscriptionVerbose =
             TranscriptionVerbose(
                 checkRequired("duration", duration),

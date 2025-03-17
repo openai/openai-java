@@ -33,25 +33,62 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The model identifier, which can be referenced in the API endpoints. */
+    /**
+     * The model identifier, which can be referenced in the API endpoints.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** The Unix timestamp (in seconds) when the model was created. */
+    /**
+     * The Unix timestamp (in seconds) when the model was created.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun created(): Long = created.getRequired("created")
 
-    /** The object type, which is always "model". */
+    /**
+     * The object type, which is always "model".
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("model")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
-    /** The organization that owns the model. */
+    /**
+     * The organization that owns the model.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun ownedBy(): String = ownedBy.getRequired("owned_by")
 
-    /** The model identifier, which can be referenced in the API endpoints. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** The Unix timestamp (in seconds) when the model was created. */
+    /**
+     * Returns the raw JSON value of [created].
+     *
+     * Unlike [created], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("created") @ExcludeMissing fun _created(): JsonField<Long> = created
 
-    /** The organization that owns the model. */
+    /**
+     * Returns the raw JSON value of [ownedBy].
+     *
+     * Unlike [ownedBy], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("owned_by") @ExcludeMissing fun _ownedBy(): JsonField<String> = ownedBy
 
     @JsonAnyGetter
@@ -114,22 +151,48 @@ private constructor(
         /** The model identifier, which can be referenced in the API endpoints. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The model identifier, which can be referenced in the API endpoints. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The Unix timestamp (in seconds) when the model was created. */
         fun created(created: Long) = created(JsonField.of(created))
 
-        /** The Unix timestamp (in seconds) when the model was created. */
+        /**
+         * Sets [Builder.created] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.created] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun created(created: JsonField<Long>) = apply { this.created = created }
 
-        /** The object type, which is always "model". */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("model")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /** The organization that owns the model. */
         fun ownedBy(ownedBy: String) = ownedBy(JsonField.of(ownedBy))
 
-        /** The organization that owns the model. */
+        /**
+         * Sets [Builder.ownedBy] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.ownedBy] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun ownedBy(ownedBy: JsonField<String>) = apply { this.ownedBy = ownedBy }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -151,6 +214,20 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [Model].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .created()
+         * .ownedBy()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): Model =
             Model(
                 checkRequired("id", id),

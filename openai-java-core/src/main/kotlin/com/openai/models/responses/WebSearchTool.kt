@@ -42,34 +42,51 @@ private constructor(
      * The type of the web search tool. One of:
      * - `web_search_preview`
      * - `web_search_preview_2025_03_11`
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun type(): Type = type.getRequired("type")
 
     /**
      * High level guidance for the amount of context window space to use for the search. One of
      * `low`, `medium`, or `high`. `medium` is the default.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun searchContextSize(): Optional<SearchContextSize> =
         Optional.ofNullable(searchContextSize.getNullable("search_context_size"))
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun userLocation(): Optional<UserLocation> =
         Optional.ofNullable(userLocation.getNullable("user_location"))
 
     /**
-     * The type of the web search tool. One of:
-     * - `web_search_preview`
-     * - `web_search_preview_2025_03_11`
+     * Returns the raw JSON value of [type].
+     *
+     * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     /**
-     * High level guidance for the amount of context window space to use for the search. One of
-     * `low`, `medium`, or `high`. `medium` is the default.
+     * Returns the raw JSON value of [searchContextSize].
+     *
+     * Unlike [searchContextSize], this method doesn't throw if the JSON field has an unexpected
+     * type.
      */
     @JsonProperty("search_context_size")
     @ExcludeMissing
     fun _searchContextSize(): JsonField<SearchContextSize> = searchContextSize
 
+    /**
+     * Returns the raw JSON value of [userLocation].
+     *
+     * Unlike [userLocation], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("user_location")
     @ExcludeMissing
     fun _userLocation(): JsonField<UserLocation> = userLocation
@@ -130,9 +147,10 @@ private constructor(
         fun type(type: Type) = type(JsonField.of(type))
 
         /**
-         * The type of the web search tool. One of:
-         * - `web_search_preview`
-         * - `web_search_preview_2025_03_11`
+         * Sets [Builder.type] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.type] with a well-typed [Type] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
@@ -144,8 +162,11 @@ private constructor(
             searchContextSize(JsonField.of(searchContextSize))
 
         /**
-         * High level guidance for the amount of context window space to use for the search. One of
-         * `low`, `medium`, or `high`. `medium` is the default.
+         * Sets [Builder.searchContextSize] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.searchContextSize] with a well-typed [SearchContextSize]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
          */
         fun searchContextSize(searchContextSize: JsonField<SearchContextSize>) = apply {
             this.searchContextSize = searchContextSize
@@ -154,9 +175,17 @@ private constructor(
         fun userLocation(userLocation: UserLocation?) =
             userLocation(JsonField.ofNullable(userLocation))
 
+        /** Alias for calling [Builder.userLocation] with `userLocation.orElse(null)`. */
         fun userLocation(userLocation: Optional<UserLocation>) =
             userLocation(userLocation.getOrNull())
 
+        /**
+         * Sets [Builder.userLocation] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.userLocation] with a well-typed [UserLocation] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun userLocation(userLocation: JsonField<UserLocation>) = apply {
             this.userLocation = userLocation
         }
@@ -180,6 +209,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [WebSearchTool].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .type()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): WebSearchTool =
             WebSearchTool(
                 checkRequired("type", type),
@@ -425,42 +466,78 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The type of location approximation. Always `approximate`. */
+        /**
+         * The type of location approximation. Always `approximate`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("approximate")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-        /** Free text input for the city of the user, e.g. `San Francisco`. */
+        /**
+         * Free text input for the city of the user, e.g. `San Francisco`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun city(): Optional<String> = Optional.ofNullable(city.getNullable("city"))
 
         /**
          * The two-letter [ISO country code](https://en.wikipedia.org/wiki/ISO_3166-1) of the user,
          * e.g. `US`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun country(): Optional<String> = Optional.ofNullable(country.getNullable("country"))
 
-        /** Free text input for the region of the user, e.g. `California`. */
+        /**
+         * Free text input for the region of the user, e.g. `California`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun region(): Optional<String> = Optional.ofNullable(region.getNullable("region"))
 
         /**
          * The [IANA timezone](https://timeapi.io/documentation/iana-timezones) of the user, e.g.
          * `America/Los_Angeles`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun timezone(): Optional<String> = Optional.ofNullable(timezone.getNullable("timezone"))
 
-        /** Free text input for the city of the user, e.g. `San Francisco`. */
+        /**
+         * Returns the raw JSON value of [city].
+         *
+         * Unlike [city], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("city") @ExcludeMissing fun _city(): JsonField<String> = city
 
         /**
-         * The two-letter [ISO country code](https://en.wikipedia.org/wiki/ISO_3166-1) of the user,
-         * e.g. `US`.
+         * Returns the raw JSON value of [country].
+         *
+         * Unlike [country], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("country") @ExcludeMissing fun _country(): JsonField<String> = country
 
-        /** Free text input for the region of the user, e.g. `California`. */
+        /**
+         * Returns the raw JSON value of [region].
+         *
+         * Unlike [region], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("region") @ExcludeMissing fun _region(): JsonField<String> = region
 
         /**
-         * The [IANA timezone](https://timeapi.io/documentation/iana-timezones) of the user, e.g.
-         * `America/Los_Angeles`.
+         * Returns the raw JSON value of [timezone].
+         *
+         * Unlike [timezone], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("timezone") @ExcludeMissing fun _timezone(): JsonField<String> = timezone
 
@@ -515,13 +592,30 @@ private constructor(
                 additionalProperties = userLocation.additionalProperties.toMutableMap()
             }
 
-            /** The type of location approximation. Always `approximate`. */
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("approximate")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun type(type: JsonValue) = apply { this.type = type }
 
             /** Free text input for the city of the user, e.g. `San Francisco`. */
             fun city(city: String) = city(JsonField.of(city))
 
-            /** Free text input for the city of the user, e.g. `San Francisco`. */
+            /**
+             * Sets [Builder.city] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.city] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun city(city: JsonField<String>) = apply { this.city = city }
 
             /**
@@ -531,15 +625,24 @@ private constructor(
             fun country(country: String) = country(JsonField.of(country))
 
             /**
-             * The two-letter [ISO country code](https://en.wikipedia.org/wiki/ISO_3166-1) of the
-             * user, e.g. `US`.
+             * Sets [Builder.country] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.country] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun country(country: JsonField<String>) = apply { this.country = country }
 
             /** Free text input for the region of the user, e.g. `California`. */
             fun region(region: String) = region(JsonField.of(region))
 
-            /** Free text input for the region of the user, e.g. `California`. */
+            /**
+             * Sets [Builder.region] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.region] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun region(region: JsonField<String>) = apply { this.region = region }
 
             /**
@@ -549,8 +652,11 @@ private constructor(
             fun timezone(timezone: String) = timezone(JsonField.of(timezone))
 
             /**
-             * The [IANA timezone](https://timeapi.io/documentation/iana-timezones) of the user,
-             * e.g. `America/Los_Angeles`.
+             * Sets [Builder.timezone] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.timezone] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun timezone(timezone: JsonField<String>) = apply { this.timezone = timezone }
 
@@ -573,6 +679,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [UserLocation].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): UserLocation =
                 UserLocation(
                     type,

@@ -40,36 +40,73 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** A list of the categories, and whether they are flagged or not. */
+    /**
+     * A list of the categories, and whether they are flagged or not.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun categories(): Categories = categories.getRequired("categories")
 
-    /** A list of the categories along with the input type(s) that the score applies to. */
+    /**
+     * A list of the categories along with the input type(s) that the score applies to.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun categoryAppliedInputTypes(): CategoryAppliedInputTypes =
         categoryAppliedInputTypes.getRequired("category_applied_input_types")
 
-    /** A list of the categories along with their scores as predicted by model. */
+    /**
+     * A list of the categories along with their scores as predicted by model.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun categoryScores(): CategoryScores = categoryScores.getRequired("category_scores")
 
-    /** Whether any of the below categories are flagged. */
+    /**
+     * Whether any of the below categories are flagged.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun flagged(): Boolean = flagged.getRequired("flagged")
 
-    /** A list of the categories, and whether they are flagged or not. */
+    /**
+     * Returns the raw JSON value of [categories].
+     *
+     * Unlike [categories], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("categories")
     @ExcludeMissing
     fun _categories(): JsonField<Categories> = categories
 
-    /** A list of the categories along with the input type(s) that the score applies to. */
+    /**
+     * Returns the raw JSON value of [categoryAppliedInputTypes].
+     *
+     * Unlike [categoryAppliedInputTypes], this method doesn't throw if the JSON field has an
+     * unexpected type.
+     */
     @JsonProperty("category_applied_input_types")
     @ExcludeMissing
     fun _categoryAppliedInputTypes(): JsonField<CategoryAppliedInputTypes> =
         categoryAppliedInputTypes
 
-    /** A list of the categories along with their scores as predicted by model. */
+    /**
+     * Returns the raw JSON value of [categoryScores].
+     *
+     * Unlike [categoryScores], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("category_scores")
     @ExcludeMissing
     fun _categoryScores(): JsonField<CategoryScores> = categoryScores
 
-    /** Whether any of the below categories are flagged. */
+    /**
+     * Returns the raw JSON value of [flagged].
+     *
+     * Unlike [flagged], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("flagged") @ExcludeMissing fun _flagged(): JsonField<Boolean> = flagged
 
     @JsonAnyGetter
@@ -129,14 +166,26 @@ private constructor(
         /** A list of the categories, and whether they are flagged or not. */
         fun categories(categories: Categories) = categories(JsonField.of(categories))
 
-        /** A list of the categories, and whether they are flagged or not. */
+        /**
+         * Sets [Builder.categories] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.categories] with a well-typed [Categories] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun categories(categories: JsonField<Categories>) = apply { this.categories = categories }
 
         /** A list of the categories along with the input type(s) that the score applies to. */
         fun categoryAppliedInputTypes(categoryAppliedInputTypes: CategoryAppliedInputTypes) =
             categoryAppliedInputTypes(JsonField.of(categoryAppliedInputTypes))
 
-        /** A list of the categories along with the input type(s) that the score applies to. */
+        /**
+         * Sets [Builder.categoryAppliedInputTypes] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.categoryAppliedInputTypes] with a well-typed
+         * [CategoryAppliedInputTypes] value instead. This method is primarily for setting the field
+         * to an undocumented or not yet supported value.
+         */
         fun categoryAppliedInputTypes(
             categoryAppliedInputTypes: JsonField<CategoryAppliedInputTypes>
         ) = apply { this.categoryAppliedInputTypes = categoryAppliedInputTypes }
@@ -145,7 +194,13 @@ private constructor(
         fun categoryScores(categoryScores: CategoryScores) =
             categoryScores(JsonField.of(categoryScores))
 
-        /** A list of the categories along with their scores as predicted by model. */
+        /**
+         * Sets [Builder.categoryScores] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.categoryScores] with a well-typed [CategoryScores] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun categoryScores(categoryScores: JsonField<CategoryScores>) = apply {
             this.categoryScores = categoryScores
         }
@@ -153,7 +208,12 @@ private constructor(
         /** Whether any of the below categories are flagged. */
         fun flagged(flagged: Boolean) = flagged(JsonField.of(flagged))
 
-        /** Whether any of the below categories are flagged. */
+        /**
+         * Sets [Builder.flagged] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.flagged] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun flagged(flagged: JsonField<Boolean>) = apply { this.flagged = flagged }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -175,6 +235,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [Moderation].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .categories()
+         * .categoryAppliedInputTypes()
+         * .categoryScores()
+         * .flagged()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): Moderation =
             Moderation(
                 checkRequired("categories", categories),
@@ -233,10 +308,20 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** Content that expresses, incites, or promotes harassing language towards any target. */
+        /**
+         * Content that expresses, incites, or promotes harassing language towards any target.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun harassment(): Boolean = harassment.getRequired("harassment")
 
-        /** Harassment content that also includes violence or serious harm towards any target. */
+        /**
+         * Harassment content that also includes violence or serious harm towards any target.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun harassmentThreatening(): Boolean =
             harassmentThreatening.getRequired("harassment/threatening")
 
@@ -244,6 +329,9 @@ private constructor(
          * Content that expresses, incites, or promotes hate based on race, gender, ethnicity,
          * religion, nationality, sexual orientation, disability status, or caste. Hateful content
          * aimed at non-protected groups (e.g., chess players) is harassment.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun hate(): Boolean = hate.getRequired("hate")
 
@@ -251,6 +339,9 @@ private constructor(
          * Hateful content that also includes violence or serious harm towards the targeted group
          * based on race, gender, ethnicity, religion, nationality, sexual orientation, disability
          * status, or caste.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun hateThreatening(): Boolean = hateThreatening.getRequired("hate/threatening")
 
@@ -258,6 +349,9 @@ private constructor(
          * Content that includes instructions or advice that facilitate the planning or execution of
          * wrongdoing, or that gives advice or instruction on how to commit illicit acts. For
          * example, "how to shoplift" would fit this category.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun illicit(): Optional<Boolean> = Optional.ofNullable(illicit.getNullable("illicit"))
 
@@ -265,6 +359,9 @@ private constructor(
          * Content that includes instructions or advice that facilitate the planning or execution of
          * wrongdoing that also includes violence, or that gives advice or instruction on the
          * procurement of any weapon.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun illicitViolent(): Optional<Boolean> =
             Optional.ofNullable(illicitViolent.getNullable("illicit/violent"))
@@ -272,12 +369,18 @@ private constructor(
         /**
          * Content that promotes, encourages, or depicts acts of self-harm, such as suicide,
          * cutting, and eating disorders.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun selfHarm(): Boolean = selfHarm.getRequired("self-harm")
 
         /**
          * Content that encourages performing acts of self-harm, such as suicide, cutting, and
          * eating disorders, or that gives instructions or advice on how to commit such acts.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun selfHarmInstructions(): Boolean =
             selfHarmInstructions.getRequired("self-harm/instructions")
@@ -285,103 +388,155 @@ private constructor(
         /**
          * Content where the speaker expresses that they are engaging or intend to engage in acts of
          * self-harm, such as suicide, cutting, and eating disorders.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun selfHarmIntent(): Boolean = selfHarmIntent.getRequired("self-harm/intent")
 
         /**
          * Content meant to arouse sexual excitement, such as the description of sexual activity, or
          * that promotes sexual services (excluding sex education and wellness).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun sexual(): Boolean = sexual.getRequired("sexual")
 
-        /** Sexual content that includes an individual who is under 18 years old. */
+        /**
+         * Sexual content that includes an individual who is under 18 years old.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun sexualMinors(): Boolean = sexualMinors.getRequired("sexual/minors")
 
-        /** Content that depicts death, violence, or physical injury. */
+        /**
+         * Content that depicts death, violence, or physical injury.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun violence(): Boolean = violence.getRequired("violence")
 
-        /** Content that depicts death, violence, or physical injury in graphic detail. */
+        /**
+         * Content that depicts death, violence, or physical injury in graphic detail.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun violenceGraphic(): Boolean = violenceGraphic.getRequired("violence/graphic")
 
-        /** Content that expresses, incites, or promotes harassing language towards any target. */
+        /**
+         * Returns the raw JSON value of [harassment].
+         *
+         * Unlike [harassment], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("harassment")
         @ExcludeMissing
         fun _harassment(): JsonField<Boolean> = harassment
 
-        /** Harassment content that also includes violence or serious harm towards any target. */
+        /**
+         * Returns the raw JSON value of [harassmentThreatening].
+         *
+         * Unlike [harassmentThreatening], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
         @JsonProperty("harassment/threatening")
         @ExcludeMissing
         fun _harassmentThreatening(): JsonField<Boolean> = harassmentThreatening
 
         /**
-         * Content that expresses, incites, or promotes hate based on race, gender, ethnicity,
-         * religion, nationality, sexual orientation, disability status, or caste. Hateful content
-         * aimed at non-protected groups (e.g., chess players) is harassment.
+         * Returns the raw JSON value of [hate].
+         *
+         * Unlike [hate], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("hate") @ExcludeMissing fun _hate(): JsonField<Boolean> = hate
 
         /**
-         * Hateful content that also includes violence or serious harm towards the targeted group
-         * based on race, gender, ethnicity, religion, nationality, sexual orientation, disability
-         * status, or caste.
+         * Returns the raw JSON value of [hateThreatening].
+         *
+         * Unlike [hateThreatening], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
         @JsonProperty("hate/threatening")
         @ExcludeMissing
         fun _hateThreatening(): JsonField<Boolean> = hateThreatening
 
         /**
-         * Content that includes instructions or advice that facilitate the planning or execution of
-         * wrongdoing, or that gives advice or instruction on how to commit illicit acts. For
-         * example, "how to shoplift" would fit this category.
+         * Returns the raw JSON value of [illicit].
+         *
+         * Unlike [illicit], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("illicit") @ExcludeMissing fun _illicit(): JsonField<Boolean> = illicit
 
         /**
-         * Content that includes instructions or advice that facilitate the planning or execution of
-         * wrongdoing that also includes violence, or that gives advice or instruction on the
-         * procurement of any weapon.
+         * Returns the raw JSON value of [illicitViolent].
+         *
+         * Unlike [illicitViolent], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
         @JsonProperty("illicit/violent")
         @ExcludeMissing
         fun _illicitViolent(): JsonField<Boolean> = illicitViolent
 
         /**
-         * Content that promotes, encourages, or depicts acts of self-harm, such as suicide,
-         * cutting, and eating disorders.
+         * Returns the raw JSON value of [selfHarm].
+         *
+         * Unlike [selfHarm], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("self-harm") @ExcludeMissing fun _selfHarm(): JsonField<Boolean> = selfHarm
 
         /**
-         * Content that encourages performing acts of self-harm, such as suicide, cutting, and
-         * eating disorders, or that gives instructions or advice on how to commit such acts.
+         * Returns the raw JSON value of [selfHarmInstructions].
+         *
+         * Unlike [selfHarmInstructions], this method doesn't throw if the JSON field has an
+         * unexpected type.
          */
         @JsonProperty("self-harm/instructions")
         @ExcludeMissing
         fun _selfHarmInstructions(): JsonField<Boolean> = selfHarmInstructions
 
         /**
-         * Content where the speaker expresses that they are engaging or intend to engage in acts of
-         * self-harm, such as suicide, cutting, and eating disorders.
+         * Returns the raw JSON value of [selfHarmIntent].
+         *
+         * Unlike [selfHarmIntent], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
         @JsonProperty("self-harm/intent")
         @ExcludeMissing
         fun _selfHarmIntent(): JsonField<Boolean> = selfHarmIntent
 
         /**
-         * Content meant to arouse sexual excitement, such as the description of sexual activity, or
-         * that promotes sexual services (excluding sex education and wellness).
+         * Returns the raw JSON value of [sexual].
+         *
+         * Unlike [sexual], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("sexual") @ExcludeMissing fun _sexual(): JsonField<Boolean> = sexual
 
-        /** Sexual content that includes an individual who is under 18 years old. */
+        /**
+         * Returns the raw JSON value of [sexualMinors].
+         *
+         * Unlike [sexualMinors], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("sexual/minors")
         @ExcludeMissing
         fun _sexualMinors(): JsonField<Boolean> = sexualMinors
 
-        /** Content that depicts death, violence, or physical injury. */
+        /**
+         * Returns the raw JSON value of [violence].
+         *
+         * Unlike [violence], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("violence") @ExcludeMissing fun _violence(): JsonField<Boolean> = violence
 
-        /** Content that depicts death, violence, or physical injury in graphic detail. */
+        /**
+         * Returns the raw JSON value of [violenceGraphic].
+         *
+         * Unlike [violenceGraphic], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("violence/graphic")
         @ExcludeMissing
         fun _violenceGraphic(): JsonField<Boolean> = violenceGraphic
@@ -482,7 +637,11 @@ private constructor(
             fun harassment(harassment: Boolean) = harassment(JsonField.of(harassment))
 
             /**
-             * Content that expresses, incites, or promotes harassing language towards any target.
+             * Sets [Builder.harassment] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.harassment] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun harassment(harassment: JsonField<Boolean>) = apply { this.harassment = harassment }
 
@@ -493,7 +652,11 @@ private constructor(
                 harassmentThreatening(JsonField.of(harassmentThreatening))
 
             /**
-             * Harassment content that also includes violence or serious harm towards any target.
+             * Sets [Builder.harassmentThreatening] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.harassmentThreatening] with a well-typed [Boolean]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
              */
             fun harassmentThreatening(harassmentThreatening: JsonField<Boolean>) = apply {
                 this.harassmentThreatening = harassmentThreatening
@@ -507,9 +670,11 @@ private constructor(
             fun hate(hate: Boolean) = hate(JsonField.of(hate))
 
             /**
-             * Content that expresses, incites, or promotes hate based on race, gender, ethnicity,
-             * religion, nationality, sexual orientation, disability status, or caste. Hateful
-             * content aimed at non-protected groups (e.g., chess players) is harassment.
+             * Sets [Builder.hate] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.hate] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun hate(hate: JsonField<Boolean>) = apply { this.hate = hate }
 
@@ -522,9 +687,11 @@ private constructor(
                 hateThreatening(JsonField.of(hateThreatening))
 
             /**
-             * Hateful content that also includes violence or serious harm towards the targeted
-             * group based on race, gender, ethnicity, religion, nationality, sexual orientation,
-             * disability status, or caste.
+             * Sets [Builder.hateThreatening] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.hateThreatening] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun hateThreatening(hateThreatening: JsonField<Boolean>) = apply {
                 this.hateThreatening = hateThreatening
@@ -538,23 +705,21 @@ private constructor(
             fun illicit(illicit: Boolean?) = illicit(JsonField.ofNullable(illicit))
 
             /**
-             * Content that includes instructions or advice that facilitate the planning or
-             * execution of wrongdoing, or that gives advice or instruction on how to commit illicit
-             * acts. For example, "how to shoplift" would fit this category.
+             * Alias for [Builder.illicit].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
              */
             fun illicit(illicit: Boolean) = illicit(illicit as Boolean?)
 
-            /**
-             * Content that includes instructions or advice that facilitate the planning or
-             * execution of wrongdoing, or that gives advice or instruction on how to commit illicit
-             * acts. For example, "how to shoplift" would fit this category.
-             */
+            /** Alias for calling [Builder.illicit] with `illicit.orElse(null)`. */
             fun illicit(illicit: Optional<Boolean>) = illicit(illicit.getOrNull())
 
             /**
-             * Content that includes instructions or advice that facilitate the planning or
-             * execution of wrongdoing, or that gives advice or instruction on how to commit illicit
-             * acts. For example, "how to shoplift" would fit this category.
+             * Sets [Builder.illicit] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.illicit] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun illicit(illicit: JsonField<Boolean>) = apply { this.illicit = illicit }
 
@@ -567,24 +732,22 @@ private constructor(
                 illicitViolent(JsonField.ofNullable(illicitViolent))
 
             /**
-             * Content that includes instructions or advice that facilitate the planning or
-             * execution of wrongdoing that also includes violence, or that gives advice or
-             * instruction on the procurement of any weapon.
+             * Alias for [Builder.illicitViolent].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
              */
             fun illicitViolent(illicitViolent: Boolean) = illicitViolent(illicitViolent as Boolean?)
 
-            /**
-             * Content that includes instructions or advice that facilitate the planning or
-             * execution of wrongdoing that also includes violence, or that gives advice or
-             * instruction on the procurement of any weapon.
-             */
+            /** Alias for calling [Builder.illicitViolent] with `illicitViolent.orElse(null)`. */
             fun illicitViolent(illicitViolent: Optional<Boolean>) =
                 illicitViolent(illicitViolent.getOrNull())
 
             /**
-             * Content that includes instructions or advice that facilitate the planning or
-             * execution of wrongdoing that also includes violence, or that gives advice or
-             * instruction on the procurement of any weapon.
+             * Sets [Builder.illicitViolent] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.illicitViolent] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun illicitViolent(illicitViolent: JsonField<Boolean>) = apply {
                 this.illicitViolent = illicitViolent
@@ -597,8 +760,11 @@ private constructor(
             fun selfHarm(selfHarm: Boolean) = selfHarm(JsonField.of(selfHarm))
 
             /**
-             * Content that promotes, encourages, or depicts acts of self-harm, such as suicide,
-             * cutting, and eating disorders.
+             * Sets [Builder.selfHarm] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.selfHarm] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun selfHarm(selfHarm: JsonField<Boolean>) = apply { this.selfHarm = selfHarm }
 
@@ -610,8 +776,11 @@ private constructor(
                 selfHarmInstructions(JsonField.of(selfHarmInstructions))
 
             /**
-             * Content that encourages performing acts of self-harm, such as suicide, cutting, and
-             * eating disorders, or that gives instructions or advice on how to commit such acts.
+             * Sets [Builder.selfHarmInstructions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.selfHarmInstructions] with a well-typed [Boolean]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
              */
             fun selfHarmInstructions(selfHarmInstructions: JsonField<Boolean>) = apply {
                 this.selfHarmInstructions = selfHarmInstructions
@@ -625,8 +794,11 @@ private constructor(
                 selfHarmIntent(JsonField.of(selfHarmIntent))
 
             /**
-             * Content where the speaker expresses that they are engaging or intend to engage in
-             * acts of self-harm, such as suicide, cutting, and eating disorders.
+             * Sets [Builder.selfHarmIntent] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.selfHarmIntent] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun selfHarmIntent(selfHarmIntent: JsonField<Boolean>) = apply {
                 this.selfHarmIntent = selfHarmIntent
@@ -639,15 +811,24 @@ private constructor(
             fun sexual(sexual: Boolean) = sexual(JsonField.of(sexual))
 
             /**
-             * Content meant to arouse sexual excitement, such as the description of sexual
-             * activity, or that promotes sexual services (excluding sex education and wellness).
+             * Sets [Builder.sexual] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.sexual] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun sexual(sexual: JsonField<Boolean>) = apply { this.sexual = sexual }
 
             /** Sexual content that includes an individual who is under 18 years old. */
             fun sexualMinors(sexualMinors: Boolean) = sexualMinors(JsonField.of(sexualMinors))
 
-            /** Sexual content that includes an individual who is under 18 years old. */
+            /**
+             * Sets [Builder.sexualMinors] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.sexualMinors] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun sexualMinors(sexualMinors: JsonField<Boolean>) = apply {
                 this.sexualMinors = sexualMinors
             }
@@ -655,14 +836,26 @@ private constructor(
             /** Content that depicts death, violence, or physical injury. */
             fun violence(violence: Boolean) = violence(JsonField.of(violence))
 
-            /** Content that depicts death, violence, or physical injury. */
+            /**
+             * Sets [Builder.violence] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.violence] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun violence(violence: JsonField<Boolean>) = apply { this.violence = violence }
 
             /** Content that depicts death, violence, or physical injury in graphic detail. */
             fun violenceGraphic(violenceGraphic: Boolean) =
                 violenceGraphic(JsonField.of(violenceGraphic))
 
-            /** Content that depicts death, violence, or physical injury in graphic detail. */
+            /**
+             * Sets [Builder.violenceGraphic] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.violenceGraphic] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun violenceGraphic(violenceGraphic: JsonField<Boolean>) = apply {
                 this.violenceGraphic = violenceGraphic
             }
@@ -686,6 +879,30 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Categories].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .harassment()
+             * .harassmentThreatening()
+             * .hate()
+             * .hateThreatening()
+             * .illicit()
+             * .illicitViolent()
+             * .selfHarm()
+             * .selfHarmInstructions()
+             * .selfHarmIntent()
+             * .sexual()
+             * .sexualMinors()
+             * .violence()
+             * .violenceGraphic()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Categories =
                 Categories(
                     checkRequired("harassment", harassment),
@@ -772,104 +989,228 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The applied input type(s) for the category 'harassment'. */
+        /**
+         * The applied input type(s) for the category 'harassment'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun harassment(): List<Harassment> = harassment.getRequired("harassment")
 
-        /** The applied input type(s) for the category 'harassment/threatening'. */
+        /**
+         * The applied input type(s) for the category 'harassment/threatening'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun harassmentThreatening(): List<HarassmentThreatening> =
             harassmentThreatening.getRequired("harassment/threatening")
 
-        /** The applied input type(s) for the category 'hate'. */
+        /**
+         * The applied input type(s) for the category 'hate'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun hate(): List<Hate> = hate.getRequired("hate")
 
-        /** The applied input type(s) for the category 'hate/threatening'. */
+        /**
+         * The applied input type(s) for the category 'hate/threatening'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun hateThreatening(): List<HateThreatening> =
             hateThreatening.getRequired("hate/threatening")
 
-        /** The applied input type(s) for the category 'illicit'. */
+        /**
+         * The applied input type(s) for the category 'illicit'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun illicit(): List<Illicit> = illicit.getRequired("illicit")
 
-        /** The applied input type(s) for the category 'illicit/violent'. */
+        /**
+         * The applied input type(s) for the category 'illicit/violent'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun illicitViolent(): List<IllicitViolent> = illicitViolent.getRequired("illicit/violent")
 
-        /** The applied input type(s) for the category 'self-harm'. */
+        /**
+         * The applied input type(s) for the category 'self-harm'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun selfHarm(): List<SelfHarm> = selfHarm.getRequired("self-harm")
 
-        /** The applied input type(s) for the category 'self-harm/instructions'. */
+        /**
+         * The applied input type(s) for the category 'self-harm/instructions'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun selfHarmInstructions(): List<SelfHarmInstruction> =
             selfHarmInstructions.getRequired("self-harm/instructions")
 
-        /** The applied input type(s) for the category 'self-harm/intent'. */
+        /**
+         * The applied input type(s) for the category 'self-harm/intent'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun selfHarmIntent(): List<SelfHarmIntent> = selfHarmIntent.getRequired("self-harm/intent")
 
-        /** The applied input type(s) for the category 'sexual'. */
+        /**
+         * The applied input type(s) for the category 'sexual'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun sexual(): List<Sexual> = sexual.getRequired("sexual")
 
-        /** The applied input type(s) for the category 'sexual/minors'. */
+        /**
+         * The applied input type(s) for the category 'sexual/minors'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun sexualMinors(): List<SexualMinor> = sexualMinors.getRequired("sexual/minors")
 
-        /** The applied input type(s) for the category 'violence'. */
+        /**
+         * The applied input type(s) for the category 'violence'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun violence(): List<Violence> = violence.getRequired("violence")
 
-        /** The applied input type(s) for the category 'violence/graphic'. */
+        /**
+         * The applied input type(s) for the category 'violence/graphic'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun violenceGraphic(): List<ViolenceGraphic> =
             violenceGraphic.getRequired("violence/graphic")
 
-        /** The applied input type(s) for the category 'harassment'. */
+        /**
+         * Returns the raw JSON value of [harassment].
+         *
+         * Unlike [harassment], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("harassment")
         @ExcludeMissing
         fun _harassment(): JsonField<List<Harassment>> = harassment
 
-        /** The applied input type(s) for the category 'harassment/threatening'. */
+        /**
+         * Returns the raw JSON value of [harassmentThreatening].
+         *
+         * Unlike [harassmentThreatening], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
         @JsonProperty("harassment/threatening")
         @ExcludeMissing
         fun _harassmentThreatening(): JsonField<List<HarassmentThreatening>> = harassmentThreatening
 
-        /** The applied input type(s) for the category 'hate'. */
+        /**
+         * Returns the raw JSON value of [hate].
+         *
+         * Unlike [hate], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("hate") @ExcludeMissing fun _hate(): JsonField<List<Hate>> = hate
 
-        /** The applied input type(s) for the category 'hate/threatening'. */
+        /**
+         * Returns the raw JSON value of [hateThreatening].
+         *
+         * Unlike [hateThreatening], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("hate/threatening")
         @ExcludeMissing
         fun _hateThreatening(): JsonField<List<HateThreatening>> = hateThreatening
 
-        /** The applied input type(s) for the category 'illicit'. */
+        /**
+         * Returns the raw JSON value of [illicit].
+         *
+         * Unlike [illicit], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("illicit") @ExcludeMissing fun _illicit(): JsonField<List<Illicit>> = illicit
 
-        /** The applied input type(s) for the category 'illicit/violent'. */
+        /**
+         * Returns the raw JSON value of [illicitViolent].
+         *
+         * Unlike [illicitViolent], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("illicit/violent")
         @ExcludeMissing
         fun _illicitViolent(): JsonField<List<IllicitViolent>> = illicitViolent
 
-        /** The applied input type(s) for the category 'self-harm'. */
+        /**
+         * Returns the raw JSON value of [selfHarm].
+         *
+         * Unlike [selfHarm], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("self-harm")
         @ExcludeMissing
         fun _selfHarm(): JsonField<List<SelfHarm>> = selfHarm
 
-        /** The applied input type(s) for the category 'self-harm/instructions'. */
+        /**
+         * Returns the raw JSON value of [selfHarmInstructions].
+         *
+         * Unlike [selfHarmInstructions], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
         @JsonProperty("self-harm/instructions")
         @ExcludeMissing
         fun _selfHarmInstructions(): JsonField<List<SelfHarmInstruction>> = selfHarmInstructions
 
-        /** The applied input type(s) for the category 'self-harm/intent'. */
+        /**
+         * Returns the raw JSON value of [selfHarmIntent].
+         *
+         * Unlike [selfHarmIntent], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("self-harm/intent")
         @ExcludeMissing
         fun _selfHarmIntent(): JsonField<List<SelfHarmIntent>> = selfHarmIntent
 
-        /** The applied input type(s) for the category 'sexual'. */
+        /**
+         * Returns the raw JSON value of [sexual].
+         *
+         * Unlike [sexual], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("sexual") @ExcludeMissing fun _sexual(): JsonField<List<Sexual>> = sexual
 
-        /** The applied input type(s) for the category 'sexual/minors'. */
+        /**
+         * Returns the raw JSON value of [sexualMinors].
+         *
+         * Unlike [sexualMinors], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("sexual/minors")
         @ExcludeMissing
         fun _sexualMinors(): JsonField<List<SexualMinor>> = sexualMinors
 
-        /** The applied input type(s) for the category 'violence'. */
+        /**
+         * Returns the raw JSON value of [violence].
+         *
+         * Unlike [violence], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("violence")
         @ExcludeMissing
         fun _violence(): JsonField<List<Violence>> = violence
 
-        /** The applied input type(s) for the category 'violence/graphic'. */
+        /**
+         * Returns the raw JSON value of [violenceGraphic].
+         *
+         * Unlike [violenceGraphic], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("violence/graphic")
         @ExcludeMissing
         fun _violenceGraphic(): JsonField<List<ViolenceGraphic>> = violenceGraphic
@@ -972,12 +1313,22 @@ private constructor(
             /** The applied input type(s) for the category 'harassment'. */
             fun harassment(harassment: List<Harassment>) = harassment(JsonField.of(harassment))
 
-            /** The applied input type(s) for the category 'harassment'. */
+            /**
+             * Sets [Builder.harassment] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.harassment] with a well-typed `List<Harassment>`
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
             fun harassment(harassment: JsonField<List<Harassment>>) = apply {
                 this.harassment = harassment.map { it.toMutableList() }
             }
 
-            /** The applied input type(s) for the category 'harassment'. */
+            /**
+             * Adds a single [Harassment] to [Builder.harassment].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addHarassment(harassment: Harassment) = apply {
                 this.harassment =
                     (this.harassment ?: JsonField.of(mutableListOf())).also {
@@ -989,14 +1340,24 @@ private constructor(
             fun harassmentThreatening(harassmentThreatening: List<HarassmentThreatening>) =
                 harassmentThreatening(JsonField.of(harassmentThreatening))
 
-            /** The applied input type(s) for the category 'harassment/threatening'. */
+            /**
+             * Sets [Builder.harassmentThreatening] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.harassmentThreatening] with a well-typed
+             * `List<HarassmentThreatening>` value instead. This method is primarily for setting the
+             * field to an undocumented or not yet supported value.
+             */
             fun harassmentThreatening(
                 harassmentThreatening: JsonField<List<HarassmentThreatening>>
             ) = apply {
                 this.harassmentThreatening = harassmentThreatening.map { it.toMutableList() }
             }
 
-            /** The applied input type(s) for the category 'harassment/threatening'. */
+            /**
+             * Adds a single [HarassmentThreatening] to [Builder.harassmentThreatening].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addHarassmentThreatening(harassmentThreatening: HarassmentThreatening) = apply {
                 this.harassmentThreatening =
                     (this.harassmentThreatening ?: JsonField.of(mutableListOf())).also {
@@ -1007,12 +1368,22 @@ private constructor(
             /** The applied input type(s) for the category 'hate'. */
             fun hate(hate: List<Hate>) = hate(JsonField.of(hate))
 
-            /** The applied input type(s) for the category 'hate'. */
+            /**
+             * Sets [Builder.hate] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.hate] with a well-typed `List<Hate>` value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun hate(hate: JsonField<List<Hate>>) = apply {
                 this.hate = hate.map { it.toMutableList() }
             }
 
-            /** The applied input type(s) for the category 'hate'. */
+            /**
+             * Adds a single [Hate] to [Builder.hate].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addHate(hate: Hate) = apply {
                 this.hate =
                     (this.hate ?: JsonField.of(mutableListOf())).also {
@@ -1024,12 +1395,22 @@ private constructor(
             fun hateThreatening(hateThreatening: List<HateThreatening>) =
                 hateThreatening(JsonField.of(hateThreatening))
 
-            /** The applied input type(s) for the category 'hate/threatening'. */
+            /**
+             * Sets [Builder.hateThreatening] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.hateThreatening] with a well-typed
+             * `List<HateThreatening>` value instead. This method is primarily for setting the field
+             * to an undocumented or not yet supported value.
+             */
             fun hateThreatening(hateThreatening: JsonField<List<HateThreatening>>) = apply {
                 this.hateThreatening = hateThreatening.map { it.toMutableList() }
             }
 
-            /** The applied input type(s) for the category 'hate/threatening'. */
+            /**
+             * Adds a single [HateThreatening] to [Builder.hateThreatening].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addHateThreatening(hateThreatening: HateThreatening) = apply {
                 this.hateThreatening =
                     (this.hateThreatening ?: JsonField.of(mutableListOf())).also {
@@ -1040,12 +1421,22 @@ private constructor(
             /** The applied input type(s) for the category 'illicit'. */
             fun illicit(illicit: List<Illicit>) = illicit(JsonField.of(illicit))
 
-            /** The applied input type(s) for the category 'illicit'. */
+            /**
+             * Sets [Builder.illicit] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.illicit] with a well-typed `List<Illicit>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun illicit(illicit: JsonField<List<Illicit>>) = apply {
                 this.illicit = illicit.map { it.toMutableList() }
             }
 
-            /** The applied input type(s) for the category 'illicit'. */
+            /**
+             * Adds a single [Illicit] to [Builder.illicit].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addIllicit(illicit: Illicit) = apply {
                 this.illicit =
                     (this.illicit ?: JsonField.of(mutableListOf())).also {
@@ -1057,12 +1448,22 @@ private constructor(
             fun illicitViolent(illicitViolent: List<IllicitViolent>) =
                 illicitViolent(JsonField.of(illicitViolent))
 
-            /** The applied input type(s) for the category 'illicit/violent'. */
+            /**
+             * Sets [Builder.illicitViolent] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.illicitViolent] with a well-typed
+             * `List<IllicitViolent>` value instead. This method is primarily for setting the field
+             * to an undocumented or not yet supported value.
+             */
             fun illicitViolent(illicitViolent: JsonField<List<IllicitViolent>>) = apply {
                 this.illicitViolent = illicitViolent.map { it.toMutableList() }
             }
 
-            /** The applied input type(s) for the category 'illicit/violent'. */
+            /**
+             * Adds a single [IllicitViolent] to [Builder.illicitViolent].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addIllicitViolent(illicitViolent: IllicitViolent) = apply {
                 this.illicitViolent =
                     (this.illicitViolent ?: JsonField.of(mutableListOf())).also {
@@ -1073,12 +1474,22 @@ private constructor(
             /** The applied input type(s) for the category 'self-harm'. */
             fun selfHarm(selfHarm: List<SelfHarm>) = selfHarm(JsonField.of(selfHarm))
 
-            /** The applied input type(s) for the category 'self-harm'. */
+            /**
+             * Sets [Builder.selfHarm] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.selfHarm] with a well-typed `List<SelfHarm>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun selfHarm(selfHarm: JsonField<List<SelfHarm>>) = apply {
                 this.selfHarm = selfHarm.map { it.toMutableList() }
             }
 
-            /** The applied input type(s) for the category 'self-harm'. */
+            /**
+             * Adds a single [SelfHarm] to [Builder.selfHarm].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addSelfHarm(selfHarm: SelfHarm) = apply {
                 this.selfHarm =
                     (this.selfHarm ?: JsonField.of(mutableListOf())).also {
@@ -1090,13 +1501,23 @@ private constructor(
             fun selfHarmInstructions(selfHarmInstructions: List<SelfHarmInstruction>) =
                 selfHarmInstructions(JsonField.of(selfHarmInstructions))
 
-            /** The applied input type(s) for the category 'self-harm/instructions'. */
+            /**
+             * Sets [Builder.selfHarmInstructions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.selfHarmInstructions] with a well-typed
+             * `List<SelfHarmInstruction>` value instead. This method is primarily for setting the
+             * field to an undocumented or not yet supported value.
+             */
             fun selfHarmInstructions(selfHarmInstructions: JsonField<List<SelfHarmInstruction>>) =
                 apply {
                     this.selfHarmInstructions = selfHarmInstructions.map { it.toMutableList() }
                 }
 
-            /** The applied input type(s) for the category 'self-harm/instructions'. */
+            /**
+             * Adds a single [SelfHarmInstruction] to [selfHarmInstructions].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addSelfHarmInstruction(selfHarmInstruction: SelfHarmInstruction) = apply {
                 selfHarmInstructions =
                     (selfHarmInstructions ?: JsonField.of(mutableListOf())).also {
@@ -1108,12 +1529,22 @@ private constructor(
             fun selfHarmIntent(selfHarmIntent: List<SelfHarmIntent>) =
                 selfHarmIntent(JsonField.of(selfHarmIntent))
 
-            /** The applied input type(s) for the category 'self-harm/intent'. */
+            /**
+             * Sets [Builder.selfHarmIntent] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.selfHarmIntent] with a well-typed
+             * `List<SelfHarmIntent>` value instead. This method is primarily for setting the field
+             * to an undocumented or not yet supported value.
+             */
             fun selfHarmIntent(selfHarmIntent: JsonField<List<SelfHarmIntent>>) = apply {
                 this.selfHarmIntent = selfHarmIntent.map { it.toMutableList() }
             }
 
-            /** The applied input type(s) for the category 'self-harm/intent'. */
+            /**
+             * Adds a single [SelfHarmIntent] to [Builder.selfHarmIntent].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addSelfHarmIntent(selfHarmIntent: SelfHarmIntent) = apply {
                 this.selfHarmIntent =
                     (this.selfHarmIntent ?: JsonField.of(mutableListOf())).also {
@@ -1124,12 +1555,22 @@ private constructor(
             /** The applied input type(s) for the category 'sexual'. */
             fun sexual(sexual: List<Sexual>) = sexual(JsonField.of(sexual))
 
-            /** The applied input type(s) for the category 'sexual'. */
+            /**
+             * Sets [Builder.sexual] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.sexual] with a well-typed `List<Sexual>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun sexual(sexual: JsonField<List<Sexual>>) = apply {
                 this.sexual = sexual.map { it.toMutableList() }
             }
 
-            /** The applied input type(s) for the category 'sexual'. */
+            /**
+             * Adds a single [Sexual] to [Builder.sexual].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addSexual(sexual: Sexual) = apply {
                 this.sexual =
                     (this.sexual ?: JsonField.of(mutableListOf())).also {
@@ -1141,12 +1582,22 @@ private constructor(
             fun sexualMinors(sexualMinors: List<SexualMinor>) =
                 sexualMinors(JsonField.of(sexualMinors))
 
-            /** The applied input type(s) for the category 'sexual/minors'. */
+            /**
+             * Sets [Builder.sexualMinors] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.sexualMinors] with a well-typed `List<SexualMinor>`
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
             fun sexualMinors(sexualMinors: JsonField<List<SexualMinor>>) = apply {
                 this.sexualMinors = sexualMinors.map { it.toMutableList() }
             }
 
-            /** The applied input type(s) for the category 'sexual/minors'. */
+            /**
+             * Adds a single [SexualMinor] to [sexualMinors].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addSexualMinor(sexualMinor: SexualMinor) = apply {
                 sexualMinors =
                     (sexualMinors ?: JsonField.of(mutableListOf())).also {
@@ -1157,12 +1608,22 @@ private constructor(
             /** The applied input type(s) for the category 'violence'. */
             fun violence(violence: List<Violence>) = violence(JsonField.of(violence))
 
-            /** The applied input type(s) for the category 'violence'. */
+            /**
+             * Sets [Builder.violence] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.violence] with a well-typed `List<Violence>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun violence(violence: JsonField<List<Violence>>) = apply {
                 this.violence = violence.map { it.toMutableList() }
             }
 
-            /** The applied input type(s) for the category 'violence'. */
+            /**
+             * Adds a single [Violence] to [Builder.violence].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addViolence(violence: Violence) = apply {
                 this.violence =
                     (this.violence ?: JsonField.of(mutableListOf())).also {
@@ -1174,12 +1635,22 @@ private constructor(
             fun violenceGraphic(violenceGraphic: List<ViolenceGraphic>) =
                 violenceGraphic(JsonField.of(violenceGraphic))
 
-            /** The applied input type(s) for the category 'violence/graphic'. */
+            /**
+             * Sets [Builder.violenceGraphic] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.violenceGraphic] with a well-typed
+             * `List<ViolenceGraphic>` value instead. This method is primarily for setting the field
+             * to an undocumented or not yet supported value.
+             */
             fun violenceGraphic(violenceGraphic: JsonField<List<ViolenceGraphic>>) = apply {
                 this.violenceGraphic = violenceGraphic.map { it.toMutableList() }
             }
 
-            /** The applied input type(s) for the category 'violence/graphic'. */
+            /**
+             * Adds a single [ViolenceGraphic] to [Builder.violenceGraphic].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
             fun addViolenceGraphic(violenceGraphic: ViolenceGraphic) = apply {
                 this.violenceGraphic =
                     (this.violenceGraphic ?: JsonField.of(mutableListOf())).also {
@@ -1206,6 +1677,30 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [CategoryAppliedInputTypes].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .harassment()
+             * .harassmentThreatening()
+             * .hate()
+             * .hateThreatening()
+             * .illicit()
+             * .illicitViolent()
+             * .selfHarm()
+             * .selfHarmInstructions()
+             * .selfHarmIntent()
+             * .sexual()
+             * .sexualMinors()
+             * .violence()
+             * .violenceGraphic()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): CategoryAppliedInputTypes =
                 CategoryAppliedInputTypes(
                     checkRequired("harassment", harassment).map { it.toImmutable() },
@@ -2607,98 +3102,222 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The score for the category 'harassment'. */
+        /**
+         * The score for the category 'harassment'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun harassment(): Double = harassment.getRequired("harassment")
 
-        /** The score for the category 'harassment/threatening'. */
+        /**
+         * The score for the category 'harassment/threatening'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun harassmentThreatening(): Double =
             harassmentThreatening.getRequired("harassment/threatening")
 
-        /** The score for the category 'hate'. */
+        /**
+         * The score for the category 'hate'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun hate(): Double = hate.getRequired("hate")
 
-        /** The score for the category 'hate/threatening'. */
+        /**
+         * The score for the category 'hate/threatening'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun hateThreatening(): Double = hateThreatening.getRequired("hate/threatening")
 
-        /** The score for the category 'illicit'. */
+        /**
+         * The score for the category 'illicit'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun illicit(): Double = illicit.getRequired("illicit")
 
-        /** The score for the category 'illicit/violent'. */
+        /**
+         * The score for the category 'illicit/violent'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun illicitViolent(): Double = illicitViolent.getRequired("illicit/violent")
 
-        /** The score for the category 'self-harm'. */
+        /**
+         * The score for the category 'self-harm'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun selfHarm(): Double = selfHarm.getRequired("self-harm")
 
-        /** The score for the category 'self-harm/instructions'. */
+        /**
+         * The score for the category 'self-harm/instructions'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun selfHarmInstructions(): Double =
             selfHarmInstructions.getRequired("self-harm/instructions")
 
-        /** The score for the category 'self-harm/intent'. */
+        /**
+         * The score for the category 'self-harm/intent'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun selfHarmIntent(): Double = selfHarmIntent.getRequired("self-harm/intent")
 
-        /** The score for the category 'sexual'. */
+        /**
+         * The score for the category 'sexual'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun sexual(): Double = sexual.getRequired("sexual")
 
-        /** The score for the category 'sexual/minors'. */
+        /**
+         * The score for the category 'sexual/minors'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun sexualMinors(): Double = sexualMinors.getRequired("sexual/minors")
 
-        /** The score for the category 'violence'. */
+        /**
+         * The score for the category 'violence'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun violence(): Double = violence.getRequired("violence")
 
-        /** The score for the category 'violence/graphic'. */
+        /**
+         * The score for the category 'violence/graphic'.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun violenceGraphic(): Double = violenceGraphic.getRequired("violence/graphic")
 
-        /** The score for the category 'harassment'. */
+        /**
+         * Returns the raw JSON value of [harassment].
+         *
+         * Unlike [harassment], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("harassment")
         @ExcludeMissing
         fun _harassment(): JsonField<Double> = harassment
 
-        /** The score for the category 'harassment/threatening'. */
+        /**
+         * Returns the raw JSON value of [harassmentThreatening].
+         *
+         * Unlike [harassmentThreatening], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
         @JsonProperty("harassment/threatening")
         @ExcludeMissing
         fun _harassmentThreatening(): JsonField<Double> = harassmentThreatening
 
-        /** The score for the category 'hate'. */
+        /**
+         * Returns the raw JSON value of [hate].
+         *
+         * Unlike [hate], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("hate") @ExcludeMissing fun _hate(): JsonField<Double> = hate
 
-        /** The score for the category 'hate/threatening'. */
+        /**
+         * Returns the raw JSON value of [hateThreatening].
+         *
+         * Unlike [hateThreatening], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("hate/threatening")
         @ExcludeMissing
         fun _hateThreatening(): JsonField<Double> = hateThreatening
 
-        /** The score for the category 'illicit'. */
+        /**
+         * Returns the raw JSON value of [illicit].
+         *
+         * Unlike [illicit], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("illicit") @ExcludeMissing fun _illicit(): JsonField<Double> = illicit
 
-        /** The score for the category 'illicit/violent'. */
+        /**
+         * Returns the raw JSON value of [illicitViolent].
+         *
+         * Unlike [illicitViolent], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("illicit/violent")
         @ExcludeMissing
         fun _illicitViolent(): JsonField<Double> = illicitViolent
 
-        /** The score for the category 'self-harm'. */
+        /**
+         * Returns the raw JSON value of [selfHarm].
+         *
+         * Unlike [selfHarm], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("self-harm") @ExcludeMissing fun _selfHarm(): JsonField<Double> = selfHarm
 
-        /** The score for the category 'self-harm/instructions'. */
+        /**
+         * Returns the raw JSON value of [selfHarmInstructions].
+         *
+         * Unlike [selfHarmInstructions], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
         @JsonProperty("self-harm/instructions")
         @ExcludeMissing
         fun _selfHarmInstructions(): JsonField<Double> = selfHarmInstructions
 
-        /** The score for the category 'self-harm/intent'. */
+        /**
+         * Returns the raw JSON value of [selfHarmIntent].
+         *
+         * Unlike [selfHarmIntent], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("self-harm/intent")
         @ExcludeMissing
         fun _selfHarmIntent(): JsonField<Double> = selfHarmIntent
 
-        /** The score for the category 'sexual'. */
+        /**
+         * Returns the raw JSON value of [sexual].
+         *
+         * Unlike [sexual], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("sexual") @ExcludeMissing fun _sexual(): JsonField<Double> = sexual
 
-        /** The score for the category 'sexual/minors'. */
+        /**
+         * Returns the raw JSON value of [sexualMinors].
+         *
+         * Unlike [sexualMinors], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("sexual/minors")
         @ExcludeMissing
         fun _sexualMinors(): JsonField<Double> = sexualMinors
 
-        /** The score for the category 'violence'. */
+        /**
+         * Returns the raw JSON value of [violence].
+         *
+         * Unlike [violence], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("violence") @ExcludeMissing fun _violence(): JsonField<Double> = violence
 
-        /** The score for the category 'violence/graphic'. */
+        /**
+         * Returns the raw JSON value of [violenceGraphic].
+         *
+         * Unlike [violenceGraphic], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
         @JsonProperty("violence/graphic")
         @ExcludeMissing
         fun _violenceGraphic(): JsonField<Double> = violenceGraphic
@@ -2796,14 +3415,26 @@ private constructor(
             /** The score for the category 'harassment'. */
             fun harassment(harassment: Double) = harassment(JsonField.of(harassment))
 
-            /** The score for the category 'harassment'. */
+            /**
+             * Sets [Builder.harassment] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.harassment] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun harassment(harassment: JsonField<Double>) = apply { this.harassment = harassment }
 
             /** The score for the category 'harassment/threatening'. */
             fun harassmentThreatening(harassmentThreatening: Double) =
                 harassmentThreatening(JsonField.of(harassmentThreatening))
 
-            /** The score for the category 'harassment/threatening'. */
+            /**
+             * Sets [Builder.harassmentThreatening] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.harassmentThreatening] with a well-typed [Double]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
             fun harassmentThreatening(harassmentThreatening: JsonField<Double>) = apply {
                 this.harassmentThreatening = harassmentThreatening
             }
@@ -2811,14 +3442,26 @@ private constructor(
             /** The score for the category 'hate'. */
             fun hate(hate: Double) = hate(JsonField.of(hate))
 
-            /** The score for the category 'hate'. */
+            /**
+             * Sets [Builder.hate] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.hate] with a well-typed [Double] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun hate(hate: JsonField<Double>) = apply { this.hate = hate }
 
             /** The score for the category 'hate/threatening'. */
             fun hateThreatening(hateThreatening: Double) =
                 hateThreatening(JsonField.of(hateThreatening))
 
-            /** The score for the category 'hate/threatening'. */
+            /**
+             * Sets [Builder.hateThreatening] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.hateThreatening] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun hateThreatening(hateThreatening: JsonField<Double>) = apply {
                 this.hateThreatening = hateThreatening
             }
@@ -2826,14 +3469,26 @@ private constructor(
             /** The score for the category 'illicit'. */
             fun illicit(illicit: Double) = illicit(JsonField.of(illicit))
 
-            /** The score for the category 'illicit'. */
+            /**
+             * Sets [Builder.illicit] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.illicit] with a well-typed [Double] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun illicit(illicit: JsonField<Double>) = apply { this.illicit = illicit }
 
             /** The score for the category 'illicit/violent'. */
             fun illicitViolent(illicitViolent: Double) =
                 illicitViolent(JsonField.of(illicitViolent))
 
-            /** The score for the category 'illicit/violent'. */
+            /**
+             * Sets [Builder.illicitViolent] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.illicitViolent] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun illicitViolent(illicitViolent: JsonField<Double>) = apply {
                 this.illicitViolent = illicitViolent
             }
@@ -2841,14 +3496,26 @@ private constructor(
             /** The score for the category 'self-harm'. */
             fun selfHarm(selfHarm: Double) = selfHarm(JsonField.of(selfHarm))
 
-            /** The score for the category 'self-harm'. */
+            /**
+             * Sets [Builder.selfHarm] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.selfHarm] with a well-typed [Double] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun selfHarm(selfHarm: JsonField<Double>) = apply { this.selfHarm = selfHarm }
 
             /** The score for the category 'self-harm/instructions'. */
             fun selfHarmInstructions(selfHarmInstructions: Double) =
                 selfHarmInstructions(JsonField.of(selfHarmInstructions))
 
-            /** The score for the category 'self-harm/instructions'. */
+            /**
+             * Sets [Builder.selfHarmInstructions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.selfHarmInstructions] with a well-typed [Double]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
             fun selfHarmInstructions(selfHarmInstructions: JsonField<Double>) = apply {
                 this.selfHarmInstructions = selfHarmInstructions
             }
@@ -2857,7 +3524,13 @@ private constructor(
             fun selfHarmIntent(selfHarmIntent: Double) =
                 selfHarmIntent(JsonField.of(selfHarmIntent))
 
-            /** The score for the category 'self-harm/intent'. */
+            /**
+             * Sets [Builder.selfHarmIntent] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.selfHarmIntent] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun selfHarmIntent(selfHarmIntent: JsonField<Double>) = apply {
                 this.selfHarmIntent = selfHarmIntent
             }
@@ -2865,13 +3538,25 @@ private constructor(
             /** The score for the category 'sexual'. */
             fun sexual(sexual: Double) = sexual(JsonField.of(sexual))
 
-            /** The score for the category 'sexual'. */
+            /**
+             * Sets [Builder.sexual] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.sexual] with a well-typed [Double] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun sexual(sexual: JsonField<Double>) = apply { this.sexual = sexual }
 
             /** The score for the category 'sexual/minors'. */
             fun sexualMinors(sexualMinors: Double) = sexualMinors(JsonField.of(sexualMinors))
 
-            /** The score for the category 'sexual/minors'. */
+            /**
+             * Sets [Builder.sexualMinors] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.sexualMinors] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun sexualMinors(sexualMinors: JsonField<Double>) = apply {
                 this.sexualMinors = sexualMinors
             }
@@ -2879,14 +3564,26 @@ private constructor(
             /** The score for the category 'violence'. */
             fun violence(violence: Double) = violence(JsonField.of(violence))
 
-            /** The score for the category 'violence'. */
+            /**
+             * Sets [Builder.violence] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.violence] with a well-typed [Double] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun violence(violence: JsonField<Double>) = apply { this.violence = violence }
 
             /** The score for the category 'violence/graphic'. */
             fun violenceGraphic(violenceGraphic: Double) =
                 violenceGraphic(JsonField.of(violenceGraphic))
 
-            /** The score for the category 'violence/graphic'. */
+            /**
+             * Sets [Builder.violenceGraphic] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.violenceGraphic] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun violenceGraphic(violenceGraphic: JsonField<Double>) = apply {
                 this.violenceGraphic = violenceGraphic
             }
@@ -2910,6 +3607,30 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [CategoryScores].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .harassment()
+             * .harassmentThreatening()
+             * .hate()
+             * .hateThreatening()
+             * .illicit()
+             * .illicitViolent()
+             * .selfHarm()
+             * .selfHarmInstructions()
+             * .selfHarmIntent()
+             * .sexual()
+             * .sexualMinors()
+             * .violence()
+             * .violenceGraphic()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): CategoryScores =
                 CategoryScores(
                     checkRequired("harassment", harassment),

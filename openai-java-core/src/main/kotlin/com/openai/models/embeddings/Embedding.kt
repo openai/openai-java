@@ -34,22 +34,45 @@ private constructor(
     /**
      * The embedding vector, which is a list of floats. The length of vector depends on the model as
      * listed in the [embedding guide](https://platform.openai.com/docs/guides/embeddings).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun embedding(): List<Double> = embedding.getRequired("embedding")
 
-    /** The index of the embedding in the list of embeddings. */
+    /**
+     * The index of the embedding in the list of embeddings.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun index(): Long = index.getRequired("index")
 
-    /** The object type, which is always "embedding". */
+    /**
+     * The object type, which is always "embedding".
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("embedding")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
-     * The embedding vector, which is a list of floats. The length of vector depends on the model as
-     * listed in the [embedding guide](https://platform.openai.com/docs/guides/embeddings).
+     * Returns the raw JSON value of [embedding].
+     *
+     * Unlike [embedding], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("embedding") @ExcludeMissing fun _embedding(): JsonField<List<Double>> = embedding
 
-    /** The index of the embedding in the list of embeddings. */
+    /**
+     * Returns the raw JSON value of [index].
+     *
+     * Unlike [index], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
     @JsonAnyGetter
@@ -113,18 +136,20 @@ private constructor(
         fun embedding(embedding: List<Double>) = embedding(JsonField.of(embedding))
 
         /**
-         * The embedding vector, which is a list of floats. The length of vector depends on the
-         * model as listed in the
-         * [embedding guide](https://platform.openai.com/docs/guides/embeddings).
+         * Sets [Builder.embedding] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.embedding] with a well-typed `List<Double>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun embedding(embedding: JsonField<List<Double>>) = apply {
             this.embedding = embedding.map { it.toMutableList() }
         }
 
         /**
-         * The embedding vector, which is a list of floats. The length of vector depends on the
-         * model as listed in the
-         * [embedding guide](https://platform.openai.com/docs/guides/embeddings).
+         * Adds a single [Double] to [Builder.embedding].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addEmbedding(embedding: Double) = apply {
             this.embedding =
@@ -136,10 +161,26 @@ private constructor(
         /** The index of the embedding in the list of embeddings. */
         fun index(index: Long) = index(JsonField.of(index))
 
-        /** The index of the embedding in the list of embeddings. */
+        /**
+         * Sets [Builder.index] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.index] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun index(index: JsonField<Long>) = apply { this.index = index }
 
-        /** The object type, which is always "embedding". */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("embedding")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -161,6 +202,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [Embedding].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .embedding()
+         * .index()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): Embedding =
             Embedding(
                 checkRequired("embedding", embedding).map { it.toImmutable() },

@@ -30,11 +30,30 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun inputAudio(): InputAudio = inputAudio.getRequired("input_audio")
 
-    /** The type of the content part. Always `input_audio`. */
+    /**
+     * The type of the content part. Always `input_audio`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("input_audio")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
+    /**
+     * Returns the raw JSON value of [inputAudio].
+     *
+     * Unlike [inputAudio], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("input_audio")
     @ExcludeMissing
     fun _inputAudio(): JsonField<InputAudio> = inputAudio
@@ -94,9 +113,27 @@ private constructor(
 
         fun inputAudio(inputAudio: InputAudio) = inputAudio(JsonField.of(inputAudio))
 
+        /**
+         * Sets [Builder.inputAudio] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.inputAudio] with a well-typed [InputAudio] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun inputAudio(inputAudio: JsonField<InputAudio>) = apply { this.inputAudio = inputAudio }
 
-        /** The type of the content part. Always `input_audio`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("input_audio")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -118,6 +155,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ChatCompletionContentPartInputAudio].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .inputAudio()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ChatCompletionContentPartInputAudio =
             ChatCompletionContentPartInputAudio(
                 checkRequired("inputAudio", inputAudio),
@@ -140,16 +189,34 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** Base64 encoded audio data. */
+        /**
+         * Base64 encoded audio data.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun data(): String = data.getRequired("data")
 
-        /** The format of the encoded audio data. Currently supports "wav" and "mp3". */
+        /**
+         * The format of the encoded audio data. Currently supports "wav" and "mp3".
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun format(): Format = format.getRequired("format")
 
-        /** Base64 encoded audio data. */
+        /**
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<String> = data
 
-        /** The format of the encoded audio data. Currently supports "wav" and "mp3". */
+        /**
+         * Returns the raw JSON value of [format].
+         *
+         * Unlike [format], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("format") @ExcludeMissing fun _format(): JsonField<Format> = format
 
         @JsonAnyGetter
@@ -201,13 +268,25 @@ private constructor(
             /** Base64 encoded audio data. */
             fun data(data: String) = data(JsonField.of(data))
 
-            /** Base64 encoded audio data. */
+            /**
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun data(data: JsonField<String>) = apply { this.data = data }
 
             /** The format of the encoded audio data. Currently supports "wav" and "mp3". */
             fun format(format: Format) = format(JsonField.of(format))
 
-            /** The format of the encoded audio data. Currently supports "wav" and "mp3". */
+            /**
+             * Sets [Builder.format] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.format] with a well-typed [Format] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun format(format: JsonField<Format>) = apply { this.format = format }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -229,6 +308,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [InputAudio].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * .format()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): InputAudio =
                 InputAudio(
                     checkRequired("data", data),

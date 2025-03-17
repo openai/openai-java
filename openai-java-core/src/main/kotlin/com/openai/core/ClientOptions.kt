@@ -116,10 +116,12 @@ private constructor(
 
         fun organization(organization: String?) = apply { this.organization = organization }
 
+        /** Alias for calling [Builder.organization] with `organization.orElse(null)`. */
         fun organization(organization: Optional<String>) = organization(organization.getOrNull())
 
         fun project(project: String?) = apply { this.project = project }
 
+        /** Alias for calling [Builder.project] with `project.orElse(null)`. */
         fun project(project: Optional<String>) = project(project.getOrNull())
 
         fun headers(headers: Headers) = apply {
@@ -208,6 +210,19 @@ private constructor(
             System.getenv("OPENAI_PROJECT_ID")?.let { project(it) }
         }
 
+        /**
+         * Returns an immutable instance of [ClientOptions].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .httpClient()
+         * .apiKey()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ClientOptions {
             val httpClient = checkRequired("httpClient", httpClient)
             val apiKey = checkRequired("apiKey", apiKey)

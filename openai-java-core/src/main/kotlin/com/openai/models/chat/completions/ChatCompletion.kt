@@ -48,22 +48,57 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** A unique identifier for the chat completion. */
+    /**
+     * A unique identifier for the chat completion.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** A list of chat completion choices. Can be more than one if `n` is greater than 1. */
+    /**
+     * A list of chat completion choices. Can be more than one if `n` is greater than 1.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun choices(): List<Choice> = choices.getRequired("choices")
 
-    /** The Unix timestamp (in seconds) of when the chat completion was created. */
+    /**
+     * The Unix timestamp (in seconds) of when the chat completion was created.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun created(): Long = created.getRequired("created")
 
-    /** The model used for the chat completion. */
+    /**
+     * The model used for the chat completion.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun model(): String = model.getRequired("model")
 
-    /** The object type, which is always `chat.completion`. */
+    /**
+     * The object type, which is always `chat.completion`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("chat.completion")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
-    /** The service tier used for processing the request. */
+    /**
+     * The service tier used for processing the request.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun serviceTier(): Optional<ServiceTier> =
         Optional.ofNullable(serviceTier.getNullable("service_tier"))
 
@@ -72,41 +107,73 @@ private constructor(
      *
      * Can be used in conjunction with the `seed` request parameter to understand when backend
      * changes have been made that might impact determinism.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun systemFingerprint(): Optional<String> =
         Optional.ofNullable(systemFingerprint.getNullable("system_fingerprint"))
 
-    /** Usage statistics for the completion request. */
+    /**
+     * Usage statistics for the completion request.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun usage(): Optional<CompletionUsage> = Optional.ofNullable(usage.getNullable("usage"))
 
-    /** A unique identifier for the chat completion. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** A list of chat completion choices. Can be more than one if `n` is greater than 1. */
+    /**
+     * Returns the raw JSON value of [choices].
+     *
+     * Unlike [choices], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("choices") @ExcludeMissing fun _choices(): JsonField<List<Choice>> = choices
 
-    /** The Unix timestamp (in seconds) of when the chat completion was created. */
+    /**
+     * Returns the raw JSON value of [created].
+     *
+     * Unlike [created], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("created") @ExcludeMissing fun _created(): JsonField<Long> = created
 
-    /** The model used for the chat completion. */
+    /**
+     * Returns the raw JSON value of [model].
+     *
+     * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
 
-    /** The service tier used for processing the request. */
+    /**
+     * Returns the raw JSON value of [serviceTier].
+     *
+     * Unlike [serviceTier], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("service_tier")
     @ExcludeMissing
     fun _serviceTier(): JsonField<ServiceTier> = serviceTier
 
     /**
-     * This fingerprint represents the backend configuration that the model runs with.
+     * Returns the raw JSON value of [systemFingerprint].
      *
-     * Can be used in conjunction with the `seed` request parameter to understand when backend
-     * changes have been made that might impact determinism.
+     * Unlike [systemFingerprint], this method doesn't throw if the JSON field has an unexpected
+     * type.
      */
     @JsonProperty("system_fingerprint")
     @ExcludeMissing
     fun _systemFingerprint(): JsonField<String> = systemFingerprint
 
-    /** Usage statistics for the completion request. */
+    /**
+     * Returns the raw JSON value of [usage].
+     *
+     * Unlike [usage], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<CompletionUsage> = usage
 
     @JsonAnyGetter
@@ -182,18 +249,33 @@ private constructor(
         /** A unique identifier for the chat completion. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** A unique identifier for the chat completion. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** A list of chat completion choices. Can be more than one if `n` is greater than 1. */
         fun choices(choices: List<Choice>) = choices(JsonField.of(choices))
 
-        /** A list of chat completion choices. Can be more than one if `n` is greater than 1. */
+        /**
+         * Sets [Builder.choices] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.choices] with a well-typed `List<Choice>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun choices(choices: JsonField<List<Choice>>) = apply {
             this.choices = choices.map { it.toMutableList() }
         }
 
-        /** A list of chat completion choices. Can be more than one if `n` is greater than 1. */
+        /**
+         * Adds a single [Choice] to [choices].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addChoice(choice: Choice) = apply {
             choices =
                 (choices ?: JsonField.of(mutableListOf())).also {
@@ -204,25 +286,52 @@ private constructor(
         /** The Unix timestamp (in seconds) of when the chat completion was created. */
         fun created(created: Long) = created(JsonField.of(created))
 
-        /** The Unix timestamp (in seconds) of when the chat completion was created. */
+        /**
+         * Sets [Builder.created] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.created] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun created(created: JsonField<Long>) = apply { this.created = created }
 
         /** The model used for the chat completion. */
         fun model(model: String) = model(JsonField.of(model))
 
-        /** The model used for the chat completion. */
+        /**
+         * Sets [Builder.model] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.model] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun model(model: JsonField<String>) = apply { this.model = model }
 
-        /** The object type, which is always `chat.completion`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("chat.completion")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /** The service tier used for processing the request. */
         fun serviceTier(serviceTier: ServiceTier?) = serviceTier(JsonField.ofNullable(serviceTier))
 
-        /** The service tier used for processing the request. */
+        /** Alias for calling [Builder.serviceTier] with `serviceTier.orElse(null)`. */
         fun serviceTier(serviceTier: Optional<ServiceTier>) = serviceTier(serviceTier.getOrNull())
 
-        /** The service tier used for processing the request. */
+        /**
+         * Sets [Builder.serviceTier] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.serviceTier] with a well-typed [ServiceTier] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun serviceTier(serviceTier: JsonField<ServiceTier>) = apply {
             this.serviceTier = serviceTier
         }
@@ -237,10 +346,11 @@ private constructor(
             systemFingerprint(JsonField.of(systemFingerprint))
 
         /**
-         * This fingerprint represents the backend configuration that the model runs with.
+         * Sets [Builder.systemFingerprint] to an arbitrary JSON value.
          *
-         * Can be used in conjunction with the `seed` request parameter to understand when backend
-         * changes have been made that might impact determinism.
+         * You should usually call [Builder.systemFingerprint] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun systemFingerprint(systemFingerprint: JsonField<String>) = apply {
             this.systemFingerprint = systemFingerprint
@@ -249,7 +359,13 @@ private constructor(
         /** Usage statistics for the completion request. */
         fun usage(usage: CompletionUsage) = usage(JsonField.of(usage))
 
-        /** Usage statistics for the completion request. */
+        /**
+         * Sets [Builder.usage] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.usage] with a well-typed [CompletionUsage] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun usage(usage: JsonField<CompletionUsage>) = apply { this.usage = usage }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -271,6 +387,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ChatCompletion].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .choices()
+         * .created()
+         * .model()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ChatCompletion =
             ChatCompletion(
                 checkRequired("id", id),
@@ -311,36 +442,65 @@ private constructor(
          * specified in the request was reached, `content_filter` if content was omitted due to a
          * flag from our content filters, `tool_calls` if the model called a tool, or
          * `function_call` (deprecated) if the model called a function.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun finishReason(): FinishReason = finishReason.getRequired("finish_reason")
 
-        /** The index of the choice in the list of choices. */
+        /**
+         * The index of the choice in the list of choices.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun index(): Long = index.getRequired("index")
 
-        /** Log probability information for the choice. */
+        /**
+         * Log probability information for the choice.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun logprobs(): Optional<Logprobs> = Optional.ofNullable(logprobs.getNullable("logprobs"))
 
-        /** A chat completion message generated by the model. */
+        /**
+         * A chat completion message generated by the model.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun message(): ChatCompletionMessage = message.getRequired("message")
 
         /**
-         * The reason the model stopped generating tokens. This will be `stop` if the model hit a
-         * natural stop point or a provided stop sequence, `length` if the maximum number of tokens
-         * specified in the request was reached, `content_filter` if content was omitted due to a
-         * flag from our content filters, `tool_calls` if the model called a tool, or
-         * `function_call` (deprecated) if the model called a function.
+         * Returns the raw JSON value of [finishReason].
+         *
+         * Unlike [finishReason], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
         @JsonProperty("finish_reason")
         @ExcludeMissing
         fun _finishReason(): JsonField<FinishReason> = finishReason
 
-        /** The index of the choice in the list of choices. */
+        /**
+         * Returns the raw JSON value of [index].
+         *
+         * Unlike [index], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
-        /** Log probability information for the choice. */
+        /**
+         * Returns the raw JSON value of [logprobs].
+         *
+         * Unlike [logprobs], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("logprobs") @ExcludeMissing fun _logprobs(): JsonField<Logprobs> = logprobs
 
-        /** A chat completion message generated by the model. */
+        /**
+         * Returns the raw JSON value of [message].
+         *
+         * Unlike [message], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("message")
         @ExcludeMissing
         fun _message(): JsonField<ChatCompletionMessage> = message
@@ -409,11 +569,11 @@ private constructor(
             fun finishReason(finishReason: FinishReason) = finishReason(JsonField.of(finishReason))
 
             /**
-             * The reason the model stopped generating tokens. This will be `stop` if the model hit
-             * a natural stop point or a provided stop sequence, `length` if the maximum number of
-             * tokens specified in the request was reached, `content_filter` if content was omitted
-             * due to a flag from our content filters, `tool_calls` if the model called a tool, or
-             * `function_call` (deprecated) if the model called a function.
+             * Sets [Builder.finishReason] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.finishReason] with a well-typed [FinishReason] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun finishReason(finishReason: JsonField<FinishReason>) = apply {
                 this.finishReason = finishReason
@@ -422,22 +582,40 @@ private constructor(
             /** The index of the choice in the list of choices. */
             fun index(index: Long) = index(JsonField.of(index))
 
-            /** The index of the choice in the list of choices. */
+            /**
+             * Sets [Builder.index] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.index] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun index(index: JsonField<Long>) = apply { this.index = index }
 
             /** Log probability information for the choice. */
             fun logprobs(logprobs: Logprobs?) = logprobs(JsonField.ofNullable(logprobs))
 
-            /** Log probability information for the choice. */
+            /** Alias for calling [Builder.logprobs] with `logprobs.orElse(null)`. */
             fun logprobs(logprobs: Optional<Logprobs>) = logprobs(logprobs.getOrNull())
 
-            /** Log probability information for the choice. */
+            /**
+             * Sets [Builder.logprobs] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.logprobs] with a well-typed [Logprobs] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun logprobs(logprobs: JsonField<Logprobs>) = apply { this.logprobs = logprobs }
 
             /** A chat completion message generated by the model. */
             fun message(message: ChatCompletionMessage) = message(JsonField.of(message))
 
-            /** A chat completion message generated by the model. */
+            /**
+             * Sets [Builder.message] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.message] with a well-typed [ChatCompletionMessage]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
             fun message(message: JsonField<ChatCompletionMessage>) = apply {
                 this.message = message
             }
@@ -461,6 +639,21 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Choice].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .finishReason()
+             * .index()
+             * .logprobs()
+             * .message()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Choice =
                 Choice(
                     checkRequired("finishReason", finishReason),
@@ -615,20 +808,38 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
-            /** A list of message content tokens with log probability information. */
+            /**
+             * A list of message content tokens with log probability information.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
             fun content(): Optional<List<ChatCompletionTokenLogprob>> =
                 Optional.ofNullable(content.getNullable("content"))
 
-            /** A list of message refusal tokens with log probability information. */
+            /**
+             * A list of message refusal tokens with log probability information.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
             fun refusal(): Optional<List<ChatCompletionTokenLogprob>> =
                 Optional.ofNullable(refusal.getNullable("refusal"))
 
-            /** A list of message content tokens with log probability information. */
+            /**
+             * Returns the raw JSON value of [content].
+             *
+             * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("content")
             @ExcludeMissing
             fun _content(): JsonField<List<ChatCompletionTokenLogprob>> = content
 
-            /** A list of message refusal tokens with log probability information. */
+            /**
+             * Returns the raw JSON value of [refusal].
+             *
+             * Unlike [refusal], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("refusal")
             @ExcludeMissing
             fun _refusal(): JsonField<List<ChatCompletionTokenLogprob>> = refusal
@@ -683,16 +894,26 @@ private constructor(
                 fun content(content: List<ChatCompletionTokenLogprob>?) =
                     content(JsonField.ofNullable(content))
 
-                /** A list of message content tokens with log probability information. */
+                /** Alias for calling [Builder.content] with `content.orElse(null)`. */
                 fun content(content: Optional<List<ChatCompletionTokenLogprob>>) =
                     content(content.getOrNull())
 
-                /** A list of message content tokens with log probability information. */
+                /**
+                 * Sets [Builder.content] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.content] with a well-typed
+                 * `List<ChatCompletionTokenLogprob>` value instead. This method is primarily for
+                 * setting the field to an undocumented or not yet supported value.
+                 */
                 fun content(content: JsonField<List<ChatCompletionTokenLogprob>>) = apply {
                     this.content = content.map { it.toMutableList() }
                 }
 
-                /** A list of message content tokens with log probability information. */
+                /**
+                 * Adds a single [ChatCompletionTokenLogprob] to [Builder.content].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
                 fun addContent(content: ChatCompletionTokenLogprob) = apply {
                     this.content =
                         (this.content ?: JsonField.of(mutableListOf())).also {
@@ -704,16 +925,26 @@ private constructor(
                 fun refusal(refusal: List<ChatCompletionTokenLogprob>?) =
                     refusal(JsonField.ofNullable(refusal))
 
-                /** A list of message refusal tokens with log probability information. */
+                /** Alias for calling [Builder.refusal] with `refusal.orElse(null)`. */
                 fun refusal(refusal: Optional<List<ChatCompletionTokenLogprob>>) =
                     refusal(refusal.getOrNull())
 
-                /** A list of message refusal tokens with log probability information. */
+                /**
+                 * Sets [Builder.refusal] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.refusal] with a well-typed
+                 * `List<ChatCompletionTokenLogprob>` value instead. This method is primarily for
+                 * setting the field to an undocumented or not yet supported value.
+                 */
                 fun refusal(refusal: JsonField<List<ChatCompletionTokenLogprob>>) = apply {
                     this.refusal = refusal.map { it.toMutableList() }
                 }
 
-                /** A list of message refusal tokens with log probability information. */
+                /**
+                 * Adds a single [ChatCompletionTokenLogprob] to [Builder.refusal].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
                 fun addRefusal(refusal: ChatCompletionTokenLogprob) = apply {
                     this.refusal =
                         (this.refusal ?: JsonField.of(mutableListOf())).also {
@@ -743,6 +974,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Logprobs].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .content()
+                 * .refusal()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Logprobs =
                     Logprobs(
                         checkRequired("content", content).map { it.toImmutable() },

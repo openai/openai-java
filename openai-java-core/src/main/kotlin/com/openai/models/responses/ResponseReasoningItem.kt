@@ -36,30 +36,62 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The unique identifier of the reasoning content. */
+    /**
+     * The unique identifier of the reasoning content.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** Reasoning text contents. */
+    /**
+     * Reasoning text contents.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun summary(): List<Summary> = summary.getRequired("summary")
 
-    /** The type of the object. Always `reasoning`. */
+    /**
+     * The type of the object. Always `reasoning`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("reasoning")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
      * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated when
      * items are returned via API.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun status(): Optional<Status> = Optional.ofNullable(status.getNullable("status"))
 
-    /** The unique identifier of the reasoning content. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** Reasoning text contents. */
+    /**
+     * Returns the raw JSON value of [summary].
+     *
+     * Unlike [summary], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("summary") @ExcludeMissing fun _summary(): JsonField<List<Summary>> = summary
 
     /**
-     * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated when
-     * items are returned via API.
+     * Returns the raw JSON value of [status].
+     *
+     * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
@@ -122,18 +154,33 @@ private constructor(
         /** The unique identifier of the reasoning content. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The unique identifier of the reasoning content. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** Reasoning text contents. */
         fun summary(summary: List<Summary>) = summary(JsonField.of(summary))
 
-        /** Reasoning text contents. */
+        /**
+         * Sets [Builder.summary] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.summary] with a well-typed `List<Summary>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun summary(summary: JsonField<List<Summary>>) = apply {
             this.summary = summary.map { it.toMutableList() }
         }
 
-        /** Reasoning text contents. */
+        /**
+         * Adds a single [Summary] to [Builder.summary].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addSummary(summary: Summary) = apply {
             this.summary =
                 (this.summary ?: JsonField.of(mutableListOf())).also {
@@ -141,7 +188,18 @@ private constructor(
                 }
         }
 
-        /** The type of the object. Always `reasoning`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("reasoning")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         /**
@@ -151,8 +209,10 @@ private constructor(
         fun status(status: Status) = status(JsonField.of(status))
 
         /**
-         * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated
-         * when items are returned via API.
+         * Sets [Builder.status] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun status(status: JsonField<Status>) = apply { this.status = status }
 
@@ -175,6 +235,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseReasoningItem].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .summary()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseReasoningItem =
             ResponseReasoningItem(
                 checkRequired("id", id),
@@ -197,13 +270,32 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** A short summary of the reasoning used by the model when generating the response. */
+        /**
+         * A short summary of the reasoning used by the model when generating the response.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun text(): String = text.getRequired("text")
 
-        /** The type of the object. Always `summary_text`. */
+        /**
+         * The type of the object. Always `summary_text`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("summary_text")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-        /** A short summary of the reasoning used by the model when generating the response. */
+        /**
+         * Returns the raw JSON value of [text].
+         *
+         * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
         @JsonAnyGetter
@@ -258,10 +350,27 @@ private constructor(
             /** A short summary of the reasoning used by the model when generating the response. */
             fun text(text: String) = text(JsonField.of(text))
 
-            /** A short summary of the reasoning used by the model when generating the response. */
+            /**
+             * Sets [Builder.text] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.text] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun text(text: JsonField<String>) = apply { this.text = text }
 
-            /** The type of the object. Always `summary_text`. */
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("summary_text")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun type(type: JsonValue) = apply { this.type = type }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -283,6 +392,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Summary].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .text()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Summary =
                 Summary(checkRequired("text", text), type, additionalProperties.toImmutable())
         }

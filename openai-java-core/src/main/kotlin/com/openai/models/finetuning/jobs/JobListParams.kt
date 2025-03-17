@@ -81,16 +81,20 @@ private constructor(
         /** Identifier for the last job from the previous pagination request. */
         fun after(after: String?) = apply { this.after = after }
 
-        /** Identifier for the last job from the previous pagination request. */
+        /** Alias for calling [Builder.after] with `after.orElse(null)`. */
         fun after(after: Optional<String>) = after(after.getOrNull())
 
         /** Number of fine-tuning jobs to retrieve. */
         fun limit(limit: Long?) = apply { this.limit = limit }
 
-        /** Number of fine-tuning jobs to retrieve. */
+        /**
+         * Alias for [Builder.limit].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
         fun limit(limit: Long) = limit(limit as Long?)
 
-        /** Number of fine-tuning jobs to retrieve. */
+        /** Alias for calling [Builder.limit] with `limit.orElse(null)`. */
         fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
 
         /**
@@ -99,10 +103,7 @@ private constructor(
          */
         fun metadata(metadata: Metadata?) = apply { this.metadata = metadata }
 
-        /**
-         * Optional metadata filter. To filter, use the syntax `metadata[k]=v`. Alternatively, set
-         * `metadata=null` to indicate no metadata.
-         */
+        /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
         fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
@@ -203,6 +204,11 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [JobListParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): JobListParams =
             JobListParams(
                 after,
@@ -293,6 +299,11 @@ private constructor(
                 additionalProperties.removeAll(keys)
             }
 
+            /**
+             * Returns an immutable instance of [Metadata].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Metadata = Metadata(additionalProperties.build())
         }
 

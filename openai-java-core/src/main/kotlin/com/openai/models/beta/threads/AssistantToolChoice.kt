@@ -31,15 +31,33 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The type of the tool. If type is `function`, the function name must be set */
+    /**
+     * The type of the tool. If type is `function`, the function name must be set
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun type(): Type = type.getRequired("type")
 
+    /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun function(): Optional<AssistantToolChoiceFunction> =
         Optional.ofNullable(function.getNullable("function"))
 
-    /** The type of the tool. If type is `function`, the function name must be set */
+    /**
+     * Returns the raw JSON value of [type].
+     *
+     * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+    /**
+     * Returns the raw JSON value of [function].
+     *
+     * Unlike [function], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("function")
     @ExcludeMissing
     fun _function(): JsonField<AssistantToolChoiceFunction> = function
@@ -92,11 +110,23 @@ private constructor(
         /** The type of the tool. If type is `function`, the function name must be set */
         fun type(type: Type) = type(JsonField.of(type))
 
-        /** The type of the tool. If type is `function`, the function name must be set */
+        /**
+         * Sets [Builder.type] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.type] with a well-typed [Type] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
         fun function(function: AssistantToolChoiceFunction) = function(JsonField.of(function))
 
+        /**
+         * Sets [Builder.function] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.function] with a well-typed
+         * [AssistantToolChoiceFunction] value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
+         */
         fun function(function: JsonField<AssistantToolChoiceFunction>) = apply {
             this.function = function
         }
@@ -120,6 +150,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [AssistantToolChoice].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .type()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): AssistantToolChoice =
             AssistantToolChoice(
                 checkRequired("type", type),

@@ -6,7 +6,7 @@ import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ModerationCreateParamsTest {
+internal class ModerationCreateParamsTest {
 
     @Test
     fun create() {

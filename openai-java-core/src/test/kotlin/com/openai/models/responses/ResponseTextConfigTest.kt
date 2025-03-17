@@ -6,7 +6,7 @@ import com.openai.models.ResponseFormatText
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ResponseTextConfigTest {
+internal class ResponseTextConfigTest {
 
     @Test
     fun createResponseTextConfig() {

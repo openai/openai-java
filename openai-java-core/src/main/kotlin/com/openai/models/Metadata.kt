@@ -78,6 +78,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [Metadata].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): Metadata = Metadata(additionalProperties.toImmutable())
     }
 

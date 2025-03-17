@@ -567,14 +567,27 @@ private constructor(
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun data(): Run = data.getRequired("data")
 
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("thread.run.created")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
         /**
-         * Represents an execution run on a
-         * [thread](https://platform.openai.com/docs/api-reference/threads).
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Run> = data
 
@@ -634,11 +647,26 @@ private constructor(
             fun data(data: Run) = data(JsonField.of(data))
 
             /**
-             * Represents an execution run on a
-             * [thread](https://platform.openai.com/docs/api-reference/threads).
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [Run] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
 
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("thread.run.created")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -660,6 +688,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunCreated].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunCreated =
                 ThreadRunCreated(
                     checkRequired("data", data),
@@ -703,14 +743,27 @@ private constructor(
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun data(): Run = data.getRequired("data")
 
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("thread.run.queued")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
         /**
-         * Represents an execution run on a
-         * [thread](https://platform.openai.com/docs/api-reference/threads).
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Run> = data
 
@@ -770,11 +823,26 @@ private constructor(
             fun data(data: Run) = data(JsonField.of(data))
 
             /**
-             * Represents an execution run on a
-             * [thread](https://platform.openai.com/docs/api-reference/threads).
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [Run] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
 
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("thread.run.queued")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -796,6 +864,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunQueued].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunQueued =
                 ThreadRunQueued(
                     checkRequired("data", data),
@@ -839,14 +919,27 @@ private constructor(
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun data(): Run = data.getRequired("data")
 
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("thread.run.in_progress")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
         /**
-         * Represents an execution run on a
-         * [thread](https://platform.openai.com/docs/api-reference/threads).
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Run> = data
 
@@ -906,11 +999,26 @@ private constructor(
             fun data(data: Run) = data(JsonField.of(data))
 
             /**
-             * Represents an execution run on a
-             * [thread](https://platform.openai.com/docs/api-reference/threads).
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [Run] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
 
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("thread.run.in_progress")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -932,6 +1040,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunInProgress].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunInProgress =
                 ThreadRunInProgress(
                     checkRequired("data", data),
@@ -975,14 +1095,27 @@ private constructor(
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun data(): Run = data.getRequired("data")
 
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("thread.run.requires_action")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
         /**
-         * Represents an execution run on a
-         * [thread](https://platform.openai.com/docs/api-reference/threads).
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Run> = data
 
@@ -1042,11 +1175,26 @@ private constructor(
             fun data(data: Run) = data(JsonField.of(data))
 
             /**
-             * Represents an execution run on a
-             * [thread](https://platform.openai.com/docs/api-reference/threads).
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [Run] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
 
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("thread.run.requires_action")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1068,6 +1216,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunRequiresAction].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunRequiresAction =
                 ThreadRunRequiresAction(
                     checkRequired("data", data),
@@ -1110,14 +1270,27 @@ private constructor(
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun data(): Run = data.getRequired("data")
 
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("thread.run.completed")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
         /**
-         * Represents an execution run on a
-         * [thread](https://platform.openai.com/docs/api-reference/threads).
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Run> = data
 
@@ -1177,11 +1350,26 @@ private constructor(
             fun data(data: Run) = data(JsonField.of(data))
 
             /**
-             * Represents an execution run on a
-             * [thread](https://platform.openai.com/docs/api-reference/threads).
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [Run] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
 
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("thread.run.completed")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1203,6 +1391,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunCompleted].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunCompleted =
                 ThreadRunCompleted(
                     checkRequired("data", data),
@@ -1246,14 +1446,27 @@ private constructor(
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun data(): Run = data.getRequired("data")
 
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("thread.run.incomplete")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
         /**
-         * Represents an execution run on a
-         * [thread](https://platform.openai.com/docs/api-reference/threads).
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Run> = data
 
@@ -1313,11 +1526,26 @@ private constructor(
             fun data(data: Run) = data(JsonField.of(data))
 
             /**
-             * Represents an execution run on a
-             * [thread](https://platform.openai.com/docs/api-reference/threads).
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [Run] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
 
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("thread.run.incomplete")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1339,6 +1567,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunIncomplete].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunIncomplete =
                 ThreadRunIncomplete(
                     checkRequired("data", data),
@@ -1379,14 +1619,27 @@ private constructor(
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun data(): Run = data.getRequired("data")
 
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("thread.run.failed")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
         /**
-         * Represents an execution run on a
-         * [thread](https://platform.openai.com/docs/api-reference/threads).
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Run> = data
 
@@ -1446,11 +1699,26 @@ private constructor(
             fun data(data: Run) = data(JsonField.of(data))
 
             /**
-             * Represents an execution run on a
-             * [thread](https://platform.openai.com/docs/api-reference/threads).
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [Run] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
 
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("thread.run.failed")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1472,6 +1740,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunFailed].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunFailed =
                 ThreadRunFailed(
                     checkRequired("data", data),
@@ -1515,14 +1795,27 @@ private constructor(
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun data(): Run = data.getRequired("data")
 
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("thread.run.cancelling")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
         /**
-         * Represents an execution run on a
-         * [thread](https://platform.openai.com/docs/api-reference/threads).
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Run> = data
 
@@ -1582,11 +1875,26 @@ private constructor(
             fun data(data: Run) = data(JsonField.of(data))
 
             /**
-             * Represents an execution run on a
-             * [thread](https://platform.openai.com/docs/api-reference/threads).
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [Run] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
 
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("thread.run.cancelling")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1608,6 +1916,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunCancelling].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunCancelling =
                 ThreadRunCancelling(
                     checkRequired("data", data),
@@ -1650,14 +1970,27 @@ private constructor(
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun data(): Run = data.getRequired("data")
 
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("thread.run.cancelled")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
         /**
-         * Represents an execution run on a
-         * [thread](https://platform.openai.com/docs/api-reference/threads).
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Run> = data
 
@@ -1717,11 +2050,26 @@ private constructor(
             fun data(data: Run) = data(JsonField.of(data))
 
             /**
-             * Represents an execution run on a
-             * [thread](https://platform.openai.com/docs/api-reference/threads).
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [Run] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
 
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("thread.run.cancelled")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1743,6 +2091,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunCancelled].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunCancelled =
                 ThreadRunCancelled(
                     checkRequired("data", data),
@@ -1783,14 +2143,27 @@ private constructor(
         /**
          * Represents an execution run on a
          * [thread](https://platform.openai.com/docs/api-reference/threads).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun data(): Run = data.getRequired("data")
 
+        /**
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("thread.run.expired")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
         @JsonProperty("event") @ExcludeMissing fun _event(): JsonValue = event
 
         /**
-         * Represents an execution run on a
-         * [thread](https://platform.openai.com/docs/api-reference/threads).
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<Run> = data
 
@@ -1850,11 +2223,26 @@ private constructor(
             fun data(data: Run) = data(JsonField.of(data))
 
             /**
-             * Represents an execution run on a
-             * [thread](https://platform.openai.com/docs/api-reference/threads).
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [Run] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun data(data: JsonField<Run>) = apply { this.data = data }
 
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("thread.run.expired")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun event(event: JsonValue) = apply { this.event = event }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -1876,6 +2264,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ThreadRunExpired].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ThreadRunExpired =
                 ThreadRunExpired(
                     checkRequired("data", data),

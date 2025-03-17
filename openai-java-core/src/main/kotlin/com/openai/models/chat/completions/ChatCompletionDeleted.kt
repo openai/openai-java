@@ -29,19 +29,47 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The ID of the chat completion that was deleted. */
+    /**
+     * The ID of the chat completion that was deleted.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** Whether the chat completion was deleted. */
+    /**
+     * Whether the chat completion was deleted.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun deleted(): Boolean = deleted.getRequired("deleted")
 
-    /** The type of object being deleted. */
+    /**
+     * The type of object being deleted.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("chat.completion.deleted")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
-    /** The ID of the chat completion that was deleted. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** Whether the chat completion was deleted. */
+    /**
+     * Returns the raw JSON value of [deleted].
+     *
+     * Unlike [deleted], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("deleted") @ExcludeMissing fun _deleted(): JsonField<Boolean> = deleted
 
     @JsonAnyGetter
@@ -100,16 +128,37 @@ private constructor(
         /** The ID of the chat completion that was deleted. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The ID of the chat completion that was deleted. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** Whether the chat completion was deleted. */
         fun deleted(deleted: Boolean) = deleted(JsonField.of(deleted))
 
-        /** Whether the chat completion was deleted. */
+        /**
+         * Sets [Builder.deleted] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.deleted] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun deleted(deleted: JsonField<Boolean>) = apply { this.deleted = deleted }
 
-        /** The type of object being deleted. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("chat.completion.deleted")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -131,6 +180,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ChatCompletionDeleted].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .deleted()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ChatCompletionDeleted =
             ChatCompletionDeleted(
                 checkRequired("id", id),

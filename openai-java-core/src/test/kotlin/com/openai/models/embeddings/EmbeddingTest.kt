@@ -5,7 +5,7 @@ package com.openai.models.embeddings
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class EmbeddingTest {
+internal class EmbeddingTest {
 
     @Test
     fun createEmbedding() {

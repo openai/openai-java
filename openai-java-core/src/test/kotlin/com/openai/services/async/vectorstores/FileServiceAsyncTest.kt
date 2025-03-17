@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(TestServerExtension::class)
-class FileServiceAsyncTest {
+internal class FileServiceAsyncTest {
 
     @Test
     fun create() {

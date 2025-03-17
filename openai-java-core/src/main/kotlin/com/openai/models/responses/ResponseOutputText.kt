@@ -43,21 +43,49 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The annotations of the text output. */
+    /**
+     * The annotations of the text output.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun annotations(): List<Annotation> = annotations.getRequired("annotations")
 
-    /** The text output from the model. */
+    /**
+     * The text output from the model.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun text(): String = text.getRequired("text")
 
-    /** The type of the output text. Always `output_text`. */
+    /**
+     * The type of the output text. Always `output_text`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("output_text")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** The annotations of the text output. */
+    /**
+     * Returns the raw JSON value of [annotations].
+     *
+     * Unlike [annotations], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("annotations")
     @ExcludeMissing
     fun _annotations(): JsonField<List<Annotation>> = annotations
 
-    /** The text output from the model. */
+    /**
+     * Returns the raw JSON value of [text].
+     *
+     * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
     @JsonAnyGetter
@@ -116,12 +144,22 @@ private constructor(
         /** The annotations of the text output. */
         fun annotations(annotations: List<Annotation>) = annotations(JsonField.of(annotations))
 
-        /** The annotations of the text output. */
+        /**
+         * Sets [Builder.annotations] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.annotations] with a well-typed `List<Annotation>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun annotations(annotations: JsonField<List<Annotation>>) = apply {
             this.annotations = annotations.map { it.toMutableList() }
         }
 
-        /** The annotations of the text output. */
+        /**
+         * Adds a single [Annotation] to [annotations].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addAnnotation(annotation: Annotation) = apply {
             annotations =
                 (annotations ?: JsonField.of(mutableListOf())).also {
@@ -129,25 +167,41 @@ private constructor(
                 }
         }
 
-        /** A citation to a file. */
+        /** Alias for calling [addAnnotation] with `Annotation.ofFileCitation(fileCitation)`. */
         fun addAnnotation(fileCitation: Annotation.FileCitation) =
             addAnnotation(Annotation.ofFileCitation(fileCitation))
 
-        /** A citation for a web resource used to generate a model response. */
+        /** Alias for calling [addAnnotation] with `Annotation.ofUrlCitation(urlCitation)`. */
         fun addAnnotation(urlCitation: Annotation.UrlCitation) =
             addAnnotation(Annotation.ofUrlCitation(urlCitation))
 
-        /** A path to a file. */
+        /** Alias for calling [addAnnotation] with `Annotation.ofFilePath(filePath)`. */
         fun addAnnotation(filePath: Annotation.FilePath) =
             addAnnotation(Annotation.ofFilePath(filePath))
 
         /** The text output from the model. */
         fun text(text: String) = text(JsonField.of(text))
 
-        /** The text output from the model. */
+        /**
+         * Sets [Builder.text] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.text] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun text(text: JsonField<String>) = apply { this.text = text }
 
-        /** The type of the output text. Always `output_text`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("output_text")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -169,6 +223,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseOutputText].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .annotations()
+         * .text()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseOutputText =
             ResponseOutputText(
                 checkRequired("annotations", annotations).map { it.toImmutable() },
@@ -375,19 +442,49 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
-            /** The ID of the file. */
+            /**
+             * The ID of the file.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun fileId(): String = fileId.getRequired("file_id")
 
-            /** The index of the file in the list of files. */
+            /**
+             * The index of the file in the list of files.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun index(): Long = index.getRequired("index")
 
-            /** The type of the file citation. Always `file_citation`. */
+            /**
+             * The type of the file citation. Always `file_citation`.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("file_citation")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-            /** The ID of the file. */
+            /**
+             * Returns the raw JSON value of [fileId].
+             *
+             * Unlike [fileId], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
-            /** The index of the file in the list of files. */
+            /**
+             * Returns the raw JSON value of [index].
+             *
+             * Unlike [index], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
             @JsonAnyGetter
@@ -446,16 +543,39 @@ private constructor(
                 /** The ID of the file. */
                 fun fileId(fileId: String) = fileId(JsonField.of(fileId))
 
-                /** The ID of the file. */
+                /**
+                 * Sets [Builder.fileId] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.fileId] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
                 fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
 
                 /** The index of the file in the list of files. */
                 fun index(index: Long) = index(JsonField.of(index))
 
-                /** The index of the file in the list of files. */
+                /**
+                 * Sets [Builder.index] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.index] with a well-typed [Long] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun index(index: JsonField<Long>) = apply { this.index = index }
 
-                /** The type of the file citation. Always `file_citation`. */
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("file_citation")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun type(type: JsonValue) = apply { this.type = type }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -480,6 +600,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [FileCitation].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .fileId()
+                 * .index()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): FileCitation =
                     FileCitation(
                         checkRequired("fileId", fileId),
@@ -529,33 +662,85 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
-            /** The index of the last character of the URL citation in the message. */
+            /**
+             * The index of the last character of the URL citation in the message.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun endIndex(): Long = endIndex.getRequired("end_index")
 
-            /** The index of the first character of the URL citation in the message. */
+            /**
+             * The index of the first character of the URL citation in the message.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun startIndex(): Long = startIndex.getRequired("start_index")
 
-            /** The title of the web resource. */
+            /**
+             * The title of the web resource.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun title(): String = title.getRequired("title")
 
-            /** The type of the URL citation. Always `url_citation`. */
+            /**
+             * The type of the URL citation. Always `url_citation`.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("url_citation")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-            /** The URL of the web resource. */
+            /**
+             * The URL of the web resource.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun url(): String = url.getRequired("url")
 
-            /** The index of the last character of the URL citation in the message. */
+            /**
+             * Returns the raw JSON value of [endIndex].
+             *
+             * Unlike [endIndex], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
             @JsonProperty("end_index") @ExcludeMissing fun _endIndex(): JsonField<Long> = endIndex
 
-            /** The index of the first character of the URL citation in the message. */
+            /**
+             * Returns the raw JSON value of [startIndex].
+             *
+             * Unlike [startIndex], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
             @JsonProperty("start_index")
             @ExcludeMissing
             fun _startIndex(): JsonField<Long> = startIndex
 
-            /** The title of the web resource. */
+            /**
+             * Returns the raw JSON value of [title].
+             *
+             * Unlike [title], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("title") @ExcludeMissing fun _title(): JsonField<String> = title
 
-            /** The URL of the web resource. */
+            /**
+             * Returns the raw JSON value of [url].
+             *
+             * Unlike [url], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("url") @ExcludeMissing fun _url(): JsonField<String> = url
 
             @JsonAnyGetter
@@ -622,28 +807,63 @@ private constructor(
                 /** The index of the last character of the URL citation in the message. */
                 fun endIndex(endIndex: Long) = endIndex(JsonField.of(endIndex))
 
-                /** The index of the last character of the URL citation in the message. */
+                /**
+                 * Sets [Builder.endIndex] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.endIndex] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
                 fun endIndex(endIndex: JsonField<Long>) = apply { this.endIndex = endIndex }
 
                 /** The index of the first character of the URL citation in the message. */
                 fun startIndex(startIndex: Long) = startIndex(JsonField.of(startIndex))
 
-                /** The index of the first character of the URL citation in the message. */
+                /**
+                 * Sets [Builder.startIndex] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.startIndex] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
                 fun startIndex(startIndex: JsonField<Long>) = apply { this.startIndex = startIndex }
 
                 /** The title of the web resource. */
                 fun title(title: String) = title(JsonField.of(title))
 
-                /** The title of the web resource. */
+                /**
+                 * Sets [Builder.title] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.title] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun title(title: JsonField<String>) = apply { this.title = title }
 
-                /** The type of the URL citation. Always `url_citation`. */
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("url_citation")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun type(type: JsonValue) = apply { this.type = type }
 
                 /** The URL of the web resource. */
                 fun url(url: String) = url(JsonField.of(url))
 
-                /** The URL of the web resource. */
+                /**
+                 * Sets [Builder.url] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.url] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun url(url: JsonField<String>) = apply { this.url = url }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -668,6 +888,21 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [UrlCitation].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .endIndex()
+                 * .startIndex()
+                 * .title()
+                 * .url()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): UrlCitation =
                     UrlCitation(
                         checkRequired("endIndex", endIndex),
@@ -713,19 +948,49 @@ private constructor(
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
 
-            /** The ID of the file. */
+            /**
+             * The ID of the file.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun fileId(): String = fileId.getRequired("file_id")
 
-            /** The index of the file in the list of files. */
+            /**
+             * The index of the file in the list of files.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
             fun index(): Long = index.getRequired("index")
 
-            /** The type of the file path. Always `file_path`. */
+            /**
+             * The type of the file path. Always `file_path`.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("file_path")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-            /** The ID of the file. */
+            /**
+             * Returns the raw JSON value of [fileId].
+             *
+             * Unlike [fileId], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
-            /** The index of the file in the list of files. */
+            /**
+             * Returns the raw JSON value of [index].
+             *
+             * Unlike [index], this method doesn't throw if the JSON field has an unexpected type.
+             */
             @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
             @JsonAnyGetter
@@ -784,16 +1049,39 @@ private constructor(
                 /** The ID of the file. */
                 fun fileId(fileId: String) = fileId(JsonField.of(fileId))
 
-                /** The ID of the file. */
+                /**
+                 * Sets [Builder.fileId] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.fileId] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
                 fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
 
                 /** The index of the file in the list of files. */
                 fun index(index: Long) = index(JsonField.of(index))
 
-                /** The index of the file in the list of files. */
+                /**
+                 * Sets [Builder.index] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.index] with a well-typed [Long] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun index(index: JsonField<Long>) = apply { this.index = index }
 
-                /** The type of the file path. Always `file_path`. */
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("file_path")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
                 fun type(type: JsonValue) = apply { this.type = type }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -818,6 +1106,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [FilePath].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .fileId()
+                 * .index()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): FilePath =
                     FilePath(
                         checkRequired("fileId", fileId),

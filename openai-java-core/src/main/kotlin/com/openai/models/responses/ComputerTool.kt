@@ -39,29 +39,66 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The height of the computer display. */
+    /**
+     * The height of the computer display.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun displayHeight(): Double = displayHeight.getRequired("display_height")
 
-    /** The width of the computer display. */
+    /**
+     * The width of the computer display.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun displayWidth(): Double = displayWidth.getRequired("display_width")
 
-    /** The type of computer environment to control. */
+    /**
+     * The type of computer environment to control.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun environment(): Environment = environment.getRequired("environment")
 
-    /** The type of the computer use tool. Always `computer_use_preview`. */
+    /**
+     * The type of the computer use tool. Always `computer_use_preview`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("computer_use_preview")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** The height of the computer display. */
+    /**
+     * Returns the raw JSON value of [displayHeight].
+     *
+     * Unlike [displayHeight], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("display_height")
     @ExcludeMissing
     fun _displayHeight(): JsonField<Double> = displayHeight
 
-    /** The width of the computer display. */
+    /**
+     * Returns the raw JSON value of [displayWidth].
+     *
+     * Unlike [displayWidth], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("display_width")
     @ExcludeMissing
     fun _displayWidth(): JsonField<Double> = displayWidth
 
-    /** The type of computer environment to control. */
+    /**
+     * Returns the raw JSON value of [environment].
+     *
+     * Unlike [environment], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("environment")
     @ExcludeMissing
     fun _environment(): JsonField<Environment> = environment
@@ -126,7 +163,13 @@ private constructor(
         /** The height of the computer display. */
         fun displayHeight(displayHeight: Double) = displayHeight(JsonField.of(displayHeight))
 
-        /** The height of the computer display. */
+        /**
+         * Sets [Builder.displayHeight] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.displayHeight] with a well-typed [Double] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun displayHeight(displayHeight: JsonField<Double>) = apply {
             this.displayHeight = displayHeight
         }
@@ -134,7 +177,13 @@ private constructor(
         /** The width of the computer display. */
         fun displayWidth(displayWidth: Double) = displayWidth(JsonField.of(displayWidth))
 
-        /** The width of the computer display. */
+        /**
+         * Sets [Builder.displayWidth] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.displayWidth] with a well-typed [Double] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun displayWidth(displayWidth: JsonField<Double>) = apply {
             this.displayWidth = displayWidth
         }
@@ -142,12 +191,29 @@ private constructor(
         /** The type of computer environment to control. */
         fun environment(environment: Environment) = environment(JsonField.of(environment))
 
-        /** The type of computer environment to control. */
+        /**
+         * Sets [Builder.environment] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.environment] with a well-typed [Environment] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
         fun environment(environment: JsonField<Environment>) = apply {
             this.environment = environment
         }
 
-        /** The type of the computer use tool. Always `computer_use_preview`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("computer_use_preview")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -169,6 +235,20 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ComputerTool].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .displayHeight()
+         * .displayWidth()
+         * .environment()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ComputerTool =
             ComputerTool(
                 checkRequired("displayHeight", displayHeight),

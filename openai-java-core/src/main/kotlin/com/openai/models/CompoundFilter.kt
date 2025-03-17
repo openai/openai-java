@@ -42,16 +42,34 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** Array of filters to combine. Items can be `ComparisonFilter` or `CompoundFilter`. */
+    /**
+     * Array of filters to combine. Items can be `ComparisonFilter` or `CompoundFilter`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun filters(): List<Filter> = filters.getRequired("filters")
 
-    /** Type of operation: `and` or `or`. */
+    /**
+     * Type of operation: `and` or `or`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun type(): Type = type.getRequired("type")
 
-    /** Array of filters to combine. Items can be `ComparisonFilter` or `CompoundFilter`. */
+    /**
+     * Returns the raw JSON value of [filters].
+     *
+     * Unlike [filters], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonField<List<Filter>> = filters
 
-    /** Type of operation: `and` or `or`. */
+    /**
+     * Returns the raw JSON value of [type].
+     *
+     * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
@@ -103,12 +121,22 @@ private constructor(
         /** Array of filters to combine. Items can be `ComparisonFilter` or `CompoundFilter`. */
         fun filters(filters: List<Filter>) = filters(JsonField.of(filters))
 
-        /** Array of filters to combine. Items can be `ComparisonFilter` or `CompoundFilter`. */
+        /**
+         * Sets [Builder.filters] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.filters] with a well-typed `List<Filter>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun filters(filters: JsonField<List<Filter>>) = apply {
             this.filters = filters.map { it.toMutableList() }
         }
 
-        /** Array of filters to combine. Items can be `ComparisonFilter` or `CompoundFilter`. */
+        /**
+         * Adds a single [Filter] to [filters].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
         fun addFilter(filter: Filter) = apply {
             filters =
                 (filters ?: JsonField.of(mutableListOf())).also {
@@ -116,19 +144,21 @@ private constructor(
                 }
         }
 
-        /**
-         * A filter used to compare a specified attribute key to a given value using a defined
-         * comparison operation.
-         */
+        /** Alias for calling [addFilter] with `Filter.ofComparison(comparison)`. */
         fun addFilter(comparison: ComparisonFilter) = addFilter(Filter.ofComparison(comparison))
 
-        /** Array of filters to combine. Items can be `ComparisonFilter` or `CompoundFilter`. */
+        /** Alias for calling [addFilter] with `Filter.ofJsonValue(jsonValue)`. */
         fun addFilter(jsonValue: JsonValue) = addFilter(Filter.ofJsonValue(jsonValue))
 
         /** Type of operation: `and` or `or`. */
         fun type(type: Type) = type(JsonField.of(type))
 
-        /** Type of operation: `and` or `or`. */
+        /**
+         * Sets [Builder.type] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.type] with a well-typed [Type] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -150,6 +180,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [CompoundFilter].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .filters()
+         * .type()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): CompoundFilter =
             CompoundFilter(
                 checkRequired("filters", filters).map { it.toImmutable() },

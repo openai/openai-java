@@ -38,40 +38,95 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The object identifier. */
+    /**
+     * The object identifier.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun id(): String = id.getRequired("id")
 
-    /** The Unix timestamp (in seconds) for when the fine-tuning job was created. */
+    /**
+     * The Unix timestamp (in seconds) for when the fine-tuning job was created.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun createdAt(): Long = createdAt.getRequired("created_at")
 
-    /** The log level of the event. */
+    /**
+     * The log level of the event.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun level(): Level = level.getRequired("level")
 
-    /** The message of the event. */
+    /**
+     * The message of the event.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun message(): String = message.getRequired("message")
 
-    /** The object type, which is always "fine_tuning.job.event". */
+    /**
+     * The object type, which is always "fine_tuning.job.event".
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("fine_tuning.job.event")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /** The data associated with the event. */
     @JsonProperty("data") @ExcludeMissing fun _data(): JsonValue = data
 
-    /** The type of event. */
+    /**
+     * The type of event.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
 
-    /** The object identifier. */
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    /** The Unix timestamp (in seconds) for when the fine-tuning job was created. */
+    /**
+     * Returns the raw JSON value of [createdAt].
+     *
+     * Unlike [createdAt], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("created_at") @ExcludeMissing fun _createdAt(): JsonField<Long> = createdAt
 
-    /** The log level of the event. */
+    /**
+     * Returns the raw JSON value of [level].
+     *
+     * Unlike [level], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("level") @ExcludeMissing fun _level(): JsonField<Level> = level
 
-    /** The message of the event. */
+    /**
+     * Returns the raw JSON value of [message].
+     *
+     * Unlike [message], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
-    /** The type of event. */
+    /**
+     * Returns the raw JSON value of [type].
+     *
+     * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnyGetter
@@ -143,28 +198,59 @@ private constructor(
         /** The object identifier. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /** The object identifier. */
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** The Unix timestamp (in seconds) for when the fine-tuning job was created. */
         fun createdAt(createdAt: Long) = createdAt(JsonField.of(createdAt))
 
-        /** The Unix timestamp (in seconds) for when the fine-tuning job was created. */
+        /**
+         * Sets [Builder.createdAt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.createdAt] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun createdAt(createdAt: JsonField<Long>) = apply { this.createdAt = createdAt }
 
         /** The log level of the event. */
         fun level(level: Level) = level(JsonField.of(level))
 
-        /** The log level of the event. */
+        /**
+         * Sets [Builder.level] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.level] with a well-typed [Level] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun level(level: JsonField<Level>) = apply { this.level = level }
 
         /** The message of the event. */
         fun message(message: String) = message(JsonField.of(message))
 
-        /** The message of the event. */
+        /**
+         * Sets [Builder.message] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.message] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun message(message: JsonField<String>) = apply { this.message = message }
 
-        /** The object type, which is always "fine_tuning.job.event". */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("fine_tuning.job.event")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /** The data associated with the event. */
@@ -173,7 +259,12 @@ private constructor(
         /** The type of event. */
         fun type(type: Type) = type(JsonField.of(type))
 
-        /** The type of event. */
+        /**
+         * Sets [Builder.type] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.type] with a well-typed [Type] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -195,6 +286,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FineTuningJobEvent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .level()
+         * .message()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FineTuningJobEvent =
             FineTuningJobEvent(
                 checkRequired("id", id),

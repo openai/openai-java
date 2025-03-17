@@ -30,12 +30,20 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /** The text to generate audio for. The maximum length is 4096 characters. */
+    /**
+     * The text to generate audio for. The maximum length is 4096 characters.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun input(): String = body.input()
 
     /**
      * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1` or
      * `tts-1-hd`
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun model(): SpeechModel = body.model()
 
@@ -44,43 +52,60 @@ private constructor(
      * `echo`, `fable`, `onyx`, `nova`, `sage` and `shimmer`. Previews of the voices are available
      * in the
      * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun voice(): Voice = body.voice()
 
     /**
      * The format to audio in. Supported formats are `mp3`, `opus`, `aac`, `flac`, `wav`, and `pcm`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun responseFormat(): Optional<ResponseFormat> = body.responseFormat()
 
     /**
      * The speed of the generated audio. Select a value from `0.25` to `4.0`. `1.0` is the default.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun speed(): Optional<Double> = body.speed()
 
-    /** The text to generate audio for. The maximum length is 4096 characters. */
+    /**
+     * Returns the raw JSON value of [input].
+     *
+     * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
+     */
     fun _input(): JsonField<String> = body._input()
 
     /**
-     * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1` or
-     * `tts-1-hd`
+     * Returns the raw JSON value of [model].
+     *
+     * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _model(): JsonField<SpeechModel> = body._model()
 
     /**
-     * The voice to use when generating the audio. Supported voices are `alloy`, `ash`, `coral`,
-     * `echo`, `fable`, `onyx`, `nova`, `sage` and `shimmer`. Previews of the voices are available
-     * in the
-     * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
+     * Returns the raw JSON value of [voice].
+     *
+     * Unlike [voice], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _voice(): JsonField<Voice> = body._voice()
 
     /**
-     * The format to audio in. Supported formats are `mp3`, `opus`, `aac`, `flac`, `wav`, and `pcm`.
+     * Returns the raw JSON value of [responseFormat].
+     *
+     * Unlike [responseFormat], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _responseFormat(): JsonField<ResponseFormat> = body._responseFormat()
 
     /**
-     * The speed of the generated audio. Select a value from `0.25` to `4.0`. `1.0` is the default.
+     * Returns the raw JSON value of [speed].
+     *
+     * Unlike [speed], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _speed(): JsonField<Double> = body._speed()
 
@@ -119,12 +144,20 @@ private constructor(
         private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
     ) {
 
-        /** The text to generate audio for. The maximum length is 4096 characters. */
+        /**
+         * The text to generate audio for. The maximum length is 4096 characters.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun input(): String = input.getRequired("input")
 
         /**
          * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1`
          * or `tts-1-hd`
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun model(): SpeechModel = model.getRequired("model")
 
@@ -133,12 +166,18 @@ private constructor(
          * `echo`, `fable`, `onyx`, `nova`, `sage` and `shimmer`. Previews of the voices are
          * available in the
          * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun voice(): Voice = voice.getRequired("voice")
 
         /**
          * The format to audio in. Supported formats are `mp3`, `opus`, `aac`, `flac`, `wav`, and
          * `pcm`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun responseFormat(): Optional<ResponseFormat> =
             Optional.ofNullable(responseFormat.getNullable("response_format"))
@@ -146,37 +185,47 @@ private constructor(
         /**
          * The speed of the generated audio. Select a value from `0.25` to `4.0`. `1.0` is the
          * default.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun speed(): Optional<Double> = Optional.ofNullable(speed.getNullable("speed"))
 
-        /** The text to generate audio for. The maximum length is 4096 characters. */
+        /**
+         * Returns the raw JSON value of [input].
+         *
+         * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
+         */
         @JsonProperty("input") @ExcludeMissing fun _input(): JsonField<String> = input
 
         /**
-         * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1`
-         * or `tts-1-hd`
+         * Returns the raw JSON value of [model].
+         *
+         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<SpeechModel> = model
 
         /**
-         * The voice to use when generating the audio. Supported voices are `alloy`, `ash`, `coral`,
-         * `echo`, `fable`, `onyx`, `nova`, `sage` and `shimmer`. Previews of the voices are
-         * available in the
-         * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
+         * Returns the raw JSON value of [voice].
+         *
+         * Unlike [voice], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("voice") @ExcludeMissing fun _voice(): JsonField<Voice> = voice
 
         /**
-         * The format to audio in. Supported formats are `mp3`, `opus`, `aac`, `flac`, `wav`, and
-         * `pcm`.
+         * Returns the raw JSON value of [responseFormat].
+         *
+         * Unlike [responseFormat], this method doesn't throw if the JSON field has an unexpected
+         * type.
          */
         @JsonProperty("response_format")
         @ExcludeMissing
         fun _responseFormat(): JsonField<ResponseFormat> = responseFormat
 
         /**
-         * The speed of the generated audio. Select a value from `0.25` to `4.0`. `1.0` is the
-         * default.
+         * Returns the raw JSON value of [speed].
+         *
+         * Unlike [speed], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("speed") @ExcludeMissing fun _speed(): JsonField<Double> = speed
 
@@ -239,7 +288,13 @@ private constructor(
             /** The text to generate audio for. The maximum length is 4096 characters. */
             fun input(input: String) = input(JsonField.of(input))
 
-            /** The text to generate audio for. The maximum length is 4096 characters. */
+            /**
+             * Sets [Builder.input] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.input] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun input(input: JsonField<String>) = apply { this.input = input }
 
             /**
@@ -249,14 +304,20 @@ private constructor(
             fun model(model: SpeechModel) = model(JsonField.of(model))
 
             /**
-             * One of the available [TTS models](https://platform.openai.com/docs/models#tts):
-             * `tts-1` or `tts-1-hd`
+             * Sets [Builder.model] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.model] with a well-typed [SpeechModel] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun model(model: JsonField<SpeechModel>) = apply { this.model = model }
 
             /**
-             * One of the available [TTS models](https://platform.openai.com/docs/models#tts):
-             * `tts-1` or `tts-1-hd`
+             * Sets [model] to an arbitrary [String].
+             *
+             * You should usually call [model] with a well-typed [SpeechModel] constant instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun model(value: String) = model(SpeechModel.of(value))
 
@@ -269,10 +330,11 @@ private constructor(
             fun voice(voice: Voice) = voice(JsonField.of(voice))
 
             /**
-             * The voice to use when generating the audio. Supported voices are `alloy`, `ash`,
-             * `coral`, `echo`, `fable`, `onyx`, `nova`, `sage` and `shimmer`. Previews of the
-             * voices are available in the
-             * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
+             * Sets [Builder.voice] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.voice] with a well-typed [Voice] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun voice(voice: JsonField<Voice>) = apply { this.voice = voice }
 
@@ -284,8 +346,11 @@ private constructor(
                 responseFormat(JsonField.of(responseFormat))
 
             /**
-             * The format to audio in. Supported formats are `mp3`, `opus`, `aac`, `flac`, `wav`,
-             * and `pcm`.
+             * Sets [Builder.responseFormat] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.responseFormat] with a well-typed [ResponseFormat]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
              */
             fun responseFormat(responseFormat: JsonField<ResponseFormat>) = apply {
                 this.responseFormat = responseFormat
@@ -298,8 +363,11 @@ private constructor(
             fun speed(speed: Double) = speed(JsonField.of(speed))
 
             /**
-             * The speed of the generated audio. Select a value from `0.25` to `4.0`. `1.0` is the
-             * default.
+             * Sets [Builder.speed] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.speed] with a well-typed [Double] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun speed(speed: JsonField<Double>) = apply { this.speed = speed }
 
@@ -322,6 +390,20 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .input()
+             * .model()
+             * .voice()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("input", input),
@@ -386,7 +468,12 @@ private constructor(
         /** The text to generate audio for. The maximum length is 4096 characters. */
         fun input(input: String) = apply { body.input(input) }
 
-        /** The text to generate audio for. The maximum length is 4096 characters. */
+        /**
+         * Sets [Builder.input] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.input] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun input(input: JsonField<String>) = apply { body.input(input) }
 
         /**
@@ -396,14 +483,19 @@ private constructor(
         fun model(model: SpeechModel) = apply { body.model(model) }
 
         /**
-         * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1`
-         * or `tts-1-hd`
+         * Sets [Builder.model] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.model] with a well-typed [SpeechModel] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun model(model: JsonField<SpeechModel>) = apply { body.model(model) }
 
         /**
-         * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1`
-         * or `tts-1-hd`
+         * Sets [model] to an arbitrary [String].
+         *
+         * You should usually call [model] with a well-typed [SpeechModel] constant instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun model(value: String) = apply { body.model(value) }
 
@@ -416,10 +508,10 @@ private constructor(
         fun voice(voice: Voice) = apply { body.voice(voice) }
 
         /**
-         * The voice to use when generating the audio. Supported voices are `alloy`, `ash`, `coral`,
-         * `echo`, `fable`, `onyx`, `nova`, `sage` and `shimmer`. Previews of the voices are
-         * available in the
-         * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
+         * Sets [Builder.voice] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.voice] with a well-typed [Voice] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun voice(voice: JsonField<Voice>) = apply { body.voice(voice) }
 
@@ -432,8 +524,11 @@ private constructor(
         }
 
         /**
-         * The format to audio in. Supported formats are `mp3`, `opus`, `aac`, `flac`, `wav`, and
-         * `pcm`.
+         * Sets [Builder.responseFormat] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.responseFormat] with a well-typed [ResponseFormat] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun responseFormat(responseFormat: JsonField<ResponseFormat>) = apply {
             body.responseFormat(responseFormat)
@@ -446,8 +541,10 @@ private constructor(
         fun speed(speed: Double) = apply { body.speed(speed) }
 
         /**
-         * The speed of the generated audio. Select a value from `0.25` to `4.0`. `1.0` is the
-         * default.
+         * Sets [Builder.speed] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.speed] with a well-typed [Double] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun speed(speed: JsonField<Double>) = apply { body.speed(speed) }
 
@@ -568,6 +665,20 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [SpeechCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .input()
+         * .model()
+         * .voice()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): SpeechCreateParams =
             SpeechCreateParams(
                 body.build(),

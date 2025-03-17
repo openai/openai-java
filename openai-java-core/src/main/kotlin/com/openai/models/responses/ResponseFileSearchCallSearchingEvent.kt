@@ -32,19 +32,47 @@ private constructor(
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
 
-    /** The ID of the output item that the file search call is initiated. */
+    /**
+     * The ID of the output item that the file search call is initiated.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun itemId(): String = itemId.getRequired("item_id")
 
-    /** The index of the output item that the file search call is searching. */
+    /**
+     * The index of the output item that the file search call is searching.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun outputIndex(): Long = outputIndex.getRequired("output_index")
 
-    /** The type of the event. Always `response.file_search_call.searching`. */
+    /**
+     * The type of the event. Always `response.file_search_call.searching`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("response.file_search_call.searching")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
-    /** The ID of the output item that the file search call is initiated. */
+    /**
+     * Returns the raw JSON value of [itemId].
+     *
+     * Unlike [itemId], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("item_id") @ExcludeMissing fun _itemId(): JsonField<String> = itemId
 
-    /** The index of the output item that the file search call is searching. */
+    /**
+     * Returns the raw JSON value of [outputIndex].
+     *
+     * Unlike [outputIndex], this method doesn't throw if the JSON field has an unexpected type.
+     */
     @JsonProperty("output_index") @ExcludeMissing fun _outputIndex(): JsonField<Long> = outputIndex
 
     @JsonAnyGetter
@@ -107,16 +135,38 @@ private constructor(
         /** The ID of the output item that the file search call is initiated. */
         fun itemId(itemId: String) = itemId(JsonField.of(itemId))
 
-        /** The ID of the output item that the file search call is initiated. */
+        /**
+         * Sets [Builder.itemId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.itemId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun itemId(itemId: JsonField<String>) = apply { this.itemId = itemId }
 
         /** The index of the output item that the file search call is searching. */
         fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))
 
-        /** The index of the output item that the file search call is searching. */
+        /**
+         * Sets [Builder.outputIndex] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.outputIndex] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun outputIndex(outputIndex: JsonField<Long>) = apply { this.outputIndex = outputIndex }
 
-        /** The type of the event. Always `response.file_search_call.searching`. */
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("response.file_search_call.searching")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun type(type: JsonValue) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -138,6 +188,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseFileSearchCallSearchingEvent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .itemId()
+         * .outputIndex()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ResponseFileSearchCallSearchingEvent =
             ResponseFileSearchCallSearchingEvent(
                 checkRequired("itemId", itemId),
