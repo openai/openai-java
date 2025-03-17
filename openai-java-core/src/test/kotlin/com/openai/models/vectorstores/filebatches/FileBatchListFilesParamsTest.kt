@@ -33,13 +33,19 @@ internal class FileBatchListFilesParamsTest {
                 .limit(0L)
                 .order(FileBatchListFilesParams.Order.ASC)
                 .build()
-        val expected = QueryParams.builder()
-        expected.put("after", "after")
-        expected.put("before", "before")
-        expected.put("filter", FileBatchListFilesParams.Filter.IN_PROGRESS.toString())
-        expected.put("limit", "0")
-        expected.put("order", FileBatchListFilesParams.Order.ASC.toString())
-        assertThat(params._queryParams()).isEqualTo(expected.build())
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams)
+            .isEqualTo(
+                QueryParams.builder()
+                    .put("after", "after")
+                    .put("before", "before")
+                    .put("filter", "in_progress")
+                    .put("limit", "0")
+                    .put("order", "asc")
+                    .build()
+            )
     }
 
     @Test
@@ -49,8 +55,10 @@ internal class FileBatchListFilesParamsTest {
                 .vectorStoreId("vector_store_id")
                 .batchId("batch_id")
                 .build()
-        val expected = QueryParams.builder()
-        assertThat(params._queryParams()).isEqualTo(expected.build())
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams).isEqualTo(QueryParams.builder().build())
     }
 
     @Test

@@ -27,18 +27,26 @@ internal class FileListParamsTest {
                 .order(FileListParams.Order.ASC)
                 .purpose("purpose")
                 .build()
-        val expected = QueryParams.builder()
-        expected.put("after", "after")
-        expected.put("limit", "0")
-        expected.put("order", FileListParams.Order.ASC.toString())
-        expected.put("purpose", "purpose")
-        assertThat(params._queryParams()).isEqualTo(expected.build())
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams)
+            .isEqualTo(
+                QueryParams.builder()
+                    .put("after", "after")
+                    .put("limit", "0")
+                    .put("order", "asc")
+                    .put("purpose", "purpose")
+                    .build()
+            )
     }
 
     @Test
     fun queryParamsWithoutOptionalFields() {
         val params = FileListParams.builder().build()
-        val expected = QueryParams.builder()
-        assertThat(params._queryParams()).isEqualTo(expected.build())
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams).isEqualTo(QueryParams.builder().build())
     }
 }
