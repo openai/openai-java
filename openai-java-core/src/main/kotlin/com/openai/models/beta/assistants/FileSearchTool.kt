@@ -148,6 +148,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FileSearchTool].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): FileSearchTool =
             FileSearchTool(type, fileSearch, additionalProperties.toImmutable())
     }
@@ -318,6 +323,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [FileSearch].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): FileSearch =
                 FileSearch(maxNumResults, rankingOptions, additionalProperties.toImmutable())
         }
@@ -479,6 +489,18 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [RankingOptions].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .scoreThreshold()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): RankingOptions =
                     RankingOptions(
                         checkRequired("scoreThreshold", scoreThreshold),

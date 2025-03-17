@@ -235,6 +235,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [Moderation].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .categories()
+         * .categoryAppliedInputTypes()
+         * .categoryScores()
+         * .flagged()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): Moderation =
             Moderation(
                 checkRequired("categories", categories),
@@ -864,6 +879,30 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Categories].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .harassment()
+             * .harassmentThreatening()
+             * .hate()
+             * .hateThreatening()
+             * .illicit()
+             * .illicitViolent()
+             * .selfHarm()
+             * .selfHarmInstructions()
+             * .selfHarmIntent()
+             * .sexual()
+             * .sexualMinors()
+             * .violence()
+             * .violenceGraphic()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Categories =
                 Categories(
                     checkRequired("harassment", harassment),
@@ -1638,6 +1677,30 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [CategoryAppliedInputTypes].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .harassment()
+             * .harassmentThreatening()
+             * .hate()
+             * .hateThreatening()
+             * .illicit()
+             * .illicitViolent()
+             * .selfHarm()
+             * .selfHarmInstructions()
+             * .selfHarmIntent()
+             * .sexual()
+             * .sexualMinors()
+             * .violence()
+             * .violenceGraphic()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): CategoryAppliedInputTypes =
                 CategoryAppliedInputTypes(
                     checkRequired("harassment", harassment).map { it.toImmutable() },
@@ -3544,6 +3607,30 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [CategoryScores].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .harassment()
+             * .harassmentThreatening()
+             * .hate()
+             * .hateThreatening()
+             * .illicit()
+             * .illicitViolent()
+             * .selfHarm()
+             * .selfHarmInstructions()
+             * .selfHarmIntent()
+             * .sexual()
+             * .sexualMinors()
+             * .violence()
+             * .violenceGraphic()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): CategoryScores =
                 CategoryScores(
                     checkRequired("harassment", harassment),

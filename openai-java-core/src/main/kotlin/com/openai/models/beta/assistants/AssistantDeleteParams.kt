@@ -198,6 +198,18 @@ private constructor(
             keys.forEach(::removeAdditionalBodyProperty)
         }
 
+        /**
+         * Returns an immutable instance of [AssistantDeleteParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .assistantId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): AssistantDeleteParams =
             AssistantDeleteParams(
                 checkRequired("assistantId", assistantId),

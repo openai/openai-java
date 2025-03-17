@@ -279,6 +279,22 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [VectorStoreSearchResponse].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .attributes()
+         * .content()
+         * .fileId()
+         * .filename()
+         * .score()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): VectorStoreSearchResponse =
             VectorStoreSearchResponse(
                 checkRequired("attributes", attributes),
@@ -355,6 +371,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Attributes].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Attributes = Attributes(additionalProperties.toImmutable())
         }
 
@@ -506,6 +527,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Content].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .text()
+             * .type()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Content =
                 Content(
                     checkRequired("text", text),

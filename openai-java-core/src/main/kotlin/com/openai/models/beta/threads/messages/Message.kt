@@ -737,6 +737,30 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [Message].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .assistantId()
+         * .attachments()
+         * .completedAt()
+         * .content()
+         * .createdAt()
+         * .incompleteAt()
+         * .incompleteDetails()
+         * .metadata()
+         * .role()
+         * .runId()
+         * .status()
+         * .threadId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): Message =
             Message(
                 checkRequired("id", id),
@@ -904,6 +928,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Attachment].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Attachment =
                 Attachment(
                     fileId,
@@ -1202,6 +1231,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [IncompleteDetails].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .reason()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): IncompleteDetails =
                 IncompleteDetails(
                     checkRequired("reason", reason),

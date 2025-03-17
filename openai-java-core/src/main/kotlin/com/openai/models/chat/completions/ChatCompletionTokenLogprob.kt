@@ -263,6 +263,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ChatCompletionTokenLogprob].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .token()
+         * .bytes()
+         * .logprob()
+         * .topLogprobs()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ChatCompletionTokenLogprob =
             ChatCompletionTokenLogprob(
                 checkRequired("token", token),
@@ -469,6 +484,20 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [TopLogprob].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .token()
+             * .bytes()
+             * .logprob()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): TopLogprob =
                 TopLogprob(
                     checkRequired("token", token),

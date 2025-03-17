@@ -186,6 +186,19 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FileSearchToolCall].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .fileSearch()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FileSearchToolCall =
             FileSearchToolCall(
                 checkRequired("id", id),
@@ -342,6 +355,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [FileSearch].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): FileSearch =
                 FileSearch(
                     rankingOptions,
@@ -502,6 +520,19 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [RankingOptions].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .ranker()
+                 * .scoreThreshold()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): RankingOptions =
                     RankingOptions(
                         checkRequired("ranker", ranker),
@@ -867,6 +898,20 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Result].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .fileId()
+                 * .fileName()
+                 * .score()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
                 fun build(): Result =
                     Result(
                         checkRequired("fileId", fileId),
@@ -1007,6 +1052,11 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [Content].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
                     fun build(): Content = Content(text, type, additionalProperties.toImmutable())
                 }
 

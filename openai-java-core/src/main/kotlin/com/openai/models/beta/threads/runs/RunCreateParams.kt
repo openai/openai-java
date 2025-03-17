@@ -1410,6 +1410,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .assistantId()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("assistantId", assistantId),
@@ -2113,6 +2125,19 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [RunCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .threadId()
+         * .assistantId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): RunCreateParams =
             RunCreateParams(
                 checkRequired("threadId", threadId),
@@ -2377,6 +2402,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [AdditionalMessage].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .content()
+             * .role()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): AdditionalMessage =
                 AdditionalMessage(
                     checkRequired("content", content),
@@ -2813,6 +2851,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Attachment].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): Attachment =
                     Attachment(
                         fileId,
@@ -3190,6 +3233,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [TruncationStrategy].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .type()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): TruncationStrategy =
                 TruncationStrategy(
                     checkRequired("type", type),

@@ -723,6 +723,25 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [Assistant].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .description()
+         * .instructions()
+         * .metadata()
+         * .model()
+         * .name()
+         * .tools()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): Assistant =
             Assistant(
                 checkRequired("id", id),
@@ -878,6 +897,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ToolResources].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): ToolResources =
                 ToolResources(codeInterpreter, fileSearch, additionalProperties.toImmutable())
         }
@@ -1000,6 +1024,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [CodeInterpreter].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): CodeInterpreter =
                     CodeInterpreter(
                         (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
@@ -1147,6 +1176,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [FileSearch].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): FileSearch =
                     FileSearch(
                         (vectorStoreIds ?: JsonMissing.of()).map { it.toImmutable() },

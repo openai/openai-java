@@ -306,6 +306,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FileSearchTool].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .vectorStoreIds()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FileSearchTool =
             FileSearchTool(
                 type,
@@ -616,6 +628,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [RankingOptions].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): RankingOptions =
                 RankingOptions(ranker, scoreThreshold, additionalProperties.toImmutable())
         }

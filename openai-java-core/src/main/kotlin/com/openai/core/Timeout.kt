@@ -132,6 +132,11 @@ private constructor(
         /** Alias for calling [Builder.request] with `request.orElse(null)`. */
         fun request(request: Optional<Duration>) = request(request.getOrNull())
 
+        /**
+         * Returns an immutable instance of [Timeout].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): Timeout = Timeout(connect, read, write, request)
     }
 

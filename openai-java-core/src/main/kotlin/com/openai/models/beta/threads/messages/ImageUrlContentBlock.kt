@@ -148,6 +148,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ImageUrlContentBlock].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .imageUrl()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ImageUrlContentBlock =
             ImageUrlContentBlock(
                 checkRequired("imageUrl", imageUrl),

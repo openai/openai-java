@@ -395,6 +395,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [File].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .file()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): File =
                 File(checkRequired("file", file), type, additionalProperties.toImmutable())
         }
@@ -567,6 +579,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [FileObject].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): FileObject =
                     FileObject(fileData, fileId, fileName, additionalProperties.toImmutable())
             }

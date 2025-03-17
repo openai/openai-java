@@ -242,6 +242,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .partIds()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("partIds", partIds).map { it.toImmutable() },
@@ -453,6 +465,19 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [UploadCompleteParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .uploadId()
+         * .partIds()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): UploadCompleteParams =
             UploadCompleteParams(
                 checkRequired("uploadId", uploadId),

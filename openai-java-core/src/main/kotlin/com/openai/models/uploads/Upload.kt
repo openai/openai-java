@@ -389,6 +389,24 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [Upload].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .bytes()
+         * .createdAt()
+         * .expiresAt()
+         * .filename()
+         * .purpose()
+         * .status()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): Upload =
             Upload(
                 checkRequired("id", id),

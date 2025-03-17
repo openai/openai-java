@@ -495,6 +495,25 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [VectorStore].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .fileCounts()
+         * .lastActiveAt()
+         * .metadata()
+         * .name()
+         * .status()
+         * .usageBytes()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): VectorStore =
             VectorStore(
                 checkRequired("id", id),
@@ -747,6 +766,22 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [FileCounts].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .cancelled()
+             * .completed()
+             * .failed()
+             * .inProgress()
+             * .total()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): FileCounts =
                 FileCounts(
                     checkRequired("cancelled", cancelled),
@@ -1018,6 +1053,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ExpiresAfter].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .days()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): ExpiresAfter =
                 ExpiresAfter(
                     anchor,

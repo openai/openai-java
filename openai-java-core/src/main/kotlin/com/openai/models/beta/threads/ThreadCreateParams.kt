@@ -327,6 +327,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Body =
                 Body(
                     (messages ?: JsonMissing.of()).map { it.toImmutable() },
@@ -565,6 +570,11 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [ThreadCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): ThreadCreateParams =
             ThreadCreateParams(
                 body.build(),
@@ -827,6 +837,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Message].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .content()
+             * .role()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Message =
                 Message(
                     checkRequired("content", content),
@@ -1263,6 +1286,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [Attachment].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): Attachment =
                     Attachment(
                         fileId,
@@ -1614,6 +1642,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ToolResources].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): ToolResources =
                 ToolResources(codeInterpreter, fileSearch, additionalProperties.toImmutable())
         }
@@ -1736,6 +1769,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [CodeInterpreter].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): CodeInterpreter =
                     CodeInterpreter(
                         (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
@@ -1943,6 +1981,11 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
+                /**
+                 * Returns an immutable instance of [FileSearch].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
                 fun build(): FileSearch =
                     FileSearch(
                         (vectorStoreIds ?: JsonMissing.of()).map { it.toImmutable() },
@@ -2188,6 +2231,11 @@ private constructor(
                         keys.forEach(::removeAdditionalProperty)
                     }
 
+                    /**
+                     * Returns an immutable instance of [VectorStore].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
                     fun build(): VectorStore =
                         VectorStore(
                             chunkingStrategy,
@@ -2530,6 +2578,19 @@ private constructor(
                                 keys.forEach(::removeAdditionalProperty)
                             }
 
+                            /**
+                             * Returns an immutable instance of [StaticObject].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             *
+                             * The following fields are required:
+                             * ```java
+                             * .static_()
+                             * ```
+                             *
+                             * @throws IllegalStateException if any required field is unset.
+                             */
                             fun build(): StaticObject =
                                 StaticObject(
                                     checkRequired("static_", static_),
@@ -2713,6 +2774,20 @@ private constructor(
                                     keys.forEach(::removeAdditionalProperty)
                                 }
 
+                                /**
+                                 * Returns an immutable instance of [Static].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .chunkOverlapTokens()
+                                 * .maxChunkSizeTokens()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
                                 fun build(): Static =
                                     Static(
                                         checkRequired("chunkOverlapTokens", chunkOverlapTokens),

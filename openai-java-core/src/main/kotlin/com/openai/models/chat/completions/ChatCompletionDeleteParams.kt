@@ -202,6 +202,18 @@ private constructor(
             keys.forEach(::removeAdditionalBodyProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ChatCompletionDeleteParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .completionId()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ChatCompletionDeleteParams =
             ChatCompletionDeleteParams(
                 checkRequired("completionId", completionId),

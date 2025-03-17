@@ -750,6 +750,32 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [RunStep].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .assistantId()
+         * .cancelledAt()
+         * .completedAt()
+         * .createdAt()
+         * .expiredAt()
+         * .failedAt()
+         * .lastError()
+         * .metadata()
+         * .runId()
+         * .status()
+         * .stepDetails()
+         * .threadId()
+         * .type()
+         * .usage()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): RunStep =
             RunStep(
                 checkRequired("id", id),
@@ -904,6 +930,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [LastError].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .code()
+             * .message()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): LastError =
                 LastError(
                     checkRequired("code", code),
@@ -1596,6 +1635,20 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Usage].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .completionTokens()
+             * .promptTokens()
+             * .totalTokens()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Usage =
                 Usage(
                     checkRequired("completionTokens", completionTokens),

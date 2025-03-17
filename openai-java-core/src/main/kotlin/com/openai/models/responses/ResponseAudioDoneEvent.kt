@@ -109,6 +109,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseAudioDoneEvent].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): ResponseAudioDoneEvent =
             ResponseAudioDoneEvent(type, additionalProperties.toImmutable())
     }

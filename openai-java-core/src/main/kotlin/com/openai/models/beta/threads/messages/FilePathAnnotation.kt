@@ -242,6 +242,21 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [FilePathAnnotation].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .endIndex()
+         * .filePath()
+         * .startIndex()
+         * .text()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FilePathAnnotation =
             FilePathAnnotation(
                 checkRequired("endIndex", endIndex),
@@ -352,6 +367,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [FilePath].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .fileId()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): FilePath =
                 FilePath(checkRequired("fileId", fileId), additionalProperties.toImmutable())
         }

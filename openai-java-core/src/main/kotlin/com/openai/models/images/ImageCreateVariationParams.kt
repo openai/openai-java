@@ -360,6 +360,18 @@ private constructor(
              */
             fun user(user: MultipartField<String>) = apply { this.user = user }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .image()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(checkRequired("image", image), model, n, responseFormat, size, user)
         }
@@ -620,6 +632,18 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [ImageCreateVariationParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .image()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ImageCreateVariationParams =
             ImageCreateVariationParams(
                 body.build(),

@@ -231,6 +231,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [CodeInterpreterToolCallDelta].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .index()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): CodeInterpreterToolCallDelta =
             CodeInterpreterToolCallDelta(
                 checkRequired("index", index),
@@ -415,6 +427,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [CodeInterpreter].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): CodeInterpreter =
                 CodeInterpreter(
                     input,

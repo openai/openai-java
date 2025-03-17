@@ -407,6 +407,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .query()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("query", query),
@@ -669,6 +681,19 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [VectorStoreSearchParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .vectorStoreId()
+         * .query()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): VectorStoreSearchParams =
             VectorStoreSearchParams(
                 checkRequired("vectorStoreId", vectorStoreId),
@@ -1095,6 +1120,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [RankingOptions].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): RankingOptions =
                 RankingOptions(ranker, scoreThreshold, additionalProperties.toImmutable())
         }

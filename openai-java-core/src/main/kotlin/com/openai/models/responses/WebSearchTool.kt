@@ -209,6 +209,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [WebSearchTool].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .type()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): WebSearchTool =
             WebSearchTool(
                 checkRequired("type", type),
@@ -667,6 +679,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [UserLocation].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): UserLocation =
                 UserLocation(
                     type,

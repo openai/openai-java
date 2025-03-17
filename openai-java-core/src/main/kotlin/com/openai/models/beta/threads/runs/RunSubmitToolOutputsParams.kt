@@ -190,6 +190,18 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .toolOutputs()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("toolOutputs", toolOutputs).map { it.toImmutable() },
@@ -393,6 +405,20 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [RunSubmitToolOutputsParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .threadId()
+         * .runId()
+         * .toolOutputs()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): RunSubmitToolOutputsParams =
             RunSubmitToolOutputsParams(
                 checkRequired("threadId", threadId),
@@ -535,6 +561,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [ToolOutput].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): ToolOutput =
                 ToolOutput(output, toolCallId, additionalProperties.toImmutable())
         }

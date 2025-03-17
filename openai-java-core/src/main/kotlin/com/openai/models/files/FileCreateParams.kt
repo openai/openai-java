@@ -179,6 +179,19 @@ private constructor(
              */
             fun purpose(purpose: MultipartField<FilePurpose>) = apply { this.purpose = purpose }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .file()
+             * .purpose()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body = Body(checkRequired("file", file), checkRequired("purpose", purpose))
         }
 
@@ -356,6 +369,19 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [FileCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .file()
+         * .purpose()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): FileCreateParams =
             FileCreateParams(body.build(), additionalHeaders.build(), additionalQueryParams.build())
     }

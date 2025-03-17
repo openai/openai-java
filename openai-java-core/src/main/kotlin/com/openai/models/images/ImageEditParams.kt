@@ -437,6 +437,19 @@ private constructor(
              */
             fun user(user: MultipartField<String>) = apply { this.user = user }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .image()
+             * .prompt()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("image", image),
@@ -735,6 +748,19 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [ImageEditParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .image()
+         * .prompt()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): ImageEditParams =
             ImageEditParams(body.build(), additionalHeaders.build(), additionalQueryParams.build())
     }

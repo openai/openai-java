@@ -175,6 +175,18 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [CodeInterpreterOutputImage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .index()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): CodeInterpreterOutputImage =
             CodeInterpreterOutputImage(
                 checkRequired("index", index),
@@ -276,6 +288,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Image].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): Image = Image(fileId, additionalProperties.toImmutable())
         }
 

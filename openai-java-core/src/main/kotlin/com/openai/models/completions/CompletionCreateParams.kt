@@ -1344,6 +1344,19 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .model()
+             * .prompt()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
             fun build(): Body =
                 Body(
                     checkRequired("model", model),
@@ -1985,6 +1998,19 @@ private constructor(
             additionalQueryParams.removeAll(keys)
         }
 
+        /**
+         * Returns an immutable instance of [CompletionCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .model()
+         * .prompt()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): CompletionCreateParams =
             CompletionCreateParams(
                 body.build(),
@@ -2356,6 +2382,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [LogitBias].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): LogitBias = LogitBias(additionalProperties.toImmutable())
         }
 

@@ -1157,6 +1157,30 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [Response].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .id()
+         * .createdAt()
+         * .error()
+         * .incompleteDetails()
+         * .instructions()
+         * .metadata()
+         * .model()
+         * .output()
+         * .parallelToolCalls()
+         * .temperature()
+         * .toolChoice()
+         * .tools()
+         * .topP()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
         fun build(): Response =
             Response(
                 checkRequired("id", id),
@@ -1278,6 +1302,11 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
+            /**
+             * Returns an immutable instance of [IncompleteDetails].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
             fun build(): IncompleteDetails =
                 IncompleteDetails(reason, additionalProperties.toImmutable())
         }

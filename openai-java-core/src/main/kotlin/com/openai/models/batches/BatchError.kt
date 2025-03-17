@@ -211,6 +211,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [BatchError].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): BatchError =
             BatchError(code, line, message, param, additionalProperties.toImmutable())
     }

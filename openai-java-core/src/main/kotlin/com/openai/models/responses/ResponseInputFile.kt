@@ -207,6 +207,11 @@ private constructor(
             keys.forEach(::removeAdditionalProperty)
         }
 
+        /**
+         * Returns an immutable instance of [ResponseInputFile].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         */
         fun build(): ResponseInputFile =
             ResponseInputFile(type, fileData, fileId, filename, additionalProperties.toImmutable())
     }
