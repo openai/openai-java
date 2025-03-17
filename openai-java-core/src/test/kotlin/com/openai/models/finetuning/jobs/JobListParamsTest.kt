@@ -29,20 +29,25 @@ internal class JobListParamsTest {
                     JobListParams.Metadata.builder().putAdditionalProperty("foo", "string").build()
                 )
                 .build()
-        val expected = QueryParams.builder()
-        expected.put("after", "after")
-        expected.put("limit", "0")
-        JobListParams.Metadata.builder()
-            .putAdditionalProperty("foo", "string")
-            .build()
-            .forEachQueryParam { key, values -> expected.put("metadata[$key]", values) }
-        assertThat(params._queryParams()).isEqualTo(expected.build())
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams)
+            .isEqualTo(
+                QueryParams.builder()
+                    .put("after", "after")
+                    .put("limit", "0")
+                    .put("metadata[foo]", "string")
+                    .build()
+            )
     }
 
     @Test
     fun queryParamsWithoutOptionalFields() {
         val params = JobListParams.builder().build()
-        val expected = QueryParams.builder()
-        assertThat(params._queryParams()).isEqualTo(expected.build())
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams).isEqualTo(QueryParams.builder().build())
     }
 }

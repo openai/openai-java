@@ -31,20 +31,28 @@ internal class MessageListParamsTest {
                 .order(MessageListParams.Order.ASC)
                 .runId("run_id")
                 .build()
-        val expected = QueryParams.builder()
-        expected.put("after", "after")
-        expected.put("before", "before")
-        expected.put("limit", "0")
-        expected.put("order", MessageListParams.Order.ASC.toString())
-        expected.put("run_id", "run_id")
-        assertThat(params._queryParams()).isEqualTo(expected.build())
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams)
+            .isEqualTo(
+                QueryParams.builder()
+                    .put("after", "after")
+                    .put("before", "before")
+                    .put("limit", "0")
+                    .put("order", "asc")
+                    .put("run_id", "run_id")
+                    .build()
+            )
     }
 
     @Test
     fun queryParamsWithoutOptionalFields() {
         val params = MessageListParams.builder().threadId("thread_id").build()
-        val expected = QueryParams.builder()
-        assertThat(params._queryParams()).isEqualTo(expected.build())
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams).isEqualTo(QueryParams.builder().build())
     }
 
     @Test

@@ -113,20 +113,25 @@ internal class RunCreateParamsTest {
                         .build()
                 )
                 .build()
-        val expected = QueryParams.builder()
-        expected.put(
-            "include[]",
-            RunStepInclude.STEP_DETAILS_TOOL_CALLS_FILE_SEARCH_RESULTS_CONTENT.toString(),
-        )
-        assertThat(params._queryParams()).isEqualTo(expected.build())
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams)
+            .isEqualTo(
+                QueryParams.builder()
+                    .put("include[]", "step_details.tool_calls[*].file_search.results[*].content")
+                    .build()
+            )
     }
 
     @Test
     fun queryParamsWithoutOptionalFields() {
         val params =
             RunCreateParams.builder().threadId("thread_id").assistantId("assistant_id").build()
-        val expected = QueryParams.builder()
-        assertThat(params._queryParams()).isEqualTo(expected.build())
+
+        val queryParams = params._queryParams()
+
+        assertThat(queryParams).isEqualTo(QueryParams.builder().build())
     }
 
     @Test
