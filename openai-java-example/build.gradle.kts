@@ -1,17 +1,21 @@
 plugins {
-    id("openai.kotlin")
     id("java")
     application
 }
 
-dependencies {
-    implementation(project(":openai-java"))
-    api("com.azure:azure-identity:1.15.0")
+repositories {
+    mavenCentral()
 }
 
-tasks.withType<JavaCompile>().configureEach {
+dependencies {
+    implementation(project(":openai-java"))
+    implementation("com.azure:azure-identity:1.15.0")
+}
+
+java {
     // Allow using more modern APIs, like `List.of` and `Map.of`, in examples.
-    options.release.set(11)
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 application {
