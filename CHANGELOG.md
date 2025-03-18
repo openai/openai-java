@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.35.1 (2025-03-18)
+
+Full Changelog: [v0.35.0...v0.35.1](https://github.com/openai/openai-java/compare/v0.35.0...v0.35.1)
+
+### Bug Fixes
+
+* **api:** correct some Responses types ([#328](https://github.com/openai/openai-java/issues/328)) ([efc79c0](https://github.com/openai/openai-java/commit/efc79c002003f3beaf74c2c3d13aada6235481e2))
+* **client:** support kotlin 1.8 runtime ([#330](https://github.com/openai/openai-java/issues/330)) ([5179a4e](https://github.com/openai/openai-java/commit/5179a4e4ea67797477cfdb9141e6d39eab9abd6a))
+* **types:** improve responses type names ([#332](https://github.com/openai/openai-java/issues/332)) ([517c500](https://github.com/openai/openai-java/commit/517c500d74e7d8c0f340b2607a574d8096390877))
+
+
+### Chores
+
+* **internal:** add back release workflow ([7893465](https://github.com/openai/openai-java/commit/7893465dbd929e290a2e46dfc877c3ef8a889056))
+* **internal:** codegen related update ([#327](https://github.com/openai/openai-java/issues/327)) ([7030355](https://github.com/openai/openai-java/commit/7030355dc8e511647e7a6221143ca94426ac24bf))
+* **internal:** refactor enum query param serialization ([#331](https://github.com/openai/openai-java/issues/331)) ([c5ef44d](https://github.com/openai/openai-java/commit/c5ef44dbf1c894f63bf213db391d09f5a800f825))
+
+
+### Documentation
+
+* responses conversation example ([fde5110](https://github.com/openai/openai-java/commit/fde5110a014a73e6e5e98fdb49e82506f04c4463))
+* show function calling conversation ([#227](https://github.com/openai/openai-java/issues/227)) ([ff7905a](https://github.com/openai/openai-java/commit/ff7905a22b217b370452e7a978b9153ae7487ebd))
+
 ## 0.35.0 (2025-03-18)
 
 Full Changelog: [v0.34.1...v0.35.0](https://github.com/openai/openai-java/compare/v0.34.1...v0.35.0)
