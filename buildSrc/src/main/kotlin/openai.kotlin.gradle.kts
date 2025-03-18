@@ -1,6 +1,6 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     id("openai.java")
@@ -11,25 +11,26 @@ kotlin {
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(17))
     }
+
+    compilerOptions {
+        freeCompilerArgs = listOf(
+            "-Xjvm-default=all",
+            "-Xjdk-release=1.8",
+            // Suppress deprecation warnings because we may still reference and test deprecated members.
+            // TODO: Replace with `-Xsuppress-warning=DEPRECATION` once we use Kotlin compiler 2.1.0+.
+            "-nowarn",
+        )
+        jvmTarget.set(JvmTarget.JVM_1_8)
+        languageVersion.set(KotlinVersion.KOTLIN_1_8)
+        apiVersion.set(KotlinVersion.KOTLIN_1_8)
+        coreLibrariesVersion = "1.8.0"
+    }
 }
 
 configure<SpotlessExtension> {
     kotlin {
         ktfmt().kotlinlangStyle()
         toggleOffOn()
-    }
-}
-
-tasks.withType<KotlinCompile>().configureEach {
-    compilerOptions {
-        allWarningsAsErrors = true
-        freeCompilerArgs = listOf(
-            "-Xjvm-default=all",
-            "-Xjdk-release=1.8",
-            // Suppress deprecation warnings because we may still reference and test deprecated members.
-            "-Xsuppress-warning=DEPRECATION"
-        )
-        jvmTarget.set(JvmTarget.JVM_1_8)
     }
 }
 
