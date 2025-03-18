@@ -31,8 +31,11 @@ private constructor(
     /**
      * If set, an additional chunk will be streamed before the `data: [DONE]` message. The `usage`
      * field on this chunk shows the token usage statistics for the entire request, and the
-     * `choices` field will always be an empty array. All other chunks will also include a `usage`
-     * field, but with a null value.
+     * `choices` field will always be an empty array.
+     *
+     * All other chunks will also include a `usage` field, but with a null value. **NOTE:** If the
+     * stream is interrupted, you may not receive the final usage chunk which contains the total
+     * token usage for the request.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -89,8 +92,11 @@ private constructor(
         /**
          * If set, an additional chunk will be streamed before the `data: [DONE]` message. The
          * `usage` field on this chunk shows the token usage statistics for the entire request, and
-         * the `choices` field will always be an empty array. All other chunks will also include a
-         * `usage` field, but with a null value.
+         * the `choices` field will always be an empty array.
+         *
+         * All other chunks will also include a `usage` field, but with a null value. **NOTE:** If
+         * the stream is interrupted, you may not receive the final usage chunk which contains the
+         * total token usage for the request.
          */
         fun includeUsage(includeUsage: Boolean) = includeUsage(JsonField.of(includeUsage))
 

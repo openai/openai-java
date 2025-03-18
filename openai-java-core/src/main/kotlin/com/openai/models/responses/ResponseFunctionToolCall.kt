@@ -28,7 +28,6 @@ import java.util.Optional
 class ResponseFunctionToolCall
 @JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
     @JsonProperty("arguments")
     @ExcludeMissing
     private val arguments: JsonField<String> = JsonMissing.of(),
@@ -37,19 +36,12 @@ private constructor(
     private val callId: JsonField<String> = JsonMissing.of(),
     @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
     @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
+    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
     @JsonProperty("status")
     @ExcludeMissing
     private val status: JsonField<Status> = JsonMissing.of(),
     @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
 ) {
-
-    /**
-     * The unique ID of the function tool call.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun id(): String = id.getRequired("id")
 
     /**
      * A JSON string of the arguments to pass to the function.
@@ -89,6 +81,14 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
+     * The unique ID of the function tool call.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun id(): Optional<String> = Optional.ofNullable(id.getNullable("id"))
+
+    /**
      * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated when
      * items are returned via API.
      *
@@ -96,13 +96,6 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun status(): Optional<Status> = Optional.ofNullable(status.getNullable("status"))
-
-    /**
-     * Returns the raw JSON value of [id].
-     *
-     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
     /**
      * Returns the raw JSON value of [arguments].
@@ -126,6 +119,13 @@ private constructor(
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
     /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+    /**
      * Returns the raw JSON value of [status].
      *
      * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
@@ -143,7 +143,6 @@ private constructor(
             return@apply
         }
 
-        id()
         arguments()
         callId()
         name()
@@ -152,6 +151,7 @@ private constructor(
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
+        id()
         status()
         validated = true
     }
@@ -165,7 +165,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .id()
          * .arguments()
          * .callId()
          * .name()
@@ -177,35 +176,24 @@ private constructor(
     /** A builder for [ResponseFunctionToolCall]. */
     class Builder internal constructor() {
 
-        private var id: JsonField<String>? = null
         private var arguments: JsonField<String>? = null
         private var callId: JsonField<String>? = null
         private var name: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("function_call")
+        private var id: JsonField<String> = JsonMissing.of()
         private var status: JsonField<Status> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(responseFunctionToolCall: ResponseFunctionToolCall) = apply {
-            id = responseFunctionToolCall.id
             arguments = responseFunctionToolCall.arguments
             callId = responseFunctionToolCall.callId
             name = responseFunctionToolCall.name
             type = responseFunctionToolCall.type
+            id = responseFunctionToolCall.id
             status = responseFunctionToolCall.status
             additionalProperties = responseFunctionToolCall.additionalProperties.toMutableMap()
         }
-
-        /** The unique ID of the function tool call. */
-        fun id(id: String) = id(JsonField.of(id))
-
-        /**
-         * Sets [Builder.id] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.id] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun id(id: JsonField<String>) = apply { this.id = id }
 
         /** A JSON string of the arguments to pass to the function. */
         fun arguments(arguments: String) = arguments(JsonField.of(arguments))
@@ -255,6 +243,17 @@ private constructor(
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
+        /** The unique ID of the function tool call. */
+        fun id(id: String) = id(JsonField.of(id))
+
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun id(id: JsonField<String>) = apply { this.id = id }
+
         /**
          * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated
          * when items are returned via API.
@@ -295,7 +294,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .id()
          * .arguments()
          * .callId()
          * .name()
@@ -305,11 +303,11 @@ private constructor(
          */
         fun build(): ResponseFunctionToolCall =
             ResponseFunctionToolCall(
-                checkRequired("id", id),
                 checkRequired("arguments", arguments),
                 checkRequired("callId", callId),
                 checkRequired("name", name),
                 type,
+                id,
                 status,
                 additionalProperties.toImmutable(),
             )
@@ -428,15 +426,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseFunctionToolCall && id == other.id && arguments == other.arguments && callId == other.callId && name == other.name && type == other.type && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseFunctionToolCall && arguments == other.arguments && callId == other.callId && name == other.name && type == other.type && id == other.id && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, arguments, callId, name, type, status, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(arguments, callId, name, type, id, status, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseFunctionToolCall{id=$id, arguments=$arguments, callId=$callId, name=$name, type=$type, status=$status, additionalProperties=$additionalProperties}"
+        "ResponseFunctionToolCall{arguments=$arguments, callId=$callId, name=$name, type=$type, id=$id, status=$status, additionalProperties=$additionalProperties}"
 }

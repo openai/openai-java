@@ -28,7 +28,7 @@ internal class BatchServiceTest {
             batchService.create(
                 BatchCreateParams.builder()
                     .completionWindow(BatchCreateParams.CompletionWindow._24H)
-                    .endpoint(BatchCreateParams.Endpoint.V1_CHAT_COMPLETIONS)
+                    .endpoint(BatchCreateParams.Endpoint.V1_RESPONSES)
                     .inputFileId("input_file_id")
                     .metadata(
                         Metadata.builder()

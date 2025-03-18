@@ -41,9 +41,10 @@ private constructor(
     fun completionWindow(): CompletionWindow = body.completionWindow()
 
     /**
-     * The endpoint to be used for all requests in the batch. Currently `/v1/chat/completions`,
-     * `/v1/embeddings`, and `/v1/completions` are supported. Note that `/v1/embeddings` batches are
-     * also restricted to a maximum of 50,000 embedding inputs across all requests in the batch.
+     * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
+     * `/v1/chat/completions`, `/v1/embeddings`, and `/v1/completions` are supported. Note that
+     * `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding inputs across
+     * all requests in the batch.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -150,10 +151,10 @@ private constructor(
         fun completionWindow(): CompletionWindow = completionWindow.getRequired("completion_window")
 
         /**
-         * The endpoint to be used for all requests in the batch. Currently `/v1/chat/completions`,
-         * `/v1/embeddings`, and `/v1/completions` are supported. Note that `/v1/embeddings` batches
-         * are also restricted to a maximum of 50,000 embedding inputs across all requests in the
-         * batch.
+         * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
+         * `/v1/chat/completions`, `/v1/embeddings`, and `/v1/completions` are supported. Note that
+         * `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding inputs
+         * across all requests in the batch.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -294,7 +295,7 @@ private constructor(
             }
 
             /**
-             * The endpoint to be used for all requests in the batch. Currently
+             * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
              * `/v1/chat/completions`, `/v1/embeddings`, and `/v1/completions` are supported. Note
              * that `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding
              * inputs across all requests in the batch.
@@ -469,10 +470,10 @@ private constructor(
         }
 
         /**
-         * The endpoint to be used for all requests in the batch. Currently `/v1/chat/completions`,
-         * `/v1/embeddings`, and `/v1/completions` are supported. Note that `/v1/embeddings` batches
-         * are also restricted to a maximum of 50,000 embedding inputs across all requests in the
-         * batch.
+         * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
+         * `/v1/chat/completions`, `/v1/embeddings`, and `/v1/completions` are supported. Note that
+         * `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding inputs
+         * across all requests in the batch.
          */
         fun endpoint(endpoint: Endpoint) = apply { body.endpoint(endpoint) }
 
@@ -768,9 +769,10 @@ private constructor(
     }
 
     /**
-     * The endpoint to be used for all requests in the batch. Currently `/v1/chat/completions`,
-     * `/v1/embeddings`, and `/v1/completions` are supported. Note that `/v1/embeddings` batches are
-     * also restricted to a maximum of 50,000 embedding inputs across all requests in the batch.
+     * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
+     * `/v1/chat/completions`, `/v1/embeddings`, and `/v1/completions` are supported. Note that
+     * `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding inputs across
+     * all requests in the batch.
      */
     class Endpoint @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -786,6 +788,8 @@ private constructor(
 
         companion object {
 
+            @JvmField val V1_RESPONSES = of("/v1/responses")
+
             @JvmField val V1_CHAT_COMPLETIONS = of("/v1/chat/completions")
 
             @JvmField val V1_EMBEDDINGS = of("/v1/embeddings")
@@ -797,6 +801,7 @@ private constructor(
 
         /** An enum containing [Endpoint]'s known values. */
         enum class Known {
+            V1_RESPONSES,
             V1_CHAT_COMPLETIONS,
             V1_EMBEDDINGS,
             V1_COMPLETIONS,
@@ -812,6 +817,7 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
+            V1_RESPONSES,
             V1_CHAT_COMPLETIONS,
             V1_EMBEDDINGS,
             V1_COMPLETIONS,
@@ -828,6 +834,7 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
+                V1_RESPONSES -> Value.V1_RESPONSES
                 V1_CHAT_COMPLETIONS -> Value.V1_CHAT_COMPLETIONS
                 V1_EMBEDDINGS -> Value.V1_EMBEDDINGS
                 V1_COMPLETIONS -> Value.V1_COMPLETIONS
@@ -845,6 +852,7 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
+                V1_RESPONSES -> Known.V1_RESPONSES
                 V1_CHAT_COMPLETIONS -> Known.V1_CHAT_COMPLETIONS
                 V1_EMBEDDINGS -> Known.V1_EMBEDDINGS
                 V1_COMPLETIONS -> Known.V1_COMPLETIONS

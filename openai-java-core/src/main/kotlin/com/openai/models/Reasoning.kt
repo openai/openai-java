@@ -12,7 +12,6 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.NoAutoDetect
-import com.openai.core.checkRequired
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -52,7 +51,7 @@ private constructor(
     fun effort(): Optional<ReasoningEffort> = Optional.ofNullable(effort.getNullable("effort"))
 
     /**
-     * **o-series models only**
+     * **computer_use_preview only**
      *
      * A summary of the reasoning performed by the model. This can be useful for debugging and
      * understanding the model's reasoning process. One of `concise` or `detailed`.
@@ -99,21 +98,14 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [Reasoning].
-         *
-         * The following fields are required:
-         * ```java
-         * .effort()
-         * ```
-         */
+        /** Returns a mutable builder for constructing an instance of [Reasoning]. */
         @JvmStatic fun builder() = Builder()
     }
 
     /** A builder for [Reasoning]. */
     class Builder internal constructor() {
 
-        private var effort: JsonField<ReasoningEffort>? = null
+        private var effort: JsonField<ReasoningEffort> = JsonMissing.of()
         private var generateSummary: JsonField<GenerateSummary> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -147,7 +139,7 @@ private constructor(
         fun effort(effort: JsonField<ReasoningEffort>) = apply { this.effort = effort }
 
         /**
-         * **o-series models only**
+         * **computer_use_preview only**
          *
          * A summary of the reasoning performed by the model. This can be useful for debugging and
          * understanding the model's reasoning process. One of `concise` or `detailed`.
@@ -193,24 +185,13 @@ private constructor(
          * Returns an immutable instance of [Reasoning].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .effort()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): Reasoning =
-            Reasoning(
-                checkRequired("effort", effort),
-                generateSummary,
-                additionalProperties.toImmutable(),
-            )
+            Reasoning(effort, generateSummary, additionalProperties.toImmutable())
     }
 
     /**
-     * **o-series models only**
+     * **computer_use_preview only**
      *
      * A summary of the reasoning performed by the model. This can be useful for debugging and
      * understanding the model's reasoning process. One of `concise` or `detailed`.

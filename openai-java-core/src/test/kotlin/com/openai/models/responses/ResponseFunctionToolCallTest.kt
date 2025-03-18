@@ -11,17 +11,17 @@ internal class ResponseFunctionToolCallTest {
     fun create() {
         val responseFunctionToolCall =
             ResponseFunctionToolCall.builder()
-                .id("id")
                 .arguments("arguments")
                 .callId("call_id")
                 .name("name")
+                .id("id")
                 .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
                 .build()
 
-        assertThat(responseFunctionToolCall.id()).isEqualTo("id")
         assertThat(responseFunctionToolCall.arguments()).isEqualTo("arguments")
         assertThat(responseFunctionToolCall.callId()).isEqualTo("call_id")
         assertThat(responseFunctionToolCall.name()).isEqualTo("name")
+        assertThat(responseFunctionToolCall.id()).contains("id")
         assertThat(responseFunctionToolCall.status())
             .contains(ResponseFunctionToolCall.Status.IN_PROGRESS)
     }
