@@ -90,7 +90,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("threads", params.getPathParam(0), "messages")
+                    .addPathSegments("threads", params._pathParam(0), "messages")
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -123,9 +123,9 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                     .method(HttpMethod.GET)
                     .addPathSegments(
                         "threads",
-                        params.getPathParam(0),
+                        params._pathParam(0),
                         "messages",
-                        params.getPathParam(1),
+                        params._pathParam(1),
                     )
                     .putAllHeaders(DEFAULT_HEADERS)
                     .build()
@@ -158,9 +158,9 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                     .method(HttpMethod.POST)
                     .addPathSegments(
                         "threads",
-                        params.getPathParam(0),
+                        params._pathParam(0),
                         "messages",
-                        params.getPathParam(1),
+                        params._pathParam(1),
                     )
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(json(clientOptions.jsonMapper, params._body()))
@@ -193,7 +193,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
-                    .addPathSegments("threads", params.getPathParam(0), "messages")
+                    .addPathSegments("threads", params._pathParam(0), "messages")
                     .putAllHeaders(DEFAULT_HEADERS)
                     .build()
                     .prepareAsync(clientOptions, params, deploymentModel = null)
@@ -232,9 +232,9 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                     .method(HttpMethod.DELETE)
                     .addPathSegments(
                         "threads",
-                        params.getPathParam(0),
+                        params._pathParam(0),
                         "messages",
-                        params.getPathParam(1),
+                        params._pathParam(1),
                     )
                     .putAllHeaders(DEFAULT_HEADERS)
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }

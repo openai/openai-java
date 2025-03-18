@@ -121,7 +121,7 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
-                    .addPathSegments("assistants", params.getPathParam(0))
+                    .addPathSegments("assistants", params._pathParam(0))
                     .putAllHeaders(DEFAULT_HEADERS)
                     .build()
                     .prepareAsync(clientOptions, params, deploymentModel = null)
@@ -151,7 +151,7 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("assistants", params.getPathParam(0))
+                    .addPathSegments("assistants", params._pathParam(0))
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -224,7 +224,7 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
-                    .addPathSegments("assistants", params.getPathParam(0))
+                    .addPathSegments("assistants", params._pathParam(0))
                     .putAllHeaders(DEFAULT_HEADERS)
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()

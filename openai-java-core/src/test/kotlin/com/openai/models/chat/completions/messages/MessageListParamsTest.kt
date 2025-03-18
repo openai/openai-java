@@ -19,6 +19,15 @@ internal class MessageListParamsTest {
     }
 
     @Test
+    fun pathParams() {
+        val params = MessageListParams.builder().completionId("completion_id").build()
+
+        assertThat(params._pathParam(0)).isEqualTo("completion_id")
+        // out-of-bound path param
+        assertThat(params._pathParam(1)).isEqualTo("")
+    }
+
+    @Test
     fun queryParams() {
         val params =
             MessageListParams.builder()
@@ -47,15 +56,5 @@ internal class MessageListParamsTest {
         val queryParams = params._queryParams()
 
         assertThat(queryParams).isEqualTo(QueryParams.builder().build())
-    }
-
-    @Test
-    fun getPathParam() {
-        val params = MessageListParams.builder().completionId("completion_id").build()
-        assertThat(params).isNotNull
-        // path param "completionId"
-        assertThat(params.getPathParam(0)).isEqualTo("completion_id")
-        // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
     }
 }

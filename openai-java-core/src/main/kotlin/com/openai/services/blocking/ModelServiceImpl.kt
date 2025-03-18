@@ -58,7 +58,7 @@ class ModelServiceImpl internal constructor(private val clientOptions: ClientOpt
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
-                    .addPathSegments("models", params.getPathParam(0))
+                    .addPathSegments("models", params._pathParam(0))
                     .build()
                     .prepare(clientOptions, params, params.model())
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
@@ -112,7 +112,7 @@ class ModelServiceImpl internal constructor(private val clientOptions: ClientOpt
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
-                    .addPathSegments("models", params.getPathParam(0))
+                    .addPathSegments("models", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepare(clientOptions, params, params.model())

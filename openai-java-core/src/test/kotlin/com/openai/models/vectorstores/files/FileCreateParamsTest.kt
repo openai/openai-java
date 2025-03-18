@@ -26,6 +26,15 @@ internal class FileCreateParamsTest {
     }
 
     @Test
+    fun pathParams() {
+        val params = FileCreateParams.builder().vectorStoreId("vs_abc123").fileId("file_id").build()
+
+        assertThat(params._pathParam(0)).isEqualTo("vs_abc123")
+        // out-of-bound path param
+        assertThat(params._pathParam(1)).isEqualTo("")
+    }
+
+    @Test
     fun body() {
         val params =
             FileCreateParams.builder()
@@ -63,15 +72,5 @@ internal class FileCreateParamsTest {
 
         assertNotNull(body)
         assertThat(body.fileId()).isEqualTo("file_id")
-    }
-
-    @Test
-    fun getPathParam() {
-        val params = FileCreateParams.builder().vectorStoreId("vs_abc123").fileId("file_id").build()
-        assertThat(params).isNotNull
-        // path param "vectorStoreId"
-        assertThat(params.getPathParam(0)).isEqualTo("vs_abc123")
-        // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
     }
 }

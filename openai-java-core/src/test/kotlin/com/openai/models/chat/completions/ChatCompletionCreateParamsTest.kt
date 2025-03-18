@@ -9,6 +9,7 @@ import com.openai.models.FunctionParameters
 import com.openai.models.Metadata
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
+import kotlin.jvm.optionals.getOrNull
 import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -211,14 +212,12 @@ internal class ChatCompletionCreateParamsTest {
 
         assertNotNull(body)
         assertThat(body.messages())
-            .isEqualTo(
-                listOf(
-                    ChatCompletionMessageParam.ofDeveloper(
-                        ChatCompletionDeveloperMessageParam.builder()
-                            .content("string")
-                            .name("name")
-                            .build()
-                    )
+            .containsExactly(
+                ChatCompletionMessageParam.ofDeveloper(
+                    ChatCompletionDeveloperMessageParam.builder()
+                        .content("string")
+                        .name("name")
+                        .build()
                 )
             )
         assertThat(body.model()).isEqualTo(ChatModel.O3_MINI)
@@ -236,19 +235,17 @@ internal class ChatCompletionCreateParamsTest {
                     ChatCompletionCreateParams.FunctionCall.FunctionCallMode.NONE
                 )
             )
-        assertThat(body.functions())
-            .contains(
-                listOf(
-                    ChatCompletionCreateParams.Function.builder()
-                        .name("name")
-                        .description("description")
-                        .parameters(
-                            FunctionParameters.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                .build()
-                        )
-                        .build()
-                )
+        assertThat(body.functions().getOrNull())
+            .containsExactly(
+                ChatCompletionCreateParams.Function.builder()
+                    .name("name")
+                    .description("description")
+                    .parameters(
+                        FunctionParameters.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
+                    .build()
             )
         assertThat(body.logitBias())
             .contains(
@@ -263,7 +260,8 @@ internal class ChatCompletionCreateParamsTest {
             .contains(
                 Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
             )
-        assertThat(body.modalities()).contains(listOf(ChatCompletionCreateParams.Modality.TEXT))
+        assertThat(body.modalities().getOrNull())
+            .containsExactly(ChatCompletionCreateParams.Modality.TEXT)
         assertThat(body.n()).contains(1L)
         assertThat(body.parallelToolCalls()).contains(true)
         assertThat(body.prediction())
@@ -287,24 +285,22 @@ internal class ChatCompletionCreateParamsTest {
             .contains(
                 ChatCompletionToolChoiceOption.ofAuto(ChatCompletionToolChoiceOption.Auto.NONE)
             )
-        assertThat(body.tools())
-            .contains(
-                listOf(
-                    ChatCompletionTool.builder()
-                        .function(
-                            FunctionDefinition.builder()
-                                .name("name")
-                                .description("description")
-                                .parameters(
-                                    FunctionParameters.builder()
-                                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                        .build()
-                                )
-                                .strict(true)
-                                .build()
-                        )
-                        .build()
-                )
+        assertThat(body.tools().getOrNull())
+            .containsExactly(
+                ChatCompletionTool.builder()
+                    .function(
+                        FunctionDefinition.builder()
+                            .name("name")
+                            .description("description")
+                            .parameters(
+                                FunctionParameters.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .strict(true)
+                            .build()
+                    )
+                    .build()
             )
         assertThat(body.topLogprobs()).contains(0L)
         assertThat(body.topP()).contains(1.0)
@@ -344,11 +340,9 @@ internal class ChatCompletionCreateParamsTest {
 
         assertNotNull(body)
         assertThat(body.messages())
-            .isEqualTo(
-                listOf(
-                    ChatCompletionMessageParam.ofDeveloper(
-                        ChatCompletionDeveloperMessageParam.builder().content("string").build()
-                    )
+            .containsExactly(
+                ChatCompletionMessageParam.ofDeveloper(
+                    ChatCompletionDeveloperMessageParam.builder().content("string").build()
                 )
             )
         assertThat(body.model()).isEqualTo(ChatModel.O3_MINI)

@@ -166,7 +166,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
-                    .addPathSegments("chat", "completions", params.getPathParam(0))
+                    .addPathSegments("chat", "completions", params._pathParam(0))
                     .build()
                     .prepare(clientOptions, params, null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
@@ -192,7 +192,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("chat", "completions", params.getPathParam(0))
+                    .addPathSegments("chat", "completions", params._pathParam(0))
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepare(clientOptions, params, null)
@@ -220,7 +220,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
-                    .addPathSegments("chat", "completions", params.getPathParam(0))
+                    .addPathSegments("chat", "completions", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepare(clientOptions, params, null)

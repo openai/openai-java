@@ -95,7 +95,7 @@ class UploadServiceImpl internal constructor(private val clientOptions: ClientOp
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("uploads", params.getPathParam(0), "cancel")
+                    .addPathSegments("uploads", params._pathParam(0), "cancel")
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepare(clientOptions, params, deploymentModel = null)
@@ -122,7 +122,7 @@ class UploadServiceImpl internal constructor(private val clientOptions: ClientOp
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("uploads", params.getPathParam(0), "complete")
+                    .addPathSegments("uploads", params._pathParam(0), "complete")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepare(clientOptions, params, deploymentModel = null)

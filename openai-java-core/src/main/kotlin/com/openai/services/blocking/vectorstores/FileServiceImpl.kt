@@ -88,7 +88,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("vector_stores", params.getPathParam(0), "files")
+                    .addPathSegments("vector_stores", params._pathParam(0), "files")
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -118,9 +118,9 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .method(HttpMethod.GET)
                     .addPathSegments(
                         "vector_stores",
-                        params.getPathParam(0),
+                        params._pathParam(0),
                         "files",
-                        params.getPathParam(1),
+                        params._pathParam(1),
                     )
                     .putAllHeaders(DEFAULT_HEADERS)
                     .build()
@@ -150,9 +150,9 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .method(HttpMethod.POST)
                     .addPathSegments(
                         "vector_stores",
-                        params.getPathParam(0),
+                        params._pathParam(0),
                         "files",
-                        params.getPathParam(1),
+                        params._pathParam(1),
                     )
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(json(clientOptions.jsonMapper, params._body()))
@@ -182,7 +182,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
-                    .addPathSegments("vector_stores", params.getPathParam(0), "files")
+                    .addPathSegments("vector_stores", params._pathParam(0), "files")
                     .putAllHeaders(DEFAULT_HEADERS)
                     .build()
                     .prepare(clientOptions, params, deploymentModel = null)
@@ -213,9 +213,9 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .method(HttpMethod.DELETE)
                     .addPathSegments(
                         "vector_stores",
-                        params.getPathParam(0),
+                        params._pathParam(0),
                         "files",
-                        params.getPathParam(1),
+                        params._pathParam(1),
                     )
                     .putAllHeaders(DEFAULT_HEADERS)
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
@@ -247,9 +247,9 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .method(HttpMethod.GET)
                     .addPathSegments(
                         "vector_stores",
-                        params.getPathParam(0),
+                        params._pathParam(0),
                         "files",
-                        params.getPathParam(1),
+                        params._pathParam(1),
                         "content",
                     )
                     .putAllHeaders(DEFAULT_HEADERS)

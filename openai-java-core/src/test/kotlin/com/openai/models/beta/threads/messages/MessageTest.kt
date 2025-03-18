@@ -5,6 +5,7 @@ package com.openai.models.beta.threads.messages
 import com.openai.core.JsonValue
 import com.openai.models.Metadata
 import com.openai.models.beta.assistants.CodeInterpreterTool
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -46,7 +47,7 @@ internal class MessageTest {
         assertThat(message).isNotNull
         assertThat(message.id()).isEqualTo("id")
         assertThat(message.assistantId()).contains("assistant_id")
-        assertThat(message.attachments().get())
+        assertThat(message.attachments().getOrNull())
             .containsExactly(
                 Message.Attachment.builder()
                     .fileId("file_id")

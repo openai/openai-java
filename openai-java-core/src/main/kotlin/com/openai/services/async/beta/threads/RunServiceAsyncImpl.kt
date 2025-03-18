@@ -137,7 +137,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("threads", params.getPathParam(0), "runs")
+                    .addPathSegments("threads", params._pathParam(0), "runs")
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -174,7 +174,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("threads", params.getPathParam(0), "runs")
+                    .addPathSegments("threads", params._pathParam(0), "runs")
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(
                         json(
@@ -220,12 +220,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
-                    .addPathSegments(
-                        "threads",
-                        params.getPathParam(0),
-                        "runs",
-                        params.getPathParam(1),
-                    )
+                    .addPathSegments("threads", params._pathParam(0), "runs", params._pathParam(1))
                     .putAllHeaders(DEFAULT_HEADERS)
                     .build()
                     .prepareAsync(clientOptions, params, deploymentModel = null)
@@ -255,12 +250,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments(
-                        "threads",
-                        params.getPathParam(0),
-                        "runs",
-                        params.getPathParam(1),
-                    )
+                    .addPathSegments("threads", params._pathParam(0), "runs", params._pathParam(1))
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -292,7 +282,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
-                    .addPathSegments("threads", params.getPathParam(0), "runs")
+                    .addPathSegments("threads", params._pathParam(0), "runs")
                     .putAllHeaders(DEFAULT_HEADERS)
                     .build()
                     .prepareAsync(clientOptions, params, deploymentModel = null)
@@ -327,9 +317,9 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .method(HttpMethod.POST)
                     .addPathSegments(
                         "threads",
-                        params.getPathParam(0),
+                        params._pathParam(0),
                         "runs",
-                        params.getPathParam(1),
+                        params._pathParam(1),
                         "cancel",
                     )
                     .putAllHeaders(DEFAULT_HEADERS)
@@ -364,9 +354,9 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .method(HttpMethod.POST)
                     .addPathSegments(
                         "threads",
-                        params.getPathParam(0),
+                        params._pathParam(0),
                         "runs",
-                        params.getPathParam(1),
+                        params._pathParam(1),
                         "submit_tool_outputs",
                     )
                     .putAllHeaders(DEFAULT_HEADERS)
@@ -404,9 +394,9 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .method(HttpMethod.POST)
                     .addPathSegments(
                         "threads",
-                        params.getPathParam(0),
+                        params._pathParam(0),
                         "runs",
-                        params.getPathParam(1),
+                        params._pathParam(1),
                         "submit_tool_outputs",
                     )
                     .putAllHeaders(DEFAULT_HEADERS)

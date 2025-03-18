@@ -13,12 +13,11 @@ internal class ModelRetrieveParamsTest {
     }
 
     @Test
-    fun getPathParam() {
+    fun pathParams() {
         val params = ModelRetrieveParams.builder().model("gpt-4o-mini").build()
-        assertThat(params).isNotNull
-        // path param "model"
-        assertThat(params.getPathParam(0)).isEqualTo("gpt-4o-mini")
+
+        assertThat(params._pathParam(0)).isEqualTo("gpt-4o-mini")
         // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
+        assertThat(params._pathParam(1)).isEqualTo("")
     }
 }

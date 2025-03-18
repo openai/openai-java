@@ -108,7 +108,7 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("uploads", params.getPathParam(0), "cancel")
+                    .addPathSegments("uploads", params._pathParam(0), "cancel")
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepareAsync(clientOptions, params, deploymentModel = null)
@@ -138,7 +138,7 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("uploads", params.getPathParam(0), "complete")
+                    .addPathSegments("uploads", params._pathParam(0), "complete")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
                     .prepareAsync(clientOptions, params, deploymentModel = null)

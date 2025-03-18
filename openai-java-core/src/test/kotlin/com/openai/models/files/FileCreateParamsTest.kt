@@ -43,30 +43,4 @@ internal class FileCreateParamsTest {
                 )
             )
     }
-
-    @Test
-    fun bodyWithoutOptionalFields() {
-        val params =
-            FileCreateParams.builder()
-                .file("some content".toByteArray())
-                .purpose(FilePurpose.ASSISTANTS)
-                .build()
-
-        val body = params._body()
-
-        assertNotNull(body)
-        assertThat(
-                body
-                    .filterValues { !it.value.isNull() }
-                    .mapValues { (_, field) ->
-                        field.map { if (it is InputStream) it.readBytes() else it }
-                    }
-            )
-            .isEqualTo(
-                mapOf(
-                    "file" to MultipartField.of("some content".toByteArray()),
-                    "purpose" to MultipartField.of(FilePurpose.ASSISTANTS),
-                )
-            )
-    }
 }

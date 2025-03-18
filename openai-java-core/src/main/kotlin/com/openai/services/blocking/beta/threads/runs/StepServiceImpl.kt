@@ -58,11 +58,11 @@ class StepServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .method(HttpMethod.GET)
                     .addPathSegments(
                         "threads",
-                        params.getPathParam(0),
+                        params._pathParam(0),
                         "runs",
-                        params.getPathParam(1),
+                        params._pathParam(1),
                         "steps",
-                        params.getPathParam(2),
+                        params._pathParam(2),
                     )
                     .putAllHeaders(DEFAULT_HEADERS)
                     .build()
@@ -93,9 +93,9 @@ class StepServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .method(HttpMethod.GET)
                     .addPathSegments(
                         "threads",
-                        params.getPathParam(0),
+                        params._pathParam(0),
                         "runs",
-                        params.getPathParam(1),
+                        params._pathParam(1),
                         "steps",
                     )
                     .putAllHeaders(DEFAULT_HEADERS)

@@ -7,6 +7,7 @@ import com.openai.models.ChatModel
 import com.openai.models.Metadata
 import com.openai.models.ReasoningEffort
 import com.openai.models.beta.threads.AssistantResponseFormatOption
+import kotlin.jvm.optionals.getOrNull
 import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -145,10 +146,8 @@ internal class AssistantCreateParamsTest {
                     )
                     .build()
             )
-        assertThat(body.tools())
-            .contains(
-                listOf(AssistantTool.ofCodeInterpreter(CodeInterpreterTool.builder().build()))
-            )
+        assertThat(body.tools().getOrNull())
+            .containsExactly(AssistantTool.ofCodeInterpreter(CodeInterpreterTool.builder().build()))
         assertThat(body.topP()).contains(1.0)
     }
 

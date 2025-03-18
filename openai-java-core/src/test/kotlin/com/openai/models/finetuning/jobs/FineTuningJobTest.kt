@@ -4,6 +4,7 @@ package com.openai.models.finetuning.jobs
 
 import com.openai.core.JsonValue
 import com.openai.models.Metadata
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -112,7 +113,7 @@ internal class FineTuningJobTest {
         assertThat(fineTuningJob.trainingFile()).isEqualTo("training_file")
         assertThat(fineTuningJob.validationFile()).contains("validation_file")
         assertThat(fineTuningJob.estimatedFinish()).contains(0L)
-        assertThat(fineTuningJob.integrations().get())
+        assertThat(fineTuningJob.integrations().getOrNull())
             .containsExactly(
                 FineTuningJobWandbIntegrationObject.builder()
                     .wandb(

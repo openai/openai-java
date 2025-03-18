@@ -142,7 +142,7 @@ class ThreadServiceImpl internal constructor(private val clientOptions: ClientOp
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
-                    .addPathSegments("threads", params.getPathParam(0))
+                    .addPathSegments("threads", params._pathParam(0))
                     .putAllHeaders(DEFAULT_HEADERS)
                     .build()
                     .prepare(clientOptions, params, deploymentModel = null)
@@ -169,7 +169,7 @@ class ThreadServiceImpl internal constructor(private val clientOptions: ClientOp
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("threads", params.getPathParam(0))
+                    .addPathSegments("threads", params._pathParam(0))
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -197,7 +197,7 @@ class ThreadServiceImpl internal constructor(private val clientOptions: ClientOp
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
-                    .addPathSegments("threads", params.getPathParam(0))
+                    .addPathSegments("threads", params._pathParam(0))
                     .putAllHeaders(DEFAULT_HEADERS)
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()

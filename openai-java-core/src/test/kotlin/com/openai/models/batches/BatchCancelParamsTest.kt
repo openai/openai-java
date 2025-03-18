@@ -13,12 +13,11 @@ internal class BatchCancelParamsTest {
     }
 
     @Test
-    fun getPathParam() {
+    fun pathParams() {
         val params = BatchCancelParams.builder().batchId("batch_id").build()
-        assertThat(params).isNotNull
-        // path param "batchId"
-        assertThat(params.getPathParam(0)).isEqualTo("batch_id")
+
+        assertThat(params._pathParam(0)).isEqualTo("batch_id")
         // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
+        assertThat(params._pathParam(1)).isEqualTo("")
     }
 }

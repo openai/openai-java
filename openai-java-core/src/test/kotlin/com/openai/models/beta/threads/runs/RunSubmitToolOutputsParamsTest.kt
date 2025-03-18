@@ -23,6 +23,21 @@ internal class RunSubmitToolOutputsParamsTest {
     }
 
     @Test
+    fun pathParams() {
+        val params =
+            RunSubmitToolOutputsParams.builder()
+                .threadId("thread_id")
+                .runId("run_id")
+                .addToolOutput(RunSubmitToolOutputsParams.ToolOutput.builder().build())
+                .build()
+
+        assertThat(params._pathParam(0)).isEqualTo("thread_id")
+        assertThat(params._pathParam(1)).isEqualTo("run_id")
+        // out-of-bound path param
+        assertThat(params._pathParam(2)).isEqualTo("")
+    }
+
+    @Test
     fun body() {
         val params =
             RunSubmitToolOutputsParams.builder()
@@ -40,13 +55,11 @@ internal class RunSubmitToolOutputsParamsTest {
 
         assertNotNull(body)
         assertThat(body.toolOutputs())
-            .isEqualTo(
-                listOf(
-                    RunSubmitToolOutputsParams.ToolOutput.builder()
-                        .output("output")
-                        .toolCallId("tool_call_id")
-                        .build()
-                )
+            .containsExactly(
+                RunSubmitToolOutputsParams.ToolOutput.builder()
+                    .output("output")
+                    .toolCallId("tool_call_id")
+                    .build()
             )
     }
 
@@ -63,23 +76,6 @@ internal class RunSubmitToolOutputsParamsTest {
 
         assertNotNull(body)
         assertThat(body.toolOutputs())
-            .isEqualTo(listOf(RunSubmitToolOutputsParams.ToolOutput.builder().build()))
-    }
-
-    @Test
-    fun getPathParam() {
-        val params =
-            RunSubmitToolOutputsParams.builder()
-                .threadId("thread_id")
-                .runId("run_id")
-                .addToolOutput(RunSubmitToolOutputsParams.ToolOutput.builder().build())
-                .build()
-        assertThat(params).isNotNull
-        // path param "threadId"
-        assertThat(params.getPathParam(0)).isEqualTo("thread_id")
-        // path param "runId"
-        assertThat(params.getPathParam(1)).isEqualTo("run_id")
-        // out-of-bound path param
-        assertThat(params.getPathParam(2)).isEqualTo("")
+            .containsExactly(RunSubmitToolOutputsParams.ToolOutput.builder().build())
     }
 }

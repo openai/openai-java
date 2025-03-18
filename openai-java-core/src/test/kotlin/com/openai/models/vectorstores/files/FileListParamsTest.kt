@@ -21,6 +21,15 @@ internal class FileListParamsTest {
     }
 
     @Test
+    fun pathParams() {
+        val params = FileListParams.builder().vectorStoreId("vector_store_id").build()
+
+        assertThat(params._pathParam(0)).isEqualTo("vector_store_id")
+        // out-of-bound path param
+        assertThat(params._pathParam(1)).isEqualTo("")
+    }
+
+    @Test
     fun queryParams() {
         val params =
             FileListParams.builder()
@@ -53,15 +62,5 @@ internal class FileListParamsTest {
         val queryParams = params._queryParams()
 
         assertThat(queryParams).isEqualTo(QueryParams.builder().build())
-    }
-
-    @Test
-    fun getPathParam() {
-        val params = FileListParams.builder().vectorStoreId("vector_store_id").build()
-        assertThat(params).isNotNull
-        // path param "vectorStoreId"
-        assertThat(params.getPathParam(0)).isEqualTo("vector_store_id")
-        // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
     }
 }

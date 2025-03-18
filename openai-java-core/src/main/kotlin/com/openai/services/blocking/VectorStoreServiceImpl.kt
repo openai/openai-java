@@ -150,7 +150,7 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
-                    .addPathSegments("vector_stores", params.getPathParam(0))
+                    .addPathSegments("vector_stores", params._pathParam(0))
                     .putAllHeaders(DEFAULT_HEADERS)
                     .build()
                     .prepare(clientOptions, params, deploymentModel = null)
@@ -177,7 +177,7 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("vector_stores", params.getPathParam(0))
+                    .addPathSegments("vector_stores", params._pathParam(0))
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -236,7 +236,7 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
-                    .addPathSegments("vector_stores", params.getPathParam(0))
+                    .addPathSegments("vector_stores", params._pathParam(0))
                     .putAllHeaders(DEFAULT_HEADERS)
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
@@ -265,7 +265,7 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("vector_stores", params.getPathParam(0), "search")
+                    .addPathSegments("vector_stores", params._pathParam(0), "search")
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()

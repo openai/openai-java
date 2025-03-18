@@ -6,6 +6,7 @@ import com.openai.core.JsonValue
 import com.openai.models.Metadata
 import com.openai.models.ReasoningEffort
 import com.openai.models.beta.threads.AssistantResponseFormatOption
+import kotlin.jvm.optionals.getOrNull
 import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -43,6 +44,15 @@ internal class AssistantUpdateParamsTest {
             .addTool(CodeInterpreterTool.builder().build())
             .topP(1.0)
             .build()
+    }
+
+    @Test
+    fun pathParams() {
+        val params = AssistantUpdateParams.builder().assistantId("assistant_id").build()
+
+        assertThat(params._pathParam(0)).isEqualTo("assistant_id")
+        // out-of-bound path param
+        assertThat(params._pathParam(1)).isEqualTo("")
     }
 
     @Test
@@ -109,10 +119,8 @@ internal class AssistantUpdateParamsTest {
                     )
                     .build()
             )
-        assertThat(body.tools())
-            .contains(
-                listOf(AssistantTool.ofCodeInterpreter(CodeInterpreterTool.builder().build()))
-            )
+        assertThat(body.tools().getOrNull())
+            .containsExactly(AssistantTool.ofCodeInterpreter(CodeInterpreterTool.builder().build()))
         assertThat(body.topP()).contains(1.0)
     }
 
@@ -123,15 +131,5 @@ internal class AssistantUpdateParamsTest {
         val body = params._body()
 
         assertNotNull(body)
-    }
-
-    @Test
-    fun getPathParam() {
-        val params = AssistantUpdateParams.builder().assistantId("assistant_id").build()
-        assertThat(params).isNotNull
-        // path param "assistantId"
-        assertThat(params.getPathParam(0)).isEqualTo("assistant_id")
-        // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
     }
 }

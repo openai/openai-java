@@ -13,15 +13,13 @@ internal class MessageRetrieveParamsTest {
     }
 
     @Test
-    fun getPathParam() {
+    fun pathParams() {
         val params =
             MessageRetrieveParams.builder().threadId("thread_id").messageId("message_id").build()
-        assertThat(params).isNotNull
-        // path param "threadId"
-        assertThat(params.getPathParam(0)).isEqualTo("thread_id")
-        // path param "messageId"
-        assertThat(params.getPathParam(1)).isEqualTo("message_id")
+
+        assertThat(params._pathParam(0)).isEqualTo("thread_id")
+        assertThat(params._pathParam(1)).isEqualTo("message_id")
         // out-of-bound path param
-        assertThat(params.getPathParam(2)).isEqualTo("")
+        assertThat(params._pathParam(2)).isEqualTo("")
     }
 }
