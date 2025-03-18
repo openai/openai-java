@@ -30,13 +30,21 @@ interface VectorStoreService {
     fun fileBatches(): FileBatchService
 
     /** Create a vector store. */
-    fun create(params: VectorStoreCreateParams): VectorStore = create(params, RequestOptions.none())
+    fun create(): VectorStore = create(VectorStoreCreateParams.none())
 
     /** @see [create] */
     fun create(
-        params: VectorStoreCreateParams,
+        params: VectorStoreCreateParams = VectorStoreCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStore
+
+    /** @see [create] */
+    fun create(params: VectorStoreCreateParams = VectorStoreCreateParams.none()): VectorStore =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
+    fun create(requestOptions: RequestOptions): VectorStore =
+        create(VectorStoreCreateParams.none(), requestOptions)
 
     /** Retrieves a vector store. */
     fun retrieve(params: VectorStoreRetrieveParams): VectorStore =
@@ -108,15 +116,25 @@ interface VectorStoreService {
          * [VectorStoreService.create].
          */
         @MustBeClosed
-        fun create(params: VectorStoreCreateParams): HttpResponseFor<VectorStore> =
-            create(params, RequestOptions.none())
+        fun create(): HttpResponseFor<VectorStore> = create(VectorStoreCreateParams.none())
 
         /** @see [create] */
         @MustBeClosed
         fun create(
-            params: VectorStoreCreateParams,
+            params: VectorStoreCreateParams = VectorStoreCreateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<VectorStore>
+
+        /** @see [create] */
+        @MustBeClosed
+        fun create(
+            params: VectorStoreCreateParams = VectorStoreCreateParams.none()
+        ): HttpResponseFor<VectorStore> = create(params, RequestOptions.none())
+
+        /** @see [create] */
+        @MustBeClosed
+        fun create(requestOptions: RequestOptions): HttpResponseFor<VectorStore> =
+            create(VectorStoreCreateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /vector_stores/{vector_store_id}`, but is otherwise
