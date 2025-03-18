@@ -1211,7 +1211,7 @@ private constructor(
         private val callId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("output")
         @ExcludeMissing
-        private val output: JsonField<Output> = JsonMissing.of(),
+        private val output: JsonField<ResponseComputerToolCallOutputScreenshot> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
         @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
         @JsonProperty("acknowledged_safety_checks")
@@ -1239,7 +1239,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        fun output(): Output = output.getRequired("output")
+        fun output(): ResponseComputerToolCallOutputScreenshot = output.getRequired("output")
 
         /**
          * The type of the computer tool call output. Always `computer_call_output`.
@@ -1292,7 +1292,9 @@ private constructor(
          *
          * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<Output> = output
+        @JsonProperty("output")
+        @ExcludeMissing
+        fun _output(): JsonField<ResponseComputerToolCallOutputScreenshot> = output
 
         /**
          * Returns the raw JSON value of [id].
@@ -1363,7 +1365,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var callId: JsonField<String>? = null
-            private var output: JsonField<Output>? = null
+            private var output: JsonField<ResponseComputerToolCallOutputScreenshot>? = null
             private var type: JsonValue = JsonValue.from("computer_call_output")
             private var id: JsonField<String> = JsonMissing.of()
             private var acknowledgedSafetyChecks: JsonField<MutableList<AcknowledgedSafetyCheck>>? =
@@ -1396,16 +1398,19 @@ private constructor(
             fun callId(callId: JsonField<String>) = apply { this.callId = callId }
 
             /** A computer screenshot image used with the computer use tool. */
-            fun output(output: Output) = output(JsonField.of(output))
+            fun output(output: ResponseComputerToolCallOutputScreenshot) =
+                output(JsonField.of(output))
 
             /**
              * Sets [Builder.output] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.output] with a well-typed [Output] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
+             * You should usually call [Builder.output] with a well-typed
+             * [ResponseComputerToolCallOutputScreenshot] value instead. This method is primarily
+             * for setting the field to an undocumented or not yet supported value.
              */
-            fun output(output: JsonField<Output>) = apply { this.output = output }
+            fun output(output: JsonField<ResponseComputerToolCallOutputScreenshot>) = apply {
+                this.output = output
+            }
 
             /**
              * Sets the field to an arbitrary JSON value.
@@ -1522,200 +1527,6 @@ private constructor(
                     status,
                     additionalProperties.toImmutable(),
                 )
-        }
-
-        /** A computer screenshot image used with the computer use tool. */
-        @NoAutoDetect
-        class Output
-        @JsonCreator
-        private constructor(
-            @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-            @JsonProperty("file_id")
-            @ExcludeMissing
-            private val fileId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("image_url")
-            @ExcludeMissing
-            private val imageUrl: JsonField<String> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-        ) {
-
-            /**
-             * Specifies the event type. For a computer screenshot, this property is always set to
-             * `computer_screenshot`.
-             *
-             * Expected to always return the following:
-             * ```java
-             * JsonValue.from("computer_screenshot")
-             * ```
-             *
-             * However, this method can be useful for debugging and logging (e.g. if the server
-             * responded with an unexpected value).
-             */
-            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
-
-            /**
-             * The identifier of an uploaded file that contains the screenshot.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
-             */
-            fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
-
-            /**
-             * The URL of the screenshot image.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
-             */
-            fun imageUrl(): Optional<String> =
-                Optional.ofNullable(imageUrl.getNullable("image_url"))
-
-            /**
-             * Returns the raw JSON value of [fileId].
-             *
-             * Unlike [fileId], this method doesn't throw if the JSON field has an unexpected type.
-             */
-            @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
-
-            /**
-             * Returns the raw JSON value of [imageUrl].
-             *
-             * Unlike [imageUrl], this method doesn't throw if the JSON field has an unexpected
-             * type.
-             */
-            @JsonProperty("image_url") @ExcludeMissing fun _imageUrl(): JsonField<String> = imageUrl
-
-            @JsonAnyGetter
-            @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): Output = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                _type().let {
-                    if (it != JsonValue.from("computer_screenshot")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
-                fileId()
-                imageUrl()
-                validated = true
-            }
-
-            fun toBuilder() = Builder().from(this)
-
-            companion object {
-
-                /** Returns a mutable builder for constructing an instance of [Output]. */
-                @JvmStatic fun builder() = Builder()
-            }
-
-            /** A builder for [Output]. */
-            class Builder internal constructor() {
-
-                private var type: JsonValue = JsonValue.from("computer_screenshot")
-                private var fileId: JsonField<String> = JsonMissing.of()
-                private var imageUrl: JsonField<String> = JsonMissing.of()
-                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                @JvmSynthetic
-                internal fun from(output: Output) = apply {
-                    type = output.type
-                    fileId = output.fileId
-                    imageUrl = output.imageUrl
-                    additionalProperties = output.additionalProperties.toMutableMap()
-                }
-
-                /**
-                 * Sets the field to an arbitrary JSON value.
-                 *
-                 * It is usually unnecessary to call this method because the field defaults to the
-                 * following:
-                 * ```java
-                 * JsonValue.from("computer_screenshot")
-                 * ```
-                 *
-                 * This method is primarily for setting the field to an undocumented or not yet
-                 * supported value.
-                 */
-                fun type(type: JsonValue) = apply { this.type = type }
-
-                /** The identifier of an uploaded file that contains the screenshot. */
-                fun fileId(fileId: String) = fileId(JsonField.of(fileId))
-
-                /**
-                 * Sets [Builder.fileId] to an arbitrary JSON value.
-                 *
-                 * You should usually call [Builder.fileId] with a well-typed [String] value
-                 * instead. This method is primarily for setting the field to an undocumented or not
-                 * yet supported value.
-                 */
-                fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
-
-                /** The URL of the screenshot image. */
-                fun imageUrl(imageUrl: String) = imageUrl(JsonField.of(imageUrl))
-
-                /**
-                 * Sets [Builder.imageUrl] to an arbitrary JSON value.
-                 *
-                 * You should usually call [Builder.imageUrl] with a well-typed [String] value
-                 * instead. This method is primarily for setting the field to an undocumented or not
-                 * yet supported value.
-                 */
-                fun imageUrl(imageUrl: JsonField<String>) = apply { this.imageUrl = imageUrl }
-
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
-
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
-
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
-
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
-
-                /**
-                 * Returns an immutable instance of [Output].
-                 *
-                 * Further updates to this [Builder] will not mutate the returned instance.
-                 */
-                fun build(): Output =
-                    Output(type, fileId, imageUrl, additionalProperties.toImmutable())
-            }
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Output && type == other.type && fileId == other.fileId && imageUrl == other.imageUrl && additionalProperties == other.additionalProperties /* spotless:on */
-            }
-
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(type, fileId, imageUrl, additionalProperties) }
-            /* spotless:on */
-
-            override fun hashCode(): Int = hashCode
-
-            override fun toString() =
-                "Output{type=$type, fileId=$fileId, imageUrl=$imageUrl, additionalProperties=$additionalProperties}"
         }
 
         /** A pending safety check for the computer call. */
