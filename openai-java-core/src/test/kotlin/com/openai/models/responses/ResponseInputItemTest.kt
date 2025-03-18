@@ -152,7 +152,7 @@ internal class ResponseInputItemTest {
         val computerCallOutput =
             ResponseInputItem.ComputerCallOutput.builder()
                 .callId("call_id")
-                .output(ResponseInputItem.ComputerCallOutput.Output.builder().build())
+                .output(ResponseComputerToolCallOutputScreenshot.builder().build())
                 .build()
 
         val responseInputItem = ResponseInputItem.ofComputerCallOutput(computerCallOutput)
