@@ -96,6 +96,9 @@ internal class ResponseTest {
                 .usage(
                     ResponseUsage.builder()
                         .inputTokens(0L)
+                        .inputTokensDetails(
+                            ResponseUsage.InputTokensDetails.builder().cachedTokens(0L).build()
+                        )
                         .outputTokens(0L)
                         .outputTokensDetails(
                             ResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
@@ -193,6 +196,9 @@ internal class ResponseTest {
             .contains(
                 ResponseUsage.builder()
                     .inputTokens(0L)
+                    .inputTokensDetails(
+                        ResponseUsage.InputTokensDetails.builder().cachedTokens(0L).build()
+                    )
                     .outputTokens(0L)
                     .outputTokensDetails(
                         ResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()

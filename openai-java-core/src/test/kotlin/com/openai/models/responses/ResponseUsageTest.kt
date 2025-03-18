@@ -12,6 +12,9 @@ internal class ResponseUsageTest {
         val responseUsage =
             ResponseUsage.builder()
                 .inputTokens(0L)
+                .inputTokensDetails(
+                    ResponseUsage.InputTokensDetails.builder().cachedTokens(0L).build()
+                )
                 .outputTokens(0L)
                 .outputTokensDetails(
                     ResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
@@ -20,6 +23,8 @@ internal class ResponseUsageTest {
                 .build()
 
         assertThat(responseUsage.inputTokens()).isEqualTo(0L)
+        assertThat(responseUsage.inputTokensDetails())
+            .isEqualTo(ResponseUsage.InputTokensDetails.builder().cachedTokens(0L).build())
         assertThat(responseUsage.outputTokens()).isEqualTo(0L)
         assertThat(responseUsage.outputTokensDetails())
             .isEqualTo(ResponseUsage.OutputTokensDetails.builder().reasoningTokens(0L).build())

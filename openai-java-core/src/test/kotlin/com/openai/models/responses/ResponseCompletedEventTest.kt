@@ -98,6 +98,11 @@ internal class ResponseCompletedEventTest {
                         .usage(
                             ResponseUsage.builder()
                                 .inputTokens(0L)
+                                .inputTokensDetails(
+                                    ResponseUsage.InputTokensDetails.builder()
+                                        .cachedTokens(0L)
+                                        .build()
+                                )
                                 .outputTokens(0L)
                                 .outputTokensDetails(
                                     ResponseUsage.OutputTokensDetails.builder()
@@ -193,6 +198,9 @@ internal class ResponseCompletedEventTest {
                     .usage(
                         ResponseUsage.builder()
                             .inputTokens(0L)
+                            .inputTokensDetails(
+                                ResponseUsage.InputTokensDetails.builder().cachedTokens(0L).build()
+                            )
                             .outputTokens(0L)
                             .outputTokensDetails(
                                 ResponseUsage.OutputTokensDetails.builder()
