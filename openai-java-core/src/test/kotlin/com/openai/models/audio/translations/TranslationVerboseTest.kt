@@ -3,6 +3,7 @@
 package com.openai.models.audio.translations
 
 import com.openai.models.audio.transcriptions.TranscriptionSegment
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -34,7 +35,7 @@ internal class TranslationVerboseTest {
         assertThat(translationVerbose.duration()).isEqualTo(0.0)
         assertThat(translationVerbose.language()).isEqualTo("language")
         assertThat(translationVerbose.text()).isEqualTo("text")
-        assertThat(translationVerbose.segments().get())
+        assertThat(translationVerbose.segments().getOrNull())
             .containsExactly(
                 TranscriptionSegment.builder()
                     .id(0L)

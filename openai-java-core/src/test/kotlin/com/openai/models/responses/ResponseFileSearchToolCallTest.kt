@@ -3,6 +3,7 @@
 package com.openai.models.responses
 
 import com.openai.core.JsonValue
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -34,7 +35,7 @@ internal class ResponseFileSearchToolCallTest {
         assertThat(responseFileSearchToolCall.queries()).containsExactly("string")
         assertThat(responseFileSearchToolCall.status())
             .isEqualTo(ResponseFileSearchToolCall.Status.IN_PROGRESS)
-        assertThat(responseFileSearchToolCall.results().get())
+        assertThat(responseFileSearchToolCall.results().getOrNull())
             .containsExactly(
                 ResponseFileSearchToolCall.Result.builder()
                     .attributes(

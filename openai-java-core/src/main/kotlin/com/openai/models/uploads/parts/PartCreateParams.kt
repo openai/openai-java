@@ -50,16 +50,15 @@ private constructor(
     @JvmSynthetic
     internal fun _body(): Map<String, MultipartField<*>> = mapOf("data" to _data()).toImmutable()
 
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams = additionalQueryParams
-
-    fun getPathParam(index: Int): String {
-        return when (index) {
+    fun _pathParam(index: Int): String =
+        when (index) {
             0 -> uploadId
             else -> ""
         }
-    }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
     @NoAutoDetect
     class Body @JsonCreator private constructor(private val data: MultipartField<InputStream>) {

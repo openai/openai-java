@@ -9,6 +9,7 @@ import com.openai.models.Metadata
 import com.openai.models.Reasoning
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
+import kotlin.jvm.optionals.getOrNull
 import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -122,7 +123,8 @@ internal class ResponseCreateParamsTest {
         assertNotNull(body)
         assertThat(body.input()).isEqualTo(ResponseCreateParams.Input.ofText("string"))
         assertThat(body.model()).isEqualTo(ChatModel.O3_MINI)
-        assertThat(body.include()).contains(listOf(ResponseIncludable.FILE_SEARCH_CALL_RESULTS))
+        assertThat(body.include().getOrNull())
+            .containsExactly(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.maxOutputTokens()).contains(0L)
         assertThat(body.metadata())
@@ -146,28 +148,26 @@ internal class ResponseCreateParamsTest {
             )
         assertThat(body.toolChoice())
             .contains(ResponseCreateParams.ToolChoice.ofOptions(ToolChoiceOptions.NONE))
-        assertThat(body.tools())
-            .contains(
-                listOf(
-                    Tool.ofFileSearch(
-                        FileSearchTool.builder()
-                            .addVectorStoreId("string")
-                            .filters(
-                                ComparisonFilter.builder()
-                                    .key("key")
-                                    .type(ComparisonFilter.Type.EQ)
-                                    .value("string")
-                                    .build()
-                            )
-                            .maxNumResults(0L)
-                            .rankingOptions(
-                                FileSearchTool.RankingOptions.builder()
-                                    .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
-                                    .scoreThreshold(0.0)
-                                    .build()
-                            )
-                            .build()
-                    )
+        assertThat(body.tools().getOrNull())
+            .containsExactly(
+                Tool.ofFileSearch(
+                    FileSearchTool.builder()
+                        .addVectorStoreId("string")
+                        .filters(
+                            ComparisonFilter.builder()
+                                .key("key")
+                                .type(ComparisonFilter.Type.EQ)
+                                .value("string")
+                                .build()
+                        )
+                        .maxNumResults(0L)
+                        .rankingOptions(
+                            FileSearchTool.RankingOptions.builder()
+                                .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
+                                .scoreThreshold(0.0)
+                                .build()
+                        )
+                        .build()
                 )
             )
         assertThat(body.topP()).contains(1.0)

@@ -33,6 +33,16 @@ internal class VectorStoreSearchParamsTest {
     }
 
     @Test
+    fun pathParams() {
+        val params =
+            VectorStoreSearchParams.builder().vectorStoreId("vs_abc123").query("string").build()
+
+        assertThat(params._pathParam(0)).isEqualTo("vs_abc123")
+        // out-of-bound path param
+        assertThat(params._pathParam(1)).isEqualTo("")
+    }
+
+    @Test
     fun body() {
         val params =
             VectorStoreSearchParams.builder()
@@ -89,16 +99,5 @@ internal class VectorStoreSearchParamsTest {
 
         assertNotNull(body)
         assertThat(body.query()).isEqualTo(VectorStoreSearchParams.Query.ofString("string"))
-    }
-
-    @Test
-    fun getPathParam() {
-        val params =
-            VectorStoreSearchParams.builder().vectorStoreId("vs_abc123").query("string").build()
-        assertThat(params).isNotNull
-        // path param "vectorStoreId"
-        assertThat(params.getPathParam(0)).isEqualTo("vs_abc123")
-        // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
     }
 }

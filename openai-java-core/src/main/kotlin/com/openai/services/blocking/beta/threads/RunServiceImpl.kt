@@ -112,7 +112,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("threads", params.getPathParam(0), "runs")
+                    .addPathSegments("threads", params._pathParam(0), "runs")
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -142,7 +142,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("threads", params.getPathParam(0), "runs")
+                    .addPathSegments("threads", params._pathParam(0), "runs")
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(
                         json(
@@ -181,12 +181,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
-                    .addPathSegments(
-                        "threads",
-                        params.getPathParam(0),
-                        "runs",
-                        params.getPathParam(1),
-                    )
+                    .addPathSegments("threads", params._pathParam(0), "runs", params._pathParam(1))
                     .putAllHeaders(DEFAULT_HEADERS)
                     .build()
                     .prepare(clientOptions, params)
@@ -213,12 +208,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments(
-                        "threads",
-                        params.getPathParam(0),
-                        "runs",
-                        params.getPathParam(1),
-                    )
+                    .addPathSegments("threads", params._pathParam(0), "runs", params._pathParam(1))
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -247,7 +237,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
-                    .addPathSegments("threads", params.getPathParam(0), "runs")
+                    .addPathSegments("threads", params._pathParam(0), "runs")
                     .putAllHeaders(DEFAULT_HEADERS)
                     .build()
                     .prepare(clientOptions, params)
@@ -277,9 +267,9 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .method(HttpMethod.POST)
                     .addPathSegments(
                         "threads",
-                        params.getPathParam(0),
+                        params._pathParam(0),
                         "runs",
-                        params.getPathParam(1),
+                        params._pathParam(1),
                         "cancel",
                     )
                     .putAllHeaders(DEFAULT_HEADERS)
@@ -311,9 +301,9 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .method(HttpMethod.POST)
                     .addPathSegments(
                         "threads",
-                        params.getPathParam(0),
+                        params._pathParam(0),
                         "runs",
-                        params.getPathParam(1),
+                        params._pathParam(1),
                         "submit_tool_outputs",
                     )
                     .putAllHeaders(DEFAULT_HEADERS)
@@ -348,9 +338,9 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .method(HttpMethod.POST)
                     .addPathSegments(
                         "threads",
-                        params.getPathParam(0),
+                        params._pathParam(0),
                         "runs",
-                        params.getPathParam(1),
+                        params._pathParam(1),
                         "submit_tool_outputs",
                     )
                     .putAllHeaders(DEFAULT_HEADERS)

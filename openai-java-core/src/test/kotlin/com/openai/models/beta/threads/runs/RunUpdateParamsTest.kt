@@ -22,6 +22,16 @@ internal class RunUpdateParamsTest {
     }
 
     @Test
+    fun pathParams() {
+        val params = RunUpdateParams.builder().threadId("thread_id").runId("run_id").build()
+
+        assertThat(params._pathParam(0)).isEqualTo("thread_id")
+        assertThat(params._pathParam(1)).isEqualTo("run_id")
+        // out-of-bound path param
+        assertThat(params._pathParam(2)).isEqualTo("")
+    }
+
+    @Test
     fun body() {
         val params =
             RunUpdateParams.builder()
@@ -50,17 +60,5 @@ internal class RunUpdateParamsTest {
         val body = params._body()
 
         assertNotNull(body)
-    }
-
-    @Test
-    fun getPathParam() {
-        val params = RunUpdateParams.builder().threadId("thread_id").runId("run_id").build()
-        assertThat(params).isNotNull
-        // path param "threadId"
-        assertThat(params.getPathParam(0)).isEqualTo("thread_id")
-        // path param "runId"
-        assertThat(params.getPathParam(1)).isEqualTo("run_id")
-        // out-of-bound path param
-        assertThat(params.getPathParam(2)).isEqualTo("")
     }
 }

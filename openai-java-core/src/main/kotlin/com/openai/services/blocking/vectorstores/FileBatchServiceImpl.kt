@@ -81,7 +81,7 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
-                    .addPathSegments("vector_stores", params.getPathParam(0), "file_batches")
+                    .addPathSegments("vector_stores", params._pathParam(0), "file_batches")
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -112,9 +112,9 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
                     .method(HttpMethod.GET)
                     .addPathSegments(
                         "vector_stores",
-                        params.getPathParam(0),
+                        params._pathParam(0),
                         "file_batches",
-                        params.getPathParam(1),
+                        params._pathParam(1),
                     )
                     .putAllHeaders(DEFAULT_HEADERS)
                     .build()
@@ -145,9 +145,9 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
                     .method(HttpMethod.POST)
                     .addPathSegments(
                         "vector_stores",
-                        params.getPathParam(0),
+                        params._pathParam(0),
                         "file_batches",
-                        params.getPathParam(1),
+                        params._pathParam(1),
                         "cancel",
                     )
                     .putAllHeaders(DEFAULT_HEADERS)
@@ -180,9 +180,9 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
                     .method(HttpMethod.GET)
                     .addPathSegments(
                         "vector_stores",
-                        params.getPathParam(0),
+                        params._pathParam(0),
                         "file_batches",
-                        params.getPathParam(1),
+                        params._pathParam(1),
                         "files",
                     )
                     .putAllHeaders(DEFAULT_HEADERS)

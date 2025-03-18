@@ -4,6 +4,7 @@ package com.openai.models.finetuning.jobs
 
 import com.openai.core.JsonValue
 import com.openai.models.Metadata
+import kotlin.jvm.optionals.getOrNull
 import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -147,20 +148,18 @@ internal class JobCreateParamsTest {
                     .nEpochsAuto()
                     .build()
             )
-        assertThat(body.integrations())
-            .contains(
-                listOf(
-                    JobCreateParams.Integration.builder()
-                        .wandb(
-                            JobCreateParams.Integration.Wandb.builder()
-                                .project("my-wandb-project")
-                                .entity("entity")
-                                .name("name")
-                                .addTag("custom-tag")
-                                .build()
-                        )
-                        .build()
-                )
+        assertThat(body.integrations().getOrNull())
+            .containsExactly(
+                JobCreateParams.Integration.builder()
+                    .wandb(
+                        JobCreateParams.Integration.Wandb.builder()
+                            .project("my-wandb-project")
+                            .entity("entity")
+                            .name("name")
+                            .addTag("custom-tag")
+                            .build()
+                    )
+                    .build()
             )
         assertThat(body.metadata())
             .contains(

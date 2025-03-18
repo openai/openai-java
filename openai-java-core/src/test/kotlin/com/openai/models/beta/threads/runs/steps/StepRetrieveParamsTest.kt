@@ -19,6 +19,22 @@ internal class StepRetrieveParamsTest {
     }
 
     @Test
+    fun pathParams() {
+        val params =
+            StepRetrieveParams.builder()
+                .threadId("thread_id")
+                .runId("run_id")
+                .stepId("step_id")
+                .build()
+
+        assertThat(params._pathParam(0)).isEqualTo("thread_id")
+        assertThat(params._pathParam(1)).isEqualTo("run_id")
+        assertThat(params._pathParam(2)).isEqualTo("step_id")
+        // out-of-bound path param
+        assertThat(params._pathParam(3)).isEqualTo("")
+    }
+
+    @Test
     fun queryParams() {
         val params =
             StepRetrieveParams.builder()
@@ -50,24 +66,5 @@ internal class StepRetrieveParamsTest {
         val queryParams = params._queryParams()
 
         assertThat(queryParams).isEqualTo(QueryParams.builder().build())
-    }
-
-    @Test
-    fun getPathParam() {
-        val params =
-            StepRetrieveParams.builder()
-                .threadId("thread_id")
-                .runId("run_id")
-                .stepId("step_id")
-                .build()
-        assertThat(params).isNotNull
-        // path param "threadId"
-        assertThat(params.getPathParam(0)).isEqualTo("thread_id")
-        // path param "runId"
-        assertThat(params.getPathParam(1)).isEqualTo("run_id")
-        // path param "stepId"
-        assertThat(params.getPathParam(2)).isEqualTo("step_id")
-        // out-of-bound path param
-        assertThat(params.getPathParam(3)).isEqualTo("")
     }
 }
