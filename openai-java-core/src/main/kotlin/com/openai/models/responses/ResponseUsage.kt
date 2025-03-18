@@ -28,6 +28,9 @@ private constructor(
     @JsonProperty("input_tokens")
     @ExcludeMissing
     private val inputTokens: JsonField<Long> = JsonMissing.of(),
+    @JsonProperty("input_tokens_details")
+    @ExcludeMissing
+    private val inputTokensDetails: JsonField<InputTokensDetails> = JsonMissing.of(),
     @JsonProperty("output_tokens")
     @ExcludeMissing
     private val outputTokens: JsonField<Long> = JsonMissing.of(),
@@ -47,6 +50,15 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun inputTokens(): Long = inputTokens.getRequired("input_tokens")
+
+    /**
+     * A detailed breakdown of the input tokens.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun inputTokensDetails(): InputTokensDetails =
+        inputTokensDetails.getRequired("input_tokens_details")
 
     /**
      * The number of output tokens.
@@ -79,6 +91,16 @@ private constructor(
      * Unlike [inputTokens], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("input_tokens") @ExcludeMissing fun _inputTokens(): JsonField<Long> = inputTokens
+
+    /**
+     * Returns the raw JSON value of [inputTokensDetails].
+     *
+     * Unlike [inputTokensDetails], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("input_tokens_details")
+    @ExcludeMissing
+    fun _inputTokensDetails(): JsonField<InputTokensDetails> = inputTokensDetails
 
     /**
      * Returns the raw JSON value of [outputTokens].
@@ -118,6 +140,7 @@ private constructor(
         }
 
         inputTokens()
+        inputTokensDetails().validate()
         outputTokens()
         outputTokensDetails().validate()
         totalTokens()
@@ -134,6 +157,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .inputTokens()
+         * .inputTokensDetails()
          * .outputTokens()
          * .outputTokensDetails()
          * .totalTokens()
@@ -146,6 +170,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var inputTokens: JsonField<Long>? = null
+        private var inputTokensDetails: JsonField<InputTokensDetails>? = null
         private var outputTokens: JsonField<Long>? = null
         private var outputTokensDetails: JsonField<OutputTokensDetails>? = null
         private var totalTokens: JsonField<Long>? = null
@@ -154,6 +179,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(responseUsage: ResponseUsage) = apply {
             inputTokens = responseUsage.inputTokens
+            inputTokensDetails = responseUsage.inputTokensDetails
             outputTokens = responseUsage.outputTokens
             outputTokensDetails = responseUsage.outputTokensDetails
             totalTokens = responseUsage.totalTokens
@@ -171,6 +197,21 @@ private constructor(
          * value.
          */
         fun inputTokens(inputTokens: JsonField<Long>) = apply { this.inputTokens = inputTokens }
+
+        /** A detailed breakdown of the input tokens. */
+        fun inputTokensDetails(inputTokensDetails: InputTokensDetails) =
+            inputTokensDetails(JsonField.of(inputTokensDetails))
+
+        /**
+         * Sets [Builder.inputTokensDetails] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.inputTokensDetails] with a well-typed
+         * [InputTokensDetails] value instead. This method is primarily for setting the field to an
+         * undocumented or not yet supported value.
+         */
+        fun inputTokensDetails(inputTokensDetails: JsonField<InputTokensDetails>) = apply {
+            this.inputTokensDetails = inputTokensDetails
+        }
 
         /** The number of output tokens. */
         fun outputTokens(outputTokens: Long) = outputTokens(JsonField.of(outputTokens))
@@ -238,6 +279,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .inputTokens()
+         * .inputTokensDetails()
          * .outputTokens()
          * .outputTokensDetails()
          * .totalTokens()
@@ -248,11 +290,158 @@ private constructor(
         fun build(): ResponseUsage =
             ResponseUsage(
                 checkRequired("inputTokens", inputTokens),
+                checkRequired("inputTokensDetails", inputTokensDetails),
                 checkRequired("outputTokens", outputTokens),
                 checkRequired("outputTokensDetails", outputTokensDetails),
                 checkRequired("totalTokens", totalTokens),
                 additionalProperties.toImmutable(),
             )
+    }
+
+    /** A detailed breakdown of the input tokens. */
+    @NoAutoDetect
+    class InputTokensDetails
+    @JsonCreator
+    private constructor(
+        @JsonProperty("cached_tokens")
+        @ExcludeMissing
+        private val cachedTokens: JsonField<Long> = JsonMissing.of(),
+        @JsonAnySetter
+        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    ) {
+
+        /**
+         * The number of tokens that were retrieved from the cache.
+         * [More on prompt caching](https://platform.openai.com/docs/guides/prompt-caching).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun cachedTokens(): Long = cachedTokens.getRequired("cached_tokens")
+
+        /**
+         * Returns the raw JSON value of [cachedTokens].
+         *
+         * Unlike [cachedTokens], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("cached_tokens")
+        @ExcludeMissing
+        fun _cachedTokens(): JsonField<Long> = cachedTokens
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+        private var validated: Boolean = false
+
+        fun validate(): InputTokensDetails = apply {
+            if (validated) {
+                return@apply
+            }
+
+            cachedTokens()
+            validated = true
+        }
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [InputTokensDetails].
+             *
+             * The following fields are required:
+             * ```java
+             * .cachedTokens()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [InputTokensDetails]. */
+        class Builder internal constructor() {
+
+            private var cachedTokens: JsonField<Long>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(inputTokensDetails: InputTokensDetails) = apply {
+                cachedTokens = inputTokensDetails.cachedTokens
+                additionalProperties = inputTokensDetails.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * The number of tokens that were retrieved from the cache.
+             * [More on prompt caching](https://platform.openai.com/docs/guides/prompt-caching).
+             */
+            fun cachedTokens(cachedTokens: Long) = cachedTokens(JsonField.of(cachedTokens))
+
+            /**
+             * Sets [Builder.cachedTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.cachedTokens] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun cachedTokens(cachedTokens: JsonField<Long>) = apply {
+                this.cachedTokens = cachedTokens
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [InputTokensDetails].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .cachedTokens()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): InputTokensDetails =
+                InputTokensDetails(
+                    checkRequired("cachedTokens", cachedTokens),
+                    additionalProperties.toImmutable(),
+                )
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is InputTokensDetails && cachedTokens == other.cachedTokens && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(cachedTokens, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "InputTokensDetails{cachedTokens=$cachedTokens, additionalProperties=$additionalProperties}"
     }
 
     /** A detailed breakdown of the output tokens. */
@@ -403,15 +592,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseUsage && inputTokens == other.inputTokens && outputTokens == other.outputTokens && outputTokensDetails == other.outputTokensDetails && totalTokens == other.totalTokens && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseUsage && inputTokens == other.inputTokens && inputTokensDetails == other.inputTokensDetails && outputTokens == other.outputTokens && outputTokensDetails == other.outputTokensDetails && totalTokens == other.totalTokens && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(inputTokens, outputTokens, outputTokensDetails, totalTokens, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(inputTokens, inputTokensDetails, outputTokens, outputTokensDetails, totalTokens, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseUsage{inputTokens=$inputTokens, outputTokens=$outputTokens, outputTokensDetails=$outputTokensDetails, totalTokens=$totalTokens, additionalProperties=$additionalProperties}"
+        "ResponseUsage{inputTokens=$inputTokens, inputTokensDetails=$inputTokensDetails, outputTokens=$outputTokens, outputTokensDetails=$outputTokensDetails, totalTokens=$totalTokens, additionalProperties=$additionalProperties}"
 }

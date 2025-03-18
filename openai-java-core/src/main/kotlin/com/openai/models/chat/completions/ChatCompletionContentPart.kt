@@ -421,9 +421,9 @@ private constructor(
             @JsonProperty("file_id")
             @ExcludeMissing
             private val fileId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("file_name")
+            @JsonProperty("filename")
             @ExcludeMissing
-            private val fileName: JsonField<String> = JsonMissing.of(),
+            private val filename: JsonField<String> = JsonMissing.of(),
             @JsonAnySetter
             private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
         ) {
@@ -451,8 +451,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
-            fun fileName(): Optional<String> =
-                Optional.ofNullable(fileName.getNullable("file_name"))
+            fun filename(): Optional<String> = Optional.ofNullable(filename.getNullable("filename"))
 
             /**
              * Returns the raw JSON value of [fileData].
@@ -470,12 +469,12 @@ private constructor(
             @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
             /**
-             * Returns the raw JSON value of [fileName].
+             * Returns the raw JSON value of [filename].
              *
-             * Unlike [fileName], this method doesn't throw if the JSON field has an unexpected
+             * Unlike [filename], this method doesn't throw if the JSON field has an unexpected
              * type.
              */
-            @JsonProperty("file_name") @ExcludeMissing fun _fileName(): JsonField<String> = fileName
+            @JsonProperty("filename") @ExcludeMissing fun _filename(): JsonField<String> = filename
 
             @JsonAnyGetter
             @ExcludeMissing
@@ -490,7 +489,7 @@ private constructor(
 
                 fileData()
                 fileId()
-                fileName()
+                filename()
                 validated = true
             }
 
@@ -507,14 +506,14 @@ private constructor(
 
                 private var fileData: JsonField<String> = JsonMissing.of()
                 private var fileId: JsonField<String> = JsonMissing.of()
-                private var fileName: JsonField<String> = JsonMissing.of()
+                private var filename: JsonField<String> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(fileObject: FileObject) = apply {
                     fileData = fileObject.fileData
                     fileId = fileObject.fileId
-                    fileName = fileObject.fileName
+                    filename = fileObject.filename
                     additionalProperties = fileObject.additionalProperties.toMutableMap()
                 }
 
@@ -546,16 +545,16 @@ private constructor(
                 fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
 
                 /** The name of the file, used when passing the file to the model as a string. */
-                fun fileName(fileName: String) = fileName(JsonField.of(fileName))
+                fun filename(filename: String) = filename(JsonField.of(filename))
 
                 /**
-                 * Sets [Builder.fileName] to an arbitrary JSON value.
+                 * Sets [Builder.filename] to an arbitrary JSON value.
                  *
-                 * You should usually call [Builder.fileName] with a well-typed [String] value
+                 * You should usually call [Builder.filename] with a well-typed [String] value
                  * instead. This method is primarily for setting the field to an undocumented or not
                  * yet supported value.
                  */
-                fun fileName(fileName: JsonField<String>) = apply { this.fileName = fileName }
+                fun filename(filename: JsonField<String>) = apply { this.filename = filename }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -585,7 +584,7 @@ private constructor(
                  * Further updates to this [Builder] will not mutate the returned instance.
                  */
                 fun build(): FileObject =
-                    FileObject(fileData, fileId, fileName, additionalProperties.toImmutable())
+                    FileObject(fileData, fileId, filename, additionalProperties.toImmutable())
             }
 
             override fun equals(other: Any?): Boolean {
@@ -593,17 +592,17 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is FileObject && fileData == other.fileData && fileId == other.fileId && fileName == other.fileName && additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is FileObject && fileData == other.fileData && fileId == other.fileId && filename == other.filename && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(fileData, fileId, fileName, additionalProperties) }
+            private val hashCode: Int by lazy { Objects.hash(fileData, fileId, filename, additionalProperties) }
             /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "FileObject{fileData=$fileData, fileId=$fileId, fileName=$fileName, additionalProperties=$additionalProperties}"
+                "FileObject{fileData=$fileData, fileId=$fileId, filename=$filename, additionalProperties=$additionalProperties}"
         }
 
         override fun equals(other: Any?): Boolean {

@@ -14,7 +14,7 @@ internal class BatchCreateParamsTest {
     fun create() {
         BatchCreateParams.builder()
             .completionWindow(BatchCreateParams.CompletionWindow._24H)
-            .endpoint(BatchCreateParams.Endpoint.V1_CHAT_COMPLETIONS)
+            .endpoint(BatchCreateParams.Endpoint.V1_RESPONSES)
             .inputFileId("input_file_id")
             .metadata(
                 Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
@@ -27,7 +27,7 @@ internal class BatchCreateParamsTest {
         val params =
             BatchCreateParams.builder()
                 .completionWindow(BatchCreateParams.CompletionWindow._24H)
-                .endpoint(BatchCreateParams.Endpoint.V1_CHAT_COMPLETIONS)
+                .endpoint(BatchCreateParams.Endpoint.V1_RESPONSES)
                 .inputFileId("input_file_id")
                 .metadata(
                     Metadata.builder()
@@ -40,7 +40,7 @@ internal class BatchCreateParamsTest {
 
         assertNotNull(body)
         assertThat(body.completionWindow()).isEqualTo(BatchCreateParams.CompletionWindow._24H)
-        assertThat(body.endpoint()).isEqualTo(BatchCreateParams.Endpoint.V1_CHAT_COMPLETIONS)
+        assertThat(body.endpoint()).isEqualTo(BatchCreateParams.Endpoint.V1_RESPONSES)
         assertThat(body.inputFileId()).isEqualTo("input_file_id")
         assertThat(body.metadata())
             .contains(
@@ -53,7 +53,7 @@ internal class BatchCreateParamsTest {
         val params =
             BatchCreateParams.builder()
                 .completionWindow(BatchCreateParams.CompletionWindow._24H)
-                .endpoint(BatchCreateParams.Endpoint.V1_CHAT_COMPLETIONS)
+                .endpoint(BatchCreateParams.Endpoint.V1_RESPONSES)
                 .inputFileId("input_file_id")
                 .build()
 
@@ -61,7 +61,7 @@ internal class BatchCreateParamsTest {
 
         assertNotNull(body)
         assertThat(body.completionWindow()).isEqualTo(BatchCreateParams.CompletionWindow._24H)
-        assertThat(body.endpoint()).isEqualTo(BatchCreateParams.Endpoint.V1_CHAT_COMPLETIONS)
+        assertThat(body.endpoint()).isEqualTo(BatchCreateParams.Endpoint.V1_RESPONSES)
         assertThat(body.inputFileId()).isEqualTo("input_file_id")
     }
 }

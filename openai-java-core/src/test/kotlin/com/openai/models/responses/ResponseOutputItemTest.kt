@@ -59,7 +59,6 @@ internal class ResponseOutputItemTest {
     fun ofFunctionCall() {
         val functionCall =
             ResponseFunctionToolCall.builder()
-                .id("id")
                 .arguments("arguments")
                 .callId("call_id")
                 .name("name")
