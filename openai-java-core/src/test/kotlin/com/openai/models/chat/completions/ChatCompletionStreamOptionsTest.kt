@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionStreamOptionsTest {
 
     @Test
-    fun createChatCompletionStreamOptions() {
+    fun create() {
         val chatCompletionStreamOptions =
             ChatCompletionStreamOptions.builder().includeUsage(true).build()
-        assertThat(chatCompletionStreamOptions).isNotNull
+
         assertThat(chatCompletionStreamOptions.includeUsage()).contains(true)
     }
 }

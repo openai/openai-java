@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class BatchTest {
 
     @Test
-    fun createBatch() {
+    fun create() {
         val batch =
             Batch.builder()
                 .id("id")
@@ -51,7 +51,7 @@ internal class BatchTest {
                     BatchRequestCounts.builder().completed(0L).failed(0L).total(0L).build()
                 )
                 .build()
-        assertThat(batch).isNotNull
+
         assertThat(batch.id()).isEqualTo("id")
         assertThat(batch.completionWindow()).isEqualTo("completion_window")
         assertThat(batch.createdAt()).isEqualTo(0L)

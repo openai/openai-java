@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class ToolCallDeltaObjectTest {
 
     @Test
-    fun createToolCallDeltaObject() {
+    fun create() {
         val toolCallDeltaObject =
             ToolCallDeltaObject.builder()
                 .addToolCall(
@@ -27,7 +27,7 @@ internal class ToolCallDeltaObjectTest {
                         .build()
                 )
                 .build()
-        assertThat(toolCallDeltaObject).isNotNull
+
         assertThat(toolCallDeltaObject.toolCalls().getOrNull())
             .containsExactly(
                 ToolCallDelta.ofCodeInterpreter(

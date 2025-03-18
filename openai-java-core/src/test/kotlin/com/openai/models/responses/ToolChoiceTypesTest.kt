@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test
 internal class ToolChoiceTypesTest {
 
     @Test
-    fun createToolChoiceTypes() {
+    fun create() {
         val toolChoiceTypes =
             ToolChoiceTypes.builder().type(ToolChoiceTypes.Type.FILE_SEARCH).build()
-        assertThat(toolChoiceTypes).isNotNull
+
         assertThat(toolChoiceTypes.type()).isEqualTo(ToolChoiceTypes.Type.FILE_SEARCH)
     }
 }

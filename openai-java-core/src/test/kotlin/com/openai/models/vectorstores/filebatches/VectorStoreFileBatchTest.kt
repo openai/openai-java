@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class VectorStoreFileBatchTest {
 
     @Test
-    fun createVectorStoreFileBatch() {
+    fun create() {
         val vectorStoreFileBatch =
             VectorStoreFileBatch.builder()
                 .id("id")
@@ -25,7 +25,7 @@ internal class VectorStoreFileBatchTest {
                 .status(VectorStoreFileBatch.Status.IN_PROGRESS)
                 .vectorStoreId("vector_store_id")
                 .build()
-        assertThat(vectorStoreFileBatch).isNotNull
+
         assertThat(vectorStoreFileBatch.id()).isEqualTo("id")
         assertThat(vectorStoreFileBatch.createdAt()).isEqualTo(0L)
         assertThat(vectorStoreFileBatch.fileCounts())

@@ -2,14 +2,12 @@
 
 package com.openai.models.responses
 
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class ResponseAudioDoneEventTest {
 
     @Test
-    fun createResponseAudioDoneEvent() {
+    fun create() {
         val responseAudioDoneEvent = ResponseAudioDoneEvent.builder().build()
-        assertThat(responseAudioDoneEvent).isNotNull
     }
 }

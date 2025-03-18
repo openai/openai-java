@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test
 internal class ResponseInputTextTest {
 
     @Test
-    fun createResponseInputText() {
+    fun create() {
         val responseInputText = ResponseInputText.builder().text("text").build()
-        assertThat(responseInputText).isNotNull
+
         assertThat(responseInputText.text()).isEqualTo("text")
     }
 }

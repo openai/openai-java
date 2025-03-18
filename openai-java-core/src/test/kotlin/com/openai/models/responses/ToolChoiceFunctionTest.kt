@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test
 internal class ToolChoiceFunctionTest {
 
     @Test
-    fun createToolChoiceFunction() {
+    fun create() {
         val toolChoiceFunction = ToolChoiceFunction.builder().name("name").build()
-        assertThat(toolChoiceFunction).isNotNull
+
         assertThat(toolChoiceFunction.name()).isEqualTo("name")
     }
 }

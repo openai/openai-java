@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class VectorStoreFileTest {
 
     @Test
-    fun createVectorStoreFile() {
+    fun create() {
         val vectorStoreFile =
             VectorStoreFile.builder()
                 .id("id")
@@ -38,7 +38,7 @@ internal class VectorStoreFileTest {
                         .build()
                 )
                 .build()
-        assertThat(vectorStoreFile).isNotNull
+
         assertThat(vectorStoreFile.id()).isEqualTo("id")
         assertThat(vectorStoreFile.createdAt()).isEqualTo(0L)
         assertThat(vectorStoreFile.lastError())

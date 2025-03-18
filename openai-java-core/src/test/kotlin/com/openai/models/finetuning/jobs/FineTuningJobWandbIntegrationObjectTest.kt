@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class FineTuningJobWandbIntegrationObjectTest {
 
     @Test
-    fun createFineTuningJobWandbIntegrationObject() {
+    fun create() {
         val fineTuningJobWandbIntegrationObject =
             FineTuningJobWandbIntegrationObject.builder()
                 .wandb(
@@ -20,7 +20,7 @@ internal class FineTuningJobWandbIntegrationObjectTest {
                         .build()
                 )
                 .build()
-        assertThat(fineTuningJobWandbIntegrationObject).isNotNull
+
         assertThat(fineTuningJobWandbIntegrationObject.wandb())
             .isEqualTo(
                 FineTuningJobWandbIntegration.builder()

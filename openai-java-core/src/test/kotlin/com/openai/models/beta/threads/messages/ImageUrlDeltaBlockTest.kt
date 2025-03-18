@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ImageUrlDeltaBlockTest {
 
     @Test
-    fun createImageUrlDeltaBlock() {
+    fun create() {
         val imageUrlDeltaBlock =
             ImageUrlDeltaBlock.builder()
                 .index(0L)
@@ -16,7 +16,7 @@ internal class ImageUrlDeltaBlockTest {
                     ImageUrlDelta.builder().detail(ImageUrlDelta.Detail.AUTO).url("url").build()
                 )
                 .build()
-        assertThat(imageUrlDeltaBlock).isNotNull
+
         assertThat(imageUrlDeltaBlock.index()).isEqualTo(0L)
         assertThat(imageUrlDeltaBlock.imageUrl())
             .contains(ImageUrlDelta.builder().detail(ImageUrlDelta.Detail.AUTO).url("url").build())

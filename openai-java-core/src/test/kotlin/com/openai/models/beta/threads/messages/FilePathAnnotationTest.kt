@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class FilePathAnnotationTest {
 
     @Test
-    fun createFilePathAnnotation() {
+    fun create() {
         val filePathAnnotation =
             FilePathAnnotation.builder()
                 .endIndex(0L)
@@ -16,7 +16,7 @@ internal class FilePathAnnotationTest {
                 .startIndex(0L)
                 .text("text")
                 .build()
-        assertThat(filePathAnnotation).isNotNull
+
         assertThat(filePathAnnotation.endIndex()).isEqualTo(0L)
         assertThat(filePathAnnotation.filePath())
             .isEqualTo(FilePathAnnotation.FilePath.builder().fileId("file_id").build())

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ImageFileDeltaBlockTest {
 
     @Test
-    fun createImageFileDeltaBlock() {
+    fun create() {
         val imageFileDeltaBlock =
             ImageFileDeltaBlock.builder()
                 .index(0L)
@@ -19,7 +19,7 @@ internal class ImageFileDeltaBlockTest {
                         .build()
                 )
                 .build()
-        assertThat(imageFileDeltaBlock).isNotNull
+
         assertThat(imageFileDeltaBlock.index()).isEqualTo(0L)
         assertThat(imageFileDeltaBlock.imageFile())
             .contains(

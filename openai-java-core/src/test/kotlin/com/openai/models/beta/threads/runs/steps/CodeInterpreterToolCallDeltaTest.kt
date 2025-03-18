@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class CodeInterpreterToolCallDeltaTest {
 
     @Test
-    fun createCodeInterpreterToolCallDelta() {
+    fun create() {
         val codeInterpreterToolCallDelta =
             CodeInterpreterToolCallDelta.builder()
                 .index(0L)
@@ -20,7 +20,7 @@ internal class CodeInterpreterToolCallDeltaTest {
                         .build()
                 )
                 .build()
-        assertThat(codeInterpreterToolCallDelta).isNotNull
+
         assertThat(codeInterpreterToolCallDelta.index()).isEqualTo(0L)
         assertThat(codeInterpreterToolCallDelta.id()).contains("id")
         assertThat(codeInterpreterToolCallDelta.codeInterpreter())

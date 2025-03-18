@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class VectorStoreTest {
 
     @Test
-    fun createVectorStore() {
+    fun create() {
         val vectorStore =
             VectorStore.builder()
                 .id("id")
@@ -36,7 +36,7 @@ internal class VectorStoreTest {
                 .expiresAfter(VectorStore.ExpiresAfter.builder().days(1L).build())
                 .expiresAt(0L)
                 .build()
-        assertThat(vectorStore).isNotNull
+
         assertThat(vectorStore.id()).isEqualTo("id")
         assertThat(vectorStore.createdAt()).isEqualTo(0L)
         assertThat(vectorStore.fileCounts())

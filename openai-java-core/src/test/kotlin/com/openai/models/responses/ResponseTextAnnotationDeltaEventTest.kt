@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseTextAnnotationDeltaEventTest {
 
     @Test
-    fun createResponseTextAnnotationDeltaEvent() {
+    fun create() {
         val responseTextAnnotationDeltaEvent =
             ResponseTextAnnotationDeltaEvent.builder()
                 .annotation(
@@ -22,7 +22,7 @@ internal class ResponseTextAnnotationDeltaEventTest {
                 .itemId("item_id")
                 .outputIndex(0L)
                 .build()
-        assertThat(responseTextAnnotationDeltaEvent).isNotNull
+
         assertThat(responseTextAnnotationDeltaEvent.annotation())
             .isEqualTo(
                 ResponseTextAnnotationDeltaEvent.Annotation.ofFileCitation(

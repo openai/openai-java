@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class RunStepDeltaMessageDeltaTest {
 
     @Test
-    fun createRunStepDeltaMessageDelta() {
+    fun create() {
         val runStepDeltaMessageDelta =
             RunStepDeltaMessageDelta.builder()
                 .messageCreation(
@@ -17,7 +17,7 @@ internal class RunStepDeltaMessageDeltaTest {
                         .build()
                 )
                 .build()
-        assertThat(runStepDeltaMessageDelta).isNotNull
+
         assertThat(runStepDeltaMessageDelta.messageCreation())
             .contains(
                 RunStepDeltaMessageDelta.MessageCreation.builder().messageId("message_id").build()

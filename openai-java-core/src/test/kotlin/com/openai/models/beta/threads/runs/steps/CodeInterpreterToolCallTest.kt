@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class CodeInterpreterToolCallTest {
 
     @Test
-    fun createCodeInterpreterToolCall() {
+    fun create() {
         val codeInterpreterToolCall =
             CodeInterpreterToolCall.builder()
                 .id("id")
@@ -19,7 +19,7 @@ internal class CodeInterpreterToolCallTest {
                         .build()
                 )
                 .build()
-        assertThat(codeInterpreterToolCall).isNotNull
+
         assertThat(codeInterpreterToolCall.id()).isEqualTo("id")
         assertThat(codeInterpreterToolCall.codeInterpreter())
             .isEqualTo(

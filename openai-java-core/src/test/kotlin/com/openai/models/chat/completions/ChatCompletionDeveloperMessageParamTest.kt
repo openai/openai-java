@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionDeveloperMessageParamTest {
 
     @Test
-    fun createChatCompletionDeveloperMessageParam() {
+    fun create() {
         val chatCompletionDeveloperMessageParam =
             ChatCompletionDeveloperMessageParam.builder().content("string").name("name").build()
-        assertThat(chatCompletionDeveloperMessageParam).isNotNull
+
         assertThat(chatCompletionDeveloperMessageParam.content())
             .isEqualTo(ChatCompletionDeveloperMessageParam.Content.ofText("string"))
         assertThat(chatCompletionDeveloperMessageParam.name()).contains("name")

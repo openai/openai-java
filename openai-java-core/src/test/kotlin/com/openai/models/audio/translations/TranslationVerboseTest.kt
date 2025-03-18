@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class TranslationVerboseTest {
 
     @Test
-    fun createTranslationVerbose() {
+    fun create() {
         val translationVerbose =
             TranslationVerbose.builder()
                 .duration(0.0)
@@ -31,7 +31,7 @@ internal class TranslationVerboseTest {
                         .build()
                 )
                 .build()
-        assertThat(translationVerbose).isNotNull
+
         assertThat(translationVerbose.duration()).isEqualTo(0.0)
         assertThat(translationVerbose.language()).isEqualTo("language")
         assertThat(translationVerbose.text()).isEqualTo("text")

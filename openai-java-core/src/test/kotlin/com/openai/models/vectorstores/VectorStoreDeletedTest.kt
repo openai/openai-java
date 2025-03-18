@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test
 internal class VectorStoreDeletedTest {
 
     @Test
-    fun createVectorStoreDeleted() {
+    fun create() {
         val vectorStoreDeleted = VectorStoreDeleted.builder().id("id").deleted(true).build()
-        assertThat(vectorStoreDeleted).isNotNull
+
         assertThat(vectorStoreDeleted.id()).isEqualTo("id")
         assertThat(vectorStoreDeleted.deleted()).isEqualTo(true)
     }

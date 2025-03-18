@@ -8,14 +8,14 @@ import org.junit.jupiter.api.Test
 internal class ImageFileContentBlockTest {
 
     @Test
-    fun createImageFileContentBlock() {
+    fun create() {
         val imageFileContentBlock =
             ImageFileContentBlock.builder()
                 .imageFile(
                     ImageFile.builder().fileId("file_id").detail(ImageFile.Detail.AUTO).build()
                 )
                 .build()
-        assertThat(imageFileContentBlock).isNotNull
+
         assertThat(imageFileContentBlock.imageFile())
             .isEqualTo(ImageFile.builder().fileId("file_id").detail(ImageFile.Detail.AUTO).build())
     }

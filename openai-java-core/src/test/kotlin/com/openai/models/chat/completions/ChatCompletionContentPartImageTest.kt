@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionContentPartImageTest {
 
     @Test
-    fun createChatCompletionContentPartImage() {
+    fun create() {
         val chatCompletionContentPartImage =
             ChatCompletionContentPartImage.builder()
                 .imageUrl(
@@ -18,7 +18,7 @@ internal class ChatCompletionContentPartImageTest {
                         .build()
                 )
                 .build()
-        assertThat(chatCompletionContentPartImage).isNotNull
+
         assertThat(chatCompletionContentPartImage.imageUrl())
             .isEqualTo(
                 ChatCompletionContentPartImage.ImageUrl.builder()

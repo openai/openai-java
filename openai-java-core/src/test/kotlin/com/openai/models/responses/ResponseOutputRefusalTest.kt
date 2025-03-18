@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test
 internal class ResponseOutputRefusalTest {
 
     @Test
-    fun createResponseOutputRefusal() {
+    fun create() {
         val responseOutputRefusal = ResponseOutputRefusal.builder().refusal("refusal").build()
-        assertThat(responseOutputRefusal).isNotNull
+
         assertThat(responseOutputRefusal.refusal()).isEqualTo("refusal")
     }
 }

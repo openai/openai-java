@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseRefusalDeltaEventTest {
 
     @Test
-    fun createResponseRefusalDeltaEvent() {
+    fun create() {
         val responseRefusalDeltaEvent =
             ResponseRefusalDeltaEvent.builder()
                 .contentIndex(0L)
@@ -16,7 +16,7 @@ internal class ResponseRefusalDeltaEventTest {
                 .itemId("item_id")
                 .outputIndex(0L)
                 .build()
-        assertThat(responseRefusalDeltaEvent).isNotNull
+
         assertThat(responseRefusalDeltaEvent.contentIndex()).isEqualTo(0L)
         assertThat(responseRefusalDeltaEvent.delta()).isEqualTo("delta")
         assertThat(responseRefusalDeltaEvent.itemId()).isEqualTo("item_id")

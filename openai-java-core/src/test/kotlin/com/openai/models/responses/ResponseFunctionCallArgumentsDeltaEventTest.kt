@@ -8,14 +8,14 @@ import org.junit.jupiter.api.Test
 internal class ResponseFunctionCallArgumentsDeltaEventTest {
 
     @Test
-    fun createResponseFunctionCallArgumentsDeltaEvent() {
+    fun create() {
         val responseFunctionCallArgumentsDeltaEvent =
             ResponseFunctionCallArgumentsDeltaEvent.builder()
                 .delta("delta")
                 .itemId("item_id")
                 .outputIndex(0L)
                 .build()
-        assertThat(responseFunctionCallArgumentsDeltaEvent).isNotNull
+
         assertThat(responseFunctionCallArgumentsDeltaEvent.delta()).isEqualTo("delta")
         assertThat(responseFunctionCallArgumentsDeltaEvent.itemId()).isEqualTo("item_id")
         assertThat(responseFunctionCallArgumentsDeltaEvent.outputIndex()).isEqualTo(0L)

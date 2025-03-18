@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseItemListTest {
 
     @Test
-    fun createResponseItemList() {
+    fun create() {
         val responseItemList =
             ResponseItemList.builder()
                 .addData(
@@ -24,7 +24,7 @@ internal class ResponseItemListTest {
                 .hasMore(true)
                 .lastId("last_id")
                 .build()
-        assertThat(responseItemList).isNotNull
+
         assertThat(responseItemList.data())
             .containsExactly(
                 ResponseItemList.Data.ofMessage(

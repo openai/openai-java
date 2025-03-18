@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class FineTuningJobTest {
 
     @Test
-    fun createFineTuningJob() {
+    fun create() {
         val fineTuningJob =
             FineTuningJob.builder()
                 .id("id")
@@ -87,7 +87,7 @@ internal class FineTuningJobTest {
                         .build()
                 )
                 .build()
-        assertThat(fineTuningJob).isNotNull
+
         assertThat(fineTuningJob.id()).isEqualTo("id")
         assertThat(fineTuningJob.createdAt()).isEqualTo(0L)
         assertThat(fineTuningJob.error())

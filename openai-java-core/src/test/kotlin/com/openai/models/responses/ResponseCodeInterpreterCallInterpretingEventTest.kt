@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseCodeInterpreterCallInterpretingEventTest {
 
     @Test
-    fun createResponseCodeInterpreterCallInterpretingEvent() {
+    fun create() {
         val responseCodeInterpreterCallInterpretingEvent =
             ResponseCodeInterpreterCallInterpretingEvent.builder()
                 .codeInterpreterCall(
@@ -21,7 +21,7 @@ internal class ResponseCodeInterpreterCallInterpretingEventTest {
                 )
                 .outputIndex(0L)
                 .build()
-        assertThat(responseCodeInterpreterCallInterpretingEvent).isNotNull
+
         assertThat(responseCodeInterpreterCallInterpretingEvent.codeInterpreterCall())
             .isEqualTo(
                 ResponseCodeInterpreterToolCall.builder()

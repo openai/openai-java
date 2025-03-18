@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseIncompleteEventTest {
 
     @Test
-    fun createResponseIncompleteEvent() {
+    fun create() {
         val responseIncompleteEvent =
             ResponseIncompleteEvent.builder()
                 .response(
@@ -111,7 +111,7 @@ internal class ResponseIncompleteEventTest {
                         .build()
                 )
                 .build()
-        assertThat(responseIncompleteEvent).isNotNull
+
         assertThat(responseIncompleteEvent.response())
             .isEqualTo(
                 Response.builder()

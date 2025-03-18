@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ModerationCreateResponseTest {
 
     @Test
-    fun createModerationCreateResponse() {
+    fun create() {
         val moderationCreateResponse =
             ModerationCreateResponse.builder()
                 .id("id")
@@ -84,7 +84,7 @@ internal class ModerationCreateResponseTest {
                         .build()
                 )
                 .build()
-        assertThat(moderationCreateResponse).isNotNull
+
         assertThat(moderationCreateResponse.id()).isEqualTo("id")
         assertThat(moderationCreateResponse.model()).isEqualTo("model")
         assertThat(moderationCreateResponse.results())

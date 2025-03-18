@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ThreadStreamEventTest {
 
     @Test
-    fun createThreadStreamEvent() {
+    fun create() {
         val threadStreamEvent =
             ThreadStreamEvent.builder()
                 .data(
@@ -41,7 +41,7 @@ internal class ThreadStreamEventTest {
                 )
                 .enabled(true)
                 .build()
-        assertThat(threadStreamEvent).isNotNull
+
         assertThat(threadStreamEvent.data())
             .isEqualTo(
                 Thread.builder()

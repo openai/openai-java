@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test
 internal class ModerationTextInputTest {
 
     @Test
-    fun createModerationTextInput() {
+    fun create() {
         val moderationTextInput = ModerationTextInput.builder().text("I want to kill them").build()
-        assertThat(moderationTextInput).isNotNull
+
         assertThat(moderationTextInput.text()).isEqualTo("I want to kill them")
     }
 }

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ModerationTest {
 
     @Test
-    fun createModeration() {
+    fun create() {
         val moderation =
             Moderation.builder()
                 .categories(
@@ -72,7 +72,7 @@ internal class ModerationTest {
                 )
                 .flagged(true)
                 .build()
-        assertThat(moderation).isNotNull
+
         assertThat(moderation.categories())
             .isEqualTo(
                 Moderation.Categories.builder()
