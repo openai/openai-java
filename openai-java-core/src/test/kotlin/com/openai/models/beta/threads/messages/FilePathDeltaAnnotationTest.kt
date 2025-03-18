@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class FilePathDeltaAnnotationTest {
 
     @Test
-    fun createFilePathDeltaAnnotation() {
+    fun create() {
         val filePathDeltaAnnotation =
             FilePathDeltaAnnotation.builder()
                 .index(0L)
@@ -17,7 +17,7 @@ internal class FilePathDeltaAnnotationTest {
                 .startIndex(0L)
                 .text("text")
                 .build()
-        assertThat(filePathDeltaAnnotation).isNotNull
+
         assertThat(filePathDeltaAnnotation.index()).isEqualTo(0L)
         assertThat(filePathDeltaAnnotation.endIndex()).contains(0L)
         assertThat(filePathDeltaAnnotation.filePath())

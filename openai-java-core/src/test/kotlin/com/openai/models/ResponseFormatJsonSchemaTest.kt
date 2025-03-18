@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseFormatJsonSchemaTest {
 
     @Test
-    fun createResponseFormatJsonSchema() {
+    fun create() {
         val responseFormatJsonSchema =
             ResponseFormatJsonSchema.builder()
                 .jsonSchema(
@@ -25,7 +25,7 @@ internal class ResponseFormatJsonSchemaTest {
                         .build()
                 )
                 .build()
-        assertThat(responseFormatJsonSchema).isNotNull
+
         assertThat(responseFormatJsonSchema.jsonSchema())
             .isEqualTo(
                 ResponseFormatJsonSchema.JsonSchema.builder()

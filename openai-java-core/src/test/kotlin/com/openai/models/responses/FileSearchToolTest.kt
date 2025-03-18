@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class FileSearchToolTest {
 
     @Test
-    fun createFileSearchTool() {
+    fun create() {
         val fileSearchTool =
             FileSearchTool.builder()
                 .addVectorStoreId("string")
@@ -28,7 +28,7 @@ internal class FileSearchToolTest {
                         .build()
                 )
                 .build()
-        assertThat(fileSearchTool).isNotNull
+
         assertThat(fileSearchTool.vectorStoreIds()).containsExactly("string")
         assertThat(fileSearchTool.filters())
             .contains(

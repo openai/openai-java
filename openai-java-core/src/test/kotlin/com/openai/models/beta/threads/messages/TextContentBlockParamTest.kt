@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test
 internal class TextContentBlockParamTest {
 
     @Test
-    fun createTextContentBlockParam() {
+    fun create() {
         val textContentBlockParam = TextContentBlockParam.builder().text("text").build()
-        assertThat(textContentBlockParam).isNotNull
+
         assertThat(textContentBlockParam.text()).isEqualTo("text")
     }
 }

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseTextDeltaEventTest {
 
     @Test
-    fun createResponseTextDeltaEvent() {
+    fun create() {
         val responseTextDeltaEvent =
             ResponseTextDeltaEvent.builder()
                 .contentIndex(0L)
@@ -16,7 +16,7 @@ internal class ResponseTextDeltaEventTest {
                 .itemId("item_id")
                 .outputIndex(0L)
                 .build()
-        assertThat(responseTextDeltaEvent).isNotNull
+
         assertThat(responseTextDeltaEvent.contentIndex()).isEqualTo(0L)
         assertThat(responseTextDeltaEvent.delta()).isEqualTo("delta")
         assertThat(responseTextDeltaEvent.itemId()).isEqualTo("item_id")

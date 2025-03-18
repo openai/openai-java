@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseOutputTextTest {
 
     @Test
-    fun createResponseOutputText() {
+    fun create() {
         val responseOutputText =
             ResponseOutputText.builder()
                 .addAnnotation(
@@ -19,7 +19,7 @@ internal class ResponseOutputTextTest {
                 )
                 .text("text")
                 .build()
-        assertThat(responseOutputText).isNotNull
+
         assertThat(responseOutputText.annotations())
             .containsExactly(
                 ResponseOutputText.Annotation.ofFileCitation(

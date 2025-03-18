@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class MessageDeltaEventTest {
 
     @Test
-    fun createMessageDeltaEvent() {
+    fun create() {
         val messageDeltaEvent =
             MessageDeltaEvent.builder()
                 .id("id")
@@ -29,7 +29,7 @@ internal class MessageDeltaEventTest {
                         .build()
                 )
                 .build()
-        assertThat(messageDeltaEvent).isNotNull
+
         assertThat(messageDeltaEvent.id()).isEqualTo("id")
         assertThat(messageDeltaEvent.delta())
             .isEqualTo(

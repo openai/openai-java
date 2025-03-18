@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class StaticFileChunkingStrategyObjectTest {
 
     @Test
-    fun createStaticFileChunkingStrategyObject() {
+    fun create() {
         val staticFileChunkingStrategyObject =
             StaticFileChunkingStrategyObject.builder()
                 .static_(
@@ -18,7 +18,7 @@ internal class StaticFileChunkingStrategyObjectTest {
                         .build()
                 )
                 .build()
-        assertThat(staticFileChunkingStrategyObject).isNotNull
+
         assertThat(staticFileChunkingStrategyObject.static_())
             .isEqualTo(
                 StaticFileChunkingStrategy.builder()

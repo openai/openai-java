@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test
 internal class BatchErrorTest {
 
     @Test
-    fun createBatchError() {
+    fun create() {
         val batchError =
             BatchError.builder().code("code").line(0L).message("message").param("param").build()
-        assertThat(batchError).isNotNull
+
         assertThat(batchError.code()).contains("code")
         assertThat(batchError.line()).contains(0L)
         assertThat(batchError.message()).contains("message")

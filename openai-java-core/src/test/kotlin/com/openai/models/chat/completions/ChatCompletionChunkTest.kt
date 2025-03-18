@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionChunkTest {
 
     @Test
-    fun createChatCompletionChunk() {
+    fun create() {
         val chatCompletionChunk =
             ChatCompletionChunk.builder()
                 .id("id")
@@ -106,7 +106,7 @@ internal class ChatCompletionChunkTest {
                         .build()
                 )
                 .build()
-        assertThat(chatCompletionChunk).isNotNull
+
         assertThat(chatCompletionChunk.id()).isEqualTo("id")
         assertThat(chatCompletionChunk.choices())
             .containsExactly(

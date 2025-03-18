@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test
 internal class RefusalContentBlockTest {
 
     @Test
-    fun createRefusalContentBlock() {
+    fun create() {
         val refusalContentBlock = RefusalContentBlock.builder().refusal("refusal").build()
-        assertThat(refusalContentBlock).isNotNull
+
         assertThat(refusalContentBlock.refusal()).isEqualTo("refusal")
     }
 }

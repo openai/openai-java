@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionDeletedTest {
 
     @Test
-    fun createChatCompletionDeleted() {
+    fun create() {
         val chatCompletionDeleted = ChatCompletionDeleted.builder().id("id").deleted(true).build()
-        assertThat(chatCompletionDeleted).isNotNull
+
         assertThat(chatCompletionDeleted.id()).isEqualTo("id")
         assertThat(chatCompletionDeleted.deleted()).isEqualTo(true)
     }

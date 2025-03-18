@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionContentPartRefusalTest {
 
     @Test
-    fun createChatCompletionContentPartRefusal() {
+    fun create() {
         val chatCompletionContentPartRefusal =
             ChatCompletionContentPartRefusal.builder().refusal("refusal").build()
-        assertThat(chatCompletionContentPartRefusal).isNotNull
+
         assertThat(chatCompletionContentPartRefusal.refusal()).isEqualTo("refusal")
     }
 }

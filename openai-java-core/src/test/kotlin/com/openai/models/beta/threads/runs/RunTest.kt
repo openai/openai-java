@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test
 internal class RunTest {
 
     @Test
-    fun createRun() {
+    fun create() {
         val run =
             Run.builder()
                 .id("id")
@@ -86,7 +86,7 @@ internal class RunTest {
                 .temperature(0.0)
                 .topP(0.0)
                 .build()
-        assertThat(run).isNotNull
+
         assertThat(run.id()).isEqualTo("id")
         assertThat(run.assistantId()).isEqualTo("assistant_id")
         assertThat(run.cancelledAt()).contains(0L)

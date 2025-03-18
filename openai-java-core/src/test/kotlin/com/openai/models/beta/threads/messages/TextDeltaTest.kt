@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class TextDeltaTest {
 
     @Test
-    fun createTextDelta() {
+    fun create() {
         val textDelta =
             TextDelta.builder()
                 .addAnnotation(
@@ -28,7 +28,7 @@ internal class TextDeltaTest {
                 )
                 .value("value")
                 .build()
-        assertThat(textDelta).isNotNull
+
         assertThat(textDelta.annotations().getOrNull())
             .containsExactly(
                 AnnotationDelta.ofFileCitation(

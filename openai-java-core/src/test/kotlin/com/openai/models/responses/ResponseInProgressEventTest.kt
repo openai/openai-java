@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseInProgressEventTest {
 
     @Test
-    fun createResponseInProgressEvent() {
+    fun create() {
         val responseInProgressEvent =
             ResponseInProgressEvent.builder()
                 .response(
@@ -111,7 +111,7 @@ internal class ResponseInProgressEventTest {
                         .build()
                 )
                 .build()
-        assertThat(responseInProgressEvent).isNotNull
+
         assertThat(responseInProgressEvent.response())
             .isEqualTo(
                 Response.builder()

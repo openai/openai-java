@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ErrorObjectTest {
 
     @Test
-    fun createErrorObject() {
+    fun create() {
         val errorObject =
             ErrorObject.builder()
                 .code("code")
@@ -16,7 +16,7 @@ internal class ErrorObjectTest {
                 .param("param")
                 .type("type")
                 .build()
-        assertThat(errorObject).isNotNull
+
         assertThat(errorObject.code()).contains("code")
         assertThat(errorObject.message()).isEqualTo("message")
         assertThat(errorObject.param()).contains("param")

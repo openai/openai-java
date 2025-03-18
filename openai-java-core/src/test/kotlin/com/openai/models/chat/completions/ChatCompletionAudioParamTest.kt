@@ -8,13 +8,13 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionAudioParamTest {
 
     @Test
-    fun createChatCompletionAudioParam() {
+    fun create() {
         val chatCompletionAudioParam =
             ChatCompletionAudioParam.builder()
                 .format(ChatCompletionAudioParam.Format.WAV)
                 .voice(ChatCompletionAudioParam.Voice.ALLOY)
                 .build()
-        assertThat(chatCompletionAudioParam).isNotNull
+
         assertThat(chatCompletionAudioParam.format()).isEqualTo(ChatCompletionAudioParam.Format.WAV)
         assertThat(chatCompletionAudioParam.voice()).isEqualTo(ChatCompletionAudioParam.Voice.ALLOY)
     }

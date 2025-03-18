@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Test
 internal class ResponseTextConfigTest {
 
     @Test
-    fun createResponseTextConfig() {
+    fun create() {
         val responseTextConfig =
             ResponseTextConfig.builder().format(ResponseFormatText.builder().build()).build()
-        assertThat(responseTextConfig).isNotNull
+
         assertThat(responseTextConfig.format())
             .contains(ResponseFormatTextConfig.ofText(ResponseFormatText.builder().build()))
     }

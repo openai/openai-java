@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseTest {
 
     @Test
-    fun createResponse() {
+    fun create() {
         val response =
             Response.builder()
                 .id("id")
@@ -105,7 +105,7 @@ internal class ResponseTest {
                 )
                 .user("user-1234")
                 .build()
-        assertThat(response).isNotNull
+
         assertThat(response.id()).isEqualTo("id")
         assertThat(response.createdAt()).isEqualTo(0.0)
         assertThat(response.error())

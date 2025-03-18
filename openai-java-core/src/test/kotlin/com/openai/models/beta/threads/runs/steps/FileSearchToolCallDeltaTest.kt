@@ -9,14 +9,14 @@ import org.junit.jupiter.api.Test
 internal class FileSearchToolCallDeltaTest {
 
     @Test
-    fun createFileSearchToolCallDelta() {
+    fun create() {
         val fileSearchToolCallDelta =
             FileSearchToolCallDelta.builder()
                 .fileSearch(JsonValue.from(mapOf<String, Any>()))
                 .index(0L)
                 .id("id")
                 .build()
-        assertThat(fileSearchToolCallDelta).isNotNull
+
         assertThat(fileSearchToolCallDelta._fileSearch())
             .isEqualTo(JsonValue.from(mapOf<String, Any>()))
         assertThat(fileSearchToolCallDelta.index()).isEqualTo(0L)

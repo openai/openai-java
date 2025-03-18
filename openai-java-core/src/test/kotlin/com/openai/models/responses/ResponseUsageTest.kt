@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseUsageTest {
 
     @Test
-    fun createResponseUsage() {
+    fun create() {
         val responseUsage =
             ResponseUsage.builder()
                 .inputTokens(0L)
@@ -18,7 +18,7 @@ internal class ResponseUsageTest {
                 )
                 .totalTokens(0L)
                 .build()
-        assertThat(responseUsage).isNotNull
+
         assertThat(responseUsage.inputTokens()).isEqualTo(0L)
         assertThat(responseUsage.outputTokens()).isEqualTo(0L)
         assertThat(responseUsage.outputTokensDetails())

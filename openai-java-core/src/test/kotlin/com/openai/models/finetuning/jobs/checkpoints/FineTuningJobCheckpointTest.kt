@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class FineTuningJobCheckpointTest {
 
     @Test
-    fun createFineTuningJobCheckpoint() {
+    fun create() {
         val fineTuningJobCheckpoint =
             FineTuningJobCheckpoint.builder()
                 .id("id")
@@ -28,7 +28,7 @@ internal class FineTuningJobCheckpointTest {
                 )
                 .stepNumber(0L)
                 .build()
-        assertThat(fineTuningJobCheckpoint).isNotNull
+
         assertThat(fineTuningJobCheckpoint.id()).isEqualTo("id")
         assertThat(fineTuningJobCheckpoint.createdAt()).isEqualTo(0L)
         assertThat(fineTuningJobCheckpoint.fineTunedModelCheckpoint())

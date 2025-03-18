@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test
 internal class ResponseFileSearchCallSearchingEventTest {
 
     @Test
-    fun createResponseFileSearchCallSearchingEvent() {
+    fun create() {
         val responseFileSearchCallSearchingEvent =
             ResponseFileSearchCallSearchingEvent.builder().itemId("item_id").outputIndex(0L).build()
-        assertThat(responseFileSearchCallSearchingEvent).isNotNull
+
         assertThat(responseFileSearchCallSearchingEvent.itemId()).isEqualTo("item_id")
         assertThat(responseFileSearchCallSearchingEvent.outputIndex()).isEqualTo(0L)
     }

@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test
 internal class ImageUrlDeltaTest {
 
     @Test
-    fun createImageUrlDelta() {
+    fun create() {
         val imageUrlDelta =
             ImageUrlDelta.builder().detail(ImageUrlDelta.Detail.AUTO).url("url").build()
-        assertThat(imageUrlDelta).isNotNull
+
         assertThat(imageUrlDelta.detail()).contains(ImageUrlDelta.Detail.AUTO)
         assertThat(imageUrlDelta.url()).contains("url")
     }

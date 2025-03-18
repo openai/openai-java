@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ImageUrlContentBlockTest {
 
     @Test
-    fun createImageUrlContentBlock() {
+    fun create() {
         val imageUrlContentBlock =
             ImageUrlContentBlock.builder()
                 .imageUrl(
@@ -18,7 +18,7 @@ internal class ImageUrlContentBlockTest {
                         .build()
                 )
                 .build()
-        assertThat(imageUrlContentBlock).isNotNull
+
         assertThat(imageUrlContentBlock.imageUrl())
             .isEqualTo(
                 ImageUrl.builder().url("https://example.com").detail(ImageUrl.Detail.AUTO).build()

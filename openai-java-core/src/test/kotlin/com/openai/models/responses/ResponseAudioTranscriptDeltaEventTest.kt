@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test
 internal class ResponseAudioTranscriptDeltaEventTest {
 
     @Test
-    fun createResponseAudioTranscriptDeltaEvent() {
+    fun create() {
         val responseAudioTranscriptDeltaEvent =
             ResponseAudioTranscriptDeltaEvent.builder().delta("delta").build()
-        assertThat(responseAudioTranscriptDeltaEvent).isNotNull
+
         assertThat(responseAudioTranscriptDeltaEvent.delta()).isEqualTo("delta")
     }
 }

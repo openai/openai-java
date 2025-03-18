@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseRefusalDoneEventTest {
 
     @Test
-    fun createResponseRefusalDoneEvent() {
+    fun create() {
         val responseRefusalDoneEvent =
             ResponseRefusalDoneEvent.builder()
                 .contentIndex(0L)
@@ -16,7 +16,7 @@ internal class ResponseRefusalDoneEventTest {
                 .outputIndex(0L)
                 .refusal("refusal")
                 .build()
-        assertThat(responseRefusalDoneEvent).isNotNull
+
         assertThat(responseRefusalDoneEvent.contentIndex()).isEqualTo(0L)
         assertThat(responseRefusalDoneEvent.itemId()).isEqualTo("item_id")
         assertThat(responseRefusalDoneEvent.outputIndex()).isEqualTo(0L)

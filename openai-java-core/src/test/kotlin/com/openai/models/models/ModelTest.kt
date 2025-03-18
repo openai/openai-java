@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test
 internal class ModelTest {
 
     @Test
-    fun createModel() {
+    fun create() {
         val model = Model.builder().id("id").created(0L).ownedBy("owned_by").build()
-        assertThat(model).isNotNull
+
         assertThat(model.id()).isEqualTo("id")
         assertThat(model.created()).isEqualTo(0L)
         assertThat(model.ownedBy()).isEqualTo("owned_by")

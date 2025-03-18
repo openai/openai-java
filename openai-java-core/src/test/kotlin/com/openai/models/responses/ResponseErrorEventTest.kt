@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test
 internal class ResponseErrorEventTest {
 
     @Test
-    fun createResponseErrorEvent() {
+    fun create() {
         val responseErrorEvent =
             ResponseErrorEvent.builder().code("code").message("message").param("param").build()
-        assertThat(responseErrorEvent).isNotNull
+
         assertThat(responseErrorEvent.code()).contains("code")
         assertThat(responseErrorEvent.message()).isEqualTo("message")
         assertThat(responseErrorEvent.param()).contains("param")

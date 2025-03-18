@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test
 internal class CodeInterpreterLogsTest {
 
     @Test
-    fun createCodeInterpreterLogs() {
+    fun create() {
         val codeInterpreterLogs = CodeInterpreterLogs.builder().index(0L).logs("logs").build()
-        assertThat(codeInterpreterLogs).isNotNull
+
         assertThat(codeInterpreterLogs.index()).isEqualTo(0L)
         assertThat(codeInterpreterLogs.logs()).contains("logs")
     }

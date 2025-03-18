@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class WebSearchToolTest {
 
     @Test
-    fun createWebSearchTool() {
+    fun create() {
         val webSearchTool =
             WebSearchTool.builder()
                 .type(WebSearchTool.Type.WEB_SEARCH_PREVIEW)
@@ -22,7 +22,7 @@ internal class WebSearchToolTest {
                         .build()
                 )
                 .build()
-        assertThat(webSearchTool).isNotNull
+
         assertThat(webSearchTool.type()).isEqualTo(WebSearchTool.Type.WEB_SEARCH_PREVIEW)
         assertThat(webSearchTool.searchContextSize()).contains(WebSearchTool.SearchContextSize.LOW)
         assertThat(webSearchTool.userLocation())

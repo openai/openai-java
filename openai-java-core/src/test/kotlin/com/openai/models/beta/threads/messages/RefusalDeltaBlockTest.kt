@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test
 internal class RefusalDeltaBlockTest {
 
     @Test
-    fun createRefusalDeltaBlock() {
+    fun create() {
         val refusalDeltaBlock = RefusalDeltaBlock.builder().index(0L).refusal("refusal").build()
-        assertThat(refusalDeltaBlock).isNotNull
+
         assertThat(refusalDeltaBlock.index()).isEqualTo(0L)
         assertThat(refusalDeltaBlock.refusal()).contains("refusal")
     }

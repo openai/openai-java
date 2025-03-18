@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class FineTuningJobWandbIntegrationTest {
 
     @Test
-    fun createFineTuningJobWandbIntegration() {
+    fun create() {
         val fineTuningJobWandbIntegration =
             FineTuningJobWandbIntegration.builder()
                 .project("my-wandb-project")
@@ -17,7 +17,7 @@ internal class FineTuningJobWandbIntegrationTest {
                 .name("name")
                 .addTag("custom-tag")
                 .build()
-        assertThat(fineTuningJobWandbIntegration).isNotNull
+
         assertThat(fineTuningJobWandbIntegration.project()).isEqualTo("my-wandb-project")
         assertThat(fineTuningJobWandbIntegration.entity()).contains("entity")
         assertThat(fineTuningJobWandbIntegration.name()).contains("name")

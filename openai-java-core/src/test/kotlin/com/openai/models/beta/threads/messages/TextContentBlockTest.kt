@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class TextContentBlockTest {
 
     @Test
-    fun createTextContentBlock() {
+    fun create() {
         val textContentBlock =
             TextContentBlock.builder()
                 .text(
@@ -29,7 +29,7 @@ internal class TextContentBlockTest {
                         .build()
                 )
                 .build()
-        assertThat(textContentBlock).isNotNull
+
         assertThat(textContentBlock.text())
             .isEqualTo(
                 Text.builder()

@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test
 internal class TranscriptionTest {
 
     @Test
-    fun createTranscription() {
+    fun create() {
         val transcription = Transcription.builder().text("text").build()
-        assertThat(transcription).isNotNull
+
         assertThat(transcription.text()).isEqualTo("text")
     }
 }

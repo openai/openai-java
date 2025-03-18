@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test
 internal class ResponseErrorTest {
 
     @Test
-    fun createResponseError() {
+    fun create() {
         val responseError =
             ResponseError.builder().code(ResponseError.Code.SERVER_ERROR).message("message").build()
-        assertThat(responseError).isNotNull
+
         assertThat(responseError.code()).isEqualTo(ResponseError.Code.SERVER_ERROR)
         assertThat(responseError.message()).isEqualTo("message")
     }

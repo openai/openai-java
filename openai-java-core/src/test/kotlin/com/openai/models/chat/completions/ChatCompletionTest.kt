@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionTest {
 
     @Test
-    fun createChatCompletion() {
+    fun create() {
         val chatCompletion =
             ChatCompletion.builder()
                 .id("id")
@@ -120,7 +120,7 @@ internal class ChatCompletionTest {
                         .build()
                 )
                 .build()
-        assertThat(chatCompletion).isNotNull
+
         assertThat(chatCompletion.id()).isEqualTo("id")
         assertThat(chatCompletion.choices())
             .containsExactly(

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class CompoundFilterTest {
 
     @Test
-    fun createCompoundFilter() {
+    fun create() {
         val compoundFilter =
             CompoundFilter.builder()
                 .addFilter(
@@ -20,7 +20,7 @@ internal class CompoundFilterTest {
                 )
                 .type(CompoundFilter.Type.AND)
                 .build()
-        assertThat(compoundFilter).isNotNull
+
         assertThat(compoundFilter.filters())
             .containsExactly(
                 CompoundFilter.Filter.ofComparison(

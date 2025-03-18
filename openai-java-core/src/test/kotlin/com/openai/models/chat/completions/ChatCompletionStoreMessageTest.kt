@@ -6,12 +6,12 @@ import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-internal class ChatCompletionMessageTest {
+internal class ChatCompletionStoreMessageTest {
 
     @Test
     fun create() {
-        val chatCompletionMessage =
-            ChatCompletionMessage.builder()
+        val chatCompletionStoreMessage =
+            ChatCompletionStoreMessage.builder()
                 .content("content")
                 .refusal("refusal")
                 .addAnnotation(
@@ -51,11 +51,12 @@ internal class ChatCompletionMessageTest {
                         )
                         .build()
                 )
+                .id("id")
                 .build()
 
-        assertThat(chatCompletionMessage.content()).contains("content")
-        assertThat(chatCompletionMessage.refusal()).contains("refusal")
-        assertThat(chatCompletionMessage.annotations().getOrNull())
+        assertThat(chatCompletionStoreMessage.content()).contains("content")
+        assertThat(chatCompletionStoreMessage.refusal()).contains("refusal")
+        assertThat(chatCompletionStoreMessage.annotations().getOrNull())
             .containsExactly(
                 ChatCompletionMessage.Annotation.builder()
                     .urlCitation(
@@ -68,7 +69,7 @@ internal class ChatCompletionMessageTest {
                     )
                     .build()
             )
-        assertThat(chatCompletionMessage.audio())
+        assertThat(chatCompletionStoreMessage.audio())
             .contains(
                 ChatCompletionAudio.builder()
                     .id("id")
@@ -77,14 +78,14 @@ internal class ChatCompletionMessageTest {
                     .transcript("transcript")
                     .build()
             )
-        assertThat(chatCompletionMessage.functionCall())
+        assertThat(chatCompletionStoreMessage.functionCall())
             .contains(
                 ChatCompletionMessage.FunctionCall.builder()
                     .arguments("arguments")
                     .name("name")
                     .build()
             )
-        assertThat(chatCompletionMessage.toolCalls().getOrNull())
+        assertThat(chatCompletionStoreMessage.toolCalls().getOrNull())
             .containsExactly(
                 ChatCompletionMessageToolCall.builder()
                     .id("id")
@@ -96,5 +97,6 @@ internal class ChatCompletionMessageTest {
                     )
                     .build()
             )
+        assertThat(chatCompletionStoreMessage.id()).isEqualTo("id")
     }
 }

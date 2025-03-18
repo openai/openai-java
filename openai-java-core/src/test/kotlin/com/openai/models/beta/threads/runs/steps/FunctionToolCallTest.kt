@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class FunctionToolCallTest {
 
     @Test
-    fun createFunctionToolCall() {
+    fun create() {
         val functionToolCall =
             FunctionToolCall.builder()
                 .id("id")
@@ -20,7 +20,7 @@ internal class FunctionToolCallTest {
                         .build()
                 )
                 .build()
-        assertThat(functionToolCall).isNotNull
+
         assertThat(functionToolCall.id()).isEqualTo("id")
         assertThat(functionToolCall.function())
             .isEqualTo(

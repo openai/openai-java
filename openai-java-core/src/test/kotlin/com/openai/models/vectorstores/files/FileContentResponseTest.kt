@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test
 internal class FileContentResponseTest {
 
     @Test
-    fun createFileContentResponse() {
+    fun create() {
         val fileContentResponse = FileContentResponse.builder().text("text").type("type").build()
-        assertThat(fileContentResponse).isNotNull
+
         assertThat(fileContentResponse.text()).contains("text")
         assertThat(fileContentResponse.type()).contains("type")
     }
