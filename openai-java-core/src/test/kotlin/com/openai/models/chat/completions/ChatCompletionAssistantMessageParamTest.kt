@@ -2,6 +2,7 @@
 
 package com.openai.models.chat.completions
 
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -47,7 +48,7 @@ internal class ChatCompletionAssistantMessageParamTest {
             )
         assertThat(chatCompletionAssistantMessageParam.name()).contains("name")
         assertThat(chatCompletionAssistantMessageParam.refusal()).contains("refusal")
-        assertThat(chatCompletionAssistantMessageParam.toolCalls().get())
+        assertThat(chatCompletionAssistantMessageParam.toolCalls().getOrNull())
             .containsExactly(
                 ChatCompletionMessageToolCall.builder()
                     .id("id")

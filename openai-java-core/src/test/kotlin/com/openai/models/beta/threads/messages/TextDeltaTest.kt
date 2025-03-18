@@ -2,6 +2,7 @@
 
 package com.openai.models.beta.threads.messages
 
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -28,7 +29,7 @@ internal class TextDeltaTest {
                 .value("value")
                 .build()
         assertThat(textDelta).isNotNull
-        assertThat(textDelta.annotations().get())
+        assertThat(textDelta.annotations().getOrNull())
             .containsExactly(
                 AnnotationDelta.ofFileCitation(
                     FileCitationDeltaAnnotation.builder()

@@ -13,12 +13,11 @@ internal class AssistantDeleteParamsTest {
     }
 
     @Test
-    fun getPathParam() {
+    fun pathParams() {
         val params = AssistantDeleteParams.builder().assistantId("assistant_id").build()
-        assertThat(params).isNotNull
-        // path param "assistantId"
-        assertThat(params.getPathParam(0)).isEqualTo("assistant_id")
+
+        assertThat(params._pathParam(0)).isEqualTo("assistant_id")
         // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
+        assertThat(params._pathParam(1)).isEqualTo("")
     }
 }

@@ -26,6 +26,16 @@ internal class FileBatchCreateParamsTest {
     }
 
     @Test
+    fun pathParams() {
+        val params =
+            FileBatchCreateParams.builder().vectorStoreId("vs_abc123").addFileId("string").build()
+
+        assertThat(params._pathParam(0)).isEqualTo("vs_abc123")
+        // out-of-bound path param
+        assertThat(params._pathParam(1)).isEqualTo("")
+    }
+
+    @Test
     fun body() {
         val params =
             FileBatchCreateParams.builder()
@@ -42,7 +52,7 @@ internal class FileBatchCreateParamsTest {
         val body = params._body()
 
         assertNotNull(body)
-        assertThat(body.fileIds()).isEqualTo(listOf("string"))
+        assertThat(body.fileIds()).containsExactly("string")
         assertThat(body.attributes())
             .contains(
                 FileBatchCreateParams.Attributes.builder()
@@ -63,17 +73,6 @@ internal class FileBatchCreateParamsTest {
         val body = params._body()
 
         assertNotNull(body)
-        assertThat(body.fileIds()).isEqualTo(listOf("string"))
-    }
-
-    @Test
-    fun getPathParam() {
-        val params =
-            FileBatchCreateParams.builder().vectorStoreId("vs_abc123").addFileId("string").build()
-        assertThat(params).isNotNull
-        // path param "vectorStoreId"
-        assertThat(params.getPathParam(0)).isEqualTo("vs_abc123")
-        // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
+        assertThat(body.fileIds()).containsExactly("string")
     }
 }

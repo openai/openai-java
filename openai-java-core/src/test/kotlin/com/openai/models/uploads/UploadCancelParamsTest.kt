@@ -13,12 +13,11 @@ internal class UploadCancelParamsTest {
     }
 
     @Test
-    fun getPathParam() {
+    fun pathParams() {
         val params = UploadCancelParams.builder().uploadId("upload_abc123").build()
-        assertThat(params).isNotNull
-        // path param "uploadId"
-        assertThat(params.getPathParam(0)).isEqualTo("upload_abc123")
+
+        assertThat(params._pathParam(0)).isEqualTo("upload_abc123")
         // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
+        assertThat(params._pathParam(1)).isEqualTo("")
     }
 }

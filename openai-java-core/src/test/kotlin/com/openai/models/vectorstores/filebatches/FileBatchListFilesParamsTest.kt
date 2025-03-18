@@ -22,6 +22,20 @@ internal class FileBatchListFilesParamsTest {
     }
 
     @Test
+    fun pathParams() {
+        val params =
+            FileBatchListFilesParams.builder()
+                .vectorStoreId("vector_store_id")
+                .batchId("batch_id")
+                .build()
+
+        assertThat(params._pathParam(0)).isEqualTo("vector_store_id")
+        assertThat(params._pathParam(1)).isEqualTo("batch_id")
+        // out-of-bound path param
+        assertThat(params._pathParam(2)).isEqualTo("")
+    }
+
+    @Test
     fun queryParams() {
         val params =
             FileBatchListFilesParams.builder()
@@ -59,21 +73,5 @@ internal class FileBatchListFilesParamsTest {
         val queryParams = params._queryParams()
 
         assertThat(queryParams).isEqualTo(QueryParams.builder().build())
-    }
-
-    @Test
-    fun getPathParam() {
-        val params =
-            FileBatchListFilesParams.builder()
-                .vectorStoreId("vector_store_id")
-                .batchId("batch_id")
-                .build()
-        assertThat(params).isNotNull
-        // path param "vectorStoreId"
-        assertThat(params.getPathParam(0)).isEqualTo("vector_store_id")
-        // path param "batchId"
-        assertThat(params.getPathParam(1)).isEqualTo("batch_id")
-        // out-of-bound path param
-        assertThat(params.getPathParam(2)).isEqualTo("")
     }
 }

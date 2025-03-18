@@ -12,6 +12,7 @@ import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.AssistantResponseFormatOption
 import com.openai.models.beta.threads.AssistantToolChoiceOption
 import com.openai.models.beta.threads.runs.steps.RunStepInclude
+import kotlin.jvm.optionals.getOrNull
 import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -63,6 +64,16 @@ internal class RunCreateParamsTest {
                     .build()
             )
             .build()
+    }
+
+    @Test
+    fun pathParams() {
+        val params =
+            RunCreateParams.builder().threadId("thread_id").assistantId("assistant_id").build()
+
+        assertThat(params._pathParam(0)).isEqualTo("thread_id")
+        // out-of-bound path param
+        assertThat(params._pathParam(1)).isEqualTo("")
     }
 
     @Test
@@ -188,25 +199,23 @@ internal class RunCreateParamsTest {
         assertNotNull(body)
         assertThat(body.assistantId()).isEqualTo("assistant_id")
         assertThat(body.additionalInstructions()).contains("additional_instructions")
-        assertThat(body.additionalMessages())
-            .contains(
-                listOf(
-                    RunCreateParams.AdditionalMessage.builder()
-                        .content("string")
-                        .role(RunCreateParams.AdditionalMessage.Role.USER)
-                        .addAttachment(
-                            RunCreateParams.AdditionalMessage.Attachment.builder()
-                                .fileId("file_id")
-                                .addTool(CodeInterpreterTool.builder().build())
-                                .build()
-                        )
-                        .metadata(
-                            Metadata.builder()
-                                .putAdditionalProperty("foo", JsonValue.from("string"))
-                                .build()
-                        )
-                        .build()
-                )
+        assertThat(body.additionalMessages().getOrNull())
+            .containsExactly(
+                RunCreateParams.AdditionalMessage.builder()
+                    .content("string")
+                    .role(RunCreateParams.AdditionalMessage.Role.USER)
+                    .addAttachment(
+                        RunCreateParams.AdditionalMessage.Attachment.builder()
+                            .fileId("file_id")
+                            .addTool(CodeInterpreterTool.builder().build())
+                            .build()
+                    )
+                    .metadata(
+                        Metadata.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .build()
             )
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.maxCompletionTokens()).contains(256L)
@@ -222,10 +231,8 @@ internal class RunCreateParamsTest {
         assertThat(body.temperature()).contains(1.0)
         assertThat(body.toolChoice())
             .contains(AssistantToolChoiceOption.ofAuto(AssistantToolChoiceOption.Auto.NONE))
-        assertThat(body.tools())
-            .contains(
-                listOf(AssistantTool.ofCodeInterpreter(CodeInterpreterTool.builder().build()))
-            )
+        assertThat(body.tools().getOrNull())
+            .containsExactly(AssistantTool.ofCodeInterpreter(CodeInterpreterTool.builder().build()))
         assertThat(body.topP()).contains(1.0)
         assertThat(body.truncationStrategy())
             .contains(
@@ -245,16 +252,5 @@ internal class RunCreateParamsTest {
 
         assertNotNull(body)
         assertThat(body.assistantId()).isEqualTo("assistant_id")
-    }
-
-    @Test
-    fun getPathParam() {
-        val params =
-            RunCreateParams.builder().threadId("thread_id").assistantId("assistant_id").build()
-        assertThat(params).isNotNull
-        // path param "threadId"
-        assertThat(params.getPathParam(0)).isEqualTo("thread_id")
-        // out-of-bound path param
-        assertThat(params.getPathParam(1)).isEqualTo("")
     }
 }

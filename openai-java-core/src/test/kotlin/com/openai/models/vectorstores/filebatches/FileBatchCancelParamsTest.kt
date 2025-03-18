@@ -13,18 +13,16 @@ internal class FileBatchCancelParamsTest {
     }
 
     @Test
-    fun getPathParam() {
+    fun pathParams() {
         val params =
             FileBatchCancelParams.builder()
                 .vectorStoreId("vector_store_id")
                 .batchId("batch_id")
                 .build()
-        assertThat(params).isNotNull
-        // path param "vectorStoreId"
-        assertThat(params.getPathParam(0)).isEqualTo("vector_store_id")
-        // path param "batchId"
-        assertThat(params.getPathParam(1)).isEqualTo("batch_id")
+
+        assertThat(params._pathParam(0)).isEqualTo("vector_store_id")
+        assertThat(params._pathParam(1)).isEqualTo("batch_id")
         // out-of-bound path param
-        assertThat(params.getPathParam(2)).isEqualTo("")
+        assertThat(params._pathParam(2)).isEqualTo("")
     }
 }

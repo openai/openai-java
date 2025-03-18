@@ -2,6 +2,7 @@
 
 package com.openai.models.beta.threads.runs.steps
 
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -27,7 +28,7 @@ internal class ToolCallDeltaObjectTest {
                 )
                 .build()
         assertThat(toolCallDeltaObject).isNotNull
-        assertThat(toolCallDeltaObject.toolCalls().get())
+        assertThat(toolCallDeltaObject.toolCalls().getOrNull())
             .containsExactly(
                 ToolCallDelta.ofCodeInterpreter(
                     CodeInterpreterToolCallDelta.builder()
