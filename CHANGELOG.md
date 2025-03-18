@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.35.0 (2025-03-18)
+
+Full Changelog: [v0.34.1...v0.35.0](https://github.com/openai/openai-java/compare/v0.34.1...v0.35.0)
+
+### Features
+
+* **client:** don't require params for some service methods ([#325](https://github.com/openai/openai-java/issues/325)) ([3ed7cf8](https://github.com/openai/openai-java/commit/3ed7cf88c11b95003b5962f94f848af3511f0525))
+
+
+### Chores
+
+* **internal:** add generated comment ([#318](https://github.com/openai/openai-java/issues/318)) ([44a46b5](https://github.com/openai/openai-java/commit/44a46b5e6651a3cf38f4b5321020a9fa52c5976c))
+* **internal:** add some tests for union classes ([#326](https://github.com/openai/openai-java/issues/326)) ([bd92f57](https://github.com/openai/openai-java/commit/bd92f577231430115d4976a3f4740ef8f09baa07))
+* **internal:** delete duplicate tests ([f95f8bc](https://github.com/openai/openai-java/commit/f95f8bc083cebbfeef127b62d8c5dbaffa2083ed))
+* **internal:** generate more tests ([a05b899](https://github.com/openai/openai-java/commit/a05b899d056538f47a238cac0e6357ce2688861a))
+* **internal:** make test classes internal ([#317](https://github.com/openai/openai-java/issues/317)) ([f9a25b4](https://github.com/openai/openai-java/commit/f9a25b4be4daa5184b9d19896f4e2009285759be))
+* **internal:** refactor query param serialization impl and tests ([#322](https://github.com/openai/openai-java/issues/322)) ([93558fc](https://github.com/openai/openai-java/commit/93558fcecc463b7d6a4f976c2a7889b1c691dc52))
+* **internal:** refactor some test assertions ([f95f8bc](https://github.com/openai/openai-java/commit/f95f8bc083cebbfeef127b62d8c5dbaffa2083ed))
+* **internal:** reformat some tests ([#324](https://github.com/openai/openai-java/issues/324)) ([a05b899](https://github.com/openai/openai-java/commit/a05b899d056538f47a238cac0e6357ce2688861a))
+* **internal:** remove CI condition ([#310](https://github.com/openai/openai-java/issues/310)) ([1cb3294](https://github.com/openai/openai-java/commit/1cb3294f74fa75bca443aaa6f0f3d9127ed7ea14))
+* **internal:** rename `getPathParam` ([#323](https://github.com/openai/openai-java/issues/323)) ([f95f8bc](https://github.com/openai/openai-java/commit/f95f8bc083cebbfeef127b62d8c5dbaffa2083ed))
+* **internal:** reorder some params methodsc ([f95f8bc](https://github.com/openai/openai-java/commit/f95f8bc083cebbfeef127b62d8c5dbaffa2083ed))
+* **internal:** update release workflows ([2b0d392](https://github.com/openai/openai-java/commit/2b0d392b57acc03b393c1052e39326606d9ad2b0))
+
+
+### Documentation
+
+* add `build` method comments ([#321](https://github.com/openai/openai-java/issues/321)) ([31a8e9e](https://github.com/openai/openai-java/commit/31a8e9e507d0242098fc280ad03cb40ab92dcf83))
+* deduplicate and refine comments ([#313](https://github.com/openai/openai-java/issues/313)) ([3e0b2f5](https://github.com/openai/openai-java/commit/3e0b2f5ebea908879f2215bb648027d60e491374))
+* image url example ([39695e4](https://github.com/openai/openai-java/commit/39695e4702c10171e02fb426bc66db61599c365a))
+
 ## 0.34.1 (2025-03-11)
 
 Full Changelog: [v0.34.0...v0.34.1](https://github.com/openai/openai-java/compare/v0.34.0...v0.34.1)
