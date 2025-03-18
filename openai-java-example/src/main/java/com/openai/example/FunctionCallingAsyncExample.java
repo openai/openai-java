@@ -10,10 +10,7 @@ import com.openai.core.JsonValue;
 import com.openai.models.ChatModel;
 import com.openai.models.FunctionDefinition;
 import com.openai.models.FunctionParameters;
-import com.openai.models.chat.completions.ChatCompletion;
-import com.openai.models.chat.completions.ChatCompletionCreateParams;
-import com.openai.models.chat.completions.ChatCompletionMessageToolCall;
-import com.openai.models.chat.completions.ChatCompletionTool;
+import com.openai.models.chat.completions.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +24,7 @@ public final class FunctionCallingAsyncExample {
         // - The `AZURE_OPENAI_ENDPOINT` and `AZURE_OPENAI_KEY` environment variables
         OpenAIClientAsync client = OpenAIOkHttpClientAsync.fromEnv();
 
-        ChatCompletionCreateParams createParams = ChatCompletionCreateParams.builder()
+        ChatCompletionCreateParams.Builder createParamsBuilder = ChatCompletionCreateParams.builder()
                 .model(ChatModel.GPT_3_5_TURBO)
                 .maxCompletionTokens(2048)
                 .addTool(ChatCompletionTool.builder()
@@ -43,19 +40,40 @@ public final class FunctionCallingAsyncExample {
                                         .build())
                                 .build())
                         .build())
-                .addUserMessage("How good are the following SDKs: OpenAI Java SDK, Unknown Company SDK")
-                .build();
+                .addUserMessage("How good are the following SDKs: OpenAI Java SDK, Unknown Company SDK");
 
         client.chat()
                 .completions()
-                .create(createParams)
+                .create(createParamsBuilder.build())
+                .thenComposeAsync(completion -> {
+                    completion.choices().stream()
+                            .map(ChatCompletion.Choice::message)
+                            // Add each assistant message onto the builder so that we keep track of the conversation for
+                            // asking a
+                            // follow-up question later.
+                            .peek(createParamsBuilder::addMessage)
+                            .flatMap(message -> {
+                                message.content().ifPresent(System.out::println);
+                                return message.toolCalls().stream().flatMap(Collection::stream);
+                            })
+                            .forEach(toolCall -> {
+                                String content = callFunction(toolCall.function());
+                                // Add the tool call result to the conversation.
+                                createParamsBuilder.addMessage(ChatCompletionToolMessageParam.builder()
+                                        .toolCallId(toolCall.id())
+                                        .content(content)
+                                        .build());
+                                System.out.println(content);
+                            });
+                    System.out.println();
+
+                    // Ask a follow-up question about the function call result.
+                    createParamsBuilder.addUserMessage("Why do you say that?");
+                    return client.chat().completions().create(createParamsBuilder.build());
+                })
                 .thenAccept(completion -> completion.choices().stream()
-                        .map(ChatCompletion.Choice::message)
-                        .flatMap(message -> {
-                            message.content().ifPresent(System.out::println);
-                            return message.toolCalls().stream().flatMap(Collection::stream);
-                        })
-                        .forEach(toolCall -> System.out.println(callFunction(toolCall.function()))))
+                        .flatMap(choice -> choice.message().content().stream())
+                        .forEach(System.out::println))
                 .join();
     }
 
