@@ -58,7 +58,7 @@ private constructor(
             .apply {
                 after?.let { put("after", it) }
                 limit?.let { put("limit", it.toString()) }
-                order?.let { put("order", it.asString()) }
+                order?.let { put("order", it.toString()) }
                 purpose?.let { put("purpose", it) }
                 putAll(additionalQueryParams)
             }
