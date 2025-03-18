@@ -89,9 +89,9 @@ private constructor(
             .apply {
                 after?.let { put("after", it) }
                 before?.let { put("before", it) }
-                include?.forEach { put("include[]", it.asString()) }
+                include?.forEach { put("include[]", it.toString()) }
                 limit?.let { put("limit", it.toString()) }
-                order?.let { put("order", it.asString()) }
+                order?.let { put("order", it.toString()) }
                 putAll(additionalQueryParams)
             }
             .build()

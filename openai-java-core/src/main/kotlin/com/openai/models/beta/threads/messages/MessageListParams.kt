@@ -77,7 +77,7 @@ private constructor(
                 after?.let { put("after", it) }
                 before?.let { put("before", it) }
                 limit?.let { put("limit", it.toString()) }
-                order?.let { put("order", it.asString()) }
+                order?.let { put("order", it.toString()) }
                 runId?.let { put("run_id", it) }
                 putAll(additionalQueryParams)
             }
