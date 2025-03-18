@@ -465,6 +465,8 @@ private constructor(
 
     companion object {
 
+        @JvmStatic fun none(): VectorStoreCreateParams = builder().build()
+
         /** Returns a mutable builder for constructing an instance of [VectorStoreCreateParams]. */
         @JvmStatic fun builder() = Builder()
     }
