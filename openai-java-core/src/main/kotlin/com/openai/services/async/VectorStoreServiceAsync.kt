@@ -31,14 +31,22 @@ interface VectorStoreServiceAsync {
     fun fileBatches(): FileBatchServiceAsync
 
     /** Create a vector store. */
-    fun create(params: VectorStoreCreateParams): CompletableFuture<VectorStore> =
-        create(params, RequestOptions.none())
+    fun create(): CompletableFuture<VectorStore> = create(VectorStoreCreateParams.none())
 
     /** @see [create] */
     fun create(
-        params: VectorStoreCreateParams,
+        params: VectorStoreCreateParams = VectorStoreCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStore>
+
+    /** @see [create] */
+    fun create(
+        params: VectorStoreCreateParams = VectorStoreCreateParams.none()
+    ): CompletableFuture<VectorStore> = create(params, RequestOptions.none())
+
+    /** @see [create] */
+    fun create(requestOptions: RequestOptions): CompletableFuture<VectorStore> =
+        create(VectorStoreCreateParams.none(), requestOptions)
 
     /** Retrieves a vector store. */
     fun retrieve(params: VectorStoreRetrieveParams): CompletableFuture<VectorStore> =
@@ -113,16 +121,28 @@ interface VectorStoreServiceAsync {
          * [VectorStoreServiceAsync.create].
          */
         @MustBeClosed
+        fun create(): CompletableFuture<HttpResponseFor<VectorStore>> =
+            create(VectorStoreCreateParams.none())
+
+        /** @see [create] */
+        @MustBeClosed
         fun create(
-            params: VectorStoreCreateParams
+            params: VectorStoreCreateParams = VectorStoreCreateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<VectorStore>>
+
+        /** @see [create] */
+        @MustBeClosed
+        fun create(
+            params: VectorStoreCreateParams = VectorStoreCreateParams.none()
         ): CompletableFuture<HttpResponseFor<VectorStore>> = create(params, RequestOptions.none())
 
         /** @see [create] */
         @MustBeClosed
         fun create(
-            params: VectorStoreCreateParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<VectorStore>>
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<VectorStore>> =
+            create(VectorStoreCreateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /vector_stores/{vector_store_id}`, but is otherwise
