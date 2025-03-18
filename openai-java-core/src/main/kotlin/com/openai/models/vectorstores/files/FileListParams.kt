@@ -76,9 +76,9 @@ private constructor(
             .apply {
                 after?.let { put("after", it) }
                 before?.let { put("before", it) }
-                filter?.let { put("filter", it.asString()) }
+                filter?.let { put("filter", it.toString()) }
                 limit?.let { put("limit", it.toString()) }
-                order?.let { put("order", it.asString()) }
+                order?.let { put("order", it.toString()) }
                 putAll(additionalQueryParams)
             }
             .build()

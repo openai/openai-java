@@ -390,7 +390,7 @@ private constructor(
     override fun _queryParams(): QueryParams =
         QueryParams.builder()
             .apply {
-                include?.forEach { put("include[]", it.asString()) }
+                include?.forEach { put("include[]", it.toString()) }
                 putAll(additionalQueryParams)
             }
             .build()
