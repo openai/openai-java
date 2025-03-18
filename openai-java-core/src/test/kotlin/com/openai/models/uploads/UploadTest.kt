@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class UploadTest {
 
     @Test
-    fun createUpload() {
+    fun create() {
         val upload =
             Upload.builder()
                 .id("id")
@@ -32,7 +32,7 @@ internal class UploadTest {
                         .build()
                 )
                 .build()
-        assertThat(upload).isNotNull
+
         assertThat(upload.id()).isEqualTo("id")
         assertThat(upload.bytes()).isEqualTo(0L)
         assertThat(upload.createdAt()).isEqualTo(0L)

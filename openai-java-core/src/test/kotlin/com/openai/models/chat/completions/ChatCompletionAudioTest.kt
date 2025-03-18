@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionAudioTest {
 
     @Test
-    fun createChatCompletionAudio() {
+    fun create() {
         val chatCompletionAudio =
             ChatCompletionAudio.builder()
                 .id("id")
@@ -16,7 +16,7 @@ internal class ChatCompletionAudioTest {
                 .expiresAt(0L)
                 .transcript("transcript")
                 .build()
-        assertThat(chatCompletionAudio).isNotNull
+
         assertThat(chatCompletionAudio.id()).isEqualTo("id")
         assertThat(chatCompletionAudio.data()).isEqualTo("data")
         assertThat(chatCompletionAudio.expiresAt()).isEqualTo(0L)

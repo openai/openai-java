@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class MessageDeltaTest {
 
     @Test
-    fun createMessageDelta() {
+    fun create() {
         val messageDelta =
             MessageDelta.builder()
                 .addContent(
@@ -25,7 +25,7 @@ internal class MessageDeltaTest {
                 )
                 .role(MessageDelta.Role.USER)
                 .build()
-        assertThat(messageDelta).isNotNull
+
         assertThat(messageDelta.content().getOrNull())
             .containsExactly(
                 MessageContentDelta.ofImageFile(

@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test
 internal class VectorStoreFileDeletedTest {
 
     @Test
-    fun createVectorStoreFileDeleted() {
+    fun create() {
         val vectorStoreFileDeleted = VectorStoreFileDeleted.builder().id("id").deleted(true).build()
-        assertThat(vectorStoreFileDeleted).isNotNull
+
         assertThat(vectorStoreFileDeleted.id()).isEqualTo("id")
         assertThat(vectorStoreFileDeleted.deleted()).isEqualTo(true)
     }

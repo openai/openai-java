@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class FunctionToolTest {
 
     @Test
-    fun createFunctionTool() {
+    fun create() {
         val functionTool =
             FunctionTool.builder()
                 .name("name")
@@ -21,7 +21,7 @@ internal class FunctionToolTest {
                 .strict(true)
                 .description("description")
                 .build()
-        assertThat(functionTool).isNotNull
+
         assertThat(functionTool.name()).isEqualTo("name")
         assertThat(functionTool.parameters())
             .isEqualTo(

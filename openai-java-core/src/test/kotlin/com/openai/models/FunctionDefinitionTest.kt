@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class FunctionDefinitionTest {
 
     @Test
-    fun createFunctionDefinition() {
+    fun create() {
         val functionDefinition =
             FunctionDefinition.builder()
                 .name("name")
@@ -21,7 +21,7 @@ internal class FunctionDefinitionTest {
                 )
                 .strict(true)
                 .build()
-        assertThat(functionDefinition).isNotNull
+
         assertThat(functionDefinition.name()).isEqualTo("name")
         assertThat(functionDefinition.description()).contains("description")
         assertThat(functionDefinition.parameters())

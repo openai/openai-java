@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionTokenLogprobTest {
 
     @Test
-    fun createChatCompletionTokenLogprob() {
+    fun create() {
         val chatCompletionTokenLogprob =
             ChatCompletionTokenLogprob.builder()
                 .token("token")
@@ -23,7 +23,7 @@ internal class ChatCompletionTokenLogprobTest {
                         .build()
                 )
                 .build()
-        assertThat(chatCompletionTokenLogprob).isNotNull
+
         assertThat(chatCompletionTokenLogprob.token()).isEqualTo("token")
         assertThat(chatCompletionTokenLogprob.bytes().getOrNull()).containsExactly(0L)
         assertThat(chatCompletionTokenLogprob.logprob()).isEqualTo(0.0)

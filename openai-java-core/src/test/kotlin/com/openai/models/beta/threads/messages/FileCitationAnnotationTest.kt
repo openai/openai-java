@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class FileCitationAnnotationTest {
 
     @Test
-    fun createFileCitationAnnotation() {
+    fun create() {
         val fileCitationAnnotation =
             FileCitationAnnotation.builder()
                 .endIndex(0L)
@@ -18,7 +18,7 @@ internal class FileCitationAnnotationTest {
                 .startIndex(0L)
                 .text("text")
                 .build()
-        assertThat(fileCitationAnnotation).isNotNull
+
         assertThat(fileCitationAnnotation.endIndex()).isEqualTo(0L)
         assertThat(fileCitationAnnotation.fileCitation())
             .isEqualTo(FileCitationAnnotation.FileCitation.builder().fileId("file_id").build())

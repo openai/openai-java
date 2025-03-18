@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseFileSearchToolCallTest {
 
     @Test
-    fun createResponseFileSearchToolCall() {
+    fun create() {
         val responseFileSearchToolCall =
             ResponseFileSearchToolCall.builder()
                 .id("id")
@@ -30,7 +30,7 @@ internal class ResponseFileSearchToolCallTest {
                         .build()
                 )
                 .build()
-        assertThat(responseFileSearchToolCall).isNotNull
+
         assertThat(responseFileSearchToolCall.id()).isEqualTo("id")
         assertThat(responseFileSearchToolCall.queries()).containsExactly("string")
         assertThat(responseFileSearchToolCall.status())

@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionFunctionCallOptionTest {
 
     @Test
-    fun createChatCompletionFunctionCallOption() {
+    fun create() {
         val chatCompletionFunctionCallOption =
             ChatCompletionFunctionCallOption.builder().name("name").build()
-        assertThat(chatCompletionFunctionCallOption).isNotNull
+
         assertThat(chatCompletionFunctionCallOption.name()).isEqualTo("name")
     }
 }

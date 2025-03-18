@@ -8,12 +8,12 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionNamedToolChoiceTest {
 
     @Test
-    fun createChatCompletionNamedToolChoice() {
+    fun create() {
         val chatCompletionNamedToolChoice =
             ChatCompletionNamedToolChoice.builder()
                 .function(ChatCompletionNamedToolChoice.Function.builder().name("name").build())
                 .build()
-        assertThat(chatCompletionNamedToolChoice).isNotNull
+
         assertThat(chatCompletionNamedToolChoice.function())
             .isEqualTo(ChatCompletionNamedToolChoice.Function.builder().name("name").build())
     }

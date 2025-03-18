@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseOutputItemAddedEventTest {
 
     @Test
-    fun createResponseOutputItemAddedEvent() {
+    fun create() {
         val responseOutputItemAddedEvent =
             ResponseOutputItemAddedEvent.builder()
                 .item(
@@ -30,7 +30,7 @@ internal class ResponseOutputItemAddedEventTest {
                 )
                 .outputIndex(0L)
                 .build()
-        assertThat(responseOutputItemAddedEvent).isNotNull
+
         assertThat(responseOutputItemAddedEvent.item())
             .isEqualTo(
                 ResponseOutputItem.ofMessage(

@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test
 internal class MessageDeletedTest {
 
     @Test
-    fun createMessageDeleted() {
+    fun create() {
         val messageDeleted = MessageDeleted.builder().id("id").deleted(true).build()
-        assertThat(messageDeleted).isNotNull
+
         assertThat(messageDeleted.id()).isEqualTo("id")
         assertThat(messageDeleted.deleted()).isEqualTo(true)
     }

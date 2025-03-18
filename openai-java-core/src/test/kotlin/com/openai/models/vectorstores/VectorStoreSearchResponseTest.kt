@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class VectorStoreSearchResponseTest {
 
     @Test
-    fun createVectorStoreSearchResponse() {
+    fun create() {
         val vectorStoreSearchResponse =
             VectorStoreSearchResponse.builder()
                 .attributes(
@@ -27,7 +27,7 @@ internal class VectorStoreSearchResponseTest {
                 .filename("filename")
                 .score(0.0)
                 .build()
-        assertThat(vectorStoreSearchResponse).isNotNull
+
         assertThat(vectorStoreSearchResponse.attributes())
             .contains(
                 VectorStoreSearchResponse.Attributes.builder()

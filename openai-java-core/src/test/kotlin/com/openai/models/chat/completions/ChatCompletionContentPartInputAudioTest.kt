@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionContentPartInputAudioTest {
 
     @Test
-    fun createChatCompletionContentPartInputAudio() {
+    fun create() {
         val chatCompletionContentPartInputAudio =
             ChatCompletionContentPartInputAudio.builder()
                 .inputAudio(
@@ -18,7 +18,7 @@ internal class ChatCompletionContentPartInputAudioTest {
                         .build()
                 )
                 .build()
-        assertThat(chatCompletionContentPartInputAudio).isNotNull
+
         assertThat(chatCompletionContentPartInputAudio.inputAudio())
             .isEqualTo(
                 ChatCompletionContentPartInputAudio.InputAudio.builder()

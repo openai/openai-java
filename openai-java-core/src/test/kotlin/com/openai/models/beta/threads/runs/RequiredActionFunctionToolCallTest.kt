@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class RequiredActionFunctionToolCallTest {
 
     @Test
-    fun createRequiredActionFunctionToolCall() {
+    fun create() {
         val requiredActionFunctionToolCall =
             RequiredActionFunctionToolCall.builder()
                 .id("id")
@@ -19,7 +19,7 @@ internal class RequiredActionFunctionToolCallTest {
                         .build()
                 )
                 .build()
-        assertThat(requiredActionFunctionToolCall).isNotNull
+
         assertThat(requiredActionFunctionToolCall.id()).isEqualTo("id")
         assertThat(requiredActionFunctionToolCall.function())
             .isEqualTo(

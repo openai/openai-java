@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionAssistantMessageParamTest {
 
     @Test
-    fun createChatCompletionAssistantMessageParam() {
+    fun create() {
         val chatCompletionAssistantMessageParam =
             ChatCompletionAssistantMessageParam.builder()
                 .audio(ChatCompletionAssistantMessageParam.Audio.builder().id("id").build())
@@ -34,7 +34,7 @@ internal class ChatCompletionAssistantMessageParamTest {
                         .build()
                 )
                 .build()
-        assertThat(chatCompletionAssistantMessageParam).isNotNull
+
         assertThat(chatCompletionAssistantMessageParam.audio())
             .contains(ChatCompletionAssistantMessageParam.Audio.builder().id("id").build())
         assertThat(chatCompletionAssistantMessageParam.content())

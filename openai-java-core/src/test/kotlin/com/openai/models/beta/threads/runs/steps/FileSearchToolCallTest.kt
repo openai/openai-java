@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class FileSearchToolCallTest {
 
     @Test
-    fun createFileSearchToolCall() {
+    fun create() {
         val fileSearchToolCall =
             FileSearchToolCall.builder()
                 .id("id")
@@ -38,7 +38,7 @@ internal class FileSearchToolCallTest {
                         .build()
                 )
                 .build()
-        assertThat(fileSearchToolCall).isNotNull
+
         assertThat(fileSearchToolCall.id()).isEqualTo("id")
         assertThat(fileSearchToolCall.fileSearch())
             .isEqualTo(

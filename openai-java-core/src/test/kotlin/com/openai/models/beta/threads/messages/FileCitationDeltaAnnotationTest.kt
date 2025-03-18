@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class FileCitationDeltaAnnotationTest {
 
     @Test
-    fun createFileCitationDeltaAnnotation() {
+    fun create() {
         val fileCitationDeltaAnnotation =
             FileCitationDeltaAnnotation.builder()
                 .index(0L)
@@ -22,7 +22,7 @@ internal class FileCitationDeltaAnnotationTest {
                 .startIndex(0L)
                 .text("text")
                 .build()
-        assertThat(fileCitationDeltaAnnotation).isNotNull
+
         assertThat(fileCitationDeltaAnnotation.index()).isEqualTo(0L)
         assertThat(fileCitationDeltaAnnotation.endIndex()).contains(0L)
         assertThat(fileCitationDeltaAnnotation.fileCitation())

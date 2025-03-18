@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class CompletionTest {
 
     @Test
-    fun createCompletion() {
+    fun create() {
         val completion =
             Completion.builder()
                 .id("id")
@@ -57,7 +57,7 @@ internal class CompletionTest {
                         .build()
                 )
                 .build()
-        assertThat(completion).isNotNull
+
         assertThat(completion.id()).isEqualTo("id")
         assertThat(completion.choices())
             .containsExactly(

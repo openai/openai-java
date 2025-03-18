@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class FileSearchToolTest {
 
     @Test
-    fun createFileSearchTool() {
+    fun create() {
         val fileSearchTool =
             FileSearchTool.builder()
                 .fileSearch(
@@ -23,7 +23,7 @@ internal class FileSearchToolTest {
                         .build()
                 )
                 .build()
-        assertThat(fileSearchTool).isNotNull
+
         assertThat(fileSearchTool.fileSearch())
             .contains(
                 FileSearchTool.FileSearch.builder()

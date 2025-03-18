@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ImagesResponseTest {
 
     @Test
-    fun createImagesResponse() {
+    fun create() {
         val imagesResponse =
             ImagesResponse.builder()
                 .created(0L)
@@ -20,7 +20,7 @@ internal class ImagesResponseTest {
                         .build()
                 )
                 .build()
-        assertThat(imagesResponse).isNotNull
+
         assertThat(imagesResponse.created()).isEqualTo(0L)
         assertThat(imagesResponse.data())
             .containsExactly(

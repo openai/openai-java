@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ModerationImageUrlInputTest {
 
     @Test
-    fun createModerationImageUrlInput() {
+    fun create() {
         val moderationImageUrlInput =
             ModerationImageUrlInput.builder()
                 .imageUrl(
@@ -17,7 +17,7 @@ internal class ModerationImageUrlInputTest {
                         .build()
                 )
                 .build()
-        assertThat(moderationImageUrlInput).isNotNull
+
         assertThat(moderationImageUrlInput.imageUrl())
             .isEqualTo(
                 ModerationImageUrlInput.ImageUrl.builder()

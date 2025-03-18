@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ToolCallsStepDetailsTest {
 
     @Test
-    fun createToolCallsStepDetails() {
+    fun create() {
         val toolCallsStepDetails =
             ToolCallsStepDetails.builder()
                 .addToolCall(
@@ -23,7 +23,7 @@ internal class ToolCallsStepDetailsTest {
                         .build()
                 )
                 .build()
-        assertThat(toolCallsStepDetails).isNotNull
+
         assertThat(toolCallsStepDetails.toolCalls())
             .containsExactly(
                 ToolCall.ofCodeInterpreter(

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class MessageCreationStepDetailsTest {
 
     @Test
-    fun createMessageCreationStepDetails() {
+    fun create() {
         val messageCreationStepDetails =
             MessageCreationStepDetails.builder()
                 .messageCreation(
@@ -17,7 +17,7 @@ internal class MessageCreationStepDetailsTest {
                         .build()
                 )
                 .build()
-        assertThat(messageCreationStepDetails).isNotNull
+
         assertThat(messageCreationStepDetails.messageCreation())
             .isEqualTo(
                 MessageCreationStepDetails.MessageCreation.builder().messageId("message_id").build()

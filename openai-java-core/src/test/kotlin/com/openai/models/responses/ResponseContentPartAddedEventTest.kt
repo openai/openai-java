@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseContentPartAddedEventTest {
 
     @Test
-    fun createResponseContentPartAddedEvent() {
+    fun create() {
         val responseContentPartAddedEvent =
             ResponseContentPartAddedEvent.builder()
                 .contentIndex(0L)
@@ -26,7 +26,7 @@ internal class ResponseContentPartAddedEventTest {
                         .build()
                 )
                 .build()
-        assertThat(responseContentPartAddedEvent).isNotNull
+
         assertThat(responseContentPartAddedEvent.contentIndex()).isEqualTo(0L)
         assertThat(responseContentPartAddedEvent.itemId()).isEqualTo("item_id")
         assertThat(responseContentPartAddedEvent.outputIndex()).isEqualTo(0L)

@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionContentPartTextTest {
 
     @Test
-    fun createChatCompletionContentPartText() {
+    fun create() {
         val chatCompletionContentPartText =
             ChatCompletionContentPartText.builder().text("text").build()
-        assertThat(chatCompletionContentPartText).isNotNull
+
         assertThat(chatCompletionContentPartText.text()).isEqualTo("text")
     }
 }

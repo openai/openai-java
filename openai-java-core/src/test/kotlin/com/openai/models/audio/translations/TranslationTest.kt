@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test
 internal class TranslationTest {
 
     @Test
-    fun createTranslation() {
+    fun create() {
         val translation = Translation.builder().text("text").build()
-        assertThat(translation).isNotNull
+
         assertThat(translation.text()).isEqualTo("text")
     }
 }

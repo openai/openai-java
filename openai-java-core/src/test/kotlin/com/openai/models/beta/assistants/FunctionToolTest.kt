@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class FunctionToolTest {
 
     @Test
-    fun createFunctionTool() {
+    fun create() {
         val functionTool =
             FunctionTool.builder()
                 .function(
@@ -27,7 +27,7 @@ internal class FunctionToolTest {
                         .build()
                 )
                 .build()
-        assertThat(functionTool).isNotNull
+
         assertThat(functionTool.function())
             .isEqualTo(
                 FunctionDefinition.builder()

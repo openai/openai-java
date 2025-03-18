@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class FunctionToolCallDeltaTest {
 
     @Test
-    fun createFunctionToolCallDelta() {
+    fun create() {
         val functionToolCallDelta =
             FunctionToolCallDelta.builder()
                 .index(0L)
@@ -21,7 +21,7 @@ internal class FunctionToolCallDeltaTest {
                         .build()
                 )
                 .build()
-        assertThat(functionToolCallDelta).isNotNull
+
         assertThat(functionToolCallDelta.index()).isEqualTo(0L)
         assertThat(functionToolCallDelta.id()).contains("id")
         assertThat(functionToolCallDelta.function())

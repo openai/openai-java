@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class CompletionUsageTest {
 
     @Test
-    fun createCompletionUsage() {
+    fun create() {
         val completionUsage =
             CompletionUsage.builder()
                 .completionTokens(0L)
@@ -29,7 +29,7 @@ internal class CompletionUsageTest {
                         .build()
                 )
                 .build()
-        assertThat(completionUsage).isNotNull
+
         assertThat(completionUsage.completionTokens()).isEqualTo(0L)
         assertThat(completionUsage.promptTokens()).isEqualTo(0L)
         assertThat(completionUsage.totalTokens()).isEqualTo(0L)

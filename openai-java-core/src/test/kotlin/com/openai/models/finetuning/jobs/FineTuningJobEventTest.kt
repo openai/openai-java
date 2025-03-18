@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class FineTuningJobEventTest {
 
     @Test
-    fun createFineTuningJobEvent() {
+    fun create() {
         val fineTuningJobEvent =
             FineTuningJobEvent.builder()
                 .id("id")
@@ -19,7 +19,7 @@ internal class FineTuningJobEventTest {
                 .data(JsonValue.from(mapOf<String, Any>()))
                 .type(FineTuningJobEvent.Type.MESSAGE)
                 .build()
-        assertThat(fineTuningJobEvent).isNotNull
+
         assertThat(fineTuningJobEvent.id()).isEqualTo("id")
         assertThat(fineTuningJobEvent.createdAt()).isEqualTo(0L)
         assertThat(fineTuningJobEvent.level()).isEqualTo(FineTuningJobEvent.Level.INFO)

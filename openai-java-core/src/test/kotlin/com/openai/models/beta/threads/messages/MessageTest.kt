@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class MessageTest {
 
     @Test
-    fun createMessage() {
+    fun create() {
         val message =
             Message.builder()
                 .id("id")
@@ -44,7 +44,7 @@ internal class MessageTest {
                 .status(Message.Status.IN_PROGRESS)
                 .threadId("thread_id")
                 .build()
-        assertThat(message).isNotNull
+
         assertThat(message.id()).isEqualTo("id")
         assertThat(message.assistantId()).contains("assistant_id")
         assertThat(message.attachments().getOrNull())

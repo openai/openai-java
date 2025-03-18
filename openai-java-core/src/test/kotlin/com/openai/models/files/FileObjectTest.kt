@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class FileObjectTest {
 
     @Test
-    fun createFileObject() {
+    fun create() {
         val fileObject =
             FileObject.builder()
                 .id("id")
@@ -20,7 +20,7 @@ internal class FileObjectTest {
                 .expiresAt(0L)
                 .statusDetails("status_details")
                 .build()
-        assertThat(fileObject).isNotNull
+
         assertThat(fileObject.id()).isEqualTo("id")
         assertThat(fileObject.bytes()).isEqualTo(0L)
         assertThat(fileObject.createdAt()).isEqualTo(0L)

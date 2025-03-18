@@ -8,13 +8,13 @@ import org.junit.jupiter.api.Test
 internal class ResponseCodeInterpreterCallCodeDeltaEventTest {
 
     @Test
-    fun createResponseCodeInterpreterCallCodeDeltaEvent() {
+    fun create() {
         val responseCodeInterpreterCallCodeDeltaEvent =
             ResponseCodeInterpreterCallCodeDeltaEvent.builder()
                 .delta("delta")
                 .outputIndex(0L)
                 .build()
-        assertThat(responseCodeInterpreterCallCodeDeltaEvent).isNotNull
+
         assertThat(responseCodeInterpreterCallCodeDeltaEvent.delta()).isEqualTo("delta")
         assertThat(responseCodeInterpreterCallCodeDeltaEvent.outputIndex()).isEqualTo(0L)
     }

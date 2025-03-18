@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseCodeInterpreterToolCallTest {
 
     @Test
-    fun createResponseCodeInterpreterToolCall() {
+    fun create() {
         val responseCodeInterpreterToolCall =
             ResponseCodeInterpreterToolCall.builder()
                 .id("id")
@@ -16,7 +16,7 @@ internal class ResponseCodeInterpreterToolCallTest {
                 .addLogsResult("logs")
                 .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
                 .build()
-        assertThat(responseCodeInterpreterToolCall).isNotNull
+
         assertThat(responseCodeInterpreterToolCall.id()).isEqualTo("id")
         assertThat(responseCodeInterpreterToolCall.code()).isEqualTo("code")
         assertThat(responseCodeInterpreterToolCall.results())

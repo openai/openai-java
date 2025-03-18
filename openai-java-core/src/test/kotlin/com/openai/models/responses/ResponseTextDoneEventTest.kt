@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class ResponseTextDoneEventTest {
 
     @Test
-    fun createResponseTextDoneEvent() {
+    fun create() {
         val responseTextDoneEvent =
             ResponseTextDoneEvent.builder()
                 .contentIndex(0L)
@@ -16,7 +16,7 @@ internal class ResponseTextDoneEventTest {
                 .outputIndex(0L)
                 .text("text")
                 .build()
-        assertThat(responseTextDoneEvent).isNotNull
+
         assertThat(responseTextDoneEvent.contentIndex()).isEqualTo(0L)
         assertThat(responseTextDoneEvent.itemId()).isEqualTo("item_id")
         assertThat(responseTextDoneEvent.outputIndex()).isEqualTo(0L)

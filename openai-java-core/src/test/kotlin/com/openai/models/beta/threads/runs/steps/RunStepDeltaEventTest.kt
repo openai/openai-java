@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class RunStepDeltaEventTest {
 
     @Test
-    fun createRunStepDeltaEvent() {
+    fun create() {
         val runStepDeltaEvent =
             RunStepDeltaEvent.builder()
                 .id("id")
@@ -26,7 +26,7 @@ internal class RunStepDeltaEventTest {
                         .build()
                 )
                 .build()
-        assertThat(runStepDeltaEvent).isNotNull
+
         assertThat(runStepDeltaEvent.id()).isEqualTo("id")
         assertThat(runStepDeltaEvent.delta())
             .isEqualTo(

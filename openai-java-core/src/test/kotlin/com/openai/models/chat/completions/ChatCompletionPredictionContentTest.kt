@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test
 internal class ChatCompletionPredictionContentTest {
 
     @Test
-    fun createChatCompletionPredictionContent() {
+    fun create() {
         val chatCompletionPredictionContent =
             ChatCompletionPredictionContent.builder().content("string").build()
-        assertThat(chatCompletionPredictionContent).isNotNull
+
         assertThat(chatCompletionPredictionContent.content())
             .isEqualTo(ChatCompletionPredictionContent.Content.ofText("string"))
     }

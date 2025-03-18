@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class RunStepTest {
 
     @Test
-    fun createRunStep() {
+    fun create() {
         val runStep =
             RunStep.builder()
                 .id("id")
@@ -48,7 +48,7 @@ internal class RunStepTest {
                         .build()
                 )
                 .build()
-        assertThat(runStep).isNotNull
+
         assertThat(runStep.id()).isEqualTo("id")
         assertThat(runStep.assistantId()).isEqualTo("assistant_id")
         assertThat(runStep.cancelledAt()).contains(0L)
