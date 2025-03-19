@@ -16,7 +16,11 @@
 
 The OpenAI Java SDK provides convenient access to the OpenAI REST API from applications written in Java.
 
+<!-- x-release-please-start-version -->
+
 The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are also available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/0.35.1).
+
+<!-- x-release-please-end -->
 
 ## Installation
 
