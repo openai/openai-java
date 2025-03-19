@@ -14,7 +14,7 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.errors.OpenAIError
+import com.openai.models.ErrorObject
 import com.openai.models.finetuning.jobs.FineTuningJob
 import com.openai.models.finetuning.jobs.JobCancelParams
 import com.openai.models.finetuning.jobs.JobCreateParams
@@ -67,7 +67,7 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         JobService.WithRawResponse {
 
-        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
         private val checkpoints: CheckpointService.WithRawResponse by lazy {
             CheckpointServiceImpl.WithRawResponseImpl(clientOptions)

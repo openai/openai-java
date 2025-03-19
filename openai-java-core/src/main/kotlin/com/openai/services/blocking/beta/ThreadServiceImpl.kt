@@ -20,7 +20,7 @@ import com.openai.core.http.json
 import com.openai.core.http.map
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.errors.OpenAIError
+import com.openai.models.ErrorObject
 import com.openai.models.beta.assistants.AssistantStreamEvent
 import com.openai.models.beta.threads.Thread
 import com.openai.models.beta.threads.ThreadCreateAndRunParams
@@ -90,7 +90,7 @@ class ThreadServiceImpl internal constructor(private val clientOptions: ClientOp
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ThreadService.WithRawResponse {
 
-        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
         private val runs: RunService.WithRawResponse by lazy {
             RunServiceImpl.WithRawResponseImpl(clientOptions)

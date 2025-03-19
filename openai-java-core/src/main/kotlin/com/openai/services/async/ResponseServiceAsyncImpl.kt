@@ -23,7 +23,7 @@ import com.openai.core.http.map
 import com.openai.core.http.parseable
 import com.openai.core.http.toAsync
 import com.openai.core.prepareAsync
-import com.openai.errors.OpenAIError
+import com.openai.models.ErrorObject
 import com.openai.models.responses.Response
 import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.responses.ResponseDeleteParams
@@ -82,7 +82,7 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ResponseServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
         private val inputItems: InputItemServiceAsync.WithRawResponse by lazy {
             InputItemServiceAsyncImpl.WithRawResponseImpl(clientOptions)

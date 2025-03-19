@@ -19,7 +19,7 @@ import com.openai.core.http.json
 import com.openai.core.http.map
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.errors.OpenAIError
+import com.openai.models.ErrorObject
 import com.openai.models.completions.Completion
 import com.openai.models.completions.CompletionCreateParams
 
@@ -49,7 +49,7 @@ class CompletionServiceImpl internal constructor(private val clientOptions: Clie
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         CompletionService.WithRawResponse {
 
-        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
         private val createHandler: Handler<Completion> =
             jsonHandler<Completion>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

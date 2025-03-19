@@ -13,7 +13,7 @@ import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
-import com.openai.errors.OpenAIError
+import com.openai.models.ErrorObject
 import com.openai.models.chat.completions.messages.MessageListPageAsync
 import com.openai.models.chat.completions.messages.MessageListParams
 import java.util.concurrent.CompletableFuture
@@ -37,7 +37,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         MessageServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
         private val listHandler: Handler<MessageListPageAsync.Response> =
             jsonHandler<MessageListPageAsync.Response>(clientOptions.jsonMapper)

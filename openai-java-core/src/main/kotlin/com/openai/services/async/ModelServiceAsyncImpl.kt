@@ -14,7 +14,7 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
-import com.openai.errors.OpenAIError
+import com.openai.models.ErrorObject
 import com.openai.models.models.Model
 import com.openai.models.models.ModelDeleteParams
 import com.openai.models.models.ModelDeleted
@@ -56,7 +56,7 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ModelServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
         private val retrieveHandler: Handler<Model> =
             jsonHandler<Model>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

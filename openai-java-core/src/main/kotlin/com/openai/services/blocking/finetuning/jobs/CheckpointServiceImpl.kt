@@ -13,7 +13,7 @@ import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.errors.OpenAIError
+import com.openai.models.ErrorObject
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListPage
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListParams
 
@@ -36,7 +36,7 @@ class CheckpointServiceImpl internal constructor(private val clientOptions: Clie
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         CheckpointService.WithRawResponse {
 
-        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
         private val listHandler: Handler<CheckpointListPage.Response> =
             jsonHandler<CheckpointListPage.Response>(clientOptions.jsonMapper)

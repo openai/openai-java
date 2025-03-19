@@ -11,7 +11,7 @@ import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.json
 import com.openai.core.prepare
-import com.openai.errors.OpenAIError
+import com.openai.models.ErrorObject
 import com.openai.models.audio.speech.SpeechCreateParams
 
 class SpeechServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -30,7 +30,7 @@ class SpeechServiceImpl internal constructor(private val clientOptions: ClientOp
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         SpeechService.WithRawResponse {
 
-        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
         override fun create(
             params: SpeechCreateParams,

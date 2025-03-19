@@ -15,7 +15,7 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
-import com.openai.errors.OpenAIError
+import com.openai.models.ErrorObject
 import com.openai.models.vectorstores.filebatches.FileBatchCancelParams
 import com.openai.models.vectorstores.filebatches.FileBatchCreateParams
 import com.openai.models.vectorstores.filebatches.FileBatchListFilesPageAsync
@@ -69,7 +69,7 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         FileBatchServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
         private val createHandler: Handler<VectorStoreFileBatch> =
             jsonHandler<VectorStoreFileBatch>(clientOptions.jsonMapper)
