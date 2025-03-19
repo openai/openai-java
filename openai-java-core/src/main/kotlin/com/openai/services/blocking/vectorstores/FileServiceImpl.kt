@@ -15,7 +15,7 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.errors.OpenAIError
+import com.openai.models.ErrorObject
 import com.openai.models.vectorstores.files.FileContentPage
 import com.openai.models.vectorstores.files.FileContentParams
 import com.openai.models.vectorstores.files.FileCreateParams
@@ -76,7 +76,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         FileService.WithRawResponse {
 
-        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
         private val createHandler: Handler<VectorStoreFile> =
             jsonHandler<VectorStoreFile>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

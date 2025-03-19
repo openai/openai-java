@@ -14,7 +14,7 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.errors.OpenAIError
+import com.openai.models.ErrorObject
 import com.openai.models.embeddings.CreateEmbeddingResponse
 import com.openai.models.embeddings.EmbeddingCreateParams
 
@@ -37,7 +37,7 @@ class EmbeddingServiceImpl internal constructor(private val clientOptions: Clien
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         EmbeddingService.WithRawResponse {
 
-        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
         private val createHandler: Handler<CreateEmbeddingResponse> =
             jsonHandler<CreateEmbeddingResponse>(clientOptions.jsonMapper)

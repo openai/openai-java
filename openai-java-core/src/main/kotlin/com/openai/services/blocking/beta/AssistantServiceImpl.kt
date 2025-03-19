@@ -15,7 +15,7 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.errors.OpenAIError
+import com.openai.models.ErrorObject
 import com.openai.models.beta.assistants.Assistant
 import com.openai.models.beta.assistants.AssistantCreateParams
 import com.openai.models.beta.assistants.AssistantDeleteParams
@@ -71,7 +71,7 @@ class AssistantServiceImpl internal constructor(private val clientOptions: Clien
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         AssistantService.WithRawResponse {
 
-        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
         private val createHandler: Handler<Assistant> =
             jsonHandler<Assistant>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

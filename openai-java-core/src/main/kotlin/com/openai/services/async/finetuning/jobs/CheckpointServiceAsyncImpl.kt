@@ -13,7 +13,7 @@ import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
-import com.openai.errors.OpenAIError
+import com.openai.models.ErrorObject
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListPageAsync
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListParams
 import java.util.concurrent.CompletableFuture
@@ -37,7 +37,7 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         CheckpointServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
         private val listHandler: Handler<CheckpointListPageAsync.Response> =
             jsonHandler<CheckpointListPageAsync.Response>(clientOptions.jsonMapper)

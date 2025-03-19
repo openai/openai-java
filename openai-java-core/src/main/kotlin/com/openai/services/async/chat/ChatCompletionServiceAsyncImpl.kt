@@ -21,7 +21,7 @@ import com.openai.core.http.map
 import com.openai.core.http.parseable
 import com.openai.core.http.toAsync
 import com.openai.core.prepareAsync
-import com.openai.errors.OpenAIError
+import com.openai.models.ErrorObject
 import com.openai.models.chat.completions.ChatCompletion
 import com.openai.models.chat.completions.ChatCompletionChunk
 import com.openai.models.chat.completions.ChatCompletionCreateParams
@@ -87,7 +87,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ChatCompletionServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
         private val messages: MessageServiceAsync.WithRawResponse by lazy {
             MessageServiceAsyncImpl.WithRawResponseImpl(clientOptions)
