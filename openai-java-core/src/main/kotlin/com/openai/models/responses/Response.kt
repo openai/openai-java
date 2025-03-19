@@ -30,6 +30,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ChatModel
 import com.openai.models.Metadata
 import com.openai.models.Reasoning
+import com.openai.models.ResponsesModel
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -56,7 +57,7 @@ private constructor(
     private val metadata: JsonField<Metadata> = JsonMissing.of(),
     @JsonProperty("model")
     @ExcludeMissing
-    private val model: JsonField<ChatModel> = JsonMissing.of(),
+    private val model: JsonField<ResponsesModel> = JsonMissing.of(),
     @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
     @JsonProperty("output")
     @ExcludeMissing
@@ -167,7 +168,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun model(): ChatModel = model.getRequired("model")
+    fun model(): ResponsesModel = model.getRequired("model")
 
     /**
      * The object type of this resource - always set to `response`.
@@ -390,7 +391,7 @@ private constructor(
      *
      * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<ChatModel> = model
+    @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<ResponsesModel> = model
 
     /**
      * Returns the raw JSON value of [output].
@@ -521,7 +522,7 @@ private constructor(
         incompleteDetails().ifPresent { it.validate() }
         instructions()
         metadata().ifPresent { it.validate() }
-        model()
+        model().validate()
         _object_().let {
             if (it != JsonValue.from("response")) {
                 throw OpenAIInvalidDataException("'object_' is invalid, received $it")
@@ -580,7 +581,7 @@ private constructor(
         private var incompleteDetails: JsonField<IncompleteDetails>? = null
         private var instructions: JsonField<String>? = null
         private var metadata: JsonField<Metadata>? = null
-        private var model: JsonField<ChatModel>? = null
+        private var model: JsonField<ResponsesModel>? = null
         private var object_: JsonValue = JsonValue.from("response")
         private var output: JsonField<MutableList<ResponseOutputItem>>? = null
         private var parallelToolCalls: JsonField<Boolean>? = null
@@ -733,23 +734,26 @@ private constructor(
          * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
          */
-        fun model(model: ChatModel) = model(JsonField.of(model))
+        fun model(model: ResponsesModel) = model(JsonField.of(model))
 
         /**
          * Sets [Builder.model] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.model] with a well-typed [ChatModel] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
+         * You should usually call [Builder.model] with a well-typed [ResponsesModel] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
-        fun model(model: JsonField<ChatModel>) = apply { this.model = model }
+        fun model(model: JsonField<ResponsesModel>) = apply { this.model = model }
 
-        /**
-         * Sets [model] to an arbitrary [String].
-         *
-         * You should usually call [model] with a well-typed [ChatModel] constant instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun model(value: String) = model(ChatModel.of(value))
+        /** Alias for calling [model] with `ResponsesModel.ofString(string)`. */
+        fun model(string: String) = model(ResponsesModel.ofString(string))
+
+        /** Alias for calling [model] with `ResponsesModel.ofChat(chat)`. */
+        fun model(chat: ChatModel) = model(ResponsesModel.ofChat(chat))
+
+        /** Alias for calling [model] with `ResponsesModel.ofUnionMember2(unionMember2)`. */
+        fun model(unionMember2: ResponsesModel.UnionMember2) =
+            model(ResponsesModel.ofUnionMember2(unionMember2))
 
         /**
          * Sets the field to an arbitrary JSON value.

@@ -440,7 +440,7 @@ internal class ResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.O3_MINI)
+                        .model(ChatModel.GPT_4O)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -636,7 +636,7 @@ internal class ResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.O3_MINI)
+                        .model(ChatModel.GPT_4O)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -985,7 +985,7 @@ internal class ResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.O3_MINI)
+                        .model(ChatModel.GPT_4O)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -1069,7 +1069,7 @@ internal class ResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.O3_MINI)
+                        .model(ChatModel.GPT_4O)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -1153,7 +1153,7 @@ internal class ResponseStreamEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.O3_MINI)
+                        .model(ChatModel.GPT_4O)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")

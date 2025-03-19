@@ -37,7 +37,7 @@ internal class ResponseServiceAsyncTest {
             responseServiceAsync.create(
                 ResponseCreateParams.builder()
                     .input("string")
-                    .model(ChatModel.O3_MINI)
+                    .model(ChatModel.GPT_4O)
                     .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                     .instructions("instructions")
                     .maxOutputTokens(0L)
@@ -104,7 +104,7 @@ internal class ResponseServiceAsyncTest {
             responseServiceAsync.createStreaming(
                 ResponseCreateParams.builder()
                     .input("string")
-                    .model(ChatModel.O3_MINI)
+                    .model(ChatModel.GPT_4O)
                     .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                     .instructions("instructions")
                     .maxOutputTokens(0L)
