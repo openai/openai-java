@@ -9,6 +9,7 @@ import com.openai.models.Metadata
 import com.openai.models.Reasoning
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
+import com.openai.models.ResponsesModel
 import kotlin.jvm.optionals.getOrNull
 import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
@@ -20,7 +21,7 @@ internal class ResponseCreateParamsTest {
     fun create() {
         ResponseCreateParams.builder()
             .input("string")
-            .model(ChatModel.O3_MINI)
+            .model(ChatModel.GPT_4O)
             .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
             .instructions("instructions")
             .maxOutputTokens(0L)
@@ -69,7 +70,7 @@ internal class ResponseCreateParamsTest {
         val params =
             ResponseCreateParams.builder()
                 .input("string")
-                .model(ChatModel.O3_MINI)
+                .model(ChatModel.GPT_4O)
                 .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                 .instructions("instructions")
                 .maxOutputTokens(0L)
@@ -122,7 +123,7 @@ internal class ResponseCreateParamsTest {
 
         assertNotNull(body)
         assertThat(body.input()).isEqualTo(ResponseCreateParams.Input.ofText("string"))
-        assertThat(body.model()).isEqualTo(ChatModel.O3_MINI)
+        assertThat(body.model()).isEqualTo(ResponsesModel.ofChat(ChatModel.GPT_4O))
         assertThat(body.include().getOrNull())
             .containsExactly(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
         assertThat(body.instructions()).contains("instructions")
@@ -177,12 +178,12 @@ internal class ResponseCreateParamsTest {
 
     @Test
     fun bodyWithoutOptionalFields() {
-        val params = ResponseCreateParams.builder().input("string").model(ChatModel.O3_MINI).build()
+        val params = ResponseCreateParams.builder().input("string").model(ChatModel.GPT_4O).build()
 
         val body = params._body()
 
         assertNotNull(body)
         assertThat(body.input()).isEqualTo(ResponseCreateParams.Input.ofText("string"))
-        assertThat(body.model()).isEqualTo(ChatModel.O3_MINI)
+        assertThat(body.model()).isEqualTo(ResponsesModel.ofChat(ChatModel.GPT_4O))
     }
 }

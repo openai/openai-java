@@ -39,7 +39,7 @@ internal class ResponseInProgressEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .model(ChatModel.O3_MINI)
+                        .model(ChatModel.GPT_4O)
                         .addOutput(
                             ResponseOutputMessage.builder()
                                 .id("id")
@@ -139,7 +139,7 @@ internal class ResponseInProgressEventTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.O3_MINI)
+                    .model(ChatModel.GPT_4O)
                     .addOutput(
                         ResponseOutputMessage.builder()
                             .id("id")
