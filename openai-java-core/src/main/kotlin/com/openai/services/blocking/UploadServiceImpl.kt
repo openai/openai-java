@@ -14,7 +14,7 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.errors.OpenAIError
+import com.openai.models.ErrorObject
 import com.openai.models.uploads.Upload
 import com.openai.models.uploads.UploadCancelParams
 import com.openai.models.uploads.UploadCompleteParams
@@ -50,7 +50,7 @@ class UploadServiceImpl internal constructor(private val clientOptions: ClientOp
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         UploadService.WithRawResponse {
 
-        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
         private val parts: PartService.WithRawResponse by lazy {
             PartServiceImpl.WithRawResponseImpl(clientOptions)

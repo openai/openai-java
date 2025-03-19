@@ -1,23 +1,23 @@
+// File generated from our OpenAPI spec by Stainless.
+
 package com.openai.errors
 
+import com.openai.core.JsonValue
 import com.openai.core.http.Headers
+import java.util.Optional
 
 abstract class OpenAIServiceException
-@JvmOverloads
-constructor(
-    private val statusCode: Int,
-    private val headers: Headers,
-    private val body: String,
-    private val error: OpenAIError,
-    message: String = "$statusCode: $error",
-    cause: Throwable? = null,
-) : OpenAIException(message, cause) {
+protected constructor(message: String, cause: Throwable? = null) : OpenAIException(message, cause) {
 
-    fun statusCode(): Int = statusCode
+    abstract fun statusCode(): Int
 
-    fun headers(): Headers = headers
+    abstract fun headers(): Headers
 
-    fun body(): String = body
+    abstract fun body(): JsonValue
 
-    fun error(): OpenAIError = error
+    abstract fun code(): Optional<String>
+
+    abstract fun param(): Optional<String>
+
+    abstract fun type(): Optional<String>
 }

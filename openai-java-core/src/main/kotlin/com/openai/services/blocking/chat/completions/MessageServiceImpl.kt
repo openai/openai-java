@@ -13,7 +13,7 @@ import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.errors.OpenAIError
+import com.openai.models.ErrorObject
 import com.openai.models.chat.completions.messages.MessageListPage
 import com.openai.models.chat.completions.messages.MessageListParams
 
@@ -33,7 +33,7 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         MessageService.WithRawResponse {
 
-        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
         private val listHandler: Handler<MessageListPage.Response> =
             jsonHandler<MessageListPage.Response>(clientOptions.jsonMapper)

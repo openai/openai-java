@@ -14,7 +14,7 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.errors.OpenAIError
+import com.openai.models.ErrorObject
 import com.openai.models.uploads.parts.PartCreateParams
 import com.openai.models.uploads.parts.UploadPart
 
@@ -33,7 +33,7 @@ class PartServiceImpl internal constructor(private val clientOptions: ClientOpti
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         PartService.WithRawResponse {
 
-        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
         private val createHandler: Handler<UploadPart> =
             jsonHandler<UploadPart>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

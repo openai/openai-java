@@ -14,7 +14,7 @@ import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.errors.OpenAIError
+import com.openai.models.ErrorObject
 import com.openai.models.beta.threads.runs.steps.RunStep
 import com.openai.models.beta.threads.runs.steps.StepListPage
 import com.openai.models.beta.threads.runs.steps.StepListParams
@@ -44,7 +44,7 @@ class StepServiceImpl internal constructor(private val clientOptions: ClientOpti
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         StepService.WithRawResponse {
 
-        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
         private val retrieveHandler: Handler<RunStep> =
             jsonHandler<RunStep>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

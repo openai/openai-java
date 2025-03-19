@@ -14,7 +14,7 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
-import com.openai.errors.OpenAIError
+import com.openai.models.ErrorObject
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams
 import com.openai.models.audio.transcriptions.TranscriptionCreateResponse
 import java.util.concurrent.CompletableFuture
@@ -38,7 +38,7 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         TranscriptionServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<OpenAIError> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
         private val createHandler: Handler<TranscriptionCreateResponse> =
             jsonHandler<TranscriptionCreateResponse>(clientOptions.jsonMapper)
