@@ -9,6 +9,7 @@ import com.openai.models.Metadata
 import com.openai.models.Reasoning
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
+import com.openai.models.ResponsesModel
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -37,7 +38,7 @@ internal class ResponseTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ChatModel.O3_MINI)
+                .model(ChatModel.GPT_4O)
                 .addOutput(
                     ResponseOutputMessage.builder()
                         .id("id")
@@ -129,7 +130,7 @@ internal class ResponseTest {
             .contains(
                 Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
             )
-        assertThat(response.model()).isEqualTo(ChatModel.O3_MINI)
+        assertThat(response.model()).isEqualTo(ResponsesModel.ofChat(ChatModel.GPT_4O))
         assertThat(response.output())
             .containsExactly(
                 ResponseOutputItem.ofMessage(

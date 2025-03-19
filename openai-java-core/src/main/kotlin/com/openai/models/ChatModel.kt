@@ -36,16 +36,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
         @JvmField val O1_MINI_2024_09_12 = of("o1-mini-2024-09-12")
 
-        @JvmField val COMPUTER_USE_PREVIEW = of("computer-use-preview")
-
-        @JvmField val COMPUTER_USE_PREVIEW_2025_02_04 = of("computer-use-preview-2025-02-04")
-
-        @JvmField val COMPUTER_USE_PREVIEW_2025_03_11 = of("computer-use-preview-2025-03-11")
-
-        @JvmField val GPT_4_5_PREVIEW = of("gpt-4.5-preview")
-
-        @JvmField val GPT_4_5_PREVIEW_2025_02_27 = of("gpt-4.5-preview-2025-02-27")
-
         @JvmField val GPT_4O = of("gpt-4o")
 
         @JvmField val GPT_4O_2024_11_20 = of("gpt-4o-2024-11-20")
@@ -64,6 +54,15 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
         @JvmField
         val GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17 = of("gpt-4o-mini-audio-preview-2024-12-17")
+
+        @JvmField val GPT_4O_SEARCH_PREVIEW = of("gpt-4o-search-preview")
+
+        @JvmField val GPT_4O_MINI_SEARCH_PREVIEW = of("gpt-4o-mini-search-preview")
+
+        @JvmField val GPT_4O_SEARCH_PREVIEW_2025_03_11 = of("gpt-4o-search-preview-2025-03-11")
+
+        @JvmField
+        val GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11 = of("gpt-4o-mini-search-preview-2025-03-11")
 
         @JvmField val CHATGPT_4O_LATEST = of("chatgpt-4o-latest")
 
@@ -122,11 +121,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         O1_PREVIEW_2024_09_12,
         O1_MINI,
         O1_MINI_2024_09_12,
-        COMPUTER_USE_PREVIEW,
-        COMPUTER_USE_PREVIEW_2025_02_04,
-        COMPUTER_USE_PREVIEW_2025_03_11,
-        GPT_4_5_PREVIEW,
-        GPT_4_5_PREVIEW_2025_02_27,
         GPT_4O,
         GPT_4O_2024_11_20,
         GPT_4O_2024_08_06,
@@ -136,6 +130,10 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         GPT_4O_AUDIO_PREVIEW_2024_12_17,
         GPT_4O_MINI_AUDIO_PREVIEW,
         GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17,
+        GPT_4O_SEARCH_PREVIEW,
+        GPT_4O_MINI_SEARCH_PREVIEW,
+        GPT_4O_SEARCH_PREVIEW_2025_03_11,
+        GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11,
         CHATGPT_4O_LATEST,
         GPT_4O_MINI,
         GPT_4O_MINI_2024_07_18,
@@ -178,11 +176,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         O1_PREVIEW_2024_09_12,
         O1_MINI,
         O1_MINI_2024_09_12,
-        COMPUTER_USE_PREVIEW,
-        COMPUTER_USE_PREVIEW_2025_02_04,
-        COMPUTER_USE_PREVIEW_2025_03_11,
-        GPT_4_5_PREVIEW,
-        GPT_4_5_PREVIEW_2025_02_27,
         GPT_4O,
         GPT_4O_2024_11_20,
         GPT_4O_2024_08_06,
@@ -192,6 +185,10 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         GPT_4O_AUDIO_PREVIEW_2024_12_17,
         GPT_4O_MINI_AUDIO_PREVIEW,
         GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17,
+        GPT_4O_SEARCH_PREVIEW,
+        GPT_4O_MINI_SEARCH_PREVIEW,
+        GPT_4O_SEARCH_PREVIEW_2025_03_11,
+        GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11,
         CHATGPT_4O_LATEST,
         GPT_4O_MINI,
         GPT_4O_MINI_2024_07_18,
@@ -235,11 +232,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             O1_PREVIEW_2024_09_12 -> Value.O1_PREVIEW_2024_09_12
             O1_MINI -> Value.O1_MINI
             O1_MINI_2024_09_12 -> Value.O1_MINI_2024_09_12
-            COMPUTER_USE_PREVIEW -> Value.COMPUTER_USE_PREVIEW
-            COMPUTER_USE_PREVIEW_2025_02_04 -> Value.COMPUTER_USE_PREVIEW_2025_02_04
-            COMPUTER_USE_PREVIEW_2025_03_11 -> Value.COMPUTER_USE_PREVIEW_2025_03_11
-            GPT_4_5_PREVIEW -> Value.GPT_4_5_PREVIEW
-            GPT_4_5_PREVIEW_2025_02_27 -> Value.GPT_4_5_PREVIEW_2025_02_27
             GPT_4O -> Value.GPT_4O
             GPT_4O_2024_11_20 -> Value.GPT_4O_2024_11_20
             GPT_4O_2024_08_06 -> Value.GPT_4O_2024_08_06
@@ -249,6 +241,10 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             GPT_4O_AUDIO_PREVIEW_2024_12_17 -> Value.GPT_4O_AUDIO_PREVIEW_2024_12_17
             GPT_4O_MINI_AUDIO_PREVIEW -> Value.GPT_4O_MINI_AUDIO_PREVIEW
             GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17 -> Value.GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17
+            GPT_4O_SEARCH_PREVIEW -> Value.GPT_4O_SEARCH_PREVIEW
+            GPT_4O_MINI_SEARCH_PREVIEW -> Value.GPT_4O_MINI_SEARCH_PREVIEW
+            GPT_4O_SEARCH_PREVIEW_2025_03_11 -> Value.GPT_4O_SEARCH_PREVIEW_2025_03_11
+            GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11 -> Value.GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11
             CHATGPT_4O_LATEST -> Value.CHATGPT_4O_LATEST
             GPT_4O_MINI -> Value.GPT_4O_MINI
             GPT_4O_MINI_2024_07_18 -> Value.GPT_4O_MINI_2024_07_18
@@ -292,11 +288,6 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             O1_PREVIEW_2024_09_12 -> Known.O1_PREVIEW_2024_09_12
             O1_MINI -> Known.O1_MINI
             O1_MINI_2024_09_12 -> Known.O1_MINI_2024_09_12
-            COMPUTER_USE_PREVIEW -> Known.COMPUTER_USE_PREVIEW
-            COMPUTER_USE_PREVIEW_2025_02_04 -> Known.COMPUTER_USE_PREVIEW_2025_02_04
-            COMPUTER_USE_PREVIEW_2025_03_11 -> Known.COMPUTER_USE_PREVIEW_2025_03_11
-            GPT_4_5_PREVIEW -> Known.GPT_4_5_PREVIEW
-            GPT_4_5_PREVIEW_2025_02_27 -> Known.GPT_4_5_PREVIEW_2025_02_27
             GPT_4O -> Known.GPT_4O
             GPT_4O_2024_11_20 -> Known.GPT_4O_2024_11_20
             GPT_4O_2024_08_06 -> Known.GPT_4O_2024_08_06
@@ -306,6 +297,10 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             GPT_4O_AUDIO_PREVIEW_2024_12_17 -> Known.GPT_4O_AUDIO_PREVIEW_2024_12_17
             GPT_4O_MINI_AUDIO_PREVIEW -> Known.GPT_4O_MINI_AUDIO_PREVIEW
             GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17 -> Known.GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17
+            GPT_4O_SEARCH_PREVIEW -> Known.GPT_4O_SEARCH_PREVIEW
+            GPT_4O_MINI_SEARCH_PREVIEW -> Known.GPT_4O_MINI_SEARCH_PREVIEW
+            GPT_4O_SEARCH_PREVIEW_2025_03_11 -> Known.GPT_4O_SEARCH_PREVIEW_2025_03_11
+            GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11 -> Known.GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11
             CHATGPT_4O_LATEST -> Known.CHATGPT_4O_LATEST
             GPT_4O_MINI -> Known.GPT_4O_MINI
             GPT_4O_MINI_2024_07_18 -> Known.GPT_4O_MINI_2024_07_18
