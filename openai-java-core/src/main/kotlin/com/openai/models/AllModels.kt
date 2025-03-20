@@ -26,9 +26,7 @@ class AllModels
 private constructor(
     private val string: String? = null,
     private val chatModel: ChatModel? = null,
-    private val string: String? = null,
-    private val chatModel: ChatModel? = null,
-    private val unionMember4: UnionMember4? = null,
+    private val unionMember2: UnionMember2? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -36,31 +34,19 @@ private constructor(
 
     fun chatModel(): Optional<ChatModel> = Optional.ofNullable(chatModel)
 
-    fun string(): Optional<String> = Optional.ofNullable(string)
-
-    fun chatModel(): Optional<ChatModel> = Optional.ofNullable(chatModel)
-
-    fun unionMember4(): Optional<UnionMember4> = Optional.ofNullable(unionMember4)
+    fun unionMember2(): Optional<UnionMember2> = Optional.ofNullable(unionMember2)
 
     fun isString(): Boolean = string != null
 
     fun isChatModel(): Boolean = chatModel != null
 
-    fun isString(): Boolean = string != null
-
-    fun isChatModel(): Boolean = chatModel != null
-
-    fun isUnionMember4(): Boolean = unionMember4 != null
+    fun isUnionMember2(): Boolean = unionMember2 != null
 
     fun asString(): String = string.getOrThrow("string")
 
     fun asChatModel(): ChatModel = chatModel.getOrThrow("chatModel")
 
-    fun asString(): String = string.getOrThrow("string")
-
-    fun asChatModel(): ChatModel = chatModel.getOrThrow("chatModel")
-
-    fun asUnionMember4(): UnionMember4 = unionMember4.getOrThrow("unionMember4")
+    fun asUnionMember2(): UnionMember2 = unionMember2.getOrThrow("unionMember2")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -68,9 +54,7 @@ private constructor(
         return when {
             string != null -> visitor.visitString(string)
             chatModel != null -> visitor.visitChatModel(chatModel)
-            string != null -> visitor.visitString(string)
-            chatModel != null -> visitor.visitChatModel(chatModel)
-            unionMember4 != null -> visitor.visitUnionMember4(unionMember4)
+            unionMember2 != null -> visitor.visitUnionMember2(unionMember2)
             else -> visitor.unknown(_json)
         }
     }
@@ -88,11 +72,7 @@ private constructor(
 
                 override fun visitChatModel(chatModel: ChatModel) {}
 
-                override fun visitString(string: String) {}
-
-                override fun visitChatModel(chatModel: ChatModel) {}
-
-                override fun visitUnionMember4(unionMember4: UnionMember4) {}
+                override fun visitUnionMember2(unionMember2: UnionMember2) {}
             }
         )
         validated = true
@@ -103,18 +83,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is AllModels && string == other.string && chatModel == other.chatModel && string == other.string && chatModel == other.chatModel && unionMember4 == other.unionMember4 /* spotless:on */
+        return /* spotless:off */ other is AllModels && string == other.string && chatModel == other.chatModel && unionMember2 == other.unionMember2 /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, chatModel, string, chatModel, unionMember4) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, chatModel, unionMember2) /* spotless:on */
 
     override fun toString(): String =
         when {
             string != null -> "AllModels{string=$string}"
             chatModel != null -> "AllModels{chatModel=$chatModel}"
-            string != null -> "AllModels{string=$string}"
-            chatModel != null -> "AllModels{chatModel=$chatModel}"
-            unionMember4 != null -> "AllModels{unionMember4=$unionMember4}"
+            unionMember2 != null -> "AllModels{unionMember2=$unionMember2}"
             _json != null -> "AllModels{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid AllModels")
         }
@@ -125,12 +103,8 @@ private constructor(
 
         @JvmStatic fun ofChatModel(chatModel: ChatModel) = AllModels(chatModel = chatModel)
 
-        @JvmStatic fun ofString(string: String) = AllModels(string = string)
-
-        @JvmStatic fun ofChatModel(chatModel: ChatModel) = AllModels(chatModel = chatModel)
-
         @JvmStatic
-        fun ofUnionMember4(unionMember4: UnionMember4) = AllModels(unionMember4 = unionMember4)
+        fun ofUnionMember2(unionMember2: UnionMember2) = AllModels(unionMember2 = unionMember2)
     }
 
     /** An interface that defines how to map each variant of [AllModels] to a value of type [T]. */
@@ -140,11 +114,7 @@ private constructor(
 
         fun visitChatModel(chatModel: ChatModel): T
 
-        fun visitString(string: String): T
-
-        fun visitChatModel(chatModel: ChatModel): T
-
-        fun visitUnionMember4(unionMember4: UnionMember4): T
+        fun visitUnionMember2(unionMember2: UnionMember2): T
 
         /**
          * Maps an unknown variant of [AllModels] to a value of type [T].
@@ -171,14 +141,8 @@ private constructor(
             tryDeserialize(node, jacksonTypeRef<ChatModel>())?.let {
                 return AllModels(chatModel = it, _json = json)
             }
-            tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                return AllModels(string = it, _json = json)
-            }
-            tryDeserialize(node, jacksonTypeRef<ChatModel>())?.let {
-                return AllModels(chatModel = it, _json = json)
-            }
-            tryDeserialize(node, jacksonTypeRef<UnionMember4>())?.let {
-                return AllModels(unionMember4 = it, _json = json)
+            tryDeserialize(node, jacksonTypeRef<UnionMember2>())?.let {
+                return AllModels(unionMember2 = it, _json = json)
             }
 
             return AllModels(_json = json)
@@ -195,16 +159,14 @@ private constructor(
             when {
                 value.string != null -> generator.writeObject(value.string)
                 value.chatModel != null -> generator.writeObject(value.chatModel)
-                value.string != null -> generator.writeObject(value.string)
-                value.chatModel != null -> generator.writeObject(value.chatModel)
-                value.unionMember4 != null -> generator.writeObject(value.unionMember4)
+                value.unionMember2 != null -> generator.writeObject(value.unionMember2)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid AllModels")
             }
         }
     }
 
-    class UnionMember4 @JsonCreator private constructor(private val value: JsonField<String>) :
+    class UnionMember2 @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
 
         /**
@@ -227,10 +189,10 @@ private constructor(
 
             @JvmField val COMPUTER_USE_PREVIEW_2025_03_11 = of("computer-use-preview-2025-03-11")
 
-            @JvmStatic fun of(value: String) = UnionMember4(JsonField.of(value))
+            @JvmStatic fun of(value: String) = UnionMember2(JsonField.of(value))
         }
 
-        /** An enum containing [UnionMember4]'s known values. */
+        /** An enum containing [UnionMember2]'s known values. */
         enum class Known {
             O1_PRO,
             O1_PRO_2025_03_19,
@@ -239,9 +201,9 @@ private constructor(
         }
 
         /**
-         * An enum containing [UnionMember4]'s known values, as well as an [_UNKNOWN] member.
+         * An enum containing [UnionMember2]'s known values, as well as an [_UNKNOWN] member.
          *
-         * An instance of [UnionMember4] can contain an unknown value in a couple of cases:
+         * An instance of [UnionMember2] can contain an unknown value in a couple of cases:
          * - It was deserialized from data that doesn't match any known member. For example, if the
          *   SDK is on an older version than the API, then the API may respond with new members that
          *   the SDK is unaware of.
@@ -253,7 +215,7 @@ private constructor(
             COMPUTER_USE_PREVIEW,
             COMPUTER_USE_PREVIEW_2025_03_11,
             /**
-             * An enum member indicating that [UnionMember4] was instantiated with an unknown value.
+             * An enum member indicating that [UnionMember2] was instantiated with an unknown value.
              */
             _UNKNOWN,
         }
@@ -289,7 +251,7 @@ private constructor(
                 O1_PRO_2025_03_19 -> Known.O1_PRO_2025_03_19
                 COMPUTER_USE_PREVIEW -> Known.COMPUTER_USE_PREVIEW
                 COMPUTER_USE_PREVIEW_2025_03_11 -> Known.COMPUTER_USE_PREVIEW_2025_03_11
-                else -> throw OpenAIInvalidDataException("Unknown UnionMember4: $value")
+                else -> throw OpenAIInvalidDataException("Unknown UnionMember2: $value")
             }
 
         /**
@@ -309,7 +271,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is UnionMember4 && value == other.value /* spotless:on */
+            return /* spotless:off */ other is UnionMember2 && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
