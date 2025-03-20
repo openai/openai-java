@@ -6,6 +6,7 @@ import com.openai.core.JsonValue
 import com.openai.models.ChatModel
 import com.openai.models.Metadata
 import com.openai.models.ReasoningEffort
+import com.openai.models.UnnamedSchema0
 import com.openai.models.beta.threads.AssistantResponseFormatOption
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
@@ -27,17 +28,15 @@ internal class AssistantCreateParamsTest {
             .responseFormatJsonValue()
             .temperature(1.0)
             .toolResources(
-                AssistantCreateParams.ToolResources.builder()
+                UnnamedSchema0.builder()
                     .codeInterpreter(
-                        AssistantCreateParams.ToolResources.CodeInterpreter.builder()
-                            .addFileId("string")
-                            .build()
+                        UnnamedSchema0.CodeInterpreter.builder().addFileId("string").build()
                     )
                     .fileSearch(
-                        AssistantCreateParams.ToolResources.FileSearch.builder()
+                        UnnamedSchema0.FileSearch.builder()
                             .addVectorStoreId("string")
                             .addVectorStore(
-                                AssistantCreateParams.ToolResources.FileSearch.VectorStore.builder()
+                                UnnamedSchema0.FileSearch.VectorStore.builder()
                                     .chunkingStrategyAuto()
                                     .addFileId("string")
                                     .metadata(
@@ -73,18 +72,15 @@ internal class AssistantCreateParamsTest {
                 .responseFormatJsonValue()
                 .temperature(1.0)
                 .toolResources(
-                    AssistantCreateParams.ToolResources.builder()
+                    UnnamedSchema0.builder()
                         .codeInterpreter(
-                            AssistantCreateParams.ToolResources.CodeInterpreter.builder()
-                                .addFileId("string")
-                                .build()
+                            UnnamedSchema0.CodeInterpreter.builder().addFileId("string").build()
                         )
                         .fileSearch(
-                            AssistantCreateParams.ToolResources.FileSearch.builder()
+                            UnnamedSchema0.FileSearch.builder()
                                 .addVectorStoreId("string")
                                 .addVectorStore(
-                                    AssistantCreateParams.ToolResources.FileSearch.VectorStore
-                                        .builder()
+                                    UnnamedSchema0.FileSearch.VectorStore.builder()
                                         .chunkingStrategyAuto()
                                         .addFileId("string")
                                         .metadata(
@@ -120,17 +116,15 @@ internal class AssistantCreateParamsTest {
         assertThat(body.temperature()).contains(1.0)
         assertThat(body.toolResources())
             .contains(
-                AssistantCreateParams.ToolResources.builder()
+                UnnamedSchema0.builder()
                     .codeInterpreter(
-                        AssistantCreateParams.ToolResources.CodeInterpreter.builder()
-                            .addFileId("string")
-                            .build()
+                        UnnamedSchema0.CodeInterpreter.builder().addFileId("string").build()
                     )
                     .fileSearch(
-                        AssistantCreateParams.ToolResources.FileSearch.builder()
+                        UnnamedSchema0.FileSearch.builder()
                             .addVectorStoreId("string")
                             .addVectorStore(
-                                AssistantCreateParams.ToolResources.FileSearch.VectorStore.builder()
+                                UnnamedSchema0.FileSearch.VectorStore.builder()
                                     .chunkingStrategyAuto()
                                     .addFileId("string")
                                     .metadata(
