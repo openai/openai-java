@@ -6,7 +6,6 @@ import com.openai.core.JsonValue
 import com.openai.models.Metadata
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import kotlin.jvm.optionals.getOrNull
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -66,7 +65,6 @@ internal class MessageCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.content()).isEqualTo(MessageCreateParams.Content.ofText("string"))
         assertThat(body.role()).isEqualTo(MessageCreateParams.Role.USER)
         assertThat(body.attachments().getOrNull())
@@ -93,7 +91,6 @@ internal class MessageCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.content()).isEqualTo(MessageCreateParams.Content.ofText("string"))
         assertThat(body.role()).isEqualTo(MessageCreateParams.Role.USER)
     }

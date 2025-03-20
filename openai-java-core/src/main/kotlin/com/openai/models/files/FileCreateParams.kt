@@ -10,7 +10,7 @@ import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
-import java.io.ByteArrayInputStream
+import com.openai.errors.OpenAIInvalidDataException
 import java.io.InputStream
 import java.nio.file.Path
 import java.util.Objects
@@ -41,7 +41,12 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /** The File object (not file name) to be uploaded. */
+    /**
+     * The File object (not file name) to be uploaded.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun file(): InputStream = body.file()
 
     /**
@@ -49,17 +54,23 @@ private constructor(
      * API - `batch`: Used in the Batch API - `fine-tune`: Used for fine-tuning - `vision`: Images
      * used for vision fine-tuning - `user_data`: Flexible file type for any purpose - `evals`: Used
      * for eval data sets
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun purpose(): FilePurpose = body.purpose()
 
-    /** The File object (not file name) to be uploaded. */
+    /**
+     * Returns the raw multipart value of [file].
+     *
+     * Unlike [file], this method doesn't throw if the multipart field has an unexpected type.
+     */
     fun _file(): MultipartField<InputStream> = body._file()
 
     /**
-     * The intended purpose of the uploaded file. One of: - `assistants`: Used in the Assistants
-     * API - `batch`: Used in the Batch API - `fine-tune`: Used for fine-tuning - `vision`: Images
-     * used for vision fine-tuning - `user_data`: Flexible file type for any purpose - `evals`: Used
-     * for eval data sets
+     * Returns the raw multipart value of [purpose].
+     *
+     * Unlike [purpose], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _purpose(): MultipartField<FilePurpose> = body._purpose()
 
@@ -83,7 +94,12 @@ private constructor(
         private val purpose: MultipartField<FilePurpose>,
     ) {
 
-        /** The File object (not file name) to be uploaded. */
+        /**
+         * The File object (not file name) to be uploaded.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun file(): InputStream = file.value.getRequired("file")
 
         /**
@@ -91,17 +107,24 @@ private constructor(
          * API - `batch`: Used in the Batch API - `fine-tune`: Used for fine-tuning - `vision`:
          * Images used for vision fine-tuning - `user_data`: Flexible file type for any purpose -
          * `evals`: Used for eval data sets
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun purpose(): FilePurpose = purpose.value.getRequired("purpose")
 
-        /** The File object (not file name) to be uploaded. */
+        /**
+         * Returns the raw multipart value of [file].
+         *
+         * Unlike [file], this method doesn't throw if the multipart field has an unexpected type.
+         */
         fun _file(): MultipartField<InputStream> = file
 
         /**
-         * The intended purpose of the uploaded file. One of: - `assistants`: Used in the Assistants
-         * API - `batch`: Used in the Batch API - `fine-tune`: Used for fine-tuning - `vision`:
-         * Images used for vision fine-tuning - `user_data`: Flexible file type for any purpose -
-         * `evals`: Used for eval data sets
+         * Returns the raw multipart value of [purpose].
+         *
+         * Unlike [purpose], this method doesn't throw if the multipart field has an unexpected
+         * type.
          */
         fun _purpose(): MultipartField<FilePurpose> = purpose
 
@@ -148,11 +171,17 @@ private constructor(
             /** The File object (not file name) to be uploaded. */
             fun file(file: InputStream) = file(MultipartField.of(file))
 
-            /** The File object (not file name) to be uploaded. */
+            /**
+             * Sets [Builder.file] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.file] with a well-typed [InputStream] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun file(file: MultipartField<InputStream>) = apply { this.file = file }
 
             /** The File object (not file name) to be uploaded. */
-            fun file(file: ByteArray) = file(ByteArrayInputStream(file))
+            fun file(file: ByteArray) = file(file.inputStream())
 
             /** The File object (not file name) to be uploaded. */
             fun file(file: Path) =
@@ -172,10 +201,11 @@ private constructor(
             fun purpose(purpose: FilePurpose) = purpose(MultipartField.of(purpose))
 
             /**
-             * The intended purpose of the uploaded file. One of: - `assistants`: Used in the
-             * Assistants API - `batch`: Used in the Batch API - `fine-tune`: Used for fine-tuning -
-             * `vision`: Images used for vision fine-tuning - `user_data`: Flexible file type for
-             * any purpose - `evals`: Used for eval data sets
+             * Sets [Builder.purpose] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.purpose] with a well-typed [FilePurpose] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun purpose(purpose: MultipartField<FilePurpose>) = apply { this.purpose = purpose }
 
@@ -246,7 +276,13 @@ private constructor(
         /** The File object (not file name) to be uploaded. */
         fun file(file: InputStream) = apply { body.file(file) }
 
-        /** The File object (not file name) to be uploaded. */
+        /**
+         * Sets [Builder.file] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.file] with a well-typed [InputStream] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun file(file: MultipartField<InputStream>) = apply { body.file(file) }
 
         /** The File object (not file name) to be uploaded. */
@@ -264,10 +300,11 @@ private constructor(
         fun purpose(purpose: FilePurpose) = apply { body.purpose(purpose) }
 
         /**
-         * The intended purpose of the uploaded file. One of: - `assistants`: Used in the Assistants
-         * API - `batch`: Used in the Batch API - `fine-tune`: Used for fine-tuning - `vision`:
-         * Images used for vision fine-tuning - `user_data`: Flexible file type for any purpose -
-         * `evals`: Used for eval data sets
+         * Sets [Builder.purpose] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.purpose] with a well-typed [FilePurpose] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun purpose(purpose: MultipartField<FilePurpose>) = apply { body.purpose(purpose) }
 

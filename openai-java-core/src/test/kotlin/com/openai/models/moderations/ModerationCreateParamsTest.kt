@@ -2,7 +2,6 @@
 
 package com.openai.models.moderations
 
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -26,7 +25,6 @@ internal class ModerationCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.input())
             .isEqualTo(ModerationCreateParams.Input.ofString("I want to kill them."))
         assertThat(body.model()).contains(ModerationModel.OMNI_MODERATION_LATEST)
@@ -38,7 +36,6 @@ internal class ModerationCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.input())
             .isEqualTo(ModerationCreateParams.Input.ofString("I want to kill them."))
     }

@@ -2,7 +2,6 @@
 
 package com.openai.models.beta.threads.runs
 
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -53,7 +52,6 @@ internal class RunSubmitToolOutputsParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.toolOutputs())
             .containsExactly(
                 RunSubmitToolOutputsParams.ToolOutput.builder()
@@ -74,7 +72,6 @@ internal class RunSubmitToolOutputsParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.toolOutputs())
             .containsExactly(RunSubmitToolOutputsParams.ToolOutput.builder().build())
     }

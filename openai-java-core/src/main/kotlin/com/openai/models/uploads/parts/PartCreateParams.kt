@@ -10,7 +10,7 @@ import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
-import java.io.ByteArrayInputStream
+import com.openai.errors.OpenAIInvalidDataException
 import java.io.InputStream
 import java.nio.file.Path
 import java.util.Objects
@@ -37,10 +37,19 @@ private constructor(
 
     fun uploadId(): String = uploadId
 
-    /** The chunk of bytes for this Part. */
+    /**
+     * The chunk of bytes for this Part.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun data(): InputStream = body.data()
 
-    /** The chunk of bytes for this Part. */
+    /**
+     * Returns the raw multipart value of [data].
+     *
+     * Unlike [data], this method doesn't throw if the multipart field has an unexpected type.
+     */
     fun _data(): MultipartField<InputStream> = body._data()
 
     fun _additionalHeaders(): Headers = additionalHeaders
@@ -63,10 +72,19 @@ private constructor(
     @NoAutoDetect
     class Body @JsonCreator private constructor(private val data: MultipartField<InputStream>) {
 
-        /** The chunk of bytes for this Part. */
+        /**
+         * The chunk of bytes for this Part.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun data(): InputStream = data.value.getRequired("data")
 
-        /** The chunk of bytes for this Part. */
+        /**
+         * Returns the raw multipart value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the multipart field has an unexpected type.
+         */
         fun _data(): MultipartField<InputStream> = data
 
         private var validated: Boolean = false
@@ -105,11 +123,17 @@ private constructor(
             /** The chunk of bytes for this Part. */
             fun data(data: InputStream) = data(MultipartField.of(data))
 
-            /** The chunk of bytes for this Part. */
+            /**
+             * Sets [Builder.data] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.data] with a well-typed [InputStream] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun data(data: MultipartField<InputStream>) = apply { this.data = data }
 
             /** The chunk of bytes for this Part. */
-            fun data(data: ByteArray) = data(ByteArrayInputStream(data))
+            fun data(data: ByteArray) = data(data.inputStream())
 
             /** The chunk of bytes for this Part. */
             fun data(data: Path) =
@@ -190,7 +214,13 @@ private constructor(
         /** The chunk of bytes for this Part. */
         fun data(data: InputStream) = apply { body.data(data) }
 
-        /** The chunk of bytes for this Part. */
+        /**
+         * Sets [Builder.data] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.data] with a well-typed [InputStream] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun data(data: MultipartField<InputStream>) = apply { body.data(data) }
 
         /** The chunk of bytes for this Part. */

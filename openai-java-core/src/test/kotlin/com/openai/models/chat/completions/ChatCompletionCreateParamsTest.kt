@@ -10,7 +10,6 @@ import com.openai.models.Metadata
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
 import kotlin.jvm.optionals.getOrNull
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -210,7 +209,6 @@ internal class ChatCompletionCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.messages())
             .containsExactly(
                 ChatCompletionMessageParam.ofDeveloper(
@@ -338,7 +336,6 @@ internal class ChatCompletionCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.messages())
             .containsExactly(
                 ChatCompletionMessageParam.ofDeveloper(

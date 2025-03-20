@@ -5,7 +5,6 @@ package com.openai.models.vectorstores.filebatches
 import com.openai.core.JsonValue
 import com.openai.models.vectorstores.AutoFileChunkingStrategyParam
 import com.openai.models.vectorstores.FileChunkingStrategyParam
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -51,7 +50,6 @@ internal class FileBatchCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.fileIds()).containsExactly("string")
         assertThat(body.attributes())
             .contains(
@@ -72,7 +70,6 @@ internal class FileBatchCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.fileIds()).containsExactly("string")
     }
 }
