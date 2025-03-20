@@ -5,7 +5,6 @@ package com.openai.models.finetuning.jobs
 import com.openai.core.JsonValue
 import com.openai.models.Metadata
 import kotlin.jvm.optionals.getOrNull
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -137,7 +136,6 @@ internal class JobCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.model()).isEqualTo(JobCreateParams.Model.BABBAGE_002)
         assertThat(body.trainingFile()).isEqualTo("file-abc123")
         assertThat(body.hyperparameters())
@@ -209,7 +207,6 @@ internal class JobCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.model()).isEqualTo(JobCreateParams.Model.BABBAGE_002)
         assertThat(body.trainingFile()).isEqualTo("file-abc123")
     }

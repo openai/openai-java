@@ -6,7 +6,6 @@ import com.openai.core.MultipartField
 import com.openai.models.audio.AudioModel
 import com.openai.models.audio.AudioResponseFormat
 import java.io.InputStream
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -42,28 +41,31 @@ internal class TranscriptionCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
-        assertThat(
-                body
-                    .filterValues { !it.value.isNull() }
-                    .mapValues { (_, field) ->
-                        field.map { if (it is InputStream) it.readBytes() else it }
-                    }
+        assertThat(body.filterValues { !it.value.isNull() })
+            .usingRecursiveComparison()
+            // TODO(AssertJ): Replace this and the `mapValues` below with:
+            // https://github.com/assertj/assertj/issues/3165
+            .withEqualsForType(
+                { a, b -> a.readBytes() contentEquals b.readBytes() },
+                InputStream::class.java,
             )
             .isEqualTo(
                 mapOf(
-                    "file" to MultipartField.of("some content".toByteArray()),
-                    "model" to MultipartField.of(AudioModel.WHISPER_1),
-                    "include" to MultipartField.of(listOf(TranscriptionInclude.LOGPROBS)),
-                    "language" to MultipartField.of("language"),
-                    "prompt" to MultipartField.of("prompt"),
-                    "response_format" to MultipartField.of(AudioResponseFormat.JSON),
-                    "temperature" to MultipartField.of(0.0),
-                    "timestamp_granularities" to
-                        MultipartField.of(
-                            listOf(TranscriptionCreateParams.TimestampGranularity.WORD)
-                        ),
-                )
+                        "file" to MultipartField.of("some content".toByteArray()),
+                        "model" to MultipartField.of(AudioModel.WHISPER_1),
+                        "include" to MultipartField.of(listOf(TranscriptionInclude.LOGPROBS)),
+                        "language" to MultipartField.of("language"),
+                        "prompt" to MultipartField.of("prompt"),
+                        "response_format" to MultipartField.of(AudioResponseFormat.JSON),
+                        "temperature" to MultipartField.of(0.0),
+                        "timestamp_granularities" to
+                            MultipartField.of(
+                                listOf(TranscriptionCreateParams.TimestampGranularity.WORD)
+                            ),
+                    )
+                    .mapValues { (_, field) ->
+                        field.map { (it as? ByteArray)?.inputStream() ?: it }
+                    }
             )
     }
 
@@ -77,19 +79,22 @@ internal class TranscriptionCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
-        assertThat(
-                body
-                    .filterValues { !it.value.isNull() }
-                    .mapValues { (_, field) ->
-                        field.map { if (it is InputStream) it.readBytes() else it }
-                    }
+        assertThat(body.filterValues { !it.value.isNull() })
+            .usingRecursiveComparison()
+            // TODO(AssertJ): Replace this and the `mapValues` below with:
+            // https://github.com/assertj/assertj/issues/3165
+            .withEqualsForType(
+                { a, b -> a.readBytes() contentEquals b.readBytes() },
+                InputStream::class.java,
             )
             .isEqualTo(
                 mapOf(
-                    "file" to MultipartField.of("some content".toByteArray()),
-                    "model" to MultipartField.of(AudioModel.WHISPER_1),
-                )
+                        "file" to MultipartField.of("some content".toByteArray()),
+                        "model" to MultipartField.of(AudioModel.WHISPER_1),
+                    )
+                    .mapValues { (_, field) ->
+                        field.map { (it as? ByteArray)?.inputStream() ?: it }
+                    }
             )
     }
 }

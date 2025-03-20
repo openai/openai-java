@@ -13,7 +13,6 @@ import com.openai.models.beta.threads.AssistantResponseFormatOption
 import com.openai.models.beta.threads.AssistantToolChoiceOption
 import com.openai.models.beta.threads.runs.steps.RunStepInclude
 import kotlin.jvm.optionals.getOrNull
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -196,7 +195,6 @@ internal class RunCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.assistantId()).isEqualTo("assistant_id")
         assertThat(body.additionalInstructions()).contains("additional_instructions")
         assertThat(body.additionalMessages().getOrNull())
@@ -250,7 +248,6 @@ internal class RunCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.assistantId()).isEqualTo("assistant_id")
     }
 }

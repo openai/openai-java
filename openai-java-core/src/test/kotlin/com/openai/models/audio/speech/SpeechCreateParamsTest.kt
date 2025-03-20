@@ -2,7 +2,6 @@
 
 package com.openai.models.audio.speech
 
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -34,7 +33,6 @@ internal class SpeechCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.input()).isEqualTo("input")
         assertThat(body.model()).isEqualTo(SpeechModel.TTS_1)
         assertThat(body.voice()).isEqualTo(SpeechCreateParams.Voice.ALLOY)
@@ -54,7 +52,6 @@ internal class SpeechCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.input()).isEqualTo("input")
         assertThat(body.model()).isEqualTo(SpeechModel.TTS_1)
         assertThat(body.voice()).isEqualTo(SpeechCreateParams.Voice.ALLOY)

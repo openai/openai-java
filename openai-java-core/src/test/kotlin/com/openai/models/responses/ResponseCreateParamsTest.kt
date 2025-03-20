@@ -11,7 +11,6 @@ import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
 import com.openai.models.ResponsesModel
 import kotlin.jvm.optionals.getOrNull
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -121,7 +120,6 @@ internal class ResponseCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.input()).isEqualTo(ResponseCreateParams.Input.ofText("string"))
         assertThat(body.model()).isEqualTo(ResponsesModel.ofChat(ChatModel.GPT_4O))
         assertThat(body.include().getOrNull())
@@ -182,7 +180,6 @@ internal class ResponseCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.input()).isEqualTo(ResponseCreateParams.Input.ofText("string"))
         assertThat(body.model()).isEqualTo(ResponsesModel.ofChat(ChatModel.GPT_4O))
     }

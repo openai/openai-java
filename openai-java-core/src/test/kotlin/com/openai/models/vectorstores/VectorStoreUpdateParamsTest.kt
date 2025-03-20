@@ -4,7 +4,6 @@ package com.openai.models.vectorstores
 
 import com.openai.core.JsonValue
 import com.openai.models.Metadata
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -47,7 +46,6 @@ internal class VectorStoreUpdateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.expiresAfter())
             .contains(VectorStoreUpdateParams.ExpiresAfter.builder().days(1L).build())
         assertThat(body.metadata())
@@ -62,7 +60,5 @@ internal class VectorStoreUpdateParamsTest {
         val params = VectorStoreUpdateParams.builder().vectorStoreId("vector_store_id").build()
 
         val body = params._body()
-
-        assertNotNull(body)
     }
 }

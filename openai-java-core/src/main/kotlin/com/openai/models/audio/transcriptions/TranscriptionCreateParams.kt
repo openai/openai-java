@@ -16,7 +16,6 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.audio.AudioModel
 import com.openai.models.audio.AudioResponseFormat
-import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.nio.file.Path
 import java.util.Objects
@@ -35,12 +34,18 @@ private constructor(
     /**
      * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3, mp4,
      * mpeg, mpga, m4a, ogg, wav, or webm.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun file(): InputStream = body.file()
 
     /**
      * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`, and
      * `whisper-1` (which is powered by our open source Whisper V2 model).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun model(): AudioModel = body.model()
 
@@ -49,6 +54,9 @@ private constructor(
      * log probabilities of the tokens in the response to understand the model's confidence in the
      * transcription. `logprobs` only works with response_format set to `json` and only with the
      * models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun include(): Optional<List<TranscriptionInclude>> = body.include()
 
@@ -56,6 +64,9 @@ private constructor(
      * The language of the input audio. Supplying the input language in
      * [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) (e.g. `en`) format will
      * improve accuracy and latency.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun language(): Optional<String> = body.language()
 
@@ -63,6 +74,9 @@ private constructor(
      * An optional text to guide the model's style or continue a previous audio segment. The
      * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should match the
      * audio language.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun prompt(): Optional<String> = body.prompt()
 
@@ -70,6 +84,9 @@ private constructor(
      * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`, or
      * `vtt`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only supported format is
      * `json`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun responseFormat(): Optional<AudioResponseFormat> = body.responseFormat()
 
@@ -78,6 +95,9 @@ private constructor(
      * random, while lower values like 0.2 will make it more focused and deterministic. If set to 0,
      * the model will use [log probability](https://en.wikipedia.org/wiki/Log_probability) to
      * automatically increase the temperature until certain thresholds are hit.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun temperature(): Optional<Double> = body.temperature()
 
@@ -86,64 +106,69 @@ private constructor(
      * `verbose_json` to use timestamp granularities. Either or both of these options are supported:
      * `word`, or `segment`. Note: There is no additional latency for segment timestamps, but
      * generating word timestamps incurs additional latency.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun timestampGranularities(): Optional<List<TimestampGranularity>> =
         body.timestampGranularities()
 
     /**
-     * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3, mp4,
-     * mpeg, mpga, m4a, ogg, wav, or webm.
+     * Returns the raw multipart value of [file].
+     *
+     * Unlike [file], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _file(): MultipartField<InputStream> = body._file()
 
     /**
-     * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`, and
-     * `whisper-1` (which is powered by our open source Whisper V2 model).
+     * Returns the raw multipart value of [model].
+     *
+     * Unlike [model], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _model(): MultipartField<AudioModel> = body._model()
 
     /**
-     * Additional information to include in the transcription response. `logprobs` will return the
-     * log probabilities of the tokens in the response to understand the model's confidence in the
-     * transcription. `logprobs` only works with response_format set to `json` and only with the
-     * models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`.
+     * Returns the raw multipart value of [include].
+     *
+     * Unlike [include], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _include(): MultipartField<List<TranscriptionInclude>> = body._include()
 
     /**
-     * The language of the input audio. Supplying the input language in
-     * [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) (e.g. `en`) format will
-     * improve accuracy and latency.
+     * Returns the raw multipart value of [language].
+     *
+     * Unlike [language], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _language(): MultipartField<String> = body._language()
 
     /**
-     * An optional text to guide the model's style or continue a previous audio segment. The
-     * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should match the
-     * audio language.
+     * Returns the raw multipart value of [prompt].
+     *
+     * Unlike [prompt], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _prompt(): MultipartField<String> = body._prompt()
 
     /**
-     * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`, or
-     * `vtt`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only supported format is
-     * `json`.
+     * Returns the raw multipart value of [responseFormat].
+     *
+     * Unlike [responseFormat], this method doesn't throw if the multipart field has an unexpected
+     * type.
      */
     fun _responseFormat(): MultipartField<AudioResponseFormat> = body._responseFormat()
 
     /**
-     * The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output more
-     * random, while lower values like 0.2 will make it more focused and deterministic. If set to 0,
-     * the model will use [log probability](https://en.wikipedia.org/wiki/Log_probability) to
-     * automatically increase the temperature until certain thresholds are hit.
+     * Returns the raw multipart value of [temperature].
+     *
+     * Unlike [temperature], this method doesn't throw if the multipart field has an unexpected
+     * type.
      */
     fun _temperature(): MultipartField<Double> = body._temperature()
 
     /**
-     * The timestamp granularities to populate for this transcription. `response_format` must be set
-     * `verbose_json` to use timestamp granularities. Either or both of these options are supported:
-     * `word`, or `segment`. Note: There is no additional latency for segment timestamps, but
-     * generating word timestamps incurs additional latency.
+     * Returns the raw multipart value of [timestampGranularities].
+     *
+     * Unlike [timestampGranularities], this method doesn't throw if the multipart field has an
+     * unexpected type.
      */
     fun _timestampGranularities(): MultipartField<List<TimestampGranularity>> =
         body._timestampGranularities()
@@ -187,12 +212,18 @@ private constructor(
         /**
          * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3,
          * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun file(): InputStream = file.value.getRequired("file")
 
         /**
          * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`,
          * and `whisper-1` (which is powered by our open source Whisper V2 model).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun model(): AudioModel = model.value.getRequired("model")
 
@@ -201,6 +232,9 @@ private constructor(
          * the log probabilities of the tokens in the response to understand the model's confidence
          * in the transcription. `logprobs` only works with response_format set to `json` and only
          * with the models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun include(): Optional<List<TranscriptionInclude>> =
             Optional.ofNullable(include.value.getNullable("include"))
@@ -209,6 +243,9 @@ private constructor(
          * The language of the input audio. Supplying the input language in
          * [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) (e.g. `en`) format
          * will improve accuracy and latency.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun language(): Optional<String> =
             Optional.ofNullable(language.value.getNullable("language"))
@@ -217,6 +254,9 @@ private constructor(
          * An optional text to guide the model's style or continue a previous audio segment. The
          * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should match
          * the audio language.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun prompt(): Optional<String> = Optional.ofNullable(prompt.value.getNullable("prompt"))
 
@@ -224,6 +264,9 @@ private constructor(
          * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
          * or `vtt`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only supported format
          * is `json`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun responseFormat(): Optional<AudioResponseFormat> =
             Optional.ofNullable(responseFormat.value.getNullable("response_format"))
@@ -234,6 +277,9 @@ private constructor(
          * set to 0, the model will use
          * [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically
          * increase the temperature until certain thresholds are hit.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun temperature(): Optional<Double> =
             Optional.ofNullable(temperature.value.getNullable("temperature"))
@@ -243,65 +289,71 @@ private constructor(
          * set `verbose_json` to use timestamp granularities. Either or both of these options are
          * supported: `word`, or `segment`. Note: There is no additional latency for segment
          * timestamps, but generating word timestamps incurs additional latency.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun timestampGranularities(): Optional<List<TimestampGranularity>> =
             Optional.ofNullable(timestampGranularities.value.getNullable("timestamp_granularities"))
 
         /**
-         * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3,
-         * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+         * Returns the raw multipart value of [file].
+         *
+         * Unlike [file], this method doesn't throw if the multipart field has an unexpected type.
          */
         fun _file(): MultipartField<InputStream> = file
 
         /**
-         * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`,
-         * and `whisper-1` (which is powered by our open source Whisper V2 model).
+         * Returns the raw multipart value of [model].
+         *
+         * Unlike [model], this method doesn't throw if the multipart field has an unexpected type.
          */
         fun _model(): MultipartField<AudioModel> = model
 
         /**
-         * Additional information to include in the transcription response. `logprobs` will return
-         * the log probabilities of the tokens in the response to understand the model's confidence
-         * in the transcription. `logprobs` only works with response_format set to `json` and only
-         * with the models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`.
+         * Returns the raw multipart value of [include].
+         *
+         * Unlike [include], this method doesn't throw if the multipart field has an unexpected
+         * type.
          */
         fun _include(): MultipartField<List<TranscriptionInclude>> = include
 
         /**
-         * The language of the input audio. Supplying the input language in
-         * [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) (e.g. `en`) format
-         * will improve accuracy and latency.
+         * Returns the raw multipart value of [language].
+         *
+         * Unlike [language], this method doesn't throw if the multipart field has an unexpected
+         * type.
          */
         fun _language(): MultipartField<String> = language
 
         /**
-         * An optional text to guide the model's style or continue a previous audio segment. The
-         * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should match
-         * the audio language.
+         * Returns the raw multipart value of [prompt].
+         *
+         * Unlike [prompt], this method doesn't throw if the multipart field has an unexpected type.
          */
         fun _prompt(): MultipartField<String> = prompt
 
         /**
-         * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
-         * or `vtt`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only supported format
-         * is `json`.
+         * Returns the raw multipart value of [responseFormat].
+         *
+         * Unlike [responseFormat], this method doesn't throw if the multipart field has an
+         * unexpected type.
          */
         fun _responseFormat(): MultipartField<AudioResponseFormat> = responseFormat
 
         /**
-         * The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output
-         * more random, while lower values like 0.2 will make it more focused and deterministic. If
-         * set to 0, the model will use
-         * [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically
-         * increase the temperature until certain thresholds are hit.
+         * Returns the raw multipart value of [temperature].
+         *
+         * Unlike [temperature], this method doesn't throw if the multipart field has an unexpected
+         * type.
          */
         fun _temperature(): MultipartField<Double> = temperature
 
         /**
-         * The timestamp granularities to populate for this transcription. `response_format` must be
-         * set `verbose_json` to use timestamp granularities. Either or both of these options are
-         * supported: `word`, or `segment`. Note: There is no additional latency for segment
-         * timestamps, but generating word timestamps incurs additional latency.
+         * Returns the raw multipart value of [timestampGranularities].
+         *
+         * Unlike [timestampGranularities], this method doesn't throw if the multipart field has an
+         * unexpected type.
          */
         fun _timestampGranularities(): MultipartField<List<TimestampGranularity>> =
             timestampGranularities
@@ -373,8 +425,11 @@ private constructor(
             fun file(file: InputStream) = file(MultipartField.of(file))
 
             /**
-             * The audio file object (not file name) to transcribe, in one of these formats: flac,
-             * mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+             * Sets [Builder.file] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.file] with a well-typed [InputStream] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun file(file: MultipartField<InputStream>) = apply { this.file = file }
 
@@ -382,7 +437,7 @@ private constructor(
              * The audio file object (not file name) to transcribe, in one of these formats: flac,
              * mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
              */
-            fun file(file: ByteArray) = file(ByteArrayInputStream(file))
+            fun file(file: ByteArray) = file(file.inputStream())
 
             /**
              * The audio file object (not file name) to transcribe, in one of these formats: flac,
@@ -404,9 +459,11 @@ private constructor(
             fun model(model: AudioModel) = model(MultipartField.of(model))
 
             /**
-             * ID of the model to use. The options are `gpt-4o-transcribe`,
-             * `gpt-4o-mini-transcribe`, and `whisper-1` (which is powered by our open source
-             * Whisper V2 model).
+             * Sets [Builder.model] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.model] with a well-typed [AudioModel] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun model(model: MultipartField<AudioModel>) = apply { this.model = model }
 
@@ -428,10 +485,11 @@ private constructor(
             fun include(include: List<TranscriptionInclude>) = include(MultipartField.of(include))
 
             /**
-             * Additional information to include in the transcription response. `logprobs` will
-             * return the log probabilities of the tokens in the response to understand the model's
-             * confidence in the transcription. `logprobs` only works with response_format set to
-             * `json` and only with the models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`.
+             * Sets [Builder.include] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.include] with a well-typed
+             * `List<TranscriptionInclude>` value instead. This method is primarily for setting the
+             * field to an undocumented or not yet supported value.
              */
             fun include(include: MultipartField<List<TranscriptionInclude>>) = apply {
                 this.include = include.map { it.toMutableList() }
@@ -457,9 +515,11 @@ private constructor(
             fun language(language: String) = language(MultipartField.of(language))
 
             /**
-             * The language of the input audio. Supplying the input language in
-             * [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) (e.g. `en`) format
-             * will improve accuracy and latency.
+             * Sets [Builder.language] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.language] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun language(language: MultipartField<String>) = apply { this.language = language }
 
@@ -471,9 +531,11 @@ private constructor(
             fun prompt(prompt: String) = prompt(MultipartField.of(prompt))
 
             /**
-             * An optional text to guide the model's style or continue a previous audio segment. The
-             * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should
-             * match the audio language.
+             * Sets [Builder.prompt] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.prompt] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun prompt(prompt: MultipartField<String>) = apply { this.prompt = prompt }
 
@@ -486,9 +548,11 @@ private constructor(
                 responseFormat(MultipartField.of(responseFormat))
 
             /**
-             * The format of the output, in one of these options: `json`, `text`, `srt`,
-             * `verbose_json`, or `vtt`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the
-             * only supported format is `json`.
+             * Sets [Builder.responseFormat] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.responseFormat] with a well-typed
+             * [AudioResponseFormat] value instead. This method is primarily for setting the field
+             * to an undocumented or not yet supported value.
              */
             fun responseFormat(responseFormat: MultipartField<AudioResponseFormat>) = apply {
                 this.responseFormat = responseFormat
@@ -504,11 +568,11 @@ private constructor(
             fun temperature(temperature: Double) = temperature(MultipartField.of(temperature))
 
             /**
-             * The sampling temperature, between 0 and 1. Higher values like 0.8 will make the
-             * output more random, while lower values like 0.2 will make it more focused and
-             * deterministic. If set to 0, the model will use
-             * [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically
-             * increase the temperature until certain thresholds are hit.
+             * Sets [Builder.temperature] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.temperature] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun temperature(temperature: MultipartField<Double>) = apply {
                 this.temperature = temperature
@@ -524,10 +588,11 @@ private constructor(
                 timestampGranularities(MultipartField.of(timestampGranularities))
 
             /**
-             * The timestamp granularities to populate for this transcription. `response_format`
-             * must be set `verbose_json` to use timestamp granularities. Either or both of these
-             * options are supported: `word`, or `segment`. Note: There is no additional latency for
-             * segment timestamps, but generating word timestamps incurs additional latency.
+             * Sets [Builder.timestampGranularities] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.timestampGranularities] with a well-typed
+             * `List<TimestampGranularity>` value instead. This method is primarily for setting the
+             * field to an undocumented or not yet supported value.
              */
             fun timestampGranularities(
                 timestampGranularities: MultipartField<List<TimestampGranularity>>
@@ -629,8 +694,11 @@ private constructor(
         fun file(file: InputStream) = apply { body.file(file) }
 
         /**
-         * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3,
-         * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+         * Sets [Builder.file] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.file] with a well-typed [InputStream] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun file(file: MultipartField<InputStream>) = apply { body.file(file) }
 
@@ -653,8 +721,11 @@ private constructor(
         fun model(model: AudioModel) = apply { body.model(model) }
 
         /**
-         * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`,
-         * and `whisper-1` (which is powered by our open source Whisper V2 model).
+         * Sets [Builder.model] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.model] with a well-typed [AudioModel] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun model(model: MultipartField<AudioModel>) = apply { body.model(model) }
 
@@ -675,10 +746,11 @@ private constructor(
         fun include(include: List<TranscriptionInclude>) = apply { body.include(include) }
 
         /**
-         * Additional information to include in the transcription response. `logprobs` will return
-         * the log probabilities of the tokens in the response to understand the model's confidence
-         * in the transcription. `logprobs` only works with response_format set to `json` and only
-         * with the models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`.
+         * Sets [Builder.include] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.include] with a well-typed `List<TranscriptionInclude>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
          */
         fun include(include: MultipartField<List<TranscriptionInclude>>) = apply {
             body.include(include)
@@ -699,9 +771,10 @@ private constructor(
         fun language(language: String) = apply { body.language(language) }
 
         /**
-         * The language of the input audio. Supplying the input language in
-         * [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) (e.g. `en`) format
-         * will improve accuracy and latency.
+         * Sets [Builder.language] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.language] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun language(language: MultipartField<String>) = apply { body.language(language) }
 
@@ -713,9 +786,10 @@ private constructor(
         fun prompt(prompt: String) = apply { body.prompt(prompt) }
 
         /**
-         * An optional text to guide the model's style or continue a previous audio segment. The
-         * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should match
-         * the audio language.
+         * Sets [Builder.prompt] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.prompt] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun prompt(prompt: MultipartField<String>) = apply { body.prompt(prompt) }
 
@@ -729,9 +803,11 @@ private constructor(
         }
 
         /**
-         * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
-         * or `vtt`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only supported format
-         * is `json`.
+         * Sets [Builder.responseFormat] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.responseFormat] with a well-typed [AudioResponseFormat]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
          */
         fun responseFormat(responseFormat: MultipartField<AudioResponseFormat>) = apply {
             body.responseFormat(responseFormat)
@@ -747,11 +823,11 @@ private constructor(
         fun temperature(temperature: Double) = apply { body.temperature(temperature) }
 
         /**
-         * The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output
-         * more random, while lower values like 0.2 will make it more focused and deterministic. If
-         * set to 0, the model will use
-         * [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically
-         * increase the temperature until certain thresholds are hit.
+         * Sets [Builder.temperature] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.temperature] with a well-typed [Double] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun temperature(temperature: MultipartField<Double>) = apply {
             body.temperature(temperature)
@@ -768,10 +844,11 @@ private constructor(
         }
 
         /**
-         * The timestamp granularities to populate for this transcription. `response_format` must be
-         * set `verbose_json` to use timestamp granularities. Either or both of these options are
-         * supported: `word`, or `segment`. Note: There is no additional latency for segment
-         * timestamps, but generating word timestamps incurs additional latency.
+         * Sets [Builder.timestampGranularities] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.timestampGranularities] with a well-typed
+         * `List<TimestampGranularity>` value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
          */
         fun timestampGranularities(
             timestampGranularities: MultipartField<List<TimestampGranularity>>

@@ -14,7 +14,6 @@ import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.audio.AudioModel
-import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.nio.file.Path
 import java.util.Objects
@@ -33,12 +32,18 @@ private constructor(
     /**
      * The audio file object (not file name) translate, in one of these formats: flac, mp3, mp4,
      * mpeg, mpga, m4a, ogg, wav, or webm.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun file(): InputStream = body.file()
 
     /**
      * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2
      * model) is currently available.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun model(): AudioModel = body.model()
 
@@ -46,12 +51,18 @@ private constructor(
      * An optional text to guide the model's style or continue a previous audio segment. The
      * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should be in
      * English.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun prompt(): Optional<String> = body.prompt()
 
     /**
      * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`, or
      * `vtt`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun responseFormat(): Optional<ResponseFormat> = body.responseFormat()
 
@@ -60,39 +71,46 @@ private constructor(
      * random, while lower values like 0.2 will make it more focused and deterministic. If set to 0,
      * the model will use [log probability](https://en.wikipedia.org/wiki/Log_probability) to
      * automatically increase the temperature until certain thresholds are hit.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun temperature(): Optional<Double> = body.temperature()
 
     /**
-     * The audio file object (not file name) translate, in one of these formats: flac, mp3, mp4,
-     * mpeg, mpga, m4a, ogg, wav, or webm.
+     * Returns the raw multipart value of [file].
+     *
+     * Unlike [file], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _file(): MultipartField<InputStream> = body._file()
 
     /**
-     * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2
-     * model) is currently available.
+     * Returns the raw multipart value of [model].
+     *
+     * Unlike [model], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _model(): MultipartField<AudioModel> = body._model()
 
     /**
-     * An optional text to guide the model's style or continue a previous audio segment. The
-     * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should be in
-     * English.
+     * Returns the raw multipart value of [prompt].
+     *
+     * Unlike [prompt], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _prompt(): MultipartField<String> = body._prompt()
 
     /**
-     * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`, or
-     * `vtt`.
+     * Returns the raw multipart value of [responseFormat].
+     *
+     * Unlike [responseFormat], this method doesn't throw if the multipart field has an unexpected
+     * type.
      */
     fun _responseFormat(): MultipartField<ResponseFormat> = body._responseFormat()
 
     /**
-     * The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output more
-     * random, while lower values like 0.2 will make it more focused and deterministic. If set to 0,
-     * the model will use [log probability](https://en.wikipedia.org/wiki/Log_probability) to
-     * automatically increase the temperature until certain thresholds are hit.
+     * Returns the raw multipart value of [temperature].
+     *
+     * Unlike [temperature], this method doesn't throw if the multipart field has an unexpected
+     * type.
      */
     fun _temperature(): MultipartField<Double> = body._temperature()
 
@@ -129,12 +147,18 @@ private constructor(
         /**
          * The audio file object (not file name) translate, in one of these formats: flac, mp3, mp4,
          * mpeg, mpga, m4a, ogg, wav, or webm.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun file(): InputStream = file.value.getRequired("file")
 
         /**
          * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2
          * model) is currently available.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun model(): AudioModel = model.value.getRequired("model")
 
@@ -142,12 +166,18 @@ private constructor(
          * An optional text to guide the model's style or continue a previous audio segment. The
          * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should be in
          * English.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun prompt(): Optional<String> = Optional.ofNullable(prompt.value.getNullable("prompt"))
 
         /**
          * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
          * or `vtt`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun responseFormat(): Optional<ResponseFormat> =
             Optional.ofNullable(responseFormat.value.getNullable("response_format"))
@@ -158,41 +188,47 @@ private constructor(
          * set to 0, the model will use
          * [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically
          * increase the temperature until certain thresholds are hit.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun temperature(): Optional<Double> =
             Optional.ofNullable(temperature.value.getNullable("temperature"))
 
         /**
-         * The audio file object (not file name) translate, in one of these formats: flac, mp3, mp4,
-         * mpeg, mpga, m4a, ogg, wav, or webm.
+         * Returns the raw multipart value of [file].
+         *
+         * Unlike [file], this method doesn't throw if the multipart field has an unexpected type.
          */
         fun _file(): MultipartField<InputStream> = file
 
         /**
-         * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2
-         * model) is currently available.
+         * Returns the raw multipart value of [model].
+         *
+         * Unlike [model], this method doesn't throw if the multipart field has an unexpected type.
          */
         fun _model(): MultipartField<AudioModel> = model
 
         /**
-         * An optional text to guide the model's style or continue a previous audio segment. The
-         * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should be in
-         * English.
+         * Returns the raw multipart value of [prompt].
+         *
+         * Unlike [prompt], this method doesn't throw if the multipart field has an unexpected type.
          */
         fun _prompt(): MultipartField<String> = prompt
 
         /**
-         * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
-         * or `vtt`.
+         * Returns the raw multipart value of [responseFormat].
+         *
+         * Unlike [responseFormat], this method doesn't throw if the multipart field has an
+         * unexpected type.
          */
         fun _responseFormat(): MultipartField<ResponseFormat> = responseFormat
 
         /**
-         * The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output
-         * more random, while lower values like 0.2 will make it more focused and deterministic. If
-         * set to 0, the model will use
-         * [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically
-         * increase the temperature until certain thresholds are hit.
+         * Returns the raw multipart value of [temperature].
+         *
+         * Unlike [temperature], this method doesn't throw if the multipart field has an unexpected
+         * type.
          */
         fun _temperature(): MultipartField<Double> = temperature
 
@@ -252,8 +288,11 @@ private constructor(
             fun file(file: InputStream) = file(MultipartField.of(file))
 
             /**
-             * The audio file object (not file name) translate, in one of these formats: flac, mp3,
-             * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+             * Sets [Builder.file] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.file] with a well-typed [InputStream] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun file(file: MultipartField<InputStream>) = apply { this.file = file }
 
@@ -261,7 +300,7 @@ private constructor(
              * The audio file object (not file name) translate, in one of these formats: flac, mp3,
              * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
              */
-            fun file(file: ByteArray) = file(ByteArrayInputStream(file))
+            fun file(file: ByteArray) = file(file.inputStream())
 
             /**
              * The audio file object (not file name) translate, in one of these formats: flac, mp3,
@@ -282,8 +321,11 @@ private constructor(
             fun model(model: AudioModel) = model(MultipartField.of(model))
 
             /**
-             * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper
-             * V2 model) is currently available.
+             * Sets [Builder.model] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.model] with a well-typed [AudioModel] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun model(model: MultipartField<AudioModel>) = apply { this.model = model }
 
@@ -304,9 +346,11 @@ private constructor(
             fun prompt(prompt: String) = prompt(MultipartField.of(prompt))
 
             /**
-             * An optional text to guide the model's style or continue a previous audio segment. The
-             * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should be
-             * in English.
+             * Sets [Builder.prompt] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.prompt] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun prompt(prompt: MultipartField<String>) = apply { this.prompt = prompt }
 
@@ -318,8 +362,11 @@ private constructor(
                 responseFormat(MultipartField.of(responseFormat))
 
             /**
-             * The format of the output, in one of these options: `json`, `text`, `srt`,
-             * `verbose_json`, or `vtt`.
+             * Sets [Builder.responseFormat] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.responseFormat] with a well-typed [ResponseFormat]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
              */
             fun responseFormat(responseFormat: MultipartField<ResponseFormat>) = apply {
                 this.responseFormat = responseFormat
@@ -335,11 +382,11 @@ private constructor(
             fun temperature(temperature: Double) = temperature(MultipartField.of(temperature))
 
             /**
-             * The sampling temperature, between 0 and 1. Higher values like 0.8 will make the
-             * output more random, while lower values like 0.2 will make it more focused and
-             * deterministic. If set to 0, the model will use
-             * [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically
-             * increase the temperature until certain thresholds are hit.
+             * Sets [Builder.temperature] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.temperature] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun temperature(temperature: MultipartField<Double>) = apply {
                 this.temperature = temperature
@@ -424,8 +471,11 @@ private constructor(
         fun file(file: InputStream) = apply { body.file(file) }
 
         /**
-         * The audio file object (not file name) translate, in one of these formats: flac, mp3, mp4,
-         * mpeg, mpga, m4a, ogg, wav, or webm.
+         * Sets [Builder.file] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.file] with a well-typed [InputStream] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun file(file: MultipartField<InputStream>) = apply { body.file(file) }
 
@@ -448,8 +498,11 @@ private constructor(
         fun model(model: AudioModel) = apply { body.model(model) }
 
         /**
-         * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2
-         * model) is currently available.
+         * Sets [Builder.model] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.model] with a well-typed [AudioModel] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun model(model: MultipartField<AudioModel>) = apply { body.model(model) }
 
@@ -469,9 +522,10 @@ private constructor(
         fun prompt(prompt: String) = apply { body.prompt(prompt) }
 
         /**
-         * An optional text to guide the model's style or continue a previous audio segment. The
-         * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should be in
-         * English.
+         * Sets [Builder.prompt] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.prompt] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun prompt(prompt: MultipartField<String>) = apply { body.prompt(prompt) }
 
@@ -484,8 +538,11 @@ private constructor(
         }
 
         /**
-         * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
-         * or `vtt`.
+         * Sets [Builder.responseFormat] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.responseFormat] with a well-typed [ResponseFormat] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun responseFormat(responseFormat: MultipartField<ResponseFormat>) = apply {
             body.responseFormat(responseFormat)
@@ -501,11 +558,11 @@ private constructor(
         fun temperature(temperature: Double) = apply { body.temperature(temperature) }
 
         /**
-         * The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output
-         * more random, while lower values like 0.2 will make it more focused and deterministic. If
-         * set to 0, the model will use
-         * [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically
-         * increase the temperature until certain thresholds are hit.
+         * Sets [Builder.temperature] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.temperature] with a well-typed [Double] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun temperature(temperature: MultipartField<Double>) = apply {
             body.temperature(temperature)

@@ -4,7 +4,6 @@ package com.openai.models.completions
 
 import com.openai.core.JsonValue
 import com.openai.models.chat.completions.ChatCompletionStreamOptions
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -66,7 +65,6 @@ internal class CompletionCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.model()).isEqualTo(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
         assertThat(body.prompt())
             .contains(CompletionCreateParams.Prompt.ofString("This is a test."))
@@ -103,7 +101,6 @@ internal class CompletionCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.model()).isEqualTo(CompletionCreateParams.Model.GPT_3_5_TURBO_INSTRUCT)
         assertThat(body.prompt())
             .contains(CompletionCreateParams.Prompt.ofString("This is a test."))
