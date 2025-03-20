@@ -15,9 +15,7 @@ internal class AllModelsTest {
 
         assertThat(allModels.string()).contains(string)
         assertThat(allModels.chatModel()).isEmpty
-        assertThat(allModels.string()).isEmpty
-        assertThat(allModels.chatModel()).isEmpty
-        assertThat(allModels.unionMember4()).isEmpty
+        assertThat(allModels.unionMember2()).isEmpty
     }
 
     @Test
@@ -28,47 +26,17 @@ internal class AllModelsTest {
 
         assertThat(allModels.string()).isEmpty
         assertThat(allModels.chatModel()).contains(chatModel)
-        assertThat(allModels.string()).isEmpty
-        assertThat(allModels.chatModel()).isEmpty
-        assertThat(allModels.unionMember4()).isEmpty
+        assertThat(allModels.unionMember2()).isEmpty
     }
 
     @Test
-    fun ofString() {
-        val string = "string"
+    fun ofUnionMember2() {
+        val unionMember2 = AllModels.UnionMember2.O1_PRO
 
-        val allModels = AllModels.ofString(string)
-
-        assertThat(allModels.string()).isEmpty
-        assertThat(allModels.chatModel()).isEmpty
-        assertThat(allModels.string()).contains(string)
-        assertThat(allModels.chatModel()).isEmpty
-        assertThat(allModels.unionMember4()).isEmpty
-    }
-
-    @Test
-    fun ofChatModel() {
-        val chatModel = ChatModel.O3_MINI
-
-        val allModels = AllModels.ofChatModel(chatModel)
+        val allModels = AllModels.ofUnionMember2(unionMember2)
 
         assertThat(allModels.string()).isEmpty
         assertThat(allModels.chatModel()).isEmpty
-        assertThat(allModels.string()).isEmpty
-        assertThat(allModels.chatModel()).contains(chatModel)
-        assertThat(allModels.unionMember4()).isEmpty
-    }
-
-    @Test
-    fun ofUnionMember4() {
-        val unionMember4 = AllModels.UnionMember4.O1_PRO
-
-        val allModels = AllModels.ofUnionMember4(unionMember4)
-
-        assertThat(allModels.string()).isEmpty
-        assertThat(allModels.chatModel()).isEmpty
-        assertThat(allModels.string()).isEmpty
-        assertThat(allModels.chatModel()).isEmpty
-        assertThat(allModels.unionMember4()).contains(unionMember4)
+        assertThat(allModels.unionMember2()).contains(unionMember2)
     }
 }
