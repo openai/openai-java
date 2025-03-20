@@ -5,7 +5,6 @@ package com.openai.services.blocking.audio
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.models.audio.AudioModel
-import com.openai.models.audio.AudioResponseFormat
 import com.openai.models.audio.translations.TranslationCreateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -28,7 +27,7 @@ internal class TranslationServiceTest {
                     .file("some content".toByteArray())
                     .model(AudioModel.WHISPER_1)
                     .prompt("prompt")
-                    .responseFormat(AudioResponseFormat.JSON)
+                    .responseFormat(TranslationCreateParams.ResponseFormat.JSON)
                     .temperature(0.0)
                     .build()
             )

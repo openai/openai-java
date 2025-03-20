@@ -4,7 +4,6 @@ package com.openai.models.audio.translations
 
 import com.openai.core.MultipartField
 import com.openai.models.audio.AudioModel
-import com.openai.models.audio.AudioResponseFormat
 import java.io.InputStream
 import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
@@ -18,7 +17,7 @@ internal class TranslationCreateParamsTest {
             .file("some content".toByteArray())
             .model(AudioModel.WHISPER_1)
             .prompt("prompt")
-            .responseFormat(AudioResponseFormat.JSON)
+            .responseFormat(TranslationCreateParams.ResponseFormat.JSON)
             .temperature(0.0)
             .build()
     }
@@ -30,7 +29,7 @@ internal class TranslationCreateParamsTest {
                 .file("some content".toByteArray())
                 .model(AudioModel.WHISPER_1)
                 .prompt("prompt")
-                .responseFormat(AudioResponseFormat.JSON)
+                .responseFormat(TranslationCreateParams.ResponseFormat.JSON)
                 .temperature(0.0)
                 .build()
 
@@ -49,7 +48,8 @@ internal class TranslationCreateParamsTest {
                     "file" to MultipartField.of("some content".toByteArray()),
                     "model" to MultipartField.of(AudioModel.WHISPER_1),
                     "prompt" to MultipartField.of("prompt"),
-                    "response_format" to MultipartField.of(AudioResponseFormat.JSON),
+                    "response_format" to
+                        MultipartField.of(TranslationCreateParams.ResponseFormat.JSON),
                     "temperature" to MultipartField.of(0.0),
                 )
             )

@@ -1,13 +1,14 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.models.audio.speech
+package com.openai.models.audio.transcriptions
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.openai.core.Enum
 import com.openai.core.JsonField
 import com.openai.errors.OpenAIInvalidDataException
 
-class SpeechModel @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+class TranscriptionInclude @JsonCreator private constructor(private val value: JsonField<String>) :
+    Enum {
 
     /**
      * Returns this class instance's raw value.
@@ -20,36 +21,31 @@ class SpeechModel @JsonCreator private constructor(private val value: JsonField<
 
     companion object {
 
-        @JvmField val TTS_1 = of("tts-1")
+        @JvmField val LOGPROBS = of("logprobs")
 
-        @JvmField val TTS_1_HD = of("tts-1-hd")
-
-        @JvmField val GPT_4O_MINI_TTS = of("gpt-4o-mini-tts")
-
-        @JvmStatic fun of(value: String) = SpeechModel(JsonField.of(value))
+        @JvmStatic fun of(value: String) = TranscriptionInclude(JsonField.of(value))
     }
 
-    /** An enum containing [SpeechModel]'s known values. */
+    /** An enum containing [TranscriptionInclude]'s known values. */
     enum class Known {
-        TTS_1,
-        TTS_1_HD,
-        GPT_4O_MINI_TTS,
+        LOGPROBS
     }
 
     /**
-     * An enum containing [SpeechModel]'s known values, as well as an [_UNKNOWN] member.
+     * An enum containing [TranscriptionInclude]'s known values, as well as an [_UNKNOWN] member.
      *
-     * An instance of [SpeechModel] can contain an unknown value in a couple of cases:
+     * An instance of [TranscriptionInclude] can contain an unknown value in a couple of cases:
      * - It was deserialized from data that doesn't match any known member. For example, if the SDK
      *   is on an older version than the API, then the API may respond with new members that the SDK
      *   is unaware of.
      * - It was constructed with an arbitrary value using the [of] method.
      */
     enum class Value {
-        TTS_1,
-        TTS_1_HD,
-        GPT_4O_MINI_TTS,
-        /** An enum member indicating that [SpeechModel] was instantiated with an unknown value. */
+        LOGPROBS,
+        /**
+         * An enum member indicating that [TranscriptionInclude] was instantiated with an unknown
+         * value.
+         */
         _UNKNOWN,
     }
 
@@ -62,9 +58,7 @@ class SpeechModel @JsonCreator private constructor(private val value: JsonField<
      */
     fun value(): Value =
         when (this) {
-            TTS_1 -> Value.TTS_1
-            TTS_1_HD -> Value.TTS_1_HD
-            GPT_4O_MINI_TTS -> Value.GPT_4O_MINI_TTS
+            LOGPROBS -> Value.LOGPROBS
             else -> Value._UNKNOWN
         }
 
@@ -78,10 +72,8 @@ class SpeechModel @JsonCreator private constructor(private val value: JsonField<
      */
     fun known(): Known =
         when (this) {
-            TTS_1 -> Known.TTS_1
-            TTS_1_HD -> Known.TTS_1_HD
-            GPT_4O_MINI_TTS -> Known.GPT_4O_MINI_TTS
-            else -> throw OpenAIInvalidDataException("Unknown SpeechModel: $value")
+            LOGPROBS -> Known.LOGPROBS
+            else -> throw OpenAIInvalidDataException("Unknown TranscriptionInclude: $value")
         }
 
     /**
@@ -101,7 +93,7 @@ class SpeechModel @JsonCreator private constructor(private val value: JsonField<
             return true
         }
 
-        return /* spotless:off */ other is SpeechModel && value == other.value /* spotless:on */
+        return /* spotless:off */ other is TranscriptionInclude && value == other.value /* spotless:on */
     }
 
     override fun hashCode() = value.hashCode()

@@ -380,7 +380,10 @@ private constructor(
          * **NOTE:** If the stream is interrupted or cancelled, you may not receive the final usage
          * chunk which contains the total token usage for the request.
          */
-        fun usage(usage: CompletionUsage) = usage(JsonField.of(usage))
+        fun usage(usage: CompletionUsage?) = usage(JsonField.ofNullable(usage))
+
+        /** Alias for calling [Builder.usage] with `usage.orElse(null)`. */
+        fun usage(usage: Optional<CompletionUsage>) = usage(usage.getOrNull())
 
         /**
          * Sets [Builder.usage] to an arbitrary JSON value.
