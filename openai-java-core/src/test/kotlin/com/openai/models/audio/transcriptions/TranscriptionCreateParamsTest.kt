@@ -53,7 +53,7 @@ internal class TranscriptionCreateParamsTest {
                 mapOf(
                         "file" to MultipartField.of("some content".toByteArray()),
                         "model" to MultipartField.of(AudioModel.WHISPER_1),
-                        "include" to MultipartField.of(listOf(TranscriptionInclude.LOGPROBS)),
+                        "include[]" to MultipartField.of(listOf(TranscriptionInclude.LOGPROBS)),
                         "language" to MultipartField.of("language"),
                         "prompt" to MultipartField.of("prompt"),
                         "response_format" to MultipartField.of(AudioResponseFormat.JSON),
