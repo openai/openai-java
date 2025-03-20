@@ -4,7 +4,6 @@ package com.openai.models.uploads.parts
 
 import com.openai.core.MultipartField
 import java.io.InputStream
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -41,14 +40,19 @@ internal class PartCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
-        assertThat(
-                body
-                    .filterValues { !it.value.isNull() }
-                    .mapValues { (_, field) ->
-                        field.map { if (it is InputStream) it.readBytes() else it }
-                    }
+        assertThat(body.filterValues { !it.value.isNull() })
+            .usingRecursiveComparison()
+            // TODO(AssertJ): Replace this and the `mapValues` below with:
+            // https://github.com/assertj/assertj/issues/3165
+            .withEqualsForType(
+                { a, b -> a.readBytes() contentEquals b.readBytes() },
+                InputStream::class.java,
             )
-            .isEqualTo(mapOf("data" to MultipartField.of("some content".toByteArray())))
+            .isEqualTo(
+                mapOf("data" to MultipartField.of("some content".toByteArray())).mapValues {
+                    (_, field) ->
+                    field.map { (it as? ByteArray)?.inputStream() ?: it }
+                }
+            )
     }
 }

@@ -2,7 +2,6 @@
 
 package com.openai.models.uploads
 
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -38,7 +37,6 @@ internal class UploadCompleteParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.partIds()).containsExactly("string")
         assertThat(body.md5()).contains("md5")
     }
@@ -50,7 +48,6 @@ internal class UploadCompleteParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.partIds()).containsExactly("string")
     }
 }

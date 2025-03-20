@@ -4,7 +4,6 @@ package com.openai.models.batches
 
 import com.openai.core.JsonValue
 import com.openai.models.Metadata
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -38,7 +37,6 @@ internal class BatchCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.completionWindow()).isEqualTo(BatchCreateParams.CompletionWindow._24H)
         assertThat(body.endpoint()).isEqualTo(BatchCreateParams.Endpoint.V1_RESPONSES)
         assertThat(body.inputFileId()).isEqualTo("input_file_id")
@@ -59,7 +57,6 @@ internal class BatchCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.completionWindow()).isEqualTo(BatchCreateParams.CompletionWindow._24H)
         assertThat(body.endpoint()).isEqualTo(BatchCreateParams.Endpoint.V1_RESPONSES)
         assertThat(body.inputFileId()).isEqualTo("input_file_id")

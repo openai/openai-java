@@ -5,7 +5,6 @@ package com.openai.models.vectorstores
 import com.openai.core.JsonValue
 import com.openai.models.Metadata
 import kotlin.jvm.optionals.getOrNull
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -41,7 +40,6 @@ internal class VectorStoreCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.chunkingStrategy())
             .contains(
                 FileChunkingStrategyParam.ofAuto(AutoFileChunkingStrategyParam.builder().build())
@@ -61,7 +59,5 @@ internal class VectorStoreCreateParamsTest {
         val params = VectorStoreCreateParams.builder().build()
 
         val body = params._body()
-
-        assertNotNull(body)
     }
 }

@@ -7,7 +7,6 @@ import com.openai.models.Metadata
 import com.openai.models.ReasoningEffort
 import com.openai.models.beta.threads.AssistantResponseFormatOption
 import kotlin.jvm.optionals.getOrNull
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -92,7 +91,6 @@ internal class AssistantUpdateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.description()).contains("description")
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.metadata())
@@ -129,7 +127,5 @@ internal class AssistantUpdateParamsTest {
         val params = AssistantUpdateParams.builder().assistantId("assistant_id").build()
 
         val body = params._body()
-
-        assertNotNull(body)
     }
 }

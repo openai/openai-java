@@ -3,7 +3,6 @@
 package com.openai.models.vectorstores.files
 
 import com.openai.core.JsonValue
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -56,7 +55,6 @@ internal class FileUpdateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.attributes())
             .contains(
                 FileUpdateParams.Attributes.builder()

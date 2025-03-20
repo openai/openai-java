@@ -6,7 +6,6 @@ import com.openai.core.JsonValue
 import com.openai.models.Metadata
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import kotlin.jvm.optionals.getOrNull
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -122,7 +121,6 @@ internal class ThreadCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.messages().getOrNull())
             .containsExactly(
                 ThreadCreateParams.Message.builder()
@@ -178,7 +176,5 @@ internal class ThreadCreateParamsTest {
         val params = ThreadCreateParams.builder().build()
 
         val body = params._body()
-
-        assertNotNull(body)
     }
 }

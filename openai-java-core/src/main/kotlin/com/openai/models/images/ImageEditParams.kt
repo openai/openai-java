@@ -13,7 +13,6 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
-import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.nio.file.Path
 import java.util.Objects
@@ -33,76 +32,127 @@ private constructor(
     /**
      * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not
      * provided, image must have transparency, which will be used as the mask.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun image(): InputStream = body.image()
 
-    /** A text description of the desired image(s). The maximum length is 1000 characters. */
+    /**
+     * A text description of the desired image(s). The maximum length is 1000 characters.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
     fun prompt(): String = body.prompt()
 
     /**
      * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate where
      * `image` should be edited. Must be a valid PNG file, less than 4MB, and have the same
      * dimensions as `image`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun mask(): Optional<InputStream> = body.mask()
 
-    /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
+    /**
+     * The model to use for image generation. Only `dall-e-2` is supported at this time.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun model(): Optional<ImageModel> = body.model()
 
-    /** The number of images to generate. Must be between 1 and 10. */
+    /**
+     * The number of images to generate. Must be between 1 and 10.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun n(): Optional<Long> = body.n()
 
     /**
      * The format in which the generated images are returned. Must be one of `url` or `b64_json`.
      * URLs are only valid for 60 minutes after the image has been generated.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun responseFormat(): Optional<ResponseFormat> = body.responseFormat()
 
-    /** The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`. */
+    /**
+     * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
     fun size(): Optional<Size> = body.size()
 
     /**
      * A unique identifier representing your end-user, which can help OpenAI to monitor and detect
      * abuse.
      * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
     fun user(): Optional<String> = body.user()
 
     /**
-     * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not
-     * provided, image must have transparency, which will be used as the mask.
+     * Returns the raw multipart value of [image].
+     *
+     * Unlike [image], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _image(): MultipartField<InputStream> = body._image()
 
-    /** A text description of the desired image(s). The maximum length is 1000 characters. */
+    /**
+     * Returns the raw multipart value of [prompt].
+     *
+     * Unlike [prompt], this method doesn't throw if the multipart field has an unexpected type.
+     */
     fun _prompt(): MultipartField<String> = body._prompt()
 
     /**
-     * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate where
-     * `image` should be edited. Must be a valid PNG file, less than 4MB, and have the same
-     * dimensions as `image`.
+     * Returns the raw multipart value of [mask].
+     *
+     * Unlike [mask], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _mask(): MultipartField<InputStream> = body._mask()
 
-    /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
+    /**
+     * Returns the raw multipart value of [model].
+     *
+     * Unlike [model], this method doesn't throw if the multipart field has an unexpected type.
+     */
     fun _model(): MultipartField<ImageModel> = body._model()
 
-    /** The number of images to generate. Must be between 1 and 10. */
+    /**
+     * Returns the raw multipart value of [n].
+     *
+     * Unlike [n], this method doesn't throw if the multipart field has an unexpected type.
+     */
     fun _n(): MultipartField<Long> = body._n()
 
     /**
-     * The format in which the generated images are returned. Must be one of `url` or `b64_json`.
-     * URLs are only valid for 60 minutes after the image has been generated.
+     * Returns the raw multipart value of [responseFormat].
+     *
+     * Unlike [responseFormat], this method doesn't throw if the multipart field has an unexpected
+     * type.
      */
     fun _responseFormat(): MultipartField<ResponseFormat> = body._responseFormat()
 
-    /** The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`. */
+    /**
+     * Returns the raw multipart value of [size].
+     *
+     * Unlike [size], this method doesn't throw if the multipart field has an unexpected type.
+     */
     fun _size(): MultipartField<Size> = body._size()
 
     /**
-     * A unique identifier representing your end-user, which can help OpenAI to monitor and detect
-     * abuse.
-     * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+     * Returns the raw multipart value of [user].
+     *
+     * Unlike [user], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _user(): MultipartField<String> = body._user()
 
@@ -145,34 +195,61 @@ private constructor(
         /**
          * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not
          * provided, image must have transparency, which will be used as the mask.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun image(): InputStream = image.value.getRequired("image")
 
-        /** A text description of the desired image(s). The maximum length is 1000 characters. */
+        /**
+         * A text description of the desired image(s). The maximum length is 1000 characters.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
         fun prompt(): String = prompt.value.getRequired("prompt")
 
         /**
          * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
          * where `image` should be edited. Must be a valid PNG file, less than 4MB, and have the
          * same dimensions as `image`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun mask(): Optional<InputStream> = Optional.ofNullable(mask.value.getNullable("mask"))
 
-        /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
+        /**
+         * The model to use for image generation. Only `dall-e-2` is supported at this time.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun model(): Optional<ImageModel> = Optional.ofNullable(model.value.getNullable("model"))
 
-        /** The number of images to generate. Must be between 1 and 10. */
+        /**
+         * The number of images to generate. Must be between 1 and 10.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
         fun n(): Optional<Long> = Optional.ofNullable(n.value.getNullable("n"))
 
         /**
          * The format in which the generated images are returned. Must be one of `url` or
          * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun responseFormat(): Optional<ResponseFormat> =
             Optional.ofNullable(responseFormat.value.getNullable("response_format"))
 
         /**
          * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun size(): Optional<Size> = Optional.ofNullable(size.value.getNullable("size"))
 
@@ -180,46 +257,66 @@ private constructor(
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
          * detect abuse.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
         fun user(): Optional<String> = Optional.ofNullable(user.value.getNullable("user"))
 
         /**
-         * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not
-         * provided, image must have transparency, which will be used as the mask.
+         * Returns the raw multipart value of [image].
+         *
+         * Unlike [image], this method doesn't throw if the multipart field has an unexpected type.
          */
         fun _image(): MultipartField<InputStream> = image
 
-        /** A text description of the desired image(s). The maximum length is 1000 characters. */
+        /**
+         * Returns the raw multipart value of [prompt].
+         *
+         * Unlike [prompt], this method doesn't throw if the multipart field has an unexpected type.
+         */
         fun _prompt(): MultipartField<String> = prompt
 
         /**
-         * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
-         * where `image` should be edited. Must be a valid PNG file, less than 4MB, and have the
-         * same dimensions as `image`.
+         * Returns the raw multipart value of [mask].
+         *
+         * Unlike [mask], this method doesn't throw if the multipart field has an unexpected type.
          */
         fun _mask(): MultipartField<InputStream> = mask
 
-        /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
+        /**
+         * Returns the raw multipart value of [model].
+         *
+         * Unlike [model], this method doesn't throw if the multipart field has an unexpected type.
+         */
         fun _model(): MultipartField<ImageModel> = model
 
-        /** The number of images to generate. Must be between 1 and 10. */
+        /**
+         * Returns the raw multipart value of [n].
+         *
+         * Unlike [n], this method doesn't throw if the multipart field has an unexpected type.
+         */
         fun _n(): MultipartField<Long> = n
 
         /**
-         * The format in which the generated images are returned. Must be one of `url` or
-         * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
+         * Returns the raw multipart value of [responseFormat].
+         *
+         * Unlike [responseFormat], this method doesn't throw if the multipart field has an
+         * unexpected type.
          */
         fun _responseFormat(): MultipartField<ResponseFormat> = responseFormat
 
         /**
-         * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`.
+         * Returns the raw multipart value of [size].
+         *
+         * Unlike [size], this method doesn't throw if the multipart field has an unexpected type.
          */
         fun _size(): MultipartField<Size> = size
 
         /**
-         * A unique identifier representing your end-user, which can help OpenAI to monitor and
-         * detect abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         * Returns the raw multipart value of [user].
+         *
+         * Unlike [user], this method doesn't throw if the multipart field has an unexpected type.
          */
         fun _user(): MultipartField<String> = user
 
@@ -288,8 +385,11 @@ private constructor(
             fun image(image: InputStream) = image(MultipartField.of(image))
 
             /**
-             * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is
-             * not provided, image must have transparency, which will be used as the mask.
+             * Sets [Builder.image] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.image] with a well-typed [InputStream] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun image(image: MultipartField<InputStream>) = apply { this.image = image }
 
@@ -297,7 +397,7 @@ private constructor(
              * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is
              * not provided, image must have transparency, which will be used as the mask.
              */
-            fun image(image: ByteArray) = image(ByteArrayInputStream(image))
+            fun image(image: ByteArray) = image(image.inputStream())
 
             /**
              * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is
@@ -317,7 +417,11 @@ private constructor(
             fun prompt(prompt: String) = prompt(MultipartField.of(prompt))
 
             /**
-             * A text description of the desired image(s). The maximum length is 1000 characters.
+             * Sets [Builder.prompt] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.prompt] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun prompt(prompt: MultipartField<String>) = apply { this.prompt = prompt }
 
@@ -329,9 +433,11 @@ private constructor(
             fun mask(mask: InputStream) = mask(MultipartField.of(mask))
 
             /**
-             * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
-             * where `image` should be edited. Must be a valid PNG file, less than 4MB, and have the
-             * same dimensions as `image`.
+             * Sets [Builder.mask] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.mask] with a well-typed [InputStream] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
             fun mask(mask: MultipartField<InputStream>) = apply { this.mask = mask }
 
@@ -340,7 +446,7 @@ private constructor(
              * where `image` should be edited. Must be a valid PNG file, less than 4MB, and have the
              * same dimensions as `image`.
              */
-            fun mask(mask: ByteArray) = mask(ByteArrayInputStream(mask))
+            fun mask(mask: ByteArray) = mask(mask.inputStream())
 
             /**
              * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
@@ -361,7 +467,13 @@ private constructor(
             /** Alias for calling [Builder.model] with `model.orElse(null)`. */
             fun model(model: Optional<ImageModel>) = model(model.getOrNull())
 
-            /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
+            /**
+             * Sets [Builder.model] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.model] with a well-typed [ImageModel] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
             fun model(model: MultipartField<ImageModel>) = apply { this.model = model }
 
             /**
@@ -386,7 +498,13 @@ private constructor(
             /** Alias for calling [Builder.n] with `n.orElse(null)`. */
             fun n(n: Optional<Long>) = n(n.getOrNull())
 
-            /** The number of images to generate. Must be between 1 and 10. */
+            /**
+             * Sets [Builder.n] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.n] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
             fun n(n: MultipartField<Long>) = apply { this.n = n }
 
             /**
@@ -401,8 +519,11 @@ private constructor(
                 responseFormat(responseFormat.getOrNull())
 
             /**
-             * The format in which the generated images are returned. Must be one of `url` or
-             * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
+             * Sets [Builder.responseFormat] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.responseFormat] with a well-typed [ResponseFormat]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
              */
             fun responseFormat(responseFormat: MultipartField<ResponseFormat>) = apply {
                 this.responseFormat = responseFormat
@@ -418,8 +539,11 @@ private constructor(
             fun size(size: Optional<Size>) = size(size.getOrNull())
 
             /**
-             * The size of the generated images. Must be one of `256x256`, `512x512`, or
-             * `1024x1024`.
+             * Sets [Builder.size] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.size] with a well-typed [Size] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun size(size: MultipartField<Size>) = apply { this.size = size }
 
@@ -431,9 +555,11 @@ private constructor(
             fun user(user: String) = user(MultipartField.of(user))
 
             /**
-             * A unique identifier representing your end-user, which can help OpenAI to monitor and
-             * detect abuse.
-             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+             * Sets [Builder.user] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.user] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
             fun user(user: MultipartField<String>) = apply { this.user = user }
 
@@ -519,8 +645,11 @@ private constructor(
         fun image(image: InputStream) = apply { body.image(image) }
 
         /**
-         * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not
-         * provided, image must have transparency, which will be used as the mask.
+         * Sets [Builder.image] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.image] with a well-typed [InputStream] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun image(image: MultipartField<InputStream>) = apply { body.image(image) }
 
@@ -539,7 +668,12 @@ private constructor(
         /** A text description of the desired image(s). The maximum length is 1000 characters. */
         fun prompt(prompt: String) = apply { body.prompt(prompt) }
 
-        /** A text description of the desired image(s). The maximum length is 1000 characters. */
+        /**
+         * Sets [Builder.prompt] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.prompt] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun prompt(prompt: MultipartField<String>) = apply { body.prompt(prompt) }
 
         /**
@@ -550,9 +684,11 @@ private constructor(
         fun mask(mask: InputStream) = apply { body.mask(mask) }
 
         /**
-         * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
-         * where `image` should be edited. Must be a valid PNG file, less than 4MB, and have the
-         * same dimensions as `image`.
+         * Sets [Builder.mask] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.mask] with a well-typed [InputStream] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
          */
         fun mask(mask: MultipartField<InputStream>) = apply { body.mask(mask) }
 
@@ -576,7 +712,13 @@ private constructor(
         /** Alias for calling [Builder.model] with `model.orElse(null)`. */
         fun model(model: Optional<ImageModel>) = model(model.getOrNull())
 
-        /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
+        /**
+         * Sets [Builder.model] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.model] with a well-typed [ImageModel] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
         fun model(model: MultipartField<ImageModel>) = apply { body.model(model) }
 
         /**
@@ -600,7 +742,12 @@ private constructor(
         /** Alias for calling [Builder.n] with `n.orElse(null)`. */
         fun n(n: Optional<Long>) = n(n.getOrNull())
 
-        /** The number of images to generate. Must be between 1 and 10. */
+        /**
+         * Sets [Builder.n] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.n] with a well-typed [Long] value instead. This method
+         * is primarily for setting the field to an undocumented or not yet supported value.
+         */
         fun n(n: MultipartField<Long>) = apply { body.n(n) }
 
         /**
@@ -616,8 +763,11 @@ private constructor(
             responseFormat(responseFormat.getOrNull())
 
         /**
-         * The format in which the generated images are returned. Must be one of `url` or
-         * `b64_json`. URLs are only valid for 60 minutes after the image has been generated.
+         * Sets [Builder.responseFormat] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.responseFormat] with a well-typed [ResponseFormat] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
         fun responseFormat(responseFormat: MultipartField<ResponseFormat>) = apply {
             body.responseFormat(responseFormat)
@@ -632,7 +782,10 @@ private constructor(
         fun size(size: Optional<Size>) = size(size.getOrNull())
 
         /**
-         * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`.
+         * Sets [Builder.size] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.size] with a well-typed [Size] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun size(size: MultipartField<Size>) = apply { body.size(size) }
 
@@ -644,9 +797,10 @@ private constructor(
         fun user(user: String) = apply { body.user(user) }
 
         /**
-         * A unique identifier representing your end-user, which can help OpenAI to monitor and
-         * detect abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         * Sets [Builder.user] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.user] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun user(user: MultipartField<String>) = apply { body.user(user) }
 

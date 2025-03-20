@@ -4,7 +4,6 @@ package com.openai.models.beta.threads.runs
 
 import com.openai.core.JsonValue
 import com.openai.models.Metadata
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -46,7 +45,6 @@ internal class RunUpdateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.metadata())
             .contains(
                 Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
@@ -58,7 +56,5 @@ internal class RunUpdateParamsTest {
         val params = RunUpdateParams.builder().threadId("thread_id").runId("run_id").build()
 
         val body = params._body()
-
-        assertNotNull(body)
     }
 }

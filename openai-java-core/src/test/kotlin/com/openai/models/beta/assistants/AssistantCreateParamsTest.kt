@@ -8,7 +8,6 @@ import com.openai.models.Metadata
 import com.openai.models.ReasoningEffort
 import com.openai.models.beta.threads.AssistantResponseFormatOption
 import kotlin.jvm.optionals.getOrNull
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -108,7 +107,6 @@ internal class AssistantCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.model()).isEqualTo(ChatModel.O3_MINI)
         assertThat(body.description()).contains("description")
         assertThat(body.instructions()).contains("instructions")
@@ -157,7 +155,6 @@ internal class AssistantCreateParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.model()).isEqualTo(ChatModel.O3_MINI)
     }
 }

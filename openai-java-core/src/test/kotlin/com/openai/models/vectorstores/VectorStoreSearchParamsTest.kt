@@ -3,7 +3,6 @@
 package com.openai.models.vectorstores
 
 import com.openai.models.ComparisonFilter
-import kotlin.test.assertNotNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -67,7 +66,6 @@ internal class VectorStoreSearchParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.query()).isEqualTo(VectorStoreSearchParams.Query.ofString("string"))
         assertThat(body.filters())
             .contains(
@@ -97,7 +95,6 @@ internal class VectorStoreSearchParamsTest {
 
         val body = params._body()
 
-        assertNotNull(body)
         assertThat(body.query()).isEqualTo(VectorStoreSearchParams.Query.ofString("string"))
     }
 }
