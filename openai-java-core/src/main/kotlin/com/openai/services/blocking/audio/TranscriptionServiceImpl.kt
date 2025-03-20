@@ -3,7 +3,7 @@
 package com.openai.services.blocking.audio
 
 import com.openai.core.ClientOptions
-import com.openai.core.JsonValue
+import com.openai.core.MultipartField
 import com.openai.core.RequestOptions
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
@@ -96,11 +96,7 @@ class TranscriptionServiceImpl internal constructor(private val clientOptions: C
                     .body(
                         multipartFormData(
                             clientOptions.jsonMapper,
-                            params
-                                ._body()
-                                .toBuilder()
-                                .putAdditionalProperty("stream", JsonValue.from(true))
-                                .build(),
+                            params._body() + ("stream" to MultipartField.of(true)),
                         )
                     )
                     .build()
