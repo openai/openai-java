@@ -30,7 +30,6 @@ import com.openai.core.http.QueryParams
 import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
-import com.openai.models.AssistantsVectorStoreChunkingStrategy
 import com.openai.models.Metadata
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.messages.MessageContentPartParam
@@ -2001,8 +2000,7 @@ private constructor(
             private constructor(
                 @JsonProperty("chunking_strategy")
                 @ExcludeMissing
-                private val chunkingStrategy: JsonField<AssistantsVectorStoreChunkingStrategy> =
-                    JsonMissing.of(),
+                private val chunkingStrategy: JsonField<ChunkingStrategy> = JsonMissing.of(),
                 @JsonProperty("file_ids")
                 @ExcludeMissing
                 private val fileIds: JsonField<List<String>> = JsonMissing.of(),
@@ -2020,7 +2018,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
                  */
-                fun chunkingStrategy(): Optional<AssistantsVectorStoreChunkingStrategy> =
+                fun chunkingStrategy(): Optional<ChunkingStrategy> =
                     Optional.ofNullable(chunkingStrategy.getNullable("chunking_strategy"))
 
                 /**
@@ -2055,8 +2053,7 @@ private constructor(
                  */
                 @JsonProperty("chunking_strategy")
                 @ExcludeMissing
-                fun _chunkingStrategy(): JsonField<AssistantsVectorStoreChunkingStrategy> =
-                    chunkingStrategy
+                fun _chunkingStrategy(): JsonField<ChunkingStrategy> = chunkingStrategy
 
                 /**
                  * Returns the raw JSON value of [fileIds].
@@ -2106,8 +2103,7 @@ private constructor(
                 /** A builder for [VectorStore]. */
                 class Builder internal constructor() {
 
-                    private var chunkingStrategy: JsonField<AssistantsVectorStoreChunkingStrategy> =
-                        JsonMissing.of()
+                    private var chunkingStrategy: JsonField<ChunkingStrategy> = JsonMissing.of()
                     private var fileIds: JsonField<MutableList<String>>? = null
                     private var metadata: JsonField<Metadata> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -2124,50 +2120,41 @@ private constructor(
                      * The chunking strategy used to chunk the file(s). If not set, will use the
                      * `auto` strategy.
                      */
-                    fun chunkingStrategy(chunkingStrategy: AssistantsVectorStoreChunkingStrategy) =
+                    fun chunkingStrategy(chunkingStrategy: ChunkingStrategy) =
                         chunkingStrategy(JsonField.of(chunkingStrategy))
 
                     /**
                      * Sets [Builder.chunkingStrategy] to an arbitrary JSON value.
                      *
                      * You should usually call [Builder.chunkingStrategy] with a well-typed
-                     * [AssistantsVectorStoreChunkingStrategy] value instead. This method is
-                     * primarily for setting the field to an undocumented or not yet supported
-                     * value.
+                     * [ChunkingStrategy] value instead. This method is primarily for setting the
+                     * field to an undocumented or not yet supported value.
                      */
-                    fun chunkingStrategy(
-                        chunkingStrategy: JsonField<AssistantsVectorStoreChunkingStrategy>
-                    ) = apply { this.chunkingStrategy = chunkingStrategy }
+                    fun chunkingStrategy(chunkingStrategy: JsonField<ChunkingStrategy>) = apply {
+                        this.chunkingStrategy = chunkingStrategy
+                    }
+
+                    /** Alias for calling [chunkingStrategy] with `ChunkingStrategy.ofAuto()`. */
+                    fun chunkingStrategyAuto() = chunkingStrategy(ChunkingStrategy.ofAuto())
 
                     /**
                      * Alias for calling [chunkingStrategy] with
-                     * `AssistantsVectorStoreChunkingStrategy.ofAuto()`.
+                     * `ChunkingStrategy.ofStatic(static_)`.
                      */
-                    fun chunkingStrategyAuto() =
-                        chunkingStrategy(AssistantsVectorStoreChunkingStrategy.ofAuto())
-
-                    /**
-                     * Alias for calling [chunkingStrategy] with
-                     * `AssistantsVectorStoreChunkingStrategy.ofStatic(static_)`.
-                     */
-                    fun chunkingStrategy(static_: AssistantsVectorStoreChunkingStrategy.Static) =
-                        chunkingStrategy(AssistantsVectorStoreChunkingStrategy.ofStatic(static_))
+                    fun chunkingStrategy(static_: ChunkingStrategy.StaticObject) =
+                        chunkingStrategy(ChunkingStrategy.ofStatic(static_))
 
                     /**
                      * Alias for calling [chunkingStrategy] with the following:
                      * ```java
-                     * AssistantsVectorStoreChunkingStrategy.Static.builder()
+                     * ChunkingStrategy.StaticObject.builder()
                      *     .static_(static_)
                      *     .build()
                      * ```
                      */
-                    fun staticChunkingStrategy(
-                        static_: AssistantsVectorStoreChunkingStrategy.Static.InnerStatic
-                    ) =
+                    fun staticChunkingStrategy(static_: ChunkingStrategy.StaticObject.Static) =
                         chunkingStrategy(
-                            AssistantsVectorStoreChunkingStrategy.Static.builder()
-                                .static_(static_)
-                                .build()
+                            ChunkingStrategy.StaticObject.builder().static_(static_).build()
                         )
 
                     /**
@@ -2262,12 +2249,12 @@ private constructor(
                  * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
                  * strategy.
                  */
-                @JsonDeserialize(using = AssistantsVectorStoreChunkingStrategy.Deserializer::class)
-                @JsonSerialize(using = AssistantsVectorStoreChunkingStrategy.Serializer::class)
-                class AssistantsVectorStoreChunkingStrategy
+                @JsonDeserialize(using = ChunkingStrategy.Deserializer::class)
+                @JsonSerialize(using = ChunkingStrategy.Serializer::class)
+                class ChunkingStrategy
                 private constructor(
                     private val auto: JsonValue? = null,
-                    private val static_: Static? = null,
+                    private val static_: StaticObject? = null,
                     private val _json: JsonValue? = null,
                 ) {
 
@@ -2277,7 +2264,7 @@ private constructor(
                      */
                     fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
 
-                    fun static_(): Optional<Static> = Optional.ofNullable(static_)
+                    fun static_(): Optional<StaticObject> = Optional.ofNullable(static_)
 
                     fun isAuto(): Boolean = auto != null
 
@@ -2289,7 +2276,7 @@ private constructor(
                      */
                     fun asAuto(): JsonValue = auto.getOrThrow("auto")
 
-                    fun asStatic(): Static = static_.getOrThrow("static_")
+                    fun asStatic(): StaticObject = static_.getOrThrow("static_")
 
                     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -2303,7 +2290,7 @@ private constructor(
 
                     private var validated: Boolean = false
 
-                    fun validate(): AssistantsVectorStoreChunkingStrategy = apply {
+                    fun validate(): ChunkingStrategy = apply {
                         if (validated) {
                             return@apply
                         }
@@ -2320,7 +2307,7 @@ private constructor(
                                     }
                                 }
 
-                                override fun visitStatic(static_: Static) {
+                                override fun visitStatic(static_: StaticObject) {
                                     static_.validate()
                                 }
                             }
@@ -2333,22 +2320,17 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is AssistantsVectorStoreChunkingStrategy && auto == other.auto && static_ == other.static_ /* spotless:on */
+                        return /* spotless:off */ other is ChunkingStrategy && auto == other.auto && static_ == other.static_ /* spotless:on */
                     }
 
                     override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, static_) /* spotless:on */
 
                     override fun toString(): String =
                         when {
-                            auto != null -> "AssistantsVectorStoreChunkingStrategy{auto=$auto}"
-                            static_ != null ->
-                                "AssistantsVectorStoreChunkingStrategy{static_=$static_}"
-                            _json != null ->
-                                "AssistantsVectorStoreChunkingStrategy{_unknown=$_json}"
-                            else ->
-                                throw IllegalStateException(
-                                    "Invalid AssistantsVectorStoreChunkingStrategy"
-                                )
+                            auto != null -> "ChunkingStrategy{auto=$auto}"
+                            static_ != null -> "ChunkingStrategy{static_=$static_}"
+                            _json != null -> "ChunkingStrategy{_unknown=$_json}"
+                            else -> throw IllegalStateException("Invalid ChunkingStrategy")
                         }
 
                     companion object {
@@ -2359,18 +2341,15 @@ private constructor(
                          */
                         @JvmStatic
                         fun ofAuto() =
-                            AssistantsVectorStoreChunkingStrategy(
-                                auto = JsonValue.from(mapOf("type" to "auto"))
-                            )
+                            ChunkingStrategy(auto = JsonValue.from(mapOf("type" to "auto")))
 
                         @JvmStatic
-                        fun ofStatic(static_: Static) =
-                            AssistantsVectorStoreChunkingStrategy(static_ = static_)
+                        fun ofStatic(static_: StaticObject) = ChunkingStrategy(static_ = static_)
                     }
 
                     /**
-                     * An interface that defines how to map each variant of
-                     * [AssistantsVectorStoreChunkingStrategy] to a value of type [T].
+                     * An interface that defines how to map each variant of [ChunkingStrategy] to a
+                     * value of type [T].
                      */
                     interface Visitor<out T> {
 
@@ -2380,35 +2359,27 @@ private constructor(
                          */
                         fun visitAuto(auto: JsonValue): T
 
-                        fun visitStatic(static_: Static): T
+                        fun visitStatic(static_: StaticObject): T
 
                         /**
-                         * Maps an unknown variant of [AssistantsVectorStoreChunkingStrategy] to a
-                         * value of type [T].
+                         * Maps an unknown variant of [ChunkingStrategy] to a value of type [T].
                          *
-                         * An instance of [AssistantsVectorStoreChunkingStrategy] can contain an
-                         * unknown variant if it was deserialized from data that doesn't match any
-                         * known variant. For example, if the SDK is on an older version than the
-                         * API, then the API may respond with new variants that the SDK is unaware
-                         * of.
+                         * An instance of [ChunkingStrategy] can contain an unknown variant if it
+                         * was deserialized from data that doesn't match any known variant. For
+                         * example, if the SDK is on an older version than the API, then the API may
+                         * respond with new variants that the SDK is unaware of.
                          *
                          * @throws OpenAIInvalidDataException in the default implementation.
                          */
                         fun unknown(json: JsonValue?): T {
-                            throw OpenAIInvalidDataException(
-                                "Unknown AssistantsVectorStoreChunkingStrategy: $json"
-                            )
+                            throw OpenAIInvalidDataException("Unknown ChunkingStrategy: $json")
                         }
                     }
 
                     internal class Deserializer :
-                        BaseDeserializer<AssistantsVectorStoreChunkingStrategy>(
-                            AssistantsVectorStoreChunkingStrategy::class
-                        ) {
+                        BaseDeserializer<ChunkingStrategy>(ChunkingStrategy::class) {
 
-                        override fun ObjectCodec.deserialize(
-                            node: JsonNode
-                        ): AssistantsVectorStoreChunkingStrategy {
+                        override fun ObjectCodec.deserialize(node: JsonNode): ChunkingStrategy {
                             val json = JsonValue.fromJsonNode(node)
                             val type =
                                 json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
@@ -2425,34 +2396,28 @@ private constructor(
                                             }
                                         }
                                         ?.let {
-                                            return AssistantsVectorStoreChunkingStrategy(
-                                                auto = it,
-                                                _json = json,
-                                            )
+                                            return ChunkingStrategy(auto = it, _json = json)
                                         }
                                 }
                                 "static" -> {
-                                    tryDeserialize(node, jacksonTypeRef<Static>()) { it.validate() }
+                                    tryDeserialize(node, jacksonTypeRef<StaticObject>()) {
+                                            it.validate()
+                                        }
                                         ?.let {
-                                            return AssistantsVectorStoreChunkingStrategy(
-                                                static_ = it,
-                                                _json = json,
-                                            )
+                                            return ChunkingStrategy(static_ = it, _json = json)
                                         }
                                 }
                             }
 
-                            return AssistantsVectorStoreChunkingStrategy(_json = json)
+                            return ChunkingStrategy(_json = json)
                         }
                     }
 
                     internal class Serializer :
-                        BaseSerializer<AssistantsVectorStoreChunkingStrategy>(
-                            AssistantsVectorStoreChunkingStrategy::class
-                        ) {
+                        BaseSerializer<ChunkingStrategy>(ChunkingStrategy::class) {
 
                         override fun serialize(
-                            value: AssistantsVectorStoreChunkingStrategy,
+                            value: ChunkingStrategy,
                             generator: JsonGenerator,
                             provider: SerializerProvider,
                         ) {
@@ -2460,21 +2425,18 @@ private constructor(
                                 value.auto != null -> generator.writeObject(value.auto)
                                 value.static_ != null -> generator.writeObject(value.static_)
                                 value._json != null -> generator.writeObject(value._json)
-                                else ->
-                                    throw IllegalStateException(
-                                        "Invalid AssistantsVectorStoreChunkingStrategy"
-                                    )
+                                else -> throw IllegalStateException("Invalid ChunkingStrategy")
                             }
                         }
                     }
 
                     @NoAutoDetect
-                    class Static
+                    class StaticObject
                     @JsonCreator
                     private constructor(
                         @JsonProperty("static")
                         @ExcludeMissing
-                        private val static_: JsonField<InnerStatic> = JsonMissing.of(),
+                        private val static_: JsonField<Static> = JsonMissing.of(),
                         @JsonProperty("type")
                         @ExcludeMissing
                         private val type: JsonValue = JsonMissing.of(),
@@ -2488,7 +2450,7 @@ private constructor(
                          *   type or is unexpectedly missing or null (e.g. if the server responded
                          *   with an unexpected value).
                          */
-                        fun static_(): InnerStatic = static_.getRequired("static")
+                        fun static_(): Static = static_.getRequired("static")
 
                         /**
                          * Always `static`.
@@ -2511,7 +2473,7 @@ private constructor(
                          */
                         @JsonProperty("static")
                         @ExcludeMissing
-                        fun _static_(): JsonField<InnerStatic> = static_
+                        fun _static_(): JsonField<Static> = static_
 
                         @JsonAnyGetter
                         @ExcludeMissing
@@ -2519,7 +2481,7 @@ private constructor(
 
                         private var validated: Boolean = false
 
-                        fun validate(): Static = apply {
+                        fun validate(): StaticObject = apply {
                             if (validated) {
                                 return@apply
                             }
@@ -2540,7 +2502,8 @@ private constructor(
                         companion object {
 
                             /**
-                             * Returns a mutable builder for constructing an instance of [Static].
+                             * Returns a mutable builder for constructing an instance of
+                             * [StaticObject].
                              *
                              * The following fields are required:
                              * ```java
@@ -2550,31 +2513,32 @@ private constructor(
                             @JvmStatic fun builder() = Builder()
                         }
 
-                        /** A builder for [Static]. */
+                        /** A builder for [StaticObject]. */
                         class Builder internal constructor() {
 
-                            private var static_: JsonField<InnerStatic>? = null
+                            private var static_: JsonField<Static>? = null
                             private var type: JsonValue = JsonValue.from("static")
                             private var additionalProperties: MutableMap<String, JsonValue> =
                                 mutableMapOf()
 
                             @JvmSynthetic
-                            internal fun from(static_: Static) = apply {
-                                this.static_ = static_.static_
-                                type = static_.type
-                                additionalProperties = static_.additionalProperties.toMutableMap()
+                            internal fun from(staticObject: StaticObject) = apply {
+                                static_ = staticObject.static_
+                                type = staticObject.type
+                                additionalProperties =
+                                    staticObject.additionalProperties.toMutableMap()
                             }
 
-                            fun static_(static_: InnerStatic) = static_(JsonField.of(static_))
+                            fun static_(static_: Static) = static_(JsonField.of(static_))
 
                             /**
                              * Sets [Builder.static_] to an arbitrary JSON value.
                              *
-                             * You should usually call [Builder.static_] with a well-typed
-                             * [InnerStatic] value instead. This method is primarily for setting the
-                             * field to an undocumented or not yet supported value.
+                             * You should usually call [Builder.static_] with a well-typed [Static]
+                             * value instead. This method is primarily for setting the field to an
+                             * undocumented or not yet supported value.
                              */
-                            fun static_(static_: JsonField<InnerStatic>) = apply {
+                            fun static_(static_: JsonField<Static>) = apply {
                                 this.static_ = static_
                             }
 
@@ -2615,7 +2579,7 @@ private constructor(
                             }
 
                             /**
-                             * Returns an immutable instance of [Static].
+                             * Returns an immutable instance of [StaticObject].
                              *
                              * Further updates to this [Builder] will not mutate the returned
                              * instance.
@@ -2627,8 +2591,8 @@ private constructor(
                              *
                              * @throws IllegalStateException if any required field is unset.
                              */
-                            fun build(): Static =
-                                Static(
+                            fun build(): StaticObject =
+                                StaticObject(
                                     checkRequired("static_", static_),
                                     type,
                                     additionalProperties.toImmutable(),
@@ -2636,7 +2600,7 @@ private constructor(
                         }
 
                         @NoAutoDetect
-                        class InnerStatic
+                        class Static
                         @JsonCreator
                         private constructor(
                             @JsonProperty("chunk_overlap_tokens")
@@ -2702,7 +2666,7 @@ private constructor(
 
                             private var validated: Boolean = false
 
-                            fun validate(): InnerStatic = apply {
+                            fun validate(): Static = apply {
                                 if (validated) {
                                     return@apply
                                 }
@@ -2718,7 +2682,7 @@ private constructor(
 
                                 /**
                                  * Returns a mutable builder for constructing an instance of
-                                 * [InnerStatic].
+                                 * [Static].
                                  *
                                  * The following fields are required:
                                  * ```java
@@ -2729,7 +2693,7 @@ private constructor(
                                 @JvmStatic fun builder() = Builder()
                             }
 
-                            /** A builder for [InnerStatic]. */
+                            /** A builder for [Static]. */
                             class Builder internal constructor() {
 
                                 private var chunkOverlapTokens: JsonField<Long>? = null
@@ -2738,11 +2702,11 @@ private constructor(
                                     mutableMapOf()
 
                                 @JvmSynthetic
-                                internal fun from(innerStatic: InnerStatic) = apply {
-                                    chunkOverlapTokens = innerStatic.chunkOverlapTokens
-                                    maxChunkSizeTokens = innerStatic.maxChunkSizeTokens
+                                internal fun from(static_: Static) = apply {
+                                    chunkOverlapTokens = static_.chunkOverlapTokens
+                                    maxChunkSizeTokens = static_.maxChunkSizeTokens
                                     additionalProperties =
-                                        innerStatic.additionalProperties.toMutableMap()
+                                        static_.additionalProperties.toMutableMap()
                                 }
 
                                 /**
@@ -2811,7 +2775,7 @@ private constructor(
                                 }
 
                                 /**
-                                 * Returns an immutable instance of [InnerStatic].
+                                 * Returns an immutable instance of [Static].
                                  *
                                  * Further updates to this [Builder] will not mutate the returned
                                  * instance.
@@ -2824,8 +2788,8 @@ private constructor(
                                  *
                                  * @throws IllegalStateException if any required field is unset.
                                  */
-                                fun build(): InnerStatic =
-                                    InnerStatic(
+                                fun build(): Static =
+                                    Static(
                                         checkRequired("chunkOverlapTokens", chunkOverlapTokens),
                                         checkRequired("maxChunkSizeTokens", maxChunkSizeTokens),
                                         additionalProperties.toImmutable(),
@@ -2837,7 +2801,7 @@ private constructor(
                                     return true
                                 }
 
-                                return /* spotless:off */ other is InnerStatic && chunkOverlapTokens == other.chunkOverlapTokens && maxChunkSizeTokens == other.maxChunkSizeTokens && additionalProperties == other.additionalProperties /* spotless:on */
+                                return /* spotless:off */ other is Static && chunkOverlapTokens == other.chunkOverlapTokens && maxChunkSizeTokens == other.maxChunkSizeTokens && additionalProperties == other.additionalProperties /* spotless:on */
                             }
 
                             /* spotless:off */
@@ -2847,7 +2811,7 @@ private constructor(
                             override fun hashCode(): Int = hashCode
 
                             override fun toString() =
-                                "InnerStatic{chunkOverlapTokens=$chunkOverlapTokens, maxChunkSizeTokens=$maxChunkSizeTokens, additionalProperties=$additionalProperties}"
+                                "Static{chunkOverlapTokens=$chunkOverlapTokens, maxChunkSizeTokens=$maxChunkSizeTokens, additionalProperties=$additionalProperties}"
                         }
 
                         override fun equals(other: Any?): Boolean {
@@ -2855,7 +2819,7 @@ private constructor(
                                 return true
                             }
 
-                            return /* spotless:off */ other is Static && static_ == other.static_ && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                            return /* spotless:off */ other is StaticObject && static_ == other.static_ && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
                         }
 
                         /* spotless:off */
@@ -2865,7 +2829,7 @@ private constructor(
                         override fun hashCode(): Int = hashCode
 
                         override fun toString() =
-                            "Static{static_=$static_, type=$type, additionalProperties=$additionalProperties}"
+                            "StaticObject{static_=$static_, type=$type, additionalProperties=$additionalProperties}"
                     }
                 }
 

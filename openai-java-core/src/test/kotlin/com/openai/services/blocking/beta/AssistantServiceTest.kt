@@ -8,7 +8,6 @@ import com.openai.core.JsonValue
 import com.openai.models.ChatModel
 import com.openai.models.Metadata
 import com.openai.models.ReasoningEffort
-import com.openai.models.UnnamedSchema0
 import com.openai.models.beta.assistants.AssistantCreateParams
 import com.openai.models.beta.assistants.AssistantDeleteParams
 import com.openai.models.beta.assistants.AssistantRetrieveParams
@@ -45,15 +44,18 @@ internal class AssistantServiceTest {
                     .responseFormatJsonValue()
                     .temperature(1.0)
                     .toolResources(
-                        UnnamedSchema0.builder()
+                        AssistantCreateParams.ToolResources.builder()
                             .codeInterpreter(
-                                UnnamedSchema0.CodeInterpreter.builder().addFileId("string").build()
+                                AssistantCreateParams.ToolResources.CodeInterpreter.builder()
+                                    .addFileId("string")
+                                    .build()
                             )
                             .fileSearch(
-                                UnnamedSchema0.FileSearch.builder()
+                                AssistantCreateParams.ToolResources.FileSearch.builder()
                                     .addVectorStoreId("string")
                                     .addVectorStore(
-                                        UnnamedSchema0.FileSearch.VectorStore.builder()
+                                        AssistantCreateParams.ToolResources.FileSearch.VectorStore
+                                            .builder()
                                             .chunkingStrategyAuto()
                                             .addFileId("string")
                                             .metadata(
