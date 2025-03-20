@@ -22,12 +22,18 @@ class AudioModel @JsonCreator private constructor(private val value: JsonField<S
 
         @JvmField val WHISPER_1 = of("whisper-1")
 
+        @JvmField val GPT_4O_TRANSCRIBE = of("gpt-4o-transcribe")
+
+        @JvmField val GPT_4O_MINI_TRANSCRIBE = of("gpt-4o-mini-transcribe")
+
         @JvmStatic fun of(value: String) = AudioModel(JsonField.of(value))
     }
 
     /** An enum containing [AudioModel]'s known values. */
     enum class Known {
-        WHISPER_1
+        WHISPER_1,
+        GPT_4O_TRANSCRIBE,
+        GPT_4O_MINI_TRANSCRIBE,
     }
 
     /**
@@ -41,6 +47,8 @@ class AudioModel @JsonCreator private constructor(private val value: JsonField<S
      */
     enum class Value {
         WHISPER_1,
+        GPT_4O_TRANSCRIBE,
+        GPT_4O_MINI_TRANSCRIBE,
         /** An enum member indicating that [AudioModel] was instantiated with an unknown value. */
         _UNKNOWN,
     }
@@ -55,6 +63,8 @@ class AudioModel @JsonCreator private constructor(private val value: JsonField<S
     fun value(): Value =
         when (this) {
             WHISPER_1 -> Value.WHISPER_1
+            GPT_4O_TRANSCRIBE -> Value.GPT_4O_TRANSCRIBE
+            GPT_4O_MINI_TRANSCRIBE -> Value.GPT_4O_MINI_TRANSCRIBE
             else -> Value._UNKNOWN
         }
 
@@ -69,6 +79,8 @@ class AudioModel @JsonCreator private constructor(private val value: JsonField<S
     fun known(): Known =
         when (this) {
             WHISPER_1 -> Known.WHISPER_1
+            GPT_4O_TRANSCRIBE -> Known.GPT_4O_TRANSCRIBE
+            GPT_4O_MINI_TRANSCRIBE -> Known.GPT_4O_MINI_TRANSCRIBE
             else -> throw OpenAIInvalidDataException("Unknown AudioModel: $value")
         }
 

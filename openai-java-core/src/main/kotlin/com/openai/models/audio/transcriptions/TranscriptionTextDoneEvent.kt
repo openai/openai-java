@@ -19,12 +19,18 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 import java.util.Optional
 
-/** Represents a transcription response returned by model, based on the provided input. */
+/**
+ * Emitted when the transcription is complete. Contains the complete transcription text. Only
+ * emitted when you
+ * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+ * with the `Stream` parameter set to `true`.
+ */
 @NoAutoDetect
-class Transcription
+class TranscriptionTextDoneEvent
 @JsonCreator
 private constructor(
     @JsonProperty("text") @ExcludeMissing private val text: JsonField<String> = JsonMissing.of(),
+    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
     @JsonProperty("logprobs")
     @ExcludeMissing
     private val logprobs: JsonField<List<Logprob>> = JsonMissing.of(),
@@ -32,7 +38,7 @@ private constructor(
 ) {
 
     /**
-     * The transcribed text.
+     * The text that was transcribed.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -40,9 +46,22 @@ private constructor(
     fun text(): String = text.getRequired("text")
 
     /**
-     * The log probabilities of the tokens in the transcription. Only returned with the models
-     * `gpt-4o-transcribe` and `gpt-4o-mini-transcribe` if `logprobs` is added to the `include`
-     * array.
+     * The type of the event. Always `transcript.text.done`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("transcript.text.done")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+    /**
+     * The log probabilities of the individual tokens in the transcription. Only included if you
+     * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+     * with the `include[]` parameter set to `logprobs`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -69,12 +88,17 @@ private constructor(
 
     private var validated: Boolean = false
 
-    fun validate(): Transcription = apply {
+    fun validate(): TranscriptionTextDoneEvent = apply {
         if (validated) {
             return@apply
         }
 
         text()
+        _type().let {
+            if (it != JsonValue.from("transcript.text.done")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
         logprobs().ifPresent { it.forEach { it.validate() } }
         validated = true
     }
@@ -84,7 +108,7 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [Transcription].
+         * Returns a mutable builder for constructing an instance of [TranscriptionTextDoneEvent].
          *
          * The following fields are required:
          * ```java
@@ -94,21 +118,23 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [Transcription]. */
+    /** A builder for [TranscriptionTextDoneEvent]. */
     class Builder internal constructor() {
 
         private var text: JsonField<String>? = null
+        private var type: JsonValue = JsonValue.from("transcript.text.done")
         private var logprobs: JsonField<MutableList<Logprob>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(transcription: Transcription) = apply {
-            text = transcription.text
-            logprobs = transcription.logprobs.map { it.toMutableList() }
-            additionalProperties = transcription.additionalProperties.toMutableMap()
+        internal fun from(transcriptionTextDoneEvent: TranscriptionTextDoneEvent) = apply {
+            text = transcriptionTextDoneEvent.text
+            type = transcriptionTextDoneEvent.type
+            logprobs = transcriptionTextDoneEvent.logprobs.map { it.toMutableList() }
+            additionalProperties = transcriptionTextDoneEvent.additionalProperties.toMutableMap()
         }
 
-        /** The transcribed text. */
+        /** The text that was transcribed. */
         fun text(text: String) = text(JsonField.of(text))
 
         /**
@@ -120,9 +146,23 @@ private constructor(
         fun text(text: JsonField<String>) = apply { this.text = text }
 
         /**
-         * The log probabilities of the tokens in the transcription. Only returned with the models
-         * `gpt-4o-transcribe` and `gpt-4o-mini-transcribe` if `logprobs` is added to the `include`
-         * array.
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("transcript.text.done")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun type(type: JsonValue) = apply { this.type = type }
+
+        /**
+         * The log probabilities of the individual tokens in the transcription. Only included if you
+         * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+         * with the `include[]` parameter set to `logprobs`.
          */
         fun logprobs(logprobs: List<Logprob>) = logprobs(JsonField.of(logprobs))
 
@@ -169,7 +209,7 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [Transcription].
+         * Returns an immutable instance of [TranscriptionTextDoneEvent].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
@@ -180,9 +220,10 @@ private constructor(
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): Transcription =
-            Transcription(
+        fun build(): TranscriptionTextDoneEvent =
+            TranscriptionTextDoneEvent(
                 checkRequired("text", text),
+                type,
                 (logprobs ?: JsonMissing.of()).map { it.toImmutable() },
                 additionalProperties.toImmutable(),
             )
@@ -197,7 +238,7 @@ private constructor(
         private val token: JsonField<String> = JsonMissing.of(),
         @JsonProperty("bytes")
         @ExcludeMissing
-        private val bytes: JsonField<List<Double>> = JsonMissing.of(),
+        private val bytes: JsonField<List<JsonValue>> = JsonMissing.of(),
         @JsonProperty("logprob")
         @ExcludeMissing
         private val logprob: JsonField<Double> = JsonMissing.of(),
@@ -206,7 +247,7 @@ private constructor(
     ) {
 
         /**
-         * The token in the transcription.
+         * The token that was used to generate the log probability.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -214,12 +255,12 @@ private constructor(
         fun token(): Optional<String> = Optional.ofNullable(token.getNullable("token"))
 
         /**
-         * The bytes of the token.
+         * The bytes that were used to generate the log probability.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun bytes(): Optional<List<Double>> = Optional.ofNullable(bytes.getNullable("bytes"))
+        fun bytes(): Optional<List<JsonValue>> = Optional.ofNullable(bytes.getNullable("bytes"))
 
         /**
          * The log probability of the token.
@@ -241,7 +282,7 @@ private constructor(
          *
          * Unlike [bytes], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("bytes") @ExcludeMissing fun _bytes(): JsonField<List<Double>> = bytes
+        @JsonProperty("bytes") @ExcludeMissing fun _bytes(): JsonField<List<JsonValue>> = bytes
 
         /**
          * Returns the raw JSON value of [logprob].
@@ -279,7 +320,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var token: JsonField<String> = JsonMissing.of()
-            private var bytes: JsonField<MutableList<Double>>? = null
+            private var bytes: JsonField<MutableList<JsonValue>>? = null
             private var logprob: JsonField<Double> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -291,7 +332,7 @@ private constructor(
                 additionalProperties = logprob.additionalProperties.toMutableMap()
             }
 
-            /** The token in the transcription. */
+            /** The token that was used to generate the log probability. */
             fun token(token: String) = token(JsonField.of(token))
 
             /**
@@ -303,26 +344,26 @@ private constructor(
              */
             fun token(token: JsonField<String>) = apply { this.token = token }
 
-            /** The bytes of the token. */
-            fun bytes(bytes: List<Double>) = bytes(JsonField.of(bytes))
+            /** The bytes that were used to generate the log probability. */
+            fun bytes(bytes: List<JsonValue>) = bytes(JsonField.of(bytes))
 
             /**
              * Sets [Builder.bytes] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.bytes] with a well-typed `List<Double>` value
+             * You should usually call [Builder.bytes] with a well-typed `List<JsonValue>` value
              * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun bytes(bytes: JsonField<List<Double>>) = apply {
+            fun bytes(bytes: JsonField<List<JsonValue>>) = apply {
                 this.bytes = bytes.map { it.toMutableList() }
             }
 
             /**
-             * Adds a single [Double] to [bytes].
+             * Adds a single [JsonValue] to [bytes].
              *
              * @throws IllegalStateException if the field was previously set to a non-list.
              */
-            fun addByte(byte_: Double) = apply {
+            fun addByte(byte_: JsonValue) = apply {
                 bytes =
                     (bytes ?: JsonField.of(mutableListOf())).also {
                         checkKnown("bytes", it).add(byte_)
@@ -397,15 +438,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Transcription && text == other.text && logprobs == other.logprobs && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is TranscriptionTextDoneEvent && text == other.text && type == other.type && logprobs == other.logprobs && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(text, logprobs, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(text, type, logprobs, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Transcription{text=$text, logprobs=$logprobs, additionalProperties=$additionalProperties}"
+        "TranscriptionTextDoneEvent{text=$text, type=$type, logprobs=$logprobs, additionalProperties=$additionalProperties}"
 }

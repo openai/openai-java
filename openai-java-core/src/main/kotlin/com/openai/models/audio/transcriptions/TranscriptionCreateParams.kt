@@ -39,10 +39,18 @@ private constructor(
     fun file(): InputStream = body.file()
 
     /**
-     * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2
-     * model) is currently available.
+     * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`, and
+     * `whisper-1` (which is powered by our open source Whisper V2 model).
      */
     fun model(): AudioModel = body.model()
+
+    /**
+     * Additional information to include in the transcription response. `logprobs` will return the
+     * log probabilities of the tokens in the response to understand the model's confidence in the
+     * transcription. `logprobs` only works with response_format set to `json` and only with the
+     * models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`.
+     */
+    fun include(): Optional<List<TranscriptionInclude>> = body.include()
 
     /**
      * The language of the input audio. Supplying the input language in
@@ -60,7 +68,8 @@ private constructor(
 
     /**
      * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`, or
-     * `vtt`.
+     * `vtt`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only supported format is
+     * `json`.
      */
     fun responseFormat(): Optional<AudioResponseFormat> = body.responseFormat()
 
@@ -88,10 +97,18 @@ private constructor(
     fun _file(): MultipartField<InputStream> = body._file()
 
     /**
-     * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2
-     * model) is currently available.
+     * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`, and
+     * `whisper-1` (which is powered by our open source Whisper V2 model).
      */
     fun _model(): MultipartField<AudioModel> = body._model()
+
+    /**
+     * Additional information to include in the transcription response. `logprobs` will return the
+     * log probabilities of the tokens in the response to understand the model's confidence in the
+     * transcription. `logprobs` only works with response_format set to `json` and only with the
+     * models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`.
+     */
+    fun _include(): MultipartField<List<TranscriptionInclude>> = body._include()
 
     /**
      * The language of the input audio. Supplying the input language in
@@ -109,7 +126,8 @@ private constructor(
 
     /**
      * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`, or
-     * `vtt`.
+     * `vtt`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only supported format is
+     * `json`.
      */
     fun _responseFormat(): MultipartField<AudioResponseFormat> = body._responseFormat()
 
@@ -139,6 +157,7 @@ private constructor(
         mapOf(
                 "file" to _file(),
                 "model" to _model(),
+                "include" to _include(),
                 "language" to _language(),
                 "prompt" to _prompt(),
                 "response_format" to _responseFormat(),
@@ -157,6 +176,7 @@ private constructor(
     private constructor(
         private val file: MultipartField<InputStream>,
         private val model: MultipartField<AudioModel>,
+        private val include: MultipartField<List<TranscriptionInclude>>,
         private val language: MultipartField<String>,
         private val prompt: MultipartField<String>,
         private val responseFormat: MultipartField<AudioResponseFormat>,
@@ -171,10 +191,19 @@ private constructor(
         fun file(): InputStream = file.value.getRequired("file")
 
         /**
-         * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2
-         * model) is currently available.
+         * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`,
+         * and `whisper-1` (which is powered by our open source Whisper V2 model).
          */
         fun model(): AudioModel = model.value.getRequired("model")
+
+        /**
+         * Additional information to include in the transcription response. `logprobs` will return
+         * the log probabilities of the tokens in the response to understand the model's confidence
+         * in the transcription. `logprobs` only works with response_format set to `json` and only
+         * with the models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`.
+         */
+        fun include(): Optional<List<TranscriptionInclude>> =
+            Optional.ofNullable(include.value.getNullable("include"))
 
         /**
          * The language of the input audio. Supplying the input language in
@@ -193,7 +222,8 @@ private constructor(
 
         /**
          * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
-         * or `vtt`.
+         * or `vtt`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only supported format
+         * is `json`.
          */
         fun responseFormat(): Optional<AudioResponseFormat> =
             Optional.ofNullable(responseFormat.value.getNullable("response_format"))
@@ -224,10 +254,18 @@ private constructor(
         fun _file(): MultipartField<InputStream> = file
 
         /**
-         * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2
-         * model) is currently available.
+         * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`,
+         * and `whisper-1` (which is powered by our open source Whisper V2 model).
          */
         fun _model(): MultipartField<AudioModel> = model
+
+        /**
+         * Additional information to include in the transcription response. `logprobs` will return
+         * the log probabilities of the tokens in the response to understand the model's confidence
+         * in the transcription. `logprobs` only works with response_format set to `json` and only
+         * with the models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`.
+         */
+        fun _include(): MultipartField<List<TranscriptionInclude>> = include
 
         /**
          * The language of the input audio. Supplying the input language in
@@ -245,7 +283,8 @@ private constructor(
 
         /**
          * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
-         * or `vtt`.
+         * or `vtt`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only supported format
+         * is `json`.
          */
         fun _responseFormat(): MultipartField<AudioResponseFormat> = responseFormat
 
@@ -276,6 +315,7 @@ private constructor(
 
             file()
             model()
+            include()
             language()
             prompt()
             responseFormat()
@@ -305,6 +345,7 @@ private constructor(
 
             private var file: MultipartField<InputStream>? = null
             private var model: MultipartField<AudioModel>? = null
+            private var include: MultipartField<MutableList<TranscriptionInclude>>? = null
             private var language: MultipartField<String> = MultipartField.of(null)
             private var prompt: MultipartField<String> = MultipartField.of(null)
             private var responseFormat: MultipartField<AudioResponseFormat> =
@@ -317,6 +358,7 @@ private constructor(
             internal fun from(body: Body) = apply {
                 file = body.file
                 model = body.model
+                include = body.include.map { it.toMutableList() }
                 language = body.language
                 prompt = body.prompt
                 responseFormat = body.responseFormat
@@ -355,14 +397,16 @@ private constructor(
                 )
 
             /**
-             * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper
-             * V2 model) is currently available.
+             * ID of the model to use. The options are `gpt-4o-transcribe`,
+             * `gpt-4o-mini-transcribe`, and `whisper-1` (which is powered by our open source
+             * Whisper V2 model).
              */
             fun model(model: AudioModel) = model(MultipartField.of(model))
 
             /**
-             * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper
-             * V2 model) is currently available.
+             * ID of the model to use. The options are `gpt-4o-transcribe`,
+             * `gpt-4o-mini-transcribe`, and `whisper-1` (which is powered by our open source
+             * Whisper V2 model).
              */
             fun model(model: MultipartField<AudioModel>) = apply { this.model = model }
 
@@ -374,6 +418,36 @@ private constructor(
              * value.
              */
             fun model(value: String) = model(AudioModel.of(value))
+
+            /**
+             * Additional information to include in the transcription response. `logprobs` will
+             * return the log probabilities of the tokens in the response to understand the model's
+             * confidence in the transcription. `logprobs` only works with response_format set to
+             * `json` and only with the models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`.
+             */
+            fun include(include: List<TranscriptionInclude>) = include(MultipartField.of(include))
+
+            /**
+             * Additional information to include in the transcription response. `logprobs` will
+             * return the log probabilities of the tokens in the response to understand the model's
+             * confidence in the transcription. `logprobs` only works with response_format set to
+             * `json` and only with the models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`.
+             */
+            fun include(include: MultipartField<List<TranscriptionInclude>>) = apply {
+                this.include = include.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [TranscriptionInclude] to [Builder.include].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addInclude(include: TranscriptionInclude) = apply {
+                this.include =
+                    (this.include ?: MultipartField.of(mutableListOf())).also {
+                        checkKnown("include", it).add(include)
+                    }
+            }
 
             /**
              * The language of the input audio. Supplying the input language in
@@ -405,14 +479,16 @@ private constructor(
 
             /**
              * The format of the output, in one of these options: `json`, `text`, `srt`,
-             * `verbose_json`, or `vtt`.
+             * `verbose_json`, or `vtt`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the
+             * only supported format is `json`.
              */
             fun responseFormat(responseFormat: AudioResponseFormat) =
                 responseFormat(MultipartField.of(responseFormat))
 
             /**
              * The format of the output, in one of these options: `json`, `text`, `srt`,
-             * `verbose_json`, or `vtt`.
+             * `verbose_json`, or `vtt`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the
+             * only supported format is `json`.
              */
             fun responseFormat(responseFormat: MultipartField<AudioResponseFormat>) = apply {
                 this.responseFormat = responseFormat
@@ -488,6 +564,7 @@ private constructor(
                 Body(
                     checkRequired("file", file),
                     checkRequired("model", model),
+                    (include ?: MultipartField.of(null)).map { it.toImmutable() },
                     language,
                     prompt,
                     responseFormat,
@@ -501,17 +578,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && file == other.file && model == other.model && language == other.language && prompt == other.prompt && responseFormat == other.responseFormat && temperature == other.temperature && timestampGranularities == other.timestampGranularities /* spotless:on */
+            return /* spotless:off */ other is Body && file == other.file && model == other.model && include == other.include && language == other.language && prompt == other.prompt && responseFormat == other.responseFormat && temperature == other.temperature && timestampGranularities == other.timestampGranularities /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(file, model, language, prompt, responseFormat, temperature, timestampGranularities) }
+        private val hashCode: Int by lazy { Objects.hash(file, model, include, language, prompt, responseFormat, temperature, timestampGranularities) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{file=$file, model=$model, language=$language, prompt=$prompt, responseFormat=$responseFormat, temperature=$temperature, timestampGranularities=$timestampGranularities}"
+            "Body{file=$file, model=$model, include=$include, language=$language, prompt=$prompt, responseFormat=$responseFormat, temperature=$temperature, timestampGranularities=$timestampGranularities}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -570,14 +647,14 @@ private constructor(
         fun file(file: Path) = apply { body.file(file) }
 
         /**
-         * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2
-         * model) is currently available.
+         * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`,
+         * and `whisper-1` (which is powered by our open source Whisper V2 model).
          */
         fun model(model: AudioModel) = apply { body.model(model) }
 
         /**
-         * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2
-         * model) is currently available.
+         * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`,
+         * and `whisper-1` (which is powered by our open source Whisper V2 model).
          */
         fun model(model: MultipartField<AudioModel>) = apply { body.model(model) }
 
@@ -588,6 +665,31 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun model(value: String) = apply { body.model(value) }
+
+        /**
+         * Additional information to include in the transcription response. `logprobs` will return
+         * the log probabilities of the tokens in the response to understand the model's confidence
+         * in the transcription. `logprobs` only works with response_format set to `json` and only
+         * with the models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`.
+         */
+        fun include(include: List<TranscriptionInclude>) = apply { body.include(include) }
+
+        /**
+         * Additional information to include in the transcription response. `logprobs` will return
+         * the log probabilities of the tokens in the response to understand the model's confidence
+         * in the transcription. `logprobs` only works with response_format set to `json` and only
+         * with the models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`.
+         */
+        fun include(include: MultipartField<List<TranscriptionInclude>>) = apply {
+            body.include(include)
+        }
+
+        /**
+         * Adds a single [TranscriptionInclude] to [Builder.include].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addInclude(include: TranscriptionInclude) = apply { body.addInclude(include) }
 
         /**
          * The language of the input audio. Supplying the input language in
@@ -619,7 +721,8 @@ private constructor(
 
         /**
          * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
-         * or `vtt`.
+         * or `vtt`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only supported format
+         * is `json`.
          */
         fun responseFormat(responseFormat: AudioResponseFormat) = apply {
             body.responseFormat(responseFormat)
@@ -627,7 +730,8 @@ private constructor(
 
         /**
          * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
-         * or `vtt`.
+         * or `vtt`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only supported format
+         * is `json`.
          */
         fun responseFormat(responseFormat: MultipartField<AudioResponseFormat>) = apply {
             body.responseFormat(responseFormat)
