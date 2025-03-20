@@ -182,7 +182,7 @@ private constructor(
         mapOf(
                 "file" to _file(),
                 "model" to _model(),
-                "include[]" to _include(),
+                "include" to _include(),
                 "language" to _language(),
                 "prompt" to _prompt(),
                 "response_format" to _responseFormat(),
@@ -237,7 +237,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun include(): Optional<List<TranscriptionInclude>> =
-            Optional.ofNullable(include.value.getNullable("include[]"))
+            Optional.ofNullable(include.value.getNullable("include"))
 
         /**
          * The language of the input audio. Supplying the input language in
