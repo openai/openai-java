@@ -113,7 +113,11 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                         )
                     )
                     .build()
-                    .prepareAsync(clientOptions, params)
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        deploymentModel = params.model().toString(),
+                    )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }

@@ -100,7 +100,7 @@ class TranscriptionServiceImpl internal constructor(private val clientOptions: C
                         )
                     )
                     .build()
-                    .prepare(clientOptions, params)
+                    .prepare(clientOptions, params, deploymentModel = params.model().toString())
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {
