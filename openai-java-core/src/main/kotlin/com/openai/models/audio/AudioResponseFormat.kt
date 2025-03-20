@@ -9,7 +9,7 @@ import com.openai.errors.OpenAIInvalidDataException
 
 /**
  * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`, or
- * `vtt`.
+ * `vtt`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only supported format is `json`.
  */
 class AudioResponseFormat @JsonCreator private constructor(private val value: JsonField<String>) :
     Enum {

@@ -3,6 +3,8 @@
 package com.openai.models.audio.translations
 
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.openai.core.Enum
+import com.openai.core.JsonField
 import com.openai.core.MultipartField
 import com.openai.core.NoAutoDetect
 import com.openai.core.Params
@@ -10,8 +12,8 @@ import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.audio.AudioModel
-import com.openai.models.audio.AudioResponseFormat
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.nio.file.Path
@@ -51,7 +53,7 @@ private constructor(
      * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`, or
      * `vtt`.
      */
-    fun responseFormat(): Optional<AudioResponseFormat> = body.responseFormat()
+    fun responseFormat(): Optional<ResponseFormat> = body.responseFormat()
 
     /**
      * The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output more
@@ -84,7 +86,7 @@ private constructor(
      * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`, or
      * `vtt`.
      */
-    fun _responseFormat(): MultipartField<AudioResponseFormat> = body._responseFormat()
+    fun _responseFormat(): MultipartField<ResponseFormat> = body._responseFormat()
 
     /**
      * The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output more
@@ -120,7 +122,7 @@ private constructor(
         private val file: MultipartField<InputStream>,
         private val model: MultipartField<AudioModel>,
         private val prompt: MultipartField<String>,
-        private val responseFormat: MultipartField<AudioResponseFormat>,
+        private val responseFormat: MultipartField<ResponseFormat>,
         private val temperature: MultipartField<Double>,
     ) {
 
@@ -147,7 +149,7 @@ private constructor(
          * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
          * or `vtt`.
          */
-        fun responseFormat(): Optional<AudioResponseFormat> =
+        fun responseFormat(): Optional<ResponseFormat> =
             Optional.ofNullable(responseFormat.value.getNullable("response_format"))
 
         /**
@@ -183,7 +185,7 @@ private constructor(
          * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
          * or `vtt`.
          */
-        fun _responseFormat(): MultipartField<AudioResponseFormat> = responseFormat
+        fun _responseFormat(): MultipartField<ResponseFormat> = responseFormat
 
         /**
          * The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output
@@ -231,8 +233,7 @@ private constructor(
             private var file: MultipartField<InputStream>? = null
             private var model: MultipartField<AudioModel>? = null
             private var prompt: MultipartField<String> = MultipartField.of(null)
-            private var responseFormat: MultipartField<AudioResponseFormat> =
-                MultipartField.of(null)
+            private var responseFormat: MultipartField<ResponseFormat> = MultipartField.of(null)
             private var temperature: MultipartField<Double> = MultipartField.of(null)
 
             @JvmSynthetic
@@ -313,14 +314,14 @@ private constructor(
              * The format of the output, in one of these options: `json`, `text`, `srt`,
              * `verbose_json`, or `vtt`.
              */
-            fun responseFormat(responseFormat: AudioResponseFormat) =
+            fun responseFormat(responseFormat: ResponseFormat) =
                 responseFormat(MultipartField.of(responseFormat))
 
             /**
              * The format of the output, in one of these options: `json`, `text`, `srt`,
              * `verbose_json`, or `vtt`.
              */
-            fun responseFormat(responseFormat: MultipartField<AudioResponseFormat>) = apply {
+            fun responseFormat(responseFormat: MultipartField<ResponseFormat>) = apply {
                 this.responseFormat = responseFormat
             }
 
@@ -478,7 +479,7 @@ private constructor(
          * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
          * or `vtt`.
          */
-        fun responseFormat(responseFormat: AudioResponseFormat) = apply {
+        fun responseFormat(responseFormat: ResponseFormat) = apply {
             body.responseFormat(responseFormat)
         }
 
@@ -486,7 +487,7 @@ private constructor(
          * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
          * or `vtt`.
          */
-        fun responseFormat(responseFormat: MultipartField<AudioResponseFormat>) = apply {
+        fun responseFormat(responseFormat: MultipartField<ResponseFormat>) = apply {
             body.responseFormat(responseFormat)
         }
 
@@ -627,6 +628,130 @@ private constructor(
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
+    }
+
+    /**
+     * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`, or
+     * `vtt`.
+     */
+    class ResponseFormat @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val JSON = of("json")
+
+            @JvmField val TEXT = of("text")
+
+            @JvmField val SRT = of("srt")
+
+            @JvmField val VERBOSE_JSON = of("verbose_json")
+
+            @JvmField val VTT = of("vtt")
+
+            @JvmStatic fun of(value: String) = ResponseFormat(JsonField.of(value))
+        }
+
+        /** An enum containing [ResponseFormat]'s known values. */
+        enum class Known {
+            JSON,
+            TEXT,
+            SRT,
+            VERBOSE_JSON,
+            VTT,
+        }
+
+        /**
+         * An enum containing [ResponseFormat]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [ResponseFormat] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            JSON,
+            TEXT,
+            SRT,
+            VERBOSE_JSON,
+            VTT,
+            /**
+             * An enum member indicating that [ResponseFormat] was instantiated with an unknown
+             * value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                JSON -> Value.JSON
+                TEXT -> Value.TEXT
+                SRT -> Value.SRT
+                VERBOSE_JSON -> Value.VERBOSE_JSON
+                VTT -> Value.VTT
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                JSON -> Known.JSON
+                TEXT -> Known.TEXT
+                SRT -> Known.SRT
+                VERBOSE_JSON -> Known.VERBOSE_JSON
+                VTT -> Known.VTT
+                else -> throw OpenAIInvalidDataException("Unknown ResponseFormat: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is ResponseFormat && value == other.value /* spotless:on */
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {

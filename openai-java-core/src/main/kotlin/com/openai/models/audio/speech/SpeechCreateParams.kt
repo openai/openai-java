@@ -39,8 +39,8 @@ private constructor(
     fun input(): String = body.input()
 
     /**
-     * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1` or
-     * `tts-1-hd`
+     * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1`,
+     * `tts-1-hd` or `gpt-4o-mini-tts`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -57,6 +57,15 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun voice(): Voice = body.voice()
+
+    /**
+     * Control the voice of your generated audio with additional instructions. Does not work with
+     * `tts-1` or `tts-1-hd`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun instructions(): Optional<String> = body.instructions()
 
     /**
      * The format to audio in. Supported formats are `mp3`, `opus`, `aac`, `flac`, `wav`, and `pcm`.
@@ -94,6 +103,13 @@ private constructor(
      * Unlike [voice], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _voice(): JsonField<Voice> = body._voice()
+
+    /**
+     * Returns the raw JSON value of [instructions].
+     *
+     * Unlike [instructions], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _instructions(): JsonField<String> = body._instructions()
 
     /**
      * Returns the raw JSON value of [responseFormat].
@@ -134,6 +150,9 @@ private constructor(
         @JsonProperty("voice")
         @ExcludeMissing
         private val voice: JsonField<Voice> = JsonMissing.of(),
+        @JsonProperty("instructions")
+        @ExcludeMissing
+        private val instructions: JsonField<String> = JsonMissing.of(),
         @JsonProperty("response_format")
         @ExcludeMissing
         private val responseFormat: JsonField<ResponseFormat> = JsonMissing.of(),
@@ -153,8 +172,8 @@ private constructor(
         fun input(): String = input.getRequired("input")
 
         /**
-         * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1`
-         * or `tts-1-hd`
+         * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1`,
+         * `tts-1-hd` or `gpt-4o-mini-tts`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -171,6 +190,16 @@ private constructor(
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun voice(): Voice = voice.getRequired("voice")
+
+        /**
+         * Control the voice of your generated audio with additional instructions. Does not work
+         * with `tts-1` or `tts-1-hd`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun instructions(): Optional<String> =
+            Optional.ofNullable(instructions.getNullable("instructions"))
 
         /**
          * The format to audio in. Supported formats are `mp3`, `opus`, `aac`, `flac`, `wav`, and
@@ -213,6 +242,16 @@ private constructor(
         @JsonProperty("voice") @ExcludeMissing fun _voice(): JsonField<Voice> = voice
 
         /**
+         * Returns the raw JSON value of [instructions].
+         *
+         * Unlike [instructions], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("instructions")
+        @ExcludeMissing
+        fun _instructions(): JsonField<String> = instructions
+
+        /**
          * Returns the raw JSON value of [responseFormat].
          *
          * Unlike [responseFormat], this method doesn't throw if the JSON field has an unexpected
@@ -243,6 +282,7 @@ private constructor(
             input()
             model()
             voice()
+            instructions()
             responseFormat()
             speed()
             validated = true
@@ -271,6 +311,7 @@ private constructor(
             private var input: JsonField<String>? = null
             private var model: JsonField<SpeechModel>? = null
             private var voice: JsonField<Voice>? = null
+            private var instructions: JsonField<String> = JsonMissing.of()
             private var responseFormat: JsonField<ResponseFormat> = JsonMissing.of()
             private var speed: JsonField<Double> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -280,6 +321,7 @@ private constructor(
                 input = body.input
                 model = body.model
                 voice = body.voice
+                instructions = body.instructions
                 responseFormat = body.responseFormat
                 speed = body.speed
                 additionalProperties = body.additionalProperties.toMutableMap()
@@ -299,7 +341,7 @@ private constructor(
 
             /**
              * One of the available [TTS models](https://platform.openai.com/docs/models#tts):
-             * `tts-1` or `tts-1-hd`
+             * `tts-1`, `tts-1-hd` or `gpt-4o-mini-tts`.
              */
             fun model(model: SpeechModel) = model(JsonField.of(model))
 
@@ -337,6 +379,23 @@ private constructor(
              * value.
              */
             fun voice(voice: JsonField<Voice>) = apply { this.voice = voice }
+
+            /**
+             * Control the voice of your generated audio with additional instructions. Does not work
+             * with `tts-1` or `tts-1-hd`.
+             */
+            fun instructions(instructions: String) = instructions(JsonField.of(instructions))
+
+            /**
+             * Sets [Builder.instructions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.instructions] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun instructions(instructions: JsonField<String>) = apply {
+                this.instructions = instructions
+            }
 
             /**
              * The format to audio in. Supported formats are `mp3`, `opus`, `aac`, `flac`, `wav`,
@@ -409,6 +468,7 @@ private constructor(
                     checkRequired("input", input),
                     checkRequired("model", model),
                     checkRequired("voice", voice),
+                    instructions,
                     responseFormat,
                     speed,
                     additionalProperties.toImmutable(),
@@ -420,17 +480,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && input == other.input && model == other.model && voice == other.voice && responseFormat == other.responseFormat && speed == other.speed && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && input == other.input && model == other.model && voice == other.voice && instructions == other.instructions && responseFormat == other.responseFormat && speed == other.speed && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(input, model, voice, responseFormat, speed, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(input, model, voice, instructions, responseFormat, speed, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{input=$input, model=$model, voice=$voice, responseFormat=$responseFormat, speed=$speed, additionalProperties=$additionalProperties}"
+            "Body{input=$input, model=$model, voice=$voice, instructions=$instructions, responseFormat=$responseFormat, speed=$speed, additionalProperties=$additionalProperties}"
     }
 
     fun toBuilder() = Builder().from(this)
@@ -477,8 +537,8 @@ private constructor(
         fun input(input: JsonField<String>) = apply { body.input(input) }
 
         /**
-         * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1`
-         * or `tts-1-hd`
+         * One of the available [TTS models](https://platform.openai.com/docs/models#tts): `tts-1`,
+         * `tts-1-hd` or `gpt-4o-mini-tts`.
          */
         fun model(model: SpeechModel) = apply { body.model(model) }
 
@@ -514,6 +574,23 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun voice(voice: JsonField<Voice>) = apply { body.voice(voice) }
+
+        /**
+         * Control the voice of your generated audio with additional instructions. Does not work
+         * with `tts-1` or `tts-1-hd`.
+         */
+        fun instructions(instructions: String) = apply { body.instructions(instructions) }
+
+        /**
+         * Sets [Builder.instructions] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.instructions] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun instructions(instructions: JsonField<String>) = apply {
+            body.instructions(instructions)
+        }
 
         /**
          * The format to audio in. Supported formats are `mp3`, `opus`, `aac`, `flac`, `wav`, and
