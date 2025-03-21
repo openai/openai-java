@@ -1,13 +1,18 @@
+// File generated from our OpenAPI spec by Stainless.
+
 package com.openai.core.http
 
 import java.io.InputStream
-import java.lang.AutoCloseable
+import java.util.Optional
 
 interface HttpResponse : AutoCloseable {
 
     fun statusCode(): Int
 
     fun headers(): Headers
+
+    fun requestId(): Optional<String> =
+        Optional.ofNullable(headers().values("x-request-id").firstOrNull())
 
     fun body(): InputStream
 
