@@ -41,7 +41,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .headers()
-         * .error()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -65,6 +64,9 @@ private constructor(
 
         fun error(error: ErrorObject?) = apply { this.error = error }
 
+        /** Alias for calling [Builder.error] with `error.orElse(null)`. */
+        fun error(error: Optional<ErrorObject>) = error(error.getOrNull())
+
         fun cause(cause: Throwable?) = apply { this.cause = cause }
 
         /** Alias for calling [Builder.cause] with `cause.orElse(null)`. */
@@ -78,16 +80,11 @@ private constructor(
          * The following fields are required:
          * ```java
          * .headers()
-         * .error()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
          */
         fun build(): UnauthorizedException =
-            UnauthorizedException(
-                checkRequired("headers", headers),
-                checkRequired("error", error),
-                cause,
-            )
+            UnauthorizedException(checkRequired("headers", headers), error, cause)
     }
 }

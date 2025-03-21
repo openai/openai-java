@@ -4,19 +4,20 @@
 
 package com.openai.core.handlers
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.json.JsonMapper
-import com.openai.core.JsonValue
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.SseMessage
 import com.openai.core.http.StreamResponse
 import com.openai.core.http.map
-import com.openai.errors.OpenAIException
-import kotlin.jvm.optionals.getOrNull
+import com.openai.errors.SseException
+import com.openai.models.ErrorObject
 
 @JvmSynthetic
 internal fun sseHandler(jsonMapper: JsonMapper): Handler<StreamResponse<SseMessage>> =
-    streamHandler { lines ->
+    streamHandler { response, lines ->
         val state = SseState(jsonMapper)
         var done = false
         for (line in lines) {
@@ -33,13 +34,26 @@ internal fun sseHandler(jsonMapper: JsonMapper): Handler<StreamResponse<SseMessa
                 continue
             }
 
-            val error = message.json<JsonValue>().asObject().getOrNull()?.get("error")
-            if (error != null) {
-                val errorMessage =
-                    error.asString().getOrNull()
-                        ?: error.asObject().getOrNull()?.get("message")?.asString()?.getOrNull()
-                        ?: "An error occurred during streaming"
-                throw OpenAIException(errorMessage)
+            val jsonNode =
+                try {
+                    message.json<JsonNode>()
+                } catch (e: Exception) {
+                    jsonMapper.createObjectNode()
+                }
+            jsonNode.get("error")?.let {
+                throw SseException.builder()
+                    .statusCode(response.statusCode())
+                    .headers(response.headers())
+                    .error(
+                        try {
+                            jsonMapper
+                                .readerFor(jacksonTypeRef<ErrorObject?>())
+                                .readValue<ErrorObject?>(it)
+                        } catch (e: Exception) {
+                            null
+                        }
+                    )
+                    .build()
             }
             yield(message)
         }

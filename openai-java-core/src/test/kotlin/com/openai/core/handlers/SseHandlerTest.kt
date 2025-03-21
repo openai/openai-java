@@ -1,13 +1,14 @@
+// File generated from our OpenAPI spec by Stainless.
+
 package com.openai.core.handlers
 
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.SseMessage
 import com.openai.core.jsonMapper
-import com.openai.errors.OpenAIException
-import java.io.ByteArrayInputStream
+import com.openai.errors.SseException
+import com.openai.models.ErrorObject
 import java.io.InputStream
-import java.nio.charset.StandardCharsets
 import java.util.stream.Collectors.toList
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
@@ -15,7 +16,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 
-class SseHandlerTest {
+internal class SseHandlerTest {
 
     enum class TestCase(
         internal val body: String,
@@ -81,26 +82,26 @@ class SseHandlerTest {
             },
             listOf(sseMessageBuilder().data("{\"content\":\"известни\"}").build()),
         ),
-        STRING_ERROR_PROPERTY(
+        ERROR_PROPERTY(
             buildString {
-                append("data: {\"error\":\"ERROR!\"}\n")
+                append(
+                    "data: {\"error\":{\"code\":\"code\",\"message\":\"message\",\"param\":\"param\",\"type\":\"type\"}}\n"
+                )
                 append("\n")
             },
-            expectedException = OpenAIException("ERROR!"),
-        ),
-        ERROR_PROPERTY_WITH_MESSAGE(
-            buildString {
-                append("data: {\"error\":{\"message\":\"ERROR!\"}}\n")
-                append("\n")
-            },
-            expectedException = OpenAIException("ERROR!"),
-        ),
-        ERROR_PROPERTY_MALFORMED(
-            buildString {
-                append("data: {\"error\":42}\n")
-                append("\n")
-            },
-            expectedException = OpenAIException("An error occurred during streaming"),
+            expectedException =
+                SseException.builder()
+                    .statusCode(0)
+                    .headers(Headers.builder().build())
+                    .error(
+                        ErrorObject.builder()
+                            .code("code")
+                            .message("message")
+                            .param("param")
+                            .type("type")
+                            .build()
+                    )
+                    .build(),
         ),
     }
 
@@ -148,8 +149,7 @@ private fun httpResponse(body: String): HttpResponse =
 
         override fun headers(): Headers = Headers.builder().build()
 
-        override fun body(): InputStream =
-            ByteArrayInputStream(body.toByteArray(StandardCharsets.UTF_8))
+        override fun body(): InputStream = body.toByteArray().inputStream()
 
         override fun close() {}
     }
