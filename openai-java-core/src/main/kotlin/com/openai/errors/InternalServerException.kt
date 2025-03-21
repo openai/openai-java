@@ -43,7 +43,6 @@ private constructor(
          * ```java
          * .statusCode()
          * .headers()
-         * .error()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -71,6 +70,9 @@ private constructor(
 
         fun error(error: ErrorObject?) = apply { this.error = error }
 
+        /** Alias for calling [Builder.error] with `error.orElse(null)`. */
+        fun error(error: Optional<ErrorObject>) = error(error.getOrNull())
+
         fun cause(cause: Throwable?) = apply { this.cause = cause }
 
         /** Alias for calling [Builder.cause] with `cause.orElse(null)`. */
@@ -85,7 +87,6 @@ private constructor(
          * ```java
          * .statusCode()
          * .headers()
-         * .error()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -94,7 +95,7 @@ private constructor(
             InternalServerException(
                 checkRequired("statusCode", statusCode),
                 checkRequired("headers", headers),
-                checkRequired("error", error),
+                error,
                 cause,
             )
     }
