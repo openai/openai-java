@@ -414,16 +414,18 @@ The SDK throws custom unchecked exception types:
 
 - [`OpenAIServiceException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIServiceException.kt): Base class for HTTP errors. See this table for which exception subclass is thrown for each HTTP status code:
 
-  | Status | Exception                       |
-  | ------ | ------------------------------- |
-  | 400    | `BadRequestException`           |
-  | 401    | `AuthenticationException`       |
-  | 403    | `PermissionDeniedException`     |
-  | 404    | `NotFoundException`             |
-  | 422    | `UnprocessableEntityException`  |
-  | 429    | `RateLimitException`            |
-  | 5xx    | `InternalServerException`       |
-  | others | `UnexpectedStatusCodeException` |
+  | Status | Exception                                                                                                              |
+  | ------ | ---------------------------------------------------------------------------------------------------------------------- |
+  | 400    | [`BadRequestException`](openai-java-core/src/main/kotlin/com/openai/errors/BadRequestException.kt)                     |
+  | 401    | [`UnauthorizedException`](openai-java-core/src/main/kotlin/com/openai/errors/UnauthorizedException.kt)                 |
+  | 403    | [`PermissionDeniedException`](openai-java-core/src/main/kotlin/com/openai/errors/PermissionDeniedException.kt)         |
+  | 404    | [`NotFoundException`](openai-java-core/src/main/kotlin/com/openai/errors/NotFoundException.kt)                         |
+  | 422    | [`UnprocessableEntityException`](openai-java-core/src/main/kotlin/com/openai/errors/UnprocessableEntityException.kt)   |
+  | 429    | [`RateLimitException`](openai-java-core/src/main/kotlin/com/openai/errors/RateLimitException.kt)                       |
+  | 5xx    | [`InternalServerException`](openai-java-core/src/main/kotlin/com/openai/errors/InternalServerException.kt)             |
+  | others | [`UnexpectedStatusCodeException`](openai-java-core/src/main/kotlin/com/openai/errors/UnexpectedStatusCodeException.kt) |
+
+  [`SseException`](openai-java-core/src/main/kotlin/com/openai/errors/SseException.kt) is thrown for errors encountered during [SSE streaming](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) after a successful initial HTTP response.
 
 - [`OpenAIIoException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIIoException.kt): I/O networking errors.
 
