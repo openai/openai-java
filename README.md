@@ -7,7 +7,7 @@
 
 <!-- x-release-please-end -->
 
-The OpenAI Java SDK provides convenient access to the OpenAI REST API from applications written in Java.
+The OpenAI Java SDK provides convenient access to the [OpenAI REST API](https://platform.openai.com/docs) from applications written in Java.
 
 <!-- x-release-please-start-version -->
 
@@ -29,9 +29,9 @@ implementation("com.openai:openai-java:0.36.0")
 
 ```xml
 <dependency>
-    <groupId>com.openai</groupId>
-    <artifactId>openai-java</artifactId>
-    <version>0.36.0</version>
+  <groupId>com.openai</groupId>
+  <artifactId>openai-java</artifactId>
+  <version>0.36.0</version>
 </dependency>
 ```
 
