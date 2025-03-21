@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.36.0 (2025-03-21)
+
+Full Changelog: [v0.35.1...v0.36.0](https://github.com/openai/openai-java/compare/v0.35.1...v0.36.0)
+
+### ⚠ BREAKING CHANGES
+
+* **client:** refactor exception structure and methods ([#336](https://github.com/openai/openai-java/issues/336))
+
+### Features
+
+* **api:** new models for TTS, STT, + new audio features for Realtime ([#340](https://github.com/openai/openai-java/issues/340)) ([630d63c](https://github.com/openai/openai-java/commit/630d63c5751dee259e2263e57deed3780e363234))
+* **api:** o1-pro now available through the API ([#337](https://github.com/openai/openai-java/issues/337)) ([93a7949](https://github.com/openai/openai-java/commit/93a79492bb960cbf0691a4139cf9acadafb8a7a2))
+
+
+### Bug Fixes
+
+* add missing deployment models ([0f5c072](https://github.com/openai/openai-java/commit/0f5c0727d9507c2103cd3c0fcfffd1032219448a))
+* **client:** compilation error in adding streaming discriminator ([#342](https://github.com/openai/openai-java/issues/342)) ([f26276e](https://github.com/openai/openai-java/commit/f26276eb97cf36dad03c6782ad8f1bb5f5434384))
+* **client:** remove duplicate types ([#341](https://github.com/openai/openai-java/issues/341)) ([e6b3e76](https://github.com/openai/openai-java/commit/e6b3e766b5e10117adae557e162b9daa3cf0a50f))
+
+
+### Chores
+
+* **client:** refactor exception structure and methods ([#336](https://github.com/openai/openai-java/issues/336)) ([552fcf2](https://github.com/openai/openai-java/commit/552fcf26b56912c6322319de0673d13c2885ae4d))
+* **internal:** add missing release please block ([#335](https://github.com/openai/openai-java/issues/335)) ([3312a39](https://github.com/openai/openai-java/commit/3312a3945e4c34b4073b7c5a0735a61baf22f8af))
+* **internal:** make multipart assertions more robust ([badd931](https://github.com/openai/openai-java/commit/badd931f4b959905ca81c816cf91e030c56ea842))
+* **internal:** remove unnecessary `assertNotNull` calls ([badd931](https://github.com/openai/openai-java/commit/badd931f4b959905ca81c816cf91e030c56ea842))
+* **internal:** version bump ([#333](https://github.com/openai/openai-java/issues/333)) ([7f09373](https://github.com/openai/openai-java/commit/7f0937367f01b10ee0eaa18e66c238b484b80608))
+
+
+### Documentation
+
+* refine comments on multipart params ([#343](https://github.com/openai/openai-java/issues/343)) ([badd931](https://github.com/openai/openai-java/commit/badd931f4b959905ca81c816cf91e030c56ea842))
+
 ## 0.35.1 (2025-03-18)
 
 Full Changelog: [v0.35.0...v0.35.1](https://github.com/openai/openai-java/compare/v0.35.0...v0.35.1)
