@@ -181,7 +181,7 @@ class ChatCompletionAccumulator private constructor() {
             }
             .putAllAdditionalProperties(chunk._additionalProperties())
 
-        // Each chunk contains a `choices` array (the size depends on `n` in the request). Each
+        // Each chunk contains a `choices` list (the size depends on `n` in the request). Each
         // chunked `choice` has an `index`, that identifies the corresponding `Choice` within the
         // accumulated list of choices; and a `Delta`, that contains additional content to be
         // accumulated in that `Choice`, mostly within its `message`.
@@ -201,10 +201,10 @@ class ChatCompletionAccumulator private constructor() {
                 )
 
                 // A non-null `finishReason` signals that this is the final `Chunk` for its index.
-                // There will be one chunk carrying only a `finishReason` (its `Choice` will have no
-                // `content`) for each of the `n` messages completed. These `finalReason` chunks
+                // For each of the `n` messages completed, there will be one chunk carrying only a
+                // `finishReason` (its `Choice` will have no `content`). These `finalReason` chunks
                 // will all arrive after the non-empty chunks have been received for all `n`
-                // messages. Therefore, the value of `n` can be inferred from the number of distinct
+                // choices. Therefore, the value of `n` can be inferred from the number of distinct
                 // indexes observed thus far when building choices. When all `n` `finishReason`
                 // chunks have been received, presumptively build the `ChatCompletion`. (One further
                 // usage chunk _might_ be notified.)
