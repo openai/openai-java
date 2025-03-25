@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.37.0 (2025-03-25)
+
+Full Changelog: [v0.36.0...v0.37.0](https://github.com/openai/openai-java/compare/v0.36.0...v0.37.0)
+
+### Features
+
+* **client:** support a lower jackson version ([#357](https://github.com/openai/openai-java/issues/357)) ([13a3c67](https://github.com/openai/openai-java/commit/13a3c672ef093f4a0e9110ce716086f4a3ea4329))
+* **client:** throw on incompatible jackson version ([13a3c67](https://github.com/openai/openai-java/commit/13a3c672ef093f4a0e9110ce716086f4a3ea4329))
+
+
+### Chores
+
+* **internal:** fix example formatting ([#348](https://github.com/openai/openai-java/issues/348)) ([44a7df9](https://github.com/openai/openai-java/commit/44a7df9af13ab14947fd50b37a7d26b1d9c5d0df))
+* **internal:** remove unnecessary import ([#349](https://github.com/openai/openai-java/issues/349)) ([661a906](https://github.com/openai/openai-java/commit/661a9060183a645b9ec7f9687fa0786adb224283))
+
+
+### Documentation
+
+* minor readme tweak ([#351](https://github.com/openai/openai-java/issues/351)) ([28a1116](https://github.com/openai/openai-java/commit/28a111615345011335e73f2894f1f54672493cdf))
+* responses image url example ([d84abd4](https://github.com/openai/openai-java/commit/d84abd426d220b1c248bc31cf9f47dfeb9e25509))
+* update readme exception docs ([#350](https://github.com/openai/openai-java/issues/350)) ([b441223](https://github.com/openai/openai-java/commit/b441223dc8c26d7fc023614f6b15610b8f7af35d))
+
 ## 0.36.0 (2025-03-21)
 
 Full Changelog: [v0.35.1...v0.36.0](https://github.com/openai/openai-java/compare/v0.35.1...v0.36.0)
