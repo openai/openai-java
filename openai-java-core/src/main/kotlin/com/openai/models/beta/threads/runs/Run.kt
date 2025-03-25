@@ -11,10 +11,8 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.FunctionDefinition
@@ -29,6 +27,7 @@ import com.openai.models.beta.assistants.FunctionTool
 import com.openai.models.beta.threads.AssistantResponseFormatOption
 import com.openai.models.beta.threads.AssistantToolChoice
 import com.openai.models.beta.threads.AssistantToolChoiceOption
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -37,83 +36,127 @@ import kotlin.jvm.optionals.getOrNull
  * Represents an execution run on a
  * [thread](https://platform.openai.com/docs/api-reference/threads).
  */
-@NoAutoDetect
 class Run
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("assistant_id")
-    @ExcludeMissing
-    private val assistantId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("cancelled_at")
-    @ExcludeMissing
-    private val cancelledAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("completed_at")
-    @ExcludeMissing
-    private val completedAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("created_at")
-    @ExcludeMissing
-    private val createdAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("expires_at")
-    @ExcludeMissing
-    private val expiresAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("failed_at")
-    @ExcludeMissing
-    private val failedAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("incomplete_details")
-    @ExcludeMissing
-    private val incompleteDetails: JsonField<IncompleteDetails> = JsonMissing.of(),
-    @JsonProperty("instructions")
-    @ExcludeMissing
-    private val instructions: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("last_error")
-    @ExcludeMissing
-    private val lastError: JsonField<LastError> = JsonMissing.of(),
-    @JsonProperty("max_completion_tokens")
-    @ExcludeMissing
-    private val maxCompletionTokens: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("max_prompt_tokens")
-    @ExcludeMissing
-    private val maxPromptTokens: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("metadata")
-    @ExcludeMissing
-    private val metadata: JsonField<Metadata> = JsonMissing.of(),
-    @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
-    @JsonProperty("parallel_tool_calls")
-    @ExcludeMissing
-    private val parallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
-    @JsonProperty("required_action")
-    @ExcludeMissing
-    private val requiredAction: JsonField<RequiredAction> = JsonMissing.of(),
-    @JsonProperty("response_format")
-    @ExcludeMissing
-    private val responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of(),
-    @JsonProperty("started_at")
-    @ExcludeMissing
-    private val startedAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("status")
-    @ExcludeMissing
-    private val status: JsonField<RunStatus> = JsonMissing.of(),
-    @JsonProperty("thread_id")
-    @ExcludeMissing
-    private val threadId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("tool_choice")
-    @ExcludeMissing
-    private val toolChoice: JsonField<AssistantToolChoiceOption> = JsonMissing.of(),
-    @JsonProperty("tools")
-    @ExcludeMissing
-    private val tools: JsonField<List<AssistantTool>> = JsonMissing.of(),
-    @JsonProperty("truncation_strategy")
-    @ExcludeMissing
-    private val truncationStrategy: JsonField<TruncationStrategy> = JsonMissing.of(),
-    @JsonProperty("usage") @ExcludeMissing private val usage: JsonField<Usage> = JsonMissing.of(),
-    @JsonProperty("temperature")
-    @ExcludeMissing
-    private val temperature: JsonField<Double> = JsonMissing.of(),
-    @JsonProperty("top_p") @ExcludeMissing private val topP: JsonField<Double> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val assistantId: JsonField<String>,
+    private val cancelledAt: JsonField<Long>,
+    private val completedAt: JsonField<Long>,
+    private val createdAt: JsonField<Long>,
+    private val expiresAt: JsonField<Long>,
+    private val failedAt: JsonField<Long>,
+    private val incompleteDetails: JsonField<IncompleteDetails>,
+    private val instructions: JsonField<String>,
+    private val lastError: JsonField<LastError>,
+    private val maxCompletionTokens: JsonField<Long>,
+    private val maxPromptTokens: JsonField<Long>,
+    private val metadata: JsonField<Metadata>,
+    private val model: JsonField<String>,
+    private val object_: JsonValue,
+    private val parallelToolCalls: JsonField<Boolean>,
+    private val requiredAction: JsonField<RequiredAction>,
+    private val responseFormat: JsonField<AssistantResponseFormatOption>,
+    private val startedAt: JsonField<Long>,
+    private val status: JsonField<RunStatus>,
+    private val threadId: JsonField<String>,
+    private val toolChoice: JsonField<AssistantToolChoiceOption>,
+    private val tools: JsonField<List<AssistantTool>>,
+    private val truncationStrategy: JsonField<TruncationStrategy>,
+    private val usage: JsonField<Usage>,
+    private val temperature: JsonField<Double>,
+    private val topP: JsonField<Double>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("assistant_id")
+        @ExcludeMissing
+        assistantId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("cancelled_at")
+        @ExcludeMissing
+        cancelledAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("completed_at")
+        @ExcludeMissing
+        completedAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("expires_at") @ExcludeMissing expiresAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("failed_at") @ExcludeMissing failedAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("incomplete_details")
+        @ExcludeMissing
+        incompleteDetails: JsonField<IncompleteDetails> = JsonMissing.of(),
+        @JsonProperty("instructions")
+        @ExcludeMissing
+        instructions: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("last_error")
+        @ExcludeMissing
+        lastError: JsonField<LastError> = JsonMissing.of(),
+        @JsonProperty("max_completion_tokens")
+        @ExcludeMissing
+        maxCompletionTokens: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("max_prompt_tokens")
+        @ExcludeMissing
+        maxPromptTokens: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("metadata") @ExcludeMissing metadata: JsonField<Metadata> = JsonMissing.of(),
+        @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+        @JsonProperty("parallel_tool_calls")
+        @ExcludeMissing
+        parallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("required_action")
+        @ExcludeMissing
+        requiredAction: JsonField<RequiredAction> = JsonMissing.of(),
+        @JsonProperty("response_format")
+        @ExcludeMissing
+        responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of(),
+        @JsonProperty("started_at") @ExcludeMissing startedAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("status") @ExcludeMissing status: JsonField<RunStatus> = JsonMissing.of(),
+        @JsonProperty("thread_id") @ExcludeMissing threadId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("tool_choice")
+        @ExcludeMissing
+        toolChoice: JsonField<AssistantToolChoiceOption> = JsonMissing.of(),
+        @JsonProperty("tools")
+        @ExcludeMissing
+        tools: JsonField<List<AssistantTool>> = JsonMissing.of(),
+        @JsonProperty("truncation_strategy")
+        @ExcludeMissing
+        truncationStrategy: JsonField<TruncationStrategy> = JsonMissing.of(),
+        @JsonProperty("usage") @ExcludeMissing usage: JsonField<Usage> = JsonMissing.of(),
+        @JsonProperty("temperature")
+        @ExcludeMissing
+        temperature: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("top_p") @ExcludeMissing topP: JsonField<Double> = JsonMissing.of(),
+    ) : this(
+        id,
+        assistantId,
+        cancelledAt,
+        completedAt,
+        createdAt,
+        expiresAt,
+        failedAt,
+        incompleteDetails,
+        instructions,
+        lastError,
+        maxCompletionTokens,
+        maxPromptTokens,
+        metadata,
+        model,
+        object_,
+        parallelToolCalls,
+        requiredAction,
+        responseFormat,
+        startedAt,
+        status,
+        threadId,
+        toolChoice,
+        tools,
+        truncationStrategy,
+        usage,
+        temperature,
+        topP,
+        mutableMapOf(),
+    )
 
     /**
      * The identifier, which can be referenced in API endpoints.
@@ -588,50 +631,15 @@ private constructor(
      */
     @JsonProperty("top_p") @ExcludeMissing fun _topP(): JsonField<Double> = topP
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): Run = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        assistantId()
-        cancelledAt()
-        completedAt()
-        createdAt()
-        expiresAt()
-        failedAt()
-        incompleteDetails().ifPresent { it.validate() }
-        instructions()
-        lastError().ifPresent { it.validate() }
-        maxCompletionTokens()
-        maxPromptTokens()
-        metadata().ifPresent { it.validate() }
-        model()
-        _object_().let {
-            if (it != JsonValue.from("thread.run")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        parallelToolCalls()
-        requiredAction().ifPresent { it.validate() }
-        responseFormat().ifPresent { it.validate() }
-        startedAt()
-        status()
-        threadId()
-        toolChoice().ifPresent { it.validate() }
-        tools().forEach { it.validate() }
-        truncationStrategy().ifPresent { it.validate() }
-        usage().ifPresent { it.validate() }
-        temperature()
-        topP()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -1431,21 +1439,62 @@ private constructor(
                 checkRequired("usage", usage),
                 temperature,
                 topP,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
+    private var validated: Boolean = false
+
+    fun validate(): Run = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        assistantId()
+        cancelledAt()
+        completedAt()
+        createdAt()
+        expiresAt()
+        failedAt()
+        incompleteDetails().ifPresent { it.validate() }
+        instructions()
+        lastError().ifPresent { it.validate() }
+        maxCompletionTokens()
+        maxPromptTokens()
+        metadata().ifPresent { it.validate() }
+        model()
+        _object_().let {
+            if (it != JsonValue.from("thread.run")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
+        parallelToolCalls()
+        requiredAction().ifPresent { it.validate() }
+        responseFormat().ifPresent { it.validate() }
+        startedAt()
+        status()
+        threadId()
+        toolChoice().ifPresent { it.validate() }
+        tools().forEach { it.validate() }
+        truncationStrategy().ifPresent { it.validate() }
+        usage().ifPresent { it.validate() }
+        temperature()
+        topP()
+        validated = true
+    }
+
     /** Details on why the run is incomplete. Will be `null` if the run is not incomplete. */
-    @NoAutoDetect
     class IncompleteDetails
-    @JsonCreator
     private constructor(
-        @JsonProperty("reason")
-        @ExcludeMissing
-        private val reason: JsonField<Reason> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val reason: JsonField<Reason>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("reason") @ExcludeMissing reason: JsonField<Reason> = JsonMissing.of()
+        ) : this(reason, mutableMapOf())
 
         /**
          * The reason why the run is incomplete. This will point to which specific token limit was
@@ -1463,20 +1512,15 @@ private constructor(
          */
         @JsonProperty("reason") @ExcludeMissing fun _reason(): JsonField<Reason> = reason
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): IncompleteDetails = apply {
-            if (validated) {
-                return@apply
-            }
-
-            reason()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -1538,7 +1582,18 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): IncompleteDetails =
-                IncompleteDetails(reason, additionalProperties.toImmutable())
+                IncompleteDetails(reason, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): IncompleteDetails = apply {
+            if (validated) {
+                return@apply
+            }
+
+            reason()
+            validated = true
         }
 
         /**
@@ -1666,17 +1721,18 @@ private constructor(
     }
 
     /** The last error associated with this run. Will be `null` if there are no errors. */
-    @NoAutoDetect
     class LastError
-    @JsonCreator
     private constructor(
-        @JsonProperty("code") @ExcludeMissing private val code: JsonField<Code> = JsonMissing.of(),
-        @JsonProperty("message")
-        @ExcludeMissing
-        private val message: JsonField<String> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val code: JsonField<Code>,
+        private val message: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("code") @ExcludeMissing code: JsonField<Code> = JsonMissing.of(),
+            @JsonProperty("message") @ExcludeMissing message: JsonField<String> = JsonMissing.of(),
+        ) : this(code, message, mutableMapOf())
 
         /**
          * One of `server_error`, `rate_limit_exceeded`, or `invalid_prompt`.
@@ -1708,21 +1764,15 @@ private constructor(
          */
         @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): LastError = apply {
-            if (validated) {
-                return@apply
-            }
-
-            code()
-            message()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -1814,8 +1864,20 @@ private constructor(
                 LastError(
                     checkRequired("code", code),
                     checkRequired("message", message),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): LastError = apply {
+            if (validated) {
+                return@apply
+            }
+
+            code()
+            message()
+            validated = true
         }
 
         /** One of `server_error`, `rate_limit_exceeded`, or `invalid_prompt`. */
@@ -1946,17 +2008,20 @@ private constructor(
     /**
      * Details on the action required to continue the run. Will be `null` if no action is required.
      */
-    @NoAutoDetect
     class RequiredAction
-    @JsonCreator
     private constructor(
-        @JsonProperty("submit_tool_outputs")
-        @ExcludeMissing
-        private val submitToolOutputs: JsonField<SubmitToolOutputs> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val submitToolOutputs: JsonField<SubmitToolOutputs>,
+        private val type: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("submit_tool_outputs")
+            @ExcludeMissing
+            submitToolOutputs: JsonField<SubmitToolOutputs> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        ) : this(submitToolOutputs, type, mutableMapOf())
 
         /**
          * Details on the tool outputs needed for this run to continue.
@@ -1990,25 +2055,15 @@ private constructor(
         @ExcludeMissing
         fun _submitToolOutputs(): JsonField<SubmitToolOutputs> = submitToolOutputs
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): RequiredAction = apply {
-            if (validated) {
-                return@apply
-            }
-
-            submitToolOutputs().validate()
-            _type().let {
-                if (it != JsonValue.from("submit_tool_outputs")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -2103,22 +2158,39 @@ private constructor(
                 RequiredAction(
                     checkRequired("submitToolOutputs", submitToolOutputs),
                     type,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
         }
 
+        private var validated: Boolean = false
+
+        fun validate(): RequiredAction = apply {
+            if (validated) {
+                return@apply
+            }
+
+            submitToolOutputs().validate()
+            _type().let {
+                if (it != JsonValue.from("submit_tool_outputs")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            validated = true
+        }
+
         /** Details on the tool outputs needed for this run to continue. */
-        @NoAutoDetect
         class SubmitToolOutputs
-        @JsonCreator
         private constructor(
-            @JsonProperty("tool_calls")
-            @ExcludeMissing
-            private val toolCalls: JsonField<List<RequiredActionFunctionToolCall>> =
-                JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val toolCalls: JsonField<List<RequiredActionFunctionToolCall>>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("tool_calls")
+                @ExcludeMissing
+                toolCalls: JsonField<List<RequiredActionFunctionToolCall>> = JsonMissing.of()
+            ) : this(toolCalls, mutableMapOf())
 
             /**
              * A list of the relevant tool calls.
@@ -2140,20 +2212,15 @@ private constructor(
             @ExcludeMissing
             fun _toolCalls(): JsonField<List<RequiredActionFunctionToolCall>> = toolCalls
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): SubmitToolOutputs = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                toolCalls().forEach { it.validate() }
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -2247,8 +2314,19 @@ private constructor(
                 fun build(): SubmitToolOutputs =
                     SubmitToolOutputs(
                         checkRequired("toolCalls", toolCalls).map { it.toImmutable() },
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): SubmitToolOutputs = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                toolCalls().forEach { it.validate() }
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -2291,17 +2369,20 @@ private constructor(
      * Controls for how a thread will be truncated prior to the run. Use this to control the intial
      * context window of the run.
      */
-    @NoAutoDetect
     class TruncationStrategy
-    @JsonCreator
     private constructor(
-        @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
-        @JsonProperty("last_messages")
-        @ExcludeMissing
-        private val lastMessages: JsonField<Long> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val type: JsonField<Type>,
+        private val lastMessages: JsonField<Long>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+            @JsonProperty("last_messages")
+            @ExcludeMissing
+            lastMessages: JsonField<Long> = JsonMissing.of(),
+        ) : this(type, lastMessages, mutableMapOf())
 
         /**
          * The truncation strategy to use for the thread. The default is `auto`. If set to
@@ -2341,21 +2422,15 @@ private constructor(
         @ExcludeMissing
         fun _lastMessages(): JsonField<Long> = lastMessages
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): TruncationStrategy = apply {
-            if (validated) {
-                return@apply
-            }
-
-            type()
-            lastMessages()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -2465,8 +2540,20 @@ private constructor(
                 TruncationStrategy(
                     checkRequired("type", type),
                     lastMessages,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): TruncationStrategy = apply {
+            if (validated) {
+                return@apply
+            }
+
+            type()
+            lastMessages()
+            validated = true
         }
 
         /**
@@ -2597,22 +2684,26 @@ private constructor(
      * Usage statistics related to the run. This value will be `null` if the run is not in a
      * terminal state (i.e. `in_progress`, `queued`, etc.).
      */
-    @NoAutoDetect
     class Usage
-    @JsonCreator
     private constructor(
-        @JsonProperty("completion_tokens")
-        @ExcludeMissing
-        private val completionTokens: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("prompt_tokens")
-        @ExcludeMissing
-        private val promptTokens: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("total_tokens")
-        @ExcludeMissing
-        private val totalTokens: JsonField<Long> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val completionTokens: JsonField<Long>,
+        private val promptTokens: JsonField<Long>,
+        private val totalTokens: JsonField<Long>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("completion_tokens")
+            @ExcludeMissing
+            completionTokens: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("prompt_tokens")
+            @ExcludeMissing
+            promptTokens: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("total_tokens")
+            @ExcludeMissing
+            totalTokens: JsonField<Long> = JsonMissing.of(),
+        ) : this(completionTokens, promptTokens, totalTokens, mutableMapOf())
 
         /**
          * Number of completion tokens used over the course of the run.
@@ -2667,22 +2758,15 @@ private constructor(
         @ExcludeMissing
         fun _totalTokens(): JsonField<Long> = totalTokens
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Usage = apply {
-            if (validated) {
-                return@apply
-            }
-
-            completionTokens()
-            promptTokens()
-            totalTokens()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -2796,8 +2880,21 @@ private constructor(
                     checkRequired("completionTokens", completionTokens),
                     checkRequired("promptTokens", promptTokens),
                     checkRequired("totalTokens", totalTokens),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Usage = apply {
+            if (validated) {
+                return@apply
+            }
+
+            completionTokens()
+            promptTokens()
+            totalTokens()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

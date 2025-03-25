@@ -10,24 +10,25 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /**
  * Specifying a particular function via `{"name": "my_function"}` forces the model to call that
  * function.
  */
-@NoAutoDetect
 class ChatCompletionFunctionCallOption
-@JsonCreator
 private constructor(
-    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val name: JsonField<String>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of()
+    ) : this(name, mutableMapOf())
 
     /**
      * The name of the function to call.
@@ -44,20 +45,15 @@ private constructor(
      */
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ChatCompletionFunctionCallOption = apply {
-        if (validated) {
-            return@apply
-        }
-
-        name()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -134,8 +130,19 @@ private constructor(
         fun build(): ChatCompletionFunctionCallOption =
             ChatCompletionFunctionCallOption(
                 checkRequired("name", name),
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ChatCompletionFunctionCallOption = apply {
+        if (validated) {
+            return@apply
+        }
+
+        name()
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

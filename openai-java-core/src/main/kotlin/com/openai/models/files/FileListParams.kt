@@ -5,7 +5,6 @@ package com.openai.models.files
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.openai.core.Enum
 import com.openai.core.JsonField
-import com.openai.core.NoAutoDetect
 import com.openai.core.Params
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -51,19 +50,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams =
-        QueryParams.builder()
-            .apply {
-                after?.let { put("after", it) }
-                limit?.let { put("limit", it.toString()) }
-                order?.let { put("order", it.toString()) }
-                purpose?.let { put("purpose", it) }
-                putAll(additionalQueryParams)
-            }
-            .build()
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -75,7 +61,6 @@ private constructor(
     }
 
     /** A builder for [FileListParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var after: String? = null
@@ -250,6 +235,19 @@ private constructor(
                 additionalQueryParams.build(),
             )
     }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams =
+        QueryParams.builder()
+            .apply {
+                after?.let { put("after", it) }
+                limit?.let { put("limit", it.toString()) }
+                order?.let { put("order", it.toString()) }
+                purpose?.let { put("purpose", it) }
+                putAll(additionalQueryParams)
+            }
+            .build()
 
     /**
      * Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and `desc`

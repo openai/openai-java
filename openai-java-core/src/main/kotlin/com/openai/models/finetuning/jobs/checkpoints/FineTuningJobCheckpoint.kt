@@ -10,11 +10,9 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
@@ -22,29 +20,41 @@ import java.util.Optional
  * The `fine_tuning.job.checkpoint` object represents a model checkpoint for a fine-tuning job that
  * is ready to use.
  */
-@NoAutoDetect
 class FineTuningJobCheckpoint
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("created_at")
-    @ExcludeMissing
-    private val createdAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("fine_tuned_model_checkpoint")
-    @ExcludeMissing
-    private val fineTunedModelCheckpoint: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("fine_tuning_job_id")
-    @ExcludeMissing
-    private val fineTuningJobId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("metrics")
-    @ExcludeMissing
-    private val metrics: JsonField<Metrics> = JsonMissing.of(),
-    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
-    @JsonProperty("step_number")
-    @ExcludeMissing
-    private val stepNumber: JsonField<Long> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val createdAt: JsonField<Long>,
+    private val fineTunedModelCheckpoint: JsonField<String>,
+    private val fineTuningJobId: JsonField<String>,
+    private val metrics: JsonField<Metrics>,
+    private val object_: JsonValue,
+    private val stepNumber: JsonField<Long>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("fine_tuned_model_checkpoint")
+        @ExcludeMissing
+        fineTunedModelCheckpoint: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("fine_tuning_job_id")
+        @ExcludeMissing
+        fineTuningJobId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("metrics") @ExcludeMissing metrics: JsonField<Metrics> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+        @JsonProperty("step_number") @ExcludeMissing stepNumber: JsonField<Long> = JsonMissing.of(),
+    ) : this(
+        id,
+        createdAt,
+        fineTunedModelCheckpoint,
+        fineTuningJobId,
+        metrics,
+        object_,
+        stepNumber,
+        mutableMapOf(),
+    )
 
     /**
      * The checkpoint identifier, which can be referenced in the API endpoints.
@@ -155,30 +165,15 @@ private constructor(
      */
     @JsonProperty("step_number") @ExcludeMissing fun _stepNumber(): JsonField<Long> = stepNumber
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): FineTuningJobCheckpoint = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        createdAt()
-        fineTunedModelCheckpoint()
-        fineTuningJobId()
-        metrics().validate()
-        _object_().let {
-            if (it != JsonValue.from("fine_tuning.job.checkpoint")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        stepNumber()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -357,39 +352,75 @@ private constructor(
                 checkRequired("metrics", metrics),
                 object_,
                 checkRequired("stepNumber", stepNumber),
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
+    private var validated: Boolean = false
+
+    fun validate(): FineTuningJobCheckpoint = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        createdAt()
+        fineTunedModelCheckpoint()
+        fineTuningJobId()
+        metrics().validate()
+        _object_().let {
+            if (it != JsonValue.from("fine_tuning.job.checkpoint")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
+        stepNumber()
+        validated = true
+    }
+
     /** Metrics at the step number during the fine-tuning job. */
-    @NoAutoDetect
     class Metrics
-    @JsonCreator
     private constructor(
-        @JsonProperty("full_valid_loss")
-        @ExcludeMissing
-        private val fullValidLoss: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("full_valid_mean_token_accuracy")
-        @ExcludeMissing
-        private val fullValidMeanTokenAccuracy: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("step")
-        @ExcludeMissing
-        private val step: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("train_loss")
-        @ExcludeMissing
-        private val trainLoss: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("train_mean_token_accuracy")
-        @ExcludeMissing
-        private val trainMeanTokenAccuracy: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("valid_loss")
-        @ExcludeMissing
-        private val validLoss: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("valid_mean_token_accuracy")
-        @ExcludeMissing
-        private val validMeanTokenAccuracy: JsonField<Double> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val fullValidLoss: JsonField<Double>,
+        private val fullValidMeanTokenAccuracy: JsonField<Double>,
+        private val step: JsonField<Double>,
+        private val trainLoss: JsonField<Double>,
+        private val trainMeanTokenAccuracy: JsonField<Double>,
+        private val validLoss: JsonField<Double>,
+        private val validMeanTokenAccuracy: JsonField<Double>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("full_valid_loss")
+            @ExcludeMissing
+            fullValidLoss: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("full_valid_mean_token_accuracy")
+            @ExcludeMissing
+            fullValidMeanTokenAccuracy: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("step") @ExcludeMissing step: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("train_loss")
+            @ExcludeMissing
+            trainLoss: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("train_mean_token_accuracy")
+            @ExcludeMissing
+            trainMeanTokenAccuracy: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("valid_loss")
+            @ExcludeMissing
+            validLoss: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("valid_mean_token_accuracy")
+            @ExcludeMissing
+            validMeanTokenAccuracy: JsonField<Double> = JsonMissing.of(),
+        ) : this(
+            fullValidLoss,
+            fullValidMeanTokenAccuracy,
+            step,
+            trainLoss,
+            trainMeanTokenAccuracy,
+            validLoss,
+            validMeanTokenAccuracy,
+            mutableMapOf(),
+        )
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -500,26 +531,15 @@ private constructor(
         @ExcludeMissing
         fun _validMeanTokenAccuracy(): JsonField<Double> = validMeanTokenAccuracy
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Metrics = apply {
-            if (validated) {
-                return@apply
-            }
-
-            fullValidLoss()
-            fullValidMeanTokenAccuracy()
-            step()
-            trainLoss()
-            trainMeanTokenAccuracy()
-            validLoss()
-            validMeanTokenAccuracy()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -674,8 +694,25 @@ private constructor(
                     trainMeanTokenAccuracy,
                     validLoss,
                     validMeanTokenAccuracy,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Metrics = apply {
+            if (validated) {
+                return@apply
+            }
+
+            fullValidLoss()
+            fullValidMeanTokenAccuracy()
+            step()
+            trainLoss()
+            trainMeanTokenAccuracy()
+            validLoss()
+            validMeanTokenAccuracy()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

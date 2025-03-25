@@ -19,25 +19,26 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.getOrThrow
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** The delta containing the fields that have changed on the run step. */
-@NoAutoDetect
 class RunStepDelta
-@JsonCreator
 private constructor(
-    @JsonProperty("step_details")
-    @ExcludeMissing
-    private val stepDetails: JsonField<StepDetails> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val stepDetails: JsonField<StepDetails>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("step_details")
+        @ExcludeMissing
+        stepDetails: JsonField<StepDetails> = JsonMissing.of()
+    ) : this(stepDetails, mutableMapOf())
 
     /**
      * The details of the run step.
@@ -57,20 +58,15 @@ private constructor(
     @ExcludeMissing
     fun _stepDetails(): JsonField<StepDetails> = stepDetails
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): RunStepDelta = apply {
-        if (validated) {
-            return@apply
-        }
-
-        stepDetails().ifPresent { it.validate() }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -140,7 +136,18 @@ private constructor(
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): RunStepDelta = RunStepDelta(stepDetails, additionalProperties.toImmutable())
+        fun build(): RunStepDelta = RunStepDelta(stepDetails, additionalProperties.toMutableMap())
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): RunStepDelta = apply {
+        if (validated) {
+            return@apply
+        }
+
+        stepDetails().ifPresent { it.validate() }
+        validated = true
     }
 
     /** The details of the run step. */

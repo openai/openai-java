@@ -10,32 +10,33 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.audio.transcriptions.TranscriptionSegment
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
-@NoAutoDetect
 class TranslationVerbose
-@JsonCreator
 private constructor(
-    @JsonProperty("duration")
-    @ExcludeMissing
-    private val duration: JsonField<Double> = JsonMissing.of(),
-    @JsonProperty("language")
-    @ExcludeMissing
-    private val language: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("text") @ExcludeMissing private val text: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("segments")
-    @ExcludeMissing
-    private val segments: JsonField<List<TranscriptionSegment>> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val duration: JsonField<Double>,
+    private val language: JsonField<String>,
+    private val text: JsonField<String>,
+    private val segments: JsonField<List<TranscriptionSegment>>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("duration") @ExcludeMissing duration: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("language") @ExcludeMissing language: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("segments")
+        @ExcludeMissing
+        segments: JsonField<List<TranscriptionSegment>> = JsonMissing.of(),
+    ) : this(duration, language, text, segments, mutableMapOf())
 
     /**
      * The duration of the input audio.
@@ -100,23 +101,15 @@ private constructor(
     @ExcludeMissing
     fun _segments(): JsonField<List<TranscriptionSegment>> = segments
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): TranslationVerbose = apply {
-        if (validated) {
-            return@apply
-        }
-
-        duration()
-        language()
-        text()
-        segments().ifPresent { it.forEach { it.validate() } }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -251,8 +244,22 @@ private constructor(
                 checkRequired("language", language),
                 checkRequired("text", text),
                 (segments ?: JsonMissing.of()).map { it.toImmutable() },
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): TranslationVerbose = apply {
+        if (validated) {
+            return@apply
+        }
+
+        duration()
+        language()
+        text()
+        segments().ifPresent { it.forEach { it.validate() } }
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

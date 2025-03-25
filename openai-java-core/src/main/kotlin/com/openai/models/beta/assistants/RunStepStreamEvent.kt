@@ -19,14 +19,12 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.beta.threads.runs.steps.RunStep
 import com.openai.models.beta.threads.runs.steps.RunStepDeltaEvent
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -483,17 +481,18 @@ private constructor(
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is created.
      */
-    @NoAutoDetect
     class ThreadRunStepCreated
-    @JsonCreator
     private constructor(
-        @JsonProperty("data")
-        @ExcludeMissing
-        private val data: JsonField<RunStep> = JsonMissing.of(),
-        @JsonProperty("event") @ExcludeMissing private val event: JsonValue = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val data: JsonField<RunStep>,
+        private val event: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("data") @ExcludeMissing data: JsonField<RunStep> = JsonMissing.of(),
+            @JsonProperty("event") @ExcludeMissing event: JsonValue = JsonMissing.of(),
+        ) : this(data, event, mutableMapOf())
 
         /**
          * Represents a step in execution of a run.
@@ -521,25 +520,15 @@ private constructor(
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<RunStep> = data
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): ThreadRunStepCreated = apply {
-            if (validated) {
-                return@apply
-            }
-
-            data().validate()
-            _event().let {
-                if (it != JsonValue.from("thread.run.step.created")) {
-                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
-                }
-            }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -631,8 +620,24 @@ private constructor(
                 ThreadRunStepCreated(
                     checkRequired("data", data),
                     event,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): ThreadRunStepCreated = apply {
+            if (validated) {
+                return@apply
+            }
+
+            data().validate()
+            _event().let {
+                if (it != JsonValue.from("thread.run.step.created")) {
+                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
+                }
+            }
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -658,17 +663,18 @@ private constructor(
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) moves to an
      * `in_progress` state.
      */
-    @NoAutoDetect
     class ThreadRunStepInProgress
-    @JsonCreator
     private constructor(
-        @JsonProperty("data")
-        @ExcludeMissing
-        private val data: JsonField<RunStep> = JsonMissing.of(),
-        @JsonProperty("event") @ExcludeMissing private val event: JsonValue = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val data: JsonField<RunStep>,
+        private val event: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("data") @ExcludeMissing data: JsonField<RunStep> = JsonMissing.of(),
+            @JsonProperty("event") @ExcludeMissing event: JsonValue = JsonMissing.of(),
+        ) : this(data, event, mutableMapOf())
 
         /**
          * Represents a step in execution of a run.
@@ -696,25 +702,15 @@ private constructor(
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<RunStep> = data
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): ThreadRunStepInProgress = apply {
-            if (validated) {
-                return@apply
-            }
-
-            data().validate()
-            _event().let {
-                if (it != JsonValue.from("thread.run.step.in_progress")) {
-                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
-                }
-            }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -806,8 +802,24 @@ private constructor(
                 ThreadRunStepInProgress(
                     checkRequired("data", data),
                     event,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): ThreadRunStepInProgress = apply {
+            if (validated) {
+                return@apply
+            }
+
+            data().validate()
+            _event().let {
+                if (it != JsonValue.from("thread.run.step.in_progress")) {
+                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
+                }
+            }
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -833,17 +845,20 @@ private constructor(
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) are being
      * streamed.
      */
-    @NoAutoDetect
     class ThreadRunStepDelta
-    @JsonCreator
     private constructor(
-        @JsonProperty("data")
-        @ExcludeMissing
-        private val data: JsonField<RunStepDeltaEvent> = JsonMissing.of(),
-        @JsonProperty("event") @ExcludeMissing private val event: JsonValue = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val data: JsonField<RunStepDeltaEvent>,
+        private val event: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("data")
+            @ExcludeMissing
+            data: JsonField<RunStepDeltaEvent> = JsonMissing.of(),
+            @JsonProperty("event") @ExcludeMissing event: JsonValue = JsonMissing.of(),
+        ) : this(data, event, mutableMapOf())
 
         /**
          * Represents a run step delta i.e. any changed fields on a run step during streaming.
@@ -871,25 +886,15 @@ private constructor(
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<RunStepDeltaEvent> = data
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): ThreadRunStepDelta = apply {
-            if (validated) {
-                return@apply
-            }
-
-            data().validate()
-            _event().let {
-                if (it != JsonValue.from("thread.run.step.delta")) {
-                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
-                }
-            }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -983,8 +988,24 @@ private constructor(
                 ThreadRunStepDelta(
                     checkRequired("data", data),
                     event,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): ThreadRunStepDelta = apply {
+            if (validated) {
+                return@apply
+            }
+
+            data().validate()
+            _event().let {
+                if (it != JsonValue.from("thread.run.step.delta")) {
+                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
+                }
+            }
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -1010,17 +1031,18 @@ private constructor(
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
      * completed.
      */
-    @NoAutoDetect
     class ThreadRunStepCompleted
-    @JsonCreator
     private constructor(
-        @JsonProperty("data")
-        @ExcludeMissing
-        private val data: JsonField<RunStep> = JsonMissing.of(),
-        @JsonProperty("event") @ExcludeMissing private val event: JsonValue = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val data: JsonField<RunStep>,
+        private val event: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("data") @ExcludeMissing data: JsonField<RunStep> = JsonMissing.of(),
+            @JsonProperty("event") @ExcludeMissing event: JsonValue = JsonMissing.of(),
+        ) : this(data, event, mutableMapOf())
 
         /**
          * Represents a step in execution of a run.
@@ -1048,25 +1070,15 @@ private constructor(
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<RunStep> = data
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): ThreadRunStepCompleted = apply {
-            if (validated) {
-                return@apply
-            }
-
-            data().validate()
-            _event().let {
-                if (it != JsonValue.from("thread.run.step.completed")) {
-                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
-                }
-            }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -1158,8 +1170,24 @@ private constructor(
                 ThreadRunStepCompleted(
                     checkRequired("data", data),
                     event,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): ThreadRunStepCompleted = apply {
+            if (validated) {
+                return@apply
+            }
+
+            data().validate()
+            _event().let {
+                if (it != JsonValue.from("thread.run.step.completed")) {
+                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
+                }
+            }
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -1184,17 +1212,18 @@ private constructor(
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) fails.
      */
-    @NoAutoDetect
     class ThreadRunStepFailed
-    @JsonCreator
     private constructor(
-        @JsonProperty("data")
-        @ExcludeMissing
-        private val data: JsonField<RunStep> = JsonMissing.of(),
-        @JsonProperty("event") @ExcludeMissing private val event: JsonValue = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val data: JsonField<RunStep>,
+        private val event: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("data") @ExcludeMissing data: JsonField<RunStep> = JsonMissing.of(),
+            @JsonProperty("event") @ExcludeMissing event: JsonValue = JsonMissing.of(),
+        ) : this(data, event, mutableMapOf())
 
         /**
          * Represents a step in execution of a run.
@@ -1222,25 +1251,15 @@ private constructor(
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<RunStep> = data
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): ThreadRunStepFailed = apply {
-            if (validated) {
-                return@apply
-            }
-
-            data().validate()
-            _event().let {
-                if (it != JsonValue.from("thread.run.step.failed")) {
-                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
-                }
-            }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -1332,8 +1351,24 @@ private constructor(
                 ThreadRunStepFailed(
                     checkRequired("data", data),
                     event,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): ThreadRunStepFailed = apply {
+            if (validated) {
+                return@apply
+            }
+
+            data().validate()
+            _event().let {
+                if (it != JsonValue.from("thread.run.step.failed")) {
+                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
+                }
+            }
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -1359,17 +1394,18 @@ private constructor(
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is
      * cancelled.
      */
-    @NoAutoDetect
     class ThreadRunStepCancelled
-    @JsonCreator
     private constructor(
-        @JsonProperty("data")
-        @ExcludeMissing
-        private val data: JsonField<RunStep> = JsonMissing.of(),
-        @JsonProperty("event") @ExcludeMissing private val event: JsonValue = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val data: JsonField<RunStep>,
+        private val event: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("data") @ExcludeMissing data: JsonField<RunStep> = JsonMissing.of(),
+            @JsonProperty("event") @ExcludeMissing event: JsonValue = JsonMissing.of(),
+        ) : this(data, event, mutableMapOf())
 
         /**
          * Represents a step in execution of a run.
@@ -1397,25 +1433,15 @@ private constructor(
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<RunStep> = data
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): ThreadRunStepCancelled = apply {
-            if (validated) {
-                return@apply
-            }
-
-            data().validate()
-            _event().let {
-                if (it != JsonValue.from("thread.run.step.cancelled")) {
-                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
-                }
-            }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -1507,8 +1533,24 @@ private constructor(
                 ThreadRunStepCancelled(
                     checkRequired("data", data),
                     event,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): ThreadRunStepCancelled = apply {
+            if (validated) {
+                return@apply
+            }
+
+            data().validate()
+            _event().let {
+                if (it != JsonValue.from("thread.run.step.cancelled")) {
+                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
+                }
+            }
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -1533,17 +1575,18 @@ private constructor(
      * Occurs when a
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) expires.
      */
-    @NoAutoDetect
     class ThreadRunStepExpired
-    @JsonCreator
     private constructor(
-        @JsonProperty("data")
-        @ExcludeMissing
-        private val data: JsonField<RunStep> = JsonMissing.of(),
-        @JsonProperty("event") @ExcludeMissing private val event: JsonValue = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val data: JsonField<RunStep>,
+        private val event: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("data") @ExcludeMissing data: JsonField<RunStep> = JsonMissing.of(),
+            @JsonProperty("event") @ExcludeMissing event: JsonValue = JsonMissing.of(),
+        ) : this(data, event, mutableMapOf())
 
         /**
          * Represents a step in execution of a run.
@@ -1571,25 +1614,15 @@ private constructor(
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<RunStep> = data
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): ThreadRunStepExpired = apply {
-            if (validated) {
-                return@apply
-            }
-
-            data().validate()
-            _event().let {
-                if (it != JsonValue.from("thread.run.step.expired")) {
-                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
-                }
-            }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -1681,8 +1714,24 @@ private constructor(
                 ThreadRunStepExpired(
                     checkRequired("data", data),
                     event,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): ThreadRunStepExpired = apply {
+            if (validated) {
+                return@apply
+            }
+
+            data().validate()
+            _event().let {
+                if (it != JsonValue.from("thread.run.step.expired")) {
+                    throw OpenAIInvalidDataException("'event' is invalid, received $it")
+                }
+            }
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

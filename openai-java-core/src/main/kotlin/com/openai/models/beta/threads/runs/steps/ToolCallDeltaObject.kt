@@ -10,25 +10,28 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
 /** Details of the tool call. */
-@NoAutoDetect
 class ToolCallDeltaObject
-@JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonProperty("tool_calls")
-    @ExcludeMissing
-    private val toolCalls: JsonField<List<ToolCallDelta>> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val type: JsonValue,
+    private val toolCalls: JsonField<List<ToolCallDelta>>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("tool_calls")
+        @ExcludeMissing
+        toolCalls: JsonField<List<ToolCallDelta>> = JsonMissing.of(),
+    ) : this(type, toolCalls, mutableMapOf())
 
     /**
      * Always `tool_calls`.
@@ -62,25 +65,15 @@ private constructor(
     @ExcludeMissing
     fun _toolCalls(): JsonField<List<ToolCallDelta>> = toolCalls
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ToolCallDeltaObject = apply {
-        if (validated) {
-            return@apply
-        }
-
-        _type().let {
-            if (it != JsonValue.from("tool_calls")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        toolCalls().ifPresent { it.forEach { it.validate() } }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -211,8 +204,24 @@ private constructor(
             ToolCallDeltaObject(
                 type,
                 (toolCalls ?: JsonMissing.of()).map { it.toImmutable() },
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ToolCallDeltaObject = apply {
+        if (validated) {
+            return@apply
+        }
+
+        _type().let {
+            if (it != JsonValue.from("tool_calls")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        toolCalls().ifPresent { it.forEach { it.validate() } }
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

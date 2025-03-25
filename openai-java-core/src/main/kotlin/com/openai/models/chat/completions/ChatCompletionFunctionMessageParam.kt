@@ -10,27 +10,28 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 @Deprecated("deprecated")
-@NoAutoDetect
 class ChatCompletionFunctionMessageParam
-@JsonCreator
 private constructor(
-    @JsonProperty("content")
-    @ExcludeMissing
-    private val content: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("role") @ExcludeMissing private val role: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val content: JsonField<String>,
+    private val name: JsonField<String>,
+    private val role: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("content") @ExcludeMissing content: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("role") @ExcludeMissing role: JsonValue = JsonMissing.of(),
+    ) : this(content, name, role, mutableMapOf())
 
     /**
      * The contents of the function message.
@@ -75,26 +76,15 @@ private constructor(
      */
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ChatCompletionFunctionMessageParam = apply {
-        if (validated) {
-            return@apply
-        }
-
-        content()
-        name()
-        _role().let {
-            if (it != JsonValue.from("function")) {
-                throw OpenAIInvalidDataException("'role' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -207,8 +197,25 @@ private constructor(
                 checkRequired("content", content),
                 checkRequired("name", name),
                 role,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ChatCompletionFunctionMessageParam = apply {
+        if (validated) {
+            return@apply
+        }
+
+        content()
+        name()
+        _role().let {
+            if (it != JsonValue.from("function")) {
+                throw OpenAIInvalidDataException("'role' is invalid, received $it")
+            }
+        }
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

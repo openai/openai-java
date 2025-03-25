@@ -20,14 +20,13 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.Metadata
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -35,60 +34,91 @@ import kotlin.jvm.optionals.getOrNull
 /**
  * The `fine_tuning.job` object represents a fine-tuning job that has been created through the API.
  */
-@NoAutoDetect
 class FineTuningJob
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("created_at")
-    @ExcludeMissing
-    private val createdAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("error") @ExcludeMissing private val error: JsonField<Error> = JsonMissing.of(),
-    @JsonProperty("fine_tuned_model")
-    @ExcludeMissing
-    private val fineTunedModel: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("finished_at")
-    @ExcludeMissing
-    private val finishedAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("hyperparameters")
-    @ExcludeMissing
-    private val hyperparameters: JsonField<Hyperparameters> = JsonMissing.of(),
-    @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
-    @JsonProperty("organization_id")
-    @ExcludeMissing
-    private val organizationId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("result_files")
-    @ExcludeMissing
-    private val resultFiles: JsonField<List<String>> = JsonMissing.of(),
-    @JsonProperty("seed") @ExcludeMissing private val seed: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("status")
-    @ExcludeMissing
-    private val status: JsonField<Status> = JsonMissing.of(),
-    @JsonProperty("trained_tokens")
-    @ExcludeMissing
-    private val trainedTokens: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("training_file")
-    @ExcludeMissing
-    private val trainingFile: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("validation_file")
-    @ExcludeMissing
-    private val validationFile: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("estimated_finish")
-    @ExcludeMissing
-    private val estimatedFinish: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("integrations")
-    @ExcludeMissing
-    private val integrations: JsonField<List<FineTuningJobWandbIntegrationObject>> =
-        JsonMissing.of(),
-    @JsonProperty("metadata")
-    @ExcludeMissing
-    private val metadata: JsonField<Metadata> = JsonMissing.of(),
-    @JsonProperty("method")
-    @ExcludeMissing
-    private val method: JsonField<Method> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val createdAt: JsonField<Long>,
+    private val error: JsonField<Error>,
+    private val fineTunedModel: JsonField<String>,
+    private val finishedAt: JsonField<Long>,
+    private val hyperparameters: JsonField<Hyperparameters>,
+    private val model: JsonField<String>,
+    private val object_: JsonValue,
+    private val organizationId: JsonField<String>,
+    private val resultFiles: JsonField<List<String>>,
+    private val seed: JsonField<Long>,
+    private val status: JsonField<Status>,
+    private val trainedTokens: JsonField<Long>,
+    private val trainingFile: JsonField<String>,
+    private val validationFile: JsonField<String>,
+    private val estimatedFinish: JsonField<Long>,
+    private val integrations: JsonField<List<FineTuningJobWandbIntegrationObject>>,
+    private val metadata: JsonField<Metadata>,
+    private val method: JsonField<Method>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("error") @ExcludeMissing error: JsonField<Error> = JsonMissing.of(),
+        @JsonProperty("fine_tuned_model")
+        @ExcludeMissing
+        fineTunedModel: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("finished_at") @ExcludeMissing finishedAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("hyperparameters")
+        @ExcludeMissing
+        hyperparameters: JsonField<Hyperparameters> = JsonMissing.of(),
+        @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+        @JsonProperty("organization_id")
+        @ExcludeMissing
+        organizationId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("result_files")
+        @ExcludeMissing
+        resultFiles: JsonField<List<String>> = JsonMissing.of(),
+        @JsonProperty("seed") @ExcludeMissing seed: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        @JsonProperty("trained_tokens")
+        @ExcludeMissing
+        trainedTokens: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("training_file")
+        @ExcludeMissing
+        trainingFile: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("validation_file")
+        @ExcludeMissing
+        validationFile: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("estimated_finish")
+        @ExcludeMissing
+        estimatedFinish: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("integrations")
+        @ExcludeMissing
+        integrations: JsonField<List<FineTuningJobWandbIntegrationObject>> = JsonMissing.of(),
+        @JsonProperty("metadata") @ExcludeMissing metadata: JsonField<Metadata> = JsonMissing.of(),
+        @JsonProperty("method") @ExcludeMissing method: JsonField<Method> = JsonMissing.of(),
+    ) : this(
+        id,
+        createdAt,
+        error,
+        fineTunedModel,
+        finishedAt,
+        hyperparameters,
+        model,
+        object_,
+        organizationId,
+        resultFiles,
+        seed,
+        status,
+        trainedTokens,
+        trainingFile,
+        validationFile,
+        estimatedFinish,
+        integrations,
+        metadata,
+        method,
+        mutableMapOf(),
+    )
 
     /**
      * The object identifier, which can be referenced in the API endpoints.
@@ -411,42 +441,15 @@ private constructor(
      */
     @JsonProperty("method") @ExcludeMissing fun _method(): JsonField<Method> = method
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): FineTuningJob = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        createdAt()
-        error().ifPresent { it.validate() }
-        fineTunedModel()
-        finishedAt()
-        hyperparameters().validate()
-        model()
-        _object_().let {
-            if (it != JsonValue.from("fine_tuning.job")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        organizationId()
-        resultFiles()
-        seed()
-        status()
-        trainedTokens()
-        trainingFile()
-        validationFile()
-        estimatedFinish()
-        integrations().ifPresent { it.forEach { it.validate() } }
-        metadata().ifPresent { it.validate() }
-        method().ifPresent { it.validate() }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -958,30 +961,61 @@ private constructor(
                 (integrations ?: JsonMissing.of()).map { it.toImmutable() },
                 metadata,
                 method,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): FineTuningJob = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        createdAt()
+        error().ifPresent { it.validate() }
+        fineTunedModel()
+        finishedAt()
+        hyperparameters().validate()
+        model()
+        _object_().let {
+            if (it != JsonValue.from("fine_tuning.job")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
+        organizationId()
+        resultFiles()
+        seed()
+        status()
+        trainedTokens()
+        trainingFile()
+        validationFile()
+        estimatedFinish()
+        integrations().ifPresent { it.forEach { it.validate() } }
+        metadata().ifPresent { it.validate() }
+        method().ifPresent { it.validate() }
+        validated = true
     }
 
     /**
      * For fine-tuning jobs that have `failed`, this will contain more information on the cause of
      * the failure.
      */
-    @NoAutoDetect
     class Error
-    @JsonCreator
     private constructor(
-        @JsonProperty("code")
-        @ExcludeMissing
-        private val code: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("message")
-        @ExcludeMissing
-        private val message: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("param")
-        @ExcludeMissing
-        private val param: JsonField<String> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val code: JsonField<String>,
+        private val message: JsonField<String>,
+        private val param: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("code") @ExcludeMissing code: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("message") @ExcludeMissing message: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("param") @ExcludeMissing param: JsonField<String> = JsonMissing.of(),
+        ) : this(code, message, param, mutableMapOf())
 
         /**
          * A machine-readable error code.
@@ -1029,22 +1063,15 @@ private constructor(
          */
         @JsonProperty("param") @ExcludeMissing fun _param(): JsonField<String> = param
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Error = apply {
-            if (validated) {
-                return@apply
-            }
-
-            code()
-            message()
-            param()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -1159,8 +1186,21 @@ private constructor(
                     checkRequired("code", code),
                     checkRequired("message", message),
                     checkRequired("param", param),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Error = apply {
+            if (validated) {
+                return@apply
+            }
+
+            code()
+            message()
+            param()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -1185,22 +1225,24 @@ private constructor(
      * The hyperparameters used for the fine-tuning job. This value will only be returned when
      * running `supervised` jobs.
      */
-    @NoAutoDetect
     class Hyperparameters
-    @JsonCreator
     private constructor(
-        @JsonProperty("batch_size")
-        @ExcludeMissing
-        private val batchSize: JsonField<BatchSize> = JsonMissing.of(),
-        @JsonProperty("learning_rate_multiplier")
-        @ExcludeMissing
-        private val learningRateMultiplier: JsonField<LearningRateMultiplier> = JsonMissing.of(),
-        @JsonProperty("n_epochs")
-        @ExcludeMissing
-        private val nEpochs: JsonField<NEpochs> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val batchSize: JsonField<BatchSize>,
+        private val learningRateMultiplier: JsonField<LearningRateMultiplier>,
+        private val nEpochs: JsonField<NEpochs>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("batch_size")
+            @ExcludeMissing
+            batchSize: JsonField<BatchSize> = JsonMissing.of(),
+            @JsonProperty("learning_rate_multiplier")
+            @ExcludeMissing
+            learningRateMultiplier: JsonField<LearningRateMultiplier> = JsonMissing.of(),
+            @JsonProperty("n_epochs") @ExcludeMissing nEpochs: JsonField<NEpochs> = JsonMissing.of(),
+        ) : this(batchSize, learningRateMultiplier, nEpochs, mutableMapOf())
 
         /**
          * Number of examples in each batch. A larger batch size means that model parameters are
@@ -1257,22 +1299,15 @@ private constructor(
          */
         @JsonProperty("n_epochs") @ExcludeMissing fun _nEpochs(): JsonField<NEpochs> = nEpochs
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Hyperparameters = apply {
-            if (validated) {
-                return@apply
-            }
-
-            batchSize().ifPresent { it.validate() }
-            learningRateMultiplier().ifPresent { it.validate() }
-            nEpochs().ifPresent { it.validate() }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -1401,8 +1436,21 @@ private constructor(
                     batchSize,
                     learningRateMultiplier,
                     nEpochs,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Hyperparameters = apply {
+            if (validated) {
+                return@apply
+            }
+
+            batchSize().ifPresent { it.validate() }
+            learningRateMultiplier().ifPresent { it.validate() }
+            nEpochs().ifPresent { it.validate() }
+            validated = true
         }
 
         /**
@@ -2008,18 +2056,22 @@ private constructor(
     }
 
     /** The method used for fine-tuning. */
-    @NoAutoDetect
     class Method
-    @JsonCreator
     private constructor(
-        @JsonProperty("dpo") @ExcludeMissing private val dpo: JsonField<Dpo> = JsonMissing.of(),
-        @JsonProperty("supervised")
-        @ExcludeMissing
-        private val supervised: JsonField<Supervised> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val dpo: JsonField<Dpo>,
+        private val supervised: JsonField<Supervised>,
+        private val type: JsonField<Type>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("dpo") @ExcludeMissing dpo: JsonField<Dpo> = JsonMissing.of(),
+            @JsonProperty("supervised")
+            @ExcludeMissing
+            supervised: JsonField<Supervised> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+        ) : this(dpo, supervised, type, mutableMapOf())
 
         /**
          * Configuration for the DPO fine-tuning method.
@@ -2069,22 +2121,15 @@ private constructor(
          */
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Method = apply {
-            if (validated) {
-                return@apply
-            }
-
-            dpo().ifPresent { it.validate() }
-            supervised().ifPresent { it.validate() }
-            type()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -2172,20 +2217,35 @@ private constructor(
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              */
-            fun build(): Method = Method(dpo, supervised, type, additionalProperties.toImmutable())
+            fun build(): Method = Method(dpo, supervised, type, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Method = apply {
+            if (validated) {
+                return@apply
+            }
+
+            dpo().ifPresent { it.validate() }
+            supervised().ifPresent { it.validate() }
+            type()
+            validated = true
         }
 
         /** Configuration for the DPO fine-tuning method. */
-        @NoAutoDetect
         class Dpo
-        @JsonCreator
         private constructor(
-            @JsonProperty("hyperparameters")
-            @ExcludeMissing
-            private val hyperparameters: JsonField<Hyperparameters> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val hyperparameters: JsonField<Hyperparameters>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("hyperparameters")
+                @ExcludeMissing
+                hyperparameters: JsonField<Hyperparameters> = JsonMissing.of()
+            ) : this(hyperparameters, mutableMapOf())
 
             /**
              * The hyperparameters used for the fine-tuning job.
@@ -2206,20 +2266,15 @@ private constructor(
             @ExcludeMissing
             fun _hyperparameters(): JsonField<Hyperparameters> = hyperparameters
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): Dpo = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                hyperparameters().ifPresent { it.validate() }
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -2283,30 +2338,43 @@ private constructor(
                  *
                  * Further updates to this [Builder] will not mutate the returned instance.
                  */
-                fun build(): Dpo = Dpo(hyperparameters, additionalProperties.toImmutable())
+                fun build(): Dpo = Dpo(hyperparameters, additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Dpo = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                hyperparameters().ifPresent { it.validate() }
+                validated = true
             }
 
             /** The hyperparameters used for the fine-tuning job. */
-            @NoAutoDetect
             class Hyperparameters
-            @JsonCreator
             private constructor(
-                @JsonProperty("batch_size")
-                @ExcludeMissing
-                private val batchSize: JsonField<BatchSize> = JsonMissing.of(),
-                @JsonProperty("beta")
-                @ExcludeMissing
-                private val beta: JsonField<Beta> = JsonMissing.of(),
-                @JsonProperty("learning_rate_multiplier")
-                @ExcludeMissing
-                private val learningRateMultiplier: JsonField<LearningRateMultiplier> =
-                    JsonMissing.of(),
-                @JsonProperty("n_epochs")
-                @ExcludeMissing
-                private val nEpochs: JsonField<NEpochs> = JsonMissing.of(),
-                @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                private val batchSize: JsonField<BatchSize>,
+                private val beta: JsonField<Beta>,
+                private val learningRateMultiplier: JsonField<LearningRateMultiplier>,
+                private val nEpochs: JsonField<NEpochs>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("batch_size")
+                    @ExcludeMissing
+                    batchSize: JsonField<BatchSize> = JsonMissing.of(),
+                    @JsonProperty("beta") @ExcludeMissing beta: JsonField<Beta> = JsonMissing.of(),
+                    @JsonProperty("learning_rate_multiplier")
+                    @ExcludeMissing
+                    learningRateMultiplier: JsonField<LearningRateMultiplier> = JsonMissing.of(),
+                    @JsonProperty("n_epochs")
+                    @ExcludeMissing
+                    nEpochs: JsonField<NEpochs> = JsonMissing.of(),
+                ) : this(batchSize, beta, learningRateMultiplier, nEpochs, mutableMapOf())
 
                 /**
                  * Number of examples in each batch. A larger batch size means that model parameters
@@ -2388,23 +2456,15 @@ private constructor(
                 @ExcludeMissing
                 fun _nEpochs(): JsonField<NEpochs> = nEpochs
 
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): Hyperparameters = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    batchSize().ifPresent { it.validate() }
-                    beta().ifPresent { it.validate() }
-                    learningRateMultiplier().ifPresent { it.validate() }
-                    nEpochs().ifPresent { it.validate() }
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -2565,8 +2625,22 @@ private constructor(
                             beta,
                             learningRateMultiplier,
                             nEpochs,
-                            additionalProperties.toImmutable(),
+                            additionalProperties.toMutableMap(),
                         )
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): Hyperparameters = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    batchSize().ifPresent { it.validate() }
+                    beta().ifPresent { it.validate() }
+                    learningRateMultiplier().ifPresent { it.validate() }
+                    nEpochs().ifPresent { it.validate() }
+                    validated = true
                 }
 
                 /**
@@ -3224,16 +3298,18 @@ private constructor(
         }
 
         /** Configuration for the supervised fine-tuning method. */
-        @NoAutoDetect
         class Supervised
-        @JsonCreator
         private constructor(
-            @JsonProperty("hyperparameters")
-            @ExcludeMissing
-            private val hyperparameters: JsonField<Hyperparameters> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val hyperparameters: JsonField<Hyperparameters>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("hyperparameters")
+                @ExcludeMissing
+                hyperparameters: JsonField<Hyperparameters> = JsonMissing.of()
+            ) : this(hyperparameters, mutableMapOf())
 
             /**
              * The hyperparameters used for the fine-tuning job.
@@ -3254,20 +3330,15 @@ private constructor(
             @ExcludeMissing
             fun _hyperparameters(): JsonField<Hyperparameters> = hyperparameters
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): Supervised = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                hyperparameters().ifPresent { it.validate() }
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -3332,27 +3403,41 @@ private constructor(
                  * Further updates to this [Builder] will not mutate the returned instance.
                  */
                 fun build(): Supervised =
-                    Supervised(hyperparameters, additionalProperties.toImmutable())
+                    Supervised(hyperparameters, additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Supervised = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                hyperparameters().ifPresent { it.validate() }
+                validated = true
             }
 
             /** The hyperparameters used for the fine-tuning job. */
-            @NoAutoDetect
             class Hyperparameters
-            @JsonCreator
             private constructor(
-                @JsonProperty("batch_size")
-                @ExcludeMissing
-                private val batchSize: JsonField<BatchSize> = JsonMissing.of(),
-                @JsonProperty("learning_rate_multiplier")
-                @ExcludeMissing
-                private val learningRateMultiplier: JsonField<LearningRateMultiplier> =
-                    JsonMissing.of(),
-                @JsonProperty("n_epochs")
-                @ExcludeMissing
-                private val nEpochs: JsonField<NEpochs> = JsonMissing.of(),
-                @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                private val batchSize: JsonField<BatchSize>,
+                private val learningRateMultiplier: JsonField<LearningRateMultiplier>,
+                private val nEpochs: JsonField<NEpochs>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("batch_size")
+                    @ExcludeMissing
+                    batchSize: JsonField<BatchSize> = JsonMissing.of(),
+                    @JsonProperty("learning_rate_multiplier")
+                    @ExcludeMissing
+                    learningRateMultiplier: JsonField<LearningRateMultiplier> = JsonMissing.of(),
+                    @JsonProperty("n_epochs")
+                    @ExcludeMissing
+                    nEpochs: JsonField<NEpochs> = JsonMissing.of(),
+                ) : this(batchSize, learningRateMultiplier, nEpochs, mutableMapOf())
 
                 /**
                  * Number of examples in each batch. A larger batch size means that model parameters
@@ -3417,22 +3502,15 @@ private constructor(
                 @ExcludeMissing
                 fun _nEpochs(): JsonField<NEpochs> = nEpochs
 
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): Hyperparameters = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    batchSize().ifPresent { it.validate() }
-                    learningRateMultiplier().ifPresent { it.validate() }
-                    nEpochs().ifPresent { it.validate() }
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -3569,8 +3647,21 @@ private constructor(
                             batchSize,
                             learningRateMultiplier,
                             nEpochs,
-                            additionalProperties.toImmutable(),
+                            additionalProperties.toMutableMap(),
                         )
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): Hyperparameters = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    batchSize().ifPresent { it.validate() }
+                    learningRateMultiplier().ifPresent { it.validate() }
+                    nEpochs().ifPresent { it.validate() }
+                    validated = true
                 }
 
                 /**

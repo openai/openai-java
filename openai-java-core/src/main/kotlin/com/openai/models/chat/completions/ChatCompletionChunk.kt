@@ -11,13 +11,12 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.completions.CompletionUsage
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -26,30 +25,46 @@ import kotlin.jvm.optionals.getOrNull
  * Represents a streamed chunk of a chat completion response returned by the model, based on the
  * provided input. [Learn more](https://platform.openai.com/docs/guides/streaming-responses).
  */
-@NoAutoDetect
 class ChatCompletionChunk
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("choices")
-    @ExcludeMissing
-    private val choices: JsonField<List<Choice>> = JsonMissing.of(),
-    @JsonProperty("created")
-    @ExcludeMissing
-    private val created: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
-    @JsonProperty("service_tier")
-    @ExcludeMissing
-    private val serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
-    @JsonProperty("system_fingerprint")
-    @ExcludeMissing
-    private val systemFingerprint: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("usage")
-    @ExcludeMissing
-    private val usage: JsonField<CompletionUsage> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val choices: JsonField<List<Choice>>,
+    private val created: JsonField<Long>,
+    private val model: JsonField<String>,
+    private val object_: JsonValue,
+    private val serviceTier: JsonField<ServiceTier>,
+    private val systemFingerprint: JsonField<String>,
+    private val usage: JsonField<CompletionUsage>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("choices")
+        @ExcludeMissing
+        choices: JsonField<List<Choice>> = JsonMissing.of(),
+        @JsonProperty("created") @ExcludeMissing created: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+        @JsonProperty("service_tier")
+        @ExcludeMissing
+        serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
+        @JsonProperty("system_fingerprint")
+        @ExcludeMissing
+        systemFingerprint: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("usage") @ExcludeMissing usage: JsonField<CompletionUsage> = JsonMissing.of(),
+    ) : this(
+        id,
+        choices,
+        created,
+        model,
+        object_,
+        serviceTier,
+        systemFingerprint,
+        usage,
+        mutableMapOf(),
+    )
 
     /**
      * A unique identifier for the chat completion. Each chunk has the same ID.
@@ -186,31 +201,15 @@ private constructor(
      */
     @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<CompletionUsage> = usage
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ChatCompletionChunk = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        choices().forEach { it.validate() }
-        created()
-        model()
-        _object_().let {
-            if (it != JsonValue.from("chat.completion.chunk")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        serviceTier()
-        systemFingerprint()
-        usage().ifPresent { it.validate() }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -438,29 +437,52 @@ private constructor(
                 serviceTier,
                 systemFingerprint,
                 usage,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
-    @NoAutoDetect
+    private var validated: Boolean = false
+
+    fun validate(): ChatCompletionChunk = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        choices().forEach { it.validate() }
+        created()
+        model()
+        _object_().let {
+            if (it != JsonValue.from("chat.completion.chunk")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
+        serviceTier()
+        systemFingerprint()
+        usage().ifPresent { it.validate() }
+        validated = true
+    }
+
     class Choice
-    @JsonCreator
     private constructor(
-        @JsonProperty("delta")
-        @ExcludeMissing
-        private val delta: JsonField<Delta> = JsonMissing.of(),
-        @JsonProperty("finish_reason")
-        @ExcludeMissing
-        private val finishReason: JsonField<FinishReason> = JsonMissing.of(),
-        @JsonProperty("index")
-        @ExcludeMissing
-        private val index: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("logprobs")
-        @ExcludeMissing
-        private val logprobs: JsonField<Logprobs> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val delta: JsonField<Delta>,
+        private val finishReason: JsonField<FinishReason>,
+        private val index: JsonField<Long>,
+        private val logprobs: JsonField<Logprobs>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("delta") @ExcludeMissing delta: JsonField<Delta> = JsonMissing.of(),
+            @JsonProperty("finish_reason")
+            @ExcludeMissing
+            finishReason: JsonField<FinishReason> = JsonMissing.of(),
+            @JsonProperty("index") @ExcludeMissing index: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("logprobs")
+            @ExcludeMissing
+            logprobs: JsonField<Logprobs> = JsonMissing.of(),
+        ) : this(delta, finishReason, index, logprobs, mutableMapOf())
 
         /**
          * A chat completion delta generated by streamed model responses.
@@ -530,23 +552,15 @@ private constructor(
          */
         @JsonProperty("logprobs") @ExcludeMissing fun _logprobs(): JsonField<Logprobs> = logprobs
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Choice = apply {
-            if (validated) {
-                return@apply
-            }
-
-            delta().validate()
-            finishReason()
-            index()
-            logprobs().ifPresent { it.validate() }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -686,33 +700,51 @@ private constructor(
                     checkRequired("finishReason", finishReason),
                     checkRequired("index", index),
                     logprobs,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
         }
 
+        private var validated: Boolean = false
+
+        fun validate(): Choice = apply {
+            if (validated) {
+                return@apply
+            }
+
+            delta().validate()
+            finishReason()
+            index()
+            logprobs().ifPresent { it.validate() }
+            validated = true
+        }
+
         /** A chat completion delta generated by streamed model responses. */
-        @NoAutoDetect
         class Delta
-        @JsonCreator
         private constructor(
-            @JsonProperty("content")
-            @ExcludeMissing
-            private val content: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("function_call")
-            @ExcludeMissing
-            private val functionCall: JsonField<FunctionCall> = JsonMissing.of(),
-            @JsonProperty("refusal")
-            @ExcludeMissing
-            private val refusal: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("role")
-            @ExcludeMissing
-            private val role: JsonField<Role> = JsonMissing.of(),
-            @JsonProperty("tool_calls")
-            @ExcludeMissing
-            private val toolCalls: JsonField<List<ToolCall>> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val content: JsonField<String>,
+            private val functionCall: JsonField<FunctionCall>,
+            private val refusal: JsonField<String>,
+            private val role: JsonField<Role>,
+            private val toolCalls: JsonField<List<ToolCall>>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("content")
+                @ExcludeMissing
+                content: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("function_call")
+                @ExcludeMissing
+                functionCall: JsonField<FunctionCall> = JsonMissing.of(),
+                @JsonProperty("refusal")
+                @ExcludeMissing
+                refusal: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("role") @ExcludeMissing role: JsonField<Role> = JsonMissing.of(),
+                @JsonProperty("tool_calls")
+                @ExcludeMissing
+                toolCalls: JsonField<List<ToolCall>> = JsonMissing.of(),
+            ) : this(content, functionCall, refusal, role, toolCalls, mutableMapOf())
 
             /**
              * The contents of the chunk message.
@@ -798,24 +830,15 @@ private constructor(
             @ExcludeMissing
             fun _toolCalls(): JsonField<List<ToolCall>> = toolCalls
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): Delta = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                content()
-                functionCall().ifPresent { it.validate() }
-                refusal()
-                role()
-                toolCalls().ifPresent { it.forEach { it.validate() } }
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -966,8 +989,23 @@ private constructor(
                         refusal,
                         role,
                         (toolCalls ?: JsonMissing.of()).map { it.toImmutable() },
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Delta = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                content()
+                functionCall().ifPresent { it.validate() }
+                refusal()
+                role()
+                toolCalls().ifPresent { it.forEach { it.validate() } }
+                validated = true
             }
 
             /**
@@ -975,19 +1013,20 @@ private constructor(
              * should be called, as generated by the model.
              */
             @Deprecated("deprecated")
-            @NoAutoDetect
             class FunctionCall
-            @JsonCreator
             private constructor(
-                @JsonProperty("arguments")
-                @ExcludeMissing
-                private val arguments: JsonField<String> = JsonMissing.of(),
-                @JsonProperty("name")
-                @ExcludeMissing
-                private val name: JsonField<String> = JsonMissing.of(),
-                @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                private val arguments: JsonField<String>,
+                private val name: JsonField<String>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("arguments")
+                    @ExcludeMissing
+                    arguments: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+                ) : this(arguments, name, mutableMapOf())
 
                 /**
                  * The arguments to call the function with, as generated by the model in JSON
@@ -1027,21 +1066,15 @@ private constructor(
                  */
                 @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): FunctionCall = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    arguments()
-                    name()
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -1124,7 +1157,19 @@ private constructor(
                      * Further updates to this [Builder] will not mutate the returned instance.
                      */
                     fun build(): FunctionCall =
-                        FunctionCall(arguments, name, additionalProperties.toImmutable())
+                        FunctionCall(arguments, name, additionalProperties.toMutableMap())
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): FunctionCall = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    arguments()
+                    name()
+                    validated = true
                 }
 
                 override fun equals(other: Any?): Boolean {
@@ -1267,25 +1312,26 @@ private constructor(
                 override fun toString() = value.toString()
             }
 
-            @NoAutoDetect
             class ToolCall
-            @JsonCreator
             private constructor(
-                @JsonProperty("index")
-                @ExcludeMissing
-                private val index: JsonField<Long> = JsonMissing.of(),
-                @JsonProperty("id")
-                @ExcludeMissing
-                private val id: JsonField<String> = JsonMissing.of(),
-                @JsonProperty("function")
-                @ExcludeMissing
-                private val function: JsonField<Function> = JsonMissing.of(),
-                @JsonProperty("type")
-                @ExcludeMissing
-                private val type: JsonField<Type> = JsonMissing.of(),
-                @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                private val index: JsonField<Long>,
+                private val id: JsonField<String>,
+                private val function: JsonField<Function>,
+                private val type: JsonField<Type>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("index")
+                    @ExcludeMissing
+                    index: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("function")
+                    @ExcludeMissing
+                    function: JsonField<Function> = JsonMissing.of(),
+                    @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+                ) : this(index, id, function, type, mutableMapOf())
 
                 /**
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -1350,23 +1396,15 @@ private constructor(
                  */
                 @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): ToolCall = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    index()
-                    id()
-                    function().ifPresent { it.validate() }
-                    type()
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -1487,23 +1525,40 @@ private constructor(
                             id,
                             function,
                             type,
-                            additionalProperties.toImmutable(),
+                            additionalProperties.toMutableMap(),
                         )
                 }
 
-                @NoAutoDetect
+                private var validated: Boolean = false
+
+                fun validate(): ToolCall = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    index()
+                    id()
+                    function().ifPresent { it.validate() }
+                    type()
+                    validated = true
+                }
+
                 class Function
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("arguments")
-                    @ExcludeMissing
-                    private val arguments: JsonField<String> = JsonMissing.of(),
-                    @JsonProperty("name")
-                    @ExcludeMissing
-                    private val name: JsonField<String> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val arguments: JsonField<String>,
+                    private val name: JsonField<String>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("arguments")
+                        @ExcludeMissing
+                        arguments: JsonField<String> = JsonMissing.of(),
+                        @JsonProperty("name")
+                        @ExcludeMissing
+                        name: JsonField<String> = JsonMissing.of(),
+                    ) : this(arguments, name, mutableMapOf())
 
                     /**
                      * The arguments to call the function with, as generated by the model in JSON
@@ -1543,21 +1598,15 @@ private constructor(
                      */
                     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): Function = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        arguments()
-                        name()
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -1641,7 +1690,19 @@ private constructor(
                          * Further updates to this [Builder] will not mutate the returned instance.
                          */
                         fun build(): Function =
-                            Function(arguments, name, additionalProperties.toImmutable())
+                            Function(arguments, name, additionalProperties.toMutableMap())
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): Function = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        arguments()
+                        name()
+                        validated = true
                     }
 
                     override fun equals(other: Any?): Boolean {
@@ -1928,19 +1989,22 @@ private constructor(
         }
 
         /** Log probability information for the choice. */
-        @NoAutoDetect
         class Logprobs
-        @JsonCreator
         private constructor(
-            @JsonProperty("content")
-            @ExcludeMissing
-            private val content: JsonField<List<ChatCompletionTokenLogprob>> = JsonMissing.of(),
-            @JsonProperty("refusal")
-            @ExcludeMissing
-            private val refusal: JsonField<List<ChatCompletionTokenLogprob>> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val content: JsonField<List<ChatCompletionTokenLogprob>>,
+            private val refusal: JsonField<List<ChatCompletionTokenLogprob>>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("content")
+                @ExcludeMissing
+                content: JsonField<List<ChatCompletionTokenLogprob>> = JsonMissing.of(),
+                @JsonProperty("refusal")
+                @ExcludeMissing
+                refusal: JsonField<List<ChatCompletionTokenLogprob>> = JsonMissing.of(),
+            ) : this(content, refusal, mutableMapOf())
 
             /**
              * A list of message content tokens with log probability information.
@@ -1978,21 +2042,15 @@ private constructor(
             @ExcludeMissing
             fun _refusal(): JsonField<List<ChatCompletionTokenLogprob>> = refusal
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): Logprobs = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                content().ifPresent { it.forEach { it.validate() } }
-                refusal().ifPresent { it.forEach { it.validate() } }
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -2125,8 +2183,20 @@ private constructor(
                     Logprobs(
                         checkRequired("content", content).map { it.toImmutable() },
                         checkRequired("refusal", refusal).map { it.toImmutable() },
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Logprobs = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                content().ifPresent { it.forEach { it.validate() } }
+                refusal().ifPresent { it.forEach { it.validate() } }
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {

@@ -10,15 +10,14 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.Params
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
@@ -81,204 +80,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): Body = body
-
-    fun _pathParam(index: Int): String =
-        when (index) {
-            0 -> uploadId
-            else -> ""
-        }
-
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams = additionalQueryParams
-
-    @NoAutoDetect
-    class Body
-    @JsonCreator
-    private constructor(
-        @JsonProperty("part_ids")
-        @ExcludeMissing
-        private val partIds: JsonField<List<String>> = JsonMissing.of(),
-        @JsonProperty("md5") @ExcludeMissing private val md5: JsonField<String> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-    ) {
-
-        /**
-         * The ordered list of Part IDs.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun partIds(): List<String> = partIds.getRequired("part_ids")
-
-        /**
-         * The optional md5 checksum for the file contents to verify if the bytes uploaded matches
-         * what you expect.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun md5(): Optional<String> = Optional.ofNullable(md5.getNullable("md5"))
-
-        /**
-         * Returns the raw JSON value of [partIds].
-         *
-         * Unlike [partIds], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("part_ids") @ExcludeMissing fun _partIds(): JsonField<List<String>> = partIds
-
-        /**
-         * Returns the raw JSON value of [md5].
-         *
-         * Unlike [md5], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("md5") @ExcludeMissing fun _md5(): JsonField<String> = md5
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Body = apply {
-            if (validated) {
-                return@apply
-            }
-
-            partIds()
-            md5()
-            validated = true
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```java
-             * .partIds()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Body]. */
-        class Builder internal constructor() {
-
-            private var partIds: JsonField<MutableList<String>>? = null
-            private var md5: JsonField<String> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(body: Body) = apply {
-                partIds = body.partIds.map { it.toMutableList() }
-                md5 = body.md5
-                additionalProperties = body.additionalProperties.toMutableMap()
-            }
-
-            /** The ordered list of Part IDs. */
-            fun partIds(partIds: List<String>) = partIds(JsonField.of(partIds))
-
-            /**
-             * Sets [Builder.partIds] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.partIds] with a well-typed `List<String>` value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun partIds(partIds: JsonField<List<String>>) = apply {
-                this.partIds = partIds.map { it.toMutableList() }
-            }
-
-            /**
-             * Adds a single [String] to [partIds].
-             *
-             * @throws IllegalStateException if the field was previously set to a non-list.
-             */
-            fun addPartId(partId: String) = apply {
-                partIds =
-                    (partIds ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("partIds", it).add(partId)
-                    }
-            }
-
-            /**
-             * The optional md5 checksum for the file contents to verify if the bytes uploaded
-             * matches what you expect.
-             */
-            fun md5(md5: String) = md5(JsonField.of(md5))
-
-            /**
-             * Sets [Builder.md5] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.md5] with a well-typed [String] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun md5(md5: JsonField<String>) = apply { this.md5 = md5 }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Body].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .partIds()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): Body =
-                Body(
-                    checkRequired("partIds", partIds).map { it.toImmutable() },
-                    md5,
-                    additionalProperties.toImmutable(),
-                )
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Body && partIds == other.partIds && md5 == other.md5 && additionalProperties == other.additionalProperties /* spotless:on */
-        }
-
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(partIds, md5, additionalProperties) }
-        /* spotless:on */
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Body{partIds=$partIds, md5=$md5, additionalProperties=$additionalProperties}"
-    }
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -296,7 +97,6 @@ private constructor(
     }
 
     /** A builder for [UploadCompleteParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var uploadId: String? = null
@@ -484,6 +284,213 @@ private constructor(
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
+    }
+
+    @JvmSynthetic internal fun _body(): Body = body
+
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> uploadId
+            else -> ""
+        }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    private constructor(
+        private val partIds: JsonField<List<String>>,
+        private val md5: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("part_ids")
+            @ExcludeMissing
+            partIds: JsonField<List<String>> = JsonMissing.of(),
+            @JsonProperty("md5") @ExcludeMissing md5: JsonField<String> = JsonMissing.of(),
+        ) : this(partIds, md5, mutableMapOf())
+
+        /**
+         * The ordered list of Part IDs.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun partIds(): List<String> = partIds.getRequired("part_ids")
+
+        /**
+         * The optional md5 checksum for the file contents to verify if the bytes uploaded matches
+         * what you expect.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun md5(): Optional<String> = Optional.ofNullable(md5.getNullable("md5"))
+
+        /**
+         * Returns the raw JSON value of [partIds].
+         *
+         * Unlike [partIds], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("part_ids") @ExcludeMissing fun _partIds(): JsonField<List<String>> = partIds
+
+        /**
+         * Returns the raw JSON value of [md5].
+         *
+         * Unlike [md5], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("md5") @ExcludeMissing fun _md5(): JsonField<String> = md5
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .partIds()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
+
+            private var partIds: JsonField<MutableList<String>>? = null
+            private var md5: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(body: Body) = apply {
+                partIds = body.partIds.map { it.toMutableList() }
+                md5 = body.md5
+                additionalProperties = body.additionalProperties.toMutableMap()
+            }
+
+            /** The ordered list of Part IDs. */
+            fun partIds(partIds: List<String>) = partIds(JsonField.of(partIds))
+
+            /**
+             * Sets [Builder.partIds] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.partIds] with a well-typed `List<String>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun partIds(partIds: JsonField<List<String>>) = apply {
+                this.partIds = partIds.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [partIds].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addPartId(partId: String) = apply {
+                partIds =
+                    (partIds ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("partIds", it).add(partId)
+                    }
+            }
+
+            /**
+             * The optional md5 checksum for the file contents to verify if the bytes uploaded
+             * matches what you expect.
+             */
+            fun md5(md5: String) = md5(JsonField.of(md5))
+
+            /**
+             * Sets [Builder.md5] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.md5] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun md5(md5: JsonField<String>) = apply { this.md5 = md5 }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .partIds()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body =
+                Body(
+                    checkRequired("partIds", partIds).map { it.toImmutable() },
+                    md5,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            partIds()
+            md5()
+            validated = true
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Body && partIds == other.partIds && md5 == other.md5 && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(partIds, md5, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{partIds=$partIds, md5=$md5, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

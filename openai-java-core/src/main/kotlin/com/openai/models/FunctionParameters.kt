@@ -7,9 +7,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
+import java.util.Collections
 import java.util.Objects
 
 /**
@@ -20,26 +18,20 @@ import java.util.Objects
  *
  * Omitting `parameters` defines a function with an empty parameter list.
  */
-@NoAutoDetect
 class FunctionParameters
-@JsonCreator
-private constructor(
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
-) {
+private constructor(private val additionalProperties: MutableMap<String, JsonValue>) {
+
+    @JsonCreator private constructor() : this(mutableMapOf())
+
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
 
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): FunctionParameters = apply {
-        if (validated) {
-            return@apply
-        }
-
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -83,7 +75,17 @@ private constructor(
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): FunctionParameters = FunctionParameters(additionalProperties.toImmutable())
+        fun build(): FunctionParameters = FunctionParameters(additionalProperties.toMutableMap())
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): FunctionParameters = apply {
+        if (validated) {
+            return@apply
+        }
+
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

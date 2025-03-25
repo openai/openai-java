@@ -10,24 +10,26 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /** Customize your own chunking strategy by setting chunk size and chunk overlap. */
-@NoAutoDetect
 class StaticFileChunkingStrategyObjectParam
-@JsonCreator
 private constructor(
-    @JsonProperty("static")
-    @ExcludeMissing
-    private val static_: JsonField<StaticFileChunkingStrategy> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val static_: JsonField<StaticFileChunkingStrategy>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("static")
+        @ExcludeMissing
+        static_: JsonField<StaticFileChunkingStrategy> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(static_, type, mutableMapOf())
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -57,25 +59,15 @@ private constructor(
     @ExcludeMissing
     fun _static_(): JsonField<StaticFileChunkingStrategy> = static_
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): StaticFileChunkingStrategyObjectParam = apply {
-        if (validated) {
-            return@apply
-        }
-
-        static_().validate()
-        _type().let {
-            if (it != JsonValue.from("static")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -172,8 +164,24 @@ private constructor(
             StaticFileChunkingStrategyObjectParam(
                 checkRequired("static_", static_),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): StaticFileChunkingStrategyObjectParam = apply {
+        if (validated) {
+            return@apply
+        }
+
+        static_().validate()
+        _type().let {
+            if (it != JsonValue.from("static")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

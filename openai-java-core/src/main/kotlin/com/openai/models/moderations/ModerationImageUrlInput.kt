@@ -10,24 +10,24 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /** An object describing an image to classify. */
-@NoAutoDetect
 class ModerationImageUrlInput
-@JsonCreator
 private constructor(
-    @JsonProperty("image_url")
-    @ExcludeMissing
-    private val imageUrl: JsonField<ImageUrl> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val imageUrl: JsonField<ImageUrl>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("image_url") @ExcludeMissing imageUrl: JsonField<ImageUrl> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(imageUrl, type, mutableMapOf())
 
     /**
      * Contains either an image URL or a data URL for a base64 encoded image.
@@ -57,25 +57,15 @@ private constructor(
      */
     @JsonProperty("image_url") @ExcludeMissing fun _imageUrl(): JsonField<ImageUrl> = imageUrl
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ModerationImageUrlInput = apply {
-        if (validated) {
-            return@apply
-        }
-
-        imageUrl().validate()
-        _type().let {
-            if (it != JsonValue.from("image_url")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -167,19 +157,37 @@ private constructor(
             ModerationImageUrlInput(
                 checkRequired("imageUrl", imageUrl),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
+    private var validated: Boolean = false
+
+    fun validate(): ModerationImageUrlInput = apply {
+        if (validated) {
+            return@apply
+        }
+
+        imageUrl().validate()
+        _type().let {
+            if (it != JsonValue.from("image_url")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
+    }
+
     /** Contains either an image URL or a data URL for a base64 encoded image. */
-    @NoAutoDetect
     class ImageUrl
-    @JsonCreator
     private constructor(
-        @JsonProperty("url") @ExcludeMissing private val url: JsonField<String> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val url: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("url") @ExcludeMissing url: JsonField<String> = JsonMissing.of()
+        ) : this(url, mutableMapOf())
 
         /**
          * Either a URL of the image or the base64 encoded image data.
@@ -196,20 +204,15 @@ private constructor(
          */
         @JsonProperty("url") @ExcludeMissing fun _url(): JsonField<String> = url
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): ImageUrl = apply {
-            if (validated) {
-                return@apply
-            }
-
-            url()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -282,7 +285,18 @@ private constructor(
              * @throws IllegalStateException if any required field is unset.
              */
             fun build(): ImageUrl =
-                ImageUrl(checkRequired("url", url), additionalProperties.toImmutable())
+                ImageUrl(checkRequired("url", url), additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): ImageUrl = apply {
+            if (validated) {
+                return@apply
+            }
+
+            url()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

@@ -20,17 +20,15 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.Params
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ComparisonFilter
 import com.openai.models.CompoundFilter
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
@@ -126,327 +124,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): Body = body
-
-    fun _pathParam(index: Int): String =
-        when (index) {
-            0 -> vectorStoreId
-            else -> ""
-        }
-
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams = additionalQueryParams
-
-    @NoAutoDetect
-    class Body
-    @JsonCreator
-    private constructor(
-        @JsonProperty("query")
-        @ExcludeMissing
-        private val query: JsonField<Query> = JsonMissing.of(),
-        @JsonProperty("filters")
-        @ExcludeMissing
-        private val filters: JsonField<Filters> = JsonMissing.of(),
-        @JsonProperty("max_num_results")
-        @ExcludeMissing
-        private val maxNumResults: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("ranking_options")
-        @ExcludeMissing
-        private val rankingOptions: JsonField<RankingOptions> = JsonMissing.of(),
-        @JsonProperty("rewrite_query")
-        @ExcludeMissing
-        private val rewriteQuery: JsonField<Boolean> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-    ) {
-
-        /**
-         * A query string for a search
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun query(): Query = query.getRequired("query")
-
-        /**
-         * A filter to apply based on file attributes.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun filters(): Optional<Filters> = Optional.ofNullable(filters.getNullable("filters"))
-
-        /**
-         * The maximum number of results to return. This number should be between 1 and 50
-         * inclusive.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun maxNumResults(): Optional<Long> =
-            Optional.ofNullable(maxNumResults.getNullable("max_num_results"))
-
-        /**
-         * Ranking options for search.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun rankingOptions(): Optional<RankingOptions> =
-            Optional.ofNullable(rankingOptions.getNullable("ranking_options"))
-
-        /**
-         * Whether to rewrite the natural language query for vector search.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun rewriteQuery(): Optional<Boolean> =
-            Optional.ofNullable(rewriteQuery.getNullable("rewrite_query"))
-
-        /**
-         * Returns the raw JSON value of [query].
-         *
-         * Unlike [query], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("query") @ExcludeMissing fun _query(): JsonField<Query> = query
-
-        /**
-         * Returns the raw JSON value of [filters].
-         *
-         * Unlike [filters], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonField<Filters> = filters
-
-        /**
-         * Returns the raw JSON value of [maxNumResults].
-         *
-         * Unlike [maxNumResults], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("max_num_results")
-        @ExcludeMissing
-        fun _maxNumResults(): JsonField<Long> = maxNumResults
-
-        /**
-         * Returns the raw JSON value of [rankingOptions].
-         *
-         * Unlike [rankingOptions], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("ranking_options")
-        @ExcludeMissing
-        fun _rankingOptions(): JsonField<RankingOptions> = rankingOptions
-
-        /**
-         * Returns the raw JSON value of [rewriteQuery].
-         *
-         * Unlike [rewriteQuery], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("rewrite_query")
-        @ExcludeMissing
-        fun _rewriteQuery(): JsonField<Boolean> = rewriteQuery
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Body = apply {
-            if (validated) {
-                return@apply
-            }
-
-            query().validate()
-            filters().ifPresent { it.validate() }
-            maxNumResults()
-            rankingOptions().ifPresent { it.validate() }
-            rewriteQuery()
-            validated = true
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```java
-             * .query()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Body]. */
-        class Builder internal constructor() {
-
-            private var query: JsonField<Query>? = null
-            private var filters: JsonField<Filters> = JsonMissing.of()
-            private var maxNumResults: JsonField<Long> = JsonMissing.of()
-            private var rankingOptions: JsonField<RankingOptions> = JsonMissing.of()
-            private var rewriteQuery: JsonField<Boolean> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(body: Body) = apply {
-                query = body.query
-                filters = body.filters
-                maxNumResults = body.maxNumResults
-                rankingOptions = body.rankingOptions
-                rewriteQuery = body.rewriteQuery
-                additionalProperties = body.additionalProperties.toMutableMap()
-            }
-
-            /** A query string for a search */
-            fun query(query: Query) = query(JsonField.of(query))
-
-            /**
-             * Sets [Builder.query] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.query] with a well-typed [Query] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun query(query: JsonField<Query>) = apply { this.query = query }
-
-            /** Alias for calling [query] with `Query.ofString(string)`. */
-            fun query(string: String) = query(Query.ofString(string))
-
-            /** Alias for calling [query] with `Query.ofStrings(strings)`. */
-            fun queryOfStrings(strings: List<String>) = query(Query.ofStrings(strings))
-
-            /** A filter to apply based on file attributes. */
-            fun filters(filters: Filters) = filters(JsonField.of(filters))
-
-            /**
-             * Sets [Builder.filters] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.filters] with a well-typed [Filters] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun filters(filters: JsonField<Filters>) = apply { this.filters = filters }
-
-            /** Alias for calling [filters] with `Filters.ofComparisonFilter(comparisonFilter)`. */
-            fun filters(comparisonFilter: ComparisonFilter) =
-                filters(Filters.ofComparisonFilter(comparisonFilter))
-
-            /** Alias for calling [filters] with `Filters.ofCompoundFilter(compoundFilter)`. */
-            fun filters(compoundFilter: CompoundFilter) =
-                filters(Filters.ofCompoundFilter(compoundFilter))
-
-            /**
-             * The maximum number of results to return. This number should be between 1 and 50
-             * inclusive.
-             */
-            fun maxNumResults(maxNumResults: Long) = maxNumResults(JsonField.of(maxNumResults))
-
-            /**
-             * Sets [Builder.maxNumResults] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.maxNumResults] with a well-typed [Long] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun maxNumResults(maxNumResults: JsonField<Long>) = apply {
-                this.maxNumResults = maxNumResults
-            }
-
-            /** Ranking options for search. */
-            fun rankingOptions(rankingOptions: RankingOptions) =
-                rankingOptions(JsonField.of(rankingOptions))
-
-            /**
-             * Sets [Builder.rankingOptions] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.rankingOptions] with a well-typed [RankingOptions]
-             * value instead. This method is primarily for setting the field to an undocumented or
-             * not yet supported value.
-             */
-            fun rankingOptions(rankingOptions: JsonField<RankingOptions>) = apply {
-                this.rankingOptions = rankingOptions
-            }
-
-            /** Whether to rewrite the natural language query for vector search. */
-            fun rewriteQuery(rewriteQuery: Boolean) = rewriteQuery(JsonField.of(rewriteQuery))
-
-            /**
-             * Sets [Builder.rewriteQuery] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.rewriteQuery] with a well-typed [Boolean] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun rewriteQuery(rewriteQuery: JsonField<Boolean>) = apply {
-                this.rewriteQuery = rewriteQuery
-            }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Body].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .query()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): Body =
-                Body(
-                    checkRequired("query", query),
-                    filters,
-                    maxNumResults,
-                    rankingOptions,
-                    rewriteQuery,
-                    additionalProperties.toImmutable(),
-                )
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Body && query == other.query && filters == other.filters && maxNumResults == other.maxNumResults && rankingOptions == other.rankingOptions && rewriteQuery == other.rewriteQuery && additionalProperties == other.additionalProperties /* spotless:on */
-        }
-
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(query, filters, maxNumResults, rankingOptions, rewriteQuery, additionalProperties) }
-        /* spotless:on */
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Body{query=$query, filters=$filters, maxNumResults=$maxNumResults, rankingOptions=$rankingOptions, rewriteQuery=$rewriteQuery, additionalProperties=$additionalProperties}"
-    }
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -464,7 +141,6 @@ private constructor(
     }
 
     /** A builder for [VectorStoreSearchParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var vectorStoreId: String? = null
@@ -700,6 +376,335 @@ private constructor(
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
+    }
+
+    @JvmSynthetic internal fun _body(): Body = body
+
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> vectorStoreId
+            else -> ""
+        }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    private constructor(
+        private val query: JsonField<Query>,
+        private val filters: JsonField<Filters>,
+        private val maxNumResults: JsonField<Long>,
+        private val rankingOptions: JsonField<RankingOptions>,
+        private val rewriteQuery: JsonField<Boolean>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("query") @ExcludeMissing query: JsonField<Query> = JsonMissing.of(),
+            @JsonProperty("filters") @ExcludeMissing filters: JsonField<Filters> = JsonMissing.of(),
+            @JsonProperty("max_num_results")
+            @ExcludeMissing
+            maxNumResults: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("ranking_options")
+            @ExcludeMissing
+            rankingOptions: JsonField<RankingOptions> = JsonMissing.of(),
+            @JsonProperty("rewrite_query")
+            @ExcludeMissing
+            rewriteQuery: JsonField<Boolean> = JsonMissing.of(),
+        ) : this(query, filters, maxNumResults, rankingOptions, rewriteQuery, mutableMapOf())
+
+        /**
+         * A query string for a search
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun query(): Query = query.getRequired("query")
+
+        /**
+         * A filter to apply based on file attributes.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun filters(): Optional<Filters> = Optional.ofNullable(filters.getNullable("filters"))
+
+        /**
+         * The maximum number of results to return. This number should be between 1 and 50
+         * inclusive.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun maxNumResults(): Optional<Long> =
+            Optional.ofNullable(maxNumResults.getNullable("max_num_results"))
+
+        /**
+         * Ranking options for search.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun rankingOptions(): Optional<RankingOptions> =
+            Optional.ofNullable(rankingOptions.getNullable("ranking_options"))
+
+        /**
+         * Whether to rewrite the natural language query for vector search.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun rewriteQuery(): Optional<Boolean> =
+            Optional.ofNullable(rewriteQuery.getNullable("rewrite_query"))
+
+        /**
+         * Returns the raw JSON value of [query].
+         *
+         * Unlike [query], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("query") @ExcludeMissing fun _query(): JsonField<Query> = query
+
+        /**
+         * Returns the raw JSON value of [filters].
+         *
+         * Unlike [filters], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonField<Filters> = filters
+
+        /**
+         * Returns the raw JSON value of [maxNumResults].
+         *
+         * Unlike [maxNumResults], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("max_num_results")
+        @ExcludeMissing
+        fun _maxNumResults(): JsonField<Long> = maxNumResults
+
+        /**
+         * Returns the raw JSON value of [rankingOptions].
+         *
+         * Unlike [rankingOptions], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("ranking_options")
+        @ExcludeMissing
+        fun _rankingOptions(): JsonField<RankingOptions> = rankingOptions
+
+        /**
+         * Returns the raw JSON value of [rewriteQuery].
+         *
+         * Unlike [rewriteQuery], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("rewrite_query")
+        @ExcludeMissing
+        fun _rewriteQuery(): JsonField<Boolean> = rewriteQuery
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .query()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
+
+            private var query: JsonField<Query>? = null
+            private var filters: JsonField<Filters> = JsonMissing.of()
+            private var maxNumResults: JsonField<Long> = JsonMissing.of()
+            private var rankingOptions: JsonField<RankingOptions> = JsonMissing.of()
+            private var rewriteQuery: JsonField<Boolean> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(body: Body) = apply {
+                query = body.query
+                filters = body.filters
+                maxNumResults = body.maxNumResults
+                rankingOptions = body.rankingOptions
+                rewriteQuery = body.rewriteQuery
+                additionalProperties = body.additionalProperties.toMutableMap()
+            }
+
+            /** A query string for a search */
+            fun query(query: Query) = query(JsonField.of(query))
+
+            /**
+             * Sets [Builder.query] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.query] with a well-typed [Query] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun query(query: JsonField<Query>) = apply { this.query = query }
+
+            /** Alias for calling [query] with `Query.ofString(string)`. */
+            fun query(string: String) = query(Query.ofString(string))
+
+            /** Alias for calling [query] with `Query.ofStrings(strings)`. */
+            fun queryOfStrings(strings: List<String>) = query(Query.ofStrings(strings))
+
+            /** A filter to apply based on file attributes. */
+            fun filters(filters: Filters) = filters(JsonField.of(filters))
+
+            /**
+             * Sets [Builder.filters] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.filters] with a well-typed [Filters] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun filters(filters: JsonField<Filters>) = apply { this.filters = filters }
+
+            /** Alias for calling [filters] with `Filters.ofComparisonFilter(comparisonFilter)`. */
+            fun filters(comparisonFilter: ComparisonFilter) =
+                filters(Filters.ofComparisonFilter(comparisonFilter))
+
+            /** Alias for calling [filters] with `Filters.ofCompoundFilter(compoundFilter)`. */
+            fun filters(compoundFilter: CompoundFilter) =
+                filters(Filters.ofCompoundFilter(compoundFilter))
+
+            /**
+             * The maximum number of results to return. This number should be between 1 and 50
+             * inclusive.
+             */
+            fun maxNumResults(maxNumResults: Long) = maxNumResults(JsonField.of(maxNumResults))
+
+            /**
+             * Sets [Builder.maxNumResults] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.maxNumResults] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun maxNumResults(maxNumResults: JsonField<Long>) = apply {
+                this.maxNumResults = maxNumResults
+            }
+
+            /** Ranking options for search. */
+            fun rankingOptions(rankingOptions: RankingOptions) =
+                rankingOptions(JsonField.of(rankingOptions))
+
+            /**
+             * Sets [Builder.rankingOptions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.rankingOptions] with a well-typed [RankingOptions]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun rankingOptions(rankingOptions: JsonField<RankingOptions>) = apply {
+                this.rankingOptions = rankingOptions
+            }
+
+            /** Whether to rewrite the natural language query for vector search. */
+            fun rewriteQuery(rewriteQuery: Boolean) = rewriteQuery(JsonField.of(rewriteQuery))
+
+            /**
+             * Sets [Builder.rewriteQuery] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.rewriteQuery] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun rewriteQuery(rewriteQuery: JsonField<Boolean>) = apply {
+                this.rewriteQuery = rewriteQuery
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .query()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body =
+                Body(
+                    checkRequired("query", query),
+                    filters,
+                    maxNumResults,
+                    rankingOptions,
+                    rewriteQuery,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            query().validate()
+            filters().ifPresent { it.validate() }
+            maxNumResults()
+            rankingOptions().ifPresent { it.validate() }
+            rewriteQuery()
+            validated = true
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Body && query == other.query && filters == other.filters && maxNumResults == other.maxNumResults && rankingOptions == other.rankingOptions && rewriteQuery == other.rewriteQuery && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(query, filters, maxNumResults, rankingOptions, rewriteQuery, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{query=$query, filters=$filters, maxNumResults=$maxNumResults, rankingOptions=$rankingOptions, rewriteQuery=$rewriteQuery, additionalProperties=$additionalProperties}"
     }
 
     /** A query string for a search */
@@ -993,19 +998,20 @@ private constructor(
     }
 
     /** Ranking options for search. */
-    @NoAutoDetect
     class RankingOptions
-    @JsonCreator
     private constructor(
-        @JsonProperty("ranker")
-        @ExcludeMissing
-        private val ranker: JsonField<Ranker> = JsonMissing.of(),
-        @JsonProperty("score_threshold")
-        @ExcludeMissing
-        private val scoreThreshold: JsonField<Double> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val ranker: JsonField<Ranker>,
+        private val scoreThreshold: JsonField<Double>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("ranker") @ExcludeMissing ranker: JsonField<Ranker> = JsonMissing.of(),
+            @JsonProperty("score_threshold")
+            @ExcludeMissing
+            scoreThreshold: JsonField<Double> = JsonMissing.of(),
+        ) : this(ranker, scoreThreshold, mutableMapOf())
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -1037,21 +1043,15 @@ private constructor(
         @ExcludeMissing
         fun _scoreThreshold(): JsonField<Double> = scoreThreshold
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): RankingOptions = apply {
-            if (validated) {
-                return@apply
-            }
-
-            ranker()
-            scoreThreshold()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -1125,7 +1125,19 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): RankingOptions =
-                RankingOptions(ranker, scoreThreshold, additionalProperties.toImmutable())
+                RankingOptions(ranker, scoreThreshold, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): RankingOptions = apply {
+            if (validated) {
+                return@apply
+            }
+
+            ranker()
+            scoreThreshold()
+            validated = true
         }
 
         class Ranker @JsonCreator private constructor(private val value: JsonField<String>) : Enum {

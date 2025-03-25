@@ -11,50 +11,64 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.Metadata
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** A vector store is a collection of processed files can be used by the `file_search` tool. */
-@NoAutoDetect
 class VectorStore
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("created_at")
-    @ExcludeMissing
-    private val createdAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("file_counts")
-    @ExcludeMissing
-    private val fileCounts: JsonField<FileCounts> = JsonMissing.of(),
-    @JsonProperty("last_active_at")
-    @ExcludeMissing
-    private val lastActiveAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("metadata")
-    @ExcludeMissing
-    private val metadata: JsonField<Metadata> = JsonMissing.of(),
-    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
-    @JsonProperty("status")
-    @ExcludeMissing
-    private val status: JsonField<Status> = JsonMissing.of(),
-    @JsonProperty("usage_bytes")
-    @ExcludeMissing
-    private val usageBytes: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("expires_after")
-    @ExcludeMissing
-    private val expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of(),
-    @JsonProperty("expires_at")
-    @ExcludeMissing
-    private val expiresAt: JsonField<Long> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val createdAt: JsonField<Long>,
+    private val fileCounts: JsonField<FileCounts>,
+    private val lastActiveAt: JsonField<Long>,
+    private val metadata: JsonField<Metadata>,
+    private val name: JsonField<String>,
+    private val object_: JsonValue,
+    private val status: JsonField<Status>,
+    private val usageBytes: JsonField<Long>,
+    private val expiresAfter: JsonField<ExpiresAfter>,
+    private val expiresAt: JsonField<Long>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("file_counts")
+        @ExcludeMissing
+        fileCounts: JsonField<FileCounts> = JsonMissing.of(),
+        @JsonProperty("last_active_at")
+        @ExcludeMissing
+        lastActiveAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("metadata") @ExcludeMissing metadata: JsonField<Metadata> = JsonMissing.of(),
+        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        @JsonProperty("usage_bytes") @ExcludeMissing usageBytes: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("expires_after")
+        @ExcludeMissing
+        expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of(),
+        @JsonProperty("expires_at") @ExcludeMissing expiresAt: JsonField<Long> = JsonMissing.of(),
+    ) : this(
+        id,
+        createdAt,
+        fileCounts,
+        lastActiveAt,
+        metadata,
+        name,
+        object_,
+        status,
+        usageBytes,
+        expiresAfter,
+        expiresAt,
+        mutableMapOf(),
+    )
 
     /**
      * The identifier, which can be referenced in API endpoints.
@@ -231,34 +245,15 @@ private constructor(
      */
     @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt(): JsonField<Long> = expiresAt
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): VectorStore = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        createdAt()
-        fileCounts().validate()
-        lastActiveAt()
-        metadata().ifPresent { it.validate() }
-        name()
-        _object_().let {
-            if (it != JsonValue.from("vector_store")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        status()
-        usageBytes()
-        expiresAfter().ifPresent { it.validate() }
-        expiresAt()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -527,32 +522,59 @@ private constructor(
                 checkRequired("usageBytes", usageBytes),
                 expiresAfter,
                 expiresAt,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
-    @NoAutoDetect
+    private var validated: Boolean = false
+
+    fun validate(): VectorStore = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        createdAt()
+        fileCounts().validate()
+        lastActiveAt()
+        metadata().ifPresent { it.validate() }
+        name()
+        _object_().let {
+            if (it != JsonValue.from("vector_store")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
+        status()
+        usageBytes()
+        expiresAfter().ifPresent { it.validate() }
+        expiresAt()
+        validated = true
+    }
+
     class FileCounts
-    @JsonCreator
     private constructor(
-        @JsonProperty("cancelled")
-        @ExcludeMissing
-        private val cancelled: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("completed")
-        @ExcludeMissing
-        private val completed: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("failed")
-        @ExcludeMissing
-        private val failed: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("in_progress")
-        @ExcludeMissing
-        private val inProgress: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("total")
-        @ExcludeMissing
-        private val total: JsonField<Long> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val cancelled: JsonField<Long>,
+        private val completed: JsonField<Long>,
+        private val failed: JsonField<Long>,
+        private val inProgress: JsonField<Long>,
+        private val total: JsonField<Long>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("cancelled")
+            @ExcludeMissing
+            cancelled: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("completed")
+            @ExcludeMissing
+            completed: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("failed") @ExcludeMissing failed: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("in_progress")
+            @ExcludeMissing
+            inProgress: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("total") @ExcludeMissing total: JsonField<Long> = JsonMissing.of(),
+        ) : this(cancelled, completed, failed, inProgress, total, mutableMapOf())
 
         /**
          * The number of files that were cancelled.
@@ -629,24 +651,15 @@ private constructor(
          */
         @JsonProperty("total") @ExcludeMissing fun _total(): JsonField<Long> = total
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): FileCounts = apply {
-            if (validated) {
-                return@apply
-            }
-
-            cancelled()
-            completed()
-            failed()
-            inProgress()
-            total()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -789,8 +802,23 @@ private constructor(
                     checkRequired("failed", failed),
                     checkRequired("inProgress", inProgress),
                     checkRequired("total", total),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): FileCounts = apply {
+            if (validated) {
+                return@apply
+            }
+
+            cancelled()
+            completed()
+            failed()
+            inProgress()
+            total()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -920,15 +948,18 @@ private constructor(
     }
 
     /** The expiration policy for a vector store. */
-    @NoAutoDetect
     class ExpiresAfter
-    @JsonCreator
     private constructor(
-        @JsonProperty("anchor") @ExcludeMissing private val anchor: JsonValue = JsonMissing.of(),
-        @JsonProperty("days") @ExcludeMissing private val days: JsonField<Long> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val anchor: JsonValue,
+        private val days: JsonField<Long>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("anchor") @ExcludeMissing anchor: JsonValue = JsonMissing.of(),
+            @JsonProperty("days") @ExcludeMissing days: JsonField<Long> = JsonMissing.of(),
+        ) : this(anchor, days, mutableMapOf())
 
         /**
          * Anchor timestamp after which the expiration policy applies. Supported anchors:
@@ -959,25 +990,15 @@ private constructor(
          */
         @JsonProperty("days") @ExcludeMissing fun _days(): JsonField<Long> = days
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): ExpiresAfter = apply {
-            if (validated) {
-                return@apply
-            }
-
-            _anchor().let {
-                if (it != JsonValue.from("last_active_at")) {
-                    throw OpenAIInvalidDataException("'anchor' is invalid, received $it")
-                }
-            }
-            days()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -1069,8 +1090,24 @@ private constructor(
                 ExpiresAfter(
                     anchor,
                     checkRequired("days", days),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): ExpiresAfter = apply {
+            if (validated) {
+                return@apply
+            }
+
+            _anchor().let {
+                if (it != JsonValue.from("last_active_at")) {
+                    throw OpenAIInvalidDataException("'anchor' is invalid, received $it")
+                }
+            }
+            days()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

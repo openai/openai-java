@@ -18,8 +18,6 @@ private constructor(
     cause: Throwable?,
 ) : OpenAIServiceException("400: ${error?.message()}", cause) {
 
-    override fun headers(): Headers = headers
-
     override fun statusCode(): Int = 400
 
     override fun body(): JsonValue =
@@ -30,6 +28,8 @@ private constructor(
     override fun param(): Optional<String> = Optional.ofNullable(error?.param()?.getOrNull())
 
     override fun type(): Optional<String> = Optional.ofNullable(error?.type())
+
+    override fun headers(): Headers = headers
 
     fun toBuilder() = Builder().from(this)
 

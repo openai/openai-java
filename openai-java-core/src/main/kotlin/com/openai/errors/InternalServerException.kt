@@ -19,10 +19,6 @@ private constructor(
     cause: Throwable?,
 ) : OpenAIServiceException("$statusCode: ${error?.message()}", cause) {
 
-    override fun statusCode(): Int = statusCode
-
-    override fun headers(): Headers = headers
-
     override fun body(): JsonValue =
         error?.let { JsonValue.fromJsonNode(jsonMapper().valueToTree(it)) } ?: JsonMissing.of()
 
@@ -31,6 +27,10 @@ private constructor(
     override fun param(): Optional<String> = Optional.ofNullable(error?.param()?.getOrNull())
 
     override fun type(): Optional<String> = Optional.ofNullable(error?.type())
+
+    override fun statusCode(): Int = statusCode
+
+    override fun headers(): Headers = headers
 
     fun toBuilder() = Builder().from(this)
 

@@ -20,62 +20,84 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.Metadata
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Represents a step in execution of a run. */
-@NoAutoDetect
 class RunStep
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("assistant_id")
-    @ExcludeMissing
-    private val assistantId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("cancelled_at")
-    @ExcludeMissing
-    private val cancelledAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("completed_at")
-    @ExcludeMissing
-    private val completedAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("created_at")
-    @ExcludeMissing
-    private val createdAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("expired_at")
-    @ExcludeMissing
-    private val expiredAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("failed_at")
-    @ExcludeMissing
-    private val failedAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("last_error")
-    @ExcludeMissing
-    private val lastError: JsonField<LastError> = JsonMissing.of(),
-    @JsonProperty("metadata")
-    @ExcludeMissing
-    private val metadata: JsonField<Metadata> = JsonMissing.of(),
-    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
-    @JsonProperty("run_id") @ExcludeMissing private val runId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("status")
-    @ExcludeMissing
-    private val status: JsonField<Status> = JsonMissing.of(),
-    @JsonProperty("step_details")
-    @ExcludeMissing
-    private val stepDetails: JsonField<StepDetails> = JsonMissing.of(),
-    @JsonProperty("thread_id")
-    @ExcludeMissing
-    private val threadId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
-    @JsonProperty("usage") @ExcludeMissing private val usage: JsonField<Usage> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val assistantId: JsonField<String>,
+    private val cancelledAt: JsonField<Long>,
+    private val completedAt: JsonField<Long>,
+    private val createdAt: JsonField<Long>,
+    private val expiredAt: JsonField<Long>,
+    private val failedAt: JsonField<Long>,
+    private val lastError: JsonField<LastError>,
+    private val metadata: JsonField<Metadata>,
+    private val object_: JsonValue,
+    private val runId: JsonField<String>,
+    private val status: JsonField<Status>,
+    private val stepDetails: JsonField<StepDetails>,
+    private val threadId: JsonField<String>,
+    private val type: JsonField<Type>,
+    private val usage: JsonField<Usage>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("assistant_id")
+        @ExcludeMissing
+        assistantId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("cancelled_at")
+        @ExcludeMissing
+        cancelledAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("completed_at")
+        @ExcludeMissing
+        completedAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("expired_at") @ExcludeMissing expiredAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("failed_at") @ExcludeMissing failedAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("last_error")
+        @ExcludeMissing
+        lastError: JsonField<LastError> = JsonMissing.of(),
+        @JsonProperty("metadata") @ExcludeMissing metadata: JsonField<Metadata> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+        @JsonProperty("run_id") @ExcludeMissing runId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        @JsonProperty("step_details")
+        @ExcludeMissing
+        stepDetails: JsonField<StepDetails> = JsonMissing.of(),
+        @JsonProperty("thread_id") @ExcludeMissing threadId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+        @JsonProperty("usage") @ExcludeMissing usage: JsonField<Usage> = JsonMissing.of(),
+    ) : this(
+        id,
+        assistantId,
+        cancelledAt,
+        completedAt,
+        createdAt,
+        expiredAt,
+        failedAt,
+        lastError,
+        metadata,
+        object_,
+        runId,
+        status,
+        stepDetails,
+        threadId,
+        type,
+        usage,
+        mutableMapOf(),
+    )
 
     /**
      * The identifier of the run step, which can be referenced in API endpoints.
@@ -329,39 +351,15 @@ private constructor(
      */
     @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<Usage> = usage
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): RunStep = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        assistantId()
-        cancelledAt()
-        completedAt()
-        createdAt()
-        expiredAt()
-        failedAt()
-        lastError().ifPresent { it.validate() }
-        metadata().ifPresent { it.validate() }
-        _object_().let {
-            if (it != JsonValue.from("thread.run.step")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        runId()
-        status()
-        stepDetails().validate()
-        threadId()
-        type()
-        usage().ifPresent { it.validate() }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -794,22 +792,53 @@ private constructor(
                 checkRequired("threadId", threadId),
                 checkRequired("type", type),
                 checkRequired("usage", usage),
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
+    private var validated: Boolean = false
+
+    fun validate(): RunStep = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        assistantId()
+        cancelledAt()
+        completedAt()
+        createdAt()
+        expiredAt()
+        failedAt()
+        lastError().ifPresent { it.validate() }
+        metadata().ifPresent { it.validate() }
+        _object_().let {
+            if (it != JsonValue.from("thread.run.step")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
+        runId()
+        status()
+        stepDetails().validate()
+        threadId()
+        type()
+        usage().ifPresent { it.validate() }
+        validated = true
+    }
+
     /** The last error associated with this run step. Will be `null` if there are no errors. */
-    @NoAutoDetect
     class LastError
-    @JsonCreator
     private constructor(
-        @JsonProperty("code") @ExcludeMissing private val code: JsonField<Code> = JsonMissing.of(),
-        @JsonProperty("message")
-        @ExcludeMissing
-        private val message: JsonField<String> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val code: JsonField<Code>,
+        private val message: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("code") @ExcludeMissing code: JsonField<Code> = JsonMissing.of(),
+            @JsonProperty("message") @ExcludeMissing message: JsonField<String> = JsonMissing.of(),
+        ) : this(code, message, mutableMapOf())
 
         /**
          * One of `server_error` or `rate_limit_exceeded`.
@@ -841,21 +870,15 @@ private constructor(
          */
         @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): LastError = apply {
-            if (validated) {
-                return@apply
-            }
-
-            code()
-            message()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -947,8 +970,20 @@ private constructor(
                 LastError(
                     checkRequired("code", code),
                     checkRequired("message", message),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): LastError = apply {
+            if (validated) {
+                return@apply
+            }
+
+            code()
+            message()
+            validated = true
         }
 
         /** One of `server_error` or `rate_limit_exceeded`. */
@@ -1455,22 +1490,26 @@ private constructor(
      * Usage statistics related to the run step. This value will be `null` while the run step's
      * status is `in_progress`.
      */
-    @NoAutoDetect
     class Usage
-    @JsonCreator
     private constructor(
-        @JsonProperty("completion_tokens")
-        @ExcludeMissing
-        private val completionTokens: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("prompt_tokens")
-        @ExcludeMissing
-        private val promptTokens: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("total_tokens")
-        @ExcludeMissing
-        private val totalTokens: JsonField<Long> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val completionTokens: JsonField<Long>,
+        private val promptTokens: JsonField<Long>,
+        private val totalTokens: JsonField<Long>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("completion_tokens")
+            @ExcludeMissing
+            completionTokens: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("prompt_tokens")
+            @ExcludeMissing
+            promptTokens: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("total_tokens")
+            @ExcludeMissing
+            totalTokens: JsonField<Long> = JsonMissing.of(),
+        ) : this(completionTokens, promptTokens, totalTokens, mutableMapOf())
 
         /**
          * Number of completion tokens used over the course of the run step.
@@ -1525,22 +1564,15 @@ private constructor(
         @ExcludeMissing
         fun _totalTokens(): JsonField<Long> = totalTokens
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Usage = apply {
-            if (validated) {
-                return@apply
-            }
-
-            completionTokens()
-            promptTokens()
-            totalTokens()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -1654,8 +1686,21 @@ private constructor(
                     checkRequired("completionTokens", completionTokens),
                     checkRequired("promptTokens", promptTokens),
                     checkRequired("totalTokens", totalTokens),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Usage = apply {
+            if (validated) {
+                return@apply
+            }
+
+            completionTokens()
+            promptTokens()
+            totalTokens()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

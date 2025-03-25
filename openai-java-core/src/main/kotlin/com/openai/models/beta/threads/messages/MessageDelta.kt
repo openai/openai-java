@@ -11,25 +11,28 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
 /** The delta containing the fields that have changed on the Message. */
-@NoAutoDetect
 class MessageDelta
-@JsonCreator
 private constructor(
-    @JsonProperty("content")
-    @ExcludeMissing
-    private val content: JsonField<List<MessageContentDelta>> = JsonMissing.of(),
-    @JsonProperty("role") @ExcludeMissing private val role: JsonField<Role> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val content: JsonField<List<MessageContentDelta>>,
+    private val role: JsonField<Role>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("content")
+        @ExcludeMissing
+        content: JsonField<List<MessageContentDelta>> = JsonMissing.of(),
+        @JsonProperty("role") @ExcludeMissing role: JsonField<Role> = JsonMissing.of(),
+    ) : this(content, role, mutableMapOf())
 
     /**
      * The content of the message in array of text and/or images.
@@ -64,21 +67,15 @@ private constructor(
      */
     @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): MessageDelta = apply {
-        if (validated) {
-            return@apply
-        }
-
-        content().ifPresent { it.forEach { it.validate() } }
-        role()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -225,8 +222,20 @@ private constructor(
             MessageDelta(
                 (content ?: JsonMissing.of()).map { it.toImmutable() },
                 role,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): MessageDelta = apply {
+        if (validated) {
+            return@apply
+        }
+
+        content().ifPresent { it.forEach { it.validate() } }
+        role()
+        validated = true
     }
 
     /** The entity that produced the message. One of `user` or `assistant`. */

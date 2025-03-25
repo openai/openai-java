@@ -2,9 +2,9 @@
 
 package com.openai.models.uploads.parts
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.openai.core.ExcludeMissing
 import com.openai.core.MultipartField
-import com.openai.core.NoAutoDetect
 import com.openai.core.Params
 import com.openai.core.checkRequired
 import com.openai.core.http.Headers
@@ -56,126 +56,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic
-    internal fun _body(): Map<String, MultipartField<*>> = mapOf("data" to _data()).toImmutable()
-
-    fun _pathParam(index: Int): String =
-        when (index) {
-            0 -> uploadId
-            else -> ""
-        }
-
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams = additionalQueryParams
-
-    @NoAutoDetect
-    class Body @JsonCreator private constructor(private val data: MultipartField<InputStream>) {
-
-        /**
-         * The chunk of bytes for this Part.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun data(): InputStream = data.value.getRequired("data")
-
-        /**
-         * Returns the raw multipart value of [data].
-         *
-         * Unlike [data], this method doesn't throw if the multipart field has an unexpected type.
-         */
-        fun _data(): MultipartField<InputStream> = data
-
-        private var validated: Boolean = false
-
-        fun validate(): Body = apply {
-            if (validated) {
-                return@apply
-            }
-
-            data()
-            validated = true
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```java
-             * .data()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Body]. */
-        class Builder internal constructor() {
-
-            private var data: MultipartField<InputStream>? = null
-
-            @JvmSynthetic internal fun from(body: Body) = apply { data = body.data }
-
-            /** The chunk of bytes for this Part. */
-            fun data(data: InputStream) = data(MultipartField.of(data))
-
-            /**
-             * Sets [Builder.data] to an arbitrary multipart value.
-             *
-             * You should usually call [Builder.data] with a well-typed [InputStream] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun data(data: MultipartField<InputStream>) = apply { this.data = data }
-
-            /** The chunk of bytes for this Part. */
-            fun data(data: ByteArray) = data(data.inputStream())
-
-            /** The chunk of bytes for this Part. */
-            fun data(data: Path) =
-                data(
-                    MultipartField.builder<InputStream>()
-                        .value(data.inputStream())
-                        .filename(data.name)
-                        .build()
-                )
-
-            /**
-             * Returns an immutable instance of [Body].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .data()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): Body = Body(checkRequired("data", data))
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Body && data == other.data /* spotless:on */
-        }
-
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(data) }
-        /* spotless:on */
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() = "Body{data=$data}"
-    }
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -193,7 +73,6 @@ private constructor(
     }
 
     /** A builder for [PartCreateParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var uploadId: String? = null
@@ -347,6 +226,125 @@ private constructor(
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
+    }
+
+    @JvmSynthetic
+    internal fun _body(): Map<String, MultipartField<*>> = mapOf("data" to _data()).toImmutable()
+
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> uploadId
+            else -> ""
+        }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body private constructor(private val data: MultipartField<InputStream>) {
+
+        /**
+         * The chunk of bytes for this Part.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun data(): InputStream = data.value.getRequired("data")
+
+        /**
+         * Returns the raw multipart value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the multipart field has an unexpected type.
+         */
+        @JsonProperty("data") @ExcludeMissing fun _data(): MultipartField<InputStream> = data
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
+
+            private var data: MultipartField<InputStream>? = null
+
+            @JvmSynthetic internal fun from(body: Body) = apply { data = body.data }
+
+            /** The chunk of bytes for this Part. */
+            fun data(data: InputStream) = data(MultipartField.of(data))
+
+            /**
+             * Sets [Builder.data] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.data] with a well-typed [InputStream] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun data(data: MultipartField<InputStream>) = apply { this.data = data }
+
+            /** The chunk of bytes for this Part. */
+            fun data(data: ByteArray) = data(data.inputStream())
+
+            /** The chunk of bytes for this Part. */
+            fun data(data: Path) =
+                data(
+                    MultipartField.builder<InputStream>()
+                        .value(data.inputStream())
+                        .filename(data.name)
+                        .build()
+                )
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body = Body(checkRequired("data", data))
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            data()
+            validated = true
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Body && data == other.data /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(data) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() = "Body{data=$data}"
     }
 
     override fun equals(other: Any?): Boolean {

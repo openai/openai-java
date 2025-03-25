@@ -19,30 +19,35 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Details of the Code Interpreter tool call the run step was involved in. */
-@NoAutoDetect
 class CodeInterpreterToolCallDelta
-@JsonCreator
 private constructor(
-    @JsonProperty("index") @ExcludeMissing private val index: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("code_interpreter")
-    @ExcludeMissing
-    private val codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val index: JsonField<Long>,
+    private val type: JsonValue,
+    private val id: JsonField<String>,
+    private val codeInterpreter: JsonField<CodeInterpreter>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("index") @ExcludeMissing index: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("code_interpreter")
+        @ExcludeMissing
+        codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of(),
+    ) : this(index, type, id, codeInterpreter, mutableMapOf())
 
     /**
      * The index of the tool call in the tool calls array.
@@ -106,27 +111,15 @@ private constructor(
     @ExcludeMissing
     fun _codeInterpreter(): JsonField<CodeInterpreter> = codeInterpreter
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): CodeInterpreterToolCallDelta = apply {
-        if (validated) {
-            return@apply
-        }
-
-        index()
-        _type().let {
-            if (it != JsonValue.from("code_interpreter")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        id()
-        codeInterpreter().ifPresent { it.validate() }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -249,24 +242,43 @@ private constructor(
                 type,
                 id,
                 codeInterpreter,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
+    private var validated: Boolean = false
+
+    fun validate(): CodeInterpreterToolCallDelta = apply {
+        if (validated) {
+            return@apply
+        }
+
+        index()
+        _type().let {
+            if (it != JsonValue.from("code_interpreter")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        id()
+        codeInterpreter().ifPresent { it.validate() }
+        validated = true
+    }
+
     /** The Code Interpreter tool call definition. */
-    @NoAutoDetect
     class CodeInterpreter
-    @JsonCreator
     private constructor(
-        @JsonProperty("input")
-        @ExcludeMissing
-        private val input: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("outputs")
-        @ExcludeMissing
-        private val outputs: JsonField<List<Output>> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val input: JsonField<String>,
+        private val outputs: JsonField<List<Output>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("input") @ExcludeMissing input: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("outputs")
+            @ExcludeMissing
+            outputs: JsonField<List<Output>> = JsonMissing.of(),
+        ) : this(input, outputs, mutableMapOf())
 
         /**
          * The input to the Code Interpreter tool call.
@@ -300,21 +312,15 @@ private constructor(
          */
         @JsonProperty("outputs") @ExcludeMissing fun _outputs(): JsonField<List<Output>> = outputs
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): CodeInterpreter = apply {
-            if (validated) {
-                return@apply
-            }
-
-            input()
-            outputs().ifPresent { it.forEach { it.validate() } }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -436,8 +442,20 @@ private constructor(
                 CodeInterpreter(
                     input,
                     (outputs ?: JsonMissing.of()).map { it.toImmutable() },
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): CodeInterpreter = apply {
+            if (validated) {
+                return@apply
+            }
+
+            input()
+            outputs().ifPresent { it.forEach { it.validate() } }
+            validated = true
         }
 
         /** Text output from the Code Interpreter tool call as part of a run step. */

@@ -10,15 +10,14 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.Params
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
@@ -61,171 +60,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): Body = body
-
-    fun _pathParam(index: Int): String =
-        when (index) {
-            0 -> threadId
-            1 -> runId
-            else -> ""
-        }
-
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams = additionalQueryParams
-
-    @NoAutoDetect
-    class Body
-    @JsonCreator
-    private constructor(
-        @JsonProperty("tool_outputs")
-        @ExcludeMissing
-        private val toolOutputs: JsonField<List<ToolOutput>> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-    ) {
-
-        /**
-         * A list of tools for which the outputs are being submitted.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun toolOutputs(): List<ToolOutput> = toolOutputs.getRequired("tool_outputs")
-
-        /**
-         * Returns the raw JSON value of [toolOutputs].
-         *
-         * Unlike [toolOutputs], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("tool_outputs")
-        @ExcludeMissing
-        fun _toolOutputs(): JsonField<List<ToolOutput>> = toolOutputs
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Body = apply {
-            if (validated) {
-                return@apply
-            }
-
-            toolOutputs().forEach { it.validate() }
-            validated = true
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```java
-             * .toolOutputs()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Body]. */
-        class Builder internal constructor() {
-
-            private var toolOutputs: JsonField<MutableList<ToolOutput>>? = null
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(body: Body) = apply {
-                toolOutputs = body.toolOutputs.map { it.toMutableList() }
-                additionalProperties = body.additionalProperties.toMutableMap()
-            }
-
-            /** A list of tools for which the outputs are being submitted. */
-            fun toolOutputs(toolOutputs: List<ToolOutput>) = toolOutputs(JsonField.of(toolOutputs))
-
-            /**
-             * Sets [Builder.toolOutputs] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.toolOutputs] with a well-typed `List<ToolOutput>`
-             * value instead. This method is primarily for setting the field to an undocumented or
-             * not yet supported value.
-             */
-            fun toolOutputs(toolOutputs: JsonField<List<ToolOutput>>) = apply {
-                this.toolOutputs = toolOutputs.map { it.toMutableList() }
-            }
-
-            /**
-             * Adds a single [ToolOutput] to [toolOutputs].
-             *
-             * @throws IllegalStateException if the field was previously set to a non-list.
-             */
-            fun addToolOutput(toolOutput: ToolOutput) = apply {
-                toolOutputs =
-                    (toolOutputs ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("toolOutputs", it).add(toolOutput)
-                    }
-            }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Body].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .toolOutputs()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): Body =
-                Body(
-                    checkRequired("toolOutputs", toolOutputs).map { it.toImmutable() },
-                    additionalProperties.toImmutable(),
-                )
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Body && toolOutputs == other.toolOutputs && additionalProperties == other.additionalProperties /* spotless:on */
-        }
-
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(toolOutputs, additionalProperties) }
-        /* spotless:on */
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Body{toolOutputs=$toolOutputs, additionalProperties=$additionalProperties}"
-    }
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -244,7 +78,6 @@ private constructor(
     }
 
     /** A builder for [RunSubmitToolOutputsParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var threadId: String? = null
@@ -428,19 +261,193 @@ private constructor(
             )
     }
 
-    @NoAutoDetect
-    class ToolOutput
-    @JsonCreator
+    @JvmSynthetic internal fun _body(): Body = body
+
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> threadId
+            1 -> runId
+            else -> ""
+        }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
     private constructor(
-        @JsonProperty("output")
-        @ExcludeMissing
-        private val output: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("tool_call_id")
-        @ExcludeMissing
-        private val toolCallId: JsonField<String> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val toolOutputs: JsonField<List<ToolOutput>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("tool_outputs")
+            @ExcludeMissing
+            toolOutputs: JsonField<List<ToolOutput>> = JsonMissing.of()
+        ) : this(toolOutputs, mutableMapOf())
+
+        /**
+         * A list of tools for which the outputs are being submitted.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun toolOutputs(): List<ToolOutput> = toolOutputs.getRequired("tool_outputs")
+
+        /**
+         * Returns the raw JSON value of [toolOutputs].
+         *
+         * Unlike [toolOutputs], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("tool_outputs")
+        @ExcludeMissing
+        fun _toolOutputs(): JsonField<List<ToolOutput>> = toolOutputs
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .toolOutputs()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
+
+            private var toolOutputs: JsonField<MutableList<ToolOutput>>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(body: Body) = apply {
+                toolOutputs = body.toolOutputs.map { it.toMutableList() }
+                additionalProperties = body.additionalProperties.toMutableMap()
+            }
+
+            /** A list of tools for which the outputs are being submitted. */
+            fun toolOutputs(toolOutputs: List<ToolOutput>) = toolOutputs(JsonField.of(toolOutputs))
+
+            /**
+             * Sets [Builder.toolOutputs] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.toolOutputs] with a well-typed `List<ToolOutput>`
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun toolOutputs(toolOutputs: JsonField<List<ToolOutput>>) = apply {
+                this.toolOutputs = toolOutputs.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [ToolOutput] to [toolOutputs].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addToolOutput(toolOutput: ToolOutput) = apply {
+                toolOutputs =
+                    (toolOutputs ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("toolOutputs", it).add(toolOutput)
+                    }
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .toolOutputs()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body =
+                Body(
+                    checkRequired("toolOutputs", toolOutputs).map { it.toImmutable() },
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            toolOutputs().forEach { it.validate() }
+            validated = true
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Body && toolOutputs == other.toolOutputs && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(toolOutputs, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{toolOutputs=$toolOutputs, additionalProperties=$additionalProperties}"
+    }
+
+    class ToolOutput
+    private constructor(
+        private val output: JsonField<String>,
+        private val toolCallId: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("output") @ExcludeMissing output: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("tool_call_id")
+            @ExcludeMissing
+            toolCallId: JsonField<String> = JsonMissing.of(),
+        ) : this(output, toolCallId, mutableMapOf())
 
         /**
          * The output of the tool call to be submitted to continue the run.
@@ -476,21 +483,15 @@ private constructor(
         @ExcludeMissing
         fun _toolCallId(): JsonField<String> = toolCallId
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): ToolOutput = apply {
-            if (validated) {
-                return@apply
-            }
-
-            output()
-            toolCallId()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -566,7 +567,19 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): ToolOutput =
-                ToolOutput(output, toolCallId, additionalProperties.toImmutable())
+                ToolOutput(output, toolCallId, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): ToolOutput = apply {
+            if (validated) {
+                return@apply
+            }
+
+            output()
+            toolCallId()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

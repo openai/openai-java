@@ -10,12 +10,11 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -25,22 +24,22 @@ import kotlin.jvm.optionals.getOrNull
  * that metrics will be sent to. Optionally, you can set an explicit display name for your run, add
  * tags to your run, and set a default entity (team, username, etc) to be associated with your run.
  */
-@NoAutoDetect
 class FineTuningJobWandbIntegration
-@JsonCreator
 private constructor(
-    @JsonProperty("project")
-    @ExcludeMissing
-    private val project: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("entity")
-    @ExcludeMissing
-    private val entity: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("tags")
-    @ExcludeMissing
-    private val tags: JsonField<List<String>> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val project: JsonField<String>,
+    private val entity: JsonField<String>,
+    private val name: JsonField<String>,
+    private val tags: JsonField<List<String>>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("project") @ExcludeMissing project: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("entity") @ExcludeMissing entity: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("tags") @ExcludeMissing tags: JsonField<List<String>> = JsonMissing.of(),
+    ) : this(project, entity, name, tags, mutableMapOf())
 
     /**
      * The name of the project that the new run will be created under.
@@ -106,23 +105,15 @@ private constructor(
      */
     @JsonProperty("tags") @ExcludeMissing fun _tags(): JsonField<List<String>> = tags
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): FineTuningJobWandbIntegration = apply {
-        if (validated) {
-            return@apply
-        }
-
-        project()
-        entity()
-        name()
-        tags()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -265,8 +256,22 @@ private constructor(
                 entity,
                 name,
                 (tags ?: JsonMissing.of()).map { it.toImmutable() },
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): FineTuningJobWandbIntegration = apply {
+        if (validated) {
+            return@apply
+        }
+
+        project()
+        entity()
+        name()
+        tags()
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

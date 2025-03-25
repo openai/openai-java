@@ -10,12 +10,10 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ResponseFormatJsonObject
 import com.openai.models.ResponseFormatText
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
@@ -25,15 +23,18 @@ import java.util.Optional
  * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
  * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
  */
-@NoAutoDetect
 class ResponseTextConfig
-@JsonCreator
 private constructor(
-    @JsonProperty("format")
-    @ExcludeMissing
-    private val format: JsonField<ResponseFormatTextConfig> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val format: JsonField<ResponseFormatTextConfig>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("format")
+        @ExcludeMissing
+        format: JsonField<ResponseFormatTextConfig> = JsonMissing.of()
+    ) : this(format, mutableMapOf())
 
     /**
      * An object specifying the format that the model must output.
@@ -65,20 +66,15 @@ private constructor(
     @ExcludeMissing
     fun _format(): JsonField<ResponseFormatTextConfig> = format
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ResponseTextConfig = apply {
-        if (validated) {
-            return@apply
-        }
-
-        format().ifPresent { it.validate() }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -173,7 +169,18 @@ private constructor(
          * Further updates to this [Builder] will not mutate the returned instance.
          */
         fun build(): ResponseTextConfig =
-            ResponseTextConfig(format, additionalProperties.toImmutable())
+            ResponseTextConfig(format, additionalProperties.toMutableMap())
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ResponseTextConfig = apply {
+        if (validated) {
+            return@apply
+        }
+
+        format().ifPresent { it.validate() }
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

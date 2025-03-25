@@ -10,36 +10,48 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
 /** Usage statistics for the completion request. */
-@NoAutoDetect
 class CompletionUsage
-@JsonCreator
 private constructor(
-    @JsonProperty("completion_tokens")
-    @ExcludeMissing
-    private val completionTokens: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("prompt_tokens")
-    @ExcludeMissing
-    private val promptTokens: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("total_tokens")
-    @ExcludeMissing
-    private val totalTokens: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("completion_tokens_details")
-    @ExcludeMissing
-    private val completionTokensDetails: JsonField<CompletionTokensDetails> = JsonMissing.of(),
-    @JsonProperty("prompt_tokens_details")
-    @ExcludeMissing
-    private val promptTokensDetails: JsonField<PromptTokensDetails> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val completionTokens: JsonField<Long>,
+    private val promptTokens: JsonField<Long>,
+    private val totalTokens: JsonField<Long>,
+    private val completionTokensDetails: JsonField<CompletionTokensDetails>,
+    private val promptTokensDetails: JsonField<PromptTokensDetails>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("completion_tokens")
+        @ExcludeMissing
+        completionTokens: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("prompt_tokens")
+        @ExcludeMissing
+        promptTokens: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("total_tokens")
+        @ExcludeMissing
+        totalTokens: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("completion_tokens_details")
+        @ExcludeMissing
+        completionTokensDetails: JsonField<CompletionTokensDetails> = JsonMissing.of(),
+        @JsonProperty("prompt_tokens_details")
+        @ExcludeMissing
+        promptTokensDetails: JsonField<PromptTokensDetails> = JsonMissing.of(),
+    ) : this(
+        completionTokens,
+        promptTokens,
+        totalTokens,
+        completionTokensDetails,
+        promptTokensDetails,
+        mutableMapOf(),
+    )
 
     /**
      * Number of tokens in the generated completion.
@@ -129,24 +141,15 @@ private constructor(
     @ExcludeMissing
     fun _promptTokensDetails(): JsonField<PromptTokensDetails> = promptTokensDetails
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): CompletionUsage = apply {
-        if (validated) {
-            return@apply
-        }
-
-        completionTokens()
-        promptTokens()
-        totalTokens()
-        completionTokensDetails().ifPresent { it.validate() }
-        promptTokensDetails().ifPresent { it.validate() }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -295,30 +298,56 @@ private constructor(
                 checkRequired("totalTokens", totalTokens),
                 completionTokensDetails,
                 promptTokensDetails,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
+    private var validated: Boolean = false
+
+    fun validate(): CompletionUsage = apply {
+        if (validated) {
+            return@apply
+        }
+
+        completionTokens()
+        promptTokens()
+        totalTokens()
+        completionTokensDetails().ifPresent { it.validate() }
+        promptTokensDetails().ifPresent { it.validate() }
+        validated = true
+    }
+
     /** Breakdown of tokens used in a completion. */
-    @NoAutoDetect
     class CompletionTokensDetails
-    @JsonCreator
     private constructor(
-        @JsonProperty("accepted_prediction_tokens")
-        @ExcludeMissing
-        private val acceptedPredictionTokens: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("audio_tokens")
-        @ExcludeMissing
-        private val audioTokens: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("reasoning_tokens")
-        @ExcludeMissing
-        private val reasoningTokens: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("rejected_prediction_tokens")
-        @ExcludeMissing
-        private val rejectedPredictionTokens: JsonField<Long> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val acceptedPredictionTokens: JsonField<Long>,
+        private val audioTokens: JsonField<Long>,
+        private val reasoningTokens: JsonField<Long>,
+        private val rejectedPredictionTokens: JsonField<Long>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("accepted_prediction_tokens")
+            @ExcludeMissing
+            acceptedPredictionTokens: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("audio_tokens")
+            @ExcludeMissing
+            audioTokens: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("reasoning_tokens")
+            @ExcludeMissing
+            reasoningTokens: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("rejected_prediction_tokens")
+            @ExcludeMissing
+            rejectedPredictionTokens: JsonField<Long> = JsonMissing.of(),
+        ) : this(
+            acceptedPredictionTokens,
+            audioTokens,
+            reasoningTokens,
+            rejectedPredictionTokens,
+            mutableMapOf(),
+        )
 
         /**
          * When using Predicted Outputs, the number of tokens in the prediction that appeared in the
@@ -398,23 +427,15 @@ private constructor(
         @ExcludeMissing
         fun _rejectedPredictionTokens(): JsonField<Long> = rejectedPredictionTokens
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): CompletionTokensDetails = apply {
-            if (validated) {
-                return@apply
-            }
-
-            acceptedPredictionTokens()
-            audioTokens()
-            reasoningTokens()
-            rejectedPredictionTokens()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -539,8 +560,22 @@ private constructor(
                     audioTokens,
                     reasoningTokens,
                     rejectedPredictionTokens,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): CompletionTokensDetails = apply {
+            if (validated) {
+                return@apply
+            }
+
+            acceptedPredictionTokens()
+            audioTokens()
+            reasoningTokens()
+            rejectedPredictionTokens()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -562,19 +597,22 @@ private constructor(
     }
 
     /** Breakdown of tokens used in the prompt. */
-    @NoAutoDetect
     class PromptTokensDetails
-    @JsonCreator
     private constructor(
-        @JsonProperty("audio_tokens")
-        @ExcludeMissing
-        private val audioTokens: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("cached_tokens")
-        @ExcludeMissing
-        private val cachedTokens: JsonField<Long> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val audioTokens: JsonField<Long>,
+        private val cachedTokens: JsonField<Long>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("audio_tokens")
+            @ExcludeMissing
+            audioTokens: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("cached_tokens")
+            @ExcludeMissing
+            cachedTokens: JsonField<Long> = JsonMissing.of(),
+        ) : this(audioTokens, cachedTokens, mutableMapOf())
 
         /**
          * Audio input tokens present in the prompt.
@@ -613,21 +651,15 @@ private constructor(
         @ExcludeMissing
         fun _cachedTokens(): JsonField<Long> = cachedTokens
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): PromptTokensDetails = apply {
-            if (validated) {
-                return@apply
-            }
-
-            audioTokens()
-            cachedTokens()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -702,7 +734,19 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): PromptTokensDetails =
-                PromptTokensDetails(audioTokens, cachedTokens, additionalProperties.toImmutable())
+                PromptTokensDetails(audioTokens, cachedTokens, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): PromptTokensDetails = apply {
+            if (validated) {
+                return@apply
+            }
+
+            audioTokens()
+            cachedTokens()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

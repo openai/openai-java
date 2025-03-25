@@ -10,20 +10,21 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
-@NoAutoDetect
 class Translation
-@JsonCreator
 private constructor(
-    @JsonProperty("text") @ExcludeMissing private val text: JsonField<String> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val text: JsonField<String>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of()
+    ) : this(text, mutableMapOf())
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -38,20 +39,15 @@ private constructor(
      */
     @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): Translation = apply {
-        if (validated) {
-            return@apply
-        }
-
-        text()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -122,7 +118,18 @@ private constructor(
          * @throws IllegalStateException if any required field is unset.
          */
         fun build(): Translation =
-            Translation(checkRequired("text", text), additionalProperties.toImmutable())
+            Translation(checkRequired("text", text), additionalProperties.toMutableMap())
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): Translation = apply {
+        if (validated) {
+            return@apply
+        }
+
+        text()
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

@@ -10,26 +10,27 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-@NoAutoDetect
 class FunctionToolCall
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("function")
-    @ExcludeMissing
-    private val function: JsonField<Function> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val function: JsonField<Function>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("function") @ExcludeMissing function: JsonField<Function> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(id, function, type, mutableMapOf())
 
     /**
      * The ID of the tool call object.
@@ -74,26 +75,15 @@ private constructor(
      */
     @JsonProperty("function") @ExcludeMissing fun _function(): JsonField<Function> = function
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): FunctionToolCall = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        function().validate()
-        _type().let {
-            if (it != JsonValue.from("function")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -201,27 +191,44 @@ private constructor(
                 checkRequired("id", id),
                 checkRequired("function", function),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
+    private var validated: Boolean = false
+
+    fun validate(): FunctionToolCall = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        function().validate()
+        _type().let {
+            if (it != JsonValue.from("function")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
+    }
+
     /** The definition of the function that was called. */
-    @NoAutoDetect
     class Function
-    @JsonCreator
     private constructor(
-        @JsonProperty("arguments")
-        @ExcludeMissing
-        private val arguments: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("name")
-        @ExcludeMissing
-        private val name: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("output")
-        @ExcludeMissing
-        private val output: JsonField<String> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val arguments: JsonField<String>,
+        private val name: JsonField<String>,
+        private val output: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("arguments")
+            @ExcludeMissing
+            arguments: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("output") @ExcludeMissing output: JsonField<String> = JsonMissing.of(),
+        ) : this(arguments, name, output, mutableMapOf())
 
         /**
          * The arguments passed to the function.
@@ -269,22 +276,15 @@ private constructor(
          */
         @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<String> = output
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Function = apply {
-            if (validated) {
-                return@apply
-            }
-
-            arguments()
-            name()
-            output()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -400,8 +400,21 @@ private constructor(
                     checkRequired("arguments", arguments),
                     checkRequired("name", name),
                     checkRequired("output", output),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Function = apply {
+            if (validated) {
+                return@apply
+            }
+
+            arguments()
+            name()
+            output()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

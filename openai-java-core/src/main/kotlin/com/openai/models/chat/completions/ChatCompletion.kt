@@ -11,42 +11,57 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.completions.CompletionUsage
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Represents a chat completion response returned by model, based on the provided input. */
-@NoAutoDetect
 class ChatCompletion
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("choices")
-    @ExcludeMissing
-    private val choices: JsonField<List<Choice>> = JsonMissing.of(),
-    @JsonProperty("created")
-    @ExcludeMissing
-    private val created: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
-    @JsonProperty("service_tier")
-    @ExcludeMissing
-    private val serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
-    @JsonProperty("system_fingerprint")
-    @ExcludeMissing
-    private val systemFingerprint: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("usage")
-    @ExcludeMissing
-    private val usage: JsonField<CompletionUsage> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val choices: JsonField<List<Choice>>,
+    private val created: JsonField<Long>,
+    private val model: JsonField<String>,
+    private val object_: JsonValue,
+    private val serviceTier: JsonField<ServiceTier>,
+    private val systemFingerprint: JsonField<String>,
+    private val usage: JsonField<CompletionUsage>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("choices")
+        @ExcludeMissing
+        choices: JsonField<List<Choice>> = JsonMissing.of(),
+        @JsonProperty("created") @ExcludeMissing created: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+        @JsonProperty("service_tier")
+        @ExcludeMissing
+        serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
+        @JsonProperty("system_fingerprint")
+        @ExcludeMissing
+        systemFingerprint: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("usage") @ExcludeMissing usage: JsonField<CompletionUsage> = JsonMissing.of(),
+    ) : this(
+        id,
+        choices,
+        created,
+        model,
+        object_,
+        serviceTier,
+        systemFingerprint,
+        usage,
+        mutableMapOf(),
+    )
 
     /**
      * A unique identifier for the chat completion.
@@ -176,31 +191,15 @@ private constructor(
      */
     @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<CompletionUsage> = usage
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ChatCompletion = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        choices().forEach { it.validate() }
-        created()
-        model()
-        _object_().let {
-            if (it != JsonValue.from("chat.completion")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        serviceTier()
-        systemFingerprint()
-        usage().ifPresent { it.validate() }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -412,29 +411,54 @@ private constructor(
                 serviceTier,
                 systemFingerprint,
                 usage,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
-    @NoAutoDetect
+    private var validated: Boolean = false
+
+    fun validate(): ChatCompletion = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        choices().forEach { it.validate() }
+        created()
+        model()
+        _object_().let {
+            if (it != JsonValue.from("chat.completion")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
+        serviceTier()
+        systemFingerprint()
+        usage().ifPresent { it.validate() }
+        validated = true
+    }
+
     class Choice
-    @JsonCreator
     private constructor(
-        @JsonProperty("finish_reason")
-        @ExcludeMissing
-        private val finishReason: JsonField<FinishReason> = JsonMissing.of(),
-        @JsonProperty("index")
-        @ExcludeMissing
-        private val index: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("logprobs")
-        @ExcludeMissing
-        private val logprobs: JsonField<Logprobs> = JsonMissing.of(),
-        @JsonProperty("message")
-        @ExcludeMissing
-        private val message: JsonField<ChatCompletionMessage> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val finishReason: JsonField<FinishReason>,
+        private val index: JsonField<Long>,
+        private val logprobs: JsonField<Logprobs>,
+        private val message: JsonField<ChatCompletionMessage>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("finish_reason")
+            @ExcludeMissing
+            finishReason: JsonField<FinishReason> = JsonMissing.of(),
+            @JsonProperty("index") @ExcludeMissing index: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("logprobs")
+            @ExcludeMissing
+            logprobs: JsonField<Logprobs> = JsonMissing.of(),
+            @JsonProperty("message")
+            @ExcludeMissing
+            message: JsonField<ChatCompletionMessage> = JsonMissing.of(),
+        ) : this(finishReason, index, logprobs, message, mutableMapOf())
 
         /**
          * The reason the model stopped generating tokens. This will be `stop` if the model hit a
@@ -505,23 +529,15 @@ private constructor(
         @ExcludeMissing
         fun _message(): JsonField<ChatCompletionMessage> = message
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Choice = apply {
-            if (validated) {
-                return@apply
-            }
-
-            finishReason()
-            index()
-            logprobs().ifPresent { it.validate() }
-            message().validate()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -660,8 +676,22 @@ private constructor(
                     checkRequired("index", index),
                     checkRequired("logprobs", logprobs),
                     checkRequired("message", message),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Choice = apply {
+            if (validated) {
+                return@apply
+            }
+
+            finishReason()
+            index()
+            logprobs().ifPresent { it.validate() }
+            message().validate()
+            validated = true
         }
 
         /**
@@ -794,19 +824,22 @@ private constructor(
         }
 
         /** Log probability information for the choice. */
-        @NoAutoDetect
         class Logprobs
-        @JsonCreator
         private constructor(
-            @JsonProperty("content")
-            @ExcludeMissing
-            private val content: JsonField<List<ChatCompletionTokenLogprob>> = JsonMissing.of(),
-            @JsonProperty("refusal")
-            @ExcludeMissing
-            private val refusal: JsonField<List<ChatCompletionTokenLogprob>> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val content: JsonField<List<ChatCompletionTokenLogprob>>,
+            private val refusal: JsonField<List<ChatCompletionTokenLogprob>>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("content")
+                @ExcludeMissing
+                content: JsonField<List<ChatCompletionTokenLogprob>> = JsonMissing.of(),
+                @JsonProperty("refusal")
+                @ExcludeMissing
+                refusal: JsonField<List<ChatCompletionTokenLogprob>> = JsonMissing.of(),
+            ) : this(content, refusal, mutableMapOf())
 
             /**
              * A list of message content tokens with log probability information.
@@ -844,21 +877,15 @@ private constructor(
             @ExcludeMissing
             fun _refusal(): JsonField<List<ChatCompletionTokenLogprob>> = refusal
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): Logprobs = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                content().ifPresent { it.forEach { it.validate() } }
-                refusal().ifPresent { it.forEach { it.validate() } }
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -991,8 +1018,20 @@ private constructor(
                     Logprobs(
                         checkRequired("content", content).map { it.toImmutable() },
                         checkRequired("refusal", refusal).map { it.toImmutable() },
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Logprobs = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                content().ifPresent { it.forEach { it.validate() } }
+                refusal().ifPresent { it.forEach { it.validate() } }
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {

@@ -20,12 +20,10 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
@@ -33,15 +31,20 @@ import java.util.Optional
  * A filter used to compare a specified attribute key to a given value using a defined comparison
  * operation.
  */
-@NoAutoDetect
 class ComparisonFilter
-@JsonCreator
 private constructor(
-    @JsonProperty("key") @ExcludeMissing private val key: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
-    @JsonProperty("value") @ExcludeMissing private val value: JsonField<Value> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val key: JsonField<String>,
+    private val type: JsonField<Type>,
+    private val value: JsonField<Value>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("key") @ExcludeMissing key: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+        @JsonProperty("value") @ExcludeMissing value: JsonField<Value> = JsonMissing.of(),
+    ) : this(key, type, value, mutableMapOf())
 
     /**
      * The key to compare against the value.
@@ -94,22 +97,15 @@ private constructor(
      */
     @JsonProperty("value") @ExcludeMissing fun _value(): JsonField<Value> = value
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ComparisonFilter = apply {
-        if (validated) {
-            return@apply
-        }
-
-        key()
-        type()
-        value().validate()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -235,8 +231,21 @@ private constructor(
                 checkRequired("key", key),
                 checkRequired("type", type),
                 checkRequired("value", value),
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ComparisonFilter = apply {
+        if (validated) {
+            return@apply
+        }
+
+        key()
+        type()
+        value().validate()
+        validated = true
     }
 
     /**

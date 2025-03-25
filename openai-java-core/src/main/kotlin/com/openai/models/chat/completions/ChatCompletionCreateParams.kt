@@ -20,14 +20,12 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.Params
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ChatModel
@@ -37,6 +35,7 @@ import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatJsonObject
 import com.openai.models.ResponseFormatJsonSchema
 import com.openai.models.ResponseFormatText
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -633,103 +632,1240 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of [ChatCompletionCreateParams].
+         *
+         * The following fields are required:
+         * ```java
+         * .messages()
+         * .model()
+         * ```
+         */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    /** A builder for [ChatCompletionCreateParams]. */
+    class Builder internal constructor() {
+
+        private var body: Body.Builder = Body.builder()
+        private var additionalHeaders: Headers.Builder = Headers.builder()
+        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
+
+        @JvmSynthetic
+        internal fun from(chatCompletionCreateParams: ChatCompletionCreateParams) = apply {
+            body = chatCompletionCreateParams.body.toBuilder()
+            additionalHeaders = chatCompletionCreateParams.additionalHeaders.toBuilder()
+            additionalQueryParams = chatCompletionCreateParams.additionalQueryParams.toBuilder()
+        }
+
+        /**
+         * A list of messages comprising the conversation so far. Depending on the
+         * [model](https://platform.openai.com/docs/models) you use, different message types
+         * (modalities) are supported, like
+         * [text](https://platform.openai.com/docs/guides/text-generation),
+         * [images](https://platform.openai.com/docs/guides/vision), and
+         * [audio](https://platform.openai.com/docs/guides/audio).
+         */
+        fun messages(messages: List<ChatCompletionMessageParam>) = apply { body.messages(messages) }
+
+        /**
+         * Sets [Builder.messages] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.messages] with a well-typed
+         * `List<ChatCompletionMessageParam>` value instead. This method is primarily for setting
+         * the field to an undocumented or not yet supported value.
+         */
+        fun messages(messages: JsonField<List<ChatCompletionMessageParam>>) = apply {
+            body.messages(messages)
+        }
+
+        /**
+         * Adds a single [ChatCompletionMessageParam] to [messages].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addMessage(message: ChatCompletionMessageParam) = apply { body.addMessage(message) }
+
+        /**
+         * Alias for calling [addMessage] with `ChatCompletionMessageParam.ofDeveloper(developer)`.
+         */
+        fun addMessage(developer: ChatCompletionDeveloperMessageParam) = apply {
+            body.addMessage(developer)
+        }
+
+        /**
+         * Alias for calling [addMessage] with the following:
+         * ```java
+         * ChatCompletionDeveloperMessageParam.builder()
+         *     .content(content)
+         *     .build()
+         * ```
+         */
+        fun addDeveloperMessage(content: ChatCompletionDeveloperMessageParam.Content) = apply {
+            body.addDeveloperMessage(content)
+        }
+
+        /**
+         * Alias for calling [addDeveloperMessage] with
+         * `ChatCompletionDeveloperMessageParam.Content.ofText(text)`.
+         */
+        fun addDeveloperMessage(text: String) = apply { body.addDeveloperMessage(text) }
+
+        /**
+         * Alias for calling [addDeveloperMessage] with
+         * `ChatCompletionDeveloperMessageParam.Content.ofArrayOfContentParts(arrayOfContentParts)`.
+         */
+        fun addDeveloperMessageOfArrayOfContentParts(
+            arrayOfContentParts: List<ChatCompletionContentPartText>
+        ) = apply { body.addDeveloperMessageOfArrayOfContentParts(arrayOfContentParts) }
+
+        /** Alias for calling [addMessage] with `ChatCompletionMessageParam.ofSystem(system)`. */
+        fun addMessage(system: ChatCompletionSystemMessageParam) = apply { body.addMessage(system) }
+
+        /**
+         * Alias for calling [addMessage] with the following:
+         * ```java
+         * ChatCompletionSystemMessageParam.builder()
+         *     .content(content)
+         *     .build()
+         * ```
+         */
+        fun addSystemMessage(content: ChatCompletionSystemMessageParam.Content) = apply {
+            body.addSystemMessage(content)
+        }
+
+        /**
+         * Alias for calling [addSystemMessage] with
+         * `ChatCompletionSystemMessageParam.Content.ofText(text)`.
+         */
+        fun addSystemMessage(text: String) = apply { body.addSystemMessage(text) }
+
+        /**
+         * Alias for calling [addSystemMessage] with
+         * `ChatCompletionSystemMessageParam.Content.ofArrayOfContentParts(arrayOfContentParts)`.
+         */
+        fun addSystemMessageOfArrayOfContentParts(
+            arrayOfContentParts: List<ChatCompletionContentPartText>
+        ) = apply { body.addSystemMessageOfArrayOfContentParts(arrayOfContentParts) }
+
+        /** Alias for calling [addMessage] with `ChatCompletionMessageParam.ofUser(user)`. */
+        fun addMessage(user: ChatCompletionUserMessageParam) = apply { body.addMessage(user) }
+
+        /**
+         * Alias for calling [addMessage] with the following:
+         * ```java
+         * ChatCompletionUserMessageParam.builder()
+         *     .content(content)
+         *     .build()
+         * ```
+         */
+        fun addUserMessage(content: ChatCompletionUserMessageParam.Content) = apply {
+            body.addUserMessage(content)
+        }
+
+        /**
+         * Alias for calling [addUserMessage] with
+         * `ChatCompletionUserMessageParam.Content.ofText(text)`.
+         */
+        fun addUserMessage(text: String) = apply { body.addUserMessage(text) }
+
+        /**
+         * Alias for calling [addUserMessage] with
+         * `ChatCompletionUserMessageParam.Content.ofArrayOfContentParts(arrayOfContentParts)`.
+         */
+        fun addUserMessageOfArrayOfContentParts(
+            arrayOfContentParts: List<ChatCompletionContentPart>
+        ) = apply { body.addUserMessageOfArrayOfContentParts(arrayOfContentParts) }
+
+        /**
+         * Alias for calling [addMessage] with `ChatCompletionMessageParam.ofAssistant(assistant)`.
+         */
+        fun addMessage(assistant: ChatCompletionAssistantMessageParam) = apply {
+            body.addMessage(assistant)
+        }
+
+        /** Alias for calling [addMessage] with `assistant.toParam()`. */
+        fun addMessage(assistant: ChatCompletionMessage) = apply { body.addMessage(assistant) }
+
+        /** Alias for calling [addMessage] with `ChatCompletionMessageParam.ofTool(tool)`. */
+        fun addMessage(tool: ChatCompletionToolMessageParam) = apply { body.addMessage(tool) }
+
+        /**
+         * Alias for calling [addMessage] with `ChatCompletionMessageParam.ofFunction(function)`.
+         */
+        @Deprecated("deprecated")
+        fun addMessage(function: ChatCompletionFunctionMessageParam) = apply {
+            body.addMessage(function)
+        }
+
+        /**
+         * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide range
+         * of models with different capabilities, performance characteristics, and price points.
+         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * available models.
+         */
+        fun model(model: ChatModel) = apply { body.model(model) }
+
+        /**
+         * Sets [Builder.model] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.model] with a well-typed [ChatModel] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun model(model: JsonField<ChatModel>) = apply { body.model(model) }
+
+        /**
+         * Sets [model] to an arbitrary [String].
+         *
+         * You should usually call [model] with a well-typed [ChatModel] constant instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun model(value: String) = apply { body.model(value) }
+
+        /**
+         * Parameters for audio output. Required when audio output is requested with `modalities:
+         * ["audio"]`. [Learn more](https://platform.openai.com/docs/guides/audio).
+         */
+        fun audio(audio: ChatCompletionAudioParam?) = apply { body.audio(audio) }
+
+        /** Alias for calling [Builder.audio] with `audio.orElse(null)`. */
+        fun audio(audio: Optional<ChatCompletionAudioParam>) = audio(audio.getOrNull())
+
+        /**
+         * Sets [Builder.audio] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.audio] with a well-typed [ChatCompletionAudioParam]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun audio(audio: JsonField<ChatCompletionAudioParam>) = apply { body.audio(audio) }
+
+        /**
+         * Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing
+         * frequency in the text so far, decreasing the model's likelihood to repeat the same line
+         * verbatim.
+         */
+        fun frequencyPenalty(frequencyPenalty: Double?) = apply {
+            body.frequencyPenalty(frequencyPenalty)
+        }
+
+        /**
+         * Alias for [Builder.frequencyPenalty].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun frequencyPenalty(frequencyPenalty: Double) =
+            frequencyPenalty(frequencyPenalty as Double?)
+
+        /** Alias for calling [Builder.frequencyPenalty] with `frequencyPenalty.orElse(null)`. */
+        fun frequencyPenalty(frequencyPenalty: Optional<Double>) =
+            frequencyPenalty(frequencyPenalty.getOrNull())
+
+        /**
+         * Sets [Builder.frequencyPenalty] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.frequencyPenalty] with a well-typed [Double] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun frequencyPenalty(frequencyPenalty: JsonField<Double>) = apply {
+            body.frequencyPenalty(frequencyPenalty)
+        }
+
+        /**
+         * Deprecated in favor of `tool_choice`.
+         *
+         * Controls which (if any) function is called by the model.
+         *
+         * `none` means the model will not call a function and instead generates a message.
+         *
+         * `auto` means the model can pick between generating a message or calling a function.
+         *
+         * Specifying a particular function via `{"name": "my_function"}` forces the model to call
+         * that function.
+         *
+         * `none` is the default when no functions are present. `auto` is the default if functions
+         * are present.
+         */
+        @Deprecated("deprecated")
+        fun functionCall(functionCall: FunctionCall) = apply { body.functionCall(functionCall) }
+
+        /**
+         * Sets [Builder.functionCall] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.functionCall] with a well-typed [FunctionCall] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        @Deprecated("deprecated")
+        fun functionCall(functionCall: JsonField<FunctionCall>) = apply {
+            body.functionCall(functionCall)
+        }
+
+        /** Alias for calling [functionCall] with `FunctionCall.ofMode(mode)`. */
+        @Deprecated("deprecated")
+        fun functionCall(mode: FunctionCall.FunctionCallMode) = apply { body.functionCall(mode) }
+
+        /**
+         * Alias for calling [functionCall] with
+         * `FunctionCall.ofFunctionCallOption(functionCallOption)`.
+         */
+        @Deprecated("deprecated")
+        fun functionCall(functionCallOption: ChatCompletionFunctionCallOption) = apply {
+            body.functionCall(functionCallOption)
+        }
+
+        /**
+         * Deprecated in favor of `tools`.
+         *
+         * A list of functions the model may generate JSON inputs for.
+         */
+        @Deprecated("deprecated")
+        fun functions(functions: List<Function>) = apply { body.functions(functions) }
+
+        /**
+         * Sets [Builder.functions] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.functions] with a well-typed `List<Function>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        @Deprecated("deprecated")
+        fun functions(functions: JsonField<List<Function>>) = apply { body.functions(functions) }
+
+        /**
+         * Adds a single [Function] to [functions].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        @Deprecated("deprecated")
+        fun addFunction(function: Function) = apply { body.addFunction(function) }
+
+        /**
+         * Modify the likelihood of specified tokens appearing in the completion.
+         *
+         * Accepts a JSON object that maps tokens (specified by their token ID in the tokenizer) to
+         * an associated bias value from -100 to 100. Mathematically, the bias is added to the
+         * logits generated by the model prior to sampling. The exact effect will vary per model,
+         * but values between -1 and 1 should decrease or increase likelihood of selection; values
+         * like -100 or 100 should result in a ban or exclusive selection of the relevant token.
+         */
+        fun logitBias(logitBias: LogitBias?) = apply { body.logitBias(logitBias) }
+
+        /** Alias for calling [Builder.logitBias] with `logitBias.orElse(null)`. */
+        fun logitBias(logitBias: Optional<LogitBias>) = logitBias(logitBias.getOrNull())
+
+        /**
+         * Sets [Builder.logitBias] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.logitBias] with a well-typed [LogitBias] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun logitBias(logitBias: JsonField<LogitBias>) = apply { body.logitBias(logitBias) }
+
+        /**
+         * Whether to return log probabilities of the output tokens or not. If true, returns the log
+         * probabilities of each output token returned in the `content` of `message`.
+         */
+        fun logprobs(logprobs: Boolean?) = apply { body.logprobs(logprobs) }
+
+        /**
+         * Alias for [Builder.logprobs].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun logprobs(logprobs: Boolean) = logprobs(logprobs as Boolean?)
+
+        /** Alias for calling [Builder.logprobs] with `logprobs.orElse(null)`. */
+        fun logprobs(logprobs: Optional<Boolean>) = logprobs(logprobs.getOrNull())
+
+        /**
+         * Sets [Builder.logprobs] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.logprobs] with a well-typed [Boolean] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun logprobs(logprobs: JsonField<Boolean>) = apply { body.logprobs(logprobs) }
+
+        /**
+         * An upper bound for the number of tokens that can be generated for a completion, including
+         * visible output tokens and
+         * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
+         */
+        fun maxCompletionTokens(maxCompletionTokens: Long?) = apply {
+            body.maxCompletionTokens(maxCompletionTokens)
+        }
+
+        /**
+         * Alias for [Builder.maxCompletionTokens].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun maxCompletionTokens(maxCompletionTokens: Long) =
+            maxCompletionTokens(maxCompletionTokens as Long?)
+
+        /**
+         * Alias for calling [Builder.maxCompletionTokens] with `maxCompletionTokens.orElse(null)`.
+         */
+        fun maxCompletionTokens(maxCompletionTokens: Optional<Long>) =
+            maxCompletionTokens(maxCompletionTokens.getOrNull())
+
+        /**
+         * Sets [Builder.maxCompletionTokens] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.maxCompletionTokens] with a well-typed [Long] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun maxCompletionTokens(maxCompletionTokens: JsonField<Long>) = apply {
+            body.maxCompletionTokens(maxCompletionTokens)
+        }
+
+        /**
+         * The maximum number of [tokens](/tokenizer) that can be generated in the chat completion.
+         * This value can be used to control [costs](https://openai.com/api/pricing/) for text
+         * generated via API.
+         *
+         * This value is now deprecated in favor of `max_completion_tokens`, and is not compatible
+         * with [o1 series models](https://platform.openai.com/docs/guides/reasoning).
+         */
+        @Deprecated("deprecated")
+        fun maxTokens(maxTokens: Long?) = apply { body.maxTokens(maxTokens) }
+
+        /**
+         * Alias for [Builder.maxTokens].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        @Deprecated("deprecated") fun maxTokens(maxTokens: Long) = maxTokens(maxTokens as Long?)
+
+        /** Alias for calling [Builder.maxTokens] with `maxTokens.orElse(null)`. */
+        @Deprecated("deprecated")
+        fun maxTokens(maxTokens: Optional<Long>) = maxTokens(maxTokens.getOrNull())
+
+        /**
+         * Sets [Builder.maxTokens] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.maxTokens] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        @Deprecated("deprecated")
+        fun maxTokens(maxTokens: JsonField<Long>) = apply { body.maxTokens(maxTokens) }
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         */
+        fun metadata(metadata: Metadata?) = apply { body.metadata(metadata) }
+
+        /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
+
+        /**
+         * Sets [Builder.metadata] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.metadata] with a well-typed [Metadata] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
+
+        /**
+         * Output types that you would like the model to generate. Most models are capable of
+         * generating text, which is the default:
+         *
+         * `["text"]`
+         *
+         * The `gpt-4o-audio-preview` model can also be used to
+         * [generate audio](https://platform.openai.com/docs/guides/audio). To request that this
+         * model generate both text and audio responses, you can use:
+         *
+         * `["text", "audio"]`
+         */
+        fun modalities(modalities: List<Modality>?) = apply { body.modalities(modalities) }
+
+        /** Alias for calling [Builder.modalities] with `modalities.orElse(null)`. */
+        fun modalities(modalities: Optional<List<Modality>>) = modalities(modalities.getOrNull())
+
+        /**
+         * Sets [Builder.modalities] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.modalities] with a well-typed `List<Modality>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun modalities(modalities: JsonField<List<Modality>>) = apply {
+            body.modalities(modalities)
+        }
+
+        /**
+         * Adds a single [Modality] to [modalities].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addModality(modality: Modality) = apply { body.addModality(modality) }
+
+        /**
+         * How many chat completion choices to generate for each input message. Note that you will
+         * be charged based on the number of generated tokens across all of the choices. Keep `n` as
+         * `1` to minimize costs.
+         */
+        fun n(n: Long?) = apply { body.n(n) }
+
+        /**
+         * Alias for [Builder.n].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun n(n: Long) = n(n as Long?)
+
+        /** Alias for calling [Builder.n] with `n.orElse(null)`. */
+        fun n(n: Optional<Long>) = n(n.getOrNull())
+
+        /**
+         * Sets [Builder.n] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.n] with a well-typed [Long] value instead. This method
+         * is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun n(n: JsonField<Long>) = apply { body.n(n) }
+
+        /**
+         * Whether to enable
+         * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+         * during tool use.
+         */
+        fun parallelToolCalls(parallelToolCalls: Boolean) = apply {
+            body.parallelToolCalls(parallelToolCalls)
+        }
+
+        /**
+         * Sets [Builder.parallelToolCalls] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.parallelToolCalls] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun parallelToolCalls(parallelToolCalls: JsonField<Boolean>) = apply {
+            body.parallelToolCalls(parallelToolCalls)
+        }
+
+        /**
+         * Static predicted output content, such as the content of a text file that is being
+         * regenerated.
+         */
+        fun prediction(prediction: ChatCompletionPredictionContent?) = apply {
+            body.prediction(prediction)
+        }
+
+        /** Alias for calling [Builder.prediction] with `prediction.orElse(null)`. */
+        fun prediction(prediction: Optional<ChatCompletionPredictionContent>) =
+            prediction(prediction.getOrNull())
+
+        /**
+         * Sets [Builder.prediction] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.prediction] with a well-typed
+         * [ChatCompletionPredictionContent] value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
+         */
+        fun prediction(prediction: JsonField<ChatCompletionPredictionContent>) = apply {
+            body.prediction(prediction)
+        }
+
+        /**
+         * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they
+         * appear in the text so far, increasing the model's likelihood to talk about new topics.
+         */
+        fun presencePenalty(presencePenalty: Double?) = apply {
+            body.presencePenalty(presencePenalty)
+        }
+
+        /**
+         * Alias for [Builder.presencePenalty].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun presencePenalty(presencePenalty: Double) = presencePenalty(presencePenalty as Double?)
+
+        /** Alias for calling [Builder.presencePenalty] with `presencePenalty.orElse(null)`. */
+        fun presencePenalty(presencePenalty: Optional<Double>) =
+            presencePenalty(presencePenalty.getOrNull())
+
+        /**
+         * Sets [Builder.presencePenalty] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.presencePenalty] with a well-typed [Double] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun presencePenalty(presencePenalty: JsonField<Double>) = apply {
+            body.presencePenalty(presencePenalty)
+        }
+
+        /**
+         * **o-series models only**
+         *
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
+         * faster responses and fewer tokens used on reasoning in a response.
+         */
+        fun reasoningEffort(reasoningEffort: ReasoningEffort?) = apply {
+            body.reasoningEffort(reasoningEffort)
+        }
+
+        /** Alias for calling [Builder.reasoningEffort] with `reasoningEffort.orElse(null)`. */
+        fun reasoningEffort(reasoningEffort: Optional<ReasoningEffort>) =
+            reasoningEffort(reasoningEffort.getOrNull())
+
+        /**
+         * Sets [Builder.reasoningEffort] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.reasoningEffort] with a well-typed [ReasoningEffort]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun reasoningEffort(reasoningEffort: JsonField<ReasoningEffort>) = apply {
+            body.reasoningEffort(reasoningEffort)
+        }
+
+        /**
+         * An object specifying the format that the model must output.
+         *
+         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
+         * which ensures the model will match your supplied JSON schema. Learn more in the
+         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         *
+         * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the
+         * message the model generates is valid JSON. Using `json_schema` is preferred for models
+         * that support it.
+         */
+        fun responseFormat(responseFormat: ResponseFormat) = apply {
+            body.responseFormat(responseFormat)
+        }
+
+        /**
+         * Sets [Builder.responseFormat] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.responseFormat] with a well-typed [ResponseFormat] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun responseFormat(responseFormat: JsonField<ResponseFormat>) = apply {
+            body.responseFormat(responseFormat)
+        }
+
+        /** Alias for calling [responseFormat] with `ResponseFormat.ofText(text)`. */
+        fun responseFormat(text: ResponseFormatText) = apply { body.responseFormat(text) }
+
+        /** Alias for calling [responseFormat] with `ResponseFormat.ofJsonSchema(jsonSchema)`. */
+        fun responseFormat(jsonSchema: ResponseFormatJsonSchema) = apply {
+            body.responseFormat(jsonSchema)
+        }
+
+        /** Alias for calling [responseFormat] with `ResponseFormat.ofJsonObject(jsonObject)`. */
+        fun responseFormat(jsonObject: ResponseFormatJsonObject) = apply {
+            body.responseFormat(jsonObject)
+        }
+
+        /**
+         * This feature is in Beta. If specified, our system will make a best effort to sample
+         * deterministically, such that repeated requests with the same `seed` and parameters should
+         * return the same result. Determinism is not guaranteed, and you should refer to the
+         * `system_fingerprint` response parameter to monitor changes in the backend.
+         */
+        fun seed(seed: Long?) = apply { body.seed(seed) }
+
+        /**
+         * Alias for [Builder.seed].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun seed(seed: Long) = seed(seed as Long?)
+
+        /** Alias for calling [Builder.seed] with `seed.orElse(null)`. */
+        fun seed(seed: Optional<Long>) = seed(seed.getOrNull())
+
+        /**
+         * Sets [Builder.seed] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.seed] with a well-typed [Long] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun seed(seed: JsonField<Long>) = apply { body.seed(seed) }
+
+        /**
+         * Specifies the latency tier to use for processing the request. This parameter is relevant
+         * for customers subscribed to the scale tier service:
+         * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale
+         *   tier credits until they are exhausted.
+         * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
+         *   processed using the default service tier with a lower uptime SLA and no latency
+         *   guarentee.
+         * - If set to 'default', the request will be processed using the default service tier with
+         *   a lower uptime SLA and no latency guarentee.
+         * - When not set, the default behavior is 'auto'.
+         *
+         * When this parameter is set, the response body will include the `service_tier` utilized.
+         */
+        fun serviceTier(serviceTier: ServiceTier?) = apply { body.serviceTier(serviceTier) }
+
+        /** Alias for calling [Builder.serviceTier] with `serviceTier.orElse(null)`. */
+        fun serviceTier(serviceTier: Optional<ServiceTier>) = serviceTier(serviceTier.getOrNull())
+
+        /**
+         * Sets [Builder.serviceTier] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.serviceTier] with a well-typed [ServiceTier] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun serviceTier(serviceTier: JsonField<ServiceTier>) = apply {
+            body.serviceTier(serviceTier)
+        }
+
+        /**
+         * Up to 4 sequences where the API will stop generating further tokens. The returned text
+         * will not contain the stop sequence.
+         */
+        fun stop(stop: Stop?) = apply { body.stop(stop) }
+
+        /** Alias for calling [Builder.stop] with `stop.orElse(null)`. */
+        fun stop(stop: Optional<Stop>) = stop(stop.getOrNull())
+
+        /**
+         * Sets [Builder.stop] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.stop] with a well-typed [Stop] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun stop(stop: JsonField<Stop>) = apply { body.stop(stop) }
+
+        /** Alias for calling [stop] with `Stop.ofString(string)`. */
+        fun stop(string: String) = apply { body.stop(string) }
+
+        /** Alias for calling [stop] with `Stop.ofStrings(strings)`. */
+        fun stopOfStrings(strings: List<String>) = apply { body.stopOfStrings(strings) }
+
+        /**
+         * Whether or not to store the output of this chat completion request for use in our
+         * [model distillation](https://platform.openai.com/docs/guides/distillation) or
+         * [evals](https://platform.openai.com/docs/guides/evals) products.
+         */
+        fun store(store: Boolean?) = apply { body.store(store) }
+
+        /**
+         * Alias for [Builder.store].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun store(store: Boolean) = store(store as Boolean?)
+
+        /** Alias for calling [Builder.store] with `store.orElse(null)`. */
+        fun store(store: Optional<Boolean>) = store(store.getOrNull())
+
+        /**
+         * Sets [Builder.store] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.store] with a well-typed [Boolean] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun store(store: JsonField<Boolean>) = apply { body.store(store) }
+
+        /** Options for streaming response. Only set this when you set `stream: true`. */
+        fun streamOptions(streamOptions: ChatCompletionStreamOptions?) = apply {
+            body.streamOptions(streamOptions)
+        }
+
+        /** Alias for calling [Builder.streamOptions] with `streamOptions.orElse(null)`. */
+        fun streamOptions(streamOptions: Optional<ChatCompletionStreamOptions>) =
+            streamOptions(streamOptions.getOrNull())
+
+        /**
+         * Sets [Builder.streamOptions] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.streamOptions] with a well-typed
+         * [ChatCompletionStreamOptions] value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
+         */
+        fun streamOptions(streamOptions: JsonField<ChatCompletionStreamOptions>) = apply {
+            body.streamOptions(streamOptions)
+        }
+
+        /**
+         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+         * output more random, while lower values like 0.2 will make it more focused and
+         * deterministic. We generally recommend altering this or `top_p` but not both.
+         */
+        fun temperature(temperature: Double?) = apply { body.temperature(temperature) }
+
+        /**
+         * Alias for [Builder.temperature].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun temperature(temperature: Double) = temperature(temperature as Double?)
+
+        /** Alias for calling [Builder.temperature] with `temperature.orElse(null)`. */
+        fun temperature(temperature: Optional<Double>) = temperature(temperature.getOrNull())
+
+        /**
+         * Sets [Builder.temperature] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.temperature] with a well-typed [Double] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun temperature(temperature: JsonField<Double>) = apply { body.temperature(temperature) }
+
+        /**
+         * Controls which (if any) tool is called by the model. `none` means the model will not call
+         * any tool and instead generates a message. `auto` means the model can pick between
+         * generating a message or calling one or more tools. `required` means the model must call
+         * one or more tools. Specifying a particular tool via `{"type": "function", "function":
+         * {"name": "my_function"}}` forces the model to call that tool.
+         *
+         * `none` is the default when no tools are present. `auto` is the default if tools are
+         * present.
+         */
+        fun toolChoice(toolChoice: ChatCompletionToolChoiceOption) = apply {
+            body.toolChoice(toolChoice)
+        }
+
+        /**
+         * Sets [Builder.toolChoice] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.toolChoice] with a well-typed
+         * [ChatCompletionToolChoiceOption] value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
+         */
+        fun toolChoice(toolChoice: JsonField<ChatCompletionToolChoiceOption>) = apply {
+            body.toolChoice(toolChoice)
+        }
+
+        /** Alias for calling [toolChoice] with `ChatCompletionToolChoiceOption.ofAuto(auto)`. */
+        fun toolChoice(auto: ChatCompletionToolChoiceOption.Auto) = apply { body.toolChoice(auto) }
+
+        /**
+         * Alias for calling [toolChoice] with
+         * `ChatCompletionToolChoiceOption.ofNamedToolChoice(namedToolChoice)`.
+         */
+        fun toolChoice(namedToolChoice: ChatCompletionNamedToolChoice) = apply {
+            body.toolChoice(namedToolChoice)
+        }
+
+        /**
+         * A list of tools the model may call. Currently, only functions are supported as a tool.
+         * Use this to provide a list of functions the model may generate JSON inputs for. A max of
+         * 128 functions are supported.
+         */
+        fun tools(tools: List<ChatCompletionTool>) = apply { body.tools(tools) }
+
+        /**
+         * Sets [Builder.tools] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.tools] with a well-typed `List<ChatCompletionTool>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun tools(tools: JsonField<List<ChatCompletionTool>>) = apply { body.tools(tools) }
+
+        /**
+         * Adds a single [ChatCompletionTool] to [tools].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addTool(tool: ChatCompletionTool) = apply { body.addTool(tool) }
+
+        /**
+         * An integer between 0 and 20 specifying the number of most likely tokens to return at each
+         * token position, each with an associated log probability. `logprobs` must be set to `true`
+         * if this parameter is used.
+         */
+        fun topLogprobs(topLogprobs: Long?) = apply { body.topLogprobs(topLogprobs) }
+
+        /**
+         * Alias for [Builder.topLogprobs].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun topLogprobs(topLogprobs: Long) = topLogprobs(topLogprobs as Long?)
+
+        /** Alias for calling [Builder.topLogprobs] with `topLogprobs.orElse(null)`. */
+        fun topLogprobs(topLogprobs: Optional<Long>) = topLogprobs(topLogprobs.getOrNull())
+
+        /**
+         * Sets [Builder.topLogprobs] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.topLogprobs] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun topLogprobs(topLogprobs: JsonField<Long>) = apply { body.topLogprobs(topLogprobs) }
+
+        /**
+         * An alternative to sampling with temperature, called nucleus sampling, where the model
+         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
+         * tokens comprising the top 10% probability mass are considered.
+         *
+         * We generally recommend altering this or `temperature` but not both.
+         */
+        fun topP(topP: Double?) = apply { body.topP(topP) }
+
+        /**
+         * Alias for [Builder.topP].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun topP(topP: Double) = topP(topP as Double?)
+
+        /** Alias for calling [Builder.topP] with `topP.orElse(null)`. */
+        fun topP(topP: Optional<Double>) = topP(topP.getOrNull())
+
+        /**
+         * Sets [Builder.topP] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.topP] with a well-typed [Double] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun topP(topP: JsonField<Double>) = apply { body.topP(topP) }
+
+        /**
+         * A unique identifier representing your end-user, which can help OpenAI to monitor and
+         * detect abuse.
+         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         */
+        fun user(user: String) = apply { body.user(user) }
+
+        /**
+         * Sets [Builder.user] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.user] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun user(user: JsonField<String>) = apply { body.user(user) }
+
+        /**
+         * This tool searches the web for relevant results to use in a response. Learn more about
+         * the
+         * [web search tool](https://platform.openai.com/docs/guides/tools-web-search?api-mode=chat).
+         */
+        fun webSearchOptions(webSearchOptions: WebSearchOptions) = apply {
+            body.webSearchOptions(webSearchOptions)
+        }
+
+        /**
+         * Sets [Builder.webSearchOptions] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.webSearchOptions] with a well-typed [WebSearchOptions]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun webSearchOptions(webSearchOptions: JsonField<WebSearchOptions>) = apply {
+            body.webSearchOptions(webSearchOptions)
+        }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
+
+        fun additionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.clear()
+            putAllAdditionalHeaders(additionalHeaders)
+        }
+
+        fun putAdditionalHeader(name: String, value: String) = apply {
+            additionalHeaders.put(name, value)
+        }
+
+        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.put(name, values)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.putAll(additionalHeaders)
+        }
+
+        fun replaceAdditionalHeaders(name: String, value: String) = apply {
+            additionalHeaders.replace(name, value)
+        }
+
+        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
+            additionalHeaders.replace(name, values)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
+            this.additionalHeaders.replaceAll(additionalHeaders)
+        }
+
+        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
+
+        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
+            additionalHeaders.removeAll(names)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
+            this.additionalQueryParams.clear()
+            putAllAdditionalQueryParams(additionalQueryParams)
+        }
+
+        fun putAdditionalQueryParam(key: String, value: String) = apply {
+            additionalQueryParams.put(key, value)
+        }
+
+        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.put(key, values)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.putAll(additionalQueryParams)
+        }
+
+        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.putAll(additionalQueryParams)
+            }
+
+        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
+            additionalQueryParams.replace(key, value)
+        }
+
+        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
+            additionalQueryParams.replace(key, values)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
+            this.additionalQueryParams.replaceAll(additionalQueryParams)
+        }
+
+        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
+            apply {
+                this.additionalQueryParams.replaceAll(additionalQueryParams)
+            }
+
+        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
+
+        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
+            additionalQueryParams.removeAll(keys)
+        }
+
+        /**
+         * Returns an immutable instance of [ChatCompletionCreateParams].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .messages()
+         * .model()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): ChatCompletionCreateParams =
+            ChatCompletionCreateParams(
+                body.build(),
+                additionalHeaders.build(),
+                additionalQueryParams.build(),
+            )
+    }
+
     @JvmSynthetic internal fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
-    @NoAutoDetect
     class Body
-    @JsonCreator
     private constructor(
-        @JsonProperty("messages")
-        @ExcludeMissing
-        private val messages: JsonField<List<ChatCompletionMessageParam>> = JsonMissing.of(),
-        @JsonProperty("model")
-        @ExcludeMissing
-        private val model: JsonField<ChatModel> = JsonMissing.of(),
-        @JsonProperty("audio")
-        @ExcludeMissing
-        private val audio: JsonField<ChatCompletionAudioParam> = JsonMissing.of(),
-        @JsonProperty("frequency_penalty")
-        @ExcludeMissing
-        private val frequencyPenalty: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("function_call")
-        @ExcludeMissing
-        private val functionCall: JsonField<FunctionCall> = JsonMissing.of(),
-        @JsonProperty("functions")
-        @ExcludeMissing
-        private val functions: JsonField<List<Function>> = JsonMissing.of(),
-        @JsonProperty("logit_bias")
-        @ExcludeMissing
-        private val logitBias: JsonField<LogitBias> = JsonMissing.of(),
-        @JsonProperty("logprobs")
-        @ExcludeMissing
-        private val logprobs: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("max_completion_tokens")
-        @ExcludeMissing
-        private val maxCompletionTokens: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("max_tokens")
-        @ExcludeMissing
-        private val maxTokens: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("metadata")
-        @ExcludeMissing
-        private val metadata: JsonField<Metadata> = JsonMissing.of(),
-        @JsonProperty("modalities")
-        @ExcludeMissing
-        private val modalities: JsonField<List<Modality>> = JsonMissing.of(),
-        @JsonProperty("n") @ExcludeMissing private val n: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("parallel_tool_calls")
-        @ExcludeMissing
-        private val parallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("prediction")
-        @ExcludeMissing
-        private val prediction: JsonField<ChatCompletionPredictionContent> = JsonMissing.of(),
-        @JsonProperty("presence_penalty")
-        @ExcludeMissing
-        private val presencePenalty: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("reasoning_effort")
-        @ExcludeMissing
-        private val reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of(),
-        @JsonProperty("response_format")
-        @ExcludeMissing
-        private val responseFormat: JsonField<ResponseFormat> = JsonMissing.of(),
-        @JsonProperty("seed") @ExcludeMissing private val seed: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("service_tier")
-        @ExcludeMissing
-        private val serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
-        @JsonProperty("stop") @ExcludeMissing private val stop: JsonField<Stop> = JsonMissing.of(),
-        @JsonProperty("store")
-        @ExcludeMissing
-        private val store: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("stream_options")
-        @ExcludeMissing
-        private val streamOptions: JsonField<ChatCompletionStreamOptions> = JsonMissing.of(),
-        @JsonProperty("temperature")
-        @ExcludeMissing
-        private val temperature: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("tool_choice")
-        @ExcludeMissing
-        private val toolChoice: JsonField<ChatCompletionToolChoiceOption> = JsonMissing.of(),
-        @JsonProperty("tools")
-        @ExcludeMissing
-        private val tools: JsonField<List<ChatCompletionTool>> = JsonMissing.of(),
-        @JsonProperty("top_logprobs")
-        @ExcludeMissing
-        private val topLogprobs: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("top_p")
-        @ExcludeMissing
-        private val topP: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("user")
-        @ExcludeMissing
-        private val user: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("web_search_options")
-        @ExcludeMissing
-        private val webSearchOptions: JsonField<WebSearchOptions> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val messages: JsonField<List<ChatCompletionMessageParam>>,
+        private val model: JsonField<ChatModel>,
+        private val audio: JsonField<ChatCompletionAudioParam>,
+        private val frequencyPenalty: JsonField<Double>,
+        private val functionCall: JsonField<FunctionCall>,
+        private val functions: JsonField<List<Function>>,
+        private val logitBias: JsonField<LogitBias>,
+        private val logprobs: JsonField<Boolean>,
+        private val maxCompletionTokens: JsonField<Long>,
+        private val maxTokens: JsonField<Long>,
+        private val metadata: JsonField<Metadata>,
+        private val modalities: JsonField<List<Modality>>,
+        private val n: JsonField<Long>,
+        private val parallelToolCalls: JsonField<Boolean>,
+        private val prediction: JsonField<ChatCompletionPredictionContent>,
+        private val presencePenalty: JsonField<Double>,
+        private val reasoningEffort: JsonField<ReasoningEffort>,
+        private val responseFormat: JsonField<ResponseFormat>,
+        private val seed: JsonField<Long>,
+        private val serviceTier: JsonField<ServiceTier>,
+        private val stop: JsonField<Stop>,
+        private val store: JsonField<Boolean>,
+        private val streamOptions: JsonField<ChatCompletionStreamOptions>,
+        private val temperature: JsonField<Double>,
+        private val toolChoice: JsonField<ChatCompletionToolChoiceOption>,
+        private val tools: JsonField<List<ChatCompletionTool>>,
+        private val topLogprobs: JsonField<Long>,
+        private val topP: JsonField<Double>,
+        private val user: JsonField<String>,
+        private val webSearchOptions: JsonField<WebSearchOptions>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("messages")
+            @ExcludeMissing
+            messages: JsonField<List<ChatCompletionMessageParam>> = JsonMissing.of(),
+            @JsonProperty("model") @ExcludeMissing model: JsonField<ChatModel> = JsonMissing.of(),
+            @JsonProperty("audio")
+            @ExcludeMissing
+            audio: JsonField<ChatCompletionAudioParam> = JsonMissing.of(),
+            @JsonProperty("frequency_penalty")
+            @ExcludeMissing
+            frequencyPenalty: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("function_call")
+            @ExcludeMissing
+            functionCall: JsonField<FunctionCall> = JsonMissing.of(),
+            @JsonProperty("functions")
+            @ExcludeMissing
+            functions: JsonField<List<Function>> = JsonMissing.of(),
+            @JsonProperty("logit_bias")
+            @ExcludeMissing
+            logitBias: JsonField<LogitBias> = JsonMissing.of(),
+            @JsonProperty("logprobs")
+            @ExcludeMissing
+            logprobs: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("max_completion_tokens")
+            @ExcludeMissing
+            maxCompletionTokens: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("max_tokens")
+            @ExcludeMissing
+            maxTokens: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("metadata")
+            @ExcludeMissing
+            metadata: JsonField<Metadata> = JsonMissing.of(),
+            @JsonProperty("modalities")
+            @ExcludeMissing
+            modalities: JsonField<List<Modality>> = JsonMissing.of(),
+            @JsonProperty("n") @ExcludeMissing n: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("parallel_tool_calls")
+            @ExcludeMissing
+            parallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("prediction")
+            @ExcludeMissing
+            prediction: JsonField<ChatCompletionPredictionContent> = JsonMissing.of(),
+            @JsonProperty("presence_penalty")
+            @ExcludeMissing
+            presencePenalty: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("reasoning_effort")
+            @ExcludeMissing
+            reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of(),
+            @JsonProperty("response_format")
+            @ExcludeMissing
+            responseFormat: JsonField<ResponseFormat> = JsonMissing.of(),
+            @JsonProperty("seed") @ExcludeMissing seed: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("service_tier")
+            @ExcludeMissing
+            serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
+            @JsonProperty("stop") @ExcludeMissing stop: JsonField<Stop> = JsonMissing.of(),
+            @JsonProperty("store") @ExcludeMissing store: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("stream_options")
+            @ExcludeMissing
+            streamOptions: JsonField<ChatCompletionStreamOptions> = JsonMissing.of(),
+            @JsonProperty("temperature")
+            @ExcludeMissing
+            temperature: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("tool_choice")
+            @ExcludeMissing
+            toolChoice: JsonField<ChatCompletionToolChoiceOption> = JsonMissing.of(),
+            @JsonProperty("tools")
+            @ExcludeMissing
+            tools: JsonField<List<ChatCompletionTool>> = JsonMissing.of(),
+            @JsonProperty("top_logprobs")
+            @ExcludeMissing
+            topLogprobs: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("top_p") @ExcludeMissing topP: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("user") @ExcludeMissing user: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("web_search_options")
+            @ExcludeMissing
+            webSearchOptions: JsonField<WebSearchOptions> = JsonMissing.of(),
+        ) : this(
+            messages,
+            model,
+            audio,
+            frequencyPenalty,
+            functionCall,
+            functions,
+            logitBias,
+            logprobs,
+            maxCompletionTokens,
+            maxTokens,
+            metadata,
+            modalities,
+            n,
+            parallelToolCalls,
+            prediction,
+            presencePenalty,
+            reasoningEffort,
+            responseFormat,
+            seed,
+            serviceTier,
+            stop,
+            store,
+            streamOptions,
+            temperature,
+            toolChoice,
+            tools,
+            topLogprobs,
+            topP,
+            user,
+            webSearchOptions,
+            mutableMapOf(),
+        )
 
         /**
          * A list of messages comprising the conversation so far. Depending on the
@@ -1367,49 +2503,15 @@ private constructor(
         @ExcludeMissing
         fun _webSearchOptions(): JsonField<WebSearchOptions> = webSearchOptions
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Body = apply {
-            if (validated) {
-                return@apply
-            }
-
-            messages().forEach { it.validate() }
-            model()
-            audio().ifPresent { it.validate() }
-            frequencyPenalty()
-            functionCall().ifPresent { it.validate() }
-            functions().ifPresent { it.forEach { it.validate() } }
-            logitBias().ifPresent { it.validate() }
-            logprobs()
-            maxCompletionTokens()
-            maxTokens()
-            metadata().ifPresent { it.validate() }
-            modalities()
-            n()
-            parallelToolCalls()
-            prediction().ifPresent { it.validate() }
-            presencePenalty()
-            reasoningEffort()
-            responseFormat().ifPresent { it.validate() }
-            seed()
-            serviceTier()
-            stop().ifPresent { it.validate() }
-            store()
-            streamOptions().ifPresent { it.validate() }
-            temperature()
-            toolChoice().ifPresent { it.validate() }
-            tools().ifPresent { it.forEach { it.validate() } }
-            topLogprobs()
-            topP()
-            user()
-            webSearchOptions().ifPresent { it.validate() }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -2539,8 +3641,48 @@ private constructor(
                     topP,
                     user,
                     webSearchOptions,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            messages().forEach { it.validate() }
+            model()
+            audio().ifPresent { it.validate() }
+            frequencyPenalty()
+            functionCall().ifPresent { it.validate() }
+            functions().ifPresent { it.forEach { it.validate() } }
+            logitBias().ifPresent { it.validate() }
+            logprobs()
+            maxCompletionTokens()
+            maxTokens()
+            metadata().ifPresent { it.validate() }
+            modalities()
+            n()
+            parallelToolCalls()
+            prediction().ifPresent { it.validate() }
+            presencePenalty()
+            reasoningEffort()
+            responseFormat().ifPresent { it.validate() }
+            seed()
+            serviceTier()
+            stop().ifPresent { it.validate() }
+            store()
+            streamOptions().ifPresent { it.validate() }
+            temperature()
+            toolChoice().ifPresent { it.validate() }
+            tools().ifPresent { it.forEach { it.validate() } }
+            topLogprobs()
+            topP()
+            user()
+            webSearchOptions().ifPresent { it.validate() }
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -2559,1089 +3701,6 @@ private constructor(
 
         override fun toString() =
             "Body{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, webSearchOptions=$webSearchOptions, additionalProperties=$additionalProperties}"
-    }
-
-    fun toBuilder() = Builder().from(this)
-
-    companion object {
-
-        /**
-         * Returns a mutable builder for constructing an instance of [ChatCompletionCreateParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .messages()
-         * .model()
-         * ```
-         */
-        @JvmStatic fun builder() = Builder()
-    }
-
-    /** A builder for [ChatCompletionCreateParams]. */
-    @NoAutoDetect
-    class Builder internal constructor() {
-
-        private var body: Body.Builder = Body.builder()
-        private var additionalHeaders: Headers.Builder = Headers.builder()
-        private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
-
-        @JvmSynthetic
-        internal fun from(chatCompletionCreateParams: ChatCompletionCreateParams) = apply {
-            body = chatCompletionCreateParams.body.toBuilder()
-            additionalHeaders = chatCompletionCreateParams.additionalHeaders.toBuilder()
-            additionalQueryParams = chatCompletionCreateParams.additionalQueryParams.toBuilder()
-        }
-
-        /**
-         * A list of messages comprising the conversation so far. Depending on the
-         * [model](https://platform.openai.com/docs/models) you use, different message types
-         * (modalities) are supported, like
-         * [text](https://platform.openai.com/docs/guides/text-generation),
-         * [images](https://platform.openai.com/docs/guides/vision), and
-         * [audio](https://platform.openai.com/docs/guides/audio).
-         */
-        fun messages(messages: List<ChatCompletionMessageParam>) = apply { body.messages(messages) }
-
-        /**
-         * Sets [Builder.messages] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.messages] with a well-typed
-         * `List<ChatCompletionMessageParam>` value instead. This method is primarily for setting
-         * the field to an undocumented or not yet supported value.
-         */
-        fun messages(messages: JsonField<List<ChatCompletionMessageParam>>) = apply {
-            body.messages(messages)
-        }
-
-        /**
-         * Adds a single [ChatCompletionMessageParam] to [messages].
-         *
-         * @throws IllegalStateException if the field was previously set to a non-list.
-         */
-        fun addMessage(message: ChatCompletionMessageParam) = apply { body.addMessage(message) }
-
-        /**
-         * Alias for calling [addMessage] with `ChatCompletionMessageParam.ofDeveloper(developer)`.
-         */
-        fun addMessage(developer: ChatCompletionDeveloperMessageParam) = apply {
-            body.addMessage(developer)
-        }
-
-        /**
-         * Alias for calling [addMessage] with the following:
-         * ```java
-         * ChatCompletionDeveloperMessageParam.builder()
-         *     .content(content)
-         *     .build()
-         * ```
-         */
-        fun addDeveloperMessage(content: ChatCompletionDeveloperMessageParam.Content) = apply {
-            body.addDeveloperMessage(content)
-        }
-
-        /**
-         * Alias for calling [addDeveloperMessage] with
-         * `ChatCompletionDeveloperMessageParam.Content.ofText(text)`.
-         */
-        fun addDeveloperMessage(text: String) = apply { body.addDeveloperMessage(text) }
-
-        /**
-         * Alias for calling [addDeveloperMessage] with
-         * `ChatCompletionDeveloperMessageParam.Content.ofArrayOfContentParts(arrayOfContentParts)`.
-         */
-        fun addDeveloperMessageOfArrayOfContentParts(
-            arrayOfContentParts: List<ChatCompletionContentPartText>
-        ) = apply { body.addDeveloperMessageOfArrayOfContentParts(arrayOfContentParts) }
-
-        /** Alias for calling [addMessage] with `ChatCompletionMessageParam.ofSystem(system)`. */
-        fun addMessage(system: ChatCompletionSystemMessageParam) = apply { body.addMessage(system) }
-
-        /**
-         * Alias for calling [addMessage] with the following:
-         * ```java
-         * ChatCompletionSystemMessageParam.builder()
-         *     .content(content)
-         *     .build()
-         * ```
-         */
-        fun addSystemMessage(content: ChatCompletionSystemMessageParam.Content) = apply {
-            body.addSystemMessage(content)
-        }
-
-        /**
-         * Alias for calling [addSystemMessage] with
-         * `ChatCompletionSystemMessageParam.Content.ofText(text)`.
-         */
-        fun addSystemMessage(text: String) = apply { body.addSystemMessage(text) }
-
-        /**
-         * Alias for calling [addSystemMessage] with
-         * `ChatCompletionSystemMessageParam.Content.ofArrayOfContentParts(arrayOfContentParts)`.
-         */
-        fun addSystemMessageOfArrayOfContentParts(
-            arrayOfContentParts: List<ChatCompletionContentPartText>
-        ) = apply { body.addSystemMessageOfArrayOfContentParts(arrayOfContentParts) }
-
-        /** Alias for calling [addMessage] with `ChatCompletionMessageParam.ofUser(user)`. */
-        fun addMessage(user: ChatCompletionUserMessageParam) = apply { body.addMessage(user) }
-
-        /**
-         * Alias for calling [addMessage] with the following:
-         * ```java
-         * ChatCompletionUserMessageParam.builder()
-         *     .content(content)
-         *     .build()
-         * ```
-         */
-        fun addUserMessage(content: ChatCompletionUserMessageParam.Content) = apply {
-            body.addUserMessage(content)
-        }
-
-        /**
-         * Alias for calling [addUserMessage] with
-         * `ChatCompletionUserMessageParam.Content.ofText(text)`.
-         */
-        fun addUserMessage(text: String) = apply { body.addUserMessage(text) }
-
-        /**
-         * Alias for calling [addUserMessage] with
-         * `ChatCompletionUserMessageParam.Content.ofArrayOfContentParts(arrayOfContentParts)`.
-         */
-        fun addUserMessageOfArrayOfContentParts(
-            arrayOfContentParts: List<ChatCompletionContentPart>
-        ) = apply { body.addUserMessageOfArrayOfContentParts(arrayOfContentParts) }
-
-        /**
-         * Alias for calling [addMessage] with `ChatCompletionMessageParam.ofAssistant(assistant)`.
-         */
-        fun addMessage(assistant: ChatCompletionAssistantMessageParam) = apply {
-            body.addMessage(assistant)
-        }
-
-        /** Alias for calling [addMessage] with `assistant.toParam()`. */
-        fun addMessage(assistant: ChatCompletionMessage) = apply { body.addMessage(assistant) }
-
-        /** Alias for calling [addMessage] with `ChatCompletionMessageParam.ofTool(tool)`. */
-        fun addMessage(tool: ChatCompletionToolMessageParam) = apply { body.addMessage(tool) }
-
-        /**
-         * Alias for calling [addMessage] with `ChatCompletionMessageParam.ofFunction(function)`.
-         */
-        @Deprecated("deprecated")
-        fun addMessage(function: ChatCompletionFunctionMessageParam) = apply {
-            body.addMessage(function)
-        }
-
-        /**
-         * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
-         * available models.
-         */
-        fun model(model: ChatModel) = apply { body.model(model) }
-
-        /**
-         * Sets [Builder.model] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.model] with a well-typed [ChatModel] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun model(model: JsonField<ChatModel>) = apply { body.model(model) }
-
-        /**
-         * Sets [model] to an arbitrary [String].
-         *
-         * You should usually call [model] with a well-typed [ChatModel] constant instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun model(value: String) = apply { body.model(value) }
-
-        /**
-         * Parameters for audio output. Required when audio output is requested with `modalities:
-         * ["audio"]`. [Learn more](https://platform.openai.com/docs/guides/audio).
-         */
-        fun audio(audio: ChatCompletionAudioParam?) = apply { body.audio(audio) }
-
-        /** Alias for calling [Builder.audio] with `audio.orElse(null)`. */
-        fun audio(audio: Optional<ChatCompletionAudioParam>) = audio(audio.getOrNull())
-
-        /**
-         * Sets [Builder.audio] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.audio] with a well-typed [ChatCompletionAudioParam]
-         * value instead. This method is primarily for setting the field to an undocumented or not
-         * yet supported value.
-         */
-        fun audio(audio: JsonField<ChatCompletionAudioParam>) = apply { body.audio(audio) }
-
-        /**
-         * Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing
-         * frequency in the text so far, decreasing the model's likelihood to repeat the same line
-         * verbatim.
-         */
-        fun frequencyPenalty(frequencyPenalty: Double?) = apply {
-            body.frequencyPenalty(frequencyPenalty)
-        }
-
-        /**
-         * Alias for [Builder.frequencyPenalty].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun frequencyPenalty(frequencyPenalty: Double) =
-            frequencyPenalty(frequencyPenalty as Double?)
-
-        /** Alias for calling [Builder.frequencyPenalty] with `frequencyPenalty.orElse(null)`. */
-        fun frequencyPenalty(frequencyPenalty: Optional<Double>) =
-            frequencyPenalty(frequencyPenalty.getOrNull())
-
-        /**
-         * Sets [Builder.frequencyPenalty] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.frequencyPenalty] with a well-typed [Double] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun frequencyPenalty(frequencyPenalty: JsonField<Double>) = apply {
-            body.frequencyPenalty(frequencyPenalty)
-        }
-
-        /**
-         * Deprecated in favor of `tool_choice`.
-         *
-         * Controls which (if any) function is called by the model.
-         *
-         * `none` means the model will not call a function and instead generates a message.
-         *
-         * `auto` means the model can pick between generating a message or calling a function.
-         *
-         * Specifying a particular function via `{"name": "my_function"}` forces the model to call
-         * that function.
-         *
-         * `none` is the default when no functions are present. `auto` is the default if functions
-         * are present.
-         */
-        @Deprecated("deprecated")
-        fun functionCall(functionCall: FunctionCall) = apply { body.functionCall(functionCall) }
-
-        /**
-         * Sets [Builder.functionCall] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.functionCall] with a well-typed [FunctionCall] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        @Deprecated("deprecated")
-        fun functionCall(functionCall: JsonField<FunctionCall>) = apply {
-            body.functionCall(functionCall)
-        }
-
-        /** Alias for calling [functionCall] with `FunctionCall.ofMode(mode)`. */
-        @Deprecated("deprecated")
-        fun functionCall(mode: FunctionCall.FunctionCallMode) = apply { body.functionCall(mode) }
-
-        /**
-         * Alias for calling [functionCall] with
-         * `FunctionCall.ofFunctionCallOption(functionCallOption)`.
-         */
-        @Deprecated("deprecated")
-        fun functionCall(functionCallOption: ChatCompletionFunctionCallOption) = apply {
-            body.functionCall(functionCallOption)
-        }
-
-        /**
-         * Deprecated in favor of `tools`.
-         *
-         * A list of functions the model may generate JSON inputs for.
-         */
-        @Deprecated("deprecated")
-        fun functions(functions: List<Function>) = apply { body.functions(functions) }
-
-        /**
-         * Sets [Builder.functions] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.functions] with a well-typed `List<Function>` value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        @Deprecated("deprecated")
-        fun functions(functions: JsonField<List<Function>>) = apply { body.functions(functions) }
-
-        /**
-         * Adds a single [Function] to [functions].
-         *
-         * @throws IllegalStateException if the field was previously set to a non-list.
-         */
-        @Deprecated("deprecated")
-        fun addFunction(function: Function) = apply { body.addFunction(function) }
-
-        /**
-         * Modify the likelihood of specified tokens appearing in the completion.
-         *
-         * Accepts a JSON object that maps tokens (specified by their token ID in the tokenizer) to
-         * an associated bias value from -100 to 100. Mathematically, the bias is added to the
-         * logits generated by the model prior to sampling. The exact effect will vary per model,
-         * but values between -1 and 1 should decrease or increase likelihood of selection; values
-         * like -100 or 100 should result in a ban or exclusive selection of the relevant token.
-         */
-        fun logitBias(logitBias: LogitBias?) = apply { body.logitBias(logitBias) }
-
-        /** Alias for calling [Builder.logitBias] with `logitBias.orElse(null)`. */
-        fun logitBias(logitBias: Optional<LogitBias>) = logitBias(logitBias.getOrNull())
-
-        /**
-         * Sets [Builder.logitBias] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.logitBias] with a well-typed [LogitBias] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun logitBias(logitBias: JsonField<LogitBias>) = apply { body.logitBias(logitBias) }
-
-        /**
-         * Whether to return log probabilities of the output tokens or not. If true, returns the log
-         * probabilities of each output token returned in the `content` of `message`.
-         */
-        fun logprobs(logprobs: Boolean?) = apply { body.logprobs(logprobs) }
-
-        /**
-         * Alias for [Builder.logprobs].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun logprobs(logprobs: Boolean) = logprobs(logprobs as Boolean?)
-
-        /** Alias for calling [Builder.logprobs] with `logprobs.orElse(null)`. */
-        fun logprobs(logprobs: Optional<Boolean>) = logprobs(logprobs.getOrNull())
-
-        /**
-         * Sets [Builder.logprobs] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.logprobs] with a well-typed [Boolean] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun logprobs(logprobs: JsonField<Boolean>) = apply { body.logprobs(logprobs) }
-
-        /**
-         * An upper bound for the number of tokens that can be generated for a completion, including
-         * visible output tokens and
-         * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
-         */
-        fun maxCompletionTokens(maxCompletionTokens: Long?) = apply {
-            body.maxCompletionTokens(maxCompletionTokens)
-        }
-
-        /**
-         * Alias for [Builder.maxCompletionTokens].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun maxCompletionTokens(maxCompletionTokens: Long) =
-            maxCompletionTokens(maxCompletionTokens as Long?)
-
-        /**
-         * Alias for calling [Builder.maxCompletionTokens] with `maxCompletionTokens.orElse(null)`.
-         */
-        fun maxCompletionTokens(maxCompletionTokens: Optional<Long>) =
-            maxCompletionTokens(maxCompletionTokens.getOrNull())
-
-        /**
-         * Sets [Builder.maxCompletionTokens] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.maxCompletionTokens] with a well-typed [Long] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun maxCompletionTokens(maxCompletionTokens: JsonField<Long>) = apply {
-            body.maxCompletionTokens(maxCompletionTokens)
-        }
-
-        /**
-         * The maximum number of [tokens](/tokenizer) that can be generated in the chat completion.
-         * This value can be used to control [costs](https://openai.com/api/pricing/) for text
-         * generated via API.
-         *
-         * This value is now deprecated in favor of `max_completion_tokens`, and is not compatible
-         * with [o1 series models](https://platform.openai.com/docs/guides/reasoning).
-         */
-        @Deprecated("deprecated")
-        fun maxTokens(maxTokens: Long?) = apply { body.maxTokens(maxTokens) }
-
-        /**
-         * Alias for [Builder.maxTokens].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        @Deprecated("deprecated") fun maxTokens(maxTokens: Long) = maxTokens(maxTokens as Long?)
-
-        /** Alias for calling [Builder.maxTokens] with `maxTokens.orElse(null)`. */
-        @Deprecated("deprecated")
-        fun maxTokens(maxTokens: Optional<Long>) = maxTokens(maxTokens.getOrNull())
-
-        /**
-         * Sets [Builder.maxTokens] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.maxTokens] with a well-typed [Long] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        @Deprecated("deprecated")
-        fun maxTokens(maxTokens: JsonField<Long>) = apply { body.maxTokens(maxTokens) }
-
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
-         *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
-         */
-        fun metadata(metadata: Metadata?) = apply { body.metadata(metadata) }
-
-        /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
-        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
-
-        /**
-         * Sets [Builder.metadata] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.metadata] with a well-typed [Metadata] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
-
-        /**
-         * Output types that you would like the model to generate. Most models are capable of
-         * generating text, which is the default:
-         *
-         * `["text"]`
-         *
-         * The `gpt-4o-audio-preview` model can also be used to
-         * [generate audio](https://platform.openai.com/docs/guides/audio). To request that this
-         * model generate both text and audio responses, you can use:
-         *
-         * `["text", "audio"]`
-         */
-        fun modalities(modalities: List<Modality>?) = apply { body.modalities(modalities) }
-
-        /** Alias for calling [Builder.modalities] with `modalities.orElse(null)`. */
-        fun modalities(modalities: Optional<List<Modality>>) = modalities(modalities.getOrNull())
-
-        /**
-         * Sets [Builder.modalities] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.modalities] with a well-typed `List<Modality>` value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun modalities(modalities: JsonField<List<Modality>>) = apply {
-            body.modalities(modalities)
-        }
-
-        /**
-         * Adds a single [Modality] to [modalities].
-         *
-         * @throws IllegalStateException if the field was previously set to a non-list.
-         */
-        fun addModality(modality: Modality) = apply { body.addModality(modality) }
-
-        /**
-         * How many chat completion choices to generate for each input message. Note that you will
-         * be charged based on the number of generated tokens across all of the choices. Keep `n` as
-         * `1` to minimize costs.
-         */
-        fun n(n: Long?) = apply { body.n(n) }
-
-        /**
-         * Alias for [Builder.n].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun n(n: Long) = n(n as Long?)
-
-        /** Alias for calling [Builder.n] with `n.orElse(null)`. */
-        fun n(n: Optional<Long>) = n(n.getOrNull())
-
-        /**
-         * Sets [Builder.n] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.n] with a well-typed [Long] value instead. This method
-         * is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun n(n: JsonField<Long>) = apply { body.n(n) }
-
-        /**
-         * Whether to enable
-         * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
-         * during tool use.
-         */
-        fun parallelToolCalls(parallelToolCalls: Boolean) = apply {
-            body.parallelToolCalls(parallelToolCalls)
-        }
-
-        /**
-         * Sets [Builder.parallelToolCalls] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.parallelToolCalls] with a well-typed [Boolean] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun parallelToolCalls(parallelToolCalls: JsonField<Boolean>) = apply {
-            body.parallelToolCalls(parallelToolCalls)
-        }
-
-        /**
-         * Static predicted output content, such as the content of a text file that is being
-         * regenerated.
-         */
-        fun prediction(prediction: ChatCompletionPredictionContent?) = apply {
-            body.prediction(prediction)
-        }
-
-        /** Alias for calling [Builder.prediction] with `prediction.orElse(null)`. */
-        fun prediction(prediction: Optional<ChatCompletionPredictionContent>) =
-            prediction(prediction.getOrNull())
-
-        /**
-         * Sets [Builder.prediction] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.prediction] with a well-typed
-         * [ChatCompletionPredictionContent] value instead. This method is primarily for setting the
-         * field to an undocumented or not yet supported value.
-         */
-        fun prediction(prediction: JsonField<ChatCompletionPredictionContent>) = apply {
-            body.prediction(prediction)
-        }
-
-        /**
-         * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they
-         * appear in the text so far, increasing the model's likelihood to talk about new topics.
-         */
-        fun presencePenalty(presencePenalty: Double?) = apply {
-            body.presencePenalty(presencePenalty)
-        }
-
-        /**
-         * Alias for [Builder.presencePenalty].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun presencePenalty(presencePenalty: Double) = presencePenalty(presencePenalty as Double?)
-
-        /** Alias for calling [Builder.presencePenalty] with `presencePenalty.orElse(null)`. */
-        fun presencePenalty(presencePenalty: Optional<Double>) =
-            presencePenalty(presencePenalty.getOrNull())
-
-        /**
-         * Sets [Builder.presencePenalty] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.presencePenalty] with a well-typed [Double] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun presencePenalty(presencePenalty: JsonField<Double>) = apply {
-            body.presencePenalty(presencePenalty)
-        }
-
-        /**
-         * **o-series models only**
-         *
-         * Constrains effort on reasoning for
-         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
-         * faster responses and fewer tokens used on reasoning in a response.
-         */
-        fun reasoningEffort(reasoningEffort: ReasoningEffort?) = apply {
-            body.reasoningEffort(reasoningEffort)
-        }
-
-        /** Alias for calling [Builder.reasoningEffort] with `reasoningEffort.orElse(null)`. */
-        fun reasoningEffort(reasoningEffort: Optional<ReasoningEffort>) =
-            reasoningEffort(reasoningEffort.getOrNull())
-
-        /**
-         * Sets [Builder.reasoningEffort] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.reasoningEffort] with a well-typed [ReasoningEffort]
-         * value instead. This method is primarily for setting the field to an undocumented or not
-         * yet supported value.
-         */
-        fun reasoningEffort(reasoningEffort: JsonField<ReasoningEffort>) = apply {
-            body.reasoningEffort(reasoningEffort)
-        }
-
-        /**
-         * An object specifying the format that the model must output.
-         *
-         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
-         * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-         *
-         * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the
-         * message the model generates is valid JSON. Using `json_schema` is preferred for models
-         * that support it.
-         */
-        fun responseFormat(responseFormat: ResponseFormat) = apply {
-            body.responseFormat(responseFormat)
-        }
-
-        /**
-         * Sets [Builder.responseFormat] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.responseFormat] with a well-typed [ResponseFormat] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun responseFormat(responseFormat: JsonField<ResponseFormat>) = apply {
-            body.responseFormat(responseFormat)
-        }
-
-        /** Alias for calling [responseFormat] with `ResponseFormat.ofText(text)`. */
-        fun responseFormat(text: ResponseFormatText) = apply { body.responseFormat(text) }
-
-        /** Alias for calling [responseFormat] with `ResponseFormat.ofJsonSchema(jsonSchema)`. */
-        fun responseFormat(jsonSchema: ResponseFormatJsonSchema) = apply {
-            body.responseFormat(jsonSchema)
-        }
-
-        /** Alias for calling [responseFormat] with `ResponseFormat.ofJsonObject(jsonObject)`. */
-        fun responseFormat(jsonObject: ResponseFormatJsonObject) = apply {
-            body.responseFormat(jsonObject)
-        }
-
-        /**
-         * This feature is in Beta. If specified, our system will make a best effort to sample
-         * deterministically, such that repeated requests with the same `seed` and parameters should
-         * return the same result. Determinism is not guaranteed, and you should refer to the
-         * `system_fingerprint` response parameter to monitor changes in the backend.
-         */
-        fun seed(seed: Long?) = apply { body.seed(seed) }
-
-        /**
-         * Alias for [Builder.seed].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun seed(seed: Long) = seed(seed as Long?)
-
-        /** Alias for calling [Builder.seed] with `seed.orElse(null)`. */
-        fun seed(seed: Optional<Long>) = seed(seed.getOrNull())
-
-        /**
-         * Sets [Builder.seed] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.seed] with a well-typed [Long] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun seed(seed: JsonField<Long>) = apply { body.seed(seed) }
-
-        /**
-         * Specifies the latency tier to use for processing the request. This parameter is relevant
-         * for customers subscribed to the scale tier service:
-         * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale
-         *   tier credits until they are exhausted.
-         * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
-         *   processed using the default service tier with a lower uptime SLA and no latency
-         *   guarentee.
-         * - If set to 'default', the request will be processed using the default service tier with
-         *   a lower uptime SLA and no latency guarentee.
-         * - When not set, the default behavior is 'auto'.
-         *
-         * When this parameter is set, the response body will include the `service_tier` utilized.
-         */
-        fun serviceTier(serviceTier: ServiceTier?) = apply { body.serviceTier(serviceTier) }
-
-        /** Alias for calling [Builder.serviceTier] with `serviceTier.orElse(null)`. */
-        fun serviceTier(serviceTier: Optional<ServiceTier>) = serviceTier(serviceTier.getOrNull())
-
-        /**
-         * Sets [Builder.serviceTier] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.serviceTier] with a well-typed [ServiceTier] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun serviceTier(serviceTier: JsonField<ServiceTier>) = apply {
-            body.serviceTier(serviceTier)
-        }
-
-        /**
-         * Up to 4 sequences where the API will stop generating further tokens. The returned text
-         * will not contain the stop sequence.
-         */
-        fun stop(stop: Stop?) = apply { body.stop(stop) }
-
-        /** Alias for calling [Builder.stop] with `stop.orElse(null)`. */
-        fun stop(stop: Optional<Stop>) = stop(stop.getOrNull())
-
-        /**
-         * Sets [Builder.stop] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.stop] with a well-typed [Stop] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun stop(stop: JsonField<Stop>) = apply { body.stop(stop) }
-
-        /** Alias for calling [stop] with `Stop.ofString(string)`. */
-        fun stop(string: String) = apply { body.stop(string) }
-
-        /** Alias for calling [stop] with `Stop.ofStrings(strings)`. */
-        fun stopOfStrings(strings: List<String>) = apply { body.stopOfStrings(strings) }
-
-        /**
-         * Whether or not to store the output of this chat completion request for use in our
-         * [model distillation](https://platform.openai.com/docs/guides/distillation) or
-         * [evals](https://platform.openai.com/docs/guides/evals) products.
-         */
-        fun store(store: Boolean?) = apply { body.store(store) }
-
-        /**
-         * Alias for [Builder.store].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun store(store: Boolean) = store(store as Boolean?)
-
-        /** Alias for calling [Builder.store] with `store.orElse(null)`. */
-        fun store(store: Optional<Boolean>) = store(store.getOrNull())
-
-        /**
-         * Sets [Builder.store] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.store] with a well-typed [Boolean] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun store(store: JsonField<Boolean>) = apply { body.store(store) }
-
-        /** Options for streaming response. Only set this when you set `stream: true`. */
-        fun streamOptions(streamOptions: ChatCompletionStreamOptions?) = apply {
-            body.streamOptions(streamOptions)
-        }
-
-        /** Alias for calling [Builder.streamOptions] with `streamOptions.orElse(null)`. */
-        fun streamOptions(streamOptions: Optional<ChatCompletionStreamOptions>) =
-            streamOptions(streamOptions.getOrNull())
-
-        /**
-         * Sets [Builder.streamOptions] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.streamOptions] with a well-typed
-         * [ChatCompletionStreamOptions] value instead. This method is primarily for setting the
-         * field to an undocumented or not yet supported value.
-         */
-        fun streamOptions(streamOptions: JsonField<ChatCompletionStreamOptions>) = apply {
-            body.streamOptions(streamOptions)
-        }
-
-        /**
-         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
-         * output more random, while lower values like 0.2 will make it more focused and
-         * deterministic. We generally recommend altering this or `top_p` but not both.
-         */
-        fun temperature(temperature: Double?) = apply { body.temperature(temperature) }
-
-        /**
-         * Alias for [Builder.temperature].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun temperature(temperature: Double) = temperature(temperature as Double?)
-
-        /** Alias for calling [Builder.temperature] with `temperature.orElse(null)`. */
-        fun temperature(temperature: Optional<Double>) = temperature(temperature.getOrNull())
-
-        /**
-         * Sets [Builder.temperature] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.temperature] with a well-typed [Double] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun temperature(temperature: JsonField<Double>) = apply { body.temperature(temperature) }
-
-        /**
-         * Controls which (if any) tool is called by the model. `none` means the model will not call
-         * any tool and instead generates a message. `auto` means the model can pick between
-         * generating a message or calling one or more tools. `required` means the model must call
-         * one or more tools. Specifying a particular tool via `{"type": "function", "function":
-         * {"name": "my_function"}}` forces the model to call that tool.
-         *
-         * `none` is the default when no tools are present. `auto` is the default if tools are
-         * present.
-         */
-        fun toolChoice(toolChoice: ChatCompletionToolChoiceOption) = apply {
-            body.toolChoice(toolChoice)
-        }
-
-        /**
-         * Sets [Builder.toolChoice] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.toolChoice] with a well-typed
-         * [ChatCompletionToolChoiceOption] value instead. This method is primarily for setting the
-         * field to an undocumented or not yet supported value.
-         */
-        fun toolChoice(toolChoice: JsonField<ChatCompletionToolChoiceOption>) = apply {
-            body.toolChoice(toolChoice)
-        }
-
-        /** Alias for calling [toolChoice] with `ChatCompletionToolChoiceOption.ofAuto(auto)`. */
-        fun toolChoice(auto: ChatCompletionToolChoiceOption.Auto) = apply { body.toolChoice(auto) }
-
-        /**
-         * Alias for calling [toolChoice] with
-         * `ChatCompletionToolChoiceOption.ofNamedToolChoice(namedToolChoice)`.
-         */
-        fun toolChoice(namedToolChoice: ChatCompletionNamedToolChoice) = apply {
-            body.toolChoice(namedToolChoice)
-        }
-
-        /**
-         * A list of tools the model may call. Currently, only functions are supported as a tool.
-         * Use this to provide a list of functions the model may generate JSON inputs for. A max of
-         * 128 functions are supported.
-         */
-        fun tools(tools: List<ChatCompletionTool>) = apply { body.tools(tools) }
-
-        /**
-         * Sets [Builder.tools] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.tools] with a well-typed `List<ChatCompletionTool>`
-         * value instead. This method is primarily for setting the field to an undocumented or not
-         * yet supported value.
-         */
-        fun tools(tools: JsonField<List<ChatCompletionTool>>) = apply { body.tools(tools) }
-
-        /**
-         * Adds a single [ChatCompletionTool] to [tools].
-         *
-         * @throws IllegalStateException if the field was previously set to a non-list.
-         */
-        fun addTool(tool: ChatCompletionTool) = apply { body.addTool(tool) }
-
-        /**
-         * An integer between 0 and 20 specifying the number of most likely tokens to return at each
-         * token position, each with an associated log probability. `logprobs` must be set to `true`
-         * if this parameter is used.
-         */
-        fun topLogprobs(topLogprobs: Long?) = apply { body.topLogprobs(topLogprobs) }
-
-        /**
-         * Alias for [Builder.topLogprobs].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun topLogprobs(topLogprobs: Long) = topLogprobs(topLogprobs as Long?)
-
-        /** Alias for calling [Builder.topLogprobs] with `topLogprobs.orElse(null)`. */
-        fun topLogprobs(topLogprobs: Optional<Long>) = topLogprobs(topLogprobs.getOrNull())
-
-        /**
-         * Sets [Builder.topLogprobs] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.topLogprobs] with a well-typed [Long] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun topLogprobs(topLogprobs: JsonField<Long>) = apply { body.topLogprobs(topLogprobs) }
-
-        /**
-         * An alternative to sampling with temperature, called nucleus sampling, where the model
-         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
-         * tokens comprising the top 10% probability mass are considered.
-         *
-         * We generally recommend altering this or `temperature` but not both.
-         */
-        fun topP(topP: Double?) = apply { body.topP(topP) }
-
-        /**
-         * Alias for [Builder.topP].
-         *
-         * This unboxed primitive overload exists for backwards compatibility.
-         */
-        fun topP(topP: Double) = topP(topP as Double?)
-
-        /** Alias for calling [Builder.topP] with `topP.orElse(null)`. */
-        fun topP(topP: Optional<Double>) = topP(topP.getOrNull())
-
-        /**
-         * Sets [Builder.topP] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.topP] with a well-typed [Double] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun topP(topP: JsonField<Double>) = apply { body.topP(topP) }
-
-        /**
-         * A unique identifier representing your end-user, which can help OpenAI to monitor and
-         * detect abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
-         */
-        fun user(user: String) = apply { body.user(user) }
-
-        /**
-         * Sets [Builder.user] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.user] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun user(user: JsonField<String>) = apply { body.user(user) }
-
-        /**
-         * This tool searches the web for relevant results to use in a response. Learn more about
-         * the
-         * [web search tool](https://platform.openai.com/docs/guides/tools-web-search?api-mode=chat).
-         */
-        fun webSearchOptions(webSearchOptions: WebSearchOptions) = apply {
-            body.webSearchOptions(webSearchOptions)
-        }
-
-        /**
-         * Sets [Builder.webSearchOptions] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.webSearchOptions] with a well-typed [WebSearchOptions]
-         * value instead. This method is primarily for setting the field to an undocumented or not
-         * yet supported value.
-         */
-        fun webSearchOptions(webSearchOptions: JsonField<WebSearchOptions>) = apply {
-            body.webSearchOptions(webSearchOptions)
-        }
-
-        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
-            body.additionalProperties(additionalBodyProperties)
-        }
-
-        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
-            body.putAdditionalProperty(key, value)
-        }
-
-        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
-            apply {
-                body.putAllAdditionalProperties(additionalBodyProperties)
-            }
-
-        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
-
-        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
-            body.removeAllAdditionalProperties(keys)
-        }
-
-        fun additionalHeaders(additionalHeaders: Headers) = apply {
-            this.additionalHeaders.clear()
-            putAllAdditionalHeaders(additionalHeaders)
-        }
-
-        fun additionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.clear()
-            putAllAdditionalHeaders(additionalHeaders)
-        }
-
-        fun putAdditionalHeader(name: String, value: String) = apply {
-            additionalHeaders.put(name, value)
-        }
-
-        fun putAdditionalHeaders(name: String, values: Iterable<String>) = apply {
-            additionalHeaders.put(name, values)
-        }
-
-        fun putAllAdditionalHeaders(additionalHeaders: Headers) = apply {
-            this.additionalHeaders.putAll(additionalHeaders)
-        }
-
-        fun putAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.putAll(additionalHeaders)
-        }
-
-        fun replaceAdditionalHeaders(name: String, value: String) = apply {
-            additionalHeaders.replace(name, value)
-        }
-
-        fun replaceAdditionalHeaders(name: String, values: Iterable<String>) = apply {
-            additionalHeaders.replace(name, values)
-        }
-
-        fun replaceAllAdditionalHeaders(additionalHeaders: Headers) = apply {
-            this.additionalHeaders.replaceAll(additionalHeaders)
-        }
-
-        fun replaceAllAdditionalHeaders(additionalHeaders: Map<String, Iterable<String>>) = apply {
-            this.additionalHeaders.replaceAll(additionalHeaders)
-        }
-
-        fun removeAdditionalHeaders(name: String) = apply { additionalHeaders.remove(name) }
-
-        fun removeAllAdditionalHeaders(names: Set<String>) = apply {
-            additionalHeaders.removeAll(names)
-        }
-
-        fun additionalQueryParams(additionalQueryParams: QueryParams) = apply {
-            this.additionalQueryParams.clear()
-            putAllAdditionalQueryParams(additionalQueryParams)
-        }
-
-        fun additionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) = apply {
-            this.additionalQueryParams.clear()
-            putAllAdditionalQueryParams(additionalQueryParams)
-        }
-
-        fun putAdditionalQueryParam(key: String, value: String) = apply {
-            additionalQueryParams.put(key, value)
-        }
-
-        fun putAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
-            additionalQueryParams.put(key, values)
-        }
-
-        fun putAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
-            this.additionalQueryParams.putAll(additionalQueryParams)
-        }
-
-        fun putAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
-            apply {
-                this.additionalQueryParams.putAll(additionalQueryParams)
-            }
-
-        fun replaceAdditionalQueryParams(key: String, value: String) = apply {
-            additionalQueryParams.replace(key, value)
-        }
-
-        fun replaceAdditionalQueryParams(key: String, values: Iterable<String>) = apply {
-            additionalQueryParams.replace(key, values)
-        }
-
-        fun replaceAllAdditionalQueryParams(additionalQueryParams: QueryParams) = apply {
-            this.additionalQueryParams.replaceAll(additionalQueryParams)
-        }
-
-        fun replaceAllAdditionalQueryParams(additionalQueryParams: Map<String, Iterable<String>>) =
-            apply {
-                this.additionalQueryParams.replaceAll(additionalQueryParams)
-            }
-
-        fun removeAdditionalQueryParams(key: String) = apply { additionalQueryParams.remove(key) }
-
-        fun removeAllAdditionalQueryParams(keys: Set<String>) = apply {
-            additionalQueryParams.removeAll(keys)
-        }
-
-        /**
-         * Returns an immutable instance of [ChatCompletionCreateParams].
-         *
-         * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .messages()
-         * .model()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
-         */
-        fun build(): ChatCompletionCreateParams =
-            ChatCompletionCreateParams(
-                body.build(),
-                additionalHeaders.build(),
-                additionalQueryParams.build(),
-            )
     }
 
     /**
@@ -3946,22 +4005,24 @@ private constructor(
     }
 
     @Deprecated("deprecated")
-    @NoAutoDetect
     class Function
-    @JsonCreator
     private constructor(
-        @JsonProperty("name")
-        @ExcludeMissing
-        private val name: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("description")
-        @ExcludeMissing
-        private val description: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("parameters")
-        @ExcludeMissing
-        private val parameters: JsonField<FunctionParameters> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val name: JsonField<String>,
+        private val description: JsonField<String>,
+        private val parameters: JsonField<FunctionParameters>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("description")
+            @ExcludeMissing
+            description: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("parameters")
+            @ExcludeMissing
+            parameters: JsonField<FunctionParameters> = JsonMissing.of(),
+        ) : this(name, description, parameters, mutableMapOf())
 
         /**
          * The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and
@@ -4021,22 +4082,15 @@ private constructor(
         @ExcludeMissing
         fun _parameters(): JsonField<FunctionParameters> = parameters
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Function = apply {
-            if (validated) {
-                return@apply
-            }
-
-            name()
-            description()
-            parameters().ifPresent { it.validate() }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -4158,8 +4212,21 @@ private constructor(
                     checkRequired("name", name),
                     description,
                     parameters,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Function = apply {
+            if (validated) {
+                return@apply
+            }
+
+            name()
+            description()
+            parameters().ifPresent { it.validate() }
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -4189,27 +4256,20 @@ private constructor(
      * between -1 and 1 should decrease or increase likelihood of selection; values like -100 or 100
      * should result in a ban or exclusive selection of the relevant token.
      */
-    @NoAutoDetect
     class LogitBias
-    @JsonCreator
-    private constructor(
+    private constructor(private val additionalProperties: MutableMap<String, JsonValue>) {
+
+        @JsonCreator private constructor() : this(mutableMapOf())
+
         @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
-    ) {
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
 
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): LogitBias = apply {
-            if (validated) {
-                return@apply
-            }
-
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -4253,7 +4313,17 @@ private constructor(
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              */
-            fun build(): LogitBias = LogitBias(additionalProperties.toImmutable())
+            fun build(): LogitBias = LogitBias(additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): LogitBias = apply {
+            if (validated) {
+                return@apply
+            }
+
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -4836,19 +4906,22 @@ private constructor(
      * This tool searches the web for relevant results to use in a response. Learn more about the
      * [web search tool](https://platform.openai.com/docs/guides/tools-web-search?api-mode=chat).
      */
-    @NoAutoDetect
     class WebSearchOptions
-    @JsonCreator
     private constructor(
-        @JsonProperty("search_context_size")
-        @ExcludeMissing
-        private val searchContextSize: JsonField<SearchContextSize> = JsonMissing.of(),
-        @JsonProperty("user_location")
-        @ExcludeMissing
-        private val userLocation: JsonField<UserLocation> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val searchContextSize: JsonField<SearchContextSize>,
+        private val userLocation: JsonField<UserLocation>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("search_context_size")
+            @ExcludeMissing
+            searchContextSize: JsonField<SearchContextSize> = JsonMissing.of(),
+            @JsonProperty("user_location")
+            @ExcludeMissing
+            userLocation: JsonField<UserLocation> = JsonMissing.of(),
+        ) : this(searchContextSize, userLocation, mutableMapOf())
 
         /**
          * High level guidance for the amount of context window space to use for the search. One of
@@ -4889,21 +4962,15 @@ private constructor(
         @ExcludeMissing
         fun _userLocation(): JsonField<UserLocation> = userLocation
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): WebSearchOptions = apply {
-            if (validated) {
-                return@apply
-            }
-
-            searchContextSize()
-            userLocation().ifPresent { it.validate() }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -4992,8 +5059,20 @@ private constructor(
                 WebSearchOptions(
                     searchContextSize,
                     userLocation,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): WebSearchOptions = apply {
+            if (validated) {
+                return@apply
+            }
+
+            searchContextSize()
+            userLocation().ifPresent { it.validate() }
+            validated = true
         }
 
         /**
@@ -5113,17 +5192,20 @@ private constructor(
         }
 
         /** Approximate location parameters for the search. */
-        @NoAutoDetect
         class UserLocation
-        @JsonCreator
         private constructor(
-            @JsonProperty("approximate")
-            @ExcludeMissing
-            private val approximate: JsonField<Approximate> = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val approximate: JsonField<Approximate>,
+            private val type: JsonValue,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("approximate")
+                @ExcludeMissing
+                approximate: JsonField<Approximate> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            ) : this(approximate, type, mutableMapOf())
 
             /**
              * Approximate location parameters for the search.
@@ -5157,25 +5239,15 @@ private constructor(
             @ExcludeMissing
             fun _approximate(): JsonField<Approximate> = approximate
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): UserLocation = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                approximate().validate()
-                _type().let {
-                    if (it != JsonValue.from("approximate")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -5272,30 +5344,51 @@ private constructor(
                     UserLocation(
                         checkRequired("approximate", approximate),
                         type,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
             }
 
+            private var validated: Boolean = false
+
+            fun validate(): UserLocation = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                approximate().validate()
+                _type().let {
+                    if (it != JsonValue.from("approximate")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                validated = true
+            }
+
             /** Approximate location parameters for the search. */
-            @NoAutoDetect
             class Approximate
-            @JsonCreator
             private constructor(
-                @JsonProperty("city")
-                @ExcludeMissing
-                private val city: JsonField<String> = JsonMissing.of(),
-                @JsonProperty("country")
-                @ExcludeMissing
-                private val country: JsonField<String> = JsonMissing.of(),
-                @JsonProperty("region")
-                @ExcludeMissing
-                private val region: JsonField<String> = JsonMissing.of(),
-                @JsonProperty("timezone")
-                @ExcludeMissing
-                private val timezone: JsonField<String> = JsonMissing.of(),
-                @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                private val city: JsonField<String>,
+                private val country: JsonField<String>,
+                private val region: JsonField<String>,
+                private val timezone: JsonField<String>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("city")
+                    @ExcludeMissing
+                    city: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("country")
+                    @ExcludeMissing
+                    country: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("region")
+                    @ExcludeMissing
+                    region: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("timezone")
+                    @ExcludeMissing
+                    timezone: JsonField<String> = JsonMissing.of(),
+                ) : this(city, country, region, timezone, mutableMapOf())
 
                 /**
                  * Free text input for the city of the user, e.g. `San Francisco`.
@@ -5367,23 +5460,15 @@ private constructor(
                 @ExcludeMissing
                 fun _timezone(): JsonField<String> = timezone
 
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): Approximate = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    city()
-                    country()
-                    region()
-                    timezone()
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -5498,8 +5583,22 @@ private constructor(
                             country,
                             region,
                             timezone,
-                            additionalProperties.toImmutable(),
+                            additionalProperties.toMutableMap(),
                         )
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): Approximate = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    city()
+                    country()
+                    region()
+                    timezone()
+                    validated = true
                 }
 
                 override fun equals(other: Any?): Boolean {

@@ -10,32 +10,33 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-@NoAutoDetect
 class ChatCompletionTokenLogprob
-@JsonCreator
 private constructor(
-    @JsonProperty("token") @ExcludeMissing private val token: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("bytes")
-    @ExcludeMissing
-    private val bytes: JsonField<List<Long>> = JsonMissing.of(),
-    @JsonProperty("logprob")
-    @ExcludeMissing
-    private val logprob: JsonField<Double> = JsonMissing.of(),
-    @JsonProperty("top_logprobs")
-    @ExcludeMissing
-    private val topLogprobs: JsonField<List<TopLogprob>> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val token: JsonField<String>,
+    private val bytes: JsonField<List<Long>>,
+    private val logprob: JsonField<Double>,
+    private val topLogprobs: JsonField<List<TopLogprob>>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("token") @ExcludeMissing token: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("bytes") @ExcludeMissing bytes: JsonField<List<Long>> = JsonMissing.of(),
+        @JsonProperty("logprob") @ExcludeMissing logprob: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("top_logprobs")
+        @ExcludeMissing
+        topLogprobs: JsonField<List<TopLogprob>> = JsonMissing.of(),
+    ) : this(token, bytes, logprob, topLogprobs, mutableMapOf())
 
     /**
      * The token.
@@ -104,23 +105,15 @@ private constructor(
     @ExcludeMissing
     fun _topLogprobs(): JsonField<List<TopLogprob>> = topLogprobs
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ChatCompletionTokenLogprob = apply {
-        if (validated) {
-            return@apply
-        }
-
-        token()
-        bytes()
-        logprob()
-        topLogprobs().forEach { it.validate() }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -284,26 +277,38 @@ private constructor(
                 checkRequired("bytes", bytes).map { it.toImmutable() },
                 checkRequired("logprob", logprob),
                 checkRequired("topLogprobs", topLogprobs).map { it.toImmutable() },
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
-    @NoAutoDetect
+    private var validated: Boolean = false
+
+    fun validate(): ChatCompletionTokenLogprob = apply {
+        if (validated) {
+            return@apply
+        }
+
+        token()
+        bytes()
+        logprob()
+        topLogprobs().forEach { it.validate() }
+        validated = true
+    }
+
     class TopLogprob
-    @JsonCreator
     private constructor(
-        @JsonProperty("token")
-        @ExcludeMissing
-        private val token: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("bytes")
-        @ExcludeMissing
-        private val bytes: JsonField<List<Long>> = JsonMissing.of(),
-        @JsonProperty("logprob")
-        @ExcludeMissing
-        private val logprob: JsonField<Double> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val token: JsonField<String>,
+        private val bytes: JsonField<List<Long>>,
+        private val logprob: JsonField<Double>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("token") @ExcludeMissing token: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("bytes") @ExcludeMissing bytes: JsonField<List<Long>> = JsonMissing.of(),
+            @JsonProperty("logprob") @ExcludeMissing logprob: JsonField<Double> = JsonMissing.of(),
+        ) : this(token, bytes, logprob, mutableMapOf())
 
         /**
          * The token.
@@ -354,22 +359,15 @@ private constructor(
          */
         @JsonProperty("logprob") @ExcludeMissing fun _logprob(): JsonField<Double> = logprob
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): TopLogprob = apply {
-            if (validated) {
-                return@apply
-            }
-
-            token()
-            bytes()
-            logprob()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -503,8 +501,21 @@ private constructor(
                     checkRequired("token", token),
                     checkRequired("bytes", bytes).map { it.toImmutable() },
                     checkRequired("logprob", logprob),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): TopLogprob = apply {
+            if (validated) {
+                return@apply
+            }
+
+            token()
+            bytes()
+            logprob()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

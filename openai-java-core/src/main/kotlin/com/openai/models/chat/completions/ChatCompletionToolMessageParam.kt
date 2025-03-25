@@ -19,28 +19,29 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
-@NoAutoDetect
 class ChatCompletionToolMessageParam
-@JsonCreator
 private constructor(
-    @JsonProperty("content")
-    @ExcludeMissing
-    private val content: JsonField<Content> = JsonMissing.of(),
-    @JsonProperty("role") @ExcludeMissing private val role: JsonValue = JsonMissing.of(),
-    @JsonProperty("tool_call_id")
-    @ExcludeMissing
-    private val toolCallId: JsonField<String> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val content: JsonField<Content>,
+    private val role: JsonValue,
+    private val toolCallId: JsonField<String>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("content") @ExcludeMissing content: JsonField<Content> = JsonMissing.of(),
+        @JsonProperty("role") @ExcludeMissing role: JsonValue = JsonMissing.of(),
+        @JsonProperty("tool_call_id")
+        @ExcludeMissing
+        toolCallId: JsonField<String> = JsonMissing.of(),
+    ) : this(content, role, toolCallId, mutableMapOf())
 
     /**
      * The contents of the tool message.
@@ -85,26 +86,15 @@ private constructor(
      */
     @JsonProperty("tool_call_id") @ExcludeMissing fun _toolCallId(): JsonField<String> = toolCallId
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ChatCompletionToolMessageParam = apply {
-        if (validated) {
-            return@apply
-        }
-
-        content().validate()
-        _role().let {
-            if (it != JsonValue.from("tool")) {
-                throw OpenAIInvalidDataException("'role' is invalid, received $it")
-            }
-        }
-        toolCallId()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -223,8 +213,25 @@ private constructor(
                 checkRequired("content", content),
                 role,
                 checkRequired("toolCallId", toolCallId),
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ChatCompletionToolMessageParam = apply {
+        if (validated) {
+            return@apply
+        }
+
+        content().validate()
+        _role().let {
+            if (it != JsonValue.from("tool")) {
+                throw OpenAIInvalidDataException("'role' is invalid, received $it")
+            }
+        }
+        toolCallId()
+        validated = true
     }
 
     /** The contents of the tool message. */

@@ -10,31 +10,34 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /** Emitted when text content is finalized. */
-@NoAutoDetect
 class ResponseTextDoneEvent
-@JsonCreator
 private constructor(
-    @JsonProperty("content_index")
-    @ExcludeMissing
-    private val contentIndex: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("item_id")
-    @ExcludeMissing
-    private val itemId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("output_index")
-    @ExcludeMissing
-    private val outputIndex: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("text") @ExcludeMissing private val text: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val contentIndex: JsonField<Long>,
+    private val itemId: JsonField<String>,
+    private val outputIndex: JsonField<Long>,
+    private val text: JsonField<String>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("content_index")
+        @ExcludeMissing
+        contentIndex: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("item_id") @ExcludeMissing itemId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("output_index")
+        @ExcludeMissing
+        outputIndex: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(contentIndex, itemId, outputIndex, text, type, mutableMapOf())
 
     /**
      * The index of the content part that the text content is finalized.
@@ -111,28 +114,15 @@ private constructor(
      */
     @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ResponseTextDoneEvent = apply {
-        if (validated) {
-            return@apply
-        }
-
-        contentIndex()
-        itemId()
-        outputIndex()
-        text()
-        _type().let {
-            if (it != JsonValue.from("response.output_text.done")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -273,8 +263,27 @@ private constructor(
                 checkRequired("outputIndex", outputIndex),
                 checkRequired("text", text),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ResponseTextDoneEvent = apply {
+        if (validated) {
+            return@apply
+        }
+
+        contentIndex()
+        itemId()
+        outputIndex()
+        text()
+        _type().let {
+            if (it != JsonValue.from("response.output_text.done")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {
