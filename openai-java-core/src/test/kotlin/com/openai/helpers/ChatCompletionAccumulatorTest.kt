@@ -1,18 +1,23 @@
 package com.openai.helpers
 
+import com.openai.core.JsonField
+import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.models.chat.completions.ChatCompletion
 import com.openai.models.chat.completions.ChatCompletionChunk
+import com.openai.models.chat.completions.ChatCompletionMessageToolCall
 import com.openai.models.chat.completions.ChatCompletionTokenLogprob
 import com.openai.models.completions.CompletionUsage
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
-class ChatCompletionAccumulatorTest {
+internal class ChatCompletionAccumulatorTest {
     @Test
     fun convertToolCallFunctionWithoutAdditionalProperties() {
-        val function = ChatCompletionAccumulator.convertToolCallFunction(toolCallFunction())
+        val jsonFunction = ChatCompletionAccumulator.convertToolCallFunction(_toolCallFunction())
+        val function: ChatCompletionMessageToolCall.Function = jsonFunction.getRequired("function")
 
         assertThat(function.name()).isEqualTo("tc_fn_name")
         assertThat(function.arguments()).isEqualTo("[arg1, arg2]")
@@ -20,14 +25,29 @@ class ChatCompletionAccumulatorTest {
     }
 
     @Test
+    fun convertToolCallFunctionWithNullFunction() {
+        val jsonFunction = ChatCompletionAccumulator.convertToolCallFunction(JsonNull.of())
+
+        assertThat(jsonFunction.isNull()).isTrue()
+    }
+
+    @Test
+    fun convertToolCallFunctionWithMissingFunction() {
+        val jsonFunction = ChatCompletionAccumulator.convertToolCallFunction(JsonMissing.of())
+
+        assertThat(jsonFunction.isMissing()).isTrue()
+    }
+
+    @Test
     fun convertToolCallFunctionWithAdditionalProperties() {
-        val function =
+        val jsonFunction =
             ChatCompletionAccumulator.convertToolCallFunction(
-                toolCallFunction(
+                _toolCallFunction(
                     additionalProperties =
                         mapOf("a" to JsonValue.from("a-value"), "b" to JsonValue.from("b-value"))
                 )
             )
+        val function = jsonFunction.getRequired("function")
 
         assertThat(function.name()).isEqualTo("tc_fn_name")
         assertThat(function.arguments()).isEqualTo("[arg1, arg2]")
@@ -507,6 +527,19 @@ class ChatCompletionAccumulatorTest {
             .arguments(functionArguments)
             .apply { additionalProperties?.let { additionalProperties(it) } }
             .build()
+
+    private fun _toolCallFunction(
+        functionName: JsonField<String> = JsonField.of("tc_fn_name"),
+        functionArguments: JsonField<String> = JsonField.of("[arg1, arg2]"),
+        additionalProperties: Map<String, JsonValue>? = null,
+    ) =
+        JsonField.of(
+            ChatCompletionChunk.Choice.Delta.ToolCall.Function.builder()
+                .name(functionName)
+                .arguments(functionArguments)
+                .apply { additionalProperties?.let { additionalProperties(it) } }
+                .build()
+        )
 
     private fun functionCall(
         functionName: String = "fc_fn_name",

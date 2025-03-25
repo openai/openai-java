@@ -1,5 +1,7 @@
 package com.openai.helpers
 
+import com.openai.core.JsonField
+import com.openai.core.JsonMissing
 import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.errors.OpenAIInvalidDataException
@@ -82,34 +84,41 @@ class ChatCompletionAccumulator private constructor() {
         @JvmSynthetic
         internal fun convertToolCall(chunkToolCall: ChatCompletionChunk.Choice.Delta.ToolCall) =
             ChatCompletionMessageToolCall.builder()
-                .id(chunkToolCall.id().get())
-                .function(convertToolCallFunction(chunkToolCall.function().get()))
+                .id(chunkToolCall._id())
+                .function(convertToolCallFunction(chunkToolCall._function()))
                 .additionalProperties(chunkToolCall._additionalProperties())
                 // Let the `type` default to "function".
-                // TODO: Is a default `type` OK? It can be different on the chunk `ToolCall`, but
-                //   "Currently only `function` is supported" is the line from OpenAI. It could be
-                //   missing or null on the chunk `ToolCall` and then "function" would have to be
-                //   injected, so the default type "function" seems reasonable. Sort of need to
-                //   decide between keeping things clean and handling all unlikely possibilities.
                 .build()
 
         @JvmSynthetic
         internal fun convertToolCallFunction(
-            chunkToolCallFunction: ChatCompletionChunk.Choice.Delta.ToolCall.Function
-        ) =
-            ChatCompletionMessageToolCall.Function.builder()
-                .name(chunkToolCallFunction.name().get())
-                .arguments(chunkToolCallFunction.arguments().get())
-                .additionalProperties(chunkToolCallFunction._additionalProperties())
-                .build()
+            chunkToolCallFunction: JsonField<ChatCompletionChunk.Choice.Delta.ToolCall.Function>
+        ): JsonField<ChatCompletionMessageToolCall.Function> {
+            if (chunkToolCallFunction.isNull()) {
+                return JsonNull.of()
+            }
+            if (chunkToolCallFunction.isMissing()) {
+                return JsonMissing.of()
+            }
+
+            val function = chunkToolCallFunction.getRequired("function")
+
+            return JsonField.of(
+                ChatCompletionMessageToolCall.Function.builder()
+                    .name(function._name())
+                    .arguments(function._arguments())
+                    .additionalProperties(function._additionalProperties())
+                    .build()
+            )
+        }
 
         @JvmSynthetic
         internal fun convertFunctionCall(
             chunkFunctionCall: ChatCompletionChunk.Choice.Delta.FunctionCall
         ) =
             ChatCompletionMessage.FunctionCall.builder()
-                .name(chunkFunctionCall.name().get())
-                .arguments(chunkFunctionCall.arguments().get())
+                .name(chunkFunctionCall._name())
+                .arguments(chunkFunctionCall._arguments())
                 .additionalProperties(chunkFunctionCall._additionalProperties())
                 .build()
     }
@@ -171,10 +180,8 @@ class ChatCompletionAccumulator private constructor() {
             .created(chunk.created())
             .model(chunk.model())
             // The other fields are optional and `object` has an appropriate default value.
+            .systemFingerprint(chunk._systemFingerprint())
             .apply {
-                chunk.systemFingerprint().ifPresent {
-                    systemFingerprint(chunk.systemFingerprint().get())
-                }
                 chunk.serviceTier().ifPresent {
                     serviceTier(ChatCompletion.ServiceTier.of(it.asString()))
                 }
